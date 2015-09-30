@@ -83,7 +83,7 @@ public class CourseResource
 			CourseInfo oneAtMost = courseInfoService.getByCode(code);
 			if( oneAtMost != null )
 			{
-				rawResults = aclService.filterNonGrantedObjects(Collections.singleton("LIST_COURSE"),
+				rawResults = aclService.filterNonGrantedObjects(Collections.singleton("LIST_COURSE_INFO"),
 					Collections.singletonList(oneAtMost));
 			}
 		}
