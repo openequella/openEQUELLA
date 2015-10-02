@@ -15,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.dytech.edge.common.LockedException;
+import com.dytech.edge.exceptions.InUseException;
 import com.dytech.edge.exceptions.InvalidDataException;
 import com.dytech.edge.exceptions.WebException;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -62,7 +63,7 @@ public class RestEasyExceptionMapper implements ExceptionMapper<Throwable>
 			final WebException w = (WebException) t;
 			webAppException = new WebApplicationException(w, w.getCode());
 		}
-		else if( t instanceof ItemEditingException || t instanceof InvalidDataException )
+		else if( t instanceof ItemEditingException || t instanceof InvalidDataException || t instanceof InUseException )
 		{
 			webAppException = new WebApplicationException(t, Status.BAD_REQUEST);
 		}

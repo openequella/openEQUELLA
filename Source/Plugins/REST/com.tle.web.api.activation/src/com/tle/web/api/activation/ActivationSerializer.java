@@ -25,7 +25,7 @@ public class ActivationSerializer
 	@Inject
 	private ItemLinkService itemLinkService;
 	@Inject
-	private CourseSerializer courseSerializer;
+	private CourseBeanSerializer courseSerializer;
 
 	public ActivationBean serialize(ActivateRequest request)
 	{
@@ -36,11 +36,11 @@ public class ActivationSerializer
 		activation.setLocationId(request.getLocationId());
 		if( request.getCourse() != null )
 		{
-			CourseBean courseBean = courseSerializer.serialize(request.getCourse(), false);
+			CourseBean courseBean = courseSerializer.serialize(request.getCourse(), null, false);
 			courseBean.set(
 				"links",
 				Collections.singletonMap("self",
-					UriBuilder.fromMethod(CourseResource.class, "getCourse").build(courseBean.getUuid()).toString()));
+					UriBuilder.fromMethod(CourseResource.class, "get").build(courseBean.getUuid()).toString()));
 			activation.setCourse(courseBean);
 		}
 		activation.setFrom(request.getFrom());

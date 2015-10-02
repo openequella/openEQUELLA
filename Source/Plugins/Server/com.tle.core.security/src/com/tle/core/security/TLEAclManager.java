@@ -26,6 +26,14 @@ public interface TLEAclManager extends RemoteTLEAclManager
 	<T> Collection<T> filterNonGrantedObjects(Collection<String> privileges, Collection<T> domainObjs);
 
 	/**
+	 * Same as filterNonGrantedObjects, but much easier to use.
+	 * @param privilege
+	 * @param domainObj
+	 * @return true if the privilege is granted
+	 */
+	<T> boolean checkPrivilege(String privilege, T domainObj);
+
+	/**
 	 * Return a map of domain objects to maps of privileges.
 	 */
 	<T> Map<T, Map<String, Boolean>> getPrivilegesForObjects(Collection<String> privileges, Collection<T> domainObjs);

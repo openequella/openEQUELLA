@@ -18,6 +18,8 @@
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="commons-lang:commons-lang" />
+		<import plugin-id="com.tle.web.api.baseentity" />
+		<import plugin-id="com.tle.web.api.baseentity.serializer" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">
@@ -26,7 +28,9 @@
 		<library type="resources" path="resources/" id="resources" />
 	</runtime>
 
-	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModule" />
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModule">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+	</extension>
 
 	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
 		<parameter id="group" value="resource-centre" />
@@ -36,6 +40,7 @@
 	<extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="activationResource">
 		<parameter id="class" value="com.tle.web.api.activation.ActivationResource" />
 	</extension>
+	
 	<extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="courseRestService">
 		<parameter id="class" value="com.tle.web.api.activation.CourseResource" />
 	</extension>

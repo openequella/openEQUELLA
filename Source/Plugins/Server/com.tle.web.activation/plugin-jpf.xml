@@ -10,9 +10,6 @@
 		<import plugin-id="com.tle.core.security" />
 		<import plugin-id="com.tle.core.settings" />
 		<import plugin-id="com.tle.core.usermanagement.standard" />
-		<import plugin-id="com.tle.web.api.item.equella" />
-		<import plugin-id="com.tle.web.api.search" />
-		<import plugin-id="com.tle.web.api.usermanagement" />
 		<import plugin-id="com.tle.web.bulk" />
 		<import plugin-id="com.tle.web.integration" />
 		<import plugin-id="com.tle.web.remoting.rest" />
@@ -27,7 +24,6 @@
 		<import plugin-id="net.sf.json-lib:json-lib" />
 		<import plugin-id="com.tle.web.itemlist" />
 		<import plugin-id="com.tle.web.htmleditor" />
-		<import plugin-id="com.tle.web.api.interfaces" />
 	</requires>
 
 	<runtime>
@@ -92,9 +88,5 @@
 	<extension plugin-id="com.tle.web.integration" point-id="integrationSession" id="resultsExt">
 		<parameter id="class" value="bean:com.tle.web.activation.ActivationResultsExtension" />
 		<parameter id="type" value="generic" />
-	</extension>
-
-	<extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="courseRestService">
-		<parameter id="class" value="com.tle.web.api.activation.CourseResource" />
 	</extension>
 </plugin>

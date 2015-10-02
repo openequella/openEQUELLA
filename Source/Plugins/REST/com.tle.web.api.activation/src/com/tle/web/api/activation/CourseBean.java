@@ -24,9 +24,9 @@ public class CourseBean extends BaseEntityBean
 	/**
 	 * no of students in the course, must be integer
 	 */
-	private int students;
+	private Integer students;
 	private String versionSelection;
-	private boolean archived;
+	private Boolean archived;
 
 	public String getCode()
 	{
@@ -88,12 +88,12 @@ public class CourseBean extends BaseEntityBean
 		this.until = until;
 	}
 
-	public int getStudents()
+	public Integer getStudents()
 	{
 		return students;
 	}
 
-	public void setStudents(int students)
+	public void setStudents(Integer students)
 	{
 		this.students = students;
 	}
@@ -108,12 +108,12 @@ public class CourseBean extends BaseEntityBean
 		this.versionSelection = versionSelection;
 	}
 
-	public boolean isArchived()
+	public Boolean isArchived()
 	{
 		return archived;
 	}
 
-	public void setArchived(boolean archived)
+	public void setArchived(Boolean archived)
 	{
 		this.archived = archived;
 	}

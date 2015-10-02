@@ -149,6 +149,12 @@ public class TLEAclManagerImpl implements TLEAclManager
 	}
 
 	@Override
+	public <T> boolean checkPrivilege(String privilege, T domainObj)
+	{
+		return !filterNonGrantedObjects(Collections.singleton(privilege), Collections.singleton(domainObj)).isEmpty();
+	}
+
+	@Override
 	@Transactional
 	public <T> Map<T, Map<String, Boolean>> getPrivilegesForObjects(Collection<String> privileges,
 		Collection<T> domainObjs)

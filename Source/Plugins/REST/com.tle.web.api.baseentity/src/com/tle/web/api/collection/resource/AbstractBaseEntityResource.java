@@ -16,7 +16,6 @@ import javax.ws.rs.core.UriInfo;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dytech.edge.common.LockedException;
-import com.dytech.edge.exceptions.InUseException;
 import com.dytech.edge.exceptions.InvalidDataException;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -162,8 +161,6 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 		for( BE entity : allEntities )
 		{
 			final B bean = serialize(entity, null, false);
-			final Map<String, String> links = Collections.singletonMap("self", getGetUri(entity.getUuid()).toString());
-			bean.set("links", links);
 			retBeans.add(bean);
 		}
 
@@ -177,7 +174,10 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 
 	protected B serialize(BE entity, Object data, boolean heavy)
 	{
-		return getSerializer().serialize(entity, data, heavy);
+		B bean = getSerializer().serialize(entity, data, heavy);
+		final Map<String, String> links = Collections.singletonMap("self", getGetUri(entity.getUuid()).toString());
+		bean.set("links", links);
+		return bean;
 	}
 
 	@Override
@@ -240,14 +240,14 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 		{
 			if( CurrentUser.getUserID().equals(ex.getUserID()) )
 			{
-				throw new WebApplicationException(
+				throw new LockedException(
 					"Entity is locked in a different session.  Call unlock with a force parameter value of true.",
-					Status.CONFLICT);
+					ex.getUserID(), ex.getSessionID(), ex.getEntityId());
 			}
 			else
 			{
-				throw new WebApplicationException("Entity is locked by another user: " + ex.getUserID(),
-					Status.CONFLICT);
+				throw new LockedException("Entity is locked by another user: " + ex.getUserID(), ex.getUserID(),
+					ex.getSessionID(), ex.getEntityId());
 			}
 		}
 	}
@@ -274,14 +274,14 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 		{
 			if( CurrentUser.getUserID().equals(ex.getUserID()) )
 			{
-				throw new WebApplicationException(
+				throw new LockedException(
 					"Entity is locked in a different session.  Call unlock with a force parameter value of true.",
-					Status.UNAUTHORIZED);
+					ex.getUserID(), ex.getSessionID(), ex.getEntityId());
 			}
 			else
 			{
-				throw new WebApplicationException("You do not own the lock on this entity.  It is held by user ID "
-					+ ex.getUserID(), Status.UNAUTHORIZED);
+				throw new LockedException("You do not own the lock on this entity.  It is held by user ID "
+					+ ex.getUserID(), ex.getUserID(), ex.getSessionID(), ex.getEntityId());
 			}
 		}
 		// Should be 'no content'??
@@ -340,15 +340,8 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 		{
 			return Response.status(Status.NOT_FOUND).build();
 		}
-		try
-		{
-			entityService.delete(entity, true);
-			return Response.noContent().build();
-		}
-		catch( InUseException inUse )
-		{
-			return Response.status(Status.BAD_REQUEST).build();
-		}
+		entityService.delete(entity, true);
+		return Response.noContent().build();
 	}
 
 	/**
@@ -361,42 +354,32 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	@Override
 	public Response create(UriInfo uriInfo, B bean, String stagingUuid)
 	{
-		try
-		{
-			BE entity = getSerializer().deserializeNew(bean, stagingUuid);
-			String uuid = entity.getUuid();
-			return Response.created(getGetUri(uuid)).build();
-		}
-		catch( InvalidDataException ide )
-		{
-			return Response.status(Status.BAD_REQUEST).build();
-		}
+		validate(bean.getUuid(), bean, true);
+		BE entity = getSerializer().deserializeNew(bean, stagingUuid);
+		String uuid = entity.getUuid();
+		return Response.created(getGetUri(uuid)).build();
 	}
 
 	@Override
 	public Response edit(UriInfo uriInfo, String uuid, B bean, String stagingUuid, String lockId, boolean keepLocked)
 	{
-		try
+		validate(uuid, bean, false);
+		BE entity = getSerializer().deserializeEdit(bean, stagingUuid, lockId, keepLocked);
+		if( entity == null )
 		{
-			BE entity = getSerializer().deserializeEdit(bean, stagingUuid, lockId, keepLocked);
-			if( entity == null )
-			{
-				return Response.status(Status.NOT_FOUND).build();
-			}
-			return Response.ok().location(getGetUri(uuid)).build();
+			return Response.status(Status.NOT_FOUND).build();
 		}
-		catch( LockedException locked )
-		{
-			return Response.status(Status.CONFLICT).build();
-		}
-		catch( AccessDeniedException denied )
-		{
-			return Response.status(Status.FORBIDDEN).build();
-		}
-		catch( InvalidDataException ide )
-		{
-			return Response.status(Status.BAD_REQUEST).build();
-		}
+		return Response.ok().location(getGetUri(uuid)).build();
+	}
+
+	/**
+	 * No-op by default, rely on entityService to validate.  You may need to override this for checking uniqueness before Hibernate bullshit comes into play
+	 * @param uuid
+	 * @param bean
+	 */
+	protected void validate(String uuid, B bean, boolean isNew) throws InvalidDataException
+	{
+		// Empty
 	}
 
 	protected URI getGetUri(String uuid)
