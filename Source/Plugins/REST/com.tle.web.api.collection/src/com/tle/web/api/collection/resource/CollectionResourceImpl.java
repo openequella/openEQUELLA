@@ -22,6 +22,7 @@ import com.tle.web.api.collection.CollectionBeanSerializer;
 import com.tle.web.api.collection.interfaces.CollectionResource;
 import com.tle.web.api.collection.interfaces.beans.AllCollectionsSecurityBean;
 import com.tle.web.api.collection.interfaces.beans.CollectionBean;
+import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
 import com.tle.web.api.interfaces.beans.SearchBean;
 
 @SuppressWarnings("nls")

@@ -23,7 +23,7 @@ import com.tle.web.api.activation.CourseBean;
 import com.tle.web.api.activation.CourseBeanSerializer;
 import com.tle.web.api.activation.CourseResource;
 import com.tle.web.api.baseentity.serializer.BaseEntitySerializer;
-import com.tle.web.api.collection.resource.AbstractBaseEntityResource;
+import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 

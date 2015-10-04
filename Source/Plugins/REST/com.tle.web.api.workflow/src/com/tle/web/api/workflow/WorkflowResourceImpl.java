@@ -10,7 +10,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.services.entity.AbstractEntityService;
 import com.tle.core.services.entity.WorkflowService;
 import com.tle.web.api.baseentity.serializer.BaseEntitySerializer;
-import com.tle.web.api.collection.resource.AbstractBaseEntityResource;
+import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.workflow.interfaces.WorkflowResource;
 import com.tle.web.api.workflow.interfaces.beans.WorkflowBean;

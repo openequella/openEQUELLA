@@ -10,7 +10,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.oauth.service.OAuthService;
 import com.tle.core.services.entity.AbstractEntityService;
 import com.tle.web.api.baseentity.serializer.BaseEntitySerializer;
-import com.tle.web.api.collection.resource.AbstractBaseEntityResource;
+import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.oauth.interfaces.OAuthResource;
 import com.tle.web.api.oauth.interfaces.beans.OAuthClientBean;

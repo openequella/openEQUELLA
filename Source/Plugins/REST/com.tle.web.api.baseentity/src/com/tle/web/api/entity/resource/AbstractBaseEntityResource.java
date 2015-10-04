@@ -1,4 +1,4 @@
-package com.tle.web.api.collection.resource;
+package com.tle.web.api.entity.resource;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
@@ -16,7 +15,9 @@ import javax.ws.rs.core.UriInfo;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dytech.edge.common.LockedException;
+import com.dytech.edge.common.valuebean.ValidationError;
 import com.dytech.edge.exceptions.InvalidDataException;
+import com.dytech.edge.exceptions.NotFoundException;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.tle.beans.entity.BaseEntity;
@@ -24,6 +25,7 @@ import com.tle.beans.entity.EntityLock;
 import com.tle.beans.security.AccessEntry;
 import com.tle.beans.security.AccessExpression;
 import com.tle.common.Check;
+import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.SecurityConstants;
 import com.tle.core.dao.AccessExpressionDao;
@@ -88,7 +90,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	{
 		if( aclManager.filterNonGrantedPrivileges("VIEW_SECURITY_TREE", "EDIT_SECURITY_TREE").isEmpty() )
 		{
-			throw new AccessDeniedException("One of [VIEW_SECURITY_TREE, EDIT_SECURITY_TREE] is required");
+			throw new AccessDeniedException(getString("error.acls.viewpriv"));
 		}
 
 		Node[] allNodes = getAllNodes();
@@ -139,7 +141,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 			String who = rule.getWho().trim();
 			if( Check.isEmpty(who) )
 			{
-				throw new WebApplicationException(Status.BAD_REQUEST);
+				throw new InvalidDataException(new ValidationError("who", getString("validation.acls.who")));
 			}
 			AccessExpression exprObj = accessExpressionDao.retrieveOrCreate(who);
 			newEntry.setExpression(exprObj);
@@ -206,12 +208,12 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 		final BE entity = getEntityService().getByUuid(uuid);
 		if( entity == null )
 		{
-			return Response.status(Status.NOT_FOUND).build();
+			throw entityNotFound(uuid);
 		}
 		final EntityLock lock = lockingService.getLockUnbound(entity);
 		if( lock == null )
 		{
-			return Response.status(Status.NOT_FOUND).build();
+			throw new NotFoundException(getString("error.entity.notlocked"));
 		}
 		return Response.ok().entity(convertLock(lock, entity)).build();
 	}
@@ -231,24 +233,14 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 			BE entity = getEntityService().getByUuid(uuid);
 			if( entity == null )
 			{
-				return Response.status(Status.NOT_FOUND).build();
+				throw entityNotFound(uuid);
 			}
 			final EntityLock lock = lockingService.lockEntity(entity);
 			return Response.status(Status.CREATED).entity(convertLock(lock, entity)).build();
 		}
 		catch( LockedException ex )
 		{
-			if( CurrentUser.getUserID().equals(ex.getUserID()) )
-			{
-				throw new LockedException(
-					"Entity is locked in a different session.  Call unlock with a force parameter value of true.",
-					ex.getUserID(), ex.getSessionID(), ex.getEntityId());
-			}
-			else
-			{
-				throw new LockedException("Entity is locked by another user: " + ex.getUserID(), ex.getUserID(),
-					ex.getSessionID(), ex.getEntityId());
-			}
+			throw processLocked(ex);
 		}
 	}
 
@@ -272,20 +264,24 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 		}
 		catch( LockedException ex )
 		{
-			if( CurrentUser.getUserID().equals(ex.getUserID()) )
-			{
-				throw new LockedException(
-					"Entity is locked in a different session.  Call unlock with a force parameter value of true.",
-					ex.getUserID(), ex.getSessionID(), ex.getEntityId());
-			}
-			else
-			{
-				throw new LockedException("You do not own the lock on this entity.  It is held by user ID "
-					+ ex.getUserID(), ex.getUserID(), ex.getSessionID(), ex.getEntityId());
-			}
+			throw processLocked(ex);
 		}
 		// Should be 'no content'??
 		return Response.noContent().build();
+	}
+
+	private LockedException processLocked(LockedException ex)
+	{
+		if( CurrentUser.getUserID().equals(ex.getUserID()) )
+		{
+			return new LockedException(getString("error.entity.lockeddifferentsession"), ex.getUserID(),
+				ex.getSessionID(), ex.getEntityId());
+		}
+		else
+		{
+			return new LockedException(getString("error.entity.lockeddifferentuser", ex.getUserID()), ex.getUserID(),
+				ex.getSessionID(), ex.getEntityId());
+		}
 	}
 
 	private EntityLockBean convertLock(EntityLock lock, BE entity)
@@ -316,11 +312,11 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 		final BE entity = entityService.getByUuid(uuid);
 		if( entity == null )
 		{
-			throw new WebApplicationException(Status.NOT_FOUND);
+			throw entityNotFound(uuid);
 		}
 		if( !entityService.canView(entity) )
 		{
-			throw new WebApplicationException(Status.FORBIDDEN);
+			throw new AccessDeniedException(getString("error.entity.viewpriv"));
 		}
 		return serialize(entity, null, true);
 	}
@@ -338,7 +334,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 		BE entity = entityService.getByUuid(uuid);
 		if( entity == null )
 		{
-			return Response.status(Status.NOT_FOUND).build();
+			throw entityNotFound(uuid);
 		}
 		entityService.delete(entity, true);
 		return Response.noContent().build();
@@ -367,7 +363,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 		BE entity = getSerializer().deserializeEdit(bean, stagingUuid, lockId, keepLocked);
 		if( entity == null )
 		{
-			return Response.status(Status.NOT_FOUND).build();
+			throw entityNotFound(uuid);
 		}
 		return Response.ok().location(getGetUri(uuid)).build();
 	}
@@ -390,5 +386,15 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	protected boolean isLocked(BE entity)
 	{
 		return lockingService.isEntityLocked(entity, CurrentUser.getUserID(), null);
+	}
+
+	protected NotFoundException entityNotFound(String uuid)
+	{
+		return new NotFoundException(getString("error.entity.notfound", uuid));
+	}
+
+	private String getString(String keyPart, Object... params)
+	{
+		return CurrentLocale.get("com.tle.web.api.baseentity." + keyPart, params);
 	}
 }

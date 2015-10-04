@@ -10,7 +10,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.schema.SchemaService;
 import com.tle.core.services.entity.AbstractEntityService;
 import com.tle.web.api.baseentity.serializer.BaseEntitySerializer;
-import com.tle.web.api.collection.resource.AbstractBaseEntityResource;
+import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.schema.interfaces.SchemaResource;
 import com.tle.web.api.schema.interfaces.beans.SchemaBean;
