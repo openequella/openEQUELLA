@@ -46,15 +46,17 @@ public class SchemaEditorImpl extends AbstractBaseEntityEditor<Schema, SchemaBea
 
 	@AssistedInject
 	public SchemaEditorImpl(@Assisted Schema schema, @Assisted("stagingUuid") @Nullable String stagingUuid,
-		@Assisted("lockId") @Nullable String lockId, @Assisted boolean editing)
+		@Assisted("lockId") @Nullable String lockId, @Assisted("editing") boolean editing,
+		@Assisted("importing") boolean importing)
 	{
-		super(schema, stagingUuid, lockId, editing);
+		super(schema, stagingUuid, lockId, editing, importing);
 	}
 
 	@AssistedInject
-	public SchemaEditorImpl(@Assisted Schema schema, @Assisted("stagingUuid") @Nullable String stagingUuid)
+	public SchemaEditorImpl(@Assisted Schema schema, @Assisted("stagingUuid") @Nullable String stagingUuid,
+		@Assisted("importing") boolean importing)
 	{
-		this(schema, stagingUuid, null, false);
+		this(schema, stagingUuid, null, false, importing);
 	}
 
 	@Override
@@ -326,8 +328,9 @@ public class SchemaEditorImpl extends AbstractBaseEntityEditor<Schema, SchemaBea
 	{
 		SchemaEditorImpl createExistingEditor(@Assisted Schema schema,
 			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
-			@Assisted boolean editing);
+			@Assisted("editing") boolean editing, @Assisted("importing") boolean importing);
 
-		SchemaEditorImpl createNewEditor(@Assisted Schema schema, @Assisted("stagingUuid") @Nullable String stagingUuid);
+		SchemaEditorImpl createNewEditor(@Assisted Schema schema,
+			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("importing") boolean importing);
 	}
 }

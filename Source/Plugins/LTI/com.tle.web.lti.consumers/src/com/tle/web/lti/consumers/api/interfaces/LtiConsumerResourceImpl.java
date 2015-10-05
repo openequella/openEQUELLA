@@ -9,7 +9,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.lti.consumers.service.LtiConsumerService;
 import com.tle.core.services.entity.AbstractEntityService;
 import com.tle.web.api.baseentity.serializer.BaseEntitySerializer;
-import com.tle.web.api.collection.resource.AbstractBaseEntityResource;
+import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.lti.consumers.api.beans.LtiConsumerBean;
 import com.tle.web.lti.consumers.api.serializer.LtiConsumerBeanSerializer;
@@ -21,7 +21,8 @@ import com.tle.web.lti.consumers.api.serializer.LtiConsumerBeanSerializer;
 @Bind(LtiConsumerResource.class)
 public class LtiConsumerResourceImpl
 	extends
-		AbstractBaseEntityResource<LtiConsumer, BaseEntitySecurityBean, LtiConsumerBean> implements LtiConsumerResource
+		AbstractBaseEntityResource<LtiConsumer, BaseEntitySecurityBean, LtiConsumerBean>
+	implements LtiConsumerResource
 {
 	@Inject
 	private LtiConsumerService ltiConsumerService;

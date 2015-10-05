@@ -25,15 +25,17 @@ public class ConnectorEditorImpl extends AbstractBaseEntityEditor<Connector, Con
 
 	@AssistedInject
 	public ConnectorEditorImpl(@Assisted Connector entity, @Assisted("stagingUuid") @Nullable String stagingUuid,
-		@Assisted("lockId") @Nullable String lockId, @Assisted boolean editing)
+		@Assisted("lockId") @Nullable String lockId, @Assisted("editing") boolean editing,
+		@Assisted("importing") boolean importing)
 	{
-		super(entity, stagingUuid, lockId, editing);
+		super(entity, stagingUuid, lockId, editing, importing);
 	}
 
 	@AssistedInject
-	public ConnectorEditorImpl(@Assisted Connector entity, @Assisted("stagingUuid") @Nullable String stagingUuid)
+	public ConnectorEditorImpl(@Assisted Connector entity, @Assisted("stagingUuid") @Nullable String stagingUuid,
+		@Assisted("importing") boolean importing)
 	{
-		this(entity, stagingUuid, null, false);
+		this(entity, stagingUuid, null, false, importing);
 	}
 
 	@Override
@@ -52,12 +54,11 @@ public class ConnectorEditorImpl extends AbstractBaseEntityEditor<Connector, Con
 	@BindFactory
 	public interface ConnectorEditorFactory
 	{
-		@Nullable
 		ConnectorEditorImpl createExistingEditor(@Assisted Connector connector,
 			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
-			@Assisted boolean editing);
+			@Assisted("editing") boolean editing, @Assisted("importing") boolean importing);
 
 		ConnectorEditorImpl createNewEditor(@Assisted Connector connector,
-			@Assisted("stagingUuid") @Nullable String stagingUuid);
+			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("importing") boolean importing);
 	}
 }

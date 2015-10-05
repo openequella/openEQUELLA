@@ -26,15 +26,17 @@ public class StoreFrontEditorImpl extends AbstractBaseEntityEditor<StoreFront, S
 
 	@AssistedInject
 	public StoreFrontEditorImpl(@Assisted StoreFront entity, @Assisted("stagingUuid") @Nullable String stagingUuid,
-		@Assisted("lockId") @Nullable String lockId, @Assisted boolean editing)
+		@Assisted("lockId") @Nullable String lockId, @Assisted("editing") boolean editing,
+		@Assisted("importing") boolean importing)
 	{
-		super(entity, stagingUuid, lockId, editing);
+		super(entity, stagingUuid, lockId, editing, importing);
 	}
 
 	@AssistedInject
-	public StoreFrontEditorImpl(@Assisted StoreFront entity, @Assisted("stagingUuid") @Nullable String stagingUuid)
+	public StoreFrontEditorImpl(@Assisted StoreFront entity, @Assisted("stagingUuid") @Nullable String stagingUuid,
+		@Assisted("importing") boolean importing)
 	{
-		this(entity, stagingUuid, null, false);
+		this(entity, stagingUuid, null, false, importing);
 	}
 
 	@Override
@@ -46,12 +48,11 @@ public class StoreFrontEditorImpl extends AbstractBaseEntityEditor<StoreFront, S
 	@BindFactory
 	public interface StoreFrontEditorFactory
 	{
-		@Nullable
 		StoreFrontEditorImpl createExistingEditor(StoreFront storeFront,
 			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
-			boolean editing);
+			@Assisted("editing") boolean editing, @Assisted("importing") boolean importing);
 
 		StoreFrontEditorImpl createNewEditor(StoreFront storeFront,
-			@Assisted("stagingUuid") @Nullable String stagingUuid);
+			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("importing") boolean importing);
 	}
 }

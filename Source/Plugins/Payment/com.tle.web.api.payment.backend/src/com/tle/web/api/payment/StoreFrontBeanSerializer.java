@@ -37,15 +37,16 @@ public class StoreFrontBeanSerializer
 	}
 
 	@Override
-	protected StoreFrontEditor createExistingEditor(StoreFront entity, String stagingUuid, String lockId)
+	protected StoreFrontEditor createExistingEditor(StoreFront entity, String stagingUuid, String lockId,
+		boolean importing)
 	{
-		return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true);
+		return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true, importing);
 	}
 
 	@Override
-	protected StoreFrontEditor createNewEditor(StoreFront entity, String stagingUuid)
+	protected StoreFrontEditor createNewEditor(StoreFront entity, String stagingUuid, boolean importing)
 	{
-		return editorFactory.createNewEditor(entity, stagingUuid);
+		return editorFactory.createNewEditor(entity, stagingUuid, importing);
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.tle.annotation.NonNullByDefault;
-import com.tle.annotation.Nullable;
 import com.tle.beans.taxonomy.TaxonomyBean;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.taxonomy.Taxonomy;
@@ -36,17 +35,16 @@ public class TaxonomyBeanSerializer extends AbstractEquellaBaseEntitySerializer<
 		return new Taxonomy();
 	}
 
-	@Nullable
 	@Override
-	protected TaxonomyEditor createExistingEditor(Taxonomy entity, String stagingUuid, String lockId)
+	protected TaxonomyEditor createExistingEditor(Taxonomy entity, String stagingUuid, String lockId, boolean importing)
 	{
-		return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true);
+		return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true, importing);
 	}
 
 	@Override
-	protected TaxonomyEditor createNewEditor(Taxonomy entity, String stagingUuid)
+	protected TaxonomyEditor createNewEditor(Taxonomy entity, String stagingUuid, boolean importing)
 	{
-		return editorFactory.createNewEditor(entity, stagingUuid);
+		return editorFactory.createNewEditor(entity, stagingUuid, importing);
 	}
 
 	@Override

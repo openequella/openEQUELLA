@@ -28,15 +28,17 @@ public class OAuthEditorImpl extends AbstractBaseEntityEditor<OAuthClient, OAuth
 
 	@AssistedInject
 	public OAuthEditorImpl(@Assisted OAuthClient entity, @Assisted("stagingUuid") @Nullable String stagingUuid,
-		@Assisted("lockId") @Nullable String lockId, @Assisted boolean editing)
+		@Assisted("lockId") @Nullable String lockId, @Assisted("editing") boolean editing,
+		@Assisted("importing") boolean importing)
 	{
-		super(entity, stagingUuid, lockId, editing);
+		super(entity, stagingUuid, lockId, editing, importing);
 	}
 
 	@AssistedInject
-	public OAuthEditorImpl(@Assisted OAuthClient entity, @Assisted("stagingUuid") @Nullable String stagingUuid)
+	public OAuthEditorImpl(@Assisted OAuthClient entity, @Assisted("stagingUuid") @Nullable String stagingUuid,
+		@Assisted("importing") boolean importing)
 	{
-		this(entity, stagingUuid, null, false);
+		this(entity, stagingUuid, null, false, importing);
 	}
 
 	@Override
@@ -79,12 +81,11 @@ public class OAuthEditorImpl extends AbstractBaseEntityEditor<OAuthClient, OAuth
 	@BindFactory
 	public interface OAuthEditorFactory
 	{
-		@Nullable
 		OAuthEditorImpl createExistingEditor(@Assisted OAuthClient oauthClient,
 			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
-			@Assisted boolean editing);
+			@Assisted("editing") boolean editing, @Assisted("importing") boolean importing);
 
 		OAuthEditorImpl createNewEditor(@Assisted OAuthClient oauthClient,
-			@Assisted("stagingUuid") @Nullable String stagingUuid);
+			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("importing") boolean importing);
 	}
 }

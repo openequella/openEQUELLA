@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.entity.DynaCollection;
 import com.tle.core.dynacollection.DynaCollectionService;
@@ -16,6 +17,7 @@ import com.tle.web.api.collection.beans.DynaCollectionBean;
 /**
  * @author Aaron
  */
+@NonNullByDefault
 public class DynaCollectionEditorImpl extends AbstractBaseEntityEditor<DynaCollection, DynaCollectionBean>
 	implements
 		DynaCollectionEditor
@@ -26,16 +28,16 @@ public class DynaCollectionEditorImpl extends AbstractBaseEntityEditor<DynaColle
 	@AssistedInject
 	public DynaCollectionEditorImpl(@Assisted DynaCollection collection,
 		@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
-		@Assisted boolean editing)
+		@Assisted("editing") boolean editing, @Assisted("importing") boolean importing)
 	{
-		super(collection, stagingUuid, lockId, editing);
+		super(collection, stagingUuid, lockId, editing, importing);
 	}
 
 	@AssistedInject
 	public DynaCollectionEditorImpl(@Assisted DynaCollection collection,
-		@Assisted("stagingUuid") @Nullable String stagingUuid)
+		@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("importing") boolean importing)
 	{
-		this(collection, stagingUuid, null, false);
+		this(collection, stagingUuid, null, false, importing);
 	}
 
 	@Override
@@ -57,9 +59,9 @@ public class DynaCollectionEditorImpl extends AbstractBaseEntityEditor<DynaColle
 	{
 		DynaCollectionEditorImpl createExistingEditor(@Assisted DynaCollection collection,
 			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
-			@Assisted boolean editing);
+			@Assisted("editing") boolean editing, @Assisted("importing") boolean importing);
 
 		DynaCollectionEditorImpl createNewEditor(@Assisted DynaCollection collection,
-			@Assisted("stagingUuid") @Nullable String stagingUuid);
+			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("importing") boolean importing);
 	}
 }

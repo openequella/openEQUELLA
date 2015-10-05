@@ -33,15 +33,17 @@ public class LtiConsumerEditorImpl extends AbstractBaseEntityEditor<LtiConsumer,
 
 	@AssistedInject
 	public LtiConsumerEditorImpl(@Assisted LtiConsumer entity, @Assisted("stagingUuid") @Nullable String stagingUuid,
-		@Assisted("lockId") @Nullable String lockId, @Assisted boolean editing)
+		@Assisted("lockId") @Nullable String lockId, @Assisted("editing") boolean editing,
+		@Assisted("importing") boolean importing)
 	{
-		super(entity, stagingUuid, lockId, editing);
+		super(entity, stagingUuid, lockId, editing, importing);
 	}
 
 	@AssistedInject
-	public LtiConsumerEditorImpl(@Assisted LtiConsumer entity, @Assisted("stagingUuid") @Nullable String stagingUuid)
+	public LtiConsumerEditorImpl(@Assisted LtiConsumer entity, @Assisted("stagingUuid") @Nullable String stagingUuid,
+		@Assisted("importing") boolean importing)
 	{
-		this(entity, stagingUuid, null, false);
+		this(entity, stagingUuid, null, false, importing);
 	}
 
 	@Override
@@ -138,9 +140,9 @@ public class LtiConsumerEditorImpl extends AbstractBaseEntityEditor<LtiConsumer,
 		@Nullable
 		LtiConsumerEditorImpl createExistingEditor(@Assisted LtiConsumer entity,
 			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
-			@Assisted boolean editing);
+			@Assisted("editing") boolean editing, @Assisted("importing") boolean importing);
 
 		LtiConsumerEditorImpl createNewEditor(@Assisted LtiConsumer entity,
-			@Assisted("stagingUuid") @Nullable String stagingUuid);
+			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("importing") boolean importing);
 	}
 }

@@ -28,15 +28,17 @@ public class CourseEditorImpl extends AbstractBaseEntityEditor<CourseInfo, Cours
 
 	@AssistedInject
 	public CourseEditorImpl(@Assisted CourseInfo course, @Assisted("stagingUuid") @Nullable String stagingUuid,
-		@Assisted("lockId") @Nullable String lockId, @Assisted boolean editing)
+		@Assisted("lockId") @Nullable String lockId, @Assisted("editing") boolean editing,
+		@Assisted("importing") boolean importing)
 	{
-		super(course, stagingUuid, lockId, editing);
+		super(course, stagingUuid, lockId, editing, importing);
 	}
 
 	@AssistedInject
-	public CourseEditorImpl(@Assisted CourseInfo course, @Assisted("stagingUuid") @Nullable String stagingUuid)
+	public CourseEditorImpl(@Assisted CourseInfo course, @Assisted("stagingUuid") @Nullable String stagingUuid,
+		@Assisted("importing") boolean importing)
 	{
-		this(course, stagingUuid, null, false);
+		this(course, stagingUuid, null, false, importing);
 	}
 
 	@Override
@@ -44,6 +46,12 @@ public class CourseEditorImpl extends AbstractBaseEntityEditor<CourseInfo, Cours
 	{
 		super.copyCustomFields(bean);
 
+		Boolean archived = bean.isArchived();
+		if( archived != null )
+		{
+			entity.setDisabled(archived);
+		}
+		entity.setDisabled(editing);
 		entity.setCode(bean.getCode());
 		entity.setCitation(bean.getCitation());
 		if( !Check.isEmpty(bean.getType()) )
@@ -53,7 +61,11 @@ public class CourseEditorImpl extends AbstractBaseEntityEditor<CourseInfo, Cours
 		entity.setDepartmentName(bean.getDepartmentName());
 		entity.setFrom(bean.getFrom());
 		entity.setUntil(bean.getUntil());
-		entity.setStudents(bean.getStudents());
+		Integer students = bean.getStudents();
+		if( students != null )
+		{
+			entity.setStudents(students);
+		}
 		entity.setCitation(bean.getCitation());
 		String versionSelectionAsString = bean.getVersionSelection();
 		if( !Check.isEmpty(versionSelectionAsString) )
@@ -74,8 +86,9 @@ public class CourseEditorImpl extends AbstractBaseEntityEditor<CourseInfo, Cours
 	{
 		CourseEditorImpl createExistingEditor(@Assisted CourseInfo course,
 			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
-			@Assisted boolean editing);
+			@Assisted("editing") boolean editing, @Assisted("importing") boolean importing);
 
-		CourseEditorImpl createNewEditor(CourseInfo course, @Assisted("stagingUuid") @Nullable String stagingUuid);
+		CourseEditorImpl createNewEditor(CourseInfo course, @Assisted("stagingUuid") @Nullable String stagingUuid,
+			@Assisted("importing") boolean importing);
 	}
 }

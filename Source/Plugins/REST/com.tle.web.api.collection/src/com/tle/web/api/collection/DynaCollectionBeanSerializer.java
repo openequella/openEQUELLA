@@ -53,18 +53,18 @@ public class DynaCollectionBeanSerializer
 		return new DynaCollection();
 	}
 
-	@Nullable
 	@Override
 	protected DynaCollectionEditor createExistingEditor(DynaCollection entity, @Nullable String stagingUuid,
-		@Nullable String lockId)
+		@Nullable String lockId, boolean importing)
 	{
-		return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true);
+		return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true, importing);
 	}
 
 	@Override
-	protected DynaCollectionEditor createNewEditor(DynaCollection entity, @Nullable String stagingUuid)
+	protected DynaCollectionEditor createNewEditor(DynaCollection entity, @Nullable String stagingUuid,
+		boolean importing)
 	{
-		return editorFactory.createNewEditor(entity, stagingUuid);
+		return editorFactory.createNewEditor(entity, stagingUuid, importing);
 	}
 
 	@Override

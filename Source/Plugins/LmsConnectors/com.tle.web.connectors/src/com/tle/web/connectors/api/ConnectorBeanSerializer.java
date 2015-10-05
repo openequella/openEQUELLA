@@ -42,15 +42,16 @@ public class ConnectorBeanSerializer
 	}
 
 	@Override
-	protected ConnectorEditor createExistingEditor(Connector entity, String stagingUuid, String lockId)
+	protected ConnectorEditor createExistingEditor(Connector entity, String stagingUuid, String lockId,
+		boolean importing)
 	{
-		return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true);
+		return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true, importing);
 	}
 
 	@Override
-	protected ConnectorEditor createNewEditor(Connector entity, String stagingUuid)
+	protected ConnectorEditor createNewEditor(Connector entity, String stagingUuid, boolean importing)
 	{
-		return editorFactory.createNewEditor(entity, stagingUuid);
+		return editorFactory.createNewEditor(entity, stagingUuid, importing);
 	}
 
 	@Override

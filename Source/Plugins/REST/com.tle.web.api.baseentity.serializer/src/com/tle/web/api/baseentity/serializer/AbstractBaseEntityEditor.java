@@ -2,6 +2,7 @@ package com.tle.web.api.baseentity.serializer;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,8 @@ import javax.inject.Inject;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import com.dytech.edge.common.valuebean.ValidationError;
+import com.dytech.edge.exceptions.InvalidDataException;
 import com.google.common.base.Strings;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -31,6 +34,7 @@ import com.tle.core.events.ApplicationEvent;
 import com.tle.core.services.EventService;
 import com.tle.core.services.entity.AbstractEntityService;
 import com.tle.core.user.CurrentInstitution;
+import com.tle.core.user.CurrentUser;
 import com.tle.web.api.interfaces.beans.BaseEntityBean;
 import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
@@ -52,6 +56,7 @@ public abstract class AbstractBaseEntityEditor<BE extends BaseEntity, BEB extend
 
 	protected final BE entity;
 	protected final boolean editing;
+	protected final boolean importing;
 	@Nullable
 	protected final String stagingUuid;
 	@Nullable
@@ -64,12 +69,14 @@ public abstract class AbstractBaseEntityEditor<BE extends BaseEntity, BEB extend
 
 	protected abstract AbstractEntityService<?, BE> getEntityService();
 
-	protected AbstractBaseEntityEditor(BE entity, @Nullable String stagingUuid, @Nullable String lockId, boolean editing)
+	protected AbstractBaseEntityEditor(BE entity, @Nullable String stagingUuid, @Nullable String lockId,
+		boolean editing, boolean importing)
 	{
 		this.entity = entity;
 		this.editing = editing;
 		this.stagingUuid = stagingUuid;
 		this.lockId = lockId;
+		this.importing = importing;
 	}
 
 	@Override
@@ -91,25 +98,54 @@ public abstract class AbstractBaseEntityEditor<BE extends BaseEntity, BEB extend
 	protected void copyBaseEntityFields(BEB source)
 	{
 		entity.setInstitution(CurrentInstitution.get());
-		String uuid = source.getUuid();
-		if( Strings.isNullOrEmpty(uuid) )
+
+		final String sourceUuid = source.getUuid();
+		if( !editing )
 		{
-			entity.setUuid(UUID.randomUUID().toString());
+			if( Strings.isNullOrEmpty(sourceUuid) )
+			{
+				entity.setUuid(UUID.randomUUID().toString());
+			}
+			else
+			{
+				entity.setUuid(sourceUuid);
+			}
 		}
-		else
+		else if( sourceUuid != null && !sourceUuid.equals(entity.getUuid()) )
 		{
-			entity.setUuid(uuid);
+			//FIXME: i18n
+			throw new InvalidDataException(new ValidationError("uuid", "You cannot change the UUID"));
 		}
+
 		entity.setName(getBundle(entity.getName(), source.getNameStrings(), source.getName()));
 		entity.setDescription(getBundle(entity.getDescription(), source.getDescriptionStrings(),
 			source.getDescription()));
-		final UserBean owner = source.getOwner();
-		if( owner != null )
+		if( importing )
 		{
-			entity.setOwner(owner.getId());
+			final UserBean owner = source.getOwner();
+			if( owner != null )
+			{
+				entity.setOwner(owner.getId());
+			}
+
+			entity.setDateCreated(source.getCreatedDate());
+			entity.setDateModified(source.getModifiedDate());
 		}
-		entity.setDateCreated(source.getCreatedDate());
-		entity.setDateModified(source.getModifiedDate());
+		else
+		{
+			entity.setOwner(CurrentUser.getUserID());
+
+			final Date now = new Date();
+			if( editing )
+			{
+				entity.setDateModified(now);
+			}
+			else
+			{
+				entity.setDateCreated(now);
+				entity.setDateModified(now);
+			}
+		}
 
 		targetList = getTargetList(source);
 		otherTargetLists = getOtherTargetLists(source);

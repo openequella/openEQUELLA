@@ -115,13 +115,14 @@ public class StoreBeanSerializerImpl
 
 	@Override
 	protected BaseEntityEditor<BaseEntity, BaseEntityBean> createExistingEditor(BaseEntity entity, String stagingUuid,
-		String lockId)
+		String lockId, boolean importing)
 	{
 		throw new Error();
 	}
 
 	@Override
-	protected BaseEntityEditor<BaseEntity, BaseEntityBean> createNewEditor(BaseEntity entity, String stagingUuid)
+	protected BaseEntityEditor<BaseEntity, BaseEntityBean> createNewEditor(BaseEntity entity, String stagingUuid,
+		boolean importing)
 	{
 		throw new Error();
 	}

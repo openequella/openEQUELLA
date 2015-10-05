@@ -1,11 +1,15 @@
 package com.tle.web.api.activation;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.dytech.edge.common.valuebean.ValidationError;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.cal.request.CourseInfo;
+import com.tle.common.Check;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.core.activation.service.CourseInfoService;
 import com.tle.core.guice.Bind;
@@ -39,16 +43,27 @@ public class CourseBeanSerializer extends AbstractEquellaBaseEntitySerializer<Co
 	}
 
 	@Override
-	protected CourseEditor createNewEditor(CourseInfo entity, @Nullable String stagingUuid)
+	protected CourseEditor createNewEditor(CourseInfo entity, @Nullable String stagingUuid, boolean importing)
 	{
-		return editorFactory.createNewEditor(entity, stagingUuid);
+		return editorFactory.createNewEditor(entity, stagingUuid, importing);
 	}
 
 	@Override
 	protected CourseEditor createExistingEditor(CourseInfo entity, @Nullable String stagingUuid,
-		@Nullable String lockId)
+		@Nullable String lockId, boolean importing)
 	{
-		return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true);
+		return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true, importing);
+	}
+
+	@Override
+	protected void validateCustom(CourseBean bean, boolean create, List<ValidationError> errors)
+	{
+		super.validateCustom(bean, create, errors);
+		if( Check.isEmpty(bean.getCode()) )
+		{
+			//FIXME: i18n
+			errors.add(new ValidationError("code", "code field must not be blank"));
+		}
 	}
 
 	@Override

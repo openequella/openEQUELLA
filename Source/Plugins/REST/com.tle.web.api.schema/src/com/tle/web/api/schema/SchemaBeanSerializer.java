@@ -49,17 +49,16 @@ public class SchemaBeanSerializer extends AbstractEquellaBaseEntitySerializer<Sc
 		return new Schema();
 	}
 
-	@Nullable
 	@Override
-	protected SchemaEditor createExistingEditor(Schema entity, String stagingUuid, String lockId)
+	protected SchemaEditor createExistingEditor(Schema entity, String stagingUuid, String lockId, boolean importing)
 	{
-		return schemaEditoryFactory.createExistingEditor(entity, stagingUuid, lockId, true);
+		return schemaEditoryFactory.createExistingEditor(entity, stagingUuid, lockId, true, importing);
 	}
 
 	@Override
-	protected SchemaEditor createNewEditor(Schema entity, String stagingUuid)
+	protected SchemaEditor createNewEditor(Schema entity, String stagingUuid, boolean importing)
 	{
-		return schemaEditoryFactory.createNewEditor(entity, stagingUuid);
+		return schemaEditoryFactory.createNewEditor(entity, stagingUuid, importing);
 	}
 
 	@Override

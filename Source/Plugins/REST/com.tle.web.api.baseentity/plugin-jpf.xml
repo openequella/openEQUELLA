@@ -13,6 +13,7 @@
 		<library type="code" path="classes/" id="core">
 			<export prefix="*" />
 		</library>
+		<library type="resources" path="resources/" id="resources" />
 	</runtime>
 
 	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModule">

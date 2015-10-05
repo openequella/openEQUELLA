@@ -57,17 +57,16 @@ public class CollectionBeanSerializer
 	}
 
 	@Override
-	protected CollectionEditor createNewEditor(ItemDefinition entity, @Nullable String stagingUuid)
+	protected CollectionEditor createNewEditor(ItemDefinition entity, @Nullable String stagingUuid, boolean importing)
 	{
-		return editorFactory.createNewEditor(entity, stagingUuid);
+		return editorFactory.createNewEditor(entity, stagingUuid, importing);
 	}
 
-	@Nullable
 	@Override
 	protected CollectionEditor createExistingEditor(ItemDefinition entity, @Nullable String stagingUuid,
-		@Nullable String lockId)
+		@Nullable String lockId, boolean importing)
 	{
-		return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true);
+		return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true, importing);
 	}
 
 	private List<DynamicRuleBean> getDynamicRules(ItemDefinition entity)

@@ -7,7 +7,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.tle.annotation.NonNullByDefault;
-import com.tle.annotation.Nullable;
 import com.tle.common.interfaces.BaseEntityReference;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.workflow.Workflow;
@@ -128,17 +127,16 @@ public class WorkflowBeanSerializer extends AbstractEquellaBaseEntitySerializer<
 		beanParent.setNodes(nodeBeans);
 	}
 
-	@Nullable
 	@Override
-	protected WorkflowEditor createExistingEditor(Workflow entity, String stagingUuid, String lockId)
+	protected WorkflowEditor createExistingEditor(Workflow entity, String stagingUuid, String lockId, boolean importing)
 	{
-		return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true);
+		return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true, importing);
 	}
 
 	@Override
-	protected WorkflowEditor createNewEditor(Workflow entity, String stagingUuid)
+	protected WorkflowEditor createNewEditor(Workflow entity, String stagingUuid, boolean importing)
 	{
-		return editorFactory.createNewEditor(entity, stagingUuid);
+		return editorFactory.createNewEditor(entity, stagingUuid, importing);
 	}
 
 	@Override

@@ -45,6 +45,7 @@ import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.interfaces.beans.security.TargetListEntryBean;
+import com.tle.web.remoting.rest.service.RestImportHelper;
 import com.tle.web.remoting.rest.service.UrlLinkService;
 
 /**
@@ -258,7 +259,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 			BE entity = getEntityService().getByUuid(uuid);
 			if( entity == null )
 			{
-				return Response.status(Status.NOT_FOUND).build();
+				throw new NotFoundException(getString("error.entity.notlocked"));
 			}
 			lockingService.unlockEntity(entity, true);
 		}
@@ -351,7 +352,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	public Response create(UriInfo uriInfo, B bean, String stagingUuid)
 	{
 		validate(bean.getUuid(), bean, true);
-		BE entity = getSerializer().deserializeNew(bean, stagingUuid);
+		BE entity = getSerializer().deserializeNew(bean, stagingUuid, RestImportHelper.isImport(uriInfo));
 		String uuid = entity.getUuid();
 		return Response.created(getGetUri(uuid)).build();
 	}
@@ -360,7 +361,8 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	public Response edit(UriInfo uriInfo, String uuid, B bean, String stagingUuid, String lockId, boolean keepLocked)
 	{
 		validate(uuid, bean, false);
-		BE entity = getSerializer().deserializeEdit(bean, stagingUuid, lockId, keepLocked);
+		BE entity = getSerializer().deserializeEdit(uuid, bean, stagingUuid, lockId, keepLocked,
+			RestImportHelper.isImport(uriInfo));
 		if( entity == null )
 		{
 			throw entityNotFound(uuid);

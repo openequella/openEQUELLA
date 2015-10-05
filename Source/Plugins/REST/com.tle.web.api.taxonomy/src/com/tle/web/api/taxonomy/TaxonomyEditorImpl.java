@@ -24,15 +24,17 @@ public class TaxonomyEditorImpl extends AbstractBaseEntityEditor<Taxonomy, Taxon
 
 	@AssistedInject
 	public TaxonomyEditorImpl(@Assisted Taxonomy entity, @Assisted("stagingUuid") @Nullable String stagingUuid,
-		@Assisted("lockId") @Nullable String lockId, @Assisted boolean editing)
+		@Assisted("lockId") @Nullable String lockId, @Assisted("editing") boolean editing,
+		@Assisted("importing") boolean importing)
 	{
-		super(entity, stagingUuid, lockId, editing);
+		super(entity, stagingUuid, lockId, editing, importing);
 	}
 
 	@AssistedInject
-	public TaxonomyEditorImpl(@Assisted Taxonomy entity, @Assisted("stagingUuid") @Nullable String stagingUuid)
+	public TaxonomyEditorImpl(@Assisted Taxonomy entity, @Assisted("stagingUuid") @Nullable String stagingUuid,
+		@Assisted("importing") boolean importing)
 	{
-		this(entity, stagingUuid, null, false);
+		this(entity, stagingUuid, null, false, importing);
 	}
 
 	@Override
@@ -44,11 +46,11 @@ public class TaxonomyEditorImpl extends AbstractBaseEntityEditor<Taxonomy, Taxon
 	@BindFactory
 	public interface TaxonomyEditorFactory
 	{
-		@Nullable
 		TaxonomyEditorImpl createExistingEditor(Taxonomy taxonomy,
 			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
-			@Assisted boolean editing);
+			@Assisted("editing") boolean editing, @Assisted("importing") boolean importing);
 
-		TaxonomyEditorImpl createNewEditor(Taxonomy taxonomy, @Assisted("stagingUuid") @Nullable String stagingUuid);
+		TaxonomyEditorImpl createNewEditor(Taxonomy taxonomy, @Assisted("stagingUuid") @Nullable String stagingUuid,
+			@Assisted("importing") boolean importing);
 	}
 }

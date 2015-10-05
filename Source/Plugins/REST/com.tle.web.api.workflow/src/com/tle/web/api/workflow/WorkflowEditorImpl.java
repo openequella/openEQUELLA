@@ -55,15 +55,17 @@ public class WorkflowEditorImpl extends AbstractBaseEntityEditor<Workflow, Workf
 
 	@AssistedInject
 	public WorkflowEditorImpl(@Assisted Workflow entity, @Assisted("stagingUuid") @Nullable String stagingUuid,
-		@Assisted("lockId") @Nullable String lockId, @Assisted boolean editing)
+		@Assisted("lockId") @Nullable String lockId, @Assisted("editing") boolean editing,
+		@Assisted("importing") boolean importing)
 	{
-		super(entity, stagingUuid, lockId, editing);
+		super(entity, stagingUuid, lockId, editing, importing);
 	}
 
 	@AssistedInject
-	public WorkflowEditorImpl(@Assisted Workflow entity, @Assisted("stagingUuid") @Nullable String stagingUuid)
+	public WorkflowEditorImpl(@Assisted Workflow entity, @Assisted("stagingUuid") @Nullable String stagingUuid,
+		@Assisted("importing") boolean importing)
 	{
-		this(entity, stagingUuid, null, false);
+		this(entity, stagingUuid, null, false, importing);
 	}
 
 	@Override
@@ -302,12 +304,11 @@ public class WorkflowEditorImpl extends AbstractBaseEntityEditor<Workflow, Workf
 	@BindFactory
 	public interface WorkflowEditorFactory
 	{
-		@Nullable
 		WorkflowEditorImpl createExistingEditor(@Assisted Workflow workflow,
 			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
-			@Assisted boolean editing);
+			@Assisted("editing") boolean editing, @Assisted("importing") boolean importing);
 
 		WorkflowEditorImpl createNewEditor(@Assisted Workflow workflow,
-			@Assisted("stagingUuid") @Nullable String stagingUuid);
+			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("importing") boolean importing);
 	}
 }

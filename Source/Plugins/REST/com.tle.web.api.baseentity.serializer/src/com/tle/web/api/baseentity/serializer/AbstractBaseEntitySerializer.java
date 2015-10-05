@@ -1,5 +1,6 @@
 package com.tle.web.api.baseentity.serializer;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dytech.edge.common.LockedException;
+import com.dytech.edge.common.valuebean.ValidationError;
 import com.dytech.edge.exceptions.InvalidDataException;
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
@@ -47,9 +49,10 @@ public abstract class AbstractBaseEntitySerializer<BE extends BaseEntity, BEB ex
 
 	protected abstract AbstractEntityService<?, BE> getEntityService();
 
-	protected abstract ED createNewEditor(BE entity, @Nullable String stagingUuid);
+	protected abstract ED createNewEditor(BE entity, @Nullable String stagingUuid, boolean importing);
 
-	protected abstract ED createExistingEditor(BE entity, @Nullable String stagingUuid, @Nullable String lockId);
+	protected abstract ED createExistingEditor(BE entity, @Nullable String stagingUuid, @Nullable String lockId,
+		boolean importing);
 
 	protected abstract BE createEntity();
 
@@ -73,52 +76,54 @@ public abstract class AbstractBaseEntitySerializer<BE extends BaseEntity, BEB ex
 	@Transactional(propagation = Propagation.REQUIRED)
 	@Nullable
 	@Override
-	public BE deserializeEdit(BEB bean, @Nullable String stagingUuid, @Nullable String lockId, boolean keepLocked)
-		throws LockedException, AccessDeniedException
+	public BE deserializeEdit(@Nullable String uuid, BEB bean, @Nullable String stagingUuid, @Nullable String lockId,
+		boolean keepLocked, boolean importing) throws LockedException, AccessDeniedException
 	{
-		final BE entity = getEntity(bean, false);
+		validateBean(bean, false);
+		final BE entity = getEntity(uuid, false);
 		if( entity == null )
 		{
 			return null;
 		}
-		return doEdit(entity, bean, stagingUuid, lockId, keepLocked, true);
+		return doEdit(entity, bean, stagingUuid, lockId, keepLocked, true, importing);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
 	protected BE doEdit(BE entity, BEB bean, @Nullable String stagingUuid, @Nullable String lockId, boolean keepLocked,
-		boolean editing)
+		boolean editing, boolean importing)
 	{
-		ED entityEditor = getEntityEditor(entity, stagingUuid, lockId, keepLocked, editing);
+		ED entityEditor = getEntityEditor(entity, stagingUuid, lockId, keepLocked, editing, importing);
 		entityEditor.doEdits(bean);
 		entityEditor.finishEditing();
 		return entity;
 	}
 
 	private ED getEntityEditor(BE entity, @Nullable String stagingUuid, @Nullable String lockId, boolean keepLocked,
-		boolean editing)
+		boolean editing, boolean importing)
 	{
 		if( editing )
 		{
-			final ED editor = createExistingEditor(entity, stagingUuid, lockId);
+			final ED editor = createExistingEditor(entity, stagingUuid, lockId, importing);
 			editor.setKeepLocked(keepLocked);
 			return editor;
 		}
-		return createNewEditor(entity, stagingUuid);
+		return createNewEditor(entity, stagingUuid, importing);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
 	@Override
-	public BE deserializeNew(BEB bean, @Nullable String stagingUuid) throws AccessDeniedException, InvalidDataException
+	public BE deserializeNew(BEB bean, @Nullable String stagingUuid, boolean importing)
+		throws AccessDeniedException, InvalidDataException
 	{
+		validateBean(bean, true);
 		final BE entity = createEntity();
-		return doEdit(entity, bean, stagingUuid, null, false, false);
+		return doEdit(entity, bean, stagingUuid, null, false, false, importing);
 	}
 
 	@Nullable
-	protected BE getEntity(BEB bean, boolean create)
+	protected BE getEntity(@Nullable String uuid, boolean create)
 	{
-		final String uuid = bean.getUuid();
-
+		//final String uuid = bean.getUuid();
 		final BE entity;
 		if( !create && uuid != null )
 		{
@@ -135,6 +140,22 @@ public abstract class AbstractBaseEntitySerializer<BE extends BaseEntity, BEB ex
 		return entity;
 	}
 
+	protected void validateBean(BEB bean, boolean create)
+	{
+		final List<ValidationError> errors = new ArrayList<>();
+		validateBaseEntityFields(bean, create, errors);
+		validateCustom(bean, create, errors);
+		if( errors.size() != 0 )
+		{
+			throw new InvalidDataException(errors);
+		}
+	}
+
+	protected void validateCustom(BEB bean, boolean create, List<ValidationError> errors)
+	{
+		// No-op
+	}
+
 	protected void copyCustomFields(BE entity, BEB bean, @Nullable Object data)
 	{
 		// No-op
@@ -143,6 +164,11 @@ public abstract class AbstractBaseEntitySerializer<BE extends BaseEntity, BEB ex
 	protected void copyCustomLightweightFields(BE entity, BEB bean, @Nullable Object data)
 	{
 		// No-op
+	}
+
+	protected void validateBaseEntityFields(BEB bean, boolean create, List<ValidationError> errors)
+	{
+		// Nothing to do?
 	}
 
 	protected void copyBaseEntityFields(BaseEntity source, BaseEntityBean target, boolean heavy)

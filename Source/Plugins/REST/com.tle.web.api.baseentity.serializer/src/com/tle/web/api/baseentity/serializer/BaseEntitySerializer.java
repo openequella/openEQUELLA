@@ -17,8 +17,9 @@ public interface BaseEntitySerializer<BE extends BaseEntity, BEB extends BaseEnt
 	BEB serialize(BE entity, @Nullable Object data, boolean heavy);
 
 	@Nullable
-	BE deserializeEdit(BEB bean, @Nullable String stagingUuid, @Nullable String lockId, boolean keepLocked)
-		throws LockedException, AccessDeniedException, InvalidDataException;
+	BE deserializeEdit(@Nullable String uuid, BEB bean, @Nullable String stagingUuid, @Nullable String lockId,
+		boolean keepLocked, boolean importing) throws LockedException, AccessDeniedException, InvalidDataException;
 
-	BE deserializeNew(BEB bean, @Nullable String stagingUuid) throws AccessDeniedException, InvalidDataException;
+	BE deserializeNew(BEB bean, @Nullable String stagingUuid, boolean importing) throws AccessDeniedException,
+		InvalidDataException;
 }

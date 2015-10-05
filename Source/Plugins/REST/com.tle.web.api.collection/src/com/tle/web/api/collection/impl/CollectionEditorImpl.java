@@ -79,16 +79,16 @@ public class CollectionEditorImpl extends AbstractBaseEntityEditor<ItemDefinitio
 	@AssistedInject
 	public CollectionEditorImpl(@Assisted ItemDefinition collection,
 		@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
-		@Assisted boolean editing)
+		@Assisted("editing") boolean editing, @Assisted("importing") boolean importing)
 	{
-		super(collection, stagingUuid, lockId, editing);
+		super(collection, stagingUuid, lockId, editing, importing);
 	}
 
 	@AssistedInject
 	public CollectionEditorImpl(@Assisted ItemDefinition collection,
-		@Assisted("stagingUuid") @Nullable String stagingUuid)
+		@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("importing") boolean importing)
 	{
-		this(collection, stagingUuid, null, false);
+		this(collection, stagingUuid, null, false, importing);
 	}
 
 	@Override
@@ -289,12 +289,11 @@ public class CollectionEditorImpl extends AbstractBaseEntityEditor<ItemDefinitio
 	@BindFactory
 	public interface CollectionEditorFactory
 	{
-		@Nullable
 		CollectionEditorImpl createExistingEditor(@Assisted ItemDefinition collection,
 			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
-			@Assisted boolean editing);
+			@Assisted("editing") boolean editing, @Assisted("importing") boolean importing);
 
 		CollectionEditorImpl createNewEditor(ItemDefinition collection,
-			@Assisted("stagingUuid") @Nullable String stagingUuid);
+			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("importing") boolean importing);
 	}
 }

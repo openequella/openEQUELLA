@@ -39,15 +39,15 @@ public class OAuthBeanSerializer extends AbstractEquellaBaseEntitySerializer<OAu
 	}
 
 	@Override
-	protected OAuthEditor createExistingEditor(OAuthClient entity, String stagingUuid, String lockId)
+	protected OAuthEditor createExistingEditor(OAuthClient entity, String stagingUuid, String lockId, boolean importing)
 	{
-		return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true);
+		return editorFactory.createExistingEditor(entity, stagingUuid, lockId, true, importing);
 	}
 
 	@Override
-	protected OAuthEditor createNewEditor(OAuthClient entity, String stagingUuid)
+	protected OAuthEditor createNewEditor(OAuthClient entity, String stagingUuid, boolean importing)
 	{
-		return editorFactory.createNewEditor(entity, stagingUuid);
+		return editorFactory.createNewEditor(entity, stagingUuid, importing);
 	}
 
 	@Override
