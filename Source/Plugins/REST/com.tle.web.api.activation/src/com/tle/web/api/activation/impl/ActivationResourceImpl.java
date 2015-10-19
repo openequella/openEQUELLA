@@ -9,28 +9,35 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.dytech.edge.exceptions.InUseException;
+import com.dytech.edge.exceptions.BadRequestException;
+import com.dytech.edge.exceptions.NotFoundException;
 import com.google.common.base.Strings;
 import com.tle.beans.activation.ActivateRequest;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.common.Check;
+import com.tle.core.activation.ActivationConstants;
 import com.tle.core.activation.service.ActivationService;
 import com.tle.core.activation.service.CourseInfoService;
+import com.tle.core.copyright.exception.CopyrightViolationException;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.item.ItemService;
+import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.activation.ActivationBean;
 import com.tle.web.api.activation.ActivationResource;
 import com.tle.web.api.activation.ActivationSerializer;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.remoting.rest.service.UrlLinkService;
+import com.tle.web.resources.PluginResourceHelper;
+import com.tle.web.resources.ResourcesService;
 
+// TODO: anything that returns an error response here should be changed to throw the exception instead, 
+// the RestEasyExceptionMapper will turn that into a JSON object
 /**
  * @author Dongsheng Cai
  */
@@ -42,6 +49,8 @@ public class ActivationResourceImpl implements ActivationResource
 	// Duplicated from constants in the cla & cal plugins
 	public static final String ACTIVATION_TYPE_CAL = "cal";
 	public static final String ACTIVATION_TYPE_CLA = "cla";
+
+	private final PluginResourceHelper resources = ResourcesService.getResourceHelper(ActivationResourceImpl.class);
 
 	@Inject
 	private CourseInfoService courseInfoService;
@@ -84,7 +93,7 @@ public class ActivationResourceImpl implements ActivationResource
 					// same as no status specified, so leave state as negative
 					break;
 				default:
-					throw new WebApplicationException("Status not in [active,pending,expired,any]", Status.BAD_REQUEST);
+					throw new BadRequestException(resources.getString("activation.badrequest.status"));
 			}
 		}
 
@@ -103,7 +112,7 @@ public class ActivationResourceImpl implements ActivationResource
 			final CourseInfo course = courseInfoService.getByUuid(courseUuid);
 			if( course == null )
 			{
-				throw new WebApplicationException("No course found with UUID " + courseUuid, Status.NOT_FOUND);
+				throw new NotFoundException(resources.getString("activation.notfound.course.uuid", courseUuid));
 			}
 			final List<ActivateRequest> byCourse = activationService.getByCourse(course);
 			results.retainAll(byCourse);
@@ -130,17 +139,14 @@ public class ActivationResourceImpl implements ActivationResource
 	@Override
 	public Response create(ActivationBean bean)
 	{
-		// validate the settings
-		Response invalidity = validateBean(bean);
-		if( invalidity != null )
-		{
-			return invalidity;
-		}
+		validateBean(bean);
+
 		final Item item = itemService.getItemPack(new ItemId(bean.getItem().getUuid(), bean.getItem().getVersion()))
 			.getItem();
 		final CourseInfo course = findCourseFromBean(bean);
 		final ActivateRequest activateRequest = composeActivateRequest(new ActivateRequest(), item, course, bean);
-		final ActivationBean outcome = activate(true, activateRequest, bean.getType());
+
+		activate(true, activateRequest, bean.getType());
 		return Response.status(Status.CREATED).location(getSelfLink(activateRequest.getUuid())).build();
 	}
 
@@ -153,12 +159,7 @@ public class ActivationResourceImpl implements ActivationResource
 		{
 			return Response.status(Status.NOT_FOUND).build();
 		}
-		// body of request coherent?
-		Response invalidity = validateBean(bean);
-		if( invalidity != null )
-		{
-			return invalidity;
-		}
+		validateBean(bean);
 
 		// push the button
 		int oldStatus = request.getStatus();
@@ -192,11 +193,12 @@ public class ActivationResourceImpl implements ActivationResource
 		final ActivateRequest entity = activationService.getRequest(uuid);
 		if( entity == null )
 		{
-			throw new WebApplicationException(Status.NOT_FOUND);
+			throw new NotFoundException(resources.getString("activation.notfound.activation", uuid));
 		}
 		if( !aclService.checkPrivilege("VIEW_ACTIVATION_ITEM", entity) )
 		{
-			throw new WebApplicationException(Status.FORBIDDEN);
+			throw new AccessDeniedException(
+				resources.getString("activation.notfound.activation", "VIEW_ACTIVATION_ITEM"));
 		}
 		return serialize(entity);
 	}
@@ -233,20 +235,14 @@ public class ActivationResourceImpl implements ActivationResource
 	@Override
 	public Response delete(String uuid)
 	{
-		ActivateRequest entity = activationService.getRequest(uuid);
-		if( entity == null )
+		ActivateRequest request = activationService.getRequest(uuid);
+		if( request == null )
 		{
-			return Response.status(Status.NOT_FOUND).build();
+			throw new NotFoundException(resources.getString("activation.notfound.activation", uuid));
 		}
-		try
-		{
-			activationService.delete(entity.getType(), entity);
-			return Response.noContent().build();
-		}
-		catch( InUseException inUse )
-		{
-			return Response.status(Status.BAD_REQUEST).build();
-		}
+		activationService.delete(request.getType(), request);
+
+		return Response.status(Status.NO_CONTENT).build();
 	}
 
 	private ActivationBean serialize(ActivateRequest request)
@@ -263,53 +259,34 @@ public class ActivationResourceImpl implements ActivationResource
 	 * @param bean
 	 * @return null if validation successful, else a server error response
 	 */
-	private Response validateBean(ActivationBean bean)
+	private void validateBean(ActivationBean bean)
 	{
-		CourseInfo course = null;
-		String type = bean.getType();
+		final String type = bean.getType();
 		if( Check.isEmpty(type) || !(ACTIVATION_TYPE_CLA.equals(type) || ACTIVATION_TYPE_CAL.equals(type)) )
 		{
-			return Response.status(Status.BAD_REQUEST).entity("type must be either 'cla' or 'cal'").build();
+			throw new BadRequestException(resources.getString("activation.badrequest.type"));
 		}
 
 		if( Check.isEmpty(bean.getAttachment()) )
 		{
-			return Response.status(Status.BAD_REQUEST).entity("must have attachment uuid").build();
+			throw new BadRequestException(resources.getString("activation.badrequest.attachment"));
 		}
-		else
+
+		if( bean.getCourse() == null )
 		{
-			String itemUuid = bean.getItem() != null ? bean.getItem().getUuid() : null;
-			Integer itemVersion = bean.getItem() != null ? bean.getItem().getVersion() : null;
-			if( !Check.isEmpty(itemUuid) && itemVersion != null )
-			{
-				try
-				{
-					ItemId key = new ItemId(itemUuid, itemVersion);
-					itemService.getAttachmentForUuid(key, bean.getAttachment()); // throws
-																					// not
-																					// found
-																					// exception
-					itemService.getItemPack(key).getItem(); // likewise
-				}
-				catch( Exception e )
-				{
-					return Response.status(Status.BAD_REQUEST).entity(e.getLocalizedMessage()).build();
-				}
-			}
-			if( bean.getCourse() == null )
-			{
-				return Response.status(Status.BAD_REQUEST).entity("course not specified").build();
-			}
-			else
-			{
-				course = findCourseFromBean(bean);
-				if( course == null )
-				{
-					return Response.status(Status.NOT_FOUND).entity("course not found").build();
-				}
-			}
+			throw new BadRequestException(resources.getString("activation.badrequest.course"));
 		}
-		return null;
+		findCourseFromBean(bean);
+
+		final String itemUuid = bean.getItem() != null ? bean.getItem().getUuid() : null;
+		final Integer itemVersion = bean.getItem() != null ? bean.getItem().getVersion() : null;
+		if( !Check.isEmpty(itemUuid) && itemVersion != null )
+		{
+			//Will throw NotFoundException as appropriate
+			ItemId key = new ItemId(itemUuid, itemVersion);
+			itemService.getAttachmentForUuid(key, bean.getAttachment());
+			itemService.getItemPack(key).getItem();
+		}
 	}
 
 	/**
@@ -320,11 +297,36 @@ public class ActivationResourceImpl implements ActivationResource
 	 */
 	private ActivationBean activate(boolean activate, ActivateRequest activateRequest, String type)
 	{
-		final ActivationBean outcome;
+		ActivationBean outcome = null;
 		if( activate )
 		{
-			List<ActivateRequest> requests = activationService.activate(type, activateRequest.getItem(),
-				Collections.singletonList(activateRequest), true);
+			List<ActivateRequest> requests;
+			try
+			{
+				requests = activationService.activate(type, activateRequest.getItem(),
+					Collections.singletonList(activateRequest), false);
+			}
+			catch( CopyrightViolationException we )
+			{
+				if( we.isCALBookPercentageException() )
+				{
+					if( aclService.filterNonGrantedPrivileges(ActivationConstants.COPYRIGHT_OVERRIDE).isEmpty() )
+					{
+						throw new AccessDeniedException(resources.getString("activation.access.denied.percent"));
+					}
+					if( Check.isEmpty(activateRequest.getOverrideReason()) )
+					{
+						throw new AccessDeniedException(resources.getString("activation.access.denied.message"));
+					}
+					requests = activationService.activate(type, activateRequest.getItem(),
+						Collections.singletonList(activateRequest), true);
+				}
+				else
+				{
+					throw we; // some other kind of CopyrightViolation
+				}
+
+			}
 			outcome = serialize(requests.get(0));
 		}
 		else
@@ -338,11 +340,9 @@ public class ActivationResourceImpl implements ActivationResource
 	private ActivateRequest composeActivateRequest(ActivateRequest activation, Item item, CourseInfo course,
 		ActivationBean bean)
 	{
-		String attachmentUuid = bean.getAttachment();
-
 		activation.setItem(item);
 		activation.setCourse(course);
-		activation.setAttachment(attachmentUuid);
+		activation.setAttachment(bean.getAttachment());
 		// Course date(s) apply unless activation dates supplied
 		Date from = course.getFrom();
 		Date until = course.getUntil();
@@ -356,15 +356,15 @@ public class ActivationResourceImpl implements ActivationResource
 		}
 		if( from != null && until != null && from.after(until) )
 		{
-			throw new RuntimeException("Dates provided result in 'from' after 'until'");
+			throw new BadRequestException(resources.getString("activation.badrequest.dates"));
 		}
-
 		activation.setFrom(from);
 		activation.setUntil(until);
 		activation.setDescription(bean.getDescription());
 		activation.setLocationId(bean.getLocationId());
 		activation.setLocationName(bean.getLocationName());
 		activation.setUuid(bean.getUuid());
+		activation.setOverrideReason(bean.getOverrideMessage());
 		if( bean.getUser() != null )
 		{
 			activation.setUser(bean.getUser().getUniqueID());
@@ -382,14 +382,17 @@ public class ActivationResourceImpl implements ActivationResource
 	 */
 	private CourseInfo findCourseFromBean(ActivationBean bean)
 	{
-		CourseInfo course = bean.getCourse().getUuid() != null ? courseInfoService
-			.getByUuid(bean.getCourse().getUuid()) : (bean.getCourse().getCode() != null ? courseInfoService
-			.getByCode(bean.getCourse().getCode()) : null);
+		CourseInfo course = bean.getCourse().getUuid() != null ? courseInfoService.getByUuid(bean.getCourse().getUuid())
+			: (bean.getCourse().getCode() != null ? courseInfoService.getByCode(bean.getCourse().getCode()) : null);
+		if( course == null )
+		{
+			throw new NotFoundException(resources.getString("activation.notfound.course.general"));
+		}
 		return course;
 	}
 
-	private URI getSelfLink(String courseUuid)
+	private URI getSelfLink(String requestUuid)
 	{
-		return urlLinkService.getMethodUriBuilder(getClass(), "getActivation").build(courseUuid);
+		return urlLinkService.getMethodUriBuilder(getClass(), "get").build(requestUuid);
 	}
 }

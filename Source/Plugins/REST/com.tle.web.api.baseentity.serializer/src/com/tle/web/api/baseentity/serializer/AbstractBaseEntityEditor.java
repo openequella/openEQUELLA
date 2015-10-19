@@ -114,7 +114,8 @@ public abstract class AbstractBaseEntityEditor<BE extends BaseEntity, BEB extend
 		else if( sourceUuid != null && !sourceUuid.equals(entity.getUuid()) )
 		{
 			//FIXME: i18n
-			throw new InvalidDataException(new ValidationError("uuid", "You cannot change the UUID"));
+			throw new InvalidDataException(new ValidationError("uuid",
+				CurrentLocale.get("com.tle.web.api.baseentity.serializer.validation.uuidcannotchange")));
 		}
 
 		entity.setName(getBundle(entity.getName(), source.getNameStrings(), source.getName()));

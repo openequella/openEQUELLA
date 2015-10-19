@@ -13,6 +13,7 @@ import com.dytech.edge.common.valuebean.ValidationError;
 import com.dytech.edge.exceptions.InvalidDataException;
 import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.common.Check;
+import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.SecurityConstants;
 import com.tle.core.activation.service.CourseInfoService;
@@ -92,7 +93,8 @@ public class CourseResourceImpl extends AbstractBaseEntityResource<CourseInfo, B
 			final CourseInfo courseSameCode = courseService.getByCode(courseCode);
 			if( courseSameCode != null && !uuid.equals(courseSameCode.getUuid()) )
 			{
-				throw new InvalidDataException(new ValidationError("code", "code: '" + courseCode + "' already in use"));
+				throw new InvalidDataException(new ValidationError("code", CurrentLocale.get(
+					"com.tle.web.api.activation.course.edit.validation.codeinuse", courseCode)));
 			}
 		}
 	}

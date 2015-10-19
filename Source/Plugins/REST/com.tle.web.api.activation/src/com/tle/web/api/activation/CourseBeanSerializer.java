@@ -10,6 +10,7 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.common.Check;
+import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.core.activation.service.CourseInfoService;
 import com.tle.core.guice.Bind;
@@ -61,8 +62,7 @@ public class CourseBeanSerializer extends AbstractEquellaBaseEntitySerializer<Co
 		super.validateCustom(bean, create, errors);
 		if( Check.isEmpty(bean.getCode()) )
 		{
-			//FIXME: i18n
-			errors.add(new ValidationError("code", "code field must not be blank"));
+			errors.add(new ValidationError("code", CurrentLocale.get("course.edit.validation.codeempty")));
 		}
 	}
 
