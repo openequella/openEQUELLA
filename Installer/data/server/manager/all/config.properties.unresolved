@@ -1,16 +1,6 @@
 #Server port on which equella manager runs
 server.port = ${service/port}
 
-#Username and password used to access the TLE upgrade server
-upgrade.username = 
-upgrade.password = 
-
-#Proxy information.
-proxy.host=${proxy/host}
-proxy.port=${proxy/port}
-proxy.username=${proxy/username}
-proxy.password=${proxy/password}
-
 #Time to wait for the server start up.
 #loading.timeout = 6000
 

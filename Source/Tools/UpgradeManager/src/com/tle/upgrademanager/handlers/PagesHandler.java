@@ -29,7 +29,6 @@ import org.antlr.stringtemplate.StringTemplateGroup;
 import com.dytech.edge.common.Constants;
 import com.sun.net.httpserver.HttpExchange;
 import com.tle.upgrademanager.ManagerConfig;
-import com.tle.upgrademanager.ManagerConfig.ManagerDetails;
 import com.tle.upgrademanager.Utils;
 import com.tle.upgrademanager.helpers.ServiceWrapper;
 import com.tle.upgrademanager.helpers.Version;
@@ -137,56 +136,7 @@ public class PagesHandler extends PostDispatchHandler
 	public void other(HttpExchange exchange) throws Exception
 	{
 		StringTemplate st = templates.getInstanceOf("templates/other");
-		try
-		{
-			st.setAttribute("version", new Version(config).getUpgradeVersion());
-		}
-		catch( RuntimeException ex )
-		{
-			st.setAttribute("error", ex.getMessage());
-			ex.printStackTrace();
-		}
 		HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.toString());
-	}
-
-	public void config(HttpExchange exchange) throws IOException
-	{
-		final ManagerDetails man = config.getManagerDetails();
-		final StringTemplate st = templates.getInstanceOf("templates/config");
-
-		st.setAttribute("error", exchange.getAttribute("error"));
-
-		st.setAttribute("username", man.getUpgradeUsername());
-		st.setAttribute("password", man.getUpgradePassword());
-		st.setAttribute("proxhost", man.getProxyHost());
-		st.setAttribute("proxport", man.getProxyPort());
-		st.setAttribute("proxusername", man.getProxyUsername());
-		st.setAttribute("proxpassword", man.getProxyPassword());
-
-		HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.toString());
-	}
-
-	public void saveconfig(HttpExchange exchange) throws Exception
-	{
-		final ManagerDetails man = config.getManagerDetails();
-		man.setProxyHost(getParameterValue(exchange, "proxhost"));
-		man.setProxyPort(getParameterValue(exchange, "proxport"));
-		man.setProxyUsername(getParameterValue(exchange, "proxusername"));
-		man.setProxyPassword(getParameterValue(exchange, "proxpassword"));
-		man.setUpgradeUsername(getParameterValue(exchange, "username"));
-		man.setUpgradePassword(getParameterValue(exchange, "password"));
-
-		try
-		{
-			man.save();
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-			exchange.setAttribute("error", e.getMessage());
-		}
-
-		config(exchange);
 	}
 
 	public void troubleshooting(HttpExchange exchange) throws IOException

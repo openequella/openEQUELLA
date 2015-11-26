@@ -130,7 +130,7 @@ public class Deployer
 		{
 			tempDir = File.createTempFile("tle-", "temp");
 			tempDir.delete();
-			tempDir.mkdir();
+			tempDir.mkdirs();
 
 			zip = new ZipInputStream(new FileInputStream(new java.io.File(upgradeZip, "")));
 			ZipUtils.extract(zip, tempDir);

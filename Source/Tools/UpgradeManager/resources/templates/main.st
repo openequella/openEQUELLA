@@ -54,7 +54,6 @@ $("templates/page")(script={
 	    <ul class="ui-tabs-nav">
 	        <li class="ui-tabs-selected"><a class="" href="/pages/versions"><span>Downloaded Versions</span></a></li>
 	        <li class=""><a href="/pages/other"><span>Get Other Versions</span></a></li>
-	        <li class=""><a href="/pages/config"><span>Configuration</span></a></li>
 	    </ul>
 	</div>
 })$

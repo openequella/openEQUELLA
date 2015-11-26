@@ -92,6 +92,7 @@ public class SuperDuperFilter extends Filter
 								final String filename = STRIP_PATH_FROM_FILENAME.matcher(is.getName()).replaceFirst(
 									"$1");
 								final File tempfile = File.createTempFile("equella-manager-upload", "tmp");
+								tempfile.getParentFile().mkdirs();
 								streams.put(name, new Pair<String, File>(filename, tempfile));
 
 								try( OutputStream out = new BufferedOutputStream(new FileOutputStream(tempfile)) )

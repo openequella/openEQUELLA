@@ -41,7 +41,6 @@ import com.tle.common.util.ExecUtils.ExecResult;
 import com.tle.upgrademanager.filter.SuperDuperFilter;
 import com.tle.upgrademanager.handlers.AjaxProgressHandler;
 import com.tle.upgrademanager.handlers.DeployHandler;
-import com.tle.upgrademanager.handlers.DownloadHandler;
 import com.tle.upgrademanager.handlers.PagesHandler;
 import com.tle.upgrademanager.handlers.ServerHandler;
 import com.tle.upgrademanager.handlers.UploadHandler;
@@ -134,7 +133,6 @@ public class Main
 		createContext(server, "/deploy/", new DeployHandler(config, ajaxState), auth); //$NON-NLS-1$
 		createContext(server, "/ajax/", new AjaxProgressHandler(ajaxState)); //$NON-NLS-1$
 		createContext(server, "/upload/", new UploadHandler(config)); //$NON-NLS-1$
-		createContext(server, "/download/", new DownloadHandler(config, ajaxState)); //$NON-NLS-1$
 
 		server.start();
 	}
