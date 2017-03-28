@@ -187,8 +187,7 @@
 	 {
 	   "groupId": "com.google.gdata",
 	   "artifactId": "core",
-	   "version": "1.47.1",
-	   "jpfIncludes" : ["com.google.guava:guava"]
+	   "version": "1.47.1"
 	 },
 	 {
 	   "groupId": "com.google.api-client",
@@ -507,7 +506,7 @@
 	 {
 	   "groupId": "com.tle.reporting",
 	   "artifactId": "reporting-common-6.2",
-	   "version": "LATEST",
+	   "version": "2",
 	   "noSource": "true",
 	   "jpfIncludes" : ["org.eclipse.birt:datatools-connectivity-oda"],
 	   "jpfExports" : ["org.eclipse.birt:datatools-connectivity-oda"]
@@ -643,7 +642,7 @@
 	 {
 	 	"groupId" : "org.eclipse.birt",
 	 	"artifactId" : "birt-api",
-	 	"version" : "LATEST",
+	 	"version" : "3.7.2",
 	 	"noSource": "true",
 	 	"jpfIncludes" : ["commons-codec:commons-codec", "com.ibm.icu:icu4j", "rhino:js", "com.tle.reporting:reporting-common-6.2"],
 	 	"jpfExports" : ["com.ibm.icu:icu4j", "com.tle.reporting:reporting-common-6.2"]
@@ -651,7 +650,7 @@
 	 {
 	 	"groupId" : "org.eclipse.birt",
 	 	"artifactId" : "datatools-connectivity-oda",
-	 	"version" : "LATEST"
+	 	"version" : "3.3.3"
 	 },
 	 {
 	 	"groupId" : "org.apache.httpcomponents",
@@ -686,19 +685,19 @@
 	 {
 	 	"groupId" : "edu.harvard.hul",
 	 	"artifactId" : "mets",
-	 	"version" : "LATEST",
+	 	"version" : "1.0",
 	 	"noSource": "true"
 	 },
 	 {
 	 	"groupId" : "org.oclc.oai",
 	 	"artifactId" : "oaicat",
-	 	"version" : "LATEST",
+	 	"version" : "1.5.57",
 	 	"jpfFragment" : "com.tle.web.service.oai"
 	 },
 	 {
 	 	"groupId" : "it.uniroma3.mat",
 	 	"artifactId" : "extendedset",
-	 	"version" : "LATEST",
+	 	"version" : "2.2",
 	 	"noSource": "true"
 	 },
 	 {
@@ -720,7 +719,7 @@
 	 {
 	 	"groupId" : "com.microsoft",
 	 	"artifactId" : "sqljdbc4",
-	 	"version" : "LATEST",
+	 	"version" : "4.2",
 	 	"noSource": "true"
 	 },
  	{
@@ -785,7 +784,7 @@
 	 {
 	 	"groupId" : "log4j",
 	 	"artifactId" : "log4j",
-	 	"version" : "LATEST"
+	 	"version" : "1.2.17"
 	 },
 	 {
 	   "groupId": "javax.servlet",

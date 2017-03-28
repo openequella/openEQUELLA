@@ -6,17 +6,12 @@
 		<delete dir="${birt.dir}" />
 	</target>
 	
-	<target name="-init-nexus-credentials">
-		<property file="${user.home}/.pearsonNexusCredentials" />
-		<fail unless="nexus.username" message="You must declare nexus.username via -D or in ${user.home}/.pearsonNexusCredentials" />
-		<fail unless="nexus.password" message="You must declare nexus.password via -D or in ${user.home}/.pearsonNexusCredentials" />
-		<echo>Using Nexus credentials with username ${nexus.username}</echo>
-	</target>
-	
-	<target name="make" depends="-init-nexus-credentials">
+	<target name="make">
 		<taskdef classname="com.tle.ant.dependencies.DownloadJars" name="downloadJars" classpathref="customtasks.classpath" />
 		<downloadJars destDir="${staging}" dependencies="deps-birt.txt">
-			<!-- FIXME need repos -->
+			<repository id="local" url="file://${user.home}/equella-deps"/>
+			<repository id="maven" url="http://repo1.maven.org/maven2/"/>
+			<repository id="springsource" type="springsource" url="http://repository.springsource.com/ivy/bundles/external/"/>
 		</downloadJars>
 		<unzip dest="${birt.dir}"  src="${staging}/birt-osgi-3.7.2.zip"/>
 		<copy todir="${birt.dir}/plugins">

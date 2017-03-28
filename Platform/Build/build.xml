@@ -5,14 +5,7 @@
 		<subant target="make" buildpath="${source.base}/Infrastructure/CustomBuildTasks" />
 	</target>
 
-	<target name="init-nexus-credentials" depends="init,define-customtasks">
-		<property file="${user.home}/.pearsonNexusCredentials" />
-		<fail unless="nexus.username" message="You must declare nexus.username via -D or in ${user.home}/.pearsonNexusCredentials" />
-		<fail unless="nexus.password" message="You must declare nexus.password via -D or in ${user.home}/.pearsonNexusCredentials" />
-		<echo>Using Nexus credentials with username ${nexus.username}</echo>
-	</target>
-
-	<target name="download-jars" depends="init-nexus-credentials">
+	<target name="download-jars">
 		<taskdef classname="com.tle.ant.dependencies.DownloadJars" name="downloadJars" classpathref="customtasks.classpath" />
 		<delete>
 			<fileset dir="${external.jardir}">
@@ -22,8 +15,8 @@
 			</fileset>
 		</delete>
 		<downloadJars createJpf="true" createClasspath="true" destDir="${external.jardir}" sourcesDir="${external.jardir}/lib-src">
-			<repository id="all-deps" url="https://devops-tools.pearson.com/nexus-deps/service/local/repo_groups/all-deps/content/" username="${nexus.username}" password="${nexus.password}" />
-			<repository id="thirdparty" url="https://devops-tools.pearson.com/nexus-deps/content/repositories/thirdparty/" username="${nexus.username}" password="${nexus.password}" />
+			<repository id="local" url="file://${user.home}/equella-deps"/>
+			<repository id="maven" url="http://repo1.maven.org/maven2/"/>
 			<fileset file="${external.jardir}/deps.txt" />
 		</downloadJars>
 	</target>

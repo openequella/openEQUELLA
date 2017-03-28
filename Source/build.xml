@@ -125,15 +125,8 @@
 		<taskdef classname="com.tle.ant.ReferenceLanguagePack" name="referenceLanguagePack" classpathref="customtasks.classpath" />
 		<referenceLanguagePack dest="${language-packs}/reference-language-pack.zip" />
 	</target>
-	
-	<target name="-init-nexus-credentials">
-		<property file="${user.home}/.pearsonNexusCredentials" />
-		<fail unless="nexus.username" message="You must declare nexus.username via -D or in ${user.home}/.pearsonNexusCredentials" />
-		<fail unless="nexus.password" message="You must declare nexus.password via -D or in ${user.home}/.pearsonNexusCredentials" />
-		<echo>Using Nexus credentials with username ${nexus.username}</echo>
-	</target>
-	
-	<target name="download-jars" depends="-init-nexus-credentials">
+		
+	<target name="download-jars">
 		<subant target="make" buildpath="${TLE Custom Build Tasks.base}" />
 		<taskdef classname="com.tle.ant.dependencies.DownloadJars" name="downloadJars" classpathref="customtasks.classpath" />
 		<delete>
@@ -144,9 +137,8 @@
 			</fileset>
 		</delete>
 		<downloadJars createJpf="true" createClasspath="true" destDir="${TLE Plugins.base}/External" sourcesDir="${TLE Plugins.base}/External/lib-src">
-			<repository id="all-deps" url="https://devops-tools.pearson.com/nexus-deps/service/local/repo_groups/all-deps/content/" username="${nexus.username}" password="${nexus.password}" />
-			<repository id="thirdparty" url="https://devops-tools.pearson.com/nexus-deps/content/repositories/thirdparty/" username="${nexus.username}" password="${nexus.password}" />
-			
+			<repository id="local" url="file://${user.home}/equella-deps"/>
+			<repository id="maven" url="http://repo1.maven.org/maven2/"/>
 			<fileset file="dependencies/deps.txt" />
 			<fileset file="${source.base}/Platform/Plugins/ExternalPlatform/deps.txt" />
 			<fileset file="${source.base}/Interface/Build/deps.txt" />
@@ -158,10 +150,9 @@
 				<include name="lib-src/*" />
 			</fileset>
 		</delete>
-		<downloadJars createJpf="true" createClasspath="true" destDir="${source.base}/Source/Tools/ToolDependencies" sourcesDir="${source.base}/Source/Tools/ToolDependencies/lib-src">
-			<repository id="all-deps" url="https://devops-tools.pearson.com/nexus-deps/service/local/repo_groups/all-deps/content/" username="${nexus.username}" password="${nexus.password}" />
-			<repository id="thirdparty" url="https://devops-tools.pearson.com/nexus-deps/content/repositories/thirdparty/" username="${nexus.username}" password="${nexus.password}" />
-			
+		<downloadJars createJpf="true" createClasspath="true" destDir="${source.base}/Source/Tools/ToolDependencies" sourcesDir="${source.base}/Source/Tools/ToolDependencies/lib-src">			
+			<repository id="local" url="file://${user.home}/equella-deps"/>
+			<repository id="maven" url="http://repo1.maven.org/maven2/"/>
 			<fileset file="dependencies/deps.txt" />
 			<fileset file="dependencies/tool-deps.txt" />
 			<fileset file="${source.base}/Platform/Plugins/ExternalPlatform/deps.txt" />
@@ -173,10 +164,9 @@
 				<include name="lib-src/*" />
 			</fileset>
 		</delete>
-		<downloadJars createJpf="true" createClasspath="true" destDir="${source.base}/Interface/Dependencies" sourcesDir="${source.base}/Interface/Dependencies/lib-src">
-			<repository id="all-deps" url="https://devops-tools.pearson.com/nexus-deps/service/local/repo_groups/all-deps/content/" username="${nexus.username}" password="${nexus.password}" />
-			<repository id="thirdparty" url="https://devops-tools.pearson.com/nexus-deps/content/repositories/thirdparty/" username="${nexus.username}" password="${nexus.password}" />
-			
+		<downloadJars createJpf="true" createClasspath="true" destDir="${source.base}/Interface/Dependencies" sourcesDir="${source.base}/Interface/Dependencies/lib-src">			
+			<repository id="local" url="file://${user.home}/equella-deps"/>
+			<repository id="maven" url="http://repo1.maven.org/maven2/"/>
 			<fileset file="dependencies/deps.txt" />
 			<fileset file="${source.base}/Platform/Plugins/ExternalPlatform/deps.txt" />
 			<fileset file="${source.base}/Interface/Build/deps.txt" />
