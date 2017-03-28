@@ -14,11 +14,12 @@
 	<target name="init" depends="common.init">
 		<mkdir dir="${downloads.dir}" />
 	</target>
-	
+		
 	<target name="make" depends="common.make">
 		<taskdef classname="com.tle.ant.dependencies.DownloadJars" name="downloadJars" classpathref="customtasks.classpath" />
 		<downloadJars destDir="${staging}" dependencies="deps-mycontentfiles.txt">
-			<!-- FIXME needs repos -->
+			<repository id="local" url="file://${user.home}/equella-deps"/>
+			<repository id="maven" url="http://repo1.maven.org/maven2/"/>
 		</downloadJars>
 
 		<copy file="${staging}/${installer.name.artifactory}" tofile="${downloads.dir}/${installer.name.final}" />

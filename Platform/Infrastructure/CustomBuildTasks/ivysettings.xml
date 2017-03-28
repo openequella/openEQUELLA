@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-settings>
   <property name="local-maven2-dir" value="${user.home}/.local-repo/" />
-  <property name="nexus-all-deps" value="https://devops-tools.pearson.com/nexus-deps/service/local/repo_groups/all-deps/content/"/>
-  <property name="nexus-thirdparty" value="https://devops-tools.pearson.com/nexus-deps/content/repositories/thirdparty/"/>
+  <property name="equelladeps-dir" value="${user.home}/equella-deps/" />
 	
   <settings defaultResolver="main" />
   <resolvers>
     <chain name="main">
-      <!-- resolver ref="local-maven-2" /=-->
-      <ibiblio name="all-deps" m2compatible="true" root="${nexus-all-deps}" />
-      <ibiblio name="thirdparty" m2compatible="true" root="${nexus-thirdparty}" />
+      <ibiblio name="central" m2compatible="true"/>
+      <ibiblio name="internaldeps" m2compatible="true" root="file://${equelladeps-dir}" />
     </chain>
   </resolvers>
 </ivy-settings>
-

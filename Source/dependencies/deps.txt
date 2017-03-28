@@ -1,1204 +1,988 @@
 {
-    "exclusions": [
-        "org.apache.geronimo.specs",
-        "xerces",
-        "xml-apis"
-    ],
-    "versions": {
-        "swagger": "1.3.12",
-        "scala": "2.11.7",
-        "jackson": "2.3.4",
-        "tika": "1.10",
-        "poi": "3.13"
-    },
-    "dependencies": [
-        {
-            "groupId": "org.hibernate",
-            "artifactId": "hibernate-core",
-            "version": "3.6.8.Final",
-            "jpfIncludes": [
-                "javax.validation:validation-api",
-                "org.javassist:javassist"
-            ],
-            "jpfExports": [
-                "org.javassist:javassist"
-            ],
-            "excludes": [
-                "antlr"
-            ]
-        },
-        {
-            "groupId": "javax.validation",
-            "artifactId": "validation-api",
-            "version": "1.0.0.GA"
-        },
-        {
-            "groupId": "dom4j",
-            "artifactId": "dom4j",
-            "version": "1.6.1"
-        },
-        {
-            "groupId": "javax.transaction",
-            "artifactId": "jta",
-            "version": "1.1"
-        },
-        {
-            "groupId": "xpp3",
-            "artifactId": "xpp3_min",
-            "version": "1.1.4c"
-        },
-        {
-            "groupId": "org.hibernate.javax.persistence",
-            "artifactId": "hibernate-jpa-2.0-api",
-            "version": "1.0.1.Final"
-        },
-        {
-            "groupId": "org.javassist",
-            "artifactId": "javassist",
-            "version": "3.18.2-GA"
-        },
-        {
-            "groupId": "org.hurl",
-            "artifactId": "hurl",
-            "version": "1.1",
-            "noSource": "true"
-        },
-        {
-            "groupId": "jnlp",
-            "artifactId": "jnlp",
-            "version": "1.0",
-            "noSource": "true"
-        },
-        {
-            "groupId": "org.dts.spell",
-            "artifactId": "jmyspell-core",
-            "version": "1.0.0-beta-2",
-            "noSource": "true"
-        },
-        {
-            "groupId": "org.freemarker",
-            "artifactId": "freemarker",
-            "version": "2.3.23"
-        },
-        {
-            "groupId": "org.apache.lucene",
-            "artifactId": "lucene-analyzers",
-            "version": "3.5.0"
-        },
-        {
-            "groupId": "org.apache.lucene",
-            "artifactId": "lucene-core",
-            "version": "3.5.0"
-        },
-        {
-            "groupId": "org.apache.lucene",
-            "artifactId": "lucene-queries",
-            "version": "3.5.0"
-        },
-        {
-            "groupId": "org.jafer",
-            "artifactId": "z3950",
-            "version": "1.1"
-        },
-        {
-            "groupId": "platform",
-            "artifactId": "platform",
-            "version": "1.0",
-            "noSource": "true"
-        },
-        {
-            "groupId": "org.dspace",
-            "artifactId": "cql-java",
-            "version": "1.0",
-            "noSource": "true"
-        },
-        {
-            "groupId": "flamingo",
-            "artifactId": "flamingo",
-            "version": "1.0",
-            "noSource": "true"
-        },
-        {
-            "groupId": "org.dspace",
-            "artifactId": "srw",
-            "version": "1.0",
-            "noSource": "true",
-            "jpfIncludes": [
-                "org.dspace:cql-java",
-                "axis:axis",
-                "org.apache.axis:axis-jaxrpc",
-                "javax.servlet:servlet-api",
-                "commons-logging:commons-logging"
-            ]
-        },
-        {
-            "groupId": "org.rococoa",
-            "artifactId": "rococoa-core",
-            "version": "0.5"
-        },
-        {
-            "groupId": "net.sf.transmorph",
-            "artifactId": "transmorph",
-            "version": "3.1.0"
-        },
-        {
-            "groupId": "net.oauth.core",
-            "artifactId": "oauth",
-            "version": "20100527"
-        },
-        {
-            "groupId": "net.oauth.core",
-            "artifactId": "oauth-provider",
-            "version": "20100527",
-            "jpfIncludes": [
-                "javax.servlet:servlet-api"
-            ]
-        },
-        {
-            "groupId": "kaltura",
-            "artifactId": "kaltura",
-            "version": "314.1"
-        },
-        {
-            "groupId": "edu.asu.itunesu",
-            "artifactId": "itunesu-api-java",
-            "version": "1.7",
-            "noSource": "true"
-        },
-        {
-            "groupId": "com.google.checkout.sdk",
-            "artifactId": "checkout-sdk",
-            "version": "2.5.1",
-            "noSource": "true"
-        },
-        {
-            "groupId": "com.paypal.sdk",
-            "artifactId": "paypal-base",
-            "version": "1.0"
-        },
-        {
-            "groupId": "com.google.inject",
-            "artifactId": "guice",
-            "version": "3.0"
-        },
-        {
-            "groupId": "com.google.inject.extensions",
-            "artifactId": "guice-spring",
-            "version": "3.0"
-        },
-        {
-            "groupId": "com.google.inject.extensions",
-            "artifactId": "guice-assistedinject",
-            "version": "3.0"
-        },
-        {
-            "groupId": "org.guice-recipes",
-            "artifactId": "guice-recipes-core",
-            "version": "3.0"
-        },
-        {
-            "groupId": "org.guice-recipes",
-            "artifactId": "guice-recipes-spring",
-            "version": "3.0"
-        },
-        {
-            "groupId": "com.google.gdata",
-            "artifactId": "core",
-            "version": "1.47.1"
-        },
-        {
-            "groupId": "com.google.api-client",
-            "artifactId": "google-api-client",
-            "version": "1.20.0",
-            "jpfIncludes": [
-                "com.google.http-client:google-http-client"
-            ],
-            "jpfExports": [
-                "com.google.http-client:google-http-client"
-            ]
-        },
-        {
-            "groupId": "com.google.apis",
-            "artifactId": "google-api-services-youtube",
-            "version": "v3-rev136-1.20.0"
-        },
-        {
-            "groupId": "com.google.apis",
-            "artifactId": "google-api-services-books",
-            "version": "v1-rev72-1.20.0"
-        },
-        {
-            "groupId": "jpf",
-            "artifactId": "jpf",
-            "version": "1.0.7",
-            "noSource": true
-        },
-        {
-            "groupId": "jpf",
-            "artifactId": "jpf-tools",
-            "version": "1.0.5",
-            "noSource": true
-        },
-        {
-            "groupId": "org.onemind.jxp",
-            "artifactId": "jxp",
-            "version": "1.2.0",
-            "noSource": true
-        },
-        {
-            "groupId": "org.jboss.resteasy",
-            "artifactId": "resteasy-jackson-provider",
-            "version": "3.0.10.Final",
-            "jpfIncludes": [
-                "org.jboss.resteasy:resteasy-jaxrs"
-            ]
-        },
-        {
-            "groupId": "org.jboss.resteasy",
-            "artifactId": "resteasy-jaxrs",
-            "version": "3.0.10.Final",
-            "jpfIncludes": [
-                "javax.servlet:servlet-api"
-            ]
-        },
-        {
-            "groupId": "stax",
-            "artifactId": "stax-api",
-            "version": "1.0.1",
-            "noSource": "true"
-        },
-        {
-            "groupId": "com.fifesoft",
-            "artifactId": "rsyntaxtextarea",
-            "version": "1.5.2"
-        },
-        {
-            "groupId": "org.apache.tika",
-            "artifactId": "tika-core",
-            "version": "$tika"
-        },
-        {
-            "groupId": "org.apache.tika",
-            "artifactId": "tika-parsers",
-            "version": "$tika",
-            "jpfIncludes": [
-                "org.apache.poi:poi-ooxml-schemas",
-                "org.apache.pdfbox:jempbox"
-            ]
-        },
-        {
-            "groupId": "org.apache.poi",
-            "artifactId": "poi",
-            "version": "$poi"
-        },
-        {
-            "groupId": "org.apache.poi",
-            "artifactId": "poi-ooxml",
-            "version": "$poi",
-            "jpfIncludes": [
-                "org.apache.poi:poi-scratchpad",
-                "org.apache.xmlbeans:xmlbeans"
-            ],
-            "jpfExports": [
-                "org.apache.xmlbeans:xmlbeans"
-            ]
-        },
-        {
-            "groupId": "org.apache.poi",
-            "artifactId": "poi-scratchpad",
-            "version": "$poi"
-        },
-        {
-            "groupId": "cglib",
-            "artifactId": "cglib",
-            "version": "2.2"
-        },
-        {
-            "groupId": "com.sun.syndication",
-            "artifactId": "rome",
-            "version": "1.0-TLE",
-            "jpfIncludes": [
-                "jdom:jdom"
-            ]
-        },
-        {
-            "groupId": "org.scannotation",
-            "artifactId": "scannotation",
-            "version": "1.0.3",
-            "noSource": "true",
-            "jpfIncludes": [
-                "javax.servlet:servlet-api",
-                "log4j:log4j"
-            ]
-        },
-        {
-            "groupId": "com.google.code.gson",
-            "artifactId": "gson",
-            "version": "1.6"
-        },
-        {
-            "groupId": "net.sf.json-lib",
-            "artifactId": "json-lib",
-            "version": "2.4",
-            "classifier": "jdk15"
-        },
-        {
-            "groupId": "net.sf.ezmorph",
-            "artifactId": "ezmorph",
-            "version": "1.0.4"
-        },
-        {
-            "groupId": "org.mozilla",
-            "artifactId": "rhino",
-            "version": "1.7R4"
-        },
-        {
-            "groupId": "rhino",
-            "artifactId": "js",
-            "version": "1.7R2"
-        },
-        {
-            "groupId": "org.postgresql",
-            "artifactId": "postgresql",
-            "version": "9.3-1101-jdbc41"
-        },
-        {
-            "groupId": "org.hibernate",
-            "artifactId": "hibernate-validator",
-            "version": "4.2.0.Final"
-        },
-        {
-            "groupId": "javax.inject",
-            "artifactId": "javax.inject",
-            "version": "1"
-        },
-        {
-            "groupId": "org.slf4j",
-            "artifactId": "slf4j-log4j12",
-            "version": "1.6.1",
-            "jpfFragment": "org.slf4j:slf4j-api"
-        },
-        {
-            "groupId": "antlr",
-            "artifactId": "antlr",
-            "version": "2.7.6",
-            "jpfFragment": "org.hibernate:hibernate-core"
-        },
-        {
-            "groupId": "org.springframework",
-            "artifactId": "spring-jdbc",
-            "version": "2.5.5"
-        },
-        {
-            "groupId": "org.springframework",
-            "artifactId": "spring-tx",
-            "version": "2.5.5",
-            "jpfExports": [
-                "org.springframework:spring-beans",
-                "org.springframework:spring-core"
-            ]
-        },
-        {
-            "groupId": "org.springframework",
-            "artifactId": "spring-orm",
-            "version": "2.5.5",
-            "jpfIncludes": [
-                "org.springframework:spring-jdbc",
-                "org.hibernate:hibernate-core",
-                "javax.transaction:jta"
-            ],
-            "jpfExports": [
-                "org.springframework:spring-tx",
-                "org.springframework:spring-beans",
-                "org.springframework:spring-context"
-            ],
-            "excludes": [
-                "com.oracle:toplink-essentials"
-            ]
-        },
-        {
-            "groupId": "org.springframework",
-            "artifactId": "spring-context",
-            "version": "2.5.5",
-            "jpfIncludes": [
-                "org.springframework:spring-aop"
-            ],
-            "jpfExports": [
-                "aopalliance:aopalliance",
-                "org.springframework:spring-aop"
-            ]
-        },
-        {
-            "groupId": "org.springframework",
-            "artifactId": "spring-context-support",
-            "version": "2.5.5",
-            "excludes": [
-                "jasperreports:jasperreports"
-            ]
-        },
-        {
-            "groupId": "org.springframework",
-            "artifactId": "spring-web",
-            "version": "2.5.5",
-            "jpfIncludes": [
-                "javax.servlet:servlet-api"
-            ]
-        },
-        {
-            "groupId": "org.springframework",
-            "artifactId": "spring-webmvc",
-            "version": "2.5.5",
-            "jpfIncludes": [
-                "commons-fileupload:commons-fileupload",
-                "javax.servlet:servlet-api"
-            ],
-            "jpfExports": [
-                "org.springframework:spring-web",
-                "org.springframework:spring-core"
-            ],
-            "excludes": [
-                "jasperreports:jasperreports"
-            ]
-        },
-        {
-            "groupId": "org.springframework",
-            "artifactId": "spring-aop",
-            "version": "2.5.5"
-        },
-        {
-            "groupId": "org.hibernate",
-            "artifactId": "hibernate-validator-annotation-processor",
-            "version": "4.2.0.Final"
-        },
-        {
-            "groupId": "com.google.guava",
-            "artifactId": "guava",
-            "version": "16.0.1"
-        },
-        {
-            "groupId": "javax.mail",
-            "artifactId": "mail",
-            "version": "1.4.3"
-        },
-        {
-            "groupId": "org.ccil.cowan.tagsoup",
-            "artifactId": "tagsoup",
-            "version": "1.2.1"
-        },
-        {
-            "groupId": "org.apache.axis2",
-            "artifactId": "addressing",
-            "classifier": "classpath-module",
-            "version": "1.6.2",
-            "noSource": "true"
-        },
-        {
-            "groupId": "axis",
-            "artifactId": "axis",
-            "version": "1.4",
-            "jpfIncludes": [
-                "javax.mail:mail",
-                "javax.servlet:servlet-api"
-            ]
-        },
-        {
-            "groupId": "org.apache.axis2",
-            "artifactId": "axis2-adb",
-            "version": "1.6.2",
-            "jpfIncludes": [
-                "org.apache.ws.commons.axiom:axiom-api"
-            ]
-        },
-        {
-            "groupId": "org.apache.axis2",
-            "artifactId": "axis2-adb-codegen",
-            "version": "1.6.2",
-            "noSource": "true"
-        },
-        {
-            "groupId": "org.apache.axis2",
-            "artifactId": "axis2-kernel",
-            "version": "1.6.2",
-            "jpfIncludes": [
-                "javax.mail:mail"
-            ]
-        },
-        {
-            "groupId": "org.apache.axis2",
-            "artifactId": "axis2-transport-http",
-            "version": "1.5.5",
-            "noSource": "true",
-            "jpfIncludes": [
-                "org.apache.ws.commons.axiom:axiom-api",
-                "commons-httpclient:commons-httpclient"
-            ]
-        },
-        {
-            "groupId": "org.apache.axis2",
-            "artifactId": "axis2-transport-local",
-            "version": "1.6.2",
-            "noSource": "true"
-        },
-        {
-            "groupId": "org.apache.ws.security",
-            "artifactId": "wss4j",
-            "version": "1.6.2"
-        },
-        {
-            "groupId": "org.apache.ws.commons.axiom",
-            "artifactId": "axiom-api",
-            "version": "1.2.13",
-            "jpfIncludes": [
-                "javax.mail:mail"
-            ]
-        },
-        {
-            "groupId": "org.apache.ws.commons.axiom",
-            "artifactId": "axiom-impl",
-            "version": "1.2.13"
-        },
-        {
-            "groupId": "org.apache.rampart",
-            "artifactId": "rampart-core",
-            "version": "1.6.2",
-            "jpfIncludes": [
-                "org.apache.ws.commons.axiom:axiom-api",
-                "org.apache.neethi:neethi",
-                "jaxen:jaxen"
-            ],
-            "excludes": [
-                "org.apache.xalan",
-                "org.apache.xerces"
-            ]
-        },
-        {
-            "groupId": "org.apache.rampart",
-            "artifactId": "rampart-policy",
-            "version": "1.6.2",
-            "jpfIncludes": [
-                "org.apache.neethi:neethi"
-            ],
-            "excludes": [
-                "org.apache.xalan",
-                "org.apache.xerces"
-            ]
-        },
-        {
-            "groupId": "org.apache.rampart",
-            "artifactId": "rampart-trust",
-            "version": "1.6.2",
-            "excludes": [
-                "org.apache.xalan",
-                "org.apache.xerces"
-            ]
-        },
-        {
-            "groupId": "javax.xml",
-            "artifactId": "jaxrpc",
-            "version": "1.1",
-            "noSource": "true"
-        },
-        {
-            "groupId": "org.jsoup",
-            "artifactId": "jsoup",
-            "version": "1.6.1"
-        },
-        {
-            "groupId": "com.ibm.icu",
-            "artifactId": "icu4j",
-            "version": "4.6.1.1"
-        },
-        {
-            "groupId": "com.tle.reporting",
-            "artifactId": "reporting-common-6.2",
-            "version": "LATEST",
-            "noSource": "true",
-            "jpfIncludes": [
-                "org.eclipse.birt:datatools-connectivity-oda"
-            ],
-            "jpfExports": [
-                "org.eclipse.birt:datatools-connectivity-oda"
-            ]
-        },
-        {
-            "groupId": "commons-codec",
-            "artifactId": "commons-codec",
-            "version": "1.7"
-        },
-        {
-            "groupId": "commons-io",
-            "artifactId": "commons-io",
-            "version": "2.4"
-        },
-        {
-            "groupId": "commons-fileupload",
-            "artifactId": "commons-fileupload",
-            "version": "aarons-hacked-1.2.1.2",
-            "jpfIncludes": [
-                "commons-io:commons-io",
-                "javax.servlet:servlet-api"
-            ]
-        },
-        {
-            "groupId": "commons-httpclient",
-            "artifactId": "commons-httpclient",
-            "version": "3.1"
-        },
-        {
-            "groupId": "commons-discovery",
-            "artifactId": "commons-discovery",
-            "version": "0.5"
-        },
-        {
-            "groupId": "org.apache.commons",
-            "artifactId": "commons-compress",
-            "version": "1.10"
-        },
-        {
-            "groupId": "commons-collections",
-            "artifactId": "commons-collections",
-            "version": "3.2.1"
-        },
-        {
-            "groupId": "commons-configuration",
-            "artifactId": "commons-configuration",
-            "version": "1.9"
-        },
-        {
-            "groupId": "commons-lang",
-            "artifactId": "commons-lang",
-            "version": "2.6"
-        },
-        {
-            "groupId": "com.miglayout",
-            "artifactId": "miglayout-swing",
-            "version": "4.2",
-            "jpfExports": [
-                "com.miglayout:miglayout-core"
-            ]
-        },
-        {
-            "groupId": "org.bouncycastle",
-            "artifactId": "bcprov-jdk15on",
-            "version": "1.53"
-        },
-        {
-            "groupId": "org.apache.pdfbox",
-            "artifactId": "pdfbox",
-            "version": "2.0.0-RC1",
-            "noSource": "noSource",
-            "jpfIncludes": [
-                "org.bouncycastle:bcprov-jdk15on"
-            ]
-        },
-        {
-            "groupId": "org.apache.pdfbox",
-            "artifactId": "jempbox",
-            "version": "1.8.10",
-            "noSource": "noSource"
-        },
-        {
-            "groupId": "tomcat",
-            "artifactId": "jsp-api",
-            "version": "5.5.23",
-            "noSource": "true"
-        },
-        {
-            "groupId": "org.jvnet.hudson",
-            "artifactId": "xstream",
-            "version": "1.3.1-hudson-8",
-            "jpfExports": [
-                "xpp3:xpp3_min"
-            ]
-        },
-        {
-            "groupId": "jdom",
-            "artifactId": "jdom",
-            "version": "1.0"
-        },
-        {
-            "groupId": "org.apache.cxf",
-            "artifactId": "cxf-bundle",
-            "version": "2.7.6",
-            "jpfIncludes": [
-                "javax.servlet:servlet-api",
-                "org.eclipse.jetty:jetty-util"
-            ],
-            "excludes": [
-                "org.apache.geronimo.specs",
-                "javax.xml.bind",
-                "javax.xml.soap",
-                "xml-resolver",
-                "asm",
-                "org.springframework",
-                "aopalliance",
-                "org.jvnet",
-                "antlr",
-                "org.apache.xmlbeans",
-                "javax.ws.rs",
-                "org.codehaus.jettison",
-                "org.eclipse.jetty",
-                "org.codehaus.jra",
-                "rhino",
-                "org.mozilla",
-                "org.apache.ws.security",
-                "org.apache.santuario",
-                "org.opensaml",
-                "joda-time",
-                "com.sun.xml.messaging.saaj",
-                "xalan",
-                "com.sun.xml.fastinfoset",
-                "net.sf.ehcache"
-            ]
-        },
-        {
-            "groupId": "org.eclipse.jetty",
-            "artifactId": "jetty-util",
-            "version": "8.1.7.v20120910"
-        },
-        {
-            "groupId": "org.codehaus.woodstox",
-            "artifactId": "woodstox-core-asl",
-            "version": "4.2.0"
-        },
-        {
-            "groupId": "org.codehaus.woodstox",
-            "artifactId": "stax2-api",
-            "version": "3.1.3"
-        },
-        {
-            "groupId": "org.eclipse.birt",
-            "artifactId": "birt-api",
-            "version": "LATEST",
-            "noSource": "true",
-            "jpfIncludes": [
-                "commons-codec:commons-codec",
-                "com.ibm.icu:icu4j",
-                "rhino:js",
-                "com.tle.reporting:reporting-common-6.2"
-            ],
-            "jpfExports": [
-                "com.ibm.icu:icu4j",
-                "com.tle.reporting:reporting-common-6.2"
-            ]
-        },
-        {
-            "groupId": "org.eclipse.birt",
-            "artifactId": "datatools-connectivity-oda",
-            "version": "LATEST"
-        },
-        {
-            "groupId": "org.apache.httpcomponents",
-            "artifactId": "httpcore",
-            "version": "4.3.2"
-        },
-        {
-            "groupId": "org.apache.httpcomponents",
-            "artifactId": "httpclient",
-            "version": "4.3.4"
-        },
-        {
-            "groupId": "net.sf.beanlib",
-            "artifactId": "beanlib",
-            "version": "5.0.3beta",
-            "noSource": "true"
-        },
-        {
-            "groupId": "net.sf.beanlib",
-            "artifactId": "beanlib-hibernate",
-            "version": "5.0.3beta",
-            "noSource": "true",
-            "jpfIncludes": [
-                "net.sf.beanlib:beanlib",
-                "org.hibernate:hibernate-core",
-                "cglib:cglib"
-            ],
-            "jpfExports": [
-                "net.sf.beanlib:beanlib"
-            ]
-        },
-        {
-            "groupId": "com.flickr4java",
-            "artifactId": "flickr4java",
-            "version": "2.8",
-            "excludes": [
-                "org.apache.axis:axis"
-            ]
-        },
-        {
-            "groupId": "edu.harvard.hul",
-            "artifactId": "mets",
-            "version": "LATEST",
-            "noSource": "true"
-        },
-        {
-            "groupId": "org.oclc.oai",
-            "artifactId": "oaicat",
-            "version": "LATEST",
-            "jpfFragment": "com.tle.web.service.oai"
-        },
-        {
-            "groupId": "it.uniroma3.mat",
-            "artifactId": "extendedset",
-            "version": "LATEST",
-            "noSource": "true"
-        },
-        {
-            "groupId": "com.google.guava",
-            "artifactId": "guava",
-            "version": "18.0"
-        },
-        {
-            "groupId": "com.zaxxer",
-            "artifactId": "hikaricp",
-            "version": "2.2.5"
-        },
-        {
-            "groupId": "com.oracle",
-            "artifactId": "ojdbc6",
-            "version": "LATEST",
-            "noSource": "true"
-        },
-        {
-            "groupId": "com.microsoft",
-            "artifactId": "sqljdbc4",
-            "version": "LATEST",
-            "noSource": "true"
-        },
-        {
-            "groupId": "com.wordnik",
-            "artifactId": "swagger-core_2.11",
-            "version": "$swagger",
-            "excludes": [
-                "org.slf4j:slf4j-log4j12"
-            ],
-            "jpfIncludes": [
-                "org.scala-lang:scala-library",
-                "org.scala-lang.modules:scala-xml_2.11",
-                "com.fasterxml.jackson.core:jackson-databind",
-                "org.json4s:json4s-core_2.11",
-                "org.json4s:json4s-ast_2.11"
-            ],
-            "jpfExports": [
-                "org.scala-lang:scala-library",
-                "org.scala-lang.modules:scala-xml_2.11",
-                "org.slf4j:slf4j-api",
-                "com.fasterxml.jackson.core:jackson-databind"
-            ]
-        },
-        {
-            "groupId": "org.json4s",
-            "artifactId": "json4s-jackson_2.11",
-            "version": "3.2.11",
-            "jpfIncludes": [
-                "com.fasterxml.jackson.core:jackson-core"
-            ]
-        },
-        {
-            "groupId": "com.wordnik",
-            "artifactId": "swagger-jaxrs_2.11",
-            "version": "$swagger",
-            "excludes": [
-                "com.sun.jersey",
-                "javax.servlet:javax.servlet-api",
-                "javax.ws.rs:jsr311-api"
-            ],
-            "jpfIncludes": [
-                "org.jboss.resteasy:jaxrs-api",
-                "commons-lang:commons-lang",
-                "javax.servlet:servlet-api",
-                "com.wordnik:swagger-annotations"
-            ]
-        },
-        {
-            "groupId": "com.wordnik",
-            "artifactId": "swagger-annotations",
-            "version": "$swagger"
-        },
-        {
-            "groupId": "com.fasterxml.jackson.core",
-            "artifactId": "jackson-annotations",
-            "version": "$jackson"
-        },
-        {
-            "groupId": "com.fasterxml.jackson.core",
-            "artifactId": "jackson-databind",
-            "version": "$jackson"
-        },
-        {
-            "groupId": "com.fasterxml.jackson.jaxrs",
-            "artifactId": "jackson-jaxrs-json-provider",
-            "version": "$jackson",
-            "jpfIncludes": [
-                "org.jboss.resteasy:jaxrs-api",
-                "com.fasterxml.jackson.core:jackson-annotations"
-            ],
-            "jpfExports": [
-                "org.jboss.resteasy:jaxrs-api"
-            ]
-        },
-        {
-            "groupId": "com.fasterxml.jackson.jaxrs",
-            "artifactId": "jackson-jaxrs-base",
-            "version": "$jackson",
-            "jpfIncludes": [
-                "org.jboss.resteasy:jaxrs-api",
-                "com.fasterxml.jackson.core:jackson-annotations"
-            ]
-        },
-        {
-            "groupId": "org.scala-lang",
-            "artifactId": "scala-library",
-            "version": "$scala"
-        },
-        {
-            "groupId": "org.scala-lang.modules",
-            "artifactId": "scala-xml_2.11",
-            "version": "1.0.5"
-        },
-        {
-            "groupId": "log4j",
-            "artifactId": "log4j",
-            "version": "LATEST"
-        },
-        {
-            "groupId": "javax.servlet",
-            "artifactId": "servlet-api",
-            "version": "3.1.0"
-        },
-        {
-            "groupId": "xml-resolver",
-            "artifactId": "xml-resolver",
-            "version": "1.2"
-        },
-        {
-            "groupId": "org.opensaml",
-            "artifactId": "xmltooling",
-            "version": "1.3.1",
-            "excludes": [
-                "org.slf4j"
-            ]
-        },
-        {
-            "groupId": "joda-time",
-            "artifactId": "joda-time",
-            "version": "2.2"
-        },
-        {
-            "groupId": "com.ning",
-            "artifactId": "async-http-client",
-            "version": "1.9.31"
-        },
-        {
-            "groupId": "com.pearson.equella",
-            "artifactId": "httpinvoker",
-            "version": "2.5.5.1",
-            "noSource": "true"
-        },
-        {
-            "groupId": "blackboard",
-            "artifactId": "bb-platform",
-            "version": "9.1.201410.160373",
-            "noSource": "true"
-        },
-        {
-            "groupId": "blackboard",
-            "artifactId": "bb-taglibs",
-            "version": "9.1.40071.3",
-            "noSource": "true"
-        },
-        {
-            "groupId": "blackboard",
-            "artifactId": "bb-bridge",
-            "version": "9.1",
-            "noSource": "true"
-        },
-        {
-            "groupId": "org.codehaus.xfire",
-            "artifactId": "xfire-aegis",
-            "version": "1.2.1",
-            "noSource": "true"
-        },
-        {
-            "groupId": "org.apache.struts",
-            "artifactId": "struts-core",
-            "version": "1.3.10",
-            "noSource": "true",
-            "excludes": [
-                "antlr:antlr"
-            ]
-        },
-        {
-            "groupId": "org.apache.struts",
-            "artifactId": "struts-extras",
-            "version": "1.3.10",
-            "noSource": "true"
-        },
-        {
-            "groupId": "org.apache.struts",
-            "artifactId": "struts-taglib",
-            "version": "1.3.10",
-            "noSource": "true"
-        },
-        {
-            "groupId": "javax.servlet",
-            "artifactId": "jstl",
-            "version": "1.1.2",
-            "noSource": "true"
-        },
-        {
-            "groupId": "taglibs",
-            "artifactId": "standard",
-            "version": "1.1.2",
-            "noSource": "true"
-        },
-        {
-            "groupId": "com.pearson.pdn.icodeon",
-            "artifactId": "icodeon-java-sdk",
-            "version": "1.0",
-            "jpfIncludes": [
-                "org.apache.httpcomponents:httpcore"
-            ]
-        },
-        {
-            "groupId": "uk.ac.ed.ph.qtiworks",
-            "artifactId": "qtiworks-jqtiplus",
-            "version": "1.0-beta3",
-            "excludes": [
-                "org.slf4j",
-                "ch.qos.logback",
-                "net.sf.saxon"
-            ]
-        },
-        {
-            "groupId": "org.apache.zookeeper",
-            "artifactId": "zookeeper",
-            "version": "3.4.6",
-            "excludes": [
-                "org.slf4j:slf4j-log4j12"
-            ]
-        },
-        {
-            "groupId": "org.apache.curator",
-            "artifactId": "curator-client",
-            "version": "2.6.0"
-        },
-        {
-            "groupId": "org.apache.curator",
-            "artifactId": "curator-framework",
-            "version": "2.6.0",
-            "jpfIncludes": [
-                "org.slf4j:slf4j-api"
-            ]
-        },
-        {
-            "groupId": "org.apache.curator",
-            "artifactId": "curator-recipes",
-            "version": "2.6.0",
-            "jpfIncludes": [
-                "org.apache.curator:curator-client"
-            ]
-        },
-        {
-            "groupId": "org.apache.tomcat",
-            "artifactId": "tomcat-catalina",
-            "version": "8.0.15",
-            "jpfIncludes": [
-                "javax.servlet:servlet-api",
-                "org.postgresql:postgresql",
-                "com.oracle:ojdbc6",
-                "com.microsoft:sqljdbc4"
-            ],
-            "excludes": [
-                "*"
-            ]
-        },
-        {
-            "groupId": "org.apache.tomcat",
-            "artifactId": "tomcat-catalina-ha",
-            "version": "8.0.15",
-            "jpfFragment": "org.apache.tomcat:tomcat-catalina",
-            "excludes": [
-                "*"
-            ]
-        },
-        {
-            "groupId": "org.apache.tomcat",
-            "artifactId": "tomcat-tribes",
-            "version": "8.0.15",
-            "jpfFragment": "org.apache.tomcat:tomcat-catalina",
-            "excludes": [
-                "*"
-            ]
-        },
-        {
-            "groupId": "org.apache.tomcat",
-            "artifactId": "tomcat-coyote",
-            "version": "8.0.15",
-            "jpfFragment": "org.apache.tomcat:tomcat-catalina",
-            "excludes": [
-                "*"
-            ]
-        },
-        {
-            "groupId": "org.apache.tomcat",
-            "artifactId": "tomcat-util",
-            "version": "8.0.15",
-            "jpfFragment": "org.apache.tomcat:tomcat-catalina",
-            "excludes": [
-                "*"
-            ]
-        },
-        {
-            "groupId": "org.apache.tomcat",
-            "artifactId": "tomcat-util-scan",
-            "version": "8.0.15",
-            "jpfFragment": "org.apache.tomcat:tomcat-catalina",
-            "excludes": [
-                "*"
-            ]
-        },
-        {
-            "groupId": "org.apache.tomcat",
-            "artifactId": "tomcat-api",
-            "version": "8.0.15",
-            "jpfFragment": "org.apache.tomcat:tomcat-catalina",
-            "excludes": [
-                "*"
-            ]
-        },
-        {
-            "groupId": "org.apache.tomcat",
-            "artifactId": "tomcat-juli",
-            "version": "8.0.15",
-            "jpfFragment": "org.apache.tomcat:tomcat-catalina",
-            "excludes": [
-                "*"
-            ]
-        },
-        {
-            "groupId": "org.apache.tomcat",
-            "artifactId": "tomcat-annotations-api",
-            "version": "8.0.15",
-            "jpfFragment": "org.apache.tomcat:tomcat-catalina",
-            "excludes": [
-                "*"
-            ]
-        },
-        {
-            "groupId": "org.apache.tomcat",
-            "artifactId": "tomcat-jsp-api",
-            "version": "8.0.15",
-            "jpfFragment": "org.apache.tomcat:tomcat-catalina",
-            "excludes": [
-                "*"
-            ]
-        },
-        {
-            "groupId": "org.apache.tomcat",
-            "artifactId": "tomcat-servlet-api",
-            "version": "8.0.15",
-            "rename": "javax.servlet:servlet-api"
-        }
-    ]
+	"exclusions" : ["org.apache.geronimo.specs", "xerces", "xml-apis"],
+        "versions" : {
+            "swagger": "1.3.12",
+            "scala": "2.11.7",
+            "jackson": "2.3.4"
+        },
+	"dependencies": [
+	 {
+	   "groupId": "org.hibernate",
+	   "artifactId": "hibernate-core",
+	   "version": "3.6.8.Final",
+	   "jpfIncludes" :
+	    [
+	      "javax.validation:validation-api",
+	      "org.javassist:javassist"
+	    ],
+	   "jpfExports" : ["org.javassist:javassist"],
+	   "excludes" : ["antlr"]
+	 },
+	 {
+           "groupId": "javax.validation",
+           "artifactId": "validation-api",
+           "version": "1.0.0.GA"
+         },
+         {
+           "groupId": "dom4j",
+           "artifactId": "dom4j",
+           "version": "1.6.1"
+         },
+         {
+           "groupId": "javax.transaction",
+           "artifactId": "jta",
+           "version": "1.1"
+         },  
+         {
+           "groupId": "xpp3",
+           "artifactId": "xpp3_min",
+           "version": "1.1.4c"
+         },
+         {
+           "groupId": "org.hibernate.javax.persistence",
+           "artifactId": "hibernate-jpa-2.0-api",
+           "version": "1.0.1.Final"
+         }, 
+	 {
+	   "groupId": "org.javassist",
+	   "artifactId": "javassist",
+	   "version": "3.18.2-GA"
+	 },
+	 {
+	   "groupId": "org.hurl",
+	   "artifactId": "hurl",
+	   "version": "1.1",
+	   "noSource": "true"
+	 },
+	 {
+	   "groupId": "jnlp",
+	   "artifactId": "jnlp",
+	   "version": "1.0",
+	   "noSource": "true"
+	 },
+	 {
+	   "groupId": "org.dts.spell",
+	   "artifactId": "jmyspell-core",
+	   "version": "1.0.0-beta-2",
+	   "noSource": "true"
+	 },
+	 {
+	   "groupId": "org.freemarker",
+	   "artifactId": "freemarker",
+	   "version": "2.3.18"
+	 },
+	 {
+	   "groupId": "org.apache.lucene",
+	   "artifactId": "lucene-analyzers",
+	   "version": "3.5.0"
+	 },
+	 {
+	   "groupId": "org.apache.lucene",
+	   "artifactId": "lucene-core",
+	   "version": "3.5.0"
+	 },
+	 {
+	   "groupId": "org.apache.lucene",
+	   "artifactId": "lucene-queries",
+	   "version": "3.5.0"
+	 },
+	 {
+	   "groupId": "org.jafer",
+	   "artifactId": "z3950",
+	   "version": "1.1"
+	 },
+	 {
+	   "groupId": "platform",
+	   "artifactId": "platform",
+	   "version": "1.0",
+	   "noSource": "true"
+	 },
+	 {
+	   "groupId": "org.dspace",
+	   "artifactId": "cql-java",
+	   "version": "1.0",
+	   "noSource": "true"
+	 },
+	 {
+	   "groupId": "flamingo",
+	   "artifactId": "flamingo",
+	   "version": "1.0",
+	   "noSource": "true"
+	 },
+	 {
+	   "groupId": "org.dspace",
+	   "artifactId": "srw",
+	   "version": "1.0",
+	   "noSource": "true",
+	   "jpfIncludes" : ["org.dspace:cql-java", "axis:axis", "org.apache.axis:axis-jaxrpc", "javax.servlet:servlet-api", "commons-logging:commons-logging"]
+	 },
+	 {
+	   "groupId": "org.rococoa",
+	   "artifactId": "rococoa-core",
+	   "version": "0.5"
+	 },
+	 {
+	   "groupId": "net.sf.transmorph",
+	   "artifactId": "transmorph",
+	   "version": "3.1.0"
+	 },
+	 {
+	   "groupId": "net.oauth.core",
+	   "artifactId": "oauth",
+	   "version": "20100527"	  
+	 },
+	 {
+	   "groupId": "net.oauth.core",
+	   "artifactId": "oauth-provider",
+	   "version": "20100527",
+	   "jpfIncludes": ["javax.servlet:servlet-api"]
+	 },
+	 {
+	   "groupId": "kaltura",
+	   "artifactId": "kaltura",
+	   "version": "314.1"
+	 },
+	 {
+	   "groupId": "edu.asu.itunesu",
+	   "artifactId": "itunesu-api-java",
+	   "version": "1.7",
+	   "noSource": "true"
+	 },
+	 {
+	   "groupId": "com.google.checkout.sdk",
+	   "artifactId": "checkout-sdk",
+	   "version": "2.5.1",
+	   "noSource": "true"
+	 },
+	 {
+	   "groupId": "com.paypal.sdk",
+	   "artifactId": "paypal-base",
+	   "version": "1.0"
+	 },
+	 {
+	   "groupId": "com.google.inject",
+	   "artifactId": "guice",
+	   "version": "3.0"
+	 },
+	 {
+	   "groupId": "com.google.inject.extensions",
+	   "artifactId": "guice-spring",
+	   "version": "3.0"
+	 },
+	 {
+	   "groupId": "com.google.inject.extensions",
+	   "artifactId": "guice-assistedinject",
+	   "version": "3.0"
+	 },
+	 {
+	   "groupId": "org.guice-recipes",
+	   "artifactId": "guice-recipes-core",
+	   "version": "3.0"
+	 },
+	 {
+	   "groupId": "org.guice-recipes",
+	   "artifactId": "guice-recipes-spring",
+	   "version": "3.0"
+	 },
+	 {
+	   "groupId": "com.google.gdata",
+	   "artifactId": "core",
+	   "version": "1.47.1"
+	 },
+	 {
+	   "groupId": "com.google.api-client",
+	   "artifactId": "google-api-client",
+	   "version": "1.20.0",
+	   "jpfIncludes" : ["com.google.http-client:google-http-client"],
+	   "jpfExports": ["com.google.http-client:google-http-client"]
+	 },
+	 {
+	   "groupId": "com.google.apis",
+	   "artifactId": "google-api-services-youtube",
+	   "version": "v3-rev136-1.20.0"
+	 },
+	 {
+	   "groupId": "com.google.apis",
+	   "artifactId": "google-api-services-books",
+	   "version": "v1-rev72-1.20.0"
+	 },
+	 {
+	   "groupId": "jpf",
+	   "artifactId": "jpf",
+	   "version": "1.0.7",
+	   "noSource": true
+	 },
+	 {
+	   "groupId": "jpf",
+	   "artifactId": "jpf-tools",
+	   "version": "1.0.5",
+	   "noSource": true
+	 },
+	 {
+	   "groupId": "org.onemind.jxp",
+	   "artifactId": "jxp",
+	   "version": "1.2.0",
+	   "noSource": true
+	 },
+	 {
+	   "groupId": "org.jboss.resteasy",
+	   "artifactId": "resteasy-jackson-provider",
+	   "version": "3.0.10.Final",
+	   "jpfIncludes" : ["org.jboss.resteasy:resteasy-jaxrs"]
+	 },
+	 {
+	   "groupId": "org.jboss.resteasy",
+	   "artifactId": "resteasy-jaxrs",
+	   "version": "3.0.10.Final",
+	   "jpfIncludes": ["javax.servlet:servlet-api"]
+	 },
+	 {
+	   "groupId": "stax",
+	   "artifactId": "stax-api",
+	   "version": "1.0.1",
+	   "noSource": "true"
+	 },
+	 {
+	   "groupId": "com.fifesoft",
+	   "artifactId": "rsyntaxtextarea",
+	   "version": "1.5.2"
+	 },
+	 {
+	   "groupId": "org.apache.tika",
+	   "artifactId": "tika-core",
+	   "version": "1.3"
+	 },
+	 {
+	   "groupId": "org.apache.tika",
+	   "artifactId": "tika-parsers",
+	   "version": "1.3",
+	   "jpfIncludes" : ["org.apache.poi:poi-ooxml-schemas", "org.apache.pdfbox:jempbox"]
+	 },
+	 {
+	   "groupId": "org.apache.poi",
+	   "artifactId": "poi-ooxml",
+	   "version": "3.9",
+	   "jpfIncludes" : ["org.apache.poi:poi-scratchpad", "org.apache.xmlbeans:xmlbeans"],
+	   "jpfExports": ["org.apache.xmlbeans:xmlbeans"]
+	 },
+	 {
+	   "groupId": "cglib",
+	   "artifactId": "cglib",
+	   "version": "2.2"
+	 },
+	 {
+	   "groupId": "com.sun.syndication",
+	   "artifactId": "rome",
+	   "version": "1.0-TLE",
+	   "jpfIncludes" : ["jdom:jdom"]
+	 },
+	 {
+	   "groupId": "org.scannotation",
+	   "artifactId": "scannotation",
+	   "version": "1.0.3",
+	   "noSource": "true",
+	   "jpfIncludes" : ["javax.servlet:servlet-api", "log4j:log4j"]
+	 },
+	 {
+	   "groupId": "com.google.code.gson",
+	   "artifactId": "gson",
+	   "version": "1.6"
+	 },
+	 {
+	   "groupId": "net.sf.json-lib",
+	   "artifactId": "json-lib",
+	   "version": "2.4",
+	   "classifier": "jdk15"
+	 },
+	 {
+	   "groupId": "net.sf.ezmorph",
+	   "artifactId": "ezmorph",
+	   "version": "1.0.4"
+	 },
+	 {
+	   "groupId": "org.mozilla",
+	   "artifactId": "rhino",
+	   "version": "1.7R4"
+	 },
+	 {
+	   "groupId": "rhino",
+	   "artifactId": "js",
+	   "version": "1.7R2"
+	 },
+	 {
+	   "groupId": "org.postgresql",
+	   "artifactId": "postgresql",
+	   "version": "9.3-1101-jdbc41"
+	 },
+	 {
+	   "groupId": "org.hibernate",
+	   "artifactId": "hibernate-validator",
+	   "version": "4.2.0.Final"
+	 },
+	 {
+	   "groupId": "javax.inject",
+	   "artifactId": "javax.inject",
+	   "version": "1"
+	 },
+	 {
+	   "groupId": "org.slf4j",
+	   "artifactId": "slf4j-log4j12",
+	   "version": "1.6.1",
+	   "jpfFragment" : "org.slf4j:slf4j-api"
+	 },
+	 {
+	   "groupId": "antlr",
+	   "artifactId": "antlr",
+	   "version": "2.7.6",
+	   "jpfFragment" : "org.hibernate:hibernate-core"
+	 },
+	 {
+	   "groupId": "org.springframework",
+	   "artifactId": "spring-jdbc",
+	   "version": "2.5.5"
+	 },
+	 {
+	   "groupId": "org.springframework",
+	   "artifactId": "spring-tx",
+	   "version": "2.5.5",
+	   "jpfExports": ["org.springframework:spring-beans", "org.springframework:spring-core"]
+	 },
+	 {
+	   "groupId": "org.springframework",
+	   "artifactId": "spring-orm",
+	   "version": "2.5.5",
+	   "jpfIncludes" : ["org.springframework:spring-jdbc", "org.hibernate:hibernate-core", "javax.transaction:jta"],
+	   "jpfExports" : ["org.springframework:spring-tx", "org.springframework:spring-beans", "org.springframework:spring-context"],
+	   "excludes" : ["com.oracle:toplink-essentials"]
+	 },
+	 {
+	   "groupId": "org.springframework",
+	   "artifactId": "spring-context",
+	   "version": "2.5.5",
+	   "jpfIncludes": ["org.springframework:spring-aop"],
+	   "jpfExports": ["aopalliance:aopalliance", "org.springframework:spring-aop"]
+	 },
+	 {
+	   "groupId": "org.springframework",
+	   "artifactId": "spring-context-support",
+	   "version": "2.5.5",
+	   "excludes": ["jasperreports:jasperreports"]
+	 },
+	 {
+	   "groupId": "org.springframework",
+	   "artifactId": "spring-web",
+	   "version": "2.5.5",
+	   "jpfIncludes": ["javax.servlet:servlet-api"]
+	 },
+	 {
+	   "groupId": "org.springframework",
+	   "artifactId": "spring-webmvc",
+	   "version": "2.5.5",
+	   "jpfIncludes" : ["commons-fileupload:commons-fileupload", "javax.servlet:servlet-api" ],
+	   "jpfExports": ["org.springframework:spring-web", "org.springframework:spring-core"],
+	   "excludes" : ["jasperreports:jasperreports"]
+	 },
+	 {
+	   "groupId": "org.springframework",
+	   "artifactId": "spring-aop",
+	   "version": "2.5.5"
+	 },
+	 {
+	   "groupId": "org.hibernate",
+	   "artifactId": "hibernate-validator-annotation-processor",
+	   "version": "4.2.0.Final"
+	 },
+	 {
+	   "groupId": "com.google.guava",
+	   "artifactId": "guava",
+	   "version": "16.0.1"
+	 },
+	 {
+	   "groupId": "javax.mail",
+	   "artifactId": "mail",
+	   "version": "1.4.3"
+	 },
+	 {
+	   "groupId": "org.ccil.cowan.tagsoup",
+	   "artifactId": "tagsoup",
+	   "version": "1.2.1"
+	 },
+	 {
+	   "groupId": "org.apache.axis2",
+	   "artifactId": "addressing",
+	   "classifier": "classpath-module",
+	   "version": "1.6.2",
+	   "noSource": "true"
+	 },
+	 {
+	   "groupId": "axis",
+	   "artifactId": "axis",
+	   "version": "1.4",
+	   "jpfIncludes" : ["javax.mail:mail", "javax.servlet:servlet-api"]
+	 },
+	 {
+	   "groupId": "org.apache.axis2",
+	   "artifactId": "axis2-adb",
+	   "version": "1.6.2",
+	   "jpfIncludes" : ["org.apache.ws.commons.axiom:axiom-api"]
+	 },
+	 {
+	   "groupId": "org.apache.axis2",
+	   "artifactId": "axis2-adb-codegen",
+	   "version": "1.6.2",
+	   "noSource": "true"
+	 },
+	 {
+	   "groupId": "org.apache.axis2",
+	   "artifactId": "axis2-kernel",
+	   "version": "1.6.2",
+	   "jpfIncludes" : ["javax.mail:mail"]
+	 },
+	 {
+	   "groupId": "org.apache.axis2",
+	   "artifactId": "axis2-transport-http",
+	   "version": "1.5.5",
+	   "noSource": "true",
+	   "jpfIncludes" : ["org.apache.ws.commons.axiom:axiom-api", "commons-httpclient:commons-httpclient"]
+	 },
+	 {
+	   "groupId": "org.apache.axis2",
+	   "artifactId": "axis2-transport-local",
+	   "version": "1.6.2",
+	   "noSource": "true"
+	 },
+	 {
+	   "groupId": "org.apache.ws.security",
+	   "artifactId": "wss4j",
+	   "version": "1.6.2"
+	 },
+	 {
+	   "groupId": "org.apache.ws.commons.axiom",
+	   "artifactId": "axiom-api",
+	   "version": "1.2.13",
+	   "jpfIncludes" : ["javax.mail:mail"]
+	 },
+	 {
+	   "groupId": "org.apache.ws.commons.axiom",
+	   "artifactId": "axiom-impl",
+	   "version": "1.2.13"
+	 },
+	 {
+	   "groupId": "org.apache.rampart",
+	   "artifactId": "rampart-core",
+	   "version": "1.6.2",
+	   "jpfIncludes" : ["org.apache.ws.commons.axiom:axiom-api", "org.apache.neethi:neethi", "jaxen:jaxen"],
+	   "excludes" : ["org.apache.xalan", "org.apache.xerces"]
+	 },
+	 {
+	   "groupId": "org.apache.rampart",
+	   "artifactId": "rampart-policy",
+	   "version": "1.6.2",
+	   "jpfIncludes" : ["org.apache.neethi:neethi"],
+	   "excludes" : ["org.apache.xalan", "org.apache.xerces"]
+	 },
+	 {
+	   "groupId": "org.apache.rampart",
+	   "artifactId": "rampart-trust",
+	   "version": "1.6.2",
+	   "excludes" : ["org.apache.xalan", "org.apache.xerces"]
+	 },
+	 {
+	   "groupId": "javax.xml",
+	   "artifactId": "jaxrpc",
+	   "version": "1.1",
+	   "noSource": "true"
+	 },
+	 {
+	   "groupId": "org.jsoup",
+	   "artifactId": "jsoup",
+	   "version": "1.6.1"
+	 },
+	 {
+	   "groupId": "com.ibm.icu",
+	   "artifactId": "icu4j",
+	   "version": "4.6.1.1"
+	 },
+	 {
+	   "groupId": "com.tle.reporting",
+	   "artifactId": "reporting-common-6.2",
+	   "version": "2",
+	   "noSource": "true",
+	   "jpfIncludes" : ["org.eclipse.birt:datatools-connectivity-oda"],
+	   "jpfExports" : ["org.eclipse.birt:datatools-connectivity-oda"]
+	 },
+	 {
+	   "groupId": "commons-codec",
+	   "artifactId": "commons-codec",
+	   "version": "1.7"
+	 },
+	 {
+	   "groupId": "commons-io",
+       "artifactId": "commons-io",
+       "version": "2.4"
+     },
+     {
+       "groupId": "commons-fileupload",
+       "artifactId": "commons-fileupload",
+       "version": "aarons-hacked-1.2.1.2",
+       "jpfIncludes" : ["commons-io:commons-io", "javax.servlet:servlet-api"]
+     },
+     {
+       "groupId": "commons-httpclient",
+       "artifactId": "commons-httpclient",
+       "version": "3.1"
+     },
+     {
+       "groupId": "commons-discovery",
+       "artifactId": "commons-discovery",
+       "version": "0.5"
+     },
+	 {
+	   "groupId": "org.apache.commons",
+	   "artifactId": "commons-compress",
+	   "version": "1.1"
+	 },
+	 {
+	   "groupId": "commons-collections",
+	   "artifactId": "commons-collections",
+	   "version": "3.2.1"
+	 },
+	 {
+	   "groupId": "commons-configuration",
+       "artifactId": "commons-configuration",
+       "version": "1.9"
+     },
+     {
+	   "groupId": "commons-lang",
+       "artifactId": "commons-lang",
+       "version": "2.6"
+     },
+	 {
+	   "groupId": "com.miglayout",
+	   "artifactId": "miglayout-swing",
+	   "version": "4.2",
+	   "jpfExports" : ["com.miglayout:miglayout-core"]
+	 },
+	 {
+	   "groupId": "org.bouncycastle",
+	   "artifactId": "bcprov-jdk15",
+	   "version": "1.45"
+	 },
+	 {
+		 "groupId": "org.apache.pdfbox",
+		 "artifactId": "pdfbox",
+		 "version": "1.8.7",
+		 "noSource": "noSource",
+		 "jpfIncludes": ["org.bouncycastle:bcprov-jdk15"]
+	 },
+	 {
+	   "groupId": "tomcat",
+	   "artifactId": "jsp-api",
+	   "version": "5.5.23",
+	   "noSource": "true"
+	 },
+	 {
+	   "groupId": "org.jvnet.hudson",
+	   "artifactId": "xstream",
+	   "version": "1.3.1-hudson-8",
+	   "jpfExports" : ["xpp3:xpp3_min"]
+	 },
+	 {
+	   "groupId": "jdom",
+	   "artifactId": "jdom",
+	   "version": "1.0"
+	 },
+	 {
+	   "groupId": "org.apache.cxf",
+	   "artifactId": "cxf-bundle",
+	   "version": "2.7.6",
+	   "jpfIncludes" : ["javax.servlet:servlet-api", "org.eclipse.jetty:jetty-util"],
+	   "excludes":
+	    [	"org.apache.geronimo.specs",
+			"javax.xml.bind",
+			"javax.xml.soap",
+			"xml-resolver",
+			"asm",
+			"org.springframework",
+			"aopalliance",
+			"org.jvnet",
+			"antlr",
+			"org.apache.xmlbeans",
+			"javax.ws.rs",
+			"org.codehaus.jettison",
+			"org.eclipse.jetty",
+			"org.codehaus.jra",
+			"rhino",
+			"org.mozilla",
+			"org.apache.ws.security",
+			"org.apache.santuario",
+			"org.opensaml",
+			"joda-time",
+			"com.sun.xml.messaging.saaj",
+			"xalan",
+			"com.sun.xml.fastinfoset",
+			"net.sf.ehcache"
+		]
+	 },
+	 {
+	   "groupId": "org.eclipse.jetty",
+	   "artifactId": "jetty-util",
+	   "version": "8.1.7.v20120910"
+	 },	 
+	 {
+	   "groupId": "org.codehaus.woodstox",
+	   "artifactId": "woodstox-core-asl",
+	   "version": "4.2.0"
+	 },
+	 {
+	   "groupId": "org.codehaus.woodstox",
+	   "artifactId": "stax2-api",
+	   "version": "3.1.3"
+	 },
+	 {
+	 	"groupId" : "org.eclipse.birt",
+	 	"artifactId" : "birt-api",
+	 	"version" : "3.7.2",
+	 	"noSource": "true",
+	 	"jpfIncludes" : ["commons-codec:commons-codec", "com.ibm.icu:icu4j", "rhino:js", "com.tle.reporting:reporting-common-6.2"],
+	 	"jpfExports" : ["com.ibm.icu:icu4j", "com.tle.reporting:reporting-common-6.2"]
+	 },
+	 {
+	 	"groupId" : "org.eclipse.birt",
+	 	"artifactId" : "datatools-connectivity-oda",
+	 	"version" : "3.3.3"
+	 },
+	 {
+	 	"groupId" : "org.apache.httpcomponents",
+	 	"artifactId" : "httpcore",
+	 	"version" : "4.3.2"
+	 },
+	 {
+	 	"groupId" : "org.apache.httpcomponents",
+	 	"artifactId" : "httpclient",
+	 	"version" : "4.3.4"
+	 },
+	 {
+	 	"groupId" : "net.sf.beanlib",
+	 	"artifactId" : "beanlib",
+	 	"version" : "5.0.3beta",
+	 	"noSource": "true"
+	 },
+	 {
+	 	"groupId" : "net.sf.beanlib",
+	 	"artifactId" : "beanlib-hibernate",
+	 	"version" : "5.0.3beta",
+	 	"noSource": "true",
+	 	"jpfIncludes" : ["net.sf.beanlib:beanlib", "org.hibernate:hibernate-core", "cglib:cglib"],
+	 	"jpfExports" : ["net.sf.beanlib:beanlib"]
+	 },
+	 {
+	 	"groupId" : "com.flickr4java",
+	 	"artifactId" : "flickr4java",
+	 	"version" : "2.8",
+	 	"excludes" : ["org.apache.axis:axis"]
+	 },
+	 {
+	 	"groupId" : "edu.harvard.hul",
+	 	"artifactId" : "mets",
+	 	"version" : "1.0",
+	 	"noSource": "true"
+	 },
+	 {
+	 	"groupId" : "org.oclc.oai",
+	 	"artifactId" : "oaicat",
+	 	"version" : "1.5.57",
+	 	"jpfFragment" : "com.tle.web.service.oai"
+	 },
+	 {
+	 	"groupId" : "it.uniroma3.mat",
+	 	"artifactId" : "extendedset",
+	 	"version" : "2.2",
+	 	"noSource": "true"
+	 },
+	 {
+		"groupId" : "com.google.guava",
+		"artifactId" : "guava",
+		"version" : "18.0"
+	 },
+	 {
+		"groupId" : "com.zaxxer",
+		"artifactId" : "hikaricp",
+		"version" : "2.2.5"
+	 },
+	 {
+	 	"groupId" : "com.oracle",
+	 	"artifactId" : "ojdbc6",
+	 	"version" : "11.2.0.3",
+	 	"noSource": "true"
+	 },
+	 {
+	 	"groupId" : "com.microsoft",
+	 	"artifactId" : "sqljdbc4",
+	 	"version" : "4.2",
+	 	"noSource": "true"
+	 },
+ 	{
+	 	"groupId" : "com.wordnik",
+	 	"artifactId" : "swagger-core_2.11",
+	 	"version" : "$swagger",
+	 	"excludes" : ["org.slf4j:slf4j-log4j12"],
+	 	"jpfIncludes" : ["org.scala-lang:scala-library", "org.scala-lang.modules:scala-xml_2.11", "com.fasterxml.jackson.core:jackson-databind", "org.json4s:json4s-core_2.11", "org.json4s:json4s-ast_2.11"],
+	 	"jpfExports" : ["org.scala-lang:scala-library", "org.scala-lang.modules:scala-xml_2.11", "org.slf4j:slf4j-api", "com.fasterxml.jackson.core:jackson-databind"]
+	 },
+	 {
+	 	"groupId" : "org.json4s",
+	 	"artifactId" : "json4s-jackson_2.11",
+	 	"version" : "3.2.11",
+	 	"jpfIncludes" : ["com.fasterxml.jackson.core:jackson-core"]
+	 },
+     {
+	 	"groupId" : "com.wordnik",
+	 	"artifactId" : "swagger-jaxrs_2.11",
+	 	"version" : "$swagger",
+	 	"excludes" : ["com.sun.jersey", "javax.servlet:javax.servlet-api", "javax.ws.rs:jsr311-api"],
+	 	"jpfIncludes" : ["org.jboss.resteasy:jaxrs-api", "commons-lang:commons-lang", "javax.servlet:servlet-api", "com.wordnik:swagger-annotations"]
+	 },
+     {
+         "groupId" : "com.wordnik",
+         "artifactId" : "swagger-annotations",
+         "version" : "$swagger"
+     },
+     {
+     	"groupId": "com.fasterxml.jackson.core",
+     	"artifactId": "jackson-annotations",
+     	"version": "$jackson"
+     },
+     {
+       "groupId": "com.fasterxml.jackson.core",
+       "artifactId": "jackson-databind",
+       "version": "$jackson"
+     },
+     {
+	   "groupId": "com.fasterxml.jackson.jaxrs",
+	   "artifactId": "jackson-jaxrs-json-provider",
+	   "version": "$jackson",
+	   "jpfIncludes" : ["org.jboss.resteasy:jaxrs-api", "com.fasterxml.jackson.core:jackson-annotations"],
+	   "jpfExports" : ["org.jboss.resteasy:jaxrs-api"]
+	 },
+	 {
+	     "groupId": "com.fasterxml.jackson.jaxrs",
+	     "artifactId": "jackson-jaxrs-base",
+	     "version": "$jackson",
+	     "jpfIncludes": ["org.jboss.resteasy:jaxrs-api", "com.fasterxml.jackson.core:jackson-annotations"]
+	 },
+     {
+         "groupId" : "org.scala-lang",
+         "artifactId" : "scala-library",
+         "version" : "$scala"
+     },
+     {
+         "groupId" : "org.scala-lang.modules",
+         "artifactId" : "scala-xml_2.11",
+         "version" : "1.0.5"
+     },
+	 {
+	 	"groupId" : "log4j",
+	 	"artifactId" : "log4j",
+	 	"version" : "1.2.17"
+	 },
+	 {
+	   "groupId": "javax.servlet",
+	   "artifactId": "servlet-api",
+	   "version": "3.1.0"
+	 },
+	 {
+	   "groupId": "xml-resolver",
+	   "artifactId": "xml-resolver",
+	   "version": "1.2"
+	 },
+	 {
+	   "groupId": "org.opensaml",
+	   "artifactId": "xmltooling",
+	   "version" : "1.3.1",
+	   "excludes" : ["org.slf4j"]
+	 },
+	 {
+	   "groupId": "joda-time",
+	   "artifactId": "joda-time",
+	   "version" : "2.2"
+	 },
+	 {
+	 	"groupId": "com.ning",
+	 	"artifactId": "async-http-client",
+	 	"version": "1.7.8"
+	 },
+	 {
+	 	"groupId": "com.pearson.equella",
+	 	"artifactId": "httpinvoker",
+	 	"version": "2.5.5.1",
+	 	"noSource": "true"
+	 },
+	 {
+	 	"groupId": "blackboard",
+	 	"artifactId": "bb-platform",
+	 	"version": "9.1.201410.160373",
+	 	"noSource": "true"
+	 },
+	 {
+	 	"groupId": "blackboard",
+	 	"artifactId": "bb-taglibs",
+	 	"version": "9.1.40071.3",
+	 	"noSource": "true"
+	 },
+	 {
+	 	"groupId": "blackboard",
+	 	"artifactId": "bb-bridge",
+	 	"version": "9.1",
+	 	"noSource": "true"
+	 },
+	 {
+	 	"groupId": "org.codehaus.xfire",
+	 	"artifactId": "xfire-aegis",
+	 	"version": "1.2.1",
+	 	"noSource": "true"
+	 },
+	 {
+	 	"groupId": "org.apache.struts",
+	 	"artifactId": "struts-core",
+	 	"version": "1.3.10",
+	 	"noSource": "true",
+	 	"excludes" : ["antlr:antlr"]
+	 },
+	 {
+	 	"groupId": "org.apache.struts",
+	 	"artifactId": "struts-extras",
+	 	"version": "1.3.10",
+	 	"noSource": "true"
+	 },
+	 {
+	 	"groupId": "org.apache.struts",
+	 	"artifactId": "struts-taglib",
+	 	"version": "1.3.10",
+	 	"noSource": "true"
+	 },
+	 {
+	 	"groupId": "javax.servlet",
+	 	"artifactId": "jstl",
+	 	"version": "1.1.2",
+	 	"noSource": "true"
+	 },
+	 {
+	 	"groupId": "taglibs",
+	 	"artifactId": "standard",
+	 	"version": "1.1.2",
+	 	"noSource": "true"
+	 },
+	 {
+		"groupId": "com.pearson.pdn.icodeon",
+	 	"artifactId": "icodeon-java-sdk",
+	  	"version": "1.0",
+        "jpfIncludes": ["org.apache.httpcomponents:httpcore"]
+	 },
+	 {
+	 	"groupId": "uk.ac.ed.ph.qtiworks",
+	 	"artifactId": "qtiworks-jqtiplus",
+	 	"version": "1.0-beta3",
+		"excludes" : ["org.slf4j", "ch.qos.logback", "net.sf.saxon"]
+	 },
+	 {
+	 	"groupId": "org.apache.zookeeper",
+	 	"artifactId": "zookeeper",
+	 	"version": "3.4.6",
+	 	"excludes" : ["org.slf4j:slf4j-log4j12"]
+	 },
+	 {
+		"groupId": "org.apache.curator",
+		"artifactId": "curator-client",
+ 		"version": "2.6.0"
+ 	 },
+	 {
+		"groupId": "org.apache.curator",
+		"artifactId": "curator-framework",
+ 		"version": "2.6.0",
+ 		"jpfIncludes" : ["org.slf4j:slf4j-api"]
+ 	 },
+ 	 {
+		"groupId": "org.apache.curator",
+		"artifactId": "curator-recipes",
+		"version": "2.6.0",
+		"jpfIncludes" : ["org.apache.curator:curator-client"]
+	 },
+	 {
+	   "groupId": "org.apache.tomcat",
+	   "artifactId": "tomcat-catalina",
+	   "version": "8.0.15",
+	   "jpfIncludes": ["javax.servlet:servlet-api", "org.postgresql:postgresql", "com.oracle:ojdbc6", "com.microsoft:sqljdbc4"],
+	   "excludes" : ["*"]
+	 },
+	 {
+	   "groupId": "org.apache.tomcat",
+	   "artifactId": "tomcat-catalina-ha",
+	   "version": "8.0.15",
+	   "jpfFragment" : "org.apache.tomcat:tomcat-catalina",
+	   "excludes" : ["*"]
+	 },
+	 {
+	   "groupId": "org.apache.tomcat",
+	   "artifactId": "tomcat-tribes",
+	   "version": "8.0.15",
+	   "jpfFragment" : "org.apache.tomcat:tomcat-catalina",
+	   "excludes" : ["*"]
+	 },
+	 {
+	   "groupId": "org.apache.tomcat",
+	   "artifactId": "tomcat-coyote",
+	   "version": "8.0.15",
+	   "jpfFragment" : "org.apache.tomcat:tomcat-catalina",
+	   "excludes" : ["*"]
+	 },
+	 {
+	   "groupId": "org.apache.tomcat",
+	   "artifactId": "tomcat-util",
+	   "version": "8.0.15",
+	   "jpfFragment" : "org.apache.tomcat:tomcat-catalina",
+	   "excludes" : ["*"]
+	 },
+	 {
+	 "groupId": "org.apache.tomcat",
+	   "artifactId": "tomcat-util-scan",
+	   "version": "8.0.15",
+	   "jpfFragment" : "org.apache.tomcat:tomcat-catalina",
+	   "excludes" : ["*"]
+	 },
+	 {
+	   "groupId": "org.apache.tomcat",
+	   "artifactId": "tomcat-api",
+	   "version": "8.0.15",
+	   "jpfFragment" : "org.apache.tomcat:tomcat-catalina",
+	   "excludes" : ["*"]
+	 },
+	 {
+	   "groupId": "org.apache.tomcat",
+	   "artifactId": "tomcat-juli",
+	   "version": "8.0.15",
+	   "jpfFragment" : "org.apache.tomcat:tomcat-catalina",
+	   "excludes" : ["*"]
+	 },
+	 {
+	   "groupId": "org.apache.tomcat",
+	   "artifactId": "tomcat-annotations-api",
+	   "version": "8.0.15",
+	   "jpfFragment" : "org.apache.tomcat:tomcat-catalina",
+	   "excludes" : ["*"]
+	 },
+	 {
+	   "groupId": "org.apache.tomcat",
+	   "artifactId": "tomcat-jsp-api",
+	   "version": "8.0.15",
+	   "jpfFragment" : "org.apache.tomcat:tomcat-catalina",
+	   "excludes" : ["*"]
+	 },
+	 {
+	   "groupId": "org.apache.tomcat",
+	   "artifactId": "tomcat-servlet-api",
+	   "version": "8.0.15",
+	   "rename": "javax.servlet:servlet-api"
+	 }
+	]
 }

@@ -6,7 +6,8 @@ public class Repository
 	private String url;
 	private String username;
 	private String password;
-
+	private String type = "default";
+	
 	public String getUsername()
 	{
 		return username;
@@ -45,6 +46,14 @@ public class Repository
 	public void setId(String id)
 	{
 		this.id = id;
+	}
+	
+	public String getType() {
+		return type;
+	}
+	
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

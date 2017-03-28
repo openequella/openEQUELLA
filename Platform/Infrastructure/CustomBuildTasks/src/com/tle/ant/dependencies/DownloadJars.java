@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -49,12 +51,17 @@ import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.graph.DependencyVisitor;
 import org.eclipse.aether.graph.Exclusion;
 import org.eclipse.aether.impl.DefaultServiceLocator;
+import org.eclipse.aether.metadata.Metadata;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.repository.RemoteRepository.Builder;
 import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
+import org.eclipse.aether.spi.connector.layout.RepositoryLayout;
+import org.eclipse.aether.spi.connector.layout.RepositoryLayoutFactory;
+import org.eclipse.aether.spi.connector.layout.RepositoryLayout.Checksum;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
+import org.eclipse.aether.transfer.NoRepositoryLayoutException;
 import org.eclipse.aether.transport.wagon.WagonProvider;
 import org.eclipse.aether.transport.wagon.WagonTransporterFactory;
 import org.eclipse.aether.util.graph.selector.AndDependencySelector;
@@ -239,7 +246,7 @@ public class DownloadJars extends Task
 
 			for( Repository repo : repos )
 			{
-				Builder builder = new RemoteRepository.Builder(repo.getId(), "default", repo.getUrl());
+				Builder builder = new RemoteRepository.Builder(repo.getId(), repo.getType(), repo.getUrl());
 				String username = repo.getUsername();
 				String password = repo.getPassword();
 				if( username != null )
@@ -606,9 +613,107 @@ public class DownloadJars extends Task
 		locator.setServices(WagonProvider.class, new ManualWagonProvider());
 		locator.setService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
 		locator.addService(TransporterFactory.class, WagonTransporterFactory.class);
+		locator.addService(RepositoryLayoutFactory.class, SpringSourceLayoutFactory.class);
 		return locator.getService(RepositorySystem.class);
 	}
 
+	public static class SpringSourceLayoutFactory implements RepositoryLayoutFactory {
+
+		@Override
+		public float getPriority() {
+			return 0;
+		}
+
+		@Override
+		public RepositoryLayout newInstance(RepositorySystemSession repoSystem, RemoteRepository repo)
+				throws NoRepositoryLayoutException {
+			if ("springsource".equals(repo.getContentType()))
+			{
+				return new RepositoryLayout() {
+
+					private URI toUri( String path )
+			        {
+			            try
+			            {
+			                return new URI( null, null, path, null );
+			            }
+			            catch ( URISyntaxException e )
+			            {
+			                throw new IllegalStateException( e );
+			            }
+			        }
+					
+					public List<Checksum> getChecksums( Artifact artifact, boolean upload, URI location )
+			        {
+			            return getChecksums( location );
+			        }
+
+			        public List<Checksum> getChecksums( Metadata metadata, boolean upload, URI location )
+			        {
+			            return getChecksums( location );
+			        }
+
+					private List<Checksum> getChecksums( URI location )
+			        {
+			            return Arrays.asList( Checksum.forLocation( location, "SHA-1" ), Checksum.forLocation( location, "MD5" ) );
+			        }
+					
+					@Override
+					public URI getLocation(Artifact artifact, boolean arg1) {
+						StringBuilder path = new StringBuilder( 128 );
+
+			            path.append( artifact.getGroupId() ).append( '/' );
+
+			            path.append( artifact.getArtifactId() ).append( '/' );
+
+			            path.append( artifact.getBaseVersion() ).append( '/' );
+
+			            path.append( artifact.getArtifactId() ).append( '-' ).append( artifact.getVersion() );
+
+			            if ( artifact.getClassifier().length() > 0 )
+			            {
+			                path.append( '-' ).append( artifact.getClassifier() );
+			            }
+
+			            if ( artifact.getExtension().length() > 0 )
+			            {
+			                path.append( '.' ).append( artifact.getExtension() );
+			            }
+
+			            return toUri( path.toString() );
+					}
+
+					@Override
+					public URI getLocation(Metadata metadata, boolean arg1) {
+						StringBuilder path = new StringBuilder( 128 );
+
+			            if ( metadata.getGroupId().length() > 0 )
+			            {
+			                path.append( metadata.getGroupId() ).append( '/' );
+
+			                if ( metadata.getArtifactId().length() > 0 )
+			                {
+			                    path.append( metadata.getArtifactId() ).append( '/' );
+
+			                    if ( metadata.getVersion().length() > 0 )
+			                    {
+			                        path.append( metadata.getVersion() ).append( '/' );
+			                    }
+			                }
+			            }
+
+			            path.append( metadata.getType() );
+
+			            return toUri( path.toString() );
+					}
+					
+				};
+			}
+			throw new NoRepositoryLayoutException(repo);
+		}
+		
+	}
+	
 	public static class ManualWagonProvider implements WagonProvider
 	{
 		@Override

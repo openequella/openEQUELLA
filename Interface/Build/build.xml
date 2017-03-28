@@ -66,13 +66,6 @@
 		<typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties" classpathref="customtasks.classpath" />
 		<typedef classname="com.tle.ant.JPFClasspath" name="jpfClasspath" classpathref="customtasks.classpath" />
 	</target>
-
-	<target name="init-nexus-credentials">
-		<property file="${user.home}/.pearsonNexusCredentials" />
-		<fail unless="nexus.username" message="You must declare nexus.username via -D or in ${user.home}/.pearsonNexusCredentials" />
-		<fail unless="nexus.password" message="You must declare nexus.password via -D or in ${user.home}/.pearsonNexusCredentials" />
-		<echo>Using Nexus credentials with username ${nexus.username}</echo>
-	</target>
 	
 	<target name="-download-jars">
 		<taskdef classname="com.tle.ant.dependencies.DownloadJars" name="downloadJars" classpathref="customtasks.classpath" />
@@ -91,19 +84,19 @@
 			</fileset>
 		</delete>
 		<downloadJars createJpf="true" createClasspath="true" destDir="${this.base}/Dependencies" sourcesDir="${this.base}/Dependencies/lib-src">
-			<repository id="all-deps" url="https://devops-tools.pearson.com/nexus-deps/service/local/repo_groups/all-deps/content/" username="${nexus.username}" password="${nexus.password}" />
-			<repository id="thirdparty" url="https://devops-tools.pearson.com/nexus-deps/content/repositories/thirdparty/" username="${nexus.username}" password="${nexus.password}" />
+			<repository id="local" url="file://${user.home}/equella-deps"/>
+			<repository id="maven" url="http://repo1.maven.org/maven2/"/>
 			<fileset file="deps.txt" />
 		</downloadJars>
 		<downloadJars createJpf="true" createClasspath="true" destDir="${this.base}/Tests_Dependencies" sourcesDir="${this.base}/Tests_Dependencies/lib-src">
-			<repository id="all-deps" url="https://devops-tools.pearson.com/nexus-deps/service/local/repo_groups/all-deps/content/" username="${nexus.username}" password="${nexus.password}" />
-			<repository id="thirdparty" url="https://devops-tools.pearson.com/nexus-deps/content/repositories/thirdparty/" username="${nexus.username}" password="${nexus.password}" />
+			<repository id="local" url="file://${user.home}/equella-deps"/>
+			<repository id="maven" url="http://repo1.maven.org/maven2/"/>
 			<fileset file="testdeps.txt" />
 		</downloadJars>
 		<copy file="${TLE Custom Build Tasks.base}/lib/ecj.jar" tofile="${user.home}/.ant/lib/ecj.jar" />
 	</target>
 	
-	<target name="download-jars-sans-customtasks" depends="init-nexus-credentials, -download-jars" />
+	<target name="download-jars-sans-customtasks" depends="-download-jars" />
 	
-	<target name="download-jars" depends="make-buildtasks, define-tasks, init-nexus-credentials, -download-jars" />
+	<target name="download-jars" depends="make-buildtasks, define-tasks, -download-jars" />
 </project>
