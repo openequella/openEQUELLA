@@ -19,6 +19,9 @@
       <lticm:property name="icon_url">${m.instUrl}images/equella.gif</lticm:property>
       <lticm:property name="selection_height">768</lticm:property>
       <lticm:property name="selection_width">1024</lticm:property>
+      <blti:custom>
+        <lticm:property name="course_id">$Canvas.course.sisSourceId</lticm:property>
+      </blti:custom>
       
       <lticm:options name="resource_selection">
       	<lticm:property name="message_type">ContentItemSelectionRequest</lticm:property>
