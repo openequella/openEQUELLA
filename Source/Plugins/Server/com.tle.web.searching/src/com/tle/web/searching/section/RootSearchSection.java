@@ -18,6 +18,7 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.layout.ContentLayout;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
+import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.sections.render.Label;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
@@ -60,13 +61,12 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
 		{
 			if( CurrentUser.isGuest() )
 			{
-				LogonSection.forwardToLogon(context,
-					urlService.removeInstitution(context.getPublicBookmark().getHref()),
+				LogonSection.forwardToLogon(context, urlService.removeInstitution(new InfoBookmark(context).getHref()),
 					LogonSection.STANDARD_LOGON_PATH);
 				return null;
 			}
-			throw new AccessDeniedException(CurrentLocale.get("com.tle.web.searching.missingprivileges",
-				WebConstants.SEARCH_PAGE_PRIVILEGE));
+			throw new AccessDeniedException(
+				CurrentLocale.get("com.tle.web.searching.missingprivileges", WebConstants.SEARCH_PAGE_PRIVILEGE));
 		}
 		return super.renderHtml(context);
 	}
