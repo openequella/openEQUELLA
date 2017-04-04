@@ -9,6 +9,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import com.tle.beans.Institution;
 import com.tle.beans.audit.AuditLogTable;
 import com.tle.core.auditlog.AuditLogExtensionDao;
+import com.tle.core.dao.helpers.DMLPartitioner;
 import com.tle.core.hibernate.dao.GenericDaoImpl;
 import com.tle.core.user.CurrentInstitution;
 
@@ -33,18 +34,32 @@ public abstract class AbstractAuditLogDaoImpl<T extends AuditLogTable> extends G
 	@Override
 	public void removeEntriesBeforeDate(final Date date)
 	{
-		getHibernateTemplate().execute(new HibernateCallback()
+		getHibernateTemplate().execute(new DMLPartitioner(getEntityName(), "id")
 		{
 			@Override
-			public Object doInHibernate(Session session)
+			public String getWhereClause()
 			{
-				Query q = session.createQuery("delete from " + getEntityName()
-					+ " a where a.timestamp < :date and a.institution = :institution");
-				q.setTimestamp("date", date);
-				q.setParameter("institution", CurrentInstitution.get());
-				q.executeUpdate();
+				return "where timestamp < :date and institution = :institution";
+			}
 
-				return null;
+			@Override
+			public void setWhereParams(Query query)
+			{
+				query.setTimestamp("date", date);
+				query.setParameter("institution", CurrentInstitution.get());
+			}
+
+			@Override
+			public String getDmlStart()
+			{
+				return "delete from " + getEntityName();
+			}
+
+			@Override
+			public void setDmlParams(Query q)
+			{
+				// Nothing additional to set that not already in the where
+				// parameters
 			}
 		});
 	}
@@ -63,8 +78,8 @@ public abstract class AbstractAuditLogDaoImpl<T extends AuditLogTable> extends G
 			@Override
 			public Object doInHibernate(Session session)
 			{
-				Query q = session.createQuery("delete from " + getEntityName()
-					+ " a where a.institution = :institution");
+				Query q = session
+					.createQuery("delete from " + getEntityName() + " a where a.institution = :institution");
 				q.setParameter("institution", institution);
 				q.executeUpdate();
 
