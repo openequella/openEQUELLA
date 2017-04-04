@@ -52,13 +52,13 @@ public class ServerBackendImpl implements ServerBackend
 
 	@SuppressWarnings("nls")
 	@Override
-	public URL getDownloadUrl(String wizardId, String filename)
+	public String getDownloadUrl(String wizardId, String filename)
 	{
 		WizardStateInterface state = getWizardState(wizardId);
 		try
 		{
-			return new URL(urlService.getInstitutionUrl(), "file/" + state.getStagingId() + "/$/"
-				+ URLUtils.urlEncode(filename, false));
+			return new URL(urlService.getInstitutionUrl(),
+				"file/" + state.getStagingId() + "/$/" + URLUtils.urlEncode(filename, false)).toString();
 		}
 		catch( MalformedURLException ex )
 		{
@@ -277,8 +277,9 @@ public class ServerBackendImpl implements ServerBackend
 		{
 			Attachment attachment = iter.next();
 			final String urlLower = attachment.getUrl().toLowerCase();
-			if( (filenameLower == null || (fullMatch ? filenameLower.equals(urlLower) : urlLower
-				.startsWith(filenameLower))) && !processor.process(iter, attachment) )
+			if( (filenameLower == null
+				|| (fullMatch ? filenameLower.equals(urlLower) : urlLower.startsWith(filenameLower)))
+				&& !processor.process(iter, attachment) )
 			{
 				return;
 			}

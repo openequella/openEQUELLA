@@ -1,11 +1,10 @@
 package com.tle.web.filemanager.common;
 
-import java.net.URL;
 import java.util.List;
 
 public interface ServerBackend
 {
-	URL getDownloadUrl(String wizardId, String filename);
+	String getDownloadUrl(String wizardId, String filename);
 
 	void delete(String wizardId, String filename);
 

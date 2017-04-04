@@ -25,8 +25,8 @@ public class ServerBackendConnector extends AbstractRemoteBackendImpl
 	public ServerBackendConnector(URL serverUrl, String wizardId) throws MalformedURLException
 	{
 		this.wizardId = wizardId;
-		this.serverBackend = ClientProxyFactory.createProxy(ServerBackend.class, new URL(serverUrl, "invoker/"
-			+ ServerBackend.class.getName() + ".service"));
+		this.serverBackend = ClientProxyFactory.createProxy(ServerBackend.class,
+			new URL(serverUrl, "invoker/" + ServerBackend.class.getName() + ".service"));
 	}
 
 	@Override
@@ -41,8 +41,8 @@ public class ServerBackendConnector extends AbstractRemoteBackendImpl
 	{
 		try
 		{
-			URL url = serverBackend.getDownloadUrl(wizardId, filename);
-			return url.openConnection().getInputStream();
+			String url = serverBackend.getDownloadUrl(wizardId, filename);
+			return new URL(url).openConnection().getInputStream();
 		}
 		catch( Exception ex )
 		{
