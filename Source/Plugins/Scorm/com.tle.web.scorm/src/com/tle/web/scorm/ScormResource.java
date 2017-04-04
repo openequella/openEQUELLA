@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 
 import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.common.FileSizeUtils;
+import com.tle.common.URLUtils;
 import com.tle.core.guice.Bind;
 import com.tle.core.mimetypes.MimeTypeConstants;
 import com.tle.core.mimetypes.RegisterMimeTypeExtension;
@@ -50,7 +51,6 @@ public class ScormResource
 	@Override
 	public ViewableResource process(SectionInfo info, ViewableResource resource, CustomAttachment attachment)
 	{
-
 		ViewableResource res = attachmentResourceService.createPathResource(info, resource.getViewableItem(),
 			ScormTreeNavigationSection.VIEWSCORM_JSP, attachment.getDescription(), MimeTypeConstants.MIME_SCORM,
 			attachment);
@@ -90,8 +90,11 @@ public class ScormResource
 		@Override
 		public ViewItemUrl createDefaultViewerUrl()
 		{
+			// Some scorm content may contain query strings.  
+			final String[] urlParts = URLUtils.decompose(getFilepath());
+
 			ViewItemUrl vurl = urlFactory.createItemUrl(inner.getInfo(), inner.getViewableItem(),
-				UrlEncodedString.createFromValue(getFilepath()), 0);
+				UrlEncodedString.createFromValue(urlParts[0]), urlParts[1], 0);
 			vurl.addFlag(ViewItemUrl.FLAG_NO_SELECTION);
 			return vurl;
 		}

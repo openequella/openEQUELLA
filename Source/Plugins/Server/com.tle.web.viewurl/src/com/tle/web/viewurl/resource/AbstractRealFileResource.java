@@ -1,5 +1,6 @@
 package com.tle.web.viewurl.resource;
 
+import com.tle.common.URLUtils;
 import com.tle.core.services.FileSystemService;
 import com.tle.encoding.UrlEncodedString;
 import com.tle.web.sections.Bookmark;
@@ -41,8 +42,11 @@ public abstract class AbstractRealFileResource extends AbstractWrappedResource
 			return super.createDefaultViewerUrl();
 		}
 
+		// Some SCORM and IMS content may contain query strings.  
+		final String[] urlParts = URLUtils.decompose(getFilepath());
+
 		ViewItemUrl vurl = urlFactory.createItemUrl(getInfo(), top.getViewableItem(),
-			UrlEncodedString.createFromFilePath(filePath), ViewItemUrl.FLAG_IS_RESOURCE);
+			UrlEncodedString.createFromFilePath(urlParts[0]), urlParts[1], ViewItemUrl.FLAG_IS_RESOURCE);
 		return vurl;
 	}
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dytech.edge.common.Constants;
+import com.google.common.base.Strings;
 import com.tle.core.services.UrlService;
 import com.tle.encoding.UrlEncodedString;
 import com.tle.web.sections.Bookmark;
@@ -35,6 +36,7 @@ public class ViewItemUrl implements Bookmark
 
 	private String itemdir;
 	private UrlEncodedString filepath;
+	private String extraQueryString;
 	private String queryString;
 	private int flags;
 	private boolean skipDrm = false;
@@ -48,11 +50,13 @@ public class ViewItemUrl implements Bookmark
 	private String href;
 	private final UrlService urlService;
 
-	public ViewItemUrl(SectionInfo info, String itemdir, UrlEncodedString filepath, UrlService urlService, int flags)
+	public ViewItemUrl(SectionInfo info, String itemdir, UrlEncodedString filepath, String extraQueryString,
+		UrlService urlService, int flags)
 	{
 		this.info = info;
 		this.itemdir = itemdir;
 		this.filepath = filepath;
+		this.extraQueryString = extraQueryString;
 		this.urlService = urlService;
 		this.flags = flags;
 		this.anchor = Constants.BLANK;
@@ -145,6 +149,15 @@ public class ViewItemUrl implements Bookmark
 				}
 			}
 			queryString = bookmark.getQuery();
+
+			if( !Strings.isNullOrEmpty(extraQueryString) )
+			{
+				if( !Strings.isNullOrEmpty(queryString) )
+				{
+					queryString += "&";
+				}
+				queryString += extraQueryString;
+			}
 		}
 		return queryString;
 	}

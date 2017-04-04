@@ -34,4 +34,17 @@ public interface ViewItemUrlFactory
 	ViewItemUrl createItemUrl(SectionInfo info, ItemKey item, UrlEncodedString filePath, int flags);
 
 	ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> viewableItem, UrlEncodedString filePath, int flags);
+
+	/**
+	 * SCORM and IMS resources may contain a query string component
+	 * 
+	 * @param info
+	 * @param viewableItem
+	 * @param filePath
+	 * @param queryString
+	 * @param flags
+	 * @return
+	 */
+	ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> viewableItem, UrlEncodedString filePath,
+		String queryString, int flags);
 }

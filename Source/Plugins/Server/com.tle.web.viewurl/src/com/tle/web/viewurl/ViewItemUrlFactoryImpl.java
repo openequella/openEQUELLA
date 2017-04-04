@@ -90,32 +90,11 @@ public class ViewItemUrlFactoryImpl implements ViewItemUrlFactory
 		return doCreateFromItemId(info, null, itemId, filePath, flags);
 	}
 
-	private ViewItemUrl doCreateFromItemId(@Nullable SectionInfo existing, @Nullable String contextPath,
-		ItemKey itemId, UrlEncodedString filePath, int flags)
-	{
-		NewViewableItemState viewable = new NewViewableItemState();
-		viewable.setItemId(itemId);
-		if( contextPath != null )
-		{
-			viewable.setContext(contextPath);
-		}
-		String itemdir = viewable.getItemdir(urlService);
-		return new ViewItemUrl(createViewInfo(existing, itemdir), itemdir, filePath, urlService, flags);
-	}
-
 	@Override
 	public ViewItemUrl createItemUrl(SectionInfo info, String itemServletContext, ItemKey itemId,
 		UrlEncodedString filePath, int flags)
 	{
 		return doCreateFromItemId(info, itemServletContext, itemId, filePath, flags);
-	}
-
-	@Override
-	public ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> viewableItem, UrlEncodedString filePath,
-		int flags)
-	{
-		String itemdir = viewableItem.getItemdir();
-		return new ViewItemUrl(createViewInfo(info, itemdir), itemdir, filePath, urlService, flags);
 	}
 
 	@Override
@@ -128,5 +107,34 @@ public class ViewItemUrlFactoryImpl implements ViewItemUrlFactory
 	public ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> viewableItem, int flags)
 	{
 		return createItemUrl(info, viewableItem, UrlEncodedString.BLANK, flags);
+	}
+
+	@Override
+	public ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> viewableItem, UrlEncodedString filePath,
+		int flags)
+	{
+		String itemdir = viewableItem.getItemdir();
+		return new ViewItemUrl(createViewInfo(info, itemdir), itemdir, filePath, null, urlService, flags);
+	}
+
+	@Override
+	public ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> viewableItem, UrlEncodedString filePath,
+		String queryString, int flags)
+	{
+		String itemdir = viewableItem.getItemdir();
+		return new ViewItemUrl(createViewInfo(info, itemdir), itemdir, filePath, queryString, urlService, flags);
+	}
+
+	private ViewItemUrl doCreateFromItemId(@Nullable SectionInfo existing, @Nullable String contextPath, ItemKey itemId,
+		UrlEncodedString filePath, int flags)
+	{
+		NewViewableItemState viewable = new NewViewableItemState();
+		viewable.setItemId(itemId);
+		if( contextPath != null )
+		{
+			viewable.setContext(contextPath);
+		}
+		String itemdir = viewable.getItemdir(urlService);
+		return new ViewItemUrl(createViewInfo(existing, itemdir), itemdir, filePath, null, urlService, flags);
 	}
 }
