@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="com.tle.web.galleryviewer" basedir="." default="compile">
+	<property name="compile.for.server" value="true" />
+	<import file="../../build/plugins-common-build.xml" />
+</project>

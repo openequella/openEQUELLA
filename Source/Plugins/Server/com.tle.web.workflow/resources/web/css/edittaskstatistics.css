@@ -1,0 +1,13 @@
+
+.trend div.input {
+	margin: 0
+}
+
+.trend div.input.checkbox input , div.input.radio input {
+	float: none;
+}
+
+.trend div.input.checkbox label , div.input.radio label {
+	display: inline;
+	margin: 0 20px 0 6px;
+}

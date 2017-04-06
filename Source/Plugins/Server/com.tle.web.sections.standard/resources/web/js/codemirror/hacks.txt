@@ -1,0 +1,82 @@
+- Press F11 when cursor is in the editor to toggle full screen editing. Esc can also be used to exit full screen editing. 
+Add the following things in codemirror.js,
+
+line 3560 :  fullScreen: function(cm) {cm.setOption("fullScreen", !cm.getOption("fullScreen"));},
+    exitFullScreen: function(cm) {
+        if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);},
+line 3589 : "F11": "fullScreen", "Esc": "exitFullScreen",
+line 3600 : "Cmd-L": "fullScreen","Esc": "exitFullScreen",
+
+
+- Press Ctrl-Space activate autocomplete
+Add the following codes in codemirror.js
+
+line 3563 : autocomplete: function(cm) {CodeMirror.showHint(cm);}
+line 3577 : "Ctrl-Space": "autocomplete"
+
+
+- old cross-browser indexOf doesn't work well, so update the following codes in jquery.stylish-select.js
+affected areas : codemirror.js line 5480 & javascript-hint.js line 18 
+
+//Cross-browser implementation of indexOf from MDN: https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/indexOf
+	  if (!Array.prototype.indexOf){
+	      Array.prototype.indexOf = function(searchElement /*, fromIndex */){
+	          if (this === void 0 || this === null)
+	              throw new TypeError();
+
+	          var t = Object(this);
+	          var len = t.length >>> 0;
+	          if (len === 0)
+	              return -1;
+
+	          var n = 0;
+	          if (arguments.length > 0){
+	              n = Number(arguments[1]);
+	              if (n !== n) // shortcut for verifying if it's NaN
+	                  n = 0;
+	              else if (n !== 0 && n !== (1 / 0) && n !== -(1 / 0))
+	                  n = (n > 0 || -1) * Math.floor(Math.abs(n));
+	          }
+
+	          if (n >= len)
+	              return -1;
+
+	          var k = n >= 0
+	          ? n
+	          : Math.max(len - Math.abs(n), 0);
+
+	          for (; k < len; k++){
+	              if (k in t && t[k] === searchElement)
+	                  return k;
+	          }
+	          return -1;
+	      };
+	  }
+
+
+- add equella keywords to autocompletion and remove irrelevant keywords
+Add the following codes in javascript-hint.js 
+
+line 85-87: var equellaKeywords = ("attachments attributes catalogue ctrl currentItem data drm images items lang logger mime " +
+		  		"nav newxml page request staging status system tier url user utils workflowstep xml exports require").split(" ");
+         javascriptKeywords = javascriptKeywords.concat(equellaKeywords);         
+line 101: //for (var name in obj) maybeAdd(name); don't want to add all the irrelevant keywords.
+
+
+- mark equella and commonJS keywords in colors.
+Add the following codes in javascript.js
+
+line 15: commonJS = {type: "string-2", style: "string-2"};
+line 16: var equella = kw("equella"), equella = {type: "builtin", style: "builtin"};
+line 27: "exports": commonJS, "require" : commonJS,
+line 29-33: "attachments": equella, "attributes" : equella, "catalogue" : equella, "ctrl" : equella, "currentItem" : equella, 
+      "data" : equella, "drm" : equella, "images" : equella, "items" : equella, "lang" : equella, "logger" : equella, 
+      "mime" : equella, "nav" : equella, "newxml" : equella, "page" : equella, "request" : equella, "staging" : equella, 
+      "status" : equella, "system" : equella, "tier" : equella, "url" : equella, "user" : equella, "utils" : equella, 
+      "workflowstep" : equella, "xml" : equella 
+      
+      
+- EQ-917 Add a Full Screen key-shortcut, to toggle script editor full-screen, for the Mac
+Add the following things in codemirror.js,
+line 3599: //fullscreen 
+			"Cmd-L": "fullScreen","Esc": "exitFullScreen",

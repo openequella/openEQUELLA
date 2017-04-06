@@ -1,0 +1,52 @@
+ /*
+  * IMPORTANT EQUELLA NOTE!
+  *
+  * This CSS and the accompanying image that comes with the JQuery plug-in has been
+  * modified for stars that are 15px wide and 13px high. 
+  */
+  
+/*!
+ * jQuery UI Stars v3.0.1
+ * http://plugins.jquery.com/project/Star_Rating_widget
+ *
+ * Copyright (c) 2010 Marek "Orkan" Zajac (orkans@gmail.com)
+ * Dual licensed under the MIT and GPL licenses.
+ * http://docs.jquery.com/License
+ *
+ * $Rev: 164 $
+ * $Date:: 2010-05-01 #$
+ * $Build: 35 (2010-05-01)
+ *
+ */
+ .ui-stars-star,
+.ui-stars-cancel {
+  float: left;
+  display: block;
+  overflow: hidden;
+  text-indent: -999em;
+  cursor: pointer;
+}
+.ui-stars-star a,
+.ui-stars-cancel a {
+  width: 15px;
+  height: 13px;
+  display: block;
+  background: url(../../images/stars/star-rating-selector.png) no-repeat 0 0;
+}
+.ui-stars-star a {
+  background-position: 0 -26px;
+}
+.ui-stars-star-on a {
+  background-position: 0 -39px;
+}
+.ui-stars-star-hover a {
+  background-position: 0 -52px;
+}
+.ui-stars-cancel-hover a {
+  background-position: 0 -13px;
+}
+.ui-stars-star-disabled,
+.ui-stars-star-disabled a,
+.ui-stars-cancel-disabled a {
+  cursor: default !important;
+}

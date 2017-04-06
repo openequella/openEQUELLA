@@ -1,0 +1,20 @@
+div.langlist
+{
+	height: 202px;
+}
+
+div.modal-content div.input
+{
+	margin: 0px;
+}
+
+
+table.zebra td.exportdelete
+{
+	text-align: right;
+}
+
+div.importlink
+{
+	margin-top: 13px;
+}

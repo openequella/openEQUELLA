@@ -1,0 +1,124 @@
+.user-details {
+	width: 899px;
+}
+
+.profile-save-button {
+	background: url("../images/button-save-changes.ltr.png");
+}
+
+.change-pass-button{
+	background: url("../images/button-change-password.ltr.png");
+}
+
+
+.user-details #col1 {
+	width: 592px;
+}
+
+.user-details #col2 {
+	width: 139px;
+}
+
+.area .edit h3 
+{
+	color: #f38c00;
+	font-size: 14px;
+	margin: 0 0 7px 0;
+}
+
+.area .edit p 
+{
+	margin-bottom: 10px;
+}
+
+.area #edit-description {
+	margin: 25px 0 0 0;
+}
+
+.area #edit-description .input {
+	margin: 0;
+}
+
+.area .edit {
+	margin: 20px 0 20px 0;
+}
+
+.area .edit .input {
+	margin: 0;
+}
+
+.area .edit .input input[type="text"], .area .edit .input select {
+	width: 499px;
+}
+
+.area .edit .input select {
+	width: 240px;
+}
+
+.area .edit.double .input input,.area .edit.double .input select {
+	width: 240px;
+}
+
+.area .edit .shuffle-box select {
+	width: 213px;
+}
+
+.area .edit .shuffle-box-inner label
+{
+	width: 213px;	
+}
+
+.area .edit.double h3 {
+	float: left;
+	width: 255px;
+}
+
+#editUser .control.ctrlinvalid 
+{
+	background-color: #FDD;
+	padding: 10px;
+	position: relative;
+	left: -10px;
+}
+
+#editUser .ctrlmandatory,#editUser .ctrlinvalidmessage {
+	color: red;
+	text-align: center;
+}
+
+a.float-right {
+	padding-top: 15px;
+}
+
+.message {
+	color: blue;
+	text-align: center;
+	font-weight: bold;
+}
+
+#main
+{
+	width:515px;
+	height: 171px;
+}
+
+.col_checklist input {
+	margin: 0 3px 0 3px;
+}
+
+.col_checklist li {
+	padding: 3px 0 3px 0;
+}
+
+.col_checklist label {
+	height: 1px;
+}
+.itemdefs_container{
+	width: 499px;
+	height: 20em;
+	overflow: auto;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #AAA;
+	background-color: white;
+}

@@ -1,0 +1,34 @@
+div.modal-content-inner
+{
+	height: 308px;
+}
+
+/* Um, will bugger up the parent page?... */
+html
+{
+	overflow-y: hidden;
+}
+
+td.title-cell
+{
+	width: 430px;
+}
+
+span.no-selections
+{
+	font-size: 13px;
+	padding-left: 15px;
+	padding-top:10px;
+	position: absolute;
+}
+/*
+#table-div div.newListSelected
+{
+	width: 130px !important;
+}
+
+#table-div ul.newList
+{
+	width: 143px !important;
+}
+*/

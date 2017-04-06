@@ -1,0 +1,13 @@
+@import url("sharesearchquery.css");
+
+.sharecloudsearchquery .error 
+{
+	padding-left: 0;
+	padding-right: 20px;
+}
+
+.sharecloudsearchquery .sendEmailButton button 
+{
+	right: auto;
+	left: 0;
+}

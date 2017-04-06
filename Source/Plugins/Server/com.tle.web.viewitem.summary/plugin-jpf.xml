@@ -1,0 +1,185 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.viewitem.summary" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.core.config" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.core.url" />
+		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.web.sections.standard" />
+		<import plugin-id="com.tle.web.selection" exported="true" />
+		<import plugin-id="com.tle.web.viewitem" />
+		<import plugin-id="com.tle.web.viewurl" />
+		<import plugin-id="com.tle.web.integration" />
+		<import plugin-id="com.tle.web.htmleditor" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="itemExporter">
+		<parameter-def id="id" multiplicity="one" />
+		<parameter-def id="class" multiplicity="one">
+			<doc>
+				<doc-text>Must implement SectionId</doc-text>
+			</doc>
+		</parameter-def>
+		<parameter-def id="order" multiplicity="one" type="number" />
+	</extension-point>
+
+	<extension-point id="summaryTabExtension">
+		<parameter-def id="id" type="string" />
+		<parameter-def id="class" type="string">
+			<doc caption="Must implement DisplaySectionConfiguration" />
+		</parameter-def>
+	</extension-point>
+
+	<extension-point id="minorAction">
+		<parameter-def id="id" multiplicity="one" />
+		<parameter-def id="class" multiplicity="one">
+			<doc>
+				<doc-text>Must implement GenericMinorActionSection</doc-text>
+			</doc>
+		</parameter-def>
+		<parameter-def id="order" multiplicity="one" type="number" />
+	</extension-point>
+	
+	<extension-point id="attachmentViewFilter">
+		<parameter-def id="class" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.web.sections.equella.guice.EquellaModule" />
+		<parameter id="class" value="com.tle.web.viewitem.summary.module.ViewItemSummaryModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="stringshelp">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.xml" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="viewItemTree">
+		<parameter id="path" value="/viewitem/viewitem.do" />
+		<parameter id="root" value="bean:/viewitem/viewitem" />
+		<parameter id="url" value="false" />
+	</extension>
+	
+	<extension plugin-id="com.tle.web.sections" point-id="section" id="itemDetailsMainSection">
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.section.ItemDetailsAndActionsSummarySection" />
+		<parameter id="path" value="/viewitem/viewitem" />
+		<parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_SIDEBAR" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.viewitem" point-id="itemXslt" id="selectFunctions">
+		<parameter id="id" value="selectFunctions" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.section.SelectFunctionsItemXslt" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="summaryTabExtension" id="titleAndDescriptionSection">
+		<parameter id="id" value="basicSection" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.section.TitleAndDescriptionSection" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="summaryTabExtension" id="displayNodes">
+		<parameter id="id" value="displayNodes" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.section.DisplayNodesSection" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="summaryTabExtension" id="attachmentsSection">
+		<parameter id="id" value="attachmentsSection" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.section.attachment.AttachmentsSection" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="summaryTabExtension" id="xsltSection">
+		<parameter id="id" value="xsltSection" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.section.XsltSection" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="summaryTabExtension" id="freemarkerSection">
+		<parameter id="id" value="freemarkerSection" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.section.FreemarkerSection" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="summaryTabExtension" id="commentsSection">
+		<parameter id="id" value="commentsSection" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.section.CommentsSection" />
+	</extension>
+	<!-- 
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="summaryTabExtension" id="thumbnailSection">
+		<parameter id="id" value="thumbnailSection" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.section.attachment.ThumbnailSection" />
+	</extension>
+	  -->
+	<extension plugin-id="com.tle.web.viewurl" point-id="resourceViewerFilter" id="drmViewerFilter">
+		<parameter id="id" value="drmFilter" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.filter.DRMViewerFilter" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.viewitem" point-id="contentFilter" id="DRMContentFilter">
+		<parameter id="bean" value="bean:com.tle.web.viewitem.summary.filter.DRMContentFilter" />
+	</extension>
+
+	<!-- Minor actions -->
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="archive">
+		<parameter id="id" value="archive" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.sidebar.actions.ArchiveSection" />
+		<parameter id="order" value="1000" />
+	</extension>
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="makeLive">
+		<parameter id="id" value="makeLive" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.sidebar.actions.MakeLiveSection" />
+		<parameter id="order" value="2000" />
+	</extension>
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="review">
+		<parameter id="id" value="review" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.sidebar.actions.ReviewSection" />
+		<parameter id="order" value="3000" />
+	</extension>
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="suspend">
+		<parameter id="id" value="suspend" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.sidebar.actions.SuspendSection" />
+		<parameter id="order" value="5000" />
+	</extension>
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="resume">
+		<parameter id="id" value="resume" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.sidebar.actions.ResumeSection" />
+		<parameter id="order" value="5500" />
+	</extension>
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="delete">
+		<parameter id="id" value="delete" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.sidebar.actions.DeleteSection" />
+		<parameter id="order" value="6000" />
+	</extension>
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="restore">
+		<parameter id="id" value="restore" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.sidebar.actions.RestoreSection" />
+		<parameter id="order" value="6200" />
+	</extension>
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="purge">
+		<parameter id="id" value="purge" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.sidebar.actions.PurgeSection" />
+		<parameter id="order" value="6400" />
+	</extension>
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="changeOwner">
+		<parameter id="id" value="changeOwner" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.sidebar.actions.ChangeOwnershipSection" />
+		<parameter id="order" value="7000" />
+	</extension>
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="export">
+		<parameter id="id" value="export" />
+		<parameter id="class" value="bean:com.tle.web.viewitem.summary.sidebar.summary.ExportLinkSection" />
+		<parameter id="order" value="8000" />
+	</extension>
+
+</plugin>

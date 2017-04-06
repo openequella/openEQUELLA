@@ -1,0 +1,1419 @@
+<manifest identifier="MLV532" xmlns="http://www.imsglobal.org/xsd/imscp_v1p1">
+    <metadata xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+        <schema>IMS Content</schema>
+        <schemaversion>1.2.1</schemaversion>
+        <imsmd:lom xmlns="http://www.thelearningfederation.edu.au/lexmd_v1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+            <imsmd:general>
+                <imsmd:title>
+                    <imsmd:langstring xml:lang="en">Alien life form</imsmd:langstring>
+                </imsmd:title>
+                <imsmd:catalogentry>
+                    <imsmd:catalog>TLF</imsmd:catalog>
+                    <imsmd:entry>
+                        <imsmd:langstring xml:lang="x-none">L29</imsmd:langstring>
+                    </imsmd:entry>
+                </imsmd:catalogentry>
+                <imsmd:language>en</imsmd:language>
+                <imsmd:description>
+                    <imsmd:langstring xml:lang="en">Help the alien Zorpac to find out about plant life on Earth. Choose different combinations of leaves, seeds and roots to design a plant that is best adapted to surviving in a particular environment.  Optimise the plant design to suit survival in specific environments: mangroves; cool rainforest; mountain slopes; arid land.  Check results; get feedback on matching the plant features to suit the environment.</imsmd:langstring>
+                </imsmd:description>
+                <imsmd:keyword>
+                    <imsmd:langstring xml:lang="en">mangroves</imsmd:langstring>
+                </imsmd:keyword>
+                <imsmd:keyword>
+                    <imsmd:langstring xml:lang="en">predictions</imsmd:langstring>
+                </imsmd:keyword>
+                <imsmd:keyword>
+                    <imsmd:langstring xml:lang="en">arid land</imsmd:langstring>
+                </imsmd:keyword>
+                <imsmd:keyword>
+                    <imsmd:langstring xml:lang="en">survival</imsmd:langstring>
+                </imsmd:keyword>
+                <imsmd:keyword>
+                    <imsmd:langstring xml:lang="en">adapt</imsmd:langstring>
+                </imsmd:keyword>
+                <imsmd:keyword>
+                    <imsmd:langstring xml:lang="en">diversity</imsmd:langstring>
+                </imsmd:keyword>
+                <imsmd:keyword>
+                    <imsmd:langstring xml:lang="en">seed dispersal</imsmd:langstring>
+                </imsmd:keyword>
+                <imsmd:keyword>
+                    <imsmd:langstring xml:lang="en">environments</imsmd:langstring>
+                </imsmd:keyword>
+                <imsmd:keyword>
+                    <imsmd:langstring xml:lang="en">biomes</imsmd:langstring>
+                </imsmd:keyword>
+                <imsmd:keyword>
+                    <imsmd:langstring xml:lang="en">nutrients</imsmd:langstring>
+                </imsmd:keyword>
+                <imsmd:keyword>
+                    <imsmd:langstring xml:lang="en">rainfall</imsmd:langstring>
+                </imsmd:keyword>
+                <imsmd:keyword>
+                    <imsmd:langstring xml:lang="en">rainforest</imsmd:langstring>
+                </imsmd:keyword>
+                <imsmd:keyword>
+                    <imsmd:langstring xml:lang="en">australia</imsmd:langstring>
+                </imsmd:keyword>
+                <imsmd:aggregationlevel>
+                    <imsmd:source>
+                        <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                    </imsmd:source>
+                    <imsmd:value>
+                        <imsmd:langstring xml:lang="x-none">2</imsmd:langstring>
+                    </imsmd:value>
+                </imsmd:aggregationlevel>
+            </imsmd:general>
+            <imsmd:lifecycle>
+                <imsmd:version>
+                    <imsmd:langstring xml:lang="x-none">2.0</imsmd:langstring>
+                </imsmd:version>
+                <imsmd:contribute>
+                    <imsmd:role>
+                        <imsmd:source>
+                            <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                        </imsmd:source>
+                        <imsmd:value>
+                            <imsmd:langstring xml:lang="x-none">Author</imsmd:langstring>
+                        </imsmd:value>
+                    </imsmd:role>
+                    <imsmd:centity>
+                        <imsmd:vcard>BEGIN:VCARD
+REV:2002-12-05T10:58:31+10:30
+ADR:;;;Hobart;TAS;;Australia
+ORG:Crank Media Pty Ltd
+URL:http://www.crankmedia.com.au/
+VERSION:3.0
+END:VCARD
+
+</imsmd:vcard>
+                    </imsmd:centity>
+                </imsmd:contribute>
+                <imsmd:contribute>
+                    <imsmd:role>
+                        <imsmd:source>
+                            <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                        </imsmd:source>
+                        <imsmd:value>
+                            <imsmd:langstring xml:lang="x-none">Author</imsmd:langstring>
+                        </imsmd:value>
+                    </imsmd:role>
+                    <imsmd:centity>
+                        <imsmd:vcard>BEGIN:VCARD
+REV:2002-12-05T10:59:12+10:30
+ADR:;;;Hobart;TAS;;Australia
+ORG:Department of Education\, Tasmania\; e-magine Centre of Excellence in
+ Online Learning
+URL:http://www.e-magine.education.tas.gov.au/
+VERSION:3.0
+END:VCARD
+
+</imsmd:vcard>
+                    </imsmd:centity>
+                </imsmd:contribute>
+                <imsmd:contribute>
+                    <imsmd:role>
+                        <imsmd:source>
+                            <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                        </imsmd:source>
+                        <imsmd:value>
+                            <imsmd:langstring xml:lang="x-none">Publisher</imsmd:langstring>
+                        </imsmd:value>
+                    </imsmd:role>
+                    <imsmd:centity>
+                        <imsmd:vcard>BEGIN:VCARD
+REV:2002-12-05T11:01:41+10:30
+ADR:;;;Melbourne;VIC;;Australia
+ORG:The Le@rning Federation
+URL:http://www.thelearningfederation.edu.au/
+VERSION:3.0
+END:VCARD
+
+</imsmd:vcard>
+                    </imsmd:centity>
+                </imsmd:contribute>
+                <assurance>
+                    <status>
+                        <source>
+                            <langstring xml:lang="x-none">LOM 6.4</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Published</langstring>
+                        </value>
+                    </status>
+                    <date>2003-02-28T18:29:36Z</date>
+                </assurance>
+            </imsmd:lifecycle>
+            <imsmd:metametadata>
+                <imsmd:language>en</imsmd:language>
+            </imsmd:metametadata>
+            <imsmd:technical>
+                <imsmd:format>application/x-shockwave-flash</imsmd:format>
+                <imsmd:format>text/xml</imsmd:format>
+                <imsmd:format>text/html</imsmd:format>
+                <imsmd:format>text/css</imsmd:format>
+                <imsmd:size>1057681</imsmd:size>
+                <imsmd:requirement>
+                    <imsmd:type>
+                        <imsmd:source>
+                            <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                        </imsmd:source>
+                        <imsmd:value>
+                            <imsmd:langstring xml:lang="x-none">Operating System</imsmd:langstring>
+                        </imsmd:value>
+                    </imsmd:type>
+                    <imsmd:name>
+                        <imsmd:source>
+                            <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                        </imsmd:source>
+                        <imsmd:value>
+                            <imsmd:langstring xml:lang="x-none">MS-Windows</imsmd:langstring>
+                        </imsmd:value>
+                    </imsmd:name>
+                    <imsmd:minimumversion>2000</imsmd:minimumversion>
+                </imsmd:requirement>
+                <imsmd:requirement>
+                    <imsmd:type>
+                        <imsmd:source>
+                            <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                        </imsmd:source>
+                        <imsmd:value>
+                            <imsmd:langstring xml:lang="x-none">Operating System</imsmd:langstring>
+                        </imsmd:value>
+                    </imsmd:type>
+                    <imsmd:name>
+                        <imsmd:source>
+                            <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                        </imsmd:source>
+                        <imsmd:value>
+                            <imsmd:langstring xml:lang="x-none">MacOS</imsmd:langstring>
+                        </imsmd:value>
+                    </imsmd:name>
+                    <imsmd:minimumversion>X</imsmd:minimumversion>
+                </imsmd:requirement>
+                <imsmd:requirement>
+                    <imsmd:type>
+                        <imsmd:source>
+                            <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                        </imsmd:source>
+                        <imsmd:value>
+                            <imsmd:langstring xml:lang="x-none">Browser</imsmd:langstring>
+                        </imsmd:value>
+                    </imsmd:type>
+                    <imsmd:name>
+                        <imsmd:source>
+                            <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                        </imsmd:source>
+                        <imsmd:value>
+                            <imsmd:langstring xml:lang="x-none">Microsoft Internet Explorer</imsmd:langstring>
+                        </imsmd:value>
+                    </imsmd:name>
+                    <imsmd:minimumversion>6.0 (MS-Windows); 5.2 (MacOS)</imsmd:minimumversion>
+                </imsmd:requirement>
+                <imsmd:requirement>
+                    <imsmd:type>
+                        <imsmd:source>
+                            <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                        </imsmd:source>
+                        <imsmd:value>
+                            <imsmd:langstring xml:lang="x-none">Browser</imsmd:langstring>
+                        </imsmd:value>
+                    </imsmd:type>
+                    <imsmd:name>
+                        <imsmd:source>
+                            <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                        </imsmd:source>
+                        <imsmd:value>
+                            <imsmd:langstring xml:lang="x-none">Netscape Communicator</imsmd:langstring>
+                        </imsmd:value>
+                    </imsmd:name>
+                    <imsmd:minimumversion>6.2 (MS-Windows); 6.2.3 (MacOS)</imsmd:minimumversion>
+                </imsmd:requirement>
+            </imsmd:technical>
+            <imsmd:rights>
+                <rightsmanagement>
+                    <rights>
+                        <langstring xml:lang="en">Copyright Curriculum Corporation and education.au limited</langstring>
+                    </rights>
+                </rightsmanagement>
+            </imsmd:rights>
+            <imsmd:educational>
+                <subject>
+                    <topic>
+                        <source>
+                            <langstring xml:lang="x-none">ScOT v2.0</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Plants</langstring>
+                        </value>
+                    </topic>
+                    <topic>
+                        <source>
+                            <langstring xml:lang="x-none">ScOT v2.0</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Roots (Plants)</langstring>
+                        </value>
+                    </topic>
+                    <topic>
+                        <source>
+                            <langstring xml:lang="x-none">ScOT v2.0</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Leaves</langstring>
+                        </value>
+                    </topic>
+                    <topic>
+                        <source>
+                            <langstring xml:lang="x-none">ScOT v2.0</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Seeds</langstring>
+                        </value>
+                    </topic>
+                    <topic>
+                        <source>
+                            <langstring xml:lang="x-none">ScOT v2.0</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Stems (Plants)</langstring>
+                        </value>
+                    </topic>
+                    <topic>
+                        <source>
+                            <langstring xml:lang="x-none">ScOT v2.0</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Adaptation (Biology)</langstring>
+                        </value>
+                    </topic>
+                    <topic>
+                        <source>
+                            <langstring xml:lang="x-none">ScOT v2.0</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Estuaries</langstring>
+                        </value>
+                    </topic>
+                    <topic>
+                        <source>
+                            <langstring xml:lang="x-none">ScOT v2.0</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Mountains</langstring>
+                        </value>
+                    </topic>
+                    <topic>
+                        <source>
+                            <langstring xml:lang="x-none">ScOT v2.0</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Deserts</langstring>
+                        </value>
+                    </topic>
+                    <topic>
+                        <source>
+                            <langstring xml:lang="x-none">ScOT v2.0</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Biodiversity</langstring>
+                        </value>
+                    </topic>
+                    <topic>
+                        <source>
+                            <langstring xml:lang="x-none">ScOT v2.0</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Reproduction</langstring>
+                        </value>
+                    </topic>
+                    <topic>
+                        <source>
+                            <langstring xml:lang="x-none">ScOT v2.0</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Habitats</langstring>
+                        </value>
+                    </topic>
+                    <topic>
+                        <source>
+                            <langstring xml:lang="x-none">ScOT v2.0</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Ecology</langstring>
+                        </value>
+                    </topic>
+                    <topic>
+                        <source>
+                            <langstring xml:lang="x-none">ScOT v2.0</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Rain</langstring>
+                        </value>
+                    </topic>
+                    <topic>
+                        <source>
+                            <langstring xml:lang="x-none">ScOT v2.0</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Experiments</langstring>
+                        </value>
+                    </topic>
+                    <curriculum>
+                        <learningarea>
+                            <source>
+                                <langstring xml:lang="x-none">LOM 6.4</langstring>
+                            </source>
+                            <value>
+                                <langstring xml:lang="x-none">Science</langstring>
+                            </value>
+                        </learningarea>
+                        <strand>
+                            <source>
+                                <langstring xml:lang="x-none">LOM 6.4</langstring>
+                            </source>
+                            <value>
+                                <langstring xml:lang="x-none">Science\Biological science</langstring>
+                            </value>
+                        </strand>
+                        <contentconcept>
+                            <source>
+                                <langstring xml:lang="x-none">LOM 6.4</langstring>
+                            </source>
+                            <value>
+                                <langstring xml:lang="x-none">Science\Plants</langstring>
+                            </value>
+                        </contentconcept>
+                        <contentconcept>
+                            <source>
+                                <langstring xml:lang="x-none">LOM 6.4</langstring>
+                            </source>
+                            <value>
+                                <langstring xml:lang="x-none">Science\Environmental influences</langstring>
+                            </value>
+                        </contentconcept>
+                        <contentconcept>
+                            <source>
+                                <langstring xml:lang="x-none">LOM 6.4</langstring>
+                            </source>
+                            <value>
+                                <langstring xml:lang="x-none">Science\Simple experiments</langstring>
+                            </value>
+                        </contentconcept>
+                        <contentconcept>
+                            <source>
+                                <langstring xml:lang="x-none">LOM 6.4</langstring>
+                            </source>
+                            <value>
+                                <langstring xml:lang="x-none">Science\Habitats</langstring>
+                            </value>
+                        </contentconcept>
+                        <contentconcept>
+                            <source>
+                                <langstring xml:lang="x-none">LOM 6.4</langstring>
+                            </source>
+                            <value>
+                                <langstring xml:lang="x-none">Science\Ecology</langstring>
+                            </value>
+                        </contentconcept>
+                        <skillprocess>
+                            <source>
+                                <langstring xml:lang="x-none">LOM 6.4</langstring>
+                            </source>
+                            <value>
+                                <langstring xml:lang="x-none">Analysis</langstring>
+                            </value>
+                        </skillprocess>
+                        <skillprocess>
+                            <source>
+                                <langstring xml:lang="x-none">LOM 6.4</langstring>
+                            </source>
+                            <value>
+                                <langstring xml:lang="x-none">Application</langstring>
+                            </value>
+                        </skillprocess>
+                        <skillprocess>
+                            <source>
+                                <langstring xml:lang="x-none">LOM 6.4</langstring>
+                            </source>
+                            <value>
+                                <langstring xml:lang="x-none">Comprehension</langstring>
+                            </value>
+                        </skillprocess>
+                        <skillprocess>
+                            <source>
+                                <langstring xml:lang="x-none">LOM 6.4</langstring>
+                            </source>
+                            <value>
+                                <langstring xml:lang="x-none">Knowledge</langstring>
+                            </value>
+                        </skillprocess>
+                    </curriculum>
+                </subject>
+                <resourcetype>
+                    <studentactivity>
+                        <source>
+                            <langstring xml:lang="x-none">LOM 6.4</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Interactives</langstring>
+                        </value>
+                    </studentactivity>
+                    <studentactivity>
+                        <source>
+                            <langstring xml:lang="x-none">LOM 6.4</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Experiment</langstring>
+                        </value>
+                    </studentactivity>
+                    <studentactivity>
+                        <source>
+                            <langstring xml:lang="x-none">LOM 6.4</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Analysis</langstring>
+                        </value>
+                    </studentactivity>
+                    <learningdesign>
+                        <source>
+                            <langstring xml:lang="x-none">LOM 6.4</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Experiential learning</langstring>
+                        </value>
+                    </learningdesign>
+                    <learningdesign>
+                        <source>
+                            <langstring xml:lang="x-none">LOM 6.4</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Independent learning</langstring>
+                        </value>
+                    </learningdesign>
+                    <learningdesign>
+                        <source>
+                            <langstring xml:lang="x-none">LOM 6.4</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Problem solving</langstring>
+                        </value>
+                    </learningdesign>
+                    <learningdesign>
+                        <source>
+                            <langstring xml:lang="x-none">LOM 6.4</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Visual learning</langstring>
+                        </value>
+                    </learningdesign>
+                </resourcetype>
+                <audience>
+                    <type>
+                        <source>
+                            <langstring xml:lang="x-none">LOM 6.4</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">Student</langstring>
+                        </value>
+                    </type>
+                    <sector>
+                        <source>
+                            <langstring xml:lang="x-none">LOM 6.4</langstring>
+                        </source>
+                        <value>
+                            <langstring xml:lang="x-none">School</langstring>
+                        </value>
+                    </sector>
+                    <userlevel>
+                        <langstring xml:lang="en">4</langstring>
+                    </userlevel>
+                    <userlevel>
+                        <langstring xml:lang="en">3</langstring>
+                    </userlevel>
+                </audience>
+            </imsmd:educational>
+        </imsmd:lom>
+    </metadata>
+    <organizations default="OLV532O544">
+        <organization identifier="OLV532O544">
+            <title>Alien life form</title>
+            <item identifier="ILV532O544I1" identifierref="RLV532FV2718">
+                <title>Start: Alien life form</title>
+            </item>
+        </organization>
+    </organizations>
+    <resources>
+        <resource identifier="RLV532FV2715" type="webcontent" href="Content/LV532/LO_10/20030130/LO10/glossary.swf">
+            <file href="Content/LV532/LO_10/20030130/LO10/glossary.swf">
+                <metadata xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                    <schema>IMS Content</schema>
+                    <schemaversion>1.2.1</schemaversion>
+                    <imsmd:lom xmlns="http://www.thelearningfederation.edu.au/lexmd_v1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                        <imsmd:general>
+                            <imsmd:title>
+                                <imsmd:langstring xml:lang="en">glossary.swf</imsmd:langstring>
+                            </imsmd:title>
+                            <imsmd:catalogentry>
+                                <imsmd:catalog>TLF</imsmd:catalog>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="x-none">L2715</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:catalogentry>
+                            <imsmd:description>
+                                <imsmd:langstring xml:lang="en">
+								</imsmd:langstring>
+                            </imsmd:description>
+                            <imsmd:aggregationlevel>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">1</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:aggregationlevel>
+                        </imsmd:general>
+                        <imsmd:lifecycle>
+                            <imsmd:version>
+                                <imsmd:langstring xml:lang="x-none">1.0</imsmd:langstring>
+                            </imsmd:version>
+                            <assurance>
+                                <status>
+                                    <source>
+                                        <langstring xml:lang="x-none">LOM 6.4</langstring>
+                                    </source>
+                                    <value>
+                                        <langstring xml:lang="x-none">Approved</langstring>
+                                    </value>
+                                </status>
+                                <date>2003-02-28T18:29:37Z</date>
+                            </assurance>
+                        </imsmd:lifecycle>
+                        <imsmd:metametadata>
+                            <imsmd:language>en</imsmd:language>
+                        </imsmd:metametadata>
+                        <imsmd:technical>
+                            <imsmd:format>application/x-shockwave-flash</imsmd:format>
+                            <imsmd:size>179282</imsmd:size>
+                        </imsmd:technical>
+                        <imsmd:rights>
+						</imsmd:rights>
+                    </imsmd:lom>
+                </metadata>
+            </file>
+        </resource>
+        <resource identifier="RLV532FV2716" type="webcontent" href="Content/LV532/LO_10/20030130/LO10/glossary.xml">
+            <file href="Content/LV532/LO_10/20030130/LO10/glossary.xml">
+                <metadata xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                    <schema>IMS Content</schema>
+                    <schemaversion>1.2.1</schemaversion>
+                    <imsmd:lom xmlns="http://www.thelearningfederation.edu.au/lexmd_v1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                        <imsmd:general>
+                            <imsmd:title>
+                                <imsmd:langstring xml:lang="en">glossary.xml</imsmd:langstring>
+                            </imsmd:title>
+                            <imsmd:catalogentry>
+                                <imsmd:catalog>TLF</imsmd:catalog>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="x-none">L2716</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:catalogentry>
+                            <imsmd:description>
+                                <imsmd:langstring xml:lang="en">
+								</imsmd:langstring>
+                            </imsmd:description>
+                            <imsmd:aggregationlevel>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">1</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:aggregationlevel>
+                        </imsmd:general>
+                        <imsmd:lifecycle>
+                            <imsmd:version>
+                                <imsmd:langstring xml:lang="x-none">1.0</imsmd:langstring>
+                            </imsmd:version>
+                            <assurance>
+                                <status>
+                                    <source>
+                                        <langstring xml:lang="x-none">LOM 6.4</langstring>
+                                    </source>
+                                    <value>
+                                        <langstring xml:lang="x-none">Approved</langstring>
+                                    </value>
+                                </status>
+                                <date>2003-02-28T18:29:37Z</date>
+                            </assurance>
+                        </imsmd:lifecycle>
+                        <imsmd:metametadata>
+                            <imsmd:language>en</imsmd:language>
+                        </imsmd:metametadata>
+                        <imsmd:technical>
+                            <imsmd:format>text/xml</imsmd:format>
+                            <imsmd:size>40140</imsmd:size>
+                        </imsmd:technical>
+                        <imsmd:rights>
+						</imsmd:rights>
+                    </imsmd:lom>
+                </metadata>
+            </file>
+        </resource>
+        <resource identifier="RLV532FV2717" type="webcontent" href="Content/LV532/LO_10/20030130/LO10/help.swf">
+            <file href="Content/LV532/LO_10/20030130/LO10/help.swf">
+                <metadata xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                    <schema>IMS Content</schema>
+                    <schemaversion>1.2.1</schemaversion>
+                    <imsmd:lom xmlns="http://www.thelearningfederation.edu.au/lexmd_v1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                        <imsmd:general>
+                            <imsmd:title>
+                                <imsmd:langstring xml:lang="en">help.swf</imsmd:langstring>
+                            </imsmd:title>
+                            <imsmd:catalogentry>
+                                <imsmd:catalog>TLF</imsmd:catalog>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="x-none">L2717</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:catalogentry>
+                            <imsmd:description>
+                                <imsmd:langstring xml:lang="en">
+								</imsmd:langstring>
+                            </imsmd:description>
+                            <imsmd:aggregationlevel>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">1</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:aggregationlevel>
+                        </imsmd:general>
+                        <imsmd:lifecycle>
+                            <imsmd:version>
+                                <imsmd:langstring xml:lang="x-none">1.0</imsmd:langstring>
+                            </imsmd:version>
+                            <assurance>
+                                <status>
+                                    <source>
+                                        <langstring xml:lang="x-none">LOM 6.4</langstring>
+                                    </source>
+                                    <value>
+                                        <langstring xml:lang="x-none">Approved</langstring>
+                                    </value>
+                                </status>
+                                <date>2003-02-28T18:29:37Z</date>
+                            </assurance>
+                        </imsmd:lifecycle>
+                        <imsmd:metametadata>
+                            <imsmd:language>en</imsmd:language>
+                        </imsmd:metametadata>
+                        <imsmd:technical>
+                            <imsmd:format>application/x-shockwave-flash</imsmd:format>
+                            <imsmd:size>94845</imsmd:size>
+                        </imsmd:technical>
+                        <imsmd:rights>
+						</imsmd:rights>
+                    </imsmd:lom>
+                </metadata>
+            </file>
+        </resource>
+        <resource identifier="RLV532FV2718" type="webcontent" href="Content/LV532/LO_10/20030130/LO10/index.htm">
+            <file href="Content/LV532/LO_10/20030130/LO10/index.htm">
+                <metadata xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                    <schema>IMS Content</schema>
+                    <schemaversion>1.2.1</schemaversion>
+                    <imsmd:lom xmlns="http://www.thelearningfederation.edu.au/lexmd_v1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                        <imsmd:general>
+                            <imsmd:title>
+                                <imsmd:langstring xml:lang="en">index.htm</imsmd:langstring>
+                            </imsmd:title>
+                            <imsmd:catalogentry>
+                                <imsmd:catalog>TLF</imsmd:catalog>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="x-none">L2718</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:catalogentry>
+                            <imsmd:description>
+                                <imsmd:langstring xml:lang="en">
+								</imsmd:langstring>
+                            </imsmd:description>
+                            <imsmd:aggregationlevel>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">1</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:aggregationlevel>
+                        </imsmd:general>
+                        <imsmd:lifecycle>
+                            <imsmd:version>
+                                <imsmd:langstring xml:lang="x-none">1.0</imsmd:langstring>
+                            </imsmd:version>
+                            <assurance>
+                                <status>
+                                    <source>
+                                        <langstring xml:lang="x-none">LOM 6.4</langstring>
+                                    </source>
+                                    <value>
+                                        <langstring xml:lang="x-none">Approved</langstring>
+                                    </value>
+                                </status>
+                                <date>2003-02-28T18:29:37Z</date>
+                            </assurance>
+                        </imsmd:lifecycle>
+                        <imsmd:metametadata>
+                            <imsmd:language>en</imsmd:language>
+                        </imsmd:metametadata>
+                        <imsmd:technical>
+                            <imsmd:format>text/html</imsmd:format>
+                            <imsmd:size>714</imsmd:size>
+                        </imsmd:technical>
+                        <imsmd:rights>
+						</imsmd:rights>
+                    </imsmd:lom>
+                </metadata>
+            </file>
+        </resource>
+        <resource identifier="RLV532FV2719" type="webcontent" href="Content/LV532/LO_10/20030130/LO10/keys.swf">
+            <file href="Content/LV532/LO_10/20030130/LO10/keys.swf">
+                <metadata xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                    <schema>IMS Content</schema>
+                    <schemaversion>1.2.1</schemaversion>
+                    <imsmd:lom xmlns="http://www.thelearningfederation.edu.au/lexmd_v1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                        <imsmd:general>
+                            <imsmd:title>
+                                <imsmd:langstring xml:lang="en">keys.swf</imsmd:langstring>
+                            </imsmd:title>
+                            <imsmd:catalogentry>
+                                <imsmd:catalog>TLF</imsmd:catalog>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="x-none">L2719</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:catalogentry>
+                            <imsmd:description>
+                                <imsmd:langstring xml:lang="en">
+								</imsmd:langstring>
+                            </imsmd:description>
+                            <imsmd:aggregationlevel>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">1</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:aggregationlevel>
+                        </imsmd:general>
+                        <imsmd:lifecycle>
+                            <imsmd:version>
+                                <imsmd:langstring xml:lang="x-none">1.0</imsmd:langstring>
+                            </imsmd:version>
+                            <assurance>
+                                <status>
+                                    <source>
+                                        <langstring xml:lang="x-none">LOM 6.4</langstring>
+                                    </source>
+                                    <value>
+                                        <langstring xml:lang="x-none">Approved</langstring>
+                                    </value>
+                                </status>
+                                <date>2003-02-28T18:29:37Z</date>
+                            </assurance>
+                        </imsmd:lifecycle>
+                        <imsmd:metametadata>
+                            <imsmd:language>en</imsmd:language>
+                        </imsmd:metametadata>
+                        <imsmd:technical>
+                            <imsmd:format>application/x-shockwave-flash</imsmd:format>
+                            <imsmd:size>104536</imsmd:size>
+                        </imsmd:technical>
+                        <imsmd:rights>
+						</imsmd:rights>
+                    </imsmd:lom>
+                </metadata>
+            </file>
+        </resource>
+        <resource identifier="RLV532FV2720" type="webcontent" href="Content/LV532/LO_10/20030130/LO10/LO10.swf">
+            <file href="Content/LV532/LO_10/20030130/LO10/LO10.swf">
+                <metadata xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                    <schema>IMS Content</schema>
+                    <schemaversion>1.2.1</schemaversion>
+                    <imsmd:lom xmlns="http://www.thelearningfederation.edu.au/lexmd_v1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                        <imsmd:general>
+                            <imsmd:title>
+                                <imsmd:langstring xml:lang="en">LO10.swf</imsmd:langstring>
+                            </imsmd:title>
+                            <imsmd:catalogentry>
+                                <imsmd:catalog>TLF</imsmd:catalog>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="x-none">L2720</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:catalogentry>
+                            <imsmd:description>
+                                <imsmd:langstring xml:lang="en">
+								</imsmd:langstring>
+                            </imsmd:description>
+                            <imsmd:aggregationlevel>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">1</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:aggregationlevel>
+                        </imsmd:general>
+                        <imsmd:lifecycle>
+                            <imsmd:version>
+                                <imsmd:langstring xml:lang="x-none">1.0</imsmd:langstring>
+                            </imsmd:version>
+                            <assurance>
+                                <status>
+                                    <source>
+                                        <langstring xml:lang="x-none">LOM 6.4</langstring>
+                                    </source>
+                                    <value>
+                                        <langstring xml:lang="x-none">Approved</langstring>
+                                    </value>
+                                </status>
+                                <date>2003-02-28T18:29:37Z</date>
+                            </assurance>
+                        </imsmd:lifecycle>
+                        <imsmd:metametadata>
+                            <imsmd:language>en</imsmd:language>
+                        </imsmd:metametadata>
+                        <imsmd:technical>
+                            <imsmd:format>application/x-shockwave-flash</imsmd:format>
+                            <imsmd:size>560732</imsmd:size>
+                        </imsmd:technical>
+                        <imsmd:rights>
+						</imsmd:rights>
+                    </imsmd:lom>
+                </metadata>
+            </file>
+        </resource>
+        <resource identifier="RLV532FV2721" type="webcontent" href="Content/LV532/LO_10/20030130/LO10/loader.swf">
+            <file href="Content/LV532/LO_10/20030130/LO10/loader.swf">
+                <metadata xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                    <schema>IMS Content</schema>
+                    <schemaversion>1.2.1</schemaversion>
+                    <imsmd:lom xmlns="http://www.thelearningfederation.edu.au/lexmd_v1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                        <imsmd:general>
+                            <imsmd:title>
+                                <imsmd:langstring xml:lang="en">loader.swf</imsmd:langstring>
+                            </imsmd:title>
+                            <imsmd:catalogentry>
+                                <imsmd:catalog>TLF</imsmd:catalog>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="x-none">L2721</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:catalogentry>
+                            <imsmd:description>
+                                <imsmd:langstring xml:lang="en">
+								</imsmd:langstring>
+                            </imsmd:description>
+                            <imsmd:aggregationlevel>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">1</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:aggregationlevel>
+                        </imsmd:general>
+                        <imsmd:lifecycle>
+                            <imsmd:version>
+                                <imsmd:langstring xml:lang="x-none">1.0</imsmd:langstring>
+                            </imsmd:version>
+                            <assurance>
+                                <status>
+                                    <source>
+                                        <langstring xml:lang="x-none">LOM 6.4</langstring>
+                                    </source>
+                                    <value>
+                                        <langstring xml:lang="x-none">Approved</langstring>
+                                    </value>
+                                </status>
+                                <date>2003-02-28T18:29:37Z</date>
+                            </assurance>
+                        </imsmd:lifecycle>
+                        <imsmd:metametadata>
+                            <imsmd:language>en</imsmd:language>
+                        </imsmd:metametadata>
+                        <imsmd:technical>
+                            <imsmd:format>application/x-shockwave-flash</imsmd:format>
+                            <imsmd:size>3049</imsmd:size>
+                        </imsmd:technical>
+                        <imsmd:rights>
+						</imsmd:rights>
+                    </imsmd:lom>
+                </metadata>
+            </file>
+        </resource>
+        <resource identifier="RLV532FV2722" type="webcontent" href="Content/LV532/LO_10/20030130/LO10/preloaderLO10.swf">
+            <file href="Content/LV532/LO_10/20030130/LO10/preloaderLO10.swf">
+                <metadata xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                    <schema>IMS Content</schema>
+                    <schemaversion>1.2.1</schemaversion>
+                    <imsmd:lom xmlns="http://www.thelearningfederation.edu.au/lexmd_v1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                        <imsmd:general>
+                            <imsmd:title>
+                                <imsmd:langstring xml:lang="en">preloaderLO10.swf</imsmd:langstring>
+                            </imsmd:title>
+                            <imsmd:catalogentry>
+                                <imsmd:catalog>TLF</imsmd:catalog>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="x-none">L2722</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:catalogentry>
+                            <imsmd:description>
+                                <imsmd:langstring xml:lang="en">
+								</imsmd:langstring>
+                            </imsmd:description>
+                            <imsmd:aggregationlevel>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">1</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:aggregationlevel>
+                        </imsmd:general>
+                        <imsmd:lifecycle>
+                            <imsmd:version>
+                                <imsmd:langstring xml:lang="x-none">1.0</imsmd:langstring>
+                            </imsmd:version>
+                            <assurance>
+                                <status>
+                                    <source>
+                                        <langstring xml:lang="x-none">LOM 6.4</langstring>
+                                    </source>
+                                    <value>
+                                        <langstring xml:lang="x-none">Approved</langstring>
+                                    </value>
+                                </status>
+                                <date>2003-02-28T18:29:37Z</date>
+                            </assurance>
+                        </imsmd:lifecycle>
+                        <imsmd:metametadata>
+                            <imsmd:language>en</imsmd:language>
+                        </imsmd:metametadata>
+                        <imsmd:technical>
+                            <imsmd:format>application/x-shockwave-flash</imsmd:format>
+                            <imsmd:size>93</imsmd:size>
+                        </imsmd:technical>
+                        <imsmd:rights>
+						</imsmd:rights>
+                    </imsmd:lom>
+                </metadata>
+            </file>
+        </resource>
+        <resource identifier="RLV532FV2723" type="webcontent" href="Content/LV532/LO_10/20030130/LO10/printing.swf">
+            <file href="Content/LV532/LO_10/20030130/LO10/printing.swf">
+                <metadata xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                    <schema>IMS Content</schema>
+                    <schemaversion>1.2.1</schemaversion>
+                    <imsmd:lom xmlns="http://www.thelearningfederation.edu.au/lexmd_v1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                        <imsmd:general>
+                            <imsmd:title>
+                                <imsmd:langstring xml:lang="en">printing.swf</imsmd:langstring>
+                            </imsmd:title>
+                            <imsmd:catalogentry>
+                                <imsmd:catalog>TLF</imsmd:catalog>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="x-none">L2723</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:catalogentry>
+                            <imsmd:description>
+                                <imsmd:langstring xml:lang="en">
+								</imsmd:langstring>
+                            </imsmd:description>
+                            <imsmd:aggregationlevel>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">1</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:aggregationlevel>
+                        </imsmd:general>
+                        <imsmd:lifecycle>
+                            <imsmd:version>
+                                <imsmd:langstring xml:lang="x-none">1.0</imsmd:langstring>
+                            </imsmd:version>
+                            <assurance>
+                                <status>
+                                    <source>
+                                        <langstring xml:lang="x-none">LOM 6.4</langstring>
+                                    </source>
+                                    <value>
+                                        <langstring xml:lang="x-none">Approved</langstring>
+                                    </value>
+                                </status>
+                                <date>2003-02-28T18:29:37Z</date>
+                            </assurance>
+                        </imsmd:lifecycle>
+                        <imsmd:metametadata>
+                            <imsmd:language>en</imsmd:language>
+                        </imsmd:metametadata>
+                        <imsmd:technical>
+                            <imsmd:format>application/x-shockwave-flash</imsmd:format>
+                            <imsmd:size>32419</imsmd:size>
+                        </imsmd:technical>
+                        <imsmd:rights>
+						</imsmd:rights>
+                    </imsmd:lom>
+                </metadata>
+            </file>
+        </resource>
+        <resource identifier="RLV532FV2724" type="webcontent" href="Content/LV532/LO_10/20030130/LO10/style.css">
+            <file href="Content/LV532/LO_10/20030130/LO10/style.css">
+                <metadata xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                    <schema>IMS Content</schema>
+                    <schemaversion>1.2.1</schemaversion>
+                    <imsmd:lom xmlns="http://www.thelearningfederation.edu.au/lexmd_v1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                        <imsmd:general>
+                            <imsmd:title>
+                                <imsmd:langstring xml:lang="en">style.css</imsmd:langstring>
+                            </imsmd:title>
+                            <imsmd:catalogentry>
+                                <imsmd:catalog>TLF</imsmd:catalog>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="x-none">L2724</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:catalogentry>
+                            <imsmd:description>
+                                <imsmd:langstring xml:lang="en">
+								</imsmd:langstring>
+                            </imsmd:description>
+                            <imsmd:aggregationlevel>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">1</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:aggregationlevel>
+                        </imsmd:general>
+                        <imsmd:lifecycle>
+                            <imsmd:version>
+                                <imsmd:langstring xml:lang="x-none">1.0</imsmd:langstring>
+                            </imsmd:version>
+                            <assurance>
+                                <status>
+                                    <source>
+                                        <langstring xml:lang="x-none">LOM 6.4</langstring>
+                                    </source>
+                                    <value>
+                                        <langstring xml:lang="x-none">Approved</langstring>
+                                    </value>
+                                </status>
+                                <date>2003-02-28T18:29:37Z</date>
+                            </assurance>
+                        </imsmd:lifecycle>
+                        <imsmd:metametadata>
+                            <imsmd:language>en</imsmd:language>
+                        </imsmd:metametadata>
+                        <imsmd:technical>
+                            <imsmd:format>text/css</imsmd:format>
+                            <imsmd:size>40</imsmd:size>
+                        </imsmd:technical>
+                        <imsmd:rights>
+						</imsmd:rights>
+                    </imsmd:lom>
+                </metadata>
+            </file>
+        </resource>
+        <resource identifier="RLV532FV2725" type="webcontent" href="Content/LV532/LO_10/20030130/LO10/xml_all.xml">
+            <file href="Content/LV532/LO_10/20030130/LO10/xml_all.xml">
+                <metadata xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                    <schema>IMS Content</schema>
+                    <schemaversion>1.2.1</schemaversion>
+                    <imsmd:lom xmlns="http://www.thelearningfederation.edu.au/lexmd_v1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                        <imsmd:general>
+                            <imsmd:title>
+                                <imsmd:langstring xml:lang="en">xml_all.xml</imsmd:langstring>
+                            </imsmd:title>
+                            <imsmd:catalogentry>
+                                <imsmd:catalog>TLF</imsmd:catalog>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="x-none">L2725</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:catalogentry>
+                            <imsmd:description>
+                                <imsmd:langstring xml:lang="en">
+								</imsmd:langstring>
+                            </imsmd:description>
+                            <imsmd:aggregationlevel>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">1</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:aggregationlevel>
+                        </imsmd:general>
+                        <imsmd:lifecycle>
+                            <imsmd:version>
+                                <imsmd:langstring xml:lang="x-none">1.0</imsmd:langstring>
+                            </imsmd:version>
+                            <assurance>
+                                <status>
+                                    <source>
+                                        <langstring xml:lang="x-none">LOM 6.4</langstring>
+                                    </source>
+                                    <value>
+                                        <langstring xml:lang="x-none">Approved</langstring>
+                                    </value>
+                                </status>
+                                <date>2003-02-28T18:29:37Z</date>
+                            </assurance>
+                        </imsmd:lifecycle>
+                        <imsmd:metametadata>
+                            <imsmd:language>en</imsmd:language>
+                        </imsmd:metametadata>
+                        <imsmd:technical>
+                            <imsmd:format>text/xml</imsmd:format>
+                            <imsmd:size>35098</imsmd:size>
+                        </imsmd:technical>
+                        <imsmd:rights>
+						</imsmd:rights>
+                    </imsmd:lom>
+                </metadata>
+            </file>
+        </resource>
+        <resource identifier="RLV532FV2726" type="webcontent" href="Content/LV532/LO_10/20030130/LO10/xml_globalmenu.xml">
+            <file href="Content/LV532/LO_10/20030130/LO10/xml_globalmenu.xml">
+                <metadata xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                    <schema>IMS Content</schema>
+                    <schemaversion>1.2.1</schemaversion>
+                    <imsmd:lom xmlns="http://www.thelearningfederation.edu.au/lexmd_v1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                        <imsmd:general>
+                            <imsmd:title>
+                                <imsmd:langstring xml:lang="en">xml_globalmenu.xml</imsmd:langstring>
+                            </imsmd:title>
+                            <imsmd:catalogentry>
+                                <imsmd:catalog>TLF</imsmd:catalog>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="x-none">L2726</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:catalogentry>
+                            <imsmd:description>
+                                <imsmd:langstring xml:lang="en">
+								</imsmd:langstring>
+                            </imsmd:description>
+                            <imsmd:aggregationlevel>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">1</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:aggregationlevel>
+                        </imsmd:general>
+                        <imsmd:lifecycle>
+                            <imsmd:version>
+                                <imsmd:langstring xml:lang="x-none">1.0</imsmd:langstring>
+                            </imsmd:version>
+                            <assurance>
+                                <status>
+                                    <source>
+                                        <langstring xml:lang="x-none">LOM 6.4</langstring>
+                                    </source>
+                                    <value>
+                                        <langstring xml:lang="x-none">Approved</langstring>
+                                    </value>
+                                </status>
+                                <date>2003-02-28T18:29:37Z</date>
+                            </assurance>
+                        </imsmd:lifecycle>
+                        <imsmd:metametadata>
+                            <imsmd:language>en</imsmd:language>
+                        </imsmd:metametadata>
+                        <imsmd:technical>
+                            <imsmd:format>text/xml</imsmd:format>
+                            <imsmd:size>1492</imsmd:size>
+                        </imsmd:technical>
+                        <imsmd:rights>
+						</imsmd:rights>
+                    </imsmd:lom>
+                </metadata>
+            </file>
+        </resource>
+        <resource identifier="RLV532FV2727" type="webcontent" href="Content/LV532/LO_10/20030130/LO10/xml_help.xml">
+            <file href="Content/LV532/LO_10/20030130/LO10/xml_help.xml">
+                <metadata xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                    <schema>IMS Content</schema>
+                    <schemaversion>1.2.1</schemaversion>
+                    <imsmd:lom xmlns="http://www.thelearningfederation.edu.au/lexmd_v1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                        <imsmd:general>
+                            <imsmd:title>
+                                <imsmd:langstring xml:lang="en">xml_help.xml</imsmd:langstring>
+                            </imsmd:title>
+                            <imsmd:catalogentry>
+                                <imsmd:catalog>TLF</imsmd:catalog>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="x-none">L2727</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:catalogentry>
+                            <imsmd:description>
+                                <imsmd:langstring xml:lang="en">
+								</imsmd:langstring>
+                            </imsmd:description>
+                            <imsmd:aggregationlevel>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">1</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:aggregationlevel>
+                        </imsmd:general>
+                        <imsmd:lifecycle>
+                            <imsmd:version>
+                                <imsmd:langstring xml:lang="x-none">1.0</imsmd:langstring>
+                            </imsmd:version>
+                            <assurance>
+                                <status>
+                                    <source>
+                                        <langstring xml:lang="x-none">LOM 6.4</langstring>
+                                    </source>
+                                    <value>
+                                        <langstring xml:lang="x-none">Approved</langstring>
+                                    </value>
+                                </status>
+                                <date>2003-02-28T18:29:37Z</date>
+                            </assurance>
+                        </imsmd:lifecycle>
+                        <imsmd:metametadata>
+                            <imsmd:language>en</imsmd:language>
+                        </imsmd:metametadata>
+                        <imsmd:technical>
+                            <imsmd:format>text/xml</imsmd:format>
+                            <imsmd:size>693</imsmd:size>
+                        </imsmd:technical>
+                        <imsmd:rights>
+						</imsmd:rights>
+                    </imsmd:lom>
+                </metadata>
+            </file>
+        </resource>
+        <resource identifier="RLV532FV2728" type="webcontent" href="Content/LV532/LO_10/20030130/LO10/xml_keys.xml">
+            <file href="Content/LV532/LO_10/20030130/LO10/xml_keys.xml">
+                <metadata xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                    <schema>IMS Content</schema>
+                    <schemaversion>1.2.1</schemaversion>
+                    <imsmd:lom xmlns="http://www.thelearningfederation.edu.au/lexmd_v1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                        <imsmd:general>
+                            <imsmd:title>
+                                <imsmd:langstring xml:lang="en">xml_keys.xml</imsmd:langstring>
+                            </imsmd:title>
+                            <imsmd:catalogentry>
+                                <imsmd:catalog>TLF</imsmd:catalog>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="x-none">L2728</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:catalogentry>
+                            <imsmd:description>
+                                <imsmd:langstring xml:lang="en">
+								</imsmd:langstring>
+                            </imsmd:description>
+                            <imsmd:aggregationlevel>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">1</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:aggregationlevel>
+                        </imsmd:general>
+                        <imsmd:lifecycle>
+                            <imsmd:version>
+                                <imsmd:langstring xml:lang="x-none">1.0</imsmd:langstring>
+                            </imsmd:version>
+                            <assurance>
+                                <status>
+                                    <source>
+                                        <langstring xml:lang="x-none">LOM 6.4</langstring>
+                                    </source>
+                                    <value>
+                                        <langstring xml:lang="x-none">Approved</langstring>
+                                    </value>
+                                </status>
+                                <date>2003-02-28T18:29:37Z</date>
+                            </assurance>
+                        </imsmd:lifecycle>
+                        <imsmd:metametadata>
+                            <imsmd:language>en</imsmd:language>
+                        </imsmd:metametadata>
+                        <imsmd:technical>
+                            <imsmd:format>text/xml</imsmd:format>
+                            <imsmd:size>403</imsmd:size>
+                        </imsmd:technical>
+                        <imsmd:rights>
+						</imsmd:rights>
+                    </imsmd:lom>
+                </metadata>
+            </file>
+        </resource>
+        <resource identifier="RLV532FV2729" type="webcontent" href="Content/LV532/LO_10/20030130/LO10/xml_print.xml">
+            <file href="Content/LV532/LO_10/20030130/LO10/xml_print.xml">
+                <metadata xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                    <schema>IMS Content</schema>
+                    <schemaversion>1.2.1</schemaversion>
+                    <imsmd:lom xmlns="http://www.thelearningfederation.edu.au/lexmd_v1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2">
+                        <imsmd:general>
+                            <imsmd:title>
+                                <imsmd:langstring xml:lang="en">xml_print.xml</imsmd:langstring>
+                            </imsmd:title>
+                            <imsmd:catalogentry>
+                                <imsmd:catalog>TLF</imsmd:catalog>
+                                <imsmd:entry>
+                                    <imsmd:langstring xml:lang="x-none">L2729</imsmd:langstring>
+                                </imsmd:entry>
+                            </imsmd:catalogentry>
+                            <imsmd:description>
+                                <imsmd:langstring xml:lang="en">
+								</imsmd:langstring>
+                            </imsmd:description>
+                            <imsmd:aggregationlevel>
+                                <imsmd:source>
+                                    <imsmd:langstring xml:lang="x-none">LOM 6.4</imsmd:langstring>
+                                </imsmd:source>
+                                <imsmd:value>
+                                    <imsmd:langstring xml:lang="x-none">1</imsmd:langstring>
+                                </imsmd:value>
+                            </imsmd:aggregationlevel>
+                        </imsmd:general>
+                        <imsmd:lifecycle>
+                            <imsmd:version>
+                                <imsmd:langstring xml:lang="x-none">1.0</imsmd:langstring>
+                            </imsmd:version>
+                            <assurance>
+                                <status>
+                                    <source>
+                                        <langstring xml:lang="x-none">LOM 6.4</langstring>
+                                    </source>
+                                    <value>
+                                        <langstring xml:lang="x-none">Approved</langstring>
+                                    </value>
+                                </status>
+                                <date>2003-02-28T18:29:37Z</date>
+                            </assurance>
+                        </imsmd:lifecycle>
+                        <imsmd:metametadata>
+                            <imsmd:language>en</imsmd:language>
+                        </imsmd:metametadata>
+                        <imsmd:technical>
+                            <imsmd:format>text/xml</imsmd:format>
+                            <imsmd:size>4145</imsmd:size>
+                        </imsmd:technical>
+                        <imsmd:rights>
+						</imsmd:rights>
+                    </imsmd:lom>
+                </metadata>
+            </file>
+        </resource>
+    </resources>
+</manifest>

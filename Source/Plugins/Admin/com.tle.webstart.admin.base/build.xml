@@ -1,0 +1,4 @@
+<project name="com.tle.webstart.admin" basedir="." default="compile">
+	<import file="../../build/plugins-common-build.xml" />
+	<property name="compile.for.server" value="false" />
+</project>

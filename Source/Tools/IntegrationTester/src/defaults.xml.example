@@ -1,0 +1,11 @@
+<xml>
+	<itemXml>
+		<xml><item><name>BARRY</name><description>BALLSHANK</description></item></xml>
+	</itemXml>	
+	<powerXml>
+		<xml>
+			<powersearch uuid="432432432423"><xml><test>111</test></xml></powersearch>
+			<powersearch uuid="fghfghfghfgh"><xml><test>222</test></xml></powersearch>
+		</xml>
+	</powerXml>
+</xml>

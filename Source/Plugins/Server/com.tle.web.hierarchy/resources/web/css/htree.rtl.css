@@ -1,0 +1,12 @@
+@import url("htree.css");
+
+UL.topic-tree DIV.lineItem {
+	margin-right: 0;
+	margin-left: 15px;
+	padding-left: 0;
+	padding-right: 4px;
+}
+
+UL.topic-tree DIV.lineItem .selection {
+	right: 95%;
+}

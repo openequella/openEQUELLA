@@ -1,0 +1,109 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.mypages" version="1">
+	<requires>
+		<import plugin-id="com.tagsoup.core" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.scripting" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.ims" />
+		<import plugin-id="com.tle.mets" />
+		<import plugin-id="com.tle.mycontent" />
+		<import plugin-id="com.tle.web.htmleditor" />
+		<import plugin-id="com.tle.web.ims" />
+		<import plugin-id="com.tle.web.search" />
+		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.web.selection" />
+		<import plugin-id="com.tle.web.viewitem" />
+		<import plugin-id="com.tle.web.viewitem.treeviewer" />
+		<import plugin-id="com.tle.web.viewurl" />
+		<import plugin-id="com.tle.web.wizard" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.mimetypes" />
+		<import plugin-id="com.tle.web.api.item.equella.serializer" />
+		<import plugin-id="com.tle.web.itemlist" />
+		<import plugin-id="com.tle.web.api.item.equella.interfaces" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="editor">
+		<parameter-def id="id" multiplicity="one" />
+		<parameter-def id="class" multiplicity="one" />
+		<parameter-def id="order" multiplicity="one" type="number" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.web.sections.equella.guice.EquellaModule" />
+		<parameter id="class" value="com.tle.mypages.guice.MyPagesModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="file" value="lang/i18n.properties" />
+		<parameter id="group" value="resource-centre" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="runwizTree">
+		<parameter id="path" value="/access/mypagesedit.do" />
+		<parameter id="root" value="bean:/access/mypagesedit" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.viewurl" point-id="attachmentResource" id="mypagesResource">
+		<parameter id="class" value="bean:com.tle.mypages.web.attachments.MyPagesSummariser" />
+		<parameter id="type" value="html" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.mimetypes" point-id="attachmentResourceMimeType" id="mypagesResourceMimeType">
+		<parameter id="class" value="bean:com.tle.mypages.web.attachments.MyPagesSummariser" />
+		<parameter id="type" value="html" />
+	</extension>
+
+	<extension plugin-id="com.tle.mycontent" point-id="contentHandler" id="mypagescontent">
+		<parameter id="id" value="mypages" />
+		<parameter id="nameKey" value="com.tle.mypages.handler" />
+		<parameter id="contributeBean" value="bean:com.tle.mypages.web.MyPagesContentHandler" />
+		<parameter id="summariserBean" value="bean:com.tle.mypages.web.render.MyPagesResultRenderer" />
+		<parameter id="selectionRendererBean" value="bean:com.tle.mypages.web.render.MyPagesSelectionExtension" />
+		<parameter id="order" value="3000" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="itemHelpers" id="myPagesItemHelper">
+		<parameter id="bean" value="bean:com.tle.mypages.conversion.MyPagesHelper" />
+		<parameter id="display" value="true" />
+		<parameter id="import" value="true" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.ims" point-id="imsFileExporter" id="mypagesImsFileExporter">
+		<parameter id="id" value="mypagesImsFileExporter" />
+		<parameter id="class" value="bean:com.tle.mypages.ims.MyPagesIMSExporter" />
+	</extension>
+
+	<extension plugin-id="com.tle.ims" point-id="imsAttachmentExporter" id="mypagesImsAttachmentExporter">
+		<parameter id="id" value="mypagesImsAttachmentExporter" />
+		<parameter id="class" value="bean:com.tle.mypages.ims.MyPagesIMSExporter" />
+	</extension>
+
+	<extension plugin-id="com.tle.mets" point-id="exporterimporter" id="mypagesmetsexporter">
+		<parameter id="id" value="mypagesmetsexporter" />
+		<parameter id="bean" value="bean:com.tle.mypages.mets.MyPagesMetsAttachmentImporterExporter" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.api.item.equella.serializer" point-id="attachmentSerializer" id="htmlAttachmentSerializer">
+		<parameter id="type" value="html" />
+		<parameter id="bean" value="bean:com.tle.mypages.serializer.HtmlAttachmentSerializer" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.api.item.equella.serializer" point-id="attachmentEditor" id="htmlPageEditor">
+		<parameter id="class" value="com.tle.mypages.serializer.HtmlPageAttachmentEditor" />
+		<parameter id="bean" value="bean:com.tle.mypages.serializer.HtmlPageAttachmentEditorImpl" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="cloneFileProcessor" id="htmlCloneFileProcessor">
+		<parameter id="id" value="htmlCloneFileProcessor" />
+		<parameter id="bean" value="bean:com.tle.mypages.serializer.ChangedItemIdHtmlMunger" />
+	</extension>
+</plugin>

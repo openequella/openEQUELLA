@@ -1,0 +1,11 @@
+@import url("remotecaching.css");
+
+div.inexcludetables ul li input[type="checkbox"] {
+	margin-right: 0;
+	margin-left: 1em;
+}
+
+div.inexcludetables {
+	padding-left: 0;
+	padding-right: 1em;
+}

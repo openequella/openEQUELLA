@@ -1,0 +1,48 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.controls.universal" version="1">
+	<attributes>
+		<attribute id="type" value="admin-console" />
+	</attributes>
+
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.admin.controls" />
+		<import plugin-id="com.tle.admin.schema.common" />
+		<import plugin-id="com.tle.common.wizard.controls.universal" exported="true" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="editor">
+		<parameter-def id="nameKey" />
+		<parameter-def id="configPanel" multiplicity="none-or-one" />
+	</extension-point>
+
+	<extension-point id="universalvalidator">
+		<parameter-def id="id" multiplicity="one" />
+		<parameter-def id="class" multiplicity="one">
+			<doc>
+				<doc-text>Must extend UniversalPanelValidator</doc-text>
+			</doc>
+		</parameter-def>
+	</extension-point>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="admin-console" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.controls" point-id="control" id="universalControl">
+		<parameter id="id" value="universal" />
+		<parameter id="name" value="com.tle.admin.controls.universal.title" />
+		<parameter id="modelClass" value="com.tle.admin.controls.universal.UniversalControlModel" />
+		<parameter id="wrappedClass" value="com.tle.common.wizard.controls.universal.UniversalControl" />
+		<parameter id="editorClass" value="com.tle.admin.controls.universal.UniversalControlEditor" />
+		<parameter id="context" value="page" />
+	</extension>
+</plugin>

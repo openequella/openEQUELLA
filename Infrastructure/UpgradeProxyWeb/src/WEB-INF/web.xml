@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+  <servlet>
+    <description>This is the description of my J2EE component</description>
+    <display-name>This is the display name of my J2EE component</display-name>
+    <servlet-name>UpgradeProxy</servlet-name>
+    <servlet-class>com.dytech.edge.web.UpgradeProxy</servlet-class>
+    <init-param>
+      <param-name>proxy.path</param-name>
+      <param-value>127.0.0.1:5252</param-value>
+      <description>The path to the proxy</description>
+    </init-param>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>UpgradeProxy</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+</web-app>

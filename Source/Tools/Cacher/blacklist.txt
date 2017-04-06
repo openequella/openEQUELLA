@@ -1,0 +1,2 @@
+com.sun.xml.bind:jaxb-xjc
+com.sun.xml.bind:jaxb-impl

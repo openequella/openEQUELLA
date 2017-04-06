@@ -1,0 +1,506 @@
+/**************************************************
+* Front page for listing institutions to login to *
+**************************************************/
+.select_institution_list {
+	margin-top: 1em;
+}
+
+.select_institution_list li {
+	float: left;
+	width: 400px;
+	margin: 10px;
+	font-size: 12px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.institution-badge {
+	vertical-align: middle;
+	border: 0px;
+	height: 60px;
+	width: 90px;
+}
+
+.badge-row {
+	line-height: 80px;
+}
+
+.badge-shadow {
+	float: left;
+	background: url(../images/badge-shadow.png) no-repeat bottom right
+		!important;
+	margin: 10px 0px 0px 10px !important;
+}
+
+.badge-shadow img {
+	display: block;
+	position: relative;
+	background-color: #FFFFFF;
+	border: 1px solid #A9A9A9;
+	margin: -6px 6px 6px -6px;
+	padding: 4px;
+}
+
+.administerserver {
+	padding-top: 2em;
+	text-align: right;
+	font-size: 11px;
+}
+
+p.warning {
+	background-color: #FDD;
+	border: 1px solid red;
+	margin-bottom: 20px;
+	padding: 10px;
+	text-align: center
+}
+
+#content-body .area {
+	min-height: 133px;
+}
+
+/**************************************************
+* Licence                                		  *
+**************************************************/
+.infoField {
+	display: block;
+	font-weight: bold;
+}
+
+.licenseMessage {
+	font-size: 12px;
+	font-weight: bold;
+	padding-top: 5px;
+}
+
+.licenseMessage+p {
+	margin-top: 10px;
+}
+
+/**************************************************
+* Details                                		  *
+**************************************************/
+.settingField input.unlockable.field {
+	width: 285px;
+}
+
+div.usage {
+	font-weight: bold;
+}
+
+input.quota {
+	width: 55px;
+}
+
+/**************************************************
+* Progress                                		  *
+**************************************************/
+#progressMessages {
+	padding-top: 10px;
+	padding-left: 20px;
+	list-style: inside decimal;
+	-webkit-columns: 3; /* Chrome, Safari, Opera */
+    -moz-columns: 3; /* Firefox */
+    columns: 3;
+}
+
+#progressMessages li {
+	padding-bottom: 3px;
+}
+
+#error-list LI {
+	font-weight: bold;
+}
+
+#error-list LI PRE {
+	background-color: #FFFFFF;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #4b4842;
+	width: 850px;
+	height: 400px;
+	overflow: auto;
+	margin-top: 5px;
+	margin-bottom: 30px;
+	font-weight: normal;
+	padding-left: 4px;
+	padding-top: 2px;
+}
+
+/**************************************************
+* Legacy styles                                   *
+**************************************************/
+.mandatory {
+	color: red;
+}
+
+.institution-list li {
+	padding-bottom: 10px;
+}
+
+td.extraInfo {
+	padding-left: 20px;
+	padding-bottom: 1em;
+	font-style: italic;
+}
+
+span.menu {
+	border: 1px solid black;
+	padding: 3px 10px;
+	margin-right: 1em;
+	background-color: #EEF;
+	white-space: nowrap;
+	line-height: 2.5em;
+}
+
+span.selected {
+	background-color: #FFD;
+}
+
+.taskIncomplete {
+	color: gray;
+}
+
+.taskCurrent {
+	font-style: italic;
+	color: black;
+}
+
+.taskComplete {
+	font-weight: bold;
+	color: rgba(0,0,0,0.6);
+	text-shadow: 2px 8px 6px rgba(0,0,0,0.2),
+                 0px -5px 35px rgba(255,255,255,0.3);
+}
+
+/*Server message*/
+#server_message {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 10000;
+	background: #ffc;
+	padding: 5px;
+	border: 1px solid #CCCCCC;
+	text-align: center;
+	font-weight: bold;
+	width: 99%;
+}
+
+.integdownloads {
+	list-style-type: none;
+}
+
+.integdownloads LI {
+	margin: 0;
+	padding: 0;
+	padding-left: 75px;
+	background-position: 0 0;
+	background-repeat: no-repeat;
+	margin-bottom: 3em;
+}
+
+.integdownloads LI H3 {
+	padding-top: 5px;
+	margin-top: 0px;
+	font-size: 1.5em;
+}
+
+dl.integdownload dt {
+	font-size: 1.2em;
+	font-weight: bolder;
+	padding-top: 0.5em;
+}
+
+dl.integdownload dd {
+	padding-top: 0.2em;
+}
+
+dl.integdownload dd a {
+	color: blue;
+}
+
+.detail {
+	width: 300px;
+}
+
+.chooseExports {
+	margin-top: 1em;
+	margin-bottom: 2em;
+}
+
+.nameEllipsis {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.databaseeditdialog .modal-content {
+	height: 500px;
+}
+
+.databaseselectdialog .modal-content {
+	max-height: 384px;
+}
+
+.databaseselectdialog .checklist li {
+	margin: 0 0 10px 0;
+	padding: 10px;
+	background: #F0F0F0;
+}
+
+.databaseselectdialog .checklist li label {
+	vertical-align: middle;
+	display: inline-block;
+	padding-left: 10px;
+}
+
+.databaseselectdialog .checklist li input {
+	vertical-align: middle;
+}
+
+/*****************************/
+/* Migration progress dialog */
+/*****************************/
+.databaseprogressdialog .progress-warnings,.databaseprogressdialog .warnings-link-wrapper
+	{
+	display: none;
+}
+
+.databaseprogressdialog .textpane {
+	border: solid 1px #98927C;
+	overflow-y: scroll;
+	height: 250px;
+}
+
+.databaseprogressdialog .progress-links {
+	border: solid 1px #98927C;
+	border-bottom: none;
+	background-color: #D3CFBC;
+	padding: 5px;
+}
+
+.databaseprogressdialog .progress-links a.selected {
+	font-weight: bold;
+	color: #4B4842;
+}
+
+/*********************************/
+/* Database statuses and actions */
+/*********************************/
+table.databases td.actions {
+	text-align: right;
+	white-space: nowrap;
+	width: 20%;
+}
+
+.otheractionscontainer {
+	position: relative;
+}
+
+.otheractions li {
+	margin-bottom: 5px;
+}
+
+.otheractions {
+	display: none;
+	position: absolute;
+	z-index: 100;
+	padding: 10px;
+	left: -5px;
+	top: 5px;
+	background-color: white;
+	border: solid 1px gray;
+	box-shadow: 3px 3px 5px #888;
+	-moz-box-shadow: 3px 3px 5px #888;
+	-webkit-box-shadow: 3px 3px 5px #888;
+	text-align: left;
+}
+
+table.databases td.actions .otheractionsarrow {
+	display: inline-block;
+	vertical-align: middle;
+	width: 14px;
+	height: 14px;
+	text-indent: -9999px;
+	overflow: hidden;
+	background: transparent url("../images/databases-otheractions.gif")
+		no-repeat;
+}
+
+table.databases td.status {
+	width: 40%;
+}
+
+table.zebra.databases tr td {
+	vertical-align: middle;
+}
+
+table.databases tr.odd.online td.statuscol {
+	background-color: #DFD !important;
+}
+
+table.databases tr.even.online td.statuscol {
+	background-color: #CFC !important;
+}
+
+table.databases tr.offline td.statuscol {
+	color: #AAA;
+}
+
+table.databases tr.odd.needsattention td.statuscol {
+	background-color: #FDD !important;
+}
+
+table.databases tr.even.needsattention td.statuscol {
+	background-color: #FCC !important;
+}
+
+table.databases tr.odd.beingprocessed td.statuscol {
+	background-color: #FFB !important;
+}
+
+table.databases tr.even.beingprocessed td.statuscol {
+	background-color: #FFB !important;
+}
+
+table.databases td.status .errorlink,table.databases td.status .progress
+	{
+	padding-top: 5px;
+}
+
+.migratecontainer {
+	float: right;
+}
+
+table.databases td.actions input[type=checkbox] {
+	vertical-align: middle;
+	float: left;
+}
+
+table.databases th.actionsheader {
+	text-align: right;
+}
+
+/*****************************/
+/* Health Page 				 */
+/*****************************/
+#isclusternodes_n tbody tr td i {
+	margin-top: -2px;
+	margin-left: 5px;
+}
+
+/* chrome fix (EQ-1183) */
+#isclusternodes_n thead tr th:last-child, #isclusternodes_n tbody tr td:last-child {
+	border-right: 1px solid #8f8b7f;
+}
+
+#isclusternodes_n tbody tr td.good {
+	background-image: url("../images/ok.png");
+	background-repeat: no-repeat;
+	background-position: 20px;
+}
+
+#isclusternodes_n tbody tr td.bad {
+	background-image: url("../images/error.png");
+	background-repeat: no-repeat;
+	background-position: 20px;
+}
+
+#isclusternodes_n tbody tr td a.droparrow {
+	height: 14px;
+	width: 14px;
+	background-image: url("../images/droparrow.gif");
+	background-repeat: no-repeat;
+	position: absolute;
+	margin-left: 30px;
+	background-position: 0 -15px;
+}
+
+#isclusternodes_n tbody tr td.waiting
+{
+	width: 100px;
+}
+
+*.wait-hide {
+	display: none;
+}
+
+#isclusternodes_n tbody tr td a.droparrow.down {
+	background-position: 0 -1px;
+}
+
+#isclusternodes_n tbody tr {
+	border: 1px solid #8f8b7f;
+}
+
+#isclusternodes_n tbody tr td {
+	background-color: #fefefe;
+}
+
+table.services-table {
+	margin: 0 !important;
+}
+
+table.services-table tbody tr td.pre {
+	white-space: pre-wrap;
+	width: 75%;
+}
+
+table.services-table tbody tr td:first-child {
+	vertical-align: middle;
+}
+
+#isclusternodes_n tbody tr td table.services-table tbody tr.odd td {
+	background-color: #f3f1eb;
+}
+
+#isclusternodes_n tbody tr td table.services-table tbody tr.even td {
+	background-color: #fefefe;
+}
+
+#isclusternodes_n tbody tr td table.services-table tbody tr {
+	border: none;
+}
+
+#isclusternodes_n td.table-cell {
+	background-color: #ffc;
+}
+
+#isclusternodes_n tr:hover>td {
+	background-color: #ffc;
+}
+
+#isclusternodes_n tbody tr td table.services-table tbody tr:hover>td {
+	background-color: #ffc;
+}
+
+DIV.currentconsumption
+{
+	margin-top: 2em;
+	margin-bottom: 2em;
+}
+
+#usagetable td, #usagetable th {
+	text-align: right;
+}
+
+#usagetable td:first-child,#usagetable th:first-child
+{
+	text-align: left;
+}
+
+#usagetable td.usagewaiting  
+{
+	background-image: url("../images/ajax-loader.gif");
+	background-repeat: no-repeat;
+	background-position: 20px;
+}
+
+#isclusternodes_institutionUsageTable tbody tr td.overLimit {
+  	color: red;
+}
+
+
+

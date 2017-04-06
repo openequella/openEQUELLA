@@ -1,0 +1,14 @@
+<export>
+	<mappings>
+		<map class="com.tle.conversion.exporters.DHFExport"/>
+		<map class="com.tle.conversion.exporters.ImageExport"/>
+		<map class="com.tle.conversion.exporters.JAIImageExport"/>
+		<map class="com.tle.conversion.exporters.EMFExport"/>
+		<map class="com.tle.conversion.exporters.WMFExport"/>
+	</mappings>
+	<synonyms>
+		<synonym for="html" is="htm"/>
+		<synonym for="jpeg" is="jpg,jpe"/>
+		<synonym for="tiff" is="tif"/>
+	</synonyms>
+</export>

@@ -1,0 +1,324 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.sections.equella" version="1" class="com.tle.web.sections.equella.Initialise">
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.licences" />
+		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="com.tle.core.accessibility" />
+		<import plugin-id="com.tle.core.activation" />
+		<import plugin-id="com.tle.core.entity.services" exported="true" />
+		<import plugin-id="com.tle.core.freetext" exported="true" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.javascript" />
+		<import plugin-id="com.tle.core.mimetypes" exported="true" />
+		<import plugin-id="com.tle.core.system" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.web.core" />
+		<import plugin-id="com.tle.web.freemarker" exported="true" />
+		<import plugin-id="com.tle.web.resources" exported="true" />
+		<import plugin-id="com.tle.web.sections" exported="true" />
+		<import plugin-id="com.tle.web.sections.standard" exported="true" />
+		<import plugin-id="com.tle.web.viewurl" />
+		<import plugin-id="org.hurl:hurl" />
+		<import plugin-id="com.tle.platform.common" exported="true" />
+		<import plugin-id="commons-lang:commons-lang" />
+		<import plugin-id="commons-fileupload:commons-fileupload" />
+		<import plugin-id="net.sf.json-lib:json-lib" />
+		<import plugin-id="com.tle.core.zookeeper" />
+		<import plugin-id="com.tle.core.hibernate" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="breadcrumb">
+		<parameter-def id="type" multiplicity="one" type="string" />
+		<parameter-def id="class" multiplicity="one" type="string">
+			<doc>
+				<doc-text>Must implement BreadcrumbProvider</doc-text>
+			</doc>
+		</parameter-def>
+	</extension-point>
+
+	<extension-point id="loginLink">
+		<parameter-def id="id" multiplicity="one" type="string" />
+		<parameter-def id="bean" multiplicity="one" type="string">
+			<doc>
+				<doc-text>Must implement LoginLink</doc-text>
+			</doc>
+		</parameter-def>
+		<parameter-def id="order" multiplicity="one" type="number" />
+	</extension-point>
+
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.web.sections.equella.guice.SectionsEquellaModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.equella" point-id="breadcrumb" id="viewItem">
+		<parameter id="type" value="viewItem" />
+		<parameter id="class" value="bean:com.tle.web.navigation.ViewItemBreadcrumbProvider" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionFilter" id="templateFilter">
+		<parameter id="id" value="template" />
+		<parameter id="class" value="bean:com.tle.web.template.TemplateFilter" />
+		<parameter id="order" value="1000" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionFilter" id="accessFilter">
+		<parameter id="id" value="accessFilter" />
+		<parameter id="class" value="bean:com.tle.web.login.AccessFilter" />
+		<parameter id="order" value="2000" />
+	</extension>
+
+	<!-- After the other various web filters -->
+	<extension plugin-id="com.tle.web.core" point-id="webFilter" id="redirectedAccessFilter">
+		<parameter id="bean" value="bean:com.tle.web.navigation.RedirectedAccessFilter" />
+		<parameter id="url-pattern" value="/access/home.do" />
+		<parameter id="url-pattern" value="/access/hierarchy.do" />
+		<parameter id="url-pattern" value="/access/searching.do" />
+		<parameter id="url-pattern" value="/access/cloudsearch.do" />
+		<parameter id="url-pattern" value="/access/logonnotice.do" />
+		<!-- also assuming legacy search is included -->
+		<parameter id="url-pattern" value="/access/search.do" />
+		<parameter id="order" value="1000" />
+	</extension>
+
+	<!-- Default Error Handling -->
+
+	<extension plugin-id="com.tle.web.sections" point-id="exceptionHandler" id="defaultEquellaErrorHandler">
+		<parameter id="class" value="bean:com.tle.web.errors.DefaultExceptionHandler" />
+		<parameter id="order" value="2000" />
+	</extension>
+
+
+	<!-- Template Tree -->
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="templateTree">
+		<parameter id="path" value="$TEMPLATE$" />
+		<parameter id="root" value="bean:$TEMPLATE$" />
+		<parameter id="url" value="false" />
+	</extension>
+
+	<!-- Error Tree -->
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="errorTree">
+		<parameter id="path" value="/error.do" />
+		<parameter id="root" value="bean:com.tle.web.errors.ExternalErrorSection" />
+		<parameter id="url" value="true" />
+	</extension>
+
+	<!-- Logon Notice -->
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="logonNoticeSection">
+		<parameter id="path" value="/logonnotice.do" />
+		<parameter id="root" value="bean:com.tle.web.login.LogonNoticeSection" />
+	</extension>
+
+	<!-- Logon Page -->
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="logonPageSection">
+		<parameter id="path" value="/logon.do" />
+		<parameter id="root" value="bean:com.tle.web.login.LogonSection" />
+	</extension>
+
+	<!-- Logon Page -->
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="pluginReportPage">
+		<parameter id="path" value="/plugins.do" />
+		<parameter id="root" value="bean:com.tle.web.sections.equella.debug.PluginReport" />
+	</extension>
+
+	<!-- User status Page -->
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="statusPageSection">
+		<parameter id="path" value="/status.do" />
+		<parameter id="root" value="bean:com.tle.web.userstatus.StatusPage" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.standard" point-id="rendererFactory" id="formRenderer">
+		<parameter id="rendererId" value="controls" />
+		<parameter id="stateClassName" value="com.tle.web.sections.standard.dialog.model.ControlsState" />
+		<parameter id="class" value="bean:com.tle.web.sections.equella.FormRenderer" />
+	</extension>
+
+
+	<!-- Modal sessions -->
+	<extension plugin-id="com.tle.web.sections" point-id="sectionFilter" id="modalFilter">
+		<parameter id="id" value="modal" />
+		<parameter id="class" value="bean:com.tle.web.sections.equella.ModalSessionService" />
+		<parameter id="order" value="50" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.standard" point-id="rendererFactory" id="standardSelectedStuffRenderer">
+		<parameter id="rendererId" value="selectedstuff" />
+		<parameter id="stateClassName" value="com.tle.web.sections.equella.component.model.SelectionsTableState" />
+		<parameter id="class" value="bean:com.tle.web.sections.equella.render.EquellaSelectionsTableExtension" />
+	</extension>
+
+	<!-- Menu -->
+	<extension-point id="menuContributor">
+		<parameter-def id="menuContributorClass" />
+		<parameter-def id="enabledFor" type="fixed" custom-data="loggedIn|guest|serverAdmin" multiplicity="one-or-more" />
+	</extension-point>
+
+	<!-- Topbar links -->
+	<extension-point id="topbarLink">
+		<parameter-def id="class" />
+		<parameter-def id="order" type="number" />
+	</extension-point>
+
+	<!-- <html> classes -->
+	<extension-point id="htmlStyleClass">
+		<parameter-def id="class" type="string">
+			<doc>
+				<doc-text>Must implement HtmlStyleClass</doc-text>
+			</doc>
+		</parameter-def>
+	</extension-point>
+
+	<extension plugin-id="com.tle.web.sections.standard" point-id="rendererFactory" id="customButtons">
+		<parameter id="rendererId" value="button" />
+		<parameter id="rendererId" value="bootstrap-button" />
+		<parameter id="rendererId" value="action-button" />
+		<parameter id="rendererId" value="thickbox_button" />
+		<parameter id="stateClassName" value="com.tle.web.sections.standard.model.HtmlComponentState" />
+		<parameter id="stateClassName" value="com.tle.web.sections.standard.model.HtmlLinkState" />
+		<parameter id="class" value="bean:com.tle.web.sections.equella.render.EquellaButtonExtension" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.standard" point-id="rendererFactory" id="customDropdowns">
+		<parameter id="rendererId" value="bootstrapdropdown" />
+		<parameter id="rendererId" value="bootstrapactivedropdown" />
+		<parameter id="rendererId" value="bootstrapsplitdropdown" />
+		<parameter id="rendererId" value="bootstrapsplitnavbardropdown" />
+		<parameter id="rendererId" value="dropdown" />
+		<parameter id="rendererId" value="stylish" />
+		<parameter id="stateClassName" value="com.tle.web.sections.standard.model.HtmlListState" />
+		<parameter id="class" value="bean:com.tle.web.sections.equella.render.EquellaDropdownExtension" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.standard" point-id="rendererFactory" id="buttonGroup">
+		<parameter id="rendererId" value="buttongroup" />
+		<parameter id="stateClassName" value="com.tle.web.sections.standard.model.HtmlListState" />
+		<parameter id="class" value="bean:com.tle.web.sections.equella.render.ButtonGroupRendererFactory" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.standard" point-id="rendererFactory" id="multiEditBoxRenderer">
+		<parameter id="rendererId" value="multieditbox" />
+		<parameter id="stateClassName" value="com.tle.web.sections.equella.component.model.MultiEditBoxState" />
+		<parameter id="class" value="bean:com.tle.web.sections.equella.render.MultiEditBoxRendererFactory" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.standard" point-id="rendererFactory" id="autoCompleteTextFieldRenderer">
+		<parameter id="rendererId" value="autocompletetextfield" />
+		<parameter id="stateClassName" value="com.tle.web.sections.standard.model.HtmlTextFieldState" />
+		<parameter id="class" value="bean:com.tle.web.sections.equella.render.AutoCompleteTextFieldRendererFactory" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.standard" point-id="rendererFactory" id="richDropDownRenderer">
+		<parameter id="rendererId" value="richdropdown" />
+		<parameter id="stateClassName" value="com.tle.web.sections.standard.model.HtmlListState" />
+		<parameter id="class" value="bean:com.tle.web.sections.equella.render.RichDropDownRendererFactory" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.standard" point-id="rendererFactory" id="boxRenderer">
+		<parameter id="rendererId" value="box" />
+		<parameter id="stateClassName" value="com.tle.web.sections.equella.component.model.BoxState" />
+		<parameter id="class" value="bean:com.tle.web.sections.equella.render.BoxRendererFactory" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.standard" point-id="rendererFactory" id="navBarRenderer">
+		<parameter id="rendererId" value="navbar" />
+		<parameter id="stateClassName" value="com.tle.web.sections.equella.component.model.NavBarState" />
+		<parameter id="class" value="bean:com.tle.web.sections.equella.render.NavBarRendererFactory" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.standard" point-id="rendererFactory" id="equellaFileRenderer">
+		<parameter id="rendererId" value="file" />
+		<parameter id="stateClassName" value="com.tle.web.sections.standard.model.HtmlFileUploadState" />
+		<parameter id="class" value="bean:com.tle.web.sections.equella.render.EquellaFileUploadExtension" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.standard" point-id="rendererFactory" id="equellaTableRenderer">
+		<parameter id="rendererId" value="table" />
+		<parameter id="rendererId" value="zebra" />
+		<parameter id="stateClassName" value="com.tle.web.sections.standard.model.TableState" />
+		<parameter id="class" value="bean:com.tle.web.sections.equella.render.EquellaTableExtension" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.standard" point-id="rendererFactory" id="equellaFileDropRenderer">
+		<parameter id="rendererId" value="filedrop" />
+		<parameter id="stateClassName" value="com.tle.web.sections.standard.model.HtmlFileDropState" />
+		<parameter id="class" value="bean:com.tle.web.sections.equella.render.EquellaFileDropExtension" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.standard" point-id="rendererFactory" id="pagerRenderer">
+		<parameter id="rendererId" value="pager" />
+		<parameter id="stateClassName" value="com.tle.web.sections.standard.model.HtmlPagerState" />
+		<parameter id="renderer" value="com.tle.web.sections.equella.render.ListPagerRenderer" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="registrationHandler" id="plugResourcesHandler">
+		<parameter id="class" value="bean:com.tle.web.sections.equella.annotation.PluginResourceHandler" />
+		<parameter id="order" value="1000" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="converter" id="sessionConverter">
+		<parameter id="converter" value="bean:com.tle.web.sections.equella.converter.FromSessionIdConverter" />
+		<parameter id="converter" value="bean:com.tle.web.sections.equella.converter.ToSessionIdConverter" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.equella" point-id="menuContributor" id="loginMenuContributor">
+		<parameter id="menuContributorClass" value="bean:com.tle.web.login.LoginMenuContributor" />
+		<parameter id="enabledFor" value="guest" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.freemarker" point-id="templateModelProvider" id="dateTemplateModelProvider">
+		<parameter id="modelClass" value="java.util.Date" />
+		<parameter id="modelClass" value="java.sql.Timestamp" />
+		<parameter id="class" value="bean:com.tle.web.sections.equella.freemarker.DateTemplateModelProvider" />
+	</extension>
+
+	<!-- The filter icon on the zebra table filter box -->
+	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="filterIcon">
+		<parameter id="thirdPartyName" value="Android Icons" />
+		<parameter id="thirdPartyHome" value="http://www.androidicons.com" />
+		<parameter id="licenceName" value="Creative Commons Attribution 3.0 Unported" />
+		<parameter id="licenceURLInternal" value="cc-by-3.0.txt" />
+		<parameter id="licenceURLExternal" value="http://creativecommons.org/licenses/by/3.0/legalcode" />
+	</extension>
+
+	<!-- icon for the change password button -->
+	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="changePasswordIcon">
+		<parameter id="thirdPartyName" value="Farm-fresh Web Icons" />
+		<parameter id="thirdPartyHome" value="http://www.fatcow.com/free-icons" />
+		<parameter id="licenceName" value="Creative Commons (Attribution 3.0 United States)" />
+		<parameter id="licenceURLInternal" value="cc-by-3.0.txt" />
+		<parameter id="licenceURLExternal" value="http://creativecommons.org/licenses/by/3.0/us/" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="bootstrapLicence">
+		<parameter id="thirdPartyName" value="Bootstrap" />
+		<parameter id="thirdPartyHome" value="http://twitter.github.com/bootstrap/" />
+		<parameter id="licenceName" value="Apache 2.0" />
+		<parameter id="licenceURLInternal" value="apache-2.0.txt" />
+		<parameter id="licenceURLExternal" value="http://www.apache.org/licenses/LICENSE-2.0.html" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="sectionsServlet">
+		<parameter id="bean" value="bean:com.tle.web.sections.equella.MultipartSectionsServlet" />
+		<parameter id="url-pattern" value="*.do" />
+	</extension>
+
+</plugin>

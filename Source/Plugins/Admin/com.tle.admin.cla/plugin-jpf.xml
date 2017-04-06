@@ -1,0 +1,38 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.cla" version="1">
+	<attributes>
+		<attribute id="type" value="admin-console" />
+	</attributes>
+
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.wizard.controls.resource" />
+		<import plugin-id="com.tle.admin.collection.tool" />
+		<import plugin-id="com.tle.admin.common" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="admin-console" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.wizard.controls.resource" point-id="relationTypes" id="claRelationTypes">
+		<parameter id="nameKey" value="com.tle.admin.cla.resourceType" />
+		<parameter id="value" value="CLA_HOLDING" />
+		<parameter id="lockMultiSelectToValue" value="false" />
+		<parameter id="lockSelectTypeToValue" value="ITEMS" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.collection.tool" point-id="extra" id="extra-cla">
+		<parameter id="name" value="com.tle.admin.cla.extensionname" />
+		<parameter id="enabledAttribute" value="com.tle.cla-Enabled" />
+		<parameter id="configPanel" value="com.tle.admin.cla.CLAConfigPanel" />
+	</extension>
+</plugin>

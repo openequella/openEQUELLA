@@ -1,0 +1,64 @@
+<?xml version="1.0" ?>
+<!--
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//          Copyright 2000, Microsoft Corp.  All rights reserved.
+//
+//  @module LMSDataModel.xml |
+//                      This module contains information about the part of the datamodel that this viewer supports
+//          
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<ROOT>
+            <Mode>closed</Mode>
+			<LMSDataModel Property="cmi.core._children" Implemented="true" IsControlledVocabulary="false" IsKeyword="true" DefaultValue="student_id, student_name,lesson_location,credit,lesson_status,entry,score,total_time,exit,session_time" Read="true" Write="false" Scope="global"></LMSDataModel>
+            <LMSDataModel Property="cmi.core.student_id" Implemented="true" IsControlledVocabulary="false" DefaultValue="JoeStudent" Read="true" Write="false" Scope="global"></LMSDataModel>
+            <LMSDataModel Property="cmi.core.student_name" Implemented="true" IsControlledVocabulary="false" DefaultValue="Student, Joe" Read="true" Write="false" Scope="global"></LMSDataModel>
+            <LMSDataModel Property="cmi.core.lesson_location" Implemented="true" IsControlledVocabulary="false" DefaultValue="" Read="true" Write="true" Scope="item"></LMSDataModel>
+            <LMSDataModel Property="cmi.core.credit" Implemented="true" IsControlledVocabulary="true" DefaultValue="no-credit" Read="true" Write="false" Scope="course">
+				<LMSVocabulary>credit</LMSVocabulary>
+				<LMSVocabulary>no-credit</LMSVocabulary>
+			</LMSDataModel>
+            <LMSDataModel Property="cmi.core.lesson_status" Implemented="true" IsControlledVocabulary="true" DefaultValue="not attempted" Read="true" Write="true" Scope="item">
+				<LMSVocabulary>passed</LMSVocabulary>
+				<LMSVocabulary>completed</LMSVocabulary>
+				<LMSVocabulary>failed</LMSVocabulary>
+				<LMSVocabulary>incomplete</LMSVocabulary>
+				<LMSVocabulary>browsed</LMSVocabulary>
+				<LMSVocabulary>not attempted</LMSVocabulary>
+			</LMSDataModel>
+            <LMSDataModel Property="cmi.core.entry" Implemented="true" IsControlledVocabulary="true" DefaultValue="ab-initio" Read="true" Write="true" Scope="global">
+				<LMSVocabulary>ab-initio</LMSVocabulary>
+				<LMSVocabulary>resume</LMSVocabulary>
+				<LMSVocabulary></LMSVocabulary>
+			</LMSDataModel>
+            <LMSDataModel Property="cmi.core.score._children" Implemented="true" IsControlledVocabulary="false" DefaultValue="raw" Read="true" Write="false" Scope="item"></LMSDataModel>
+            <LMSDataModel Property="cmi.core.score.raw" Implemented="true" IsControlledVocabulary="false" DefaultValue="" Read="true" Write="true" Scope="item"></LMSDataModel>
+			<LMSDataModel Property="cmi.core.score.max" Implemented="true" IsControlledVocabulary="false" DefaultValue="" Read="true" Write="true" Scope="item"></LMSDataModel>
+			<LMSDataModel Property="cmi.core.score.min" Implemented="true" IsControlledVocabulary="false" DefaultValue="" Read="true" Write="true" Scope="item"></LMSDataModel>
+            <LMSDataModel Property="cmi.core.total_time" Implemented="true" IsControlledVocabulary="false" DefaultValue="00:00:00" Read="true" Write="false" Scope="item"></LMSDataModel>
+			<LMSDataModel Property="cmi.core.lesson_mode" Implemented="true" IsControlledVocabulary="true" DefaultValue="normal" Read="true" Write="false" Scope="item">
+				<LMSVocabulary>browse</LMSVocabulary>
+				<LMSVocabulary>normal</LMSVocabulary>
+				<LMSVocabulary>review</LMSVocabulary>
+			</LMSDataModel>			
+			
+            <LMSDataModel Property="cmi.core.exit" Implemented="true" IsControlledVocabulary="true" DefaultValue="" Read="false" Write="true" Scope="item">
+				<LMSVocabulary>time-out</LMSVocabulary>
+				<LMSVocabulary>suspend</LMSVocabulary>
+				<LMSVocabulary>logout</LMSVocabulary>
+				<LMSVocabulary></LMSVocabulary>
+			</LMSDataModel>
+            <LMSDataModel Property="cmi.core.session_time" Implemented="true" IsControlledVocabulary="false" DefaultValue="" Read="false" Write="true" Scope="item"></LMSDataModel>
+            <LMSDataModel Property="cmi.suspend_data" Implemented="true" IsControlledVocabulary="false" DefaultValue="" Read="true" Write="true" Scope="item"></LMSDataModel>
+            <LMSDataModel Property="cmi.launch_data" Implemented="true" IsControlledVocabulary="false" DefaultValue="" Read="true" Write="false" Scope="item"></LMSDataModel>
+			<LMSDataModel Property="cmi.launch_data._children" Implemented="false"></LMSDataModel>
+			<LMSDataModel Property="cmi.comments" Implemented="true" IsControlledVocabulary="false" DefaultValue="" Read="true" Write="true" Scope="item"></LMSDataModel>
+			<LMSDataModel Property="cmi.comments_from_lms" Implemented="true" IsControlledVocabulary="false" DefaultValue="" Read="true" Write="false" Scope="item"></LMSDataModel>
+
+			<LMSDataModel Property="cmi._version" Implemented="true" DefaultValue="1.2" Read="true" Write="false" Scope="item"></LMSDataModel>
+
+			<LMSDataModel Property="lrn.item.title" Implemented="true" DefaultValue="" Read="true" Write="true" Scope="item"></LMSDataModel>
+			<LMSDataModel Property="lrn.startlocation" Implemented="true" DefaultValue="" Read="true" Write="true" Scope="item"></LMSDataModel>
+</ROOT>

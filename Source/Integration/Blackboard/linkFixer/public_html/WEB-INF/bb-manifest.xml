@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+	<plugin>
+		<name value="EQUELLA Link Fixer Plugin"/>
+		<handle value="tleLinkFix"/>
+		<description value="Fixes hard coded course IDs and content IDs for content added with an old version of the EQUELLA Plugin"/>
+		<version value="@VERSION@"/>
+
+		<vendor>
+			<id value="tle"/>
+			<name value="The Learning Edge International"/>
+			<url value="http://www.thelearningedge.com.au/"/>
+			<description value=""/>
+		</vendor>
+			
+		<http-actions>
+			<config value="admin/config.jsp"/>
+		</http-actions>
+			
+		<requires>
+			<bbversion value="6.0.0"/>
+		</requires>
+			
+		<permissions>
+			<permission type="persist" name="Content" actions="create,modify,delete"/>
+			<permission type="attribute" name="user.authinfo" actions="get"/>
+			<permission type="attribute" name="user.personalinfo" actions="get"/>
+			<permission type="socket" name="*" actions="connect"/>
+			<permission type="runtime" name="setFactory" actions="setFactory"/>
+			<permission type="runtime" name="createClassLoader" actions="createClassLoader"/>
+			<permission type="runtime" name="getClassLoader" actions="getClassLoader"/>
+			<permission type="runtime" name="accessDeclaredMembers" actions="accessDeclaredMembers"/>
+			<permission type="runtime" name="accessClassInPackage.sun.misc" actions="accessClassInPackage.sun.misc"/>
+			<permission type="runtime" name="accessClassInPackage.sun.reflect" actions="accessClassInPackage.sun.reflect"/>
+			<permission type="runtime" name="reflectionFactoryAccess" actions="reflectionFactoryAccess"/>
+			<permission type="java.lang.reflect.ReflectPermission" name="suppressAccessChecks" actions="suppressAccessChecks"/>
+			<permission type="javax.net.ssl.SSLPermission" name="setHostnameVerifier" actions="setHostnameVerifier"/>
+			<permission type="runtime" name="db.connection.bb_bb60" actions=""/>
+			<permission type="java.io.FilePermission" name="&amp;lt;&amp;lt;ALL FILES&amp;gt;&amp;gt;" actions="read, write"/>
+			<permission type="javax.net.ssl.SSLPermission" name="setHostnameVerifier" actions="setHostnameVerifier"/>
+			<permission type="runtime" name="getProtectionDomain" actions="getProtectionDomain"/>
+		</permissions>
+	</plugin>
+</manifest>

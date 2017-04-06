@@ -1,0 +1,32 @@
+.infobox {
+	background-color: #FFFFD0;
+	border-color: #FFFF00;
+	border-width: 1px;
+	border-style: solid;
+	margin-left: 5px;
+	margin-right: 5px;
+	padding-left: 2px;
+}
+
+div.formsection {
+	margin-bottom: 15px;
+}
+
+div.formsection h3 {
+	color: #f38c00;
+	font-size: 14px;
+	margin: 0 0 7px 0;
+}
+
+div.formsection SELECT {
+	width: 510px;
+}
+
+div.cloneopts.input.checkbox input , div.input.radio input {
+	float: none;
+}
+
+div.cloneopts.input.checkbox label , div.input.radio label {
+	display: inline;
+	margin: 0 20px 0 6px;
+}

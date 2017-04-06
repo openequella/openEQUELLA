@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="com.tle.web.mycontent.files" basedir="." default="compile">
+	<property name="compile.for.server" value="true" />
+	<import file="../../build/plugins-common-build.xml" />
+	
+	<property name="downloads.dir" location="resources/web/downloads" />
+	<property name="installer.name.final" value="EquellaOfficeIntegrationInstaller.msi" />
+	<property name="installer.name.artifactory" value="OfficeIntegrationInstaller-6.2.msi" />
+	
+	<target name="clean" depends="common.clean">
+		<delete dir="${downloads.dir}" />
+	</target>
+	
+	<target name="init" depends="common.init">
+		<mkdir dir="${downloads.dir}" />
+	</target>
+	
+	<target name="make" depends="common.make">
+		<taskdef classname="com.tle.ant.dependencies.DownloadJars" name="downloadJars" classpathref="customtasks.classpath" />
+		<downloadJars destDir="${staging}" dependencies="deps-mycontentfiles.txt">
+			<!-- FIXME needs repos -->
+		</downloadJars>
+
+		<copy file="${staging}/${installer.name.artifactory}" tofile="${downloads.dir}/${installer.name.final}" />
+	</target>
+</project>

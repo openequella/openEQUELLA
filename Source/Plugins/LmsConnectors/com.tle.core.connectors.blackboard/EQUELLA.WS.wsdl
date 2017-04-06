@@ -1,0 +1,820 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://webservice.blackboard.tle.com" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ns0="http://webservice.blackboard.tle.com/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://webservice.blackboard.tle.com">
+    <wsdl:types>
+        <xs:schema xmlns:ax222="http://webservice.blackboard.tle.com/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://webservice.blackboard.tle.com/xsd">
+            <xs:complexType name="AddItemResult">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="course" nillable="true" type="ns0:Course"/>
+                    <xs:element minOccurs="0" name="folder" nillable="true" type="ns0:Folder"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Base">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="createdDate" type="xs:long"/>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="modifiedDate" type="xs:long"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Course">
+                <xs:complexContent>
+                    <xs:extension base="ns0:Base">
+                        <xs:sequence>
+                            <xs:element minOccurs="0" name="available" type="xs:boolean"/>
+                            <xs:element minOccurs="0" name="code" nillable="true" type="xs:string"/>
+                            <xs:element minOccurs="0" name="enrollments" type="xs:int"/>
+                            <xs:element maxOccurs="unbounded" minOccurs="0" name="instructors" nillable="true" type="xs:string"/>
+                            <xs:element minOccurs="0" name="url" nillable="true" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="Folder">
+                <xs:complexContent>
+                    <xs:extension base="ns0:Base">
+                        <xs:sequence>
+                            <xs:element minOccurs="0" name="courseId" nillable="true" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="SearchResult">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="available" type="xs:int"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="courses" nillable="true" type="ns0:Course"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="folders" nillable="true" type="ns0:Folder"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="results" nillable="true" type="ns0:Content"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Content">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="available" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="courseId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="createdDate" type="xs:long"/>
+                    <xs:element minOccurs="0" name="dateAccessed" type="xs:long"/>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="folderId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="folderUrl" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="modifiedDate" type="xs:long"/>
+                    <xs:element minOccurs="0" name="page" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="title" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="usageId" type="xs:int"/>
+                    <xs:element minOccurs="0" name="uuid" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="version" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ns="http://webservice.blackboard.tle.com" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://webservice.blackboard.tle.com">
+            <xs:element name="deleteContent">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="contentId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="deleteContentResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="editContent">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="contentId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="title" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="institutionUrl" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="editContentResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="moveContent">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="contentId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="courseId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="folderId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="moveContentResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="synchroniseEquellaContentTables">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="institutionUrl" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="available" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="synchroniseEquellaContentTablesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addItemToCourse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="username" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="courseId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="folderId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="itemUuid" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="itemVersion" type="xs:int"/>
+                        <xs:element minOccurs="0" name="url" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="title" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="xml" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="serverUrl" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="attachment" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addItemToCourseResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ns0:AddItemResult"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="aBaseReturningMethodResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ns0:Base"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listCoursesForUser">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="username" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="archived" type="xs:boolean"/>
+                        <xs:element minOccurs="0" name="modifiableOnly" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listCoursesForUserResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ns0:Course"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listFoldersForCourse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="courseId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listFoldersForCourseResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ns0:Folder"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listFoldersForFolder">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="folderId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listFoldersForFolderResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ns0:Folder"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="findAllUsages">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serverUrl" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="query" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="courseId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="folderId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="available" type="xs:boolean"/>
+                        <xs:element minOccurs="0" name="offset" type="xs:int"/>
+                        <xs:element minOccurs="0" name="count" type="xs:int"/>
+                        <xs:element minOccurs="0" name="sortColumn" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="sortReverse" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="findAllUsagesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ns0:SearchResult"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="findUsages">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serverUrl" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="itemUuid" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="itemVersion" type="xs:int"/>
+                        <xs:element minOccurs="0" name="versionIsLatest" type="xs:boolean"/>
+                        <xs:element minOccurs="0" name="available" type="xs:boolean"/>
+                        <xs:element minOccurs="0" name="allVersions" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="findUsagesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ns0:SearchResult"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServerVersionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCourseCode">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="courseId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCourseCodeResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="testConnection">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="param" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="testConnectionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="getCourseCodeRequest">
+        <wsdl:part name="parameters" element="ns1:getCourseCode"/>
+    </wsdl:message>
+    <wsdl:message name="getCourseCodeResponse">
+        <wsdl:part name="parameters" element="ns1:getCourseCodeResponse"/>
+    </wsdl:message>
+    <wsdl:message name="testConnectionRequest">
+        <wsdl:part name="parameters" element="ns1:testConnection"/>
+    </wsdl:message>
+    <wsdl:message name="testConnectionResponse">
+        <wsdl:part name="parameters" element="ns1:testConnectionResponse"/>
+    </wsdl:message>
+    <wsdl:message name="listCoursesForUserRequest">
+        <wsdl:part name="parameters" element="ns1:listCoursesForUser"/>
+    </wsdl:message>
+    <wsdl:message name="listCoursesForUserResponse">
+        <wsdl:part name="parameters" element="ns1:listCoursesForUserResponse"/>
+    </wsdl:message>
+    <wsdl:message name="deleteContentRequest">
+        <wsdl:part name="parameters" element="ns1:deleteContent"/>
+    </wsdl:message>
+    <wsdl:message name="deleteContentResponse">
+        <wsdl:part name="parameters" element="ns1:deleteContentResponse"/>
+    </wsdl:message>
+    <wsdl:message name="aBaseReturningMethodRequest"/>
+    <wsdl:message name="aBaseReturningMethodResponse">
+        <wsdl:part name="parameters" element="ns1:aBaseReturningMethodResponse"/>
+    </wsdl:message>
+    <wsdl:message name="synchroniseEquellaContentTablesRequest">
+        <wsdl:part name="parameters" element="ns1:synchroniseEquellaContentTables"/>
+    </wsdl:message>
+    <wsdl:message name="synchroniseEquellaContentTablesResponse">
+        <wsdl:part name="parameters" element="ns1:synchroniseEquellaContentTablesResponse"/>
+    </wsdl:message>
+    <wsdl:message name="addItemToCourseRequest">
+        <wsdl:part name="parameters" element="ns1:addItemToCourse"/>
+    </wsdl:message>
+    <wsdl:message name="addItemToCourseResponse">
+        <wsdl:part name="parameters" element="ns1:addItemToCourseResponse"/>
+    </wsdl:message>
+    <wsdl:message name="listFoldersForFolderRequest">
+        <wsdl:part name="parameters" element="ns1:listFoldersForFolder"/>
+    </wsdl:message>
+    <wsdl:message name="listFoldersForFolderResponse">
+        <wsdl:part name="parameters" element="ns1:listFoldersForFolderResponse"/>
+    </wsdl:message>
+    <wsdl:message name="findAllUsagesRequest">
+        <wsdl:part name="parameters" element="ns1:findAllUsages"/>
+    </wsdl:message>
+    <wsdl:message name="findAllUsagesResponse">
+        <wsdl:part name="parameters" element="ns1:findAllUsagesResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getServerVersionRequest"/>
+    <wsdl:message name="getServerVersionResponse">
+        <wsdl:part name="parameters" element="ns1:getServerVersionResponse"/>
+    </wsdl:message>
+    <wsdl:message name="listFoldersForCourseRequest">
+        <wsdl:part name="parameters" element="ns1:listFoldersForCourse"/>
+    </wsdl:message>
+    <wsdl:message name="listFoldersForCourseResponse">
+        <wsdl:part name="parameters" element="ns1:listFoldersForCourseResponse"/>
+    </wsdl:message>
+    <wsdl:message name="editContentRequest">
+        <wsdl:part name="parameters" element="ns1:editContent"/>
+    </wsdl:message>
+    <wsdl:message name="editContentResponse">
+        <wsdl:part name="parameters" element="ns1:editContentResponse"/>
+    </wsdl:message>
+    <wsdl:message name="findUsagesRequest">
+        <wsdl:part name="parameters" element="ns1:findUsages"/>
+    </wsdl:message>
+    <wsdl:message name="findUsagesResponse">
+        <wsdl:part name="parameters" element="ns1:findUsagesResponse"/>
+    </wsdl:message>
+    <wsdl:message name="moveContentRequest">
+        <wsdl:part name="parameters" element="ns1:moveContent"/>
+    </wsdl:message>
+    <wsdl:message name="moveContentResponse">
+        <wsdl:part name="parameters" element="ns1:moveContentResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="EQUELLA.WSPortType">
+        <wsdl:operation name="getCourseCode">
+            <wsdl:input message="ns1:getCourseCodeRequest" wsaw:Action="getCourseCode"/>
+            <wsdl:output message="ns1:getCourseCodeResponse" wsaw:Action="http://webservice.blackboard.tle.com/EQUELLA/getCourseCodeResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="testConnection">
+            <wsdl:input message="ns1:testConnectionRequest" wsaw:Action="testConnection"/>
+            <wsdl:output message="ns1:testConnectionResponse" wsaw:Action="http://webservice.blackboard.tle.com/EQUELLA/testConnectionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="listCoursesForUser">
+            <wsdl:input message="ns1:listCoursesForUserRequest" wsaw:Action="listAllEnrolledCoursesForUser"/>
+            <wsdl:output message="ns1:listCoursesForUserResponse" wsaw:Action="http://webservice.blackboard.tle.com/EQUELLA/listCoursesForUserResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="deleteContent">
+            <wsdl:input message="ns1:deleteContentRequest" wsaw:Action="deleteContent"/>
+            <wsdl:output message="ns1:deleteContentResponse" wsaw:Action="http://webservice.blackboard.tle.com/EQUELLA/deleteContentResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="aBaseReturningMethod">
+            <wsdl:input message="ns1:aBaseReturningMethodRequest" wsaw:Action="aBaseReturningMethod"/>
+            <wsdl:output message="ns1:aBaseReturningMethodResponse" wsaw:Action="http://webservice.blackboard.tle.com/EQUELLA/aBaseReturningMethodResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="synchroniseEquellaContentTables">
+            <wsdl:input message="ns1:synchroniseEquellaContentTablesRequest" wsaw:Action="synchroniseEquellaContentTables"/>
+            <wsdl:output message="ns1:synchroniseEquellaContentTablesResponse" wsaw:Action="http://webservice.blackboard.tle.com/EQUELLA/synchroniseEquellaContentTablesResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="addItemToCourse">
+            <wsdl:input message="ns1:addItemToCourseRequest" wsaw:Action="addItemToCourse"/>
+            <wsdl:output message="ns1:addItemToCourseResponse" wsaw:Action="http://webservice.blackboard.tle.com/EQUELLA/addItemToCourseResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="listFoldersForFolder">
+            <wsdl:input message="ns1:listFoldersForFolderRequest" wsaw:Action="listFoldersForFolder"/>
+            <wsdl:output message="ns1:listFoldersForFolderResponse" wsaw:Action="http://webservice.blackboard.tle.com/EQUELLA/listFoldersForFolderResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="findAllUsages">
+            <wsdl:input message="ns1:findAllUsagesRequest" wsaw:Action="findAllUsages"/>
+            <wsdl:output message="ns1:findAllUsagesResponse" wsaw:Action="http://webservice.blackboard.tle.com/EQUELLA/findAllUsagesResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getServerVersion">
+            <wsdl:input message="ns1:getServerVersionRequest" wsaw:Action="getServerVersion"/>
+            <wsdl:output message="ns1:getServerVersionResponse" wsaw:Action="http://webservice.blackboard.tle.com/EQUELLA/getServerVersionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="listFoldersForCourse">
+            <wsdl:input message="ns1:listFoldersForCourseRequest" wsaw:Action="listFoldersForCourse"/>
+            <wsdl:output message="ns1:listFoldersForCourseResponse" wsaw:Action="http://webservice.blackboard.tle.com/EQUELLA/listFoldersForCourseResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="editContent">
+            <wsdl:input message="ns1:editContentRequest" wsaw:Action="editContent"/>
+            <wsdl:output message="ns1:editContentResponse" wsaw:Action="http://webservice.blackboard.tle.com/EQUELLA/editContentResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="findUsages">
+            <wsdl:input message="ns1:findUsagesRequest" wsaw:Action="findUsages"/>
+            <wsdl:output message="ns1:findUsagesResponse" wsaw:Action="http://webservice.blackboard.tle.com/EQUELLA/findUsagesResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="moveContent">
+            <wsdl:input message="ns1:moveContentRequest" wsaw:Action="moveContent"/>
+            <wsdl:output message="ns1:moveContentResponse" wsaw:Action="http://webservice.blackboard.tle.com/EQUELLA/moveContentResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="EQUELLA.WSSOAP11Binding" type="ns1:EQUELLA.WSPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getCourseCode">
+            <soap:operation soapAction="getCourseCode" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="testConnection">
+            <soap:operation soapAction="testConnection" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listCoursesForUser">
+            <soap:operation soapAction="listAllEnrolledCoursesForUser" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteContent">
+            <soap:operation soapAction="deleteContent" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="aBaseReturningMethod">
+            <soap:operation soapAction="aBaseReturningMethod" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="synchroniseEquellaContentTables">
+            <soap:operation soapAction="synchroniseEquellaContentTables" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addItemToCourse">
+            <soap:operation soapAction="addItemToCourse" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listFoldersForFolder">
+            <soap:operation soapAction="listFoldersForFolder" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="findAllUsages">
+            <soap:operation soapAction="findAllUsages" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getServerVersion">
+            <soap:operation soapAction="getServerVersion" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listFoldersForCourse">
+            <soap:operation soapAction="listFoldersForCourse" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="editContent">
+            <soap:operation soapAction="editContent" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="findUsages">
+            <soap:operation soapAction="findUsages" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="moveContent">
+            <soap:operation soapAction="moveContent" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="EQUELLA.WSSOAP12Binding" type="ns1:EQUELLA.WSPortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getCourseCode">
+            <soap12:operation soapAction="getCourseCode" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="testConnection">
+            <soap12:operation soapAction="testConnection" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listCoursesForUser">
+            <soap12:operation soapAction="listAllEnrolledCoursesForUser" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteContent">
+            <soap12:operation soapAction="deleteContent" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="aBaseReturningMethod">
+            <soap12:operation soapAction="aBaseReturningMethod" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="synchroniseEquellaContentTables">
+            <soap12:operation soapAction="synchroniseEquellaContentTables" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addItemToCourse">
+            <soap12:operation soapAction="addItemToCourse" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listFoldersForFolder">
+            <soap12:operation soapAction="listFoldersForFolder" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="findAllUsages">
+            <soap12:operation soapAction="findAllUsages" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getServerVersion">
+            <soap12:operation soapAction="getServerVersion" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listFoldersForCourse">
+            <soap12:operation soapAction="listFoldersForCourse" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="editContent">
+            <soap12:operation soapAction="editContent" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="findUsages">
+            <soap12:operation soapAction="findUsages" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="moveContent">
+            <soap12:operation soapAction="moveContent" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="EQUELLA.WSHttpBinding" type="ns1:EQUELLA.WSPortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="getCourseCode">
+            <http:operation location="EQUELLA.WS/getCourseCode"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getCourseCode"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getCourseCode"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="testConnection">
+            <http:operation location="EQUELLA.WS/testConnection"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="testConnection"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="testConnection"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listCoursesForUser">
+            <http:operation location="EQUELLA.WS/listCoursesForUser"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="listCoursesForUser"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="listCoursesForUser"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteContent">
+            <http:operation location="EQUELLA.WS/deleteContent"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="deleteContent"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="deleteContent"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="aBaseReturningMethod">
+            <http:operation location="EQUELLA.WS/aBaseReturningMethod"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="aBaseReturningMethod"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="aBaseReturningMethod"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="synchroniseEquellaContentTables">
+            <http:operation location="EQUELLA.WS/synchroniseEquellaContentTables"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="synchroniseEquellaContentTables"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="synchroniseEquellaContentTables"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addItemToCourse">
+            <http:operation location="EQUELLA.WS/addItemToCourse"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="addItemToCourse"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="addItemToCourse"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listFoldersForFolder">
+            <http:operation location="EQUELLA.WS/listFoldersForFolder"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="listFoldersForFolder"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="listFoldersForFolder"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="findAllUsages">
+            <http:operation location="EQUELLA.WS/findAllUsages"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="findAllUsages"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="findAllUsages"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getServerVersion">
+            <http:operation location="EQUELLA.WS/getServerVersion"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getServerVersion"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getServerVersion"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listFoldersForCourse">
+            <http:operation location="EQUELLA.WS/listFoldersForCourse"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="listFoldersForCourse"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="listFoldersForCourse"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="editContent">
+            <http:operation location="EQUELLA.WS/editContent"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="editContent"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="editContent"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="findUsages">
+            <http:operation location="EQUELLA.WS/findUsages"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="findUsages"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="findUsages"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="moveContent">
+            <http:operation location="EQUELLA.WS/moveContent"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="moveContent"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="moveContent"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="EQUELLA.WS">
+        <wsdl:port name="EQUELLA.WSSOAP11port_http" binding="ns1:EQUELLA.WSSOAP11Binding">
+            <soap:address location="http://bb91.thelearningedge.com.au:8080/webapps/ws/services/EQUELLA.WS"/>
+        </wsdl:port>
+        <wsdl:port name="EQUELLA.WSSOAP12port_http" binding="ns1:EQUELLA.WSSOAP12Binding">
+            <soap12:address location="http://bb91.thelearningedge.com.au:8080/webapps/ws/services/EQUELLA.WS"/>
+        </wsdl:port>
+        <wsdl:port name="EQUELLA.WSHttpport" binding="ns1:EQUELLA.WSHttpBinding">
+            <http:address location="http://bb91.thelearningedge.com.au:8080/webapps/ws/services/EQUELLA.WS"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

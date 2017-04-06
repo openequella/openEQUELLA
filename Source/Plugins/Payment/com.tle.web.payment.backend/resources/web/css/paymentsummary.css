@@ -1,0 +1,8 @@
+DIV.pricing DIV.tiers DIV
+{
+	margin-top: 1em;
+}
+
+div.not-purchased {
+	margin: 10px 0;
+}

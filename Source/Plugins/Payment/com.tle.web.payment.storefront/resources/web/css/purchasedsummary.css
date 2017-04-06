@@ -1,0 +1,10 @@
+TABLE.zebra TR TD.price
+{
+	text-align: right;	
+}
+
+TABLE.zebra TR TD.users
+{
+	text-align: right;
+}
+

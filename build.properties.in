@@ -1,0 +1,93 @@
+#####################################################################################
+# GLOBAL ANT PROPERTIES
+#
+# Be careful with path names here, since they will be relative to the build.xml file
+# in each directory, *NOT* relative to the directory this properties file is in.
+ 
+#####################################################################################
+# Debugging
+#
+# This section may or may not contain properties related to debugging.  Absense of
+# any properties indicates that this is a not a debugging build.
+
+@DEBUG.BUILD@
+
+#####################################################################################
+# Compiler Settings
+
+build.compiler=modern
+
+javac.nowarn=off
+javac.debug=on
+javac.debuglevel=lines,vars,source
+javac.optimize=off
+javac.deprecation=on
+javac.verbose=no
+javac.depend=off
+
+javac.server.source=1.8
+javac.server.target=1.8
+javac.client.source=1.8
+javac.client.target=1.8
+javac.compat.source=1.7
+javac.compat.target=1.7
+
+build.compiler=org.eclipse.jdt.core.JDTCompilerAdapter
+
+#####################################################################################
+# JAR SIGNER
+
+tle.signer.alias=2015key
+tle.signer.password=dytech010
+tle.signer.certificate=Source/Build/cacerts
+
+#####################################################################################
+# Git Settings
+git.bin.win32=git.exe
+git.bin.unix=/usr/bin/git
+
+#####################################################################################
+# Project Directories
+
+source.base=@BASEDIR@
+
+# For each project, *.resource is the internal path, *.base is a full path
+
+External\ Dependencies.resource=External
+External\ Dependencies.base=${TLE Plugins.base}/${External Dependencies.resource}
+
+Tool\ Dependencies.resource=ToolDependencies
+Tool\ Dependencies.base=${source.base}/Source/Tools/${Tool Dependencies.resource}
+
+Platform.base=${source.base}/Source/Plugins/Platform
+Platform\ Commons.base=${source.base}/Platform/Plugins/com.tle.platform.common
+Platform\ Commons.classes=${Platform Commons.base}/classes
+Platform\ Swing\ UI.classes=${Platform.base}/com.tle.platform.swing/classes
+
+TLE\ Plugins.base=${source.base}/Source/Plugins
+
+TLE\ Custom\ Build\ Tasks.resource=CustomBuildTasks
+TLE\ Custom\ Build\ Tasks.base=${source.base}/Platform/Infrastructure/${TLE Custom Build Tasks.resource}
+TLE\ Custom\ Build\ Tasks.classes=${TLE Custom Build Tasks.base}/classes
+
+TLE\ Common.base=${source.base}/Source/Plugins/Platform/com.tle.platform.equella
+TLE\ Common.classes=${TLE Common.base}/classes
+
+EQUELLA\ Server.base=${source.base}/Source/Server/equellaserver
+TLE\ Conversion.base=${source.base}/Source/Server/conversion
+
+TLE\ Installation\ Upgrader.base=${source.base}/Source/Tools/UpgradeInstallation
+TLE\ Upgrade\ Manager.base=${source.base}/Source/Tools/UpgradeManager
+
+TLE\ Active\ Cacher.base=${source.base}/Source/Tools/Cacher
+TLE\ Import\ Export\ Utils.base=${source.base}/Source/Tools/ImportExportUtils
+TLE\ Installer.base=${source.base}/Installer
+
+Interface.base=${source.base}/Interface
+
+Integration.base=${source.base}/Source/Integration
+Sakai.base=${Integration.base}/Sakai
+Blackboard\ Gateway.base=${Integration.base}/Blackboard
+IntegrationPack.base=${Integration.base}/IntegrationPack
+HTML\ Editor\ Plugins.base=${Integration.base}/HTMLEditorPlugins
+

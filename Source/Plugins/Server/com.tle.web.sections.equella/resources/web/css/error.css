@@ -1,0 +1,14 @@
+.error	
+{
+	/*
+	background-color: #FFFFFF;
+	border: 1px solid #000000;
+	*/
+	padding: 2em;
+}
+
+.children
+{
+	text-align: center;
+	width: 100%
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="com.tle.sigpet.usermanagement" basedir=".">
+	<import file="../../build/plugins-common-build.xml" />
+
+	<target name="generate-source" depends="common.generate-source">
+	    <jpf-path basedir="${TLE Plugins.base}" includes="External/*.jar" pathid="wsdl.classpath" pluginid="wsdl4j:wsdl4j"/>
+	    <jpf-path basedir="${TLE Plugins.base}" includes="External/*.jar" pathid="cxf.classpath" pluginid="org.apache.cxf:cxf-bundle"/>
+	
+		<mkdir dir="${gensrc}" />
+		<property name="sigpet.wsdl" value="${src}/com/tle/sigpet/usermanagement/sigpet.wsdl" />
+
+		<path id="gensrc.classpath">
+		    <path refid="wsdl.classpath" />
+		    <path refid="cxf.classpath" />
+		</path>
+
+		<java classname="org.apache.cxf.tools.wsdlto.WSDLToJava" fork="true">
+			<arg value="-client" />
+			<arg value="-d" />
+			<arg value="${gensrc}" />
+			<arg value="${sigpet.wsdl}" />
+			<classpath>
+				<path refid="gensrc.classpath" />
+			</classpath>
+		</java>
+	</target>
+</project>

@@ -1,0 +1,18 @@
+.status
+{
+	display: inline-block;
+	font-weight: bold;
+	padding-left: 30px;
+	height: 30px;
+	background-repeat: no-repeat;
+}
+
+.status.success
+{
+	background-image: url(../images/ok.png);
+}
+
+.status.fail, .status.invalid, .status.nomatch
+{
+	background-image: url(../images/fail.png);
+}

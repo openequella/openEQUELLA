@@ -1,0 +1,119 @@
+form.jqtransformdone label
+{
+	margin-top:4px;
+	margin-right: 8px;
+	display: block;
+	float:left;
+}
+form.jqtransformdone div.rowElem
+{
+	clear:both;
+	padding:4px 0px;
+}
+
+
+
+/* -------------
+ * Selects
+ * ------------- */
+.jqTransformSelectWrapper 
+{
+	/*width: 45px;*/
+	position:relative;
+	/*float:left;*/
+	
+	/*height: 31px;
+	background: url(../../images/jqtransform/select_left.gif) no-repeat top left;*/
+	height: 20px;
+	background-color: #FFFFFF;
+	
+	border: 1px solid #cfcbbe;
+	border-right: 1px solid #c3beae;
+	border-top: 1px solid #7e765e;
+	font-size: 12px;
+	padding-top: 4px;
+	/*padding-bottom: 4px;*/
+	padding-left: 6px;
+	padding-right: 6px;
+	color: #4B4842;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.jqTransformSelectWrapper div span 
+{	
+	/*font-size: 12px;*/
+	float: none;
+	position: absolute;
+	white-space: nowrap;
+	line-height: 15px;
+	/*padding: 8px 0 0 7px;*/
+	overflow: hidden;
+	cursor:pointer;
+	
+	/*height: 31px;*/
+}
+
+.jqTransformSelectWrapper  a.jqTransformSelectOpen 
+{
+	display: block;
+	position: absolute;
+	right: 0px;
+	/*
+	width: 31px;
+	height: 31px;
+	background: url(../../images/jqtransform/select_right.gif) no-repeat center center;*/
+	width: 20px;
+	height: 20px;
+	background: url(../../images/stylishSelect/select-down.png) no-repeat center center;
+}
+
+.jqTransformSelectWrapper ul 
+{
+	position: absolute;
+	left: 0px;
+	list-style: none;
+	background-color: #FFF;
+	border: solid 1px #CCC;
+	display: none;
+	margin: 0px;
+	padding: 0px;
+	height: 150px;
+	overflow: auto;
+	overflow-y: auto;
+	z-index:10;
+	
+	/*top: 30px;*/
+	/*width: 43px;*/
+	top: 22px;
+}
+
+.jqTransformSelectWrapper ul a 
+{
+	display: block;
+	padding: 5px;
+	text-decoration: none;
+	color:#333;
+	background-color: #FFF;
+	font-size: 12px;
+}
+
+.jqTransformSelectWrapper ul a.selected 
+{
+	background: #EDEDED;
+	color: #333;
+}
+
+.jqTransformSelectWrapper ul a:hover, .jqTransformSelectWrapper ul a.selected:hover 
+{
+	/*background:#3582c4;*/
+	background-color: #C0C0C0;
+	/*color: #fff;*/
+	color: #333;
+}
+
+/* -------------
+ * Hidden - used to hide the original form elements
+ * ------------- */
+.jqTransformHidden {display: none;}

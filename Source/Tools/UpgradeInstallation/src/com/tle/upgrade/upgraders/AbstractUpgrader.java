@@ -1,0 +1,98 @@
+package com.tle.upgrade.upgraders;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+
+import com.google.common.io.ByteStreams;
+import com.tle.upgrade.FileCopier;
+import com.tle.upgrade.UpgradeDepends;
+import com.tle.upgrade.Upgrader;
+
+@SuppressWarnings("nls")
+public abstract class AbstractUpgrader implements Upgrader
+{
+	protected static final String CONFIG_FOLDER = "learningedge-config"; //$NON-NLS-1$
+
+	@Override
+	public List<UpgradeDepends> getDepends()
+	{
+		return Collections.emptyList();
+	}
+
+	protected void obsoleteError()
+	{
+		throw new Error("This migration is obsolete and should not be being run");
+	}
+
+	public void copyResource(String resource, File dest)
+	{
+		copyResource(resource, dest, false);
+	}
+
+	public void copyResource(String resource, File dest, boolean executable)
+	{
+		String resname = new File(resource).getName();
+		try( InputStream inp = getClass().getResourceAsStream(resource) )
+		{
+			if( dest.isDirectory() )
+			{
+				dest = new File(dest, resname);
+			}
+			dest.getParentFile().mkdirs();
+
+			try( FileOutputStream out = new FileOutputStream(dest) )
+			{
+				ByteStreams.copy(inp, out);
+				dest.setExecutable(executable, false);
+			}
+		}
+		catch( IOException e )
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected void rename(File from, File to)
+	{
+		rename(from, to, true, true);
+	}
+
+	protected void renameIfExists(File from, File to)
+	{
+		rename(from, to, false, true);
+	}
+
+	protected void rename(File from, File to, boolean mustExist, boolean overwrite)
+	{
+		try
+		{
+			new FileCopier(from, to, mustExist).rename();
+		}
+		catch( Exception e )
+		{
+			throw new RuntimeException("Failed to rename " + from + " to " + to);
+		}
+	}
+
+	@Override
+	public boolean isRunOnInstall()
+	{
+		return false;
+	}
+
+	protected Properties loadProperties(File file) throws IOException
+	{
+		try( FileInputStream finp = new FileInputStream(file) )
+		{
+			Properties props = new Properties();
+			props.load(finp);
+			return props;
+		}
+	}
+}

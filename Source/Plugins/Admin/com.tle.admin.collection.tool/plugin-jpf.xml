@@ -1,0 +1,110 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.collection.tool" version="1">
+	<attributes>
+		<attribute id="type" value="admin-console" />
+	</attributes>
+
+	<requires>
+		<import plugin-id="com.tle.admin.codeeditor" />
+		<import plugin-id="com.tle.admin.common" />
+		<import plugin-id="com.tle.admin.controls" />
+		<import plugin-id="com.tle.admin.schema.common" />
+		<import plugin-id="com.tle.admin.scripting" />
+		<import plugin-id="com.tle.admin.tools" />
+		<import plugin-id="com.tle.common.accesscontrolbuilder" />
+		<import plugin-id="com.tle.common.collection" exported="true" />
+		<import plugin-id="com.tle.common.entity" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.recipientselector" />
+		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="com.tle.common.usermanagement" />
+		<import plugin-id="com.tle.common.wizard" />
+		<import plugin-id="com.tle.common.workflow" />
+		<import plugin-id="com.tle.admin.security.tool" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="extra">
+		<parameter-def id="name" type="string" />
+		<parameter-def id="enabledAttribute" type="string" />
+		<parameter-def id="configPanel" type="string" multiplicity="none-or-one" />
+	</extension-point>
+
+	<extension-point id="summaryDisplay">
+		<parameter-def id="id" type="string" />
+		<parameter-def id="nameKey" type="string" />
+		<parameter-def id="defaultNameKey" type="string" />
+		<parameter-def id="class" type="string" multiplicity="none-or-one" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="admin-console" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.tools" point-id="tool" id="collectiontool">
+		<parameter id="displayorder" value="200" />
+		<parameter id="name" value="com.tle.admin.gui.itemdefinitiontool.title" />
+		<parameter id="class" value="com.tle.admin.collection.tool.ItemDefinitionTool" />
+		<parameter id="privilege" value="CREATE_COLLECTION" />
+		<parameter id="privilege" value="EDIT_COLLECTION" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.controls" point-id="control" id="wizard">
+		<parameter id="id" value="wizard" />
+		<parameter id="name" value="com.tle.admin.collection.tool.wizard.editor.title" />
+		<parameter id="modelClass" value="com.tle.admin.itemdefinition.PagedWizardModel" />
+		<parameter id="wrappedClass" value="com.tle.beans.entity.itemdef.Wizard" />
+		<parameter id="editorClass" value="com.tle.admin.collection.wizard.editor.WizardEditor" />
+		<parameter id="context" value="ROOT" />
+		<parameter id="icon" value="/icons/wizard.gif" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.collection.tool" point-id="summaryDisplay" id="basicSection">
+		<parameter id="id" value="basicSection" />
+		<parameter id="nameKey" value="com.tle.admin.collection.tool.summarysections.basic.title" />
+		<parameter id="defaultNameKey" value="com.tle.admin.collection.tool.summarysections.basic.defaultname" />
+		<parameter id="class" value="com.tle.admin.collection.summarydisplay.BasicConfig" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.collection.tool" point-id="summaryDisplay" id="displayNodes">
+		<parameter id="id" value="displayNodes" />
+		<parameter id="nameKey" value="com.tle.admin.collection.tool.summarysections.displayNodes.title" />
+		<parameter id="defaultNameKey" value="com.tle.admin.collection.tool.summarysections.displayNodes.defaultname" />
+		<parameter id="class" value="com.tle.admin.collection.summarydisplay.DisplayNodesConfig" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.collection.tool" point-id="summaryDisplay" id="attachmentsSection">
+		<parameter id="id" value="attachmentsSection" />
+		<parameter id="nameKey" value="com.tle.admin.collection.tool.summarysections.attachments.title" />
+		<parameter id="defaultNameKey" value="com.tle.admin.collection.tool.summarysections.attachments.defaultname" />
+		<parameter id="class" value="com.tle.admin.collection.summarydisplay.AttachmentsSectionConfig" />
+	</extension>
+	
+	<extension plugin-id="com.tle.admin.collection.tool" point-id="summaryDisplay" id="xsltSection">
+		<parameter id="id" value="xsltSection" />
+		<parameter id="nameKey" value="com.tle.admin.collection.tool.summarysections.xslt.title" />
+		<parameter id="defaultNameKey" value="com.tle.admin.collection.tool.summarysections.xslt.defaultname" />
+		<parameter id="class" value="com.tle.admin.collection.summarydisplay.XsltConfig" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.collection.tool" point-id="summaryDisplay" id="commentsSection">
+		<parameter id="id" value="commentsSection" />
+		<parameter id="nameKey" value="com.tle.admin.collection.tool.summarysections.comments.title" />
+		<parameter id="defaultNameKey" value="com.tle.admin.collection.tool.summarysections.comments.defaultname" />
+		<parameter id="class" value="com.tle.admin.collection.summarydisplay.CommentsConfig" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.collection.tool" point-id="summaryDisplay" id="freemarkerSection">
+		<parameter id="id" value="freemarkerSection" />
+		<parameter id="nameKey" value="com.tle.admin.collection.tool.summarysections.freemarker.title" />
+		<parameter id="defaultNameKey" value="com.tle.admin.collection.tool.summarysections.freemarker.defaultname" />
+		<parameter id="class" value="com.tle.admin.collection.summarydisplay.FreemarkerConfig" />
+	</extension>
+</plugin>

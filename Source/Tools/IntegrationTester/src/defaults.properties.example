@@ -1,0 +1,14 @@
+url=http://lebowski:8080/dev/my/signon.do
+username=j
+action=searchResources
+sharedSecretId=secret
+sharedSecret=secret
+template=standard
+makeReturn=true
+selectMultiple=true
+useDownloadPrivilege=false
+itemXml=<xml><item><name>BARRY</name><description>BALLSHANK</description></item></xml>
+powerXml=<xml>\n\
+<powersearch uuid="432432432423"><xml><test>111</test></xml></powersearch>\n\
+<powersearch uuid="fghfghfghfgh"><xml><test>222</test></xml></powersearch>\n\
+</xml>

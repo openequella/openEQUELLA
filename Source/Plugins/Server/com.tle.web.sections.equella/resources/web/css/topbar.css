@@ -1,0 +1,70 @@
+/*****************************************************************************
+ Top bar containing logged in user, profile, logout
+*****************************************************************************/
+#topbar {
+	background: url(../images/topbar-bg.gif) 0 0 repeat-x;
+	height: 26px;
+	
+}
+
+#topbar-wrap {
+	position: relative;
+	width: 980px;
+	height: 26px;
+	margin: 0 auto;
+}
+
+#topbar-inner {
+	width: 980px;
+	height: 26px;
+	margin: 0 auto;
+}
+
+#topmenu {
+	text-transform: uppercase;
+	position: absolute;
+	right: 0px;
+	top:0px;
+	line-height: 26px;
+	font-size: 10px;
+	overflow: hidden;
+}
+
+#topmenu a,#topmenu span {
+	color: #fff;
+	text-decoration: none;
+	margin-left: 1px;
+	padding: 9px 6px;
+}
+
+#topmenu a i,#topmenu span i {
+	margin-top: -1px;
+	padding-right: 2px;
+}
+
+#topmenu a:hover,#topmenu span:hover {
+	text-decoration: none;
+	background: #0397D6;
+}
+
+#topmenu .disabled i.icon-bell {
+	background: url("../images/icons/glyphicons-halflings-disabled.png");
+	background-position: -48px -144px;
+}
+
+#topmenu .disabled i.icon-flag {
+	background: url("../images/icons/glyphicons-halflings-disabled.png");
+	background-position: -312px -24px;
+}
+
+#topmenu .disabled {
+	color: rgb(90, 81, 81);
+}
+
+#topmenu .embiggen {
+	background-color: #F32;
+}
+
+#topmenu .embiggen:hover {
+	background-color: #EE7D7D;
+}

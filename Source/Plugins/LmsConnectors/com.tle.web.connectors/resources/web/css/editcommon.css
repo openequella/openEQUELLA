@@ -1,0 +1,44 @@
+.status
+{
+	display: inline-block;
+	font-weight: bold;
+	padding-left: 30px;
+	height: 30px;
+	background-repeat: no-repeat;
+}
+
+.status.ok
+{
+	background-image: url(../images/ok.png);
+}
+
+.status.fail
+{
+	background-image: url(../images/fail.png);
+}
+
+.wide .settingRow.usernameScriptRow TEXTAREA
+{
+	width: 430px;
+	margin-left: 25px;
+}
+.wide .settingRow.usernameScriptRow .settingHelp
+{
+	margin-left: 25px;
+}
+
+.wide .settingRow.exportableByRow
+{
+	margin-top: 1em;
+}
+
+INPUT[type='checkbox'] + LABEL
+{
+	margin-left: 1em;
+}
+
+
+input[readonly="readonly"] {
+	color: grey; 
+	background-color: #F0F0F0;
+}

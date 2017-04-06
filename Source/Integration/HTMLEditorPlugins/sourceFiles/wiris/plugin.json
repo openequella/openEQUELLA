@@ -1,0 +1,12 @@
+{
+"id": "tiny_mce_wiris",
+"name": "WIRIS Math Editor",
+"author": "WIRIS",
+"buttons": [ 
+	{
+		title : 'Insert/Edit Forumla',
+		image : 'core/icons/tiny_mce/formula.gif',
+		id : 'tiny_mce_wiris_formulaEditor'
+	}
+	]
+}

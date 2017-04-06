@@ -1,0 +1,59 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.fedsearch.standard" version="1">
+	<attributes>
+		<attribute id="type" value="admin-console" />
+	</attributes>
+
+	<requires>
+		<import plugin-id="com.tle.admin.common" />
+		<import plugin-id="com.tle.admin.fedsearch.tool" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.remoterepo" />
+		<import plugin-id="com.tle.common.remoterepo.equella" />
+		<import plugin-id="com.tle.common.remoterepo.merlot" />
+		<import plugin-id="com.tle.common.remoterepo.sru" />
+		<import plugin-id="com.tle.common.remoterepo.srw" />
+		<import plugin-id="com.tle.common.remoterepo.z3950" />
+		<import plugin-id="com.tle.admin.controls" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core" />
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="admin-console" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.fedsearch.tool" point-id="configUI" id="EquellaUI">
+		<parameter id="type" value="LEdgeSearchEngine" />
+		<parameter id="class" value="com.tle.admin.fedsearch.standard.LearningEdgePlugin" />
+		<parameter id="name" value="EQUELLA" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.fedsearch.tool" point-id="configUI" id="Z3950UI">
+		<parameter id="type" value="Z3950SearchEngine" />
+		<parameter id="class" value="com.tle.admin.fedsearch.standard.Z3950Plugin" />
+		<parameter id="name" value="Z3950" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.fedsearch.tool" point-id="configUI" id="SRUUI">
+		<parameter id="type" value="SRUSearchEngine" />
+		<parameter id="class" value="com.tle.admin.fedsearch.standard.SRUPlugin" />
+		<parameter id="name" value="SRU" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.fedsearch.tool" point-id="configUI" id="SRWUI">
+		<parameter id="type" value="SRWSearchEngine" />
+		<parameter id="class" value="com.tle.admin.fedsearch.standard.SRWPlugin" />
+		<parameter id="name" value="SRW" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.fedsearch.tool" point-id="configUI" id="MerlotUI">
+		<parameter id="type" value="MerlotSearchEngine" />
+		<parameter id="class" value="com.tle.admin.fedsearch.standard.MerlotPlugin" />
+		<parameter id="name" value="MERLOT" />
+	</extension>
+</plugin>

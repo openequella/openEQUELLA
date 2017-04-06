@@ -1,0 +1,12 @@
+/* FF */
+#applet_embed, #fileManager
+{
+	height: 534px;
+}
+
+/* IE */
+#applet_object, #fileManager
+{
+	height: 536px;
+	width: 100%;
+} 

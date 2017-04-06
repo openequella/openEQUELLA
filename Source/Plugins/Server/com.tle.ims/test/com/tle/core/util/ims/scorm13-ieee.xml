@@ -1,0 +1,1427 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest identifier="M358810" xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 imscp_v1p1.xsd http://www.adlnet.org/xsd/adlcp_v1p3 adlcp_v1p3.xsd http://ltsc.ieee.org/xsd/LOM lom_custom.xsd" xmlns="http://www.imsglobal.org/xsd/imscp_v1p1" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3" xmlns:tlf="http://www.thelearningfederation.edu.au/lexmd_v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <metadata>
+    <schema>ADL SCORM</schema>
+    <schemaversion>CAM 1.3</schemaversion>
+    <lom xmlns="http://ltsc.ieee.org/xsd/LOM">
+      <general>
+        <identifier>
+          <catalog>TLF-LearningObject</catalog>
+          <entry>L661</entry>
+        </identifier>
+        <title>
+          <string language="en">Glide: take a flight [no spoken instructions]</string>
+        </title>
+        <keyword>
+          <string language="en">Wings</string>
+        </keyword>
+        <keyword>
+          <string language="en">Wingspan</string>
+        </keyword>
+      </general>
+      <lifeCycle>
+        <version>
+          <string>2.0</string>
+        </version>
+        <status>
+          <source>LOMv1.0</source>
+          <value>revised</value>
+        </status>
+      </lifeCycle>
+      <metaMetadata>
+        <identifier>
+          <catalog>TLF-Metadata</catalog>
+          <entry>296725</entry>
+        </identifier>
+        <metadataSchema>LOMv1.0</metadataSchema>
+        <metadataSchema>SCORM_CAM_v1.3</metadataSchema>
+        <metadataSchema>TLFv2.1</metadataSchema>
+        <metadataSchema>EdNAv1.1</metadataSchema>
+      </metaMetadata>
+      <technical>
+        <format>text/html</format>
+        <format>application/x-shockwave-flash</format>
+        <format>image/jpeg</format>
+        <format>text/css</format>
+        <format>text/xml</format>
+        <size>1025886</size>
+      </technical>
+      <educational>
+        <learningResourceType>
+          <source>DCMI</source>
+          <value>Interactive resource</value>
+        </learningResourceType>
+        <intendedEndUserRole>
+          <source>LOMv1.0</source>
+          <value>learner</value>
+        </intendedEndUserRole>
+        <context>
+          <source>LOMv1.0</source>
+          <value>school</value>
+        </context>
+        <typicalAgeRange>
+          <string language="en">13,14,15,16</string>
+        </typicalAgeRange>
+      </educational>
+      <classification>
+        <purpose>
+          <source>LOMv1.0</source>
+          <value>idea</value>
+        </purpose>
+        <taxonPath>
+          <source>
+            <string language="en">ScOTv5.2</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Aerodynamics</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">ScOTv5.2</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Air pressure</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">ScOTv5.2</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Air resistance</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">ScOTv5.2</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Altitude</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">ScOTv5.2</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Camber</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">ScOTv5.2</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Convection currents</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">ScOTv5.2</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Flight</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">ScOTv5.2</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Hang gliders</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">ScOTv5.2</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Hang gliding</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">ScOTv5.2</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Materials</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">ScOTv5.2</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Motion</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+      </classification>
+      <classification>
+        <purpose>
+          <source>LOMv1.0</source>
+          <value>discipline</value>
+        </purpose>
+        <taxonPath>
+          <source>
+            <string language="en">EdNA-kla</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Science</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+      </classification>
+      <classification>
+        <purpose>
+          <source>LOMv1.0</source>
+          <value>discipline</value>
+        </purpose>
+        <taxonPath>
+          <source>
+            <string language="en">TLF_strand_v2.1</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Science</string>
+            </entry>
+          </taxon>
+          <taxon>
+            <entry>
+              <string language="en">Energy and change</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+      </classification>
+      <classification>
+        <purpose>
+          <source>LOMv1.0</source>
+          <value>idea</value>
+        </purpose>
+        <taxonPath>
+          <source>
+            <string language="en">TLF_concepts_v2.1</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Science</string>
+            </entry>
+          </taxon>
+          <taxon>
+            <entry>
+              <string language="en">Materials</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">TLF_concepts_v2.1</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Science</string>
+            </entry>
+          </taxon>
+          <taxon>
+            <entry>
+              <string language="en">Motion</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">TLF_concepts_v2.1</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Science</string>
+            </entry>
+          </taxon>
+          <taxon>
+            <entry>
+              <string language="en">Convection</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">TLF_concepts_v2.1</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Science</string>
+            </entry>
+          </taxon>
+          <taxon>
+            <entry>
+              <string language="en">Atmosphere</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+      </classification>
+      <classification>
+        <purpose>
+          <source>LOMv1.0</source>
+          <value>skill level</value>
+        </purpose>
+        <taxonPath>
+          <source>
+            <string language="en">Bloom's taxonomy of the cognitive domain</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Analysis</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">Bloom's taxonomy of the cognitive domain</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Application</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">Bloom's taxonomy of the cognitive domain</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Comprehension</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">Bloom's taxonomy of the cognitive domain</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Knowledge</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+      </classification>
+      <classification>
+        <purpose>
+          <source>LOMv1.0</source>
+          <value>educational objective</value>
+        </purpose>
+        <taxonPath>
+          <source>
+            <string language="en">TLF_studentactivity_v2.1</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Interactives</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">TLF_studentactivity_v2.1</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Analysis</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">TLF_studentactivity_v2.1</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Modelling</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+      </classification>
+      <classification>
+        <purpose>
+          <source>LOMv1.0</source>
+          <value>educational objective</value>
+        </purpose>
+        <taxonPath>
+          <source>
+            <string language="en">TLF_learningdesign_v2.1</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Experiential learning</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">TLF_learningdesign_v2.1</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Independent learning</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">TLF_learningdesign_v2.1</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Problem solving</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+        <taxonPath>
+          <source>
+            <string language="en">TLF_learningdesign_v2.1</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Visual learning</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+      </classification>
+      <classification>
+        <purpose>
+          <source>LOMv1.0</source>
+          <value>educational objective</value>
+        </purpose>
+        <taxonPath>
+          <source>
+            <string language="en">Key learning objective</string>
+          </source>
+          <taxon>
+            <entry>
+              <string language="en">Students explore how various atmospheric and geographic conditions affect unpowered flight.</string>
+            </entry>
+          </taxon>
+        </taxonPath>
+      </classification>
+      <classification>
+        <purpose>
+          <source>LOMv1.0</source>
+          <value>educational objective</value>
+        </purpose>
+      </classification>
+    </lom>
+  </metadata>
+  <organizations default="O81531">
+    <organization identifier="O81531">
+      <title>Glide: take a flight [no spoken instructions]</title>
+      <item identifier="O81531I0" identifierref="R228843">
+        <title>Start: Glide: take a flight [no spoken instructions]</title>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="R228843" type="webcontent" adlcp:scormType="asset" href="index.html">
+      <metadata>
+        <lom xmlns="http://ltsc.ieee.org/xsd/LOM">
+          <general>
+            <identifier>
+              <catalog>TLF-LearningObject</catalog>
+              <entry>L661</entry>
+            </identifier>
+            <title>
+              <string language="en">Glide: take a flight [no spoken instructions]</string>
+            </title>
+            <language>en</language>
+            <description>
+              <string language="en">Launch a hang-glider and fly it towards a target zone. Adjust the angle of attack, and steer left or right. Find updrafts and thermals to gain altitude. This learning object is one in a series of three objects. The series is also packaged as a combined learning object.</string>
+            </description>
+            <keyword>
+              <string language="en">Wings</string>
+            </keyword>
+            <keyword>
+              <string language="en">Wingspan</string>
+            </keyword>
+            <aggregationLevel>
+              <source>LOMv1.0</source>
+              <value>2</value>
+            </aggregationLevel>
+            <tlf:coverage>
+              <tlf:spatial>
+                <tlf:scheme>Country</tlf:scheme>
+                <tlf:value>AU,HRD</tlf:value>
+              </tlf:spatial>
+              <tlf:spatial>
+                <tlf:scheme>DCMI-Point</tlf:scheme>
+                <tlf:value>east=-53.06000;north=73.35000;name=GILCHRIST AIGUILLES;</tlf:value>
+              </tlf:spatial>
+              <tlf:spatial>
+                <tlf:scheme>Gazetteer of Australia 2005</tlf:scheme>
+                <tlf:value>AAD1</tlf:value>
+              </tlf:spatial>
+            </tlf:coverage>
+          </general>
+          <lifeCycle>
+            <version>
+              <string>2.0</string>
+            </version>
+            <status>
+              <source>LOMv1.0</source>
+              <value>revised</value>
+            </status>
+            <contribute>
+              <role>
+                <source>TLF_role_v2.1</source>
+                <value>Subject matter expert</value>
+              </role>
+              <entity>BEGIN:VCARD
+REV:2006-10-19T14:44:06+09:30
+ADR:;;;Hobart;TAS;7000;Australia
+ORG:Department of Education\, Tasmania\; e-magine Centre of Excellence in
+ Online Learning
+URL:http://www.education.tas.gov.au/
+VERSION:3.0
+END:VCARD
+
+</entity>
+            </contribute>
+            <contribute>
+              <role>
+                <source>TLF_role_v2.1</source>
+                <value>Publisher</value>
+              </role>
+              <entity>BEGIN:VCARD
+REV:2006-07-28T08:57:04+09:30
+ADR:;;;Melbourne;VIC;3000;Australia
+ORG:The Le@rning Federation
+URL:http://www.thelearningfederation.edu.au/
+VERSION:3.0
+END:VCARD
+
+</entity>
+              <date>
+                <dateTime>2007-01-16T06:01:30.0Z</dateTime>
+              </date>
+            </contribute>
+            <contribute>
+              <role>
+                <source>TLF_role_v2.1</source>
+                <value>Technical implementer</value>
+              </role>
+              <entity>BEGIN:VCARD
+REV:2006-07-28T08:56:14+09:30
+ADR:;;;Hobart;TAS;7000;Australia
+ORG:Crank Media Pty Ltd
+URL:http://www.acceleration.com.au/
+VERSION:3.0
+END:VCARD
+
+</entity>
+            </contribute>
+          </lifeCycle>
+          <metaMetadata>
+            <identifier>
+              <catalog>TLF-Metadata</catalog>
+              <entry>296725</entry>
+            </identifier>
+            <metadataSchema>LOMv1.0</metadataSchema>
+            <metadataSchema>SCORM_CAM_v1.3</metadataSchema>
+            <metadataSchema>TLFv2.1</metadataSchema>
+            <metadataSchema>EdNAv1.1</metadataSchema>
+            <language>en</language>
+          </metaMetadata>
+          <technical>
+            <format>text/html</format>
+            <format>application/x-shockwave-flash</format>
+            <format>image/jpeg</format>
+            <format>text/css</format>
+            <format>text/xml</format>
+            <size>1025886</size>
+            <requirement>
+              <orComposite>
+                <type>
+                  <source>TLF_technicalrequirementtype_v2.1</source>
+                  <value>Operating System</value>
+                </type>
+                <name>
+                  <source>TLF_technicalrequirementname_v2.1</source>
+                  <value>MacOS</value>
+                </name>
+                <minimumVersion>X</minimumVersion>
+              </orComposite>
+              <orComposite>
+                <type>
+                  <source>TLF_technicalrequirementtype_v2.1</source>
+                  <value>Operating System</value>
+                </type>
+                <name>
+                  <source>TLF_technicalrequirementname_v2.1</source>
+                  <value>MS-Windows</value>
+                </name>
+                <minimumVersion>2000</minimumVersion>
+                <maximumVersion>XP</maximumVersion>
+              </orComposite>
+            </requirement>
+            <requirement>
+              <orComposite>
+                <type>
+                  <source>TLF_technicalrequirementtype_v2.1</source>
+                  <value>Browser</value>
+                </type>
+                <name>
+                  <source>TLF_technicalrequirementname_v2.1</source>
+                  <value>Microsoft Internet Explorer</value>
+                </name>
+                <minimumVersion>6.0 (MS-Windows)</minimumVersion>
+              </orComposite>
+              <orComposite>
+                <type>
+                  <source>TLF_technicalrequirementtype_v2.1</source>
+                  <value>Browser</value>
+                </type>
+                <name>
+                  <source>TLF_technicalrequirementname_v2.1</source>
+                  <value>Firefox</value>
+                </name>
+                <minimumVersion>1.0 (MS-Windows)</minimumVersion>
+              </orComposite>
+              <orComposite>
+                <type>
+                  <source>TLF_technicalrequirementtype_v2.1</source>
+                  <value>Browser</value>
+                </type>
+                <name>
+                  <source>TLF_technicalrequirementname_v2.1</source>
+                  <value>Netscape Communicator</value>
+                </name>
+                <minimumVersion>6.2 (MS-Windows)</minimumVersion>
+              </orComposite>
+              <orComposite>
+                <type>
+                  <source>TLF_technicalrequirementtype_v2.1</source>
+                  <value>Browser</value>
+                </type>
+                <name>
+                  <source>TLF_technicalrequirementname_v2.1</source>
+                  <value>Safari</value>
+                </name>
+                <minimumVersion>1.2 (MacOS) </minimumVersion>
+              </orComposite>
+            </requirement>
+            <requirement>
+              <orComposite>
+                <type>
+                  <source>TLF_technicalrequirementtype_v2.1</source>
+                  <value>Plug-in</value>
+                </type>
+                <name>
+                  <source>TLF_technicalrequirementname_v2.1</source>
+                  <value>Macromedia Flash Player</value>
+                </name>
+              </orComposite>
+            </requirement>
+            <otherPlatformRequirements>
+              <string language="en">Initial load time and load time on some screens may exceed 10 seconds on a dedicated 64kbps connection due to the use of rich media content. Keyboard functionality may also be affected by slow load times.</string>
+            </otherPlatformRequirements>
+          </technical>
+          <educational>
+            <intendedEndUserRole>
+              <source>LOMv1.0</source>
+              <value>learner</value>
+            </intendedEndUserRole>
+            <context>
+              <source>LOMv1.0</source>
+              <value>school</value>
+            </context>
+            <typicalAgeRange>
+              <string language="en">13,14,15,16</string>
+            </typicalAgeRange>
+          </educational>
+          <rights>
+            <cost>
+              <source>LOMv1.0</source>
+              <value>no</value>
+            </cost>
+            <copyrightAndOtherRestrictions>
+              <source>LOMv1.0</source>
+              <value>yes</value>
+            </copyrightAndOtherRestrictions>
+            <description>
+              <string language="en">Copyright Curriculum Corporation. This material solely contains TLF Content. Refer to Conditions of Use.</string>
+            </description>
+          </rights>
+          <relation>
+            <kind>
+              <source>TLF_relation_v2.1</source>
+              <value>ispartof</value>
+            </kind>
+            <resource>
+              <description>
+                <string language="en">this is paul's comment in description of relation</string>
+              </description>
+            </resource>
+          </relation>
+          <annotation>
+            <entity>BEGIN:VCARD
+REV:2007-01-16T16:31:28.0+10:30
+ADR:;;;;;;AUSTRALIA
+ORG:Curriculum Corporation
+URL:http://www.curriculum.edu.au
+VERSION:3.0
+END:VCARD
+
+</entity>
+            <date>
+              <dateTime>2007-01-16T06:01:30.0Z</dateTime>
+            </date>
+            <description>
+              <string language="en">v.2.0 Added support for Gecko-based browsers and seamless tabbing.
+v.1.0 First public release.</string>
+            </description>
+          </annotation>
+          <classification>
+            <purpose>
+              <source>LOMv1.0</source>
+              <value>accessibility restrictions</value>
+            </purpose>
+            <taxonPath>
+              <source>
+                <string language="en">TLF_accessprofile_v2.1</string>
+              </source>
+              <taxon>
+                <entry>
+                  <string language="en">Device independence</string>
+                </entry>
+              </taxon>
+            </taxonPath>
+            <taxonPath>
+              <source>
+                <string language="en">TLF_accessprofile_v2.1</string>
+              </source>
+              <taxon>
+                <entry>
+                  <string language="en">Hearing independence</string>
+                </entry>
+              </taxon>
+            </taxonPath>
+          </classification>
+        </lom>
+      </metadata>
+      <file href="swf/video6.swf">
+        <metadata>
+          <lom xmlns="http://ltsc.ieee.org/xsd/LOM">
+            <general>
+              <identifier>
+                <catalog>TLF-File</catalog>
+                <entry>F76939</entry>
+              </identifier>
+              <title>
+                <string language="en">video6.swf</string>
+              </title>
+              <language>en</language>
+              <description>
+                <string language="en">video6.swf</string>
+              </description>
+              <aggregationLevel>
+                <source>LOMv1.0</source>
+                <value>1</value>
+              </aggregationLevel>
+            </general>
+            <lifeCycle>
+              <version>
+                <string>1.0</string>
+              </version>
+            </lifeCycle>
+            <metaMetadata>
+              <identifier>
+                <catalog>TLF-Metadata</catalog>
+                <entry>87983</entry>
+              </identifier>
+              <metadataSchema>LOMv1.0</metadataSchema>
+              <metadataSchema>SCORM_CAM_v1.3</metadataSchema>
+              <metadataSchema>TLFv2.1</metadataSchema>
+              <metadataSchema>EdNAv1.1</metadataSchema>
+              <language>en</language>
+            </metaMetadata>
+            <technical>
+              <format>application/x-shockwave-flash</format>
+              <size>203308</size>
+            </technical>
+            <rights>
+              <cost>
+                <source>LOMv1.0</source>
+                <value>no</value>
+              </cost>
+              <copyrightAndOtherRestrictions>
+                <source>LOMv1.0</source>
+                <value>yes</value>
+              </copyrightAndOtherRestrictions>
+            </rights>
+          </lom>
+        </metadata>
+      </file>
+      <file href="swf/video3.swf">
+        <metadata>
+          <lom xmlns="http://ltsc.ieee.org/xsd/LOM">
+            <general>
+              <identifier>
+                <catalog>TLF-File</catalog>
+                <entry>F76940</entry>
+              </identifier>
+              <title>
+                <string language="en">video3.swf</string>
+              </title>
+              <language>en</language>
+              <description>
+                <string language="en">video3.swf</string>
+              </description>
+              <aggregationLevel>
+                <source>LOMv1.0</source>
+                <value>1</value>
+              </aggregationLevel>
+            </general>
+            <lifeCycle>
+              <version>
+                <string>1.0</string>
+              </version>
+            </lifeCycle>
+            <metaMetadata>
+              <identifier>
+                <catalog>TLF-Metadata</catalog>
+                <entry>87984</entry>
+              </identifier>
+              <metadataSchema>LOMv1.0</metadataSchema>
+              <metadataSchema>SCORM_CAM_v1.3</metadataSchema>
+              <metadataSchema>TLFv2.1</metadataSchema>
+              <metadataSchema>EdNAv1.1</metadataSchema>
+              <language>en</language>
+            </metaMetadata>
+            <technical>
+              <format>application/x-shockwave-flash</format>
+              <size>107604</size>
+            </technical>
+            <rights>
+              <cost>
+                <source>LOMv1.0</source>
+                <value>no</value>
+              </cost>
+              <copyrightAndOtherRestrictions>
+                <source>LOMv1.0</source>
+                <value>yes</value>
+              </copyrightAndOtherRestrictions>
+            </rights>
+          </lom>
+        </metadata>
+      </file>
+      <file href="swf/video5.swf">
+        <metadata>
+          <lom xmlns="http://ltsc.ieee.org/xsd/LOM">
+            <general>
+              <identifier>
+                <catalog>TLF-File</catalog>
+                <entry>F76941</entry>
+              </identifier>
+              <title>
+                <string language="en">video5.swf</string>
+              </title>
+              <language>en</language>
+              <description>
+                <string language="en">video5.swf</string>
+              </description>
+              <aggregationLevel>
+                <source>LOMv1.0</source>
+                <value>1</value>
+              </aggregationLevel>
+            </general>
+            <lifeCycle>
+              <version>
+                <string>1.0</string>
+              </version>
+            </lifeCycle>
+            <metaMetadata>
+              <identifier>
+                <catalog>TLF-Metadata</catalog>
+                <entry>87985</entry>
+              </identifier>
+              <metadataSchema>LOMv1.0</metadataSchema>
+              <metadataSchema>SCORM_CAM_v1.3</metadataSchema>
+              <metadataSchema>TLFv2.1</metadataSchema>
+              <metadataSchema>EdNAv1.1</metadataSchema>
+              <language>en</language>
+            </metaMetadata>
+            <technical>
+              <format>application/x-shockwave-flash</format>
+              <size>74428</size>
+            </technical>
+            <rights>
+              <cost>
+                <source>LOMv1.0</source>
+                <value>no</value>
+              </cost>
+              <copyrightAndOtherRestrictions>
+                <source>LOMv1.0</source>
+                <value>yes</value>
+              </copyrightAndOtherRestrictions>
+            </rights>
+          </lom>
+        </metadata>
+      </file>
+      <file href="swf/video1.swf">
+        <metadata>
+          <lom xmlns="http://ltsc.ieee.org/xsd/LOM">
+            <general>
+              <identifier>
+                <catalog>TLF-File</catalog>
+                <entry>F76942</entry>
+              </identifier>
+              <title>
+                <string language="en">video1.swf</string>
+              </title>
+              <language>en</language>
+              <description>
+                <string language="en">video1.swf</string>
+              </description>
+              <aggregationLevel>
+                <source>LOMv1.0</source>
+                <value>1</value>
+              </aggregationLevel>
+            </general>
+            <lifeCycle>
+              <version>
+                <string>1.0</string>
+              </version>
+            </lifeCycle>
+            <metaMetadata>
+              <identifier>
+                <catalog>TLF-Metadata</catalog>
+                <entry>87986</entry>
+              </identifier>
+              <metadataSchema>LOMv1.0</metadataSchema>
+              <metadataSchema>SCORM_CAM_v1.3</metadataSchema>
+              <metadataSchema>TLFv2.1</metadataSchema>
+              <metadataSchema>EdNAv1.1</metadataSchema>
+              <language>en</language>
+            </metaMetadata>
+            <technical>
+              <format>application/x-shockwave-flash</format>
+              <size>70888</size>
+            </technical>
+            <rights>
+              <cost>
+                <source>LOMv1.0</source>
+                <value>no</value>
+              </cost>
+              <copyrightAndOtherRestrictions>
+                <source>LOMv1.0</source>
+                <value>yes</value>
+              </copyrightAndOtherRestrictions>
+            </rights>
+          </lom>
+        </metadata>
+      </file>
+      <file href="swf/video4.swf">
+        <metadata>
+          <lom xmlns="http://ltsc.ieee.org/xsd/LOM">
+            <general>
+              <identifier>
+                <catalog>TLF-File</catalog>
+                <entry>F76943</entry>
+              </identifier>
+              <title>
+                <string language="en">video4.swf</string>
+              </title>
+              <language>en</language>
+              <description>
+                <string language="en">video4.swf</string>
+              </description>
+              <aggregationLevel>
+                <source>LOMv1.0</source>
+                <value>1</value>
+              </aggregationLevel>
+            </general>
+            <lifeCycle>
+              <version>
+                <string>1.0</string>
+              </version>
+            </lifeCycle>
+            <metaMetadata>
+              <identifier>
+                <catalog>TLF-Metadata</catalog>
+                <entry>87987</entry>
+              </identifier>
+              <metadataSchema>LOMv1.0</metadataSchema>
+              <metadataSchema>SCORM_CAM_v1.3</metadataSchema>
+              <metadataSchema>TLFv2.1</metadataSchema>
+              <metadataSchema>EdNAv1.1</metadataSchema>
+              <language>en</language>
+            </metaMetadata>
+            <technical>
+              <format>application/x-shockwave-flash</format>
+              <size>50128</size>
+            </technical>
+            <rights>
+              <cost>
+                <source>LOMv1.0</source>
+                <value>no</value>
+              </cost>
+              <copyrightAndOtherRestrictions>
+                <source>LOMv1.0</source>
+                <value>yes</value>
+              </copyrightAndOtherRestrictions>
+            </rights>
+          </lom>
+        </metadata>
+      </file>
+      <file href="swf/video7.swf">
+        <metadata>
+          <lom xmlns="http://ltsc.ieee.org/xsd/LOM">
+            <general>
+              <identifier>
+                <catalog>TLF-File</catalog>
+                <entry>F76944</entry>
+              </identifier>
+              <title>
+                <string language="en">video7.swf</string>
+              </title>
+              <language>en</language>
+              <description>
+                <string language="en">video7.swf</string>
+              </description>
+              <aggregationLevel>
+                <source>LOMv1.0</source>
+                <value>1</value>
+              </aggregationLevel>
+            </general>
+            <lifeCycle>
+              <version>
+                <string>1.0</string>
+              </version>
+            </lifeCycle>
+            <metaMetadata>
+              <identifier>
+                <catalog>TLF-Metadata</catalog>
+                <entry>87988</entry>
+              </identifier>
+              <metadataSchema>LOMv1.0</metadataSchema>
+              <metadataSchema>SCORM_CAM_v1.3</metadataSchema>
+              <metadataSchema>TLFv2.1</metadataSchema>
+              <metadataSchema>EdNAv1.1</metadataSchema>
+              <language>en</language>
+            </metaMetadata>
+            <technical>
+              <format>application/x-shockwave-flash</format>
+              <size>115310</size>
+            </technical>
+            <rights>
+              <cost>
+                <source>LOMv1.0</source>
+                <value>no</value>
+              </cost>
+              <copyrightAndOtherRestrictions>
+                <source>LOMv1.0</source>
+                <value>yes</value>
+              </copyrightAndOtherRestrictions>
+            </rights>
+          </lom>
+        </metadata>
+      </file>
+      <file href="swf/video2.swf">
+        <metadata>
+          <lom xmlns="http://ltsc.ieee.org/xsd/LOM">
+            <general>
+              <identifier>
+                <catalog>TLF-File</catalog>
+                <entry>F76945</entry>
+              </identifier>
+              <title>
+                <string language="en">video2.swf</string>
+              </title>
+              <language>en</language>
+              <description>
+                <string language="en">video2.swf</string>
+              </description>
+              <aggregationLevel>
+                <source>LOMv1.0</source>
+                <value>1</value>
+              </aggregationLevel>
+            </general>
+            <lifeCycle>
+              <version>
+                <string>1.0</string>
+              </version>
+            </lifeCycle>
+            <metaMetadata>
+              <identifier>
+                <catalog>TLF-Metadata</catalog>
+                <entry>87989</entry>
+              </identifier>
+              <metadataSchema>LOMv1.0</metadataSchema>
+              <metadataSchema>SCORM_CAM_v1.3</metadataSchema>
+              <metadataSchema>TLFv2.1</metadataSchema>
+              <metadataSchema>EdNAv1.1</metadataSchema>
+              <language>en</language>
+            </metaMetadata>
+            <technical>
+              <format>application/x-shockwave-flash</format>
+              <size>115025</size>
+            </technical>
+            <rights>
+              <cost>
+                <source>LOMv1.0</source>
+                <value>no</value>
+              </cost>
+              <copyrightAndOtherRestrictions>
+                <source>LOMv1.0</source>
+                <value>yes</value>
+              </copyrightAndOtherRestrictions>
+            </rights>
+          </lom>
+        </metadata>
+      </file>
+      <file href="jpg/pilot.jpg">
+        <metadata>
+          <lom xmlns="http://ltsc.ieee.org/xsd/LOM">
+            <general>
+              <identifier>
+                <catalog>TLF-File</catalog>
+                <entry>F76947</entry>
+              </identifier>
+              <title>
+                <string language="en">pilot.jpg</string>
+              </title>
+              <language>en</language>
+              <description>
+                <string language="en">pilot.jpg</string>
+              </description>
+              <aggregationLevel>
+                <source>LOMv1.0</source>
+                <value>1</value>
+              </aggregationLevel>
+            </general>
+            <lifeCycle>
+              <version>
+                <string>1.0</string>
+              </version>
+            </lifeCycle>
+            <metaMetadata>
+              <identifier>
+                <catalog>TLF-Metadata</catalog>
+                <entry>87991</entry>
+              </identifier>
+              <metadataSchema>LOMv1.0</metadataSchema>
+              <metadataSchema>SCORM_CAM_v1.3</metadataSchema>
+              <metadataSchema>TLFv2.1</metadataSchema>
+              <metadataSchema>EdNAv1.1</metadataSchema>
+              <language>en</language>
+            </metaMetadata>
+            <technical>
+              <format>image/jpeg</format>
+              <size>7626</size>
+            </technical>
+            <rights>
+              <cost>
+                <source>LOMv1.0</source>
+                <value>no</value>
+              </cost>
+              <copyrightAndOtherRestrictions>
+                <source>LOMv1.0</source>
+                <value>yes</value>
+              </copyrightAndOtherRestrictions>
+            </rights>
+          </lom>
+        </metadata>
+      </file>
+      <file href="loader.swf">
+        <metadata>
+          <lom xmlns="http://ltsc.ieee.org/xsd/LOM">
+            <general>
+              <identifier>
+                <catalog>TLF-File</catalog>
+                <entry>F76948</entry>
+              </identifier>
+              <title>
+                <string language="en">loader.swf</string>
+              </title>
+              <language>en</language>
+              <description>
+                <string language="en">loader.swf</string>
+              </description>
+              <aggregationLevel>
+                <source>LOMv1.0</source>
+                <value>1</value>
+              </aggregationLevel>
+            </general>
+            <lifeCycle>
+              <version>
+                <string>2.0</string>
+              </version>
+            </lifeCycle>
+            <metaMetadata>
+              <identifier>
+                <catalog>TLF-Metadata</catalog>
+                <entry>87992</entry>
+              </identifier>
+              <metadataSchema>LOMv1.0</metadataSchema>
+              <metadataSchema>SCORM_CAM_v1.3</metadataSchema>
+              <metadataSchema>TLFv2.1</metadataSchema>
+              <metadataSchema>EdNAv1.1</metadataSchema>
+              <language>en</language>
+            </metaMetadata>
+            <technical>
+              <format>application/x-shockwave-flash</format>
+              <size>6091</size>
+            </technical>
+            <rights>
+              <cost>
+                <source>LOMv1.0</source>
+                <value>no</value>
+              </cost>
+              <copyrightAndOtherRestrictions>
+                <source>LOMv1.0</source>
+                <value>yes</value>
+              </copyrightAndOtherRestrictions>
+            </rights>
+          </lom>
+        </metadata>
+      </file>
+      <file href="xml/content.xml">
+        <metadata>
+          <lom xmlns="http://ltsc.ieee.org/xsd/LOM">
+            <general>
+              <identifier>
+                <catalog>TLF-File</catalog>
+                <entry>F76938</entry>
+              </identifier>
+              <title>
+                <string language="en">content.xml</string>
+              </title>
+              <language>en</language>
+              <description>
+                <string language="en">content.xml</string>
+              </description>
+              <aggregationLevel>
+                <source>LOMv1.0</source>
+                <value>1</value>
+              </aggregationLevel>
+            </general>
+            <lifeCycle>
+              <version>
+                <string>4.0</string>
+              </version>
+            </lifeCycle>
+            <metaMetadata>
+              <identifier>
+                <catalog>TLF-Metadata</catalog>
+                <entry>87982</entry>
+              </identifier>
+              <metadataSchema>LOMv1.0</metadataSchema>
+              <metadataSchema>SCORM_CAM_v1.3</metadataSchema>
+              <metadataSchema>TLFv2.1</metadataSchema>
+              <metadataSchema>EdNAv1.1</metadataSchema>
+              <language>en</language>
+            </metaMetadata>
+            <technical>
+              <format>text/xml</format>
+              <size>28523</size>
+            </technical>
+            <rights>
+              <cost>
+                <source>LOMv1.0</source>
+                <value>no</value>
+              </cost>
+              <copyrightAndOtherRestrictions>
+                <source>LOMv1.0</source>
+                <value>yes</value>
+              </copyrightAndOtherRestrictions>
+            </rights>
+          </lom>
+        </metadata>
+      </file>
+      <file href="index.swf">
+        <metadata>
+          <lom xmlns="http://ltsc.ieee.org/xsd/LOM">
+            <general>
+              <identifier>
+                <catalog>TLF-File</catalog>
+                <entry>F76949</entry>
+              </identifier>
+              <title>
+                <string language="en">index.swf</string>
+              </title>
+              <language>en</language>
+              <description>
+                <string language="en">index.swf</string>
+              </description>
+              <aggregationLevel>
+                <source>LOMv1.0</source>
+                <value>1</value>
+              </aggregationLevel>
+            </general>
+            <lifeCycle>
+              <version>
+                <string>3.0</string>
+              </version>
+            </lifeCycle>
+            <metaMetadata>
+              <identifier>
+                <catalog>TLF-Metadata</catalog>
+                <entry>87993</entry>
+              </identifier>
+              <metadataSchema>LOMv1.0</metadataSchema>
+              <metadataSchema>SCORM_CAM_v1.3</metadataSchema>
+              <metadataSchema>TLFv2.1</metadataSchema>
+              <metadataSchema>EdNAv1.1</metadataSchema>
+              <language>en</language>
+            </metaMetadata>
+            <technical>
+              <format>application/x-shockwave-flash</format>
+              <size>245495</size>
+            </technical>
+            <rights>
+              <cost>
+                <source>LOMv1.0</source>
+                <value>no</value>
+              </cost>
+              <copyrightAndOtherRestrictions>
+                <source>LOMv1.0</source>
+                <value>yes</value>
+              </copyrightAndOtherRestrictions>
+            </rights>
+          </lom>
+        </metadata>
+      </file>
+      <file href="index.html">
+        <metadata>
+          <lom xmlns="http://ltsc.ieee.org/xsd/LOM">
+            <general>
+              <identifier>
+                <catalog>TLF-File</catalog>
+                <entry>F76950</entry>
+              </identifier>
+              <title>
+                <string language="en">index.html</string>
+              </title>
+              <language>en</language>
+              <description>
+                <string language="en">index.html</string>
+              </description>
+              <aggregationLevel>
+                <source>LOMv1.0</source>
+                <value>1</value>
+              </aggregationLevel>
+            </general>
+            <lifeCycle>
+              <version>
+                <string>3.0</string>
+              </version>
+            </lifeCycle>
+            <metaMetadata>
+              <identifier>
+                <catalog>TLF-Metadata</catalog>
+                <entry>87994</entry>
+              </identifier>
+              <metadataSchema>LOMv1.0</metadataSchema>
+              <metadataSchema>SCORM_CAM_v1.3</metadataSchema>
+              <metadataSchema>TLFv2.1</metadataSchema>
+              <metadataSchema>EdNAv1.1</metadataSchema>
+              <language>en</language>
+            </metaMetadata>
+            <technical>
+              <format>text/html</format>
+              <size>1082</size>
+            </technical>
+            <rights>
+              <cost>
+                <source>LOMv1.0</source>
+                <value>no</value>
+              </cost>
+              <copyrightAndOtherRestrictions>
+                <source>LOMv1.0</source>
+                <value>yes</value>
+              </copyrightAndOtherRestrictions>
+            </rights>
+          </lom>
+        </metadata>
+      </file>
+      <file href="css/style.css">
+        <metadata>
+          <lom xmlns="http://ltsc.ieee.org/xsd/LOM">
+            <general>
+              <identifier>
+                <catalog>TLF-File</catalog>
+                <entry>F76946</entry>
+              </identifier>
+              <title>
+                <string language="en">style.css</string>
+              </title>
+              <language>en</language>
+              <description>
+                <string language="en">style.css</string>
+              </description>
+              <aggregationLevel>
+                <source>LOMv1.0</source>
+                <value>1</value>
+              </aggregationLevel>
+            </general>
+            <lifeCycle>
+              <version>
+                <string>3.0</string>
+              </version>
+            </lifeCycle>
+            <metaMetadata>
+              <identifier>
+                <catalog>TLF-Metadata</catalog>
+                <entry>87990</entry>
+              </identifier>
+              <metadataSchema>LOMv1.0</metadataSchema>
+              <metadataSchema>SCORM_CAM_v1.3</metadataSchema>
+              <metadataSchema>TLFv2.1</metadataSchema>
+              <metadataSchema>EdNAv1.1</metadataSchema>
+              <language>en</language>
+            </metaMetadata>
+            <technical>
+              <format>text/css</format>
+              <size>378</size>
+            </technical>
+            <rights>
+              <cost>
+                <source>LOMv1.0</source>
+                <value>no</value>
+              </cost>
+              <copyrightAndOtherRestrictions>
+                <source>LOMv1.0</source>
+                <value>yes</value>
+              </copyrightAndOtherRestrictions>
+            </rights>
+          </lom>
+        </metadata>
+      </file>
+      <file href="ConditionsOfUse.html">
+      </file>
+      <file href="description.html">
+      </file>
+    </resource>
+  </resources>
+</manifest>

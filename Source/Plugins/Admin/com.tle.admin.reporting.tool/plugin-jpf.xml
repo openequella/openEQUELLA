@@ -1,0 +1,38 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.reporting.tool" version="1">
+	<attributes>
+		<attribute id="type" value="admin-console" />
+	</attributes>
+
+	<requires>
+		<import plugin-id="com.tle.admin.tools" />
+
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.recipientselector" />
+		<import plugin-id="com.tle.common.reporting" />
+
+		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="com.tle.common.usermanagement" />
+		<import plugin-id="com.tle.common.entity" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension plugin-id="com.tle.admin.tools" point-id="tool" id="reportingtool">
+		<parameter id="displayorder" value="700" />
+		<parameter id="name" value="com.tle.admin.gui.reportingtool.name" />
+		<parameter id="class" value="com.tle.admin.reporting.tool.ReportingTool" />
+		<parameter id="privilege" value="CREATE_REPORT" />
+		<parameter id="privilege" value="EDIT_REPORT" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="admin-console" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+</plugin>

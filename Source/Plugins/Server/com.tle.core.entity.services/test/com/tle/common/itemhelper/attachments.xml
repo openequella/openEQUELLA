@@ -1,0 +1,41 @@
+<xml>
+	<attachments>
+		<attachment type="local">
+			<conversion>true</conversion>
+			<size>1000</size>
+			<thumbnail>thumby.png</thumbnail>
+			<uuid>74accd19-a216-4ceb-a367-1a7cd8cd14f2</uuid>
+			<file>frog</file>
+		</attachment>
+		<attachment type="custom">
+			<type>whatever</type>
+			<attributes>
+				<entry>
+					<string>val</string>
+					<string>val</string>
+				</entry>
+				<entry>
+					<string>test</string>
+					<int>1</int>
+				</entry>
+			</attributes>
+			<uuid>fdce9d38-35e0-4e8b-a977-e13bb6bc88d6</uuid>
+			<file />
+		</attachment>
+		<attachment type="imsres">
+			<uuid>c31b6ac8-8183-4537-a36d-3e42b5236d91</uuid>
+			<file>resource.txt</file>
+		</attachment>
+		<attachment disabled="false" type="remote">
+			<uuid>d6a20721-513b-4011-9890-0a59ce3b0413</uuid>
+			<file>http://google.com/</file>
+		</attachment>
+		<attachment mapped="false" type="zip">
+			<uuid>db5d57b4-03ec-483a-b609-de1b36811ba8</uuid>
+			<file>zipfile.zip</file>
+		</attachment>
+	</attachments>
+	<itembody>
+		<packagefile name="ims" scorm="19" size="0">package.zip</packagefile>
+	</itembody>
+</xml>

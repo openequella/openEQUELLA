@@ -1,0 +1,24 @@
+.psssettings #connectionstatus span {
+	padding-left: 30px;
+	display: inline-block;
+	height: 25px;
+}
+
+.psssettings #connectionstatus .ctrlinvalid span {
+	background: url(../images/fail.png) no-repeat;
+	height: 45px;
+}
+
+.psssettings #connectionstatus .success span {
+	background: url(../images/ok.png) no-repeat;
+}
+
+.psssettings .success {
+	color: green;
+	padding: 0 5px 0 5px;
+}
+
+.psssettings .waiting {
+	color: orange;
+	padding: 0 5px 0 5px;
+}

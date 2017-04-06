@@ -1,0 +1,316 @@
+html,body,form,div.qti {
+	height: 100%;
+	background-color: #707070;
+}
+
+div.qti .area {
+	border: none;
+	padding: 0px;
+	background-color: #707070
+}
+
+div.qti a
+{
+	/*color: #0C66F4;*/
+	color: #045F7F;
+}
+
+.col hr {
+	margin: 10px;
+}
+
+.qti .navbar span.disabled.brand:hover {
+	color: #999999;
+}
+
+.test-questions-container ul li 
+{
+	line-height:22px;
+}
+
+.test-summary {	
+	margin: 15px;
+	height: 60px;
+}
+
+.test-summary ul li 
+{
+	line-height: 25px;
+}
+
+.summary-label {
+	font-weight: bold;
+	float:left;
+}
+
+.summary-value {
+	margin-left: 135px;
+}
+
+div.qti 
+{
+	background: #707070;
+	margin: none;
+	border: none;
+}
+
+.float-left.col { 
+	width: 350px;
+	background-color: white;
+	margin: 12px 6px 12px 12px;
+	border-radius: 5px 5px 5px 5px;
+	box-shadow: 5px 5px 5px;
+}
+
+.float-right.col { 
+	left: 370px; 
+	right: 0; 
+	background-color: white;
+	margin: 12px 12px 12px 6px;
+	border-radius: 5px 5px 5px 5px;
+	box-shadow: 5px 5px 5px;
+}
+
+.row, .col 
+{ 
+	overflow: hidden; 
+	position: absolute;
+}
+
+.row { left: 0; right: 0; }
+.col { top: 40px; bottom: 0; }
+.scroll-x { overflow-x: auto; }
+.scroll-y { overflow-y: auto; }
+
+.test-questions-container
+{
+	top: 100px;
+	bottom: 0;
+}
+
+.test-questions-container h3 {
+	margin-top: 10px;
+	padding-left: 10px;
+	font-weight: bold;
+}
+
+.test-questions-container ul li a:hover 
+{
+	text-decoration:underline;
+}
+
+li.question 
+{
+	font-size: 12px;
+	position: relative;
+}
+
+li.question a, li.question span
+{
+	display: inline-block;
+	text-decoration:none;
+	padding: 8px 0 8px 15px;
+	width: 100%;
+}
+
+li.question:hover 
+{
+	background-color: #F7F7F7;
+	cursor: pointer;
+}
+
+li.question.active 
+{
+	font-weight:bold;
+	background-color: #EFF6FF;
+}
+
+li.question .indicator
+{
+	position: absolute;
+	top: 0px;
+	left: 2px;
+	width: 5px;
+	height: 100%;
+}
+
+li.question.active .indicator
+{
+	background-color: #BFC6CC;
+}
+
+li.question.answered .indicator
+{
+	background-color: #3355AC;
+}
+
+.question-header {
+	margin: 15px;
+	height: 60px;
+}
+
+.question-body-container {
+	top: 100px;
+	bottom: 0;
+}
+
+.top-empty-row {
+	height:5%;
+}
+
+.buttons-prevnext
+{
+	text-align: right;
+}
+
+.question-body 
+{
+    min-height: 50%;
+    padding: 10px 15px 10px;
+}
+
+.question-body h3 
+{
+ margin-top: 15px;	
+}
+
+.question-body ol.xhtml 
+{
+	list-style: lower-alpha;
+}
+
+.question-body ul.xhtml, .question-body ul.choiceInteraction 
+{
+	margin-top:10px;
+	padding: 1em;
+}
+
+.question-body textarea.xhtml 
+{
+	width: 80%;
+	min-height: 350px;
+}
+
+.question-body .newListSelected 
+{
+	display: inline-block;
+	line-height:1.5;
+	vertical-align: middle;
+	padding: 1.5px 6px;
+}
+.questionbody .newListSelected ul 
+{
+	margin-top:0;
+}
+
+.question-body p input[type="text"] 
+{
+	vertical-align:bottom;
+} 
+
+.question-body div.input.checkbox label, .question-body div.input.radio label
+{
+	padding-top: 0px;
+}
+
+.question-body ul.choiceInteraction li
+{
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.question-body p, 
+.question-body span, 
+.question-body div, 
+.question-body a, 
+.question-body blockquote,
+.question-body input[type="text"],
+.question-body input[type="number"]
+{
+	font-size: 12pt;
+}
+
+.question-body h1.xhtml, .question-body h2.xhtml, .question-body h3.xhtml
+{
+	margin-bottom: 1em;
+}
+
+.question-body h1.xhtml
+{
+	font-size: 16pt;
+}
+
+.question-body h2.xhtml
+{
+	font-size: 15pt;
+}
+
+.question-body h3.xhtml
+{
+	font-size: 14pt;
+}
+
+.question-body p.xhtml
+{
+	line-height: normal;
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+.question-body blockquote.xhtml
+{
+	padding: 10px;
+	background-color: #E0E0E0;
+}
+
+.question-body div.xhtml
+{
+	margin-bottom: 1em;
+}
+
+/* FIXME: make like receipt */
+div.feedback, span.feedback
+{
+	color: #50A0A0;
+}
+
+.nosupport
+{	
+	background-color: #FFDCDC;
+	padding: 0.5em;
+	border-color: #D8000C;
+	border-style: solid;
+	border-width: 1px;
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+span.nosupport
+{
+	display: inline-block;
+}
+
+.hint
+{
+	display: none;
+	margin-top: 0.5em;
+}
+
+div.prompt
+{
+	font-weight: bold;
+}
+
+.MathJax_Display 
+{
+    text-align: left!important;
+}
+
+.question-body .unboundresponse, .question-body .invalidresponse
+{
+	border: 1px solid red;
+}
+
+body.qtiplayvieweriframe #qpv_navBar {
+	display: none;
+}

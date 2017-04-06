@@ -1,0 +1,31 @@
+/* duped with handler.css in my content...*/
+
+.universalresourcedialog.mypagesHandler .area
+{
+	padding-top: 0px;
+}
+
+.universalresourcedialog.mypagesHandler .control.ctrlinvalid 
+{
+	background-color: #FDD;
+	padding: 10px;
+	position: relative;
+	left: -10px;
+}
+
+.universalresourcedialog.mypagesHandler .ctrlmandatory, 
+.universalresourcedialog.mypagesHandler .ctrlinvalidmessage 
+{
+	color: red;
+	text-align: center;
+}
+
+.universalresourcedialog.mypagesHandler input[type=text] 
+{
+	width: 574px;
+}
+
+.universalresourcedialog.mypagesHandler p 
+{
+	margin: 4px 0;
+}

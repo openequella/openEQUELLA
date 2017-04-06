@@ -1,0 +1,747 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+           targetNamespace="http://www.blackboard.com/bb-manifest-plugin"
+           xmlns="http://www.blackboard.com/bb-manifest-plugin">
+
+  <xs:complexType name="value-string">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="value" use="required" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="value-bool">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="value" use="required" type="xs:boolean" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+
+  <xs:element name="manifest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="plugin" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="plugin">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="name" type="value-string" >
+          <xs:annotation>
+            <xs:documentation>Name of the B2. May be a language key, loaded from your bb-manifest-xx_XX bundles. Must not exceed 50 characters.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="handle" type="value-string">
+          <xs:annotation>
+            <xs:documentation>Identifier of the B2. Must not exceed 32 characters.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" name="description" type="value-string">
+          <xs:annotation>
+            <xs:documentation>Description of the B2. May be a language key, loaded from your bb-manifest-xx_XX bundles.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" name="default-locale" type="value-string">
+          <xs:annotation>
+            <xs:documentation>Default locale to use for the B2. If not set, the system default locale will be used.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" name="webapp-type" type="value-string">
+          <xs:annotation>
+            <xs:documentation>The type of B2. May be 'java', 'javaext', or 'net'. Defaults to 'java'.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="version" type="value-string">
+          <xs:annotation>
+            <xs:documentation>Version number for the B2. e.g. '2.5.0.23'</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="vendor">
+          <xs:annotation>
+            <xs:documentation>Information about the vendor who created the B2.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" name="hidden" type="value-bool">
+          <xs:annotation>
+            <xs:documentation>Indicates that the B2 should be hidden from the admin UI. Only signed B2s may use this feature.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" name="http-actions" type="plugin-http-actions">
+          <xs:annotation>
+            <xs:documentation>Common URLs exposed by the B2.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" ref="permissions">
+          <xs:annotation>
+            <xs:documentation>Permissions required by the B2.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="requires">
+          <xs:annotation>
+            <xs:documentation>Installation requirements for the B2.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" ref="webservice">
+          <xs:annotation>
+            <xs:documentation>Web Services provided by the B2.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" ref="required-webservices">
+          <xs:annotation>
+            <xs:documentation>Learn Web Services the B2 makes use of.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" name="legacy-ui" type="value-bool">
+          <xs:annotation>
+            <xs:documentation>Indicates that the B2 uses pre-9.0 taglibs. If not specified, the minimum version
+            supported by the bbversion element will be used to determine whether to use the legacy UI.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" ref="entitlements">
+          <xs:annotation>
+            <xs:documentation>Custom entitlements defined by the B2.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" ref="content-handlers">
+          <xs:annotation>
+            <xs:documentation>Content handlers defined by the B2.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" ref="score-providers">
+          <xs:annotation>
+            <xs:documentation>Score providers defined by the B2.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" ref="application-defs">
+          <xs:annotation>
+            <xs:documentation>Applications defined by the B2.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" name="links" type="application-links">
+          <xs:annotation>
+            <xs:documentation>Deprecated. Define links from within application-defs.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" ref="module-defs">
+          <xs:annotation>
+            <xs:documentation>Modules defined by the B2.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" ref="reports">
+          <xs:annotation>
+            <xs:documentation>Reports defined by the B2.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" ref="schema-dirs">
+          <xs:annotation>
+            <xs:documentation>Directories containing database schema definitions to parse during installation.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" ref="extension-defs">
+          <xs:annotation>
+            <xs:documentation>Extensions defined by the B2.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" ref="data-integration-handlers">
+          <xs:annotation>
+            <xs:documentation>Data integration handlers defined by the B2.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="vendor">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="id" type="value-string" />
+        <xs:element name="name" type="value-string" />
+        <xs:element name="url" type="value-string" />
+        <xs:element minOccurs="0" name="description" type="value-string" />
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="permissions">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="permission" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="permission">
+    <xs:complexType>
+      <xs:attribute name="actions" type="xs:string" />
+      <xs:attribute name="name" use="required" type="xs:string" />
+      <xs:attribute name="type" use="required" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:complexType name="plugin-http-actions">
+    <xs:all>
+      <xs:element minOccurs="0" name="config" type="value-string" />
+      <xs:element minOccurs="0" name="remove" type="value-string" />
+    </xs:all>
+  </xs:complexType>
+
+
+  <xs:element name="requires">
+    <xs:complexType>
+      <xs:all>
+        <xs:element ref="bbversion">
+          <xs:annotation>
+            <xs:documentation>Version of Learn required by this B2.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" ref="csversion">
+          <xs:annotation>
+            <xs:documentation>Version of Content System required by this B2.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" name="bbclient" type="value-string">
+          <xs:annotation>
+            <xs:documentation>MD5 hashed Learn client IDs that are allowed to install this B2.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="bbversion">
+    <xs:complexType>
+      <xs:attribute name="value" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Minimum version of Learn required by this B2. Ignored if 'min' is set.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="min" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Minimum version of Learn required by this B2. Overrides 'value' attribute.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="max" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Maximum version of Learn supported by this B2.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="csversion">
+    <xs:complexType>
+      <xs:attribute name="ifMissing" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Action to perform if Content System is not installed. May be 'fail' or 'warn'.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="value" use="required" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="webservice">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" name="filename" type="value-string">
+          <xs:annotation>
+            <xs:documentation>The relative path to a web service bundle within the B2.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="required-webservices">
+    <xs:complexType>
+      <xs:all>
+        <xs:element minOccurs="0" name="tool-login" type="required-webservices-child" />
+        <xs:element minOccurs="0" name="ticket-login" type="required-webservices-child" />
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="required-webservices-child">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="service" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="service">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="operation" type="xs:string" />
+      </xs:sequence>
+      <xs:attribute name="name" use="required" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="entitlements">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="entitlement" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="entitlement">
+    <xs:complexType>
+      <xs:attribute name="label" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Label for entitlement. May be a language key, loaded from your bb-manifest-xx_XX bundles.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="template" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Core entitlement to use as a template when creating this new entitlement.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="type" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Type of entitlement. May be one of: Course, Personal, System.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="uid" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Unique ID for this entitlement.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="content-handlers">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="content-handler" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="content-handler">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="name" type="value-string">
+          <xs:annotation>
+            <xs:documentation>May be a language key, loaded from your bb-manifest-xx_XX bundles.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="handle" type="value-string" />
+        <xs:element name="http-actions" type="content-handler-http-actions" />
+        <xs:element minOccurs="0" ref="types" />
+        <xs:element minOccurs="0" name="icons" type="content-handler-icons" />
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="types">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" name="type" type="content-handler-type" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="content-handler-http-actions">
+    <xs:all>
+      <xs:element minOccurs="0" name="create" type="value-string" />
+      <xs:element minOccurs="0" name="modify" type="value-string" />
+      <xs:element minOccurs="0" name="view" type="value-string" />
+      <xs:element minOccurs="0" name="cpview" type="value-string" />
+      <xs:element minOccurs="0" name="remove" type="value-string" />
+      <xs:element minOccurs="0" name="can-copy" type="value-bool" />
+    </xs:all>
+  </xs:complexType>
+
+  <xs:complexType name="content-handler-type">
+    <xs:all>
+      <xs:element name="action-type" type="value-string" />
+      <xs:element minOccurs="0" name="create-text" type="value-string" />
+    </xs:all>
+  </xs:complexType>
+
+  <xs:complexType name="content-handler-icons">
+    <xs:all>
+      <xs:element minOccurs="0" name="listitem" type="value-string" />
+      <xs:element minOccurs="0" name="toolbar" type="value-string" />
+    </xs:all>
+  </xs:complexType>
+
+
+  <xs:element name="score-providers">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="score-provider" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="score-provider">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="name" type="value-string" />
+        <xs:element name="handle" type="value-string" />
+        <xs:element minOccurs="0" name="grade-action" type="value-string" />
+        <xs:element minOccurs="0" name="review-action" type="value-string" />
+        <xs:element minOccurs="0" name="allow-multiple" type="value-bool" />
+        <xs:element minOccurs="0" name="attempt-based" type="value-bool" />
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="application-defs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="application" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="application">
+    <xs:complexType>
+      <xs:all>
+        <xs:element minOccurs="0" name="icons" type="application-icons" />
+        <xs:element name="links" type="application-links" />
+        <xs:element minOccurs="0" name="description" type="application-description">
+          <xs:annotation>
+            <xs:documentation>Deprecated. This field will not be used.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:all>
+      <xs:attribute name="handle" use="required" type="xs:string" />
+      <xs:attribute name="type" type="xs:string" />
+      <xs:attribute name="name" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>May be a language key, loaded from your bb-manifest-xx_XX bundles.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="use-ssl" type="xs:boolean" />
+      <xs:attribute name="can-allow-guest" type="xs:boolean" />
+      <xs:attribute name="is-sys-tool" type="xs:boolean" />
+      <xs:attribute name="is-course-tool" type="xs:boolean" />
+      <xs:attribute name="is-org-tool" type="xs:boolean" />
+      <xs:attribute name="is-group-tool" type="xs:boolean" />
+      <xs:attribute name="disable-tools" type="xs:boolean" />
+      <xs:attribute name="small-icon" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Deprecated. This field will not be used.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="large-icon" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Deprecated. This field will not be used.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="application-description" mixed="true">
+    <xs:annotation>
+      <xs:documentation>May be a language key, loaded from your bb-manifest-xx_XX bundles.</xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="lang" type="xs:string" />
+  </xs:complexType>
+
+  <xs:complexType name="application-icons">
+    <xs:all>
+      <xs:element minOccurs="0" name="small" type="value-string" />
+      <xs:element minOccurs="0" name="large" type="value-string" />
+      <xs:element minOccurs="0" name="tree" type="value-string" />
+    </xs:all>
+  </xs:complexType>
+
+  <xs:complexType name="application-links">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="link" type="application-link" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="application-link">
+    <xs:all>
+      <xs:element name="type" type="value-string" />
+      <xs:element name="name" type="value-string">
+        <xs:annotation>
+          <xs:documentation>May be a language key, loaded from your bb-manifest-xx_XX bundles.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="url" type="value-string" />
+      <xs:element minOccurs="0" name="description" type="value-string">
+        <xs:annotation>
+          <xs:documentation>May be a language key, loaded from your bb-manifest-xx_XX bundles.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="entitlement-uid" type="value-string">
+        <xs:annotation>
+          <xs:documentation>Entitlement required to view link.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="icons" type="application-link-icons" />
+      <xs:element minOccurs="0" name="navhandle" type="value-string" />
+      <xs:element minOccurs="0" name="component" type="value-string" />
+      <xs:element minOccurs="0" name="handle" type="value-string" />
+      <xs:element minOccurs="0" name="subgroup" type="value-string" />
+    </xs:all>
+  </xs:complexType>
+
+  <xs:complexType name="application-link-icons">
+    <xs:all>
+      <xs:element minOccurs="0" name="listitem" type="value-string" />
+    </xs:all>
+  </xs:complexType>
+
+
+  <xs:element name="module-defs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="module-type" />
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="rss-channel" />
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="module" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="module-type">
+    <xs:complexType>
+      <xs:all>
+        <xs:element minOccurs="0" name="jsp-dir" type="xs:string" />
+        <xs:element minOccurs="0" name="jsp" type="module-type-jsp" />
+        <xs:element minOccurs="0" name="web-dir" type="xs:string" />
+        <xs:element minOccurs="0" name="web" type="module-type-jsp" />
+      </xs:all>
+      <xs:attribute name="title" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>May be a language key, loaded from your bb-manifest-xx_XX bundles.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="ext-ref" use="required" type="xs:string" />
+      <xs:attribute name="uicreatable" type="xs:boolean" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="module-type-jsp">
+    <xs:all>
+      <xs:element name="view" type="xs:string" />
+      <xs:element minOccurs="0" name="edit" type="xs:string" />
+      <xs:element minOccurs="0" name="admin" type="xs:string" />
+    </xs:all>
+  </xs:complexType>
+
+  <xs:element name="rss-channel">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="data-url" type="xs:string" />
+        <xs:element minOccurs="0" name="link-url" type="xs:string" />
+        <xs:element minOccurs="0" name="image-url" type="xs:string" />
+      </xs:sequence>
+      <xs:attribute name="title" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>May be a language key, loaded from your bb-manifest-xx_XX bundles.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="ext-ref" use="required" type="xs:string" />
+      <xs:attribute name="update-frequency" type="xs:integer" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="module">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="description" type="module-description" />
+        <xs:element ref="ExtraInfo" />
+        <xs:element minOccurs="0" ref="module-groups" />
+      </xs:all>
+      <xs:attribute name="type" use="required" type="xs:string" />
+      <xs:attribute name="title" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>May be a language key, loaded from your bb-manifest-xx_XX bundles.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="isadmin" type="xs:boolean" />
+      <xs:attribute name="hidetitle" type="xs:boolean" />
+      <xs:attribute name="isdeletable" type="xs:boolean" />
+      <xs:attribute name="useraddable" type="xs:boolean" />
+      <xs:attribute name="isavailabletocourse" type="xs:boolean" />
+      <xs:attribute name="isavailabletoorganization" type="xs:boolean" />
+      <xs:attribute name="ext-ref" type="xs:string" />
+      <xs:attribute name="isdetachable" type="xs:string" />
+      <xs:attribute name="sort-priority" type="xs:integer" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="module-description" mixed="true">
+    <xs:annotation>
+      <xs:documentation>May be a language key, loaded from your bb-manifest-xx_XX bundles.</xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="format" type="xs:string" />
+  </xs:complexType>
+
+  <xs:element name="ExtraInfo">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="property" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="property">
+    <xs:complexType mixed="true">
+      <xs:attribute name="key" use="required" type="xs:string" />
+      <xs:attribute name="type" use="required" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="module-groups">
+    <xs:complexType>
+      <xs:all>
+        <xs:element minOccurs="0" ref="module-group" />
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="module-group">
+    <xs:complexType>
+      <xs:all>
+        <xs:element minOccurs="0" ref="module-group" />
+      </xs:all>
+      <xs:attribute name="id" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="reports">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="report-package" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="report-package">
+    <xs:complexType>
+      <xs:attribute name="file-name" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>The relative path to a report bundle within the B2.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="schema-dirs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="schema-dir" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="schema-dir">
+    <xs:complexType>
+      <xs:attribute name="dir-name" use="required" type="xs:string" />
+      <xs:attribute name="database" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="extension-defs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="definition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="definition">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="extension-point" />
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="extension" />
+      </xs:sequence>
+      <xs:attribute name="namespace" use="required" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="extension-point">
+    <xs:complexType>
+      <xs:attribute name="id" use="required" type="xs:string" />
+      <xs:attribute name="type" use="required" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="extension">
+    <xs:complexType>
+      <xs:attribute name="id" use="required" type="xs:string" />
+      <xs:attribute name="factory" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>An implementation of ExtensionFactory that dispenses instances of the extension point. This is required unless 'class' is specified.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="class" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>The class that implements the extension point. This is required unless 'factory' is specified.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="singleton" type="xs:boolean" />
+      <xs:attribute name="point" use="required" type="xs:string" />
+      <xs:anyAttribute processContents="skip">
+        <xs:annotation>
+          <xs:documentation>Any unknown attributes will be accessible via the Extension.getProperties method.</xs:documentation>
+        </xs:annotation>
+      </xs:anyAttribute>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="data-integration-handlers">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="data-integration-handler" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="data-integration-handler">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="name" type="value-string">
+          <xs:annotation>
+            <xs:documentation>May be a language key, loaded from your bb-manifest-xx_XX bundles.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="handle" type="value-string" />
+        <xs:element name="create-url" type="value-string" />
+        <xs:element name="edit-url" type="value-string" />
+        <xs:element name="links" type="data-integration-handler-links" />
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="data-integration-handler-links">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="link" type="data-integration-handler-link" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="data-integration-handler-link">
+    <xs:all>
+      <xs:element name="name" type="value-string">
+        <xs:annotation>
+          <xs:documentation>May be a language key, loaded from your bb-manifest-xx_XX bundles.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="action-url" type="value-string" />
+    </xs:all>
+  </xs:complexType>
+
+</xs:schema>

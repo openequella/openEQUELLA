@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<commands>
+
+	<!-- This command will be run if the installation fails -->
+	<failure>
+		<class name="com.dytech.edge.installer.application.OnFailure"/>
+		<foreign key="installDir" value="${install.path}"/>
+	</failure>
+
+	<command class="foreign">
+		<class name="com.dytech.installer.foreign.SaveResults"/>
+		<foreign key="file" value="${install.path}/install-log.xml"/>
+	</command>
+
+	<command class="delete">
+		<source uri="${install.path}" />
+	</command>
+
+	<!--  -->
+	<!-- Copy over the Upgrade Manager -->
+	<!--  -->
+	
+	<!-- UNIX -->
+	
+	<command class="copy" platform="linux linux64 solaris-sparc solaris-x86 solaris64 mac">
+		<source uri="${installer/local}/manager/unix"/>
+		<destination uri="${install.path}/manager" />
+	</command>
+	
+	<command class="resolver" platform="linux linux64 solaris-sparc solaris-x86 solaris64 mac">
+		<source uri="${installer/local}/manager/unix-config/manager-config.sh.unresolved"/>
+		<destination uri="${install.path}/manager/manager-config.sh" />
+	</command>
+	
+	<command class="resolver" platform="linux linux64 solaris-sparc solaris-x86 solaris64 mac">
+		<source uri="${installer/local}/manager/unix-config/equellaserver-config.sh.unresolved"/>
+		<destination uri="${install.path}/manager/equellaserver-config.sh" />
+	</command>
+	
+	<!-- Linux -->
+	<command class="copy" platform="linux">
+		<source uri="${installer/local}/manager/linux"/>
+		<destination uri="${install.path}/manager"/>
+		<force value="true"/>
+	</command>
+	
+	<!-- Linux -->
+	<command class="copy" platform="linux64">
+		<source uri="${installer/local}/manager/linux64"/>
+		<destination uri="${install.path}/manager"/>
+		<force value="true"/>
+	</command>
+	
+	<!-- Solaris-sparc -->
+	<command class="copy" platform="solaris-sparc">
+		<source uri="${installer/local}/manager/solaris-sparc"/>
+		<destination uri="${install.path}/manager"/>
+		<force value="true"/>
+	</command>
+	
+	<!-- Solaris-x86 -->
+	<command class="copy" platform="solaris-x86">
+		<source uri="${installer/local}/manager/solaris-x86"/>
+		<destination uri="${install.path}/manager"/>
+		<force value="true"/>
+	</command>	
+	
+		<!-- Solaris64 -->
+	<command class="copy" platform="solaris64">
+		<source uri="${installer/local}/manager/solaris64"/>
+		<destination uri="${install.path}/manager"/>
+		<force value="true"/>
+	</command>	
+
+	<!-- Mac -->
+	<command class="copy" platform="mac">
+		<source uri="${installer/local}/manager/mac"/>
+		<destination uri="${install.path}/manager/"/>
+		<force value="true"/>
+	</command>
+	
+	<!-- Windows -->
+	<command class="copy" platform="win32">
+		<source uri="${installer/local}/manager/win32"/>
+		<destination uri="${install.path}/manager/"/>
+		<force value="true"/>
+	</command>
+	
+	<!-- Windows 64-->
+	<command class="copy" platform="win64">
+		<source uri="${installer/local}/manager/win64"/>
+		<destination uri="${install.path}/manager/"/>
+		<force value="true"/>
+	</command>
+	
+	<!-- Windows Common -->
+	<command class="resolver" platform="win32 win64">
+		<source uri="${installer/local}/manager/win-config/manager-config.bat.unresolved"/>
+		<destination uri="${install.path}/manager/manager-config.bat" />
+	</command>
+	
+	<command class="resolver" platform="win32 win64">
+		<source uri="${installer/local}/manager/win-config/equellaserver-config.bat.unresolved"/>
+		<destination uri="${install.path}/manager/equellaserver-config.bat" />
+	</command>
+
+	<!-- platform independent stuff -->
+	<command class="resolver">
+		<source uri="${installer/local}/manager/all/config.properties.unresolved"/>
+		<destination uri="${install.path}/manager/config.properties" />
+	</command>
+	<command class="resolver">
+		<source uri="${installer/local}/manager/all/users.properties.unresolved"/>
+		<destination uri="${install.path}/manager/users.properties" />
+	</command>
+	<command class="copy">
+		<source uri="${installer/local}/manager/all/log4j.properties"/>
+		<destination uri="${install.path}/manager/log4j.properties"/>
+	</command>
+	<command class="copy">
+		<source uri="${installer/local}/manager/all/upgrader-log4j.properties"/>
+		<destination uri="${install.path}/manager/upgrader-log4j.properties"/>
+	</command>
+	<command class="copy">
+		<source uri="${installer/local}/manager/all/manager.jar"/>
+		<destination uri="${install.path}/manager/manager.jar"/>
+	</command>
+	<command class="copy">
+		<source uri="${installer/local}/manager/updates"/>
+		<destination uri="${install.path}/manager/updates"/>
+	</command>
+	
+	<!-- Copy and resolve Equella config files -->
+	<command class="copy">
+		<source uri="${installer/local}/learningedge-config/en-stopWords.txt"/>
+		<destination uri="${install.path}/learningedge-config/en-stopWords.txt"/>
+	</command>
+	<command class="copy">
+		<source uri="${installer/local}/learningedge-config/hikari.properties"/>
+		<destination uri="${install.path}/learningedge-config/hikari.properties"/>
+	</command>
+	<command class="copy">
+		<source uri="${installer/local}/learningedge-config/plugins"/>
+		<destination uri="${install.path}/learningedge-config/plugins"/>
+	</command>
+	<command class="resolver">
+		<source uri="${installer/local}/learningedge-config/mandatory-config.properties"/>
+		<destination uri="${install.path}/learningedge-config/mandatory-config.properties"/>
+	</command>
+	<command class="resolver">
+		<source uri="${installer/local}/learningedge-config/learningedge-log4j.properties"/>
+		<destination uri="${install.path}/learningedge-config/learningedge-log4j.properties"/>
+	</command>
+	<command class="resolver">
+		<source uri="${installer/local}/learningedge-config/optional-config.properties"/>
+		<destination uri="${install.path}/learningedge-config/optional-config.properties"/>
+	</command>
+	<command class="resolver">
+		<source uri="${install.path}/learningedge-config/plugins/com.tle.core.imagemagick/config.properties.unresolved" />
+		<destination uri="${install.path}/learningedge-config/plugins/com.tle.core.imagemagick/config.properties" />
+	</command>
+	<command class="delete">
+		<source uri="${install.path}/learningedge-config/plugins/com.tle.core.imagemagick/config.properties.unresolved" />
+	</command>
+
+	<!-- Copy over the conversion service ${installer/local} -->
+	<command class="copy" platform="win32">
+		<source uri="${installer/local}/conversion/win32"/>
+		<destination uri="${install.path}/conversion"/>
+	</command>
+	<command class="copy" platform="linux">
+		<source uri="${installer/local}/conversion/linux"/>
+		<destination uri="${install.path}/conversion"/>
+	</command>
+	<command class="copy" platform="solaris-sparc">
+		<source uri="${installer/local}/conversion/solaris"/>
+		<destination uri="${install.path}/conversion"/>
+	</command>
+	<command class="copy" platform="win32 linux solaris-sparc">
+		<source uri="${installer/local}/conversion/all/base2"/>
+		<destination uri="${install.path}/conversion/base2"/>
+	</command>
+	<command class="copy" platform="win32 linux solaris-sparc">
+		<source uri="${installer/local}/conversion/all/export.xml"/>
+		<destination uri="${install.path}/conversion/export.xml"/>
+	</command>
+	<command class="copy" platform="win32 linux solaris-sparc">
+		<source uri="${installer/local}/conversion/all/log4j.properties"/>
+		<destination uri="${install.path}/conversion/log4j.properties"/>
+	</command>
+	<command class="move" platform="win32 linux solaris-sparc">
+		<source uri="${install.path}/conversion/dhf_htmlli.dat"/>
+		<destination uri="${install.path}/conversion/base2/dhf_htmlli.dat"/>
+	</command>
+	
+	<!--  Copy over Filestore -->
+	<command class="copy">
+		<source uri="${installer/local}/filestore"/>
+		<destination uri="${install.path}/filestore" />
+	</command>
+
+	<command class="foreign">
+		<class name="com.dytech.edge.installer.DatasourceConfig"/>
+	</command>
+
+	<command class="foreign">
+		<class name="com.dytech.edge.installer.JarResolver"/>
+	</command>
+
+	<command class="foreign">
+		<class name="com.dytech.edge.installer.application.SuccessfulInstall"/>
+	</command>
+</commands>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="com.tle.web.raw" basedir="." default="compile">
+	<property name="compile.for.server" value="false" />
+	<import file="../../build/plugins-common-build.xml" />
+	
+	<target name="make" depends="common.make">
+		<copy file="${source.base}/version.properties" tofile="./resources/web/version.properties" overwrite="true" />
+	</target>
+</project>

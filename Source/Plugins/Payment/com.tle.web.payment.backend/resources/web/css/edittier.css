@@ -1,0 +1,38 @@
+DIV.settingRow.editperiodprice DIV.settingField DIV.control
+{
+	height: 3em;
+}
+
+DIV.settingRow.editperiodprice DIV.settingField DIV.control.ctrlinvalid
+{
+	height: auto;
+}
+
+DIV.settingRow.editperiodprice DIV.settingField DIV.control DIV.enableprice,
+DIV.settingRow.editperiodprice DIV.settingField DIV.control DIV.price
+{
+	float: left;
+	height: 1.5em;
+}
+
+DIV.settingRow.editperiodprice DIV.settingField DIV.control DIV.enableprice
+{
+	margin-right: 20px;
+}
+
+DIV.settingRow.editperiodprice DIV.settingField DIV.control INPUT.price
+{
+	width: 100px;
+}
+
+DIV.settingRow.editperiodprice DIV.settingField DIV.control DIV.price INPUT
+{
+	width: 100px;
+	margin-left: 1em;
+}
+
+.pricemandatory
+{
+	color: red;
+    float: left;
+}

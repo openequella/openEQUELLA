@@ -1,0 +1,5 @@
+hibernate.connection.driver_class = com.microsoft.sqlserver.jdbc.SQLServerDriver
+hibernate.dialect = com.tle.hibernate.dialect.SQLServerDialect
+hibernate.connection.url = jdbc:sqlserver://${datasource/host}:${datasource/port};databaseName=${datasource/database}
+hibernate.connection.username = ${datasource/username}
+hibernate.connection.password = ${datasource/password}

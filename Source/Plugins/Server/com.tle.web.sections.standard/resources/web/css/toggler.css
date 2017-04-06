@@ -1,0 +1,12 @@
+.imageToggler {
+	padding-right: 20px;
+	background: no-repeat 100% 0px;
+}
+
+.imageTogglerChecked, .imageTogglerUnchecked {
+	background-image: url(../images/toggler/togglerchecked.gif);
+}
+
+.imageTogglerChecked:hover, .imageTogglerUnchecked:hover {
+	background-image: url(../images/toggler/togglercheckedhover.gif);
+}

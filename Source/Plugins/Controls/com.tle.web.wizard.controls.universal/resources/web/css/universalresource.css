@@ -1,0 +1,163 @@
+.universalresourcedialog .modal-content {
+	height: 400px;
+}
+
+.universalresourcedialog .modal-content-inner {
+	min-height: 384px;
+}
+
+.universalresourcedialog .pick-resource-type td {
+	cursor: pointer;
+}
+
+.universalresourcedialog .pick-resource-type td.selected {
+	background: #80D2EE !important;
+}
+
+.universalresourcedialog .pick-resource-type td h4 {
+	font-size: 12px;
+	line-height: 1.4;
+}
+
+.universalresourcedialog .file-header
+{
+	height: 140px;
+}
+
+.universalresourcedialog .file-header img.file-thumbnail
+{
+	float: left;
+	width: 88px;
+}
+
+.universalresourcedialog .file-header .file-info
+{
+	float: left;
+	line-height: 1.3;
+	margin-left: 20px;
+}
+
+.universalresourcedialog .input.text label,.universalresourcedialog .input.textarea label
+{
+	padding: 5px 0px;
+}
+
+.universalresourcedialog .input.text input[type="text"],.universalresourcedialog .input.text textarea
+{
+	width: 450px;
+	margin: 5px 0px;
+}
+
+.universalresources td.actions
+{
+	width: 110px;
+}
+
+div.universaliframe { /*
+	This is what the fancybox ends up being
+	for multiple resource handler selection
+	*/
+	height: 476px;
+	overflow: hidden;
+}
+
+div.universaliframe iframe {
+	width: 100%;
+	height: 100%;
+}
+
+.attachment-details table.zebra.detail {
+	border: none;
+	margin: 0px 0px 15px;
+}
+
+.attachment-details .detail .label {
+	font-weight: bold;
+}
+
+.attachment-details .thumbnail {
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+.attachment-details .viewlink {
+	text-align: center;
+	font-weight: bold;
+}
+
+.attachment-details .thumbnail img {
+	height: 66px;
+}
+
+.attachment-content {
+	width: 57%;
+	min-height: 340px;
+	padding: 20px 25px;
+	margin-right: 15px;
+}
+
+.attachment-details {
+	width: 34%;
+}
+
+.attachment-content .settingContainer > .settingRow:first-child 
+{
+    padding-top: 3px;
+}
+
+.attachment-content .settingContainer 
+{
+    width: 432px;
+}
+
+.attachment-content .settingRow .settingLabel 
+{
+    width: 105px;
+}
+
+.attachment-content .settingRow .settingField 
+{
+    width: 315px;
+}
+
+.subsiduaryboxes>.settingRow>.settingField
+{
+	padding-left: 25px;
+	padding-top: 0;
+	width: 290px;
+}
+
+.attachment-content .settingField input[type="text"], 
+.attachment-content .settingField input[type="password"], 
+.attachment-content .settingField textarea, 
+.attachment-content .settingField select 
+{
+	/* IE needs a fixed width for the select it would seem */
+    width: 300px;
+}
+
+.attachment-details hr {
+	margin: 10px 0 10px;
+}
+
+.preview-tag {
+	margin-left: 0.5em;
+}
+
+p.warning {
+	background-color: #F90;
+	border: 1px solid red;
+	margin-bottom: 20px;
+	padding: 10px;
+	text-align: center
+}
+
+.warningimg
+{
+	margin: 5px 20px 5px 55px;
+}
+
+img.warningimg
+{
+	vertical-align: middle;
+}

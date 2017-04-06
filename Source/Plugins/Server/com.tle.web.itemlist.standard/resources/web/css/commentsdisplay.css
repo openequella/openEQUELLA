@@ -1,0 +1,8 @@
+.itemresult-stars {
+	width: 52px;
+	height: 10px;
+	background-image: url(../images/stars-small.png);
+	background-repeat: no-repeat;
+	float: left;
+	margin: 0 5px 0 0;
+}

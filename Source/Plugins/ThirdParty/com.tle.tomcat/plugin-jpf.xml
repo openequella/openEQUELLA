@@ -1,0 +1,66 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.tomcat" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.licences" />
+		<import plugin-id="com.tle.core.application" />
+		<import plugin-id="com.tle.core.config" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.hibernate" />
+		<import plugin-id="com.tle.core.migration" />
+		<import plugin-id="com.tle.core.zookeeper" />
+		<import plugin-id="com.tle.platform.common" />
+		<import plugin-id="com.tle.web.core.equella" />
+		<import plugin-id="com.google.guava:guava" />
+		<import plugin-id="commons-logging:commons-logging" />
+		<import plugin-id="org.apache.tomcat:tomcat-catalina" />
+		<import plugin-id="com.tle.core.services" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="code">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+	
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.tomcat.guice.TomcatModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.application" point-id="onStartup" id="tomcat">
+		<parameter id="bean" value="bean:com.tle.tomcat.service.TomcatService" />
+		<parameter id="type" value="web" />
+		<parameter id="order" value="100" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.services" point-id="applicationEventListener" id="listeners">
+		<parameter id="listener" value="bean:com.tle.tomcat.service.TomcatService" />
+		<parameter id="listenerClass" value="com.tle.tomcat.events.TomcatRestartListener" />
+	</extension>
+	
+	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="tomcatLicenceName">
+		<parameter id="thirdPartyName" value="Tomcat" />
+		<parameter id="licenceName" value="Apache 2.0" />
+		<parameter id="licenceURLInternal" value="apache-2.0.txt" />
+		<parameter id="licenceURLExternal" value="http://opensource.org/licenses/apache2.0.php" />
+		<parameter id="thirdPartyHome" value="http://tomcat.apache.org/" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="createTomcatSessionsSchema">
+		<parameter id="id" value="com.tle.tomcat.migration.CreateTomcatSessionEntity" />
+		<parameter id="bean" value="bean:com.tle.tomcat.migration.CreateTomcatSessionEntity" />
+		<parameter id="system" value="true" />
+		<parameter id="initial" value="true" />
+		<parameter id="date" value="2013-07-29" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="tomcatSessionsObjects">
+		<parameter id="class" value="com.tle.tomcat.migration.TomcatSessions" />
+	</extension>
+
+</plugin>

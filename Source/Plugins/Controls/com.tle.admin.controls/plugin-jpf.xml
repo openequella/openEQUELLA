@@ -1,0 +1,40 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.controls" version="1" class="com.tle.admin.controls.ControlsPlugin">
+	<attributes>
+		<attribute id="type" value="admin-console" />
+	</attributes>
+
+	<requires>
+		<import plugin-id="com.tle.admin.common" exported="true" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.recipientselector" />
+		<import plugin-id="com.tle.admin.schema.common" />
+		<import plugin-id="com.tle.admin.scripting" />
+
+		<import plugin-id="com.tle.common.collection" />
+		<import plugin-id="com.tle.common.wizard" exported="true" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="control">
+		<parameter-def id="id" type="string" />
+		<parameter-def id="name" type="string" />
+		<parameter-def id="icon" type="string" multiplicity="none-or-one" />
+		<parameter-def id="modelClass" type="string" />
+		<parameter-def id="wrappedClass" type="string" />
+		<parameter-def id="editorClass" type="string" multiplicity="none-or-one" />
+		<parameter-def id="factoryClass" type="string" multiplicity="none-or-one" />
+		<parameter-def id="context" type="fixed" multiplicity="any" custom-data="pages|metadata|multi|page|powersearch|group|ROOT" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="admin-console" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+</plugin>

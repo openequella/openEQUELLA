@@ -1,0 +1,20 @@
+table.zebra {
+	margin: 0px !important;
+	width: 469px !important;
+	line-height: 11px;
+}
+
+#lce_selectCustom_opener {
+	position: relative;
+	top: -8px;
+	left: 23px;
+}
+
+div.custom-role {
+	display: inline-block;
+	margin-top: 8px;
+}
+
+div.custom-role, div.custom-role input {
+	width: 348px !important;
+}

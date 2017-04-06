@@ -1,0 +1,218 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.payment.backend" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.dynacollection" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.recipientselector" />
+		<import plugin-id="com.tle.core.dynacollection" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.payment.backend" />
+		<import plugin-id="com.tle.web.entities" />
+		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.web.settings" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.web.itemadmin" />
+		<import plugin-id="com.tle.web.itemlist" />
+		<import plugin-id="com.tle.web.viewitem" />
+		<import plugin-id="com.tle.web.viewitem.summary" />
+		<import plugin-id="com.tle.web.viewurl" />
+		<import plugin-id="com.tle.web.bulk" />
+		<import plugin-id="com.tle.web.recipientselector" />
+		<import plugin-id="com.tle.web.search" />
+		<import plugin-id="com.tle.core.services.item.relation" />
+		<import plugin-id="com.tle.core.oauth" />
+		<import plugin-id="com.tle.core.imagemagick" />
+		<import plugin-id="com.tle.core.system" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.web.notification" />
+		<import plugin-id="com.tle.web.workflow" />
+		<import plugin-id="com.tle.web.workflow.portal" />
+		<import plugin-id="com.tle.core.notification" />
+		<import plugin-id="com.tle.core.notification.indexer" />
+		<import plugin-id="commons-io:commons-io" />
+		<import plugin-id="com.tle.core.item.operations" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="paymentGatewayEditor">
+		<parameter-def id="id" multiplicity="one" type="string" />
+		<parameter-def id="class" multiplicity="one" type="string">
+			<doc>
+				<doc-text>Must implement PaymentGatewayEditor interface. (Usually extend AbstractPaymentGatewayEditor)</doc-text>
+			</doc>
+		</parameter-def>
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+		<parameter id="class" value="com.tle.web.sections.equella.guice.EquellaModule" />
+		<parameter id="class" value="com.tle.web.payment.service.PaymentModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="file" value="lang/i18n.properties" />
+		<parameter id="group" value="resource-centre" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="catalogueEditSection">
+		<parameter id="path" value="/access/catalogue.do" />
+		<parameter id="root" value="bean:catalogueTree" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="gatewayEditSection">
+		<parameter id="path" value="/access/gateway.do" />
+		<parameter id="root" value="bean:gatewayTree" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="regionEditSection">
+		<parameter id="path" value="/access/region.do" />
+		<parameter id="root" value="bean:regionTree" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="tierEditSection">
+		<parameter id="path" value="/access/tier.do" />
+		<parameter id="root" value="bean:tierTree" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="storefrontEditSection">
+		<parameter id="path" value="/access/storefronts.do" />
+		<parameter id="root" value="bean:storefrontTree" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="taxEditSection">
+		<parameter id="path" value="/access/tax.do" />
+		<parameter id="root" value="bean:taxTree" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.settings" point-id="settingsGroupingExtension" id="storesettings">
+		<parameter id="nameKey" value="com.tle.web.payment.backend.grouping.storesettings.name" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="catalogueSettingSection">
+		<parameter id="class" value="bean:com.tle.web.payment.section.catalogue.CatalogueSettingsSection" />
+		<parameter id="grouping" value="storesettings" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="gatewaySettingSection">
+		<parameter id="class" value="bean:com.tle.web.payment.section.gateway.GatewaySettingsSection" />
+		<parameter id="grouping" value="storesettings" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="regionSettingSection">
+		<parameter id="class" value="bean:com.tle.web.payment.section.region.RegionSettingsSection" />
+		<parameter id="grouping" value="storesettings" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="tierSettingSection">
+		<parameter id="class" value="bean:com.tle.web.payment.section.tier.TierSettingsLinkSection" />
+		<parameter id="grouping" value="storesettings" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="storefrontSettingSection">
+		<parameter id="class" value="bean:com.tle.web.payment.section.storefront.StoreFrontSettingsLinkSection" />
+		<parameter id="grouping" value="storesettings" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="storeSettingsLink">
+		<parameter id="class" value="bean:com.tle.web.payment.section.store.StoreSettingsLinkSection" />
+		<parameter id="grouping" value="storesettings" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="taxSettingsLink">
+		<parameter id="class" value="bean:com.tle.web.payment.section.tax.TaxSettingsLinkSection" />
+		<parameter id="grouping" value="storesettings" />
+	</extension>
+
+
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="changeCatalogue">
+		<parameter id="id" value="changeCatalogue" />
+		<parameter id="class" value="bean:com.tle.web.payment.viewitem.action.ChangeCataloguesActionSection" />
+		<parameter id="order" value="7400" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="changeTier">
+		<parameter id="id" value="changeTier" />
+		<parameter id="class" value="bean:com.tle.web.payment.viewitem.action.ChangePricingTierActionSection" />
+		<parameter id="order" value="7500" />
+	</extension>
+
+	<!-- Purchase History -->
+	<extension plugin-id="com.tle.web.sections" point-id="section" id="purchseHistoryLink">
+		<parameter id="class" value="bean:com.tle.web.payment.viewitem.section.SalesHistoryLinkSection" />
+		<parameter id="path" value="/viewitem/viewitem" />
+		<parameter id="parentid" value="com.tle.web.viewitem.summary.sidebar.DETAILS_GROUP" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="section" id="purchaseHistoryPage">
+		<parameter id="class" value="bean:com.tle.web.payment.viewitem.section.SalesHistoryContentSection" />
+		<parameter id="path" value="/viewitem/viewitem" />
+		<parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_CONTENT" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="section" id="changePricingTierPage">
+		<parameter id="class" value="bean:com.tle.web.payment.viewitem.section.ChangePricingTierContentSection" />
+		<parameter id="path" value="/viewitem/viewitem" />
+		<parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_CONTENT" />
+	</extension>
+
+
+	<extension plugin-id="com.tle.web.sections" point-id="section" id="changeCataloguesPage">
+		<parameter id="class" value="bean:com.tle.web.payment.viewitem.section.AddRemoveFromCatalogueSection" />
+		<parameter id="path" value="/viewitem/viewitem" />
+		<parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_CONTENT" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.itemadmin" point-id="bulkExtension" id="bulkChangeTierOp">
+		<parameter id="bean" value="bean:com.tle.web.payment.section.search.BulkChangeTierOperation" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.itemadmin" point-id="bulkExtension" id="bulkChangeCatalogueOp">
+		<parameter id="bean" value="bean:com.tle.web.payment.section.search.BulkChangeCatalogueOperation" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.itemadmin" point-id="withinExtension" id="catalogueWithin">
+		<parameter id="id" value="catalogueWithin" />
+		<parameter id="bean" value="bean:com.tle.web.payment.section.search.CataloguesDropdownExtension" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="summaryTabExtension" id="paymentSummarySection">
+		<parameter id="id" value="paymentSummarySection" />
+		<parameter id="class" value="bean:com.tle.web.payment.viewitem.section.PaymentSummarySection" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.itemlist" point-id="itemListExtension" id="paymentItemListViewer">
+		<parameter id="bean" value="bean:com.tle.web.payment.viewitem.itemlist.PaymentItemListDisplay" />
+		<parameter id="order" value="2000" />
+		<parameter id="applies" value="standard" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="storeSettings">
+		<parameter id="path" value="/access/storesettings.do" />
+		<parameter id="root" value="bean:/access/storesettings" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="section" id="filterBySubscriptionEndSection">
+		<parameter id="path" value="/access/itemadmin.do" />
+		<parameter id="class" value="bean:com.tle.web.payment.section.search.FilterByTierSection" />
+		<parameter id="parentid" value="SEARCH_RESULTS_ACTIONS" />
+		<parameter id="afterid" value="com.tle.web.itemadmin.section.ItemAdminFilterByItemStatusSection" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.notification" point-id="notificationExtension" id="itemSaleNotifications">
+		<parameter id="type" value="itemsale" />
+		<parameter id="bean" value="bean:com.tle.web.payment.notification.ItemSaleNotifications" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.workflow.portal" point-id="filter" id="taskFilters">
+		<parameter id="bean" value="bean:com.tle.web.payment.notification.portal.SalesNotificationPortalExtension" />
+		<parameter id="order" value="300" />
+	</extension>
+</plugin>

@@ -1,0 +1,103 @@
+.file-list .file 
+{
+	background-image: url(../images/file/file.png);
+}
+
+.file-list .folder 
+{
+	background-image: url(../images/file/folder.png);
+	font-weight: bold;
+}
+
+
+.file-list .even 
+{
+	background-color: #ecebea;
+}
+
+.file-list .odd 
+{
+	background-color: #f1f0ef;
+}
+
+
+.file-list .selected 
+{
+	background-color: #80D2EE;
+}
+
+.file-list .selectable:hover
+{
+	background-color: #E4E4E4;
+}
+
+.file-list .selected:hover
+{
+	background-color: #80D2EE;
+}
+
+.file-list .level2 
+{
+	padding-left: 70px;
+	background-position: 46px 5px;
+}
+
+.file-list .level3
+{
+	padding-left: 100px;
+	background-position: 76px 5px;
+}
+
+.file-list .level4 
+{
+	padding-left: 130px;
+	background-position: 106px 5px;
+}
+
+.file-list .level5 
+{
+	padding-left: 160px;
+	background-position: 136px 5px;
+}
+
+.file-list .level6 
+{
+	padding-left: 190px;
+	background-position: 166px 5px;
+}
+
+.file-list .level7 
+{
+	padding-left: 200px;
+	background-position: 196px 5px;
+}
+
+.file-list .level8 
+{
+	padding-left: 230px;
+	background-position: 226px 5px;
+}
+
+.file-list .level9 
+{
+	padding-left: 260px;
+	background-position: 256px 5px;
+}
+
+.file-list .level10 
+{
+	padding-left: 290px;
+	background-position: 286px 5px;
+}
+
+.file-list .level11 
+{
+	padding-left: 320px;
+	background-position: 316px 5px;
+}
+
+.file-list .level12 
+{
+	padding-left: 350px;
+	background-position: 346px 5px;
+}

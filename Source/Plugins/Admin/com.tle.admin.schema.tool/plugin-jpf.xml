@@ -1,0 +1,32 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.schema.tool" version="1">
+	<attributes>
+		<attribute id="type" value="admin-console" />
+	</attributes>
+
+	<requires>
+		<import plugin-id="com.tle.admin.common" />
+		<import plugin-id="com.tle.admin.schema.common" />
+		<import plugin-id="com.tle.admin.scripting" />
+		<import plugin-id="com.tle.admin.tools" />
+
+		<import plugin-id="com.tle.common.recipientselector" />
+
+		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="com.tle.common.usermanagement" />
+		<import plugin-id="com.tle.common.schema" />
+		<import plugin-id="com.tle.common.entity" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core" />
+	</runtime>
+
+	<extension plugin-id="com.tle.admin.tools" point-id="tool" id="schematool">
+		<parameter id="displayorder" value="100" />
+		<parameter id="name" value="com.tle.admin.gui.schematool.title" />
+		<parameter id="class" value="com.tle.admin.schema.tool.SchemaTool" />
+		<parameter id="privilege" value="CREATE_SCHEMA" />
+		<parameter id="privilege" value="EDIT_SCHEMA" />
+	</extension>
+</plugin>

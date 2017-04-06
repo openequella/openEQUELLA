@@ -1,0 +1,29 @@
+.star-rating-static {
+	width: 75px;
+	background: url(../images/stars/star-rating-static-medium.png) 0 -26px repeat;
+}
+
+.star-rating-static div {
+	height: 13px;
+	background: url(../images/stars/star-rating-static-medium.png) 0 -39px repeat;
+}
+
+.star-rating-static div.star-rating-static-1 {
+	width: 15px;
+}
+
+.star-rating-static div.star-rating-static-2 {
+	width: 30px;
+}
+
+.star-rating-static div.star-rating-static-3 {
+	width: 45px;
+}
+
+.star-rating-static div.star-rating-static-4 {
+	width: 60px;
+}
+
+.star-rating-static div.star-rating-static-5 {
+	width: 75px;
+}

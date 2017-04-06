@@ -1,0 +1,21 @@
+<project name="org.eclipse.birt.osgi" basedir="." default="compile">
+	<import file="../../build/plugins-common-build.xml" />
+	<property location="resources/birt" name="birt.dir"/>
+	
+	<target name="clean" depends="common.clean">
+		<delete dir="${birt.dir}" />
+	</target>
+	
+	<target name="make">
+		<taskdef classname="com.tle.ant.dependencies.DownloadJars" name="downloadJars" classpathref="customtasks.classpath" />
+		<downloadJars destDir="${staging}" dependencies="deps-birt.txt">			
+			<!-- FIXME needs repos -->
+		</downloadJars>
+		<unzip dest="${birt.dir}"  src="${staging}/birt-osgi-3.7.2.zip"/>
+		<copy todir="${birt.dir}/plugins">
+			<fileset dir="${staging}">
+				<include name="*.jar"/>
+			</fileset>
+		</copy>
+	</target>
+</project>

@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<installer>
+	<product>
+		<name>EQUELLA</name>
+		<company>Pearson</company>
+	</product>
+	<image uri="/images/equella.jpg"/>
+	<pages>
+		<page>
+			<controls>
+				<control class="heading">
+					<title>Welcome to EQUELLA®</title>
+				</control>
+				<control class="paragraph">
+					<title>What is EQUELLA?</title>
+					<description>EQUELLA is an award–winning Digital Repository that incorporates Learning Objects, Learning Content Management and integrated content authoring. EQUELLA is revolutionising the way institutions search, manage and create content online.</description>
+				</control>
+				<control class="paragraph">
+					<title></title>
+					<description>Please ensure you have reviewed the EQUELLA Installation and Administration Guide available from</description>
+				</control>
+				<control class="link">
+					<title>https://neoconnect.pearson.com/groups/equella?view=documents</title>
+					<href>https://neoconnect.pearson.com/groups/equella?view=documents/</href>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Next" callback="com.dytech.edge.installer.application.FindJava" icon="/images/next.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+		<page>
+			<controls>
+				<control class="heading">
+					<title>Java Development Kit</title>
+				</control>
+				<control class="directoryselector">
+					<title>Select JDK directory</title>
+					<description>It is required that you have installed the Java Development Kit version 8.  If this is not installed, please do so now.</description>
+					<target>java/jdk</target>
+					<items>
+						<item name="" value=""/>
+					</items>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>
+				<button label="Next" callback="com.dytech.edge.installer.application.JavaCallback" icon="/images/next.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+		<page>
+			<controls>
+				<control class="heading">
+					<title>Install Directory</title>
+				</control>
+				<control class="directoryselector">
+					<title>EQUELLA Installation</title>
+					<description>Please choose the location where EQUELLA will be installed.  Please ensure that the path contains no spaces.</description>
+					<target>install.path</target>
+					<items>
+						<item name="" value=""/>
+					</items>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>
+				<button label="Next" callback="com.dytech.edge.installer.application.DirectoryCallback" icon="/images/next.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+		<page>
+			<controls>
+				<control class="heading">
+					<title>Database Server</title>
+				</control>
+				<control class="listbox">
+					<title>Type of Database</title>
+					<description>Select the database type from the list of currently supported databases.</description>
+					<target>datasource/dbtype</target>
+					<items>
+						<item name="SQL Server" value="sqlserver" default="true"/>
+						<item name="Oracle Server 9i or greater" value="oracle"/>
+						<item name="PostgreSQL 8 or greater" value="postgresql"/>
+					</items>
+				</control>
+				<control class="hosteditor">
+					<title>Database Server</title>
+					<description>Which server is the database running on? If it is not on this machine, enter the hostname or IP address of the server.</description>
+					<target>datasource/host</target>
+					<items>
+						<item name="" value=""/>
+					</items>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>
+				<button label="Next" callback="com.dytech.edge.installer.application.DatabaseHostCallback" icon="/images/next.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+		<page>
+			<controls>
+				<control class="heading">
+					<title>Database Authentication</title>
+				</control>
+				<control class="editbox">
+					<title>Database Name</title>
+					<description>Enter the name of the database you wish to connect to on the server.</description>
+					<target>datasource/database</target>
+					<items>
+						<item name="" value="equella"/>
+					</items>
+				</control>
+				<control class="editbox">
+					<title>Database Username</title>
+					<description>Specify the username that should be used to connect to the database.</description>
+					<target>datasource/username</target>
+					<items>
+						<item name="" value="equellauser"/>
+					</items>
+				</control>
+				<control class="password">
+					<title>Database Password</title>
+					<description>Enter the password for accessing the database with the above username.</description>
+					<target>datasource/password</target>
+					<items>
+						<item name="" value=""/>
+					</items>
+				</control>
+				<control class="oracleidselector">
+					<title>Database Connection Mode</title>
+					<description>Choose to connect to the database via SID (Service ID) or via Service name.  For a container/pluggable database, choose the Service name option.</description>
+					<target>datasource/idtype</target>
+					<items>
+						<item name="SID" value=":" default="true" />
+						<item name="Service name" value="/" />
+					</items>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>
+				<button label="Next" callback="com.dytech.edge.installer.application.DatabaseConnectCallback" icon="/images/next.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+		<page>
+			<controls>
+				<control class="heading">
+					<title>Web Server Settings</title>
+				</control>
+				<control class="editbox">
+					<title>Institution Administration URL</title>
+					<description>The  URL address of the institution administration web site.  Do not enter 'localhost' or '127.0.0.1' for the hostname or IP address unless you are using this installation for testing purposes, and do not wish to access EQUELLA except from this local machine.  You can also specify the port (defaults to 80) and web context (defaults to '/').</description>
+					<target>webserver/url</target>
+					<items>
+						<item name="" value="http://"/>
+					</items>
+				</control>
+				<control class="radiogroup">
+					<title>Address Binding</title>
+					<description>If you have specified an IP address above, do you want EQUELLA to provide its services exclusively on this network interface, or bind its services to all network interfaces on the server?</description>
+					<target>webserver/binding</target>
+					<items>
+						<item name="Bind to all network interfaces" value="all" default="true"/>
+						<item name="Restrict to given IP address (must specify IP address in URL above)" value="restrict"/>
+					</items>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>
+				<button label="Next" callback="com.dytech.edge.installer.application.WebHostCallback" icon="/images/next.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+		<page>
+			<controls>
+				<control class="heading">
+					<title>EQUELLA Manager</title>
+				</control>
+				<control class="password">
+					<title>EQUELLA Manager website</title>
+					<description>The EQUELLA Manager is responsible for starting, stopping and upgrading your instance of EQUELLA.  Please provide a password to secure this service and remember it for future reference.</description>
+					<target>admin.password</target>
+					<items>
+						<item name="" value="admin"/>
+					</items>
+				</control>
+				<control class="editbox">
+					<title>EQUELLA Manager website port</title>
+					<description>Please enter a port number for the EQUELLA Manager website.  The default port is 3000.</description>
+					<target>service/port</target>
+					<items>
+						<item name="" value="3000"/>
+					</items>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>
+				<button label="Next" callback="com.dytech.edge.installer.application.ManagerCallback" icon="/images/next.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+		<page>
+			<controls>
+				<control class="heading">
+					<title>Proxy Server Settings</title>
+				</control>
+				<control class="radiogroup">
+					<title>Use Proxy Server</title>
+					<description>If you have a proxy server, you will need to enter the details here.  Please select your connection type.</description>
+					<target>proxy/connection</target>
+					<items>
+						<item name="Direct Connection" value="false" default="true"/>
+						<item name="Proxy Server" value="true"/>
+					</items>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>
+				<button label="Next" callback="com.dytech.edge.installer.application.ProxyNextSkip" icon="/images/next.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+		<page>
+			<controls>
+				<control class="heading">
+					<title>Proxy Server Settings</title>
+				</control>
+				<control class="editbox">
+					<title>Proxy Host</title>
+					<description>The hostname or IP address of the proxy server.</description>
+					<target>proxy/host</target>
+					<items>
+						<item name="" value=""/>
+					</items>
+				</control>
+				<control class="editbox">
+					<title>Proxy Port</title>
+					<description>The port to access the proxy server.</description>
+					<target>proxy/port</target>
+					<items>
+						<item name="" value=""/>
+					</items>
+				</control>
+				<control class="editbox">
+					<title>Proxy Username</title>
+					<description>The username to connect to the proxy server. (optional)</description>
+					<target>proxy/user</target>
+					<items>
+						<item name="" value=""/>
+					</items>
+				</control>
+				<control class="password">
+					<title>Proxy Password</title>
+					<description>The password to connect to the proxy server. (optional)</description>
+					<target>proxy/pass</target>
+					<items>
+						<item name="" value=""/>
+					</items>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>
+				<button label="Next" callback="com.dytech.installer.BasicNextCallback" icon="/images/next.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+		<page>
+			<controls>
+				<control class="heading">
+					<title>Memory Management</title>
+				</control>
+				<control class="paragraph">
+					<title>Minimum and Maximum Usage</title>
+					<description>The minimum and maximum amount of memory used by the EQUELLA server can be configured to work best for your hardware  It is recommended that the minimum and maximum values are set to half of the total physical memory.  Never specify a memory value greater than the total physical memory as this may cause the system to fail.</description>
+				</control>
+				<control class="editbox">
+					<title>Minimum Memory Usage</title>
+					<description>Enter a minimum memory usage size.</description>
+					<target>memory/min</target>
+					<items>
+						<item name="" value="96m"/>
+					</items>
+				</control>
+				<control class="editbox">
+					<title>Maximum Memory Usage</title>
+					<description>Enter a Maximum memory usage size.</description>
+					<target>memory/max</target>
+					<items>
+						<item name="" value="512m"/>
+					</items>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Back" callback="com.dytech.edge.installer.application.ProxyBackSkip" icon="/images/back.gif" align="left"/>
+				<button label="Next" callback="com.dytech.installer.BasicNextCallback" icon="/images/next.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+		<page>
+			<controls>
+				<control class="heading">
+					<title>ImageMagick</title>
+				</control>
+				<control class="paragraph">
+					<description>The free third-party product ImageMagick is utilised by EQUELLA for all image processing.  EQUELLA requires version 6.4 or greater of ImageMagick to be installed on your system.  If you do not have ImageMagick installed, or would like more information about the product, please visit http://www.imagemagick.org</description>
+				</control>
+				<control class="directoryselector">
+					<title>Directory to ImageMagick Programs</title>
+					<description>ImageMagick is comprised of a set of different programs, and EQUELLA needs to know the directory that contains these programs.  For example, running 'which convert' on a Unix-like system may return '/usr/bin/convert' so you should enter '/usr/bin'.  On a Windows system, you may have installed to 'C:\ImageMagick6.4', then the programs can be found directly inside that path.</description>
+					<target>imagemagick/path</target>
+					<items>
+						<item name="" value=""/>
+					</items>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>
+				<button label="Next" callback="com.dytech.edge.installer.application.ImageMagickCallback" icon="/images/next.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+		<page>
+			<controls>
+				<control class="heading">
+					<title>Libav</title>
+				</control>
+				<control class="paragraph">
+					<description>Libav is a free, third-party product utilised by EQUELLA to produce thumbnails and previews for video files uploaded to the EQUELLA repository. If you do not have Libav installed, or would like more information about the product, please visit https://libav.org/</description>
+				</control>
+				<control class="directoryselector">
+					<title>Directory to Libav Programs</title>
+					<description>Libav comprises a set of different programs, and EQUELLA needs to know the directory that contains these programs. For example, running 'which avconv' on a Unix-like system may return '/usr/bin/avconv' so you should enter '/usr/bin'. On a Windows system, you may have installed to 'C:/Libav', then the programs can be found somewhere inside that path, such as ‘C:/Libav/usr/bin’.</description>
+					<target>libav/path</target>
+					<items>
+						<item name="" value=""/>
+					</items>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>
+				<button label="Next" callback="com.dytech.edge.installer.application.LibAvCallback" icon="/images/next.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+		<page>
+			<controls>
+				<control class="heading">
+					<title>Ready To Install</title>
+				</control>
+				<control class="paragraph">
+					<title>Thank You!</title>
+					<description>You may now continue to perform the installation process.  Please do not stop the installer, even if it appears to have stalled.  Some operations can take up to 2 minutes to complete.  If you quit now, no changes will be made to your system.</description>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>
+				<button label="Install" callback="com.dytech.edge.installer.application.FinishedCallback" icon="/images/install.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+	</pages>
+</installer>

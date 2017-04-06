@@ -1,0 +1,13 @@
+.emailfield
+{
+	width: 340px;
+}
+
+.noemailwarning
+{
+	background-color: #FDD;
+	padding: 5px;
+	display: block;
+	color: red;
+	text-align: center;
+}

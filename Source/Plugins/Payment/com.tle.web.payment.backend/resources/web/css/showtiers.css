@@ -1,0 +1,15 @@
+DIV.settingRow.currency DIV.settingField DIV.control SELECT,
+Div.settingRow.pricesbasedon DIV.settingField DIV.control SELECT
+{
+	width: 80px;
+}
+
+DIV.settingContainer > DIV.settingRow.pricesbasedon:first-child 
+{
+    padding-top: 0px;
+}
+
+.entitylist
+{
+	margin-top: 3em;
+}

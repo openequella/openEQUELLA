@@ -1,0 +1,34 @@
+.portletedit > .area 
+{
+	padding: 25px 33px 33px;
+	
+}
+
+.portletedit .area .control.ctrlinvalid 
+{
+	background-color: #FDD;
+	padding: 10px;
+	position: relative;
+	left: -10px;
+}
+
+.portletedit .area .ctrlmandatory, .wizard-layout .area .ctrlinvalidmessage {
+	color: red;
+	text-align: center;
+}
+
+.portletedit .area p {
+	margin: 4px 0;
+}
+
+.portletedit .ctrlcheckboxgroup {
+	width: 100%;
+}
+
+.portletedit .ctrlcheckboxgroup td {
+	padding: 3px 0;
+}
+
+.portletedit .ctrlcheckboxgroup td legend {
+	margin-left: 5px;
+}

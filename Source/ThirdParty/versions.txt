@@ -1,0 +1,10 @@
+-----------------------------
+js.jar is Rhino 1.6R2
+-----------------------------
+jgroups-core.jar is a patched version of 2.6.10.merge (see 'patches' directory)
+-----------------------------
+Lucene is 2.4.1
+---------------
+Json-lib 2-0.jdk15
+------------------
+ezmorph-1.0.4

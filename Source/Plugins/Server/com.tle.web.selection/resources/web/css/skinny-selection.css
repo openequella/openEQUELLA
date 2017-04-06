@@ -1,0 +1,135 @@
+#wrapper {
+	min-width: 549px;
+}
+
+#body-wrap2 {
+	padding-top: 0;
+}
+
+#body-wrap3,#body-inner {
+	width: auto;
+}
+
+#body-inner {
+	float: none;
+	padding: 0;
+}
+
+#footer {
+	background: url(../images/selection-footer-bg.gif) 0 0 repeat-x;
+	height: 2px;
+}
+
+#selection-header {
+	background: #C9C3AA;
+	border-bottom: 1px solid #7C786C;
+	border-top: 1px solid #FEFEFE;
+	height: 36px;
+}
+
+#selection-header-content {
+	position: relative;
+	width: 549px;
+	margin: 0 auto;
+}
+
+#selection-header-content .logo {
+	position: absolute;
+	top: 2px;
+	left: 0;
+	
+	width: 92px;
+	height: 32px;
+	
+	background: url(../images/logo-small.png) no-repeat;
+	overflow: hidden;
+	text-indent: -9999px;
+}
+
+#selection-header-content .selectactions {
+	position: absolute;
+	top: 6px;
+	left: 105px;
+}
+
+#selection-header-content .close {
+	margin-top: 10px;
+	margin-left: 10px;
+	cursor: pointer;
+}
+
+#selection-page {
+	margin: 0 auto;
+	width: 549px;
+	border-bottom: 1px solid #7C786C;
+	border-right: 1px solid #7C786C;
+	position: relative;
+}
+
+#selection-content {
+	background: url(../images/content-middle.gif) repeat-y 0px 0px;
+	position: relative;
+	width: 549px;
+	float: left;
+}
+
+#selection-content-inner {
+	background: url(../images/content-top.gif) no-repeat 0px 0px;
+	min-height: 400px;
+	padding: 15px 17px;
+	float: left;
+	width: 515px;
+}
+
+#selection-content-inner #col1 {
+	width: 515px;
+}
+
+#selection-content-inner .richcontainer {
+	width: auto;
+	position: inherit;
+	left: auto;
+}
+
+#selection-header .navbar-equella-selection.skinny .navbar.navbar-fixed-top.navbar-inverse .navbar-inner .navbar-content {
+	width: 550px;
+}
+
+#selection-header .navbar-equella-selection .navbar.navbar-fixed-top.navbar-inverse .centered-pills {
+    text-align: right;
+    width: 90%;
+}
+
+.selectable .attachments-browse.structured li {
+    display: table;
+}
+
+.link-div {
+	display: table-cell;
+    width: 100%;
+}
+
+.button-div {
+    display: table-cell;
+    width: 1%;
+}
+
+.selectable .attachments-browse.structured li.attachmentrow {
+    padding-bottom: 0;
+    padding-right: 0;
+    padding-top: 0;
+}
+
+.selectable .attachments-browse.structured li.attachmentrow .droparrow {
+	right:40px;
+}
+
+.selectable .attachments-browse.structured li .button-div .btn {
+	margin-right: 0;
+	margin-right: 0;
+	border-radius: 0 2px 2px 0;
+}
+
+.button-div .over-image {
+	right:27px;
+}

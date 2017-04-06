@@ -1,0 +1,28 @@
+.searchresults .separator {
+	padding: 0 3px;
+	font-weight: normal;
+}
+
+#searchresults-select, .searchresults-infobar {
+	background: #fbfbfb;
+	border: 1px solid #e9e9e6;
+	padding: 4px;
+	font-size: 10px;
+	margin: 10px 0;
+}
+
+.searchresults-infobar
+{
+	font-size: 14px;
+	text-align: center;
+}
+
+.searchresults h2
+{
+	max-width: 300px;	
+}
+
+.searchError
+{
+	color: red;
+}

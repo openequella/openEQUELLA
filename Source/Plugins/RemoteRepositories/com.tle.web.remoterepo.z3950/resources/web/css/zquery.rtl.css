@@ -1,0 +1,23 @@
+@import url("zquery.css");
+
+#searchform-search {
+    right: 645px;
+    left:auto;
+}
+
+.wide #searchform-query {
+	margin: 0 0 0 3px;
+}
+
+.newListSelected {
+	margin-right: 5px;
+	margin-left: 0;
+}
+
+#searchform .row .operator.where label {
+	padding: 5px 8px 10px 0;
+}
+
+.newListSelected,.operator,.use,.is,.term,#searchform-search {
+	float: right;
+}

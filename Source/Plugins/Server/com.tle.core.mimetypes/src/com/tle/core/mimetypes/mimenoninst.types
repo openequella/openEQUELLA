@@ -1,0 +1,13 @@
+# Non institution Mime-Types
+
+image/gif			            gif
+image/bmp						bmp
+image/jpeg			            jpeg jpg jpe jfif jif
+image/png						png
+
+text/html						html htm shtml
+text/plain						txt
+application/java-archive		jar war
+text/css						css
+text/javascript					js
+application/zip					zip

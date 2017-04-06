@@ -1,0 +1,26 @@
+@import url("moderate.css");
+
+#moderate-approve {
+	background: url(../images/moderate-approve.rtl.png);
+	padding: 0 0 0 32px;
+	margin: 40px 3px 0 0;
+	text-align: left;
+}
+	
+#moderate-reject {
+	padding: 0 32px 0;
+	text-align: right;
+	background: url(../images/moderate-reject.rtl.png);
+}
+
+#moderate h3 {
+	padding: 6px 40px 6px 0;
+	background: url(../images/icons/warning-large.png) right center no-repeat;
+	font-weight: normal;
+}
+
+#moderate .comments {
+padding: 0 22px 0 0;
+background: url(../images/icons/comment_alt.png) right center no-repeat;
+
+}

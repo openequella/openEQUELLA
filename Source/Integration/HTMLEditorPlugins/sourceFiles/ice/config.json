@@ -1,0 +1,9 @@
+{
+	"ice": {
+		"user": {
+			name:"${user.firstName} ${user.lastName}",
+			"id": "${user.getID()}"
+		},
+		"preserveOnPaste": "p,a[href],i,em,strong"
+	}
+}

@@ -1,0 +1,289 @@
+.wizard-controls {
+	margin: 4px 0;
+}
+
+.wizard-controls .control {
+	margin: 0 0 15px;
+}
+
+.wizard-controls .indent1 .control:first-child,.wizard-controls .indent2 .control:first-child,.wizard-controls .indent3 .control:first-child
+	{
+	margin-top: 15px;
+}
+
+.wizard-controls .ctrlinvalidmessage {
+	display: none;
+}
+
+.wizard-controls .ctrlinvalid>.ctrlinvalidmessage {
+	background-color: #FDD;
+	padding: 5px;
+	display: block;
+}
+
+.wizard-controls .ctrlmandatory,.wizard-controls .ctrlinvalidmessage {
+	color: red;
+	text-align: center;
+}
+
+.wizard-controls .control p {
+	margin-top: 0;
+	margin-bottom: 10px;
+}
+
+.wizard-controls .indent1,.wizard-controls .indent2,.wizard-controls .indent3
+	{
+	padding: 20px 0px 20px 40px;
+}
+
+.indent0 .indent1,.indent1 .indent2,.indent2 .indent3 {
+	padding-bottom: 0px;
+}
+
+.option+.indent1,.option+.indent2,.option+.indent3 {
+	padding-top: 0px;
+}
+
+/************************/
+.wizard-controls .indent1 {
+	width: 556px;
+}
+
+.wizard-controls .indent2 {
+	width: 516px;
+}
+
+.wizard-controls .indent3 {
+	width: 476px;
+}
+
+/************************/
+.wizard-controls .input.text input[type="text"],.wizard-controls .input.text textarea,.wizard-controls select.listbox
+	{
+	width: 584px;
+}
+
+.wizard-controls .indent1 .input.text input[type="text"],.wizard-controls .indent1 .input.text textarea,.wizard-controls .indent1 select.listbox
+	{
+	width: 542px;
+}
+
+.wizard-controls .indent2 .input.text input[type="text"],.wizard-controls .indent2 .input.text textarea,.wizard-controls .indent2 select.listbox
+	{
+	width: 502px;
+}
+
+.wizard-controls .indent3 .input.text input[type="text"],.wizard-controls .indent3 .input.text textarea,.wizard-controls .indent3 select.listbox
+	{
+	width: 462px;
+}
+
+/************************/
+.wizard-controls .multieditbox input[type="text"],.wizard-controls .multieditbox select,.wizard-controls .multieditbox textarea
+	{
+	width: 280px;
+}
+
+.wizard-controls .indent1 .multieditbox input[type="text"],.wizard-controls .indent1 .multieditbox select,.wizard-controls .indent1 .multieditbox textarea
+	{
+	width: 260px;
+}
+
+.wizard-controls .indent2 .multieditbox input[type="text"],.wizard-controls .indent2 .multieditbox select,.wizard-controls .indent2 .multieditbox textarea
+	{
+	width: 240px;
+}
+
+.wizard-controls .indent3 .multieditbox input[type="text"],.wizard-controls .indent3 .multieditbox select,.wizard-controls .indent3 .multieditbox textarea
+	{
+	width: 220px;
+}
+
+.wizard-controls .multieditbox DIV.singletranslation input[type="text"],.wizard-controls .multieditbox DIV.singletranslation textarea
+	{
+	width: 584px;
+}
+
+.wizard-controls .indent1 .multieditbox DIV.singletranslation input[type="text"],.wizard-controls .indent1 .multieditbox DIV.singletranslation textarea
+	{
+	width: 542px;
+}
+
+.wizard-controls .indent2 .multieditbox DIV.singletranslation input[type="text"],.wizard-controls .indent2 .multieditbox DIV.singletranslation textarea
+	{
+	width: 502px;
+}
+
+.wizard-controls .indent3 .multieditbox DIV.singletranslation input[type="text"],.wizard-controls .indent3 .multieditbox DIV.singletranslation textarea
+	{
+	width: 462px;
+}
+
+/************************/
+.wizard-controls .shuffle input[type="text"],.wizard-controls .shuffle select
+	{
+	width: 525px;
+}
+
+.wizard-controls .indent1 .shuffle input[type="text"],.wizard-controls .indent1 .shuffle select
+	{
+	width: 485px;
+}
+
+.wizard-controls .indent2 .shuffle input[type="text"],.wizard-controls .indent2 .shuffle select
+	{
+	width: 465px;
+}
+
+.wizard-controls .indent3 .shuffle input[type="text"],.wizard-controls .indent3 .shuffle select
+	{
+	width: 445px;
+}
+
+/************************/
+.repeater {
+	border: 1px solid #8F8B7E;
+	margin: 0px 0px 10px;
+	padding: 15px 19px 9px !important;
+	position: relative;
+}
+
+.repeater-remove {
+	background: url(../images/repeater-remove.png) no-repeat 0px 0px;
+	margin-left: 3px;
+	cursor: pointer;
+	height: 17px;
+	float: right;
+	width: 17px;
+}
+
+.repeater-move{
+	background: url(../images/repeater-button-bg.png) no-repeat 0px 0px;
+	height: 17px;
+	float: right;
+	width: 17px;
+	padding-left: 4px;
+	background-position: center;
+}
+
+.repeater-move i {
+	margin-bottom: 2px;
+	position: relative;
+	
+}
+
+.options-control {
+	width: 100%;
+}
+
+.options-control label {
+	margin: 0 5px;
+}
+
+/************************/
+.calendar-control .calendar {
+	display: inline;
+	margin-right: 40px;
+}
+
+.calendar-control .calendar-clear {
+	display: inline;
+}
+
+/************************/
+.wizard-layout .indent1 .shufflelist {
+	width: 556px;
+}
+
+.wizard-layout .indent2 .shufflelist {
+	width: 516px;
+}
+
+.wizard-layout .indent3 .shufflelist {
+	width: 476px;
+}
+
+.wizard-layout .indent1 .shuffle-box-inner select {
+	width: 236px;
+}
+
+.wizard-layout .indent2 .shuffle-box-inner select {
+	width: 216px;
+}
+
+.wizard-layout .indent3 .shuffle-box-inner select {
+	width: 197px;
+}
+
+.wizard-layout .indent0 .shuffle-box-inner label {
+	width: 253px;
+}
+
+.wizard-layout .indent1 .shuffle-box-inner label {
+	width: 233px;
+}
+
+.wizard-layout .indent2 .shuffle-box-inner label {
+	width: 213px;
+}
+
+.wizard-layout .indent3 .shuffle-box-inner label {
+	width: 193px;
+}
+/************************/
+#searchform .wizard-controls div.input {
+	margin: 8px 0;
+	padding: 0px;
+}
+
+#searchform .wizard-controls .input.text input[type="text"], #searchform .wizard-controls .input.text textarea, #searchform .wizard-controls select.listbox {
+	width: 465px;
+}
+
+#searchform .wizard-controls div.input.calendar {
+	margin: 8px 40px 8px 0;
+}
+
+#searchform .wizard-controls div.input.calendar input[type="text"] {
+	width: 140px;
+}
+
+#searchform .wizard-controls .shuffle input[type="text"], #searchform .wizard-controls .shuffle select {
+	width: 410px;
+}
+
+#searchform .wizard-controls .shuffle-box select {
+	width: 195px;
+}
+
+#searchform .wizard-controls .autocompleteControl input[type="text"] {
+	width: 385px;
+}
+
+div.error-receipt 
+{
+	background-color: #FDD;
+	padding: 5px;
+	display: block;
+	text-align: left;	
+	color: red;
+	margin: 12px 0;
+}
+
+html[class="accessibility"] div.error-receipt:focus
+{
+	outline: thin solid rgba(299, 151, 0, 255);
+	outline: 5px auto -webkit-focus-ring-color;
+	outline-offset: -2px;
+}
+
+div.error-receipt p
+{
+	margin: 5px 0;
+}	
+div.error-receipt ul li 
+{
+	margin-left: 10px;
+	height: 18px;
+}
+

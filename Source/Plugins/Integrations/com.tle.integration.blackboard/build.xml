@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="com.tle.integration.blackboard" basedir="." default="compile">
+	<import file="../../build/plugins-common-build.xml" />
+	
+	<target name="make" depends="common.make">
+        <subant inheritAll="false" target="product" buildpath="${Blackboard Gateway.base}/bb91"/>
+		<copy file="${Blackboard Gateway.base}/bb91/product/equella-bb91.war" tofile="${resources}/web/downloads/equella-building-block-9.1.war" />
+	</target>
+</project>

@@ -1,0 +1,14 @@
+.versionselection TABLE .column1
+{
+	width: 180px;
+}
+
+.versionselection .version SELECT
+{
+	width: 140px;
+}
+
+.versionselection TABLE .column2
+{
+	width: 20px;
+}

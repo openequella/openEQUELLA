@@ -1,0 +1,3 @@
+<project name="com.tle.common.interfaces.equella" basedir="." default="compile">
+	<import file="../../build/plugins-common-build.xml" />
+</project>

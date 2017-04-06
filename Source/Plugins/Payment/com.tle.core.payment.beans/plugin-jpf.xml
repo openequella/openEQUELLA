@@ -1,0 +1,15 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.payment.beans" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.entity" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="org.codehaus.jackson" />
+		<import plugin-id="com.tle.common.payment.backend" />
+		<import plugin-id="com.tle.web.api.item.equella.interfaces" exported="true" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+</plugin>

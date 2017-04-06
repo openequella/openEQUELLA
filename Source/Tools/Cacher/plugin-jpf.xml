@@ -1,0 +1,14 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin version="1" id="TLE Active Cacher">
+	<requires>
+		<import plugin-id="com.tle.platform.common" />
+		<import plugin-id="org.apache.cxf" />
+		<import plugin-id="log4j:log4j" />
+		<import plugin-id="org.slf4j:slf4j-api" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="code">
+			<export prefix="*" />
+		</library>
+	</runtime>
+</plugin>

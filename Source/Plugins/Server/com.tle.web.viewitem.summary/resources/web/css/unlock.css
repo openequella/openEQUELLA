@@ -1,0 +1,11 @@
+.unlock-group p {
+	padding: 10px 0;
+}
+
+.unlock-action-area {
+	text-align: center;
+}
+
+.unlock-action-area button {
+	margin-top: 2px;
+}

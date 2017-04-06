@@ -1,0 +1,117 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.freetext" version="1">
+	<requires>
+		<import plugin-id="com.tagsoup.core" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.common.licences" />
+		<import plugin-id="com.tle.common.search" />
+		<import plugin-id="com.tle.common.scripting" />
+		<import plugin-id="com.tle.common.usermanagement" />
+		<import plugin-id="com.tle.core.config" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.migration" />
+		<import plugin-id="com.tle.core.mimetypes" />
+		<import plugin-id="com.tle.core.scheduler" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="org.apache.lucene:lucene-analyzers" exported="true" />
+		<import plugin-id="org.apache.lucene:lucene-core" exported="true" />
+		<import plugin-id="org.apache.lucene:lucene-queries" exported="true" />
+		<import plugin-id="com.tle.core.healthcheck.listeners" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="securityReindexHandler">
+		<parameter-def id="privilege" multiplicity="one-or-more" />
+		<parameter-def id="bean" multiplicity="none-or-one" />
+	</extension-point>
+	
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension-point id="freetextIndex">
+		<parameter-def id="id" multiplicity="one" type="string" />
+		<parameter-def id="class" multiplicity="one" type="string" />
+	</extension-point>
+
+	<extension-point id="indexingExtension">
+		<parameter-def id="class" multiplicity="one" type="string" />
+	</extension-point>
+
+	<extension-point id="indexFieldExtension">
+		<parameter-def id="bean" multiplicity="one" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.freetext.guice.FreetextModule" />
+		<parameter id="class" value="com.tle.core.hibernate.guice.TransactionModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="converter" id="indexConverter">
+		<parameter id="id" value="SYNCHRONIZEITEMS" />
+		<parameter id="class" value="bean:com.tle.freetext.SynchronizeIndexConverter" />
+		<parameter id="order" value="1500" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.freetext" point-id="freetextIndex" id="itemIndex">
+		<parameter id="id" value="item" />
+		<parameter id="class" value="bean:com.tle.freetext.index.NormalItemIndex" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.services" point-id="applicationEventListener" id="listeners">
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.ItemReindexListener" />
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.UnindexItemListener" />
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.IndexItemNowListener" />
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.IndexItemBackgroundListener" />
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.WaitForItemIndexListener" />
+		<parameter id="listenerClass" value="com.tle.core.hibernate.event.SchemaListener" />
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.InstitutionListener" />
+		<parameter id="listenerClass" value="com.tle.core.healthcheck.listeners.ServiceCheckRequestListener" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.freetext" point-id="indexingExtension" id="standardIndexer">
+		<parameter id="class" value="bean:com.tle.freetext.StandardIndexer" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="reindex">
+		<parameter id="id" value="com.tle.freetext.ReIndexForEntityUUID" />
+		<parameter id="bean" value="bean:com.tle.freetext.ReIndexMigration" />
+		<parameter id="obsoletedby" value="com.tle.freetext.ReIndexAllItems" />
+		<parameter id="date" value="1970-01-01" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="reindexLuceneUpdate">
+		<parameter id="id" value="com.tle.freetext.ReIndexAllItems" />
+		<parameter id="bean" value="bean:com.tle.freetext.ReIndexMigration" />
+		<parameter id="date" value="1970-01-01" />
+	</extension>
+
+	<!-- There's a bag of Apache software modules, but most (except for Apache Lucene) don't have a dedicated plugin-jpf.xml 
+		file. Various 3rd party software licence details will be found in the 'parent' plugin of com.tle.web.licences. -->
+	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="luceneLicenceName">
+		<parameter id="thirdPartyName" value="Apache Lucene" />
+		<parameter id="licenceName" value="Apache 2.0" />
+		<parameter id="licenceURLInternal" value="apache-2.0.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
+		<parameter id="licenceURLExternal" value="http://www.apache.org/licenses/LICENSE-2.0.html" />
+		<parameter id="thirdPartyHome" value="http://lucene.apache.org/java/docs/" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.security" point-id="securityPostProcessor" id="indexingSecurity">
+		<parameter id="bean" value="bean:com.tle.freetext.SecurityExtension" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.freetext" point-id="securityReindexHandler" id="standardReindexer">
+		<parameter id="privilege" value="DISCOVER_ITEM" />
+		<parameter id="bean" value="bean:com.tle.freetext.reindex.StandardReindexer" />
+	</extension>
+</plugin>

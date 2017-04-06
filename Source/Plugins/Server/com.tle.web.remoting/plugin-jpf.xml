@@ -1,0 +1,42 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.remoting" version="1">
+	<requires>
+		<import plugin-id="jdom:jdom" />
+		<import plugin-id="com.tle.web.core" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.platform.common" />
+		<import plugin-id="org.springframework:spring-web" />
+		<import plugin-id="com.google.code.gson:gson" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension-point id="json">
+		<parameter-def id="url" type="string" multiplicity="one" />
+		<parameter-def id="bean" type="string" multiplicity="one" />
+	</extension-point>
+
+	<extension-point id="loginService">
+		<parameter-def id="id" />
+		<parameter-def id="class" />
+		<parameter-def id="order" type="number" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules" />
+
+	<extension plugin-id="com.tle.web.remoting" point-id="loginService" id="login">
+		<parameter id="id" value="loginService" />
+		<parameter id="class" value="bean:loginService" />
+		<parameter id="order" value="1000" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="jsonServlet">
+		<parameter id="url-pattern" value="*.json.service" />
+		<parameter id="bean" value="bean:com.tle.web.remoting.impl.JSONExporterHandler" />
+	</extension>
+
+</plugin>

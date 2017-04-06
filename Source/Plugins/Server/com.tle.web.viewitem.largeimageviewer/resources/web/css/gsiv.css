@@ -1,0 +1,108 @@
+html,body {
+	padding: 0;
+	border: 0;
+	margin: 0;
+	background-color: black;
+}
+
+#viewer {
+	background-color: #000000;
+	position: relative;
+	top: 0;
+	left: 0;
+	/* NOTE: the size and width should be set dynamically when initialized */
+	width: 0;
+	height: 0;
+}
+
+#viewer .well,#viewer .surface {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+#viewer .surface {
+	z-index: 20;
+	/* NOTE: required for IE to"see" the surface */
+	background: url(../images/blank.gif) no-repeat center center;
+}
+
+#viewer .well {
+	overflow: hidden;
+	z-index: 10;
+}
+
+#viewer .well .tile {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	display: block;
+}
+
+#viewer .thumbnail {
+	margin: 0;
+	padding: 0;
+	border: solid 1px white;
+	background: gray;
+	position: absolute;
+	z-index: 40;
+	line-height: 0;
+	opacity: 0.8;
+}
+
+/* \*/
+* html #viewer .thumbnail {
+	height: 1%;
+	width: 1%;
+}
+/* */
+#viewer .thumbnail .grabbar {
+	height: 8px;
+	background: url(../images/grab-bar.gif) repeat-x top left;
+	padding: 0;
+	margin: 0;
+	line-height: 0;
+	margin-left: 5px;
+}
+
+#viewer .thumbnail .container {
+	padding: 0;
+	margin: 5px;
+	position: relative;
+}
+
+#viewer .thumbnail .container .locator {
+	margin: 0;
+	padding: 0;
+	background-color: red;
+	opacity: 0.4;
+	filter: alpha(opacity = 40);
+	position: absolute;
+	z-index: 60;
+}
+
+#iv-content {
+	width: 100%;
+	float: left;
+	height: 500px;
+	position: relative;
+}
+
+#iv-content img {
+	display: block;
+	margin: 0 auto;
+}
+
+#iv-thumbnail {
+	position: absolute;
+	right: 20px;
+	top: 20px;
+	border: 1px solid #d4cfb9;
+}

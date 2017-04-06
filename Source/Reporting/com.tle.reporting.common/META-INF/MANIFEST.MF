@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TLE Reporting Common
+Bundle-SymbolicName: com.tle.reporting.common
+Bundle-Version: 6.3.0.20141006
+Export-Package: com.tle.reporting,
+ com.tle.reporting.schema
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: .
+Require-Bundle: org.eclipse.datatools.connectivity.oda

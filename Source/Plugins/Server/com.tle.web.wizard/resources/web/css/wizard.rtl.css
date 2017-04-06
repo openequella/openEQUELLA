@@ -1,0 +1,36 @@
+@import url("wizard.css");
+
+#wizard-pagelist ul li {
+	background: url(../images/rhs-nav-list-icon.rtl.png) right 0 no-repeat;
+	padding: 2px 15px 2px 0;
+}
+
+#wizard-pagelist ul li.active 
+{
+	background: url(../images/rhs-nav-list-icon-dark.rtl.png) right 0 no-repeat;
+	background-color: #FFA;
+}
+
+#wizard-navigation {
+	text-align: left;
+}
+
+#wizard-navigation input[type='button'] {
+	margin: 0 3px 0 0;
+}
+
+#wizard-major-actions .action-button.save {
+	background-image: url("../images/button-save-changes.rtl.png");
+}
+
+#wizard-major-actions .action-button.edit {
+	background-image: url("../images/button-edit.rtl.png");
+}
+
+#wizard-major-actions .action-button.view {
+	background-image: url("../../com.tle.web.workflow/images/button-rhs-view.rtl.png");
+}
+
+#wizard-actions {
+	text-align: left;
+}

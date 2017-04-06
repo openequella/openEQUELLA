@@ -1,0 +1,851 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.17" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 2.3.1.v20080911 Build &lt;2.3.1.v20080922-1151></property>
+    <property name="units">in</property>
+    <property name="comments">Copyright (c) 2006 &lt;&lt;Your Company Name here>></property>
+    <parameters>
+        <scalar-parameter name="StartDate" id="448">
+            <text-property name="helpText">DD/MM/YYYY</text-property>
+            <property name="valueType">static</property>
+            <property name="dataType">dateTime</property>
+            <text-property name="promptText">Please enter monitoring start date in the form DD/MM/YYYY</text-property>
+            <property name="isRequired">true</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Custom</property>
+                <property name="pattern">Medium Date</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="ReportingPeriod" id="527">
+            <property name="hidden">false</property>
+            <property name="valueType">static</property>
+            <property name="dataType">decimal</property>
+            <text-property name="promptText">Number of Days for reporting period</text-property>
+            <property name="isRequired">true</property>
+            <property name="controlType">text-box</property>
+            <property name="defaultValue">83</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+    </parameters>
+    <data-sources>
+        <oda-data-source extensionID="com.tle.reporting.oda.datasource" name="Data Source" id="4">
+            <text-property name="displayName">Data Source</text-property>
+            <property name="webserviceUrl">http://boorah/dev/my</property>
+            <property name="webserviceUser">j</property>
+            <encrypted-property name="webservicePassword" encryptionID="base64">YGBgYGBg</encrypted-property>
+        </oda-data-source>
+    </data-sources>
+    <data-sets>
+        <oda-data-set extensionID="com.tle.reporting.oda.dataset.jdbc" name="Activations" id="299">
+            <text-property name="displayName">Activations</text-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">course_id</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">course_from</property>
+                        <property name="dataType">date-time</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">course_until</property>
+                        <property name="dataType">date-time</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">holding_title</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">portion_title</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">from</property>
+                        <property name="dataType">date-time</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">authors</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">8</property>
+                        <property name="name">portion_authors</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">9</property>
+                        <property name="name">pagerange</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">10</property>
+                        <property name="name">ids</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">11</property>
+                        <property name="name">volume</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">12</property>
+                        <property name="name">issue_number</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">13</property>
+                        <property name="name">issue_date</property>
+                        <property name="dataType">date-time</property>
+                    </structure>
+                    <structure>
+                        <property name="position">14</property>
+                        <property name="name">date_created</property>
+                        <property name="dataType">date-time</property>
+                    </structure>
+                    <structure>
+                        <property name="position">15</property>
+                        <property name="name">published_date</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">16</property>
+                        <property name="name">num_people</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">17</property>
+                        <property name="name">range_start</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">18</property>
+                        <property name="name">range_end</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">19</property>
+                        <property name="name">source</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">20</property>
+                        <property name="name">reason</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">21</property>
+                        <property name="name">source_institution</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">22</property>
+                        <property name="name">artistic_works</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">23</property>
+                        <property name="name">coursename</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">Data Source</property>
+            <list-property name="parameters">
+                <structure>
+                    <property name="name">startDate</property>
+                    <property name="paramName">StartDate</property>
+                    <property name="dataType">dateTime</property>
+                    <property name="nativeDataType">0</property>
+                    <property name="position">1</property>
+                    <expression name="defaultValue">new Date()</expression>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
+                <structure>
+                    <property name="name">endDate</property>
+                    <property name="dataType">dateTime</property>
+                    <property name="nativeDataType">0</property>
+                    <property name="position">2</property>
+                    <expression name="defaultValue">new Date()</expression>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
+            </list-property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">course_id</property>
+                    <property name="nativeName">course_id</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">course_from</property>
+                    <property name="nativeName">course_from</property>
+                    <property name="dataType">date-time</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">course_until</property>
+                    <property name="nativeName">course_until</property>
+                    <property name="dataType">date-time</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">holding_title</property>
+                    <property name="nativeName">holding_title</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">portion_title</property>
+                    <property name="nativeName">portion_title</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">from</property>
+                    <property name="nativeName">from</property>
+                    <property name="dataType">date-time</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">authors</property>
+                    <property name="nativeName">authors</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">8</property>
+                    <property name="name">portion_authors</property>
+                    <property name="nativeName">portion_authors</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">9</property>
+                    <property name="name">pagerange</property>
+                    <property name="nativeName">pagerange</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">10</property>
+                    <property name="name">ids</property>
+                    <property name="nativeName">ids</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">11</property>
+                    <property name="name">volume</property>
+                    <property name="nativeName">volume</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">12</property>
+                    <property name="name">issue_number</property>
+                    <property name="nativeName">issue_number</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">13</property>
+                    <property name="name">issue_date</property>
+                    <property name="nativeName">issue_date</property>
+                    <property name="dataType">date-time</property>
+                </structure>
+                <structure>
+                    <property name="position">14</property>
+                    <property name="name">date_created</property>
+                    <property name="nativeName">date_created</property>
+                    <property name="dataType">date-time</property>
+                </structure>
+                <structure>
+                    <property name="position">15</property>
+                    <property name="name">published_date</property>
+                    <property name="nativeName">published_date</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">16</property>
+                    <property name="name">num_people</property>
+                    <property name="nativeName">num_people</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">17</property>
+                    <property name="name">range_start</property>
+                    <property name="nativeName">range_start</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">18</property>
+                    <property name="name">range_end</property>
+                    <property name="nativeName">range_end</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">19</property>
+                    <property name="name">source</property>
+                    <property name="nativeName">source</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">20</property>
+                    <property name="name">reason</property>
+                    <property name="nativeName">reason</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">21</property>
+                    <property name="name">source_institution</property>
+                    <property name="nativeName">source_institution</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">22</property>
+                    <property name="name">artistic_works</property>
+                    <property name="nativeName">artistic_works</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">23</property>
+                    <property name="name">coursename</property>
+                    <property name="nativeName">coursename</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <property name="queryText">select ci.code as "course_id", 
+ci."from" as "course_from",
+ci.until as "course_until",
+ch.title as "holding_title", 
+cp.title as "portion_title",
+ar."from" as "from",
+ch.author_list as "authors", 
+cp.author_list as "portion_authors",
+cs.range as "pagerange",
+ch.id_list as "ids",
+ch.volume as "volume",
+ch.issue_number as "issue_number",
+ch.issue_date as "issue_date",
+i.date_created as "date_created",
+ch.pub_date as "published_date",
+ci.students as "num_people",
+cs.range_start as "range_start",
+cs.range_end as "range_end",
+cp.source as "source",
+cp.reason as "reason",
+cp.source_institution as "source_institution",
+cp.artistic_works as "artistic_works",
+(select text from language_string where bundle_id = cibe.name_id) as "coursename"
+from activate_request  ar 
+inner join item i on ar.item_id = i.id AND i.institution_id = CURRENT_INSTITUTION
+inner join course_info ci on ar.course_info_id = ci.id
+inner join base_entity cibe on ci.id = cibe.id
+inner join attachment at on at.uuid = ar.attachment and i.id = at.item_id
+inner join cla_portion cp on cp.item_id = i.id
+inner join cla_section cs on at.uuid = cs.attachment and cp.id = cs.portion_id
+inner join cla_holding ch on ch.id = cp.holding_id
+where (ar."from" >= ? and ar."from" &lt;= ?) and cs.copyright_status in ('copyright', 'outofprint') order by ar."from"</property>
+        </oda-data-set>
+    </data-sets>
+    <styles>
+        <style name="CSV" id="141">
+            <structure name="stringFormat">
+                <property name="category">Custom</property>
+                <property name="pattern">@,</property>
+            </structure>
+            <property name="display">inline</property>
+        </style>
+        <style name="Title" id="189">
+            <property name="fontFamily">"Arial"</property>
+            <property name="fontSize">small</property>
+            <property name="fontWeight">bold</property>
+            <property name="borderTopStyle">none</property>
+            <property name="paddingRight">10pt</property>
+            <property name="whiteSpace">nowrap</property>
+        </style>
+        <style name="Row Border" id="201">
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">thin</property>
+            <property name="borderLeftWidth">thin</property>
+            <property name="borderRightWidth">thin</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">thin</property>
+        </style>
+        <style name="Table Border Rows (light)" id="261">
+            <property name="borderBottomColor">#C0C0C0</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">thin</property>
+            <property name="borderLeftWidth">thin</property>
+            <property name="borderRightWidth">thin</property>
+            <property name="borderTopColor">#C0C0C0</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">thin</property>
+        </style>
+        <style name="DetailsStyle" id="461">
+            <property name="backgroundColor">#0000FF</property>
+            <property name="fontFamily">"Arial"</property>
+            <property name="fontSize">small</property>
+            <property name="paddingRight">0pt</property>
+            <property name="whiteSpace">nowrap</property>
+        </style>
+        <style name="HowMuchStyle" id="462">
+            <property name="backgroundColor">#FFFF80</property>
+            <property name="fontFamily">"Arial"</property>
+            <property name="color">#000000</property>
+            <property name="borderBottomStyle">none</property>
+            <property name="borderBottomWidth">thin</property>
+            <property name="borderLeftStyle">none</property>
+            <property name="borderLeftWidth">thin</property>
+            <property name="borderRightStyle">none</property>
+            <property name="borderRightWidth">thin</property>
+            <property name="borderTopStyle">none</property>
+            <property name="borderTopWidth">thin</property>
+        </style>
+        <style name="TableHeaderStyle" id="463">
+            <property name="fontFamily">"Arial"</property>
+            <property name="fontSize">large</property>
+            <property name="fontWeight">bold</property>
+            <property name="fontStyle">normal</property>
+            <property name="color">#FFFFFF</property>
+            <property name="borderTopStyle">none</property>
+            <property name="textAlign">center</property>
+        </style>
+        <style name="CopyingStyle" id="496">
+            <property name="backgroundColor">#800080</property>
+        </style>
+        <style name="CommunicationStyle" id="497">
+            <property name="backgroundColor">#FF8000</property>
+        </style>
+        <style name="AdditionalStyle" id="501">
+            <property name="backgroundColor">#FF80C0</property>
+        </style>
+        <style name="table-detail" id="502">
+            <property name="fontFamily">"Arial"</property>
+            <property name="fontSize">small</property>
+        </style>
+        <style name="CodeStyle" id="504">
+            <property name="backgroundColor">#FF0000</property>
+        </style>
+        <style name="Grey1Style" id="505">
+            <property name="backgroundColor">#808080</property>
+            <property name="color">#FFFFFF</property>
+        </style>
+        <style name="Grey2Style" id="506">
+            <property name="backgroundColor">#C0C0C0</property>
+        </style>
+        <style name="TitlesStyle" id="507">
+            <property name="fontFamily">"Arial"</property>
+            <property name="paddingTop">5pt</property>
+            <property name="paddingLeft">5pt</property>
+            <property name="paddingBottom">5pt</property>
+            <property name="paddingRight">5pt</property>
+            <property name="textAlign">center</property>
+            <property name="verticalAlign">middle</property>
+            <property name="whiteSpace">nowrap</property>
+        </style>
+        <style name="WhomStyle" id="514">
+            <property name="backgroundColor">#008000</property>
+        </style>
+        <style name="AdditionalComStyle" id="520">
+            <property name="backgroundColor">#8080C0</property>
+        </style>
+    </styles>
+    <page-setup>
+        <simple-master-page name="MasterPage" id="2">
+            <property name="type">a4</property>
+            <property name="orientation">landscape</property>
+            <property name="topMargin">10pt</property>
+            <property name="leftMargin">5pt</property>
+            <property name="bottomMargin">10pt</property>
+            <property name="rightMargin">0in</property>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <grid id="551">
+            <property name="borderBottomColor">#000000</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">medium</property>
+            <property name="borderLeftColor">#000000</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">medium</property>
+            <property name="borderRightColor">#000000</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">medium</property>
+            <property name="borderTopColor">#000000</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">medium</property>
+            <property name="height">0.7684210526315789in</property>
+            <property name="width">5.810526315789474in</property>
+            <column id="552">
+                <property name="width">2.8842105263157896in</property>
+                <property name="backgroundColor">#80FF80</property>
+            </column>
+            <column id="553">
+                <property name="width">2.9263157894736844in</property>
+                <property name="backgroundColor">#FFFF80</property>
+            </column>
+            <row id="554">
+                <cell id="555">
+                    <text id="218">
+                        <property name="contentType">plain</property>
+                        <text-property name="content"><![CDATA[Monitoring starts]]></text-property>
+                    </text>
+                </cell>
+                <cell id="556">
+                    <text-data id="525">
+                        <expression name="valueExpr">params["StartDate"]</expression>
+                        <property name="contentType">html</property>
+                    </text-data>
+                </cell>
+            </row>
+            <row id="557">
+                <cell id="558">
+                    <text id="219">
+                        <property name="contentType">plain</property>
+                        <text-property name="content"><![CDATA[Monitoring ends]]></text-property>
+                    </text>
+                </cell>
+                <cell id="559">
+                    <text-data id="526">
+                        <expression name="valueExpr">new Date(params["StartDate"].getTime() + 86400000*params["ReportingPeriod"])</expression>
+                        <property name="contentType">html</property>
+                    </text-data>
+                </cell>
+            </row>
+            <row id="560">
+                <cell id="561">
+                    <text id="522">
+                        <property name="contentType">plain</property>
+                        <text-property name="content"><![CDATA[Date report run]]></text-property>
+                    </text>
+                </cell>
+                <cell id="562">
+                    <text-data id="524">
+                        <expression name="valueExpr">new Date()</expression>
+                        <property name="contentType">html</property>
+                    </text-data>
+                </cell>
+            </row>
+        </grid>
+        <table id="312">
+            <property name="width">100%</property>
+            <property name="dataSet">Activations</property>
+            <list-property name="paramBindings">
+                <structure>
+                    <property name="paramName">startDate</property>
+                    <expression name="expression">params["StartDate"]</expression>
+                </structure>
+                <structure>
+                    <property name="paramName">endDate</property>
+                    <expression name="expression">new Date(params["StartDate"].getTime() + 86400000*params["ReportingPeriod"])</expression>
+                </structure>
+            </list-property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">course_id</property>
+                    <expression name="expression">dataSetRow["course_id"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">holding_title</property>
+                    <expression name="expression">dataSetRow["holding_title"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">portion_title</property>
+                    <expression name="expression">dataSetRow["portion_title"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">authors</property>
+                    <expression name="expression">dataSetRow["authors"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">portion_authors</property>
+                    <expression name="expression">dataSetRow["portion_authors"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">ids</property>
+                    <expression name="expression">dataSetRow["ids"];</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">volume</property>
+                    <expression name="expression">dataSetRow["volume"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">issue_number</property>
+                    <expression name="expression">dataSetRow["issue_number"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">issue_date</property>
+                    <expression name="expression">dataSetRow["issue_date"]</expression>
+                    <property name="dataType">date-time</property>
+                </structure>
+                <structure>
+                    <property name="name">from</property>
+                    <expression name="expression">dataSetRow["from"].toLocaleDateString()</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">coursename</property>
+                    <expression name="expression">dataSetRow["coursename"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">pagerange</property>
+                    <expression name="expression">dataSetRow["pagerange"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">date_created</property>
+                    <expression name="expression">dataSetRow["date_created"].toLocaleDateString()</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">num_students</property>
+                    <expression name="expression">dataSetRow["num_people"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">year_or_volume</property>
+                    <expression name="expression">"todo"</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">range_start</property>
+                    <expression name="expression">dataSetRow["range_start"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">range_end</property>
+                    <expression name="expression">dataSetRow["range_end"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">source</property>
+                    <expression name="expression">var source = dataSetRow["source"]
+if (source == 'C')
+{
+	source += ': '+dataSetRow["source_institution"];
+}
+source;</expression>
+                    <property name="dataType">any</property>
+                </structure>
+                <structure>
+                    <property name="name">reason</property>
+                    <expression name="expression">dataSetRow["reason"]</expression>
+                </structure>
+                <structure>
+                    <property name="name">artistic_works</property>
+                    <expression name="expression">var works = dataSetRow["artistic_works"];
+if (works == 'N')
+{
+	works = "N/A";
+}
+works;</expression>
+                </structure>
+                <structure>
+                    <property name="name">course_weeks</property>
+                    <expression name="expression">Math.ceil(DateTimeSpan.days(dataSetRow["course_from"], dataSetRow["course_until"])/7)</expression>
+                </structure>
+            </list-property>
+            <property name="pageBreakInterval">50</property>
+            <column id="346"/>
+            <column id="347"/>
+            <column id="348"/>
+            <column id="349"/>
+            <column id="350"/>
+            <column id="351"/>
+            <column id="352"/>
+            <column id="353"/>
+            <column id="354"/>
+            <column id="369"/>
+            <column id="373"/>
+            <column id="377"/>
+            <header>
+                <row id="313">
+                    <property name="style">TitlesStyle</property>
+                    <cell id="314">
+                        <property name="style">Grey1Style</property>
+                        <label id="356">
+                            <text-property name="text">Course Code for Course of Study
+</text-property>
+                        </label>
+                    </cell>
+                    <cell id="315">
+                        <property name="style">Grey2Style</property>
+                        <label id="357">
+                            <text-property name="text">Course of Study Duration (weeks)
+</text-property>
+                        </label>
+                    </cell>
+                    <cell id="316">
+                        <property name="style">Grey1Style</property>
+                        <label id="358">
+                            <text-property name="text">No. of Registered Students on Course of Study
+</text-property>
+                        </label>
+                    </cell>
+                    <cell id="317">
+                        <property name="style">Grey2Style</property>
+                        <label id="359">
+                            <text-property name="text">ISBN / ISSN
+</text-property>
+                        </label>
+                    </cell>
+                    <cell id="318">
+                        <property name="style">Grey1Style</property>
+                        <label id="360">
+                            <text-property name="text">Title
+</text-property>
+                        </label>
+                    </cell>
+                    <cell id="319">
+                        <property name="style">Grey2Style</property>
+                        <label id="361">
+                            <text-property name="text">Journal Year or Volume Number
+</text-property>
+                        </label>
+                    </cell>
+                    <cell id="320">
+                        <property name="style">Grey1Style</property>
+                        <label id="362">
+                            <text-property name="text">Author(s) of Chapter / Article
+</text-property>
+                        </label>
+                    </cell>
+                    <cell id="321">
+                        <property name="style">Grey2Style</property>
+                        <label id="363">
+                            <text-property name="text">Page No. From
+</text-property>
+                        </label>
+                    </cell>
+                    <cell id="322">
+                        <property name="style">Grey1Style</property>
+                        <label id="364">
+                            <text-property name="text">Page No. To
+</text-property>
+                        </label>
+                    </cell>
+                    <cell id="366">
+                        <property name="style">Grey1Style</property>
+                        <label id="386">
+                            <text-property name="text">.Source (see code A)
+</text-property>
+                        </label>
+                    </cell>
+                    <cell id="370">
+                        <property name="style">Grey2Style</property>
+                        <label id="387">
+                            <text-property name="text">Primary Reason for Scanning where Digital Version known to exist – (see code B)
+</text-property>
+                        </label>
+                    </cell>
+                    <cell id="374">
+                        <property name="style">Grey1Style</property>
+                        <label id="388">
+                            <text-property name="text">.Artistic Works- (see code C)
+</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <detail>
+                <row id="324">
+                    <cell id="325">
+                        <data id="541">
+                            <property name="resultSetColumn">course_id</property>
+                        </data>
+                    </cell>
+                    <cell id="326">
+                        <data id="550">
+                            <property name="resultSetColumn">course_weeks</property>
+                        </data>
+                    </cell>
+                    <cell id="327">
+                        <data id="447">
+                            <property name="resultSetColumn">num_students</property>
+                        </data>
+                    </cell>
+                    <cell id="328">
+                        <data id="452">
+                            <property name="resultSetColumn">ids</property>
+                        </data>
+                    </cell>
+                    <cell id="329">
+                        <data id="453">
+                            <property name="resultSetColumn">holding_title</property>
+                        </data>
+                    </cell>
+                    <cell id="330">
+                        <data id="454">
+                            <property name="resultSetColumn">year_or_volume</property>
+                        </data>
+                    </cell>
+                    <cell id="331">
+                        <data id="455">
+                            <property name="resultSetColumn">portion_authors</property>
+                        </data>
+                    </cell>
+                    <cell id="332">
+                        <data id="542">
+                            <property name="resultSetColumn">range_start</property>
+                        </data>
+                    </cell>
+                    <cell id="333">
+                        <data id="530">
+                            <property name="resultSetColumn">range_end</property>
+                        </data>
+                    </cell>
+                    <cell id="367">
+                        <data id="547">
+                            <property name="resultSetColumn">source</property>
+                        </data>
+                    </cell>
+                    <cell id="371">
+                        <data id="548">
+                            <property name="resultSetColumn">reason</property>
+                        </data>
+                    </cell>
+                    <cell id="375">
+                        <data id="549">
+                            <property name="resultSetColumn">artistic_works</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+            <footer>
+                <row id="335">
+                    <cell id="336"/>
+                    <cell id="337"/>
+                    <cell id="338"/>
+                    <cell id="339"/>
+                    <cell id="340"/>
+                    <cell id="341"/>
+                    <cell id="342"/>
+                    <cell id="343"/>
+                    <cell id="344"/>
+                    <cell id="368"/>
+                    <cell id="372"/>
+                    <cell id="376"/>
+                </row>
+            </footer>
+        </table>
+    </body>
+</report>

@@ -1,0 +1,59 @@
+<project name="com.tle.applet.inplaceeditor" basedir="." default="compile">
+	<import file="../../Applet/com.tle.common.applet/appletcommon-build.xml" />
+
+	<property name="applet.jar.name" value="inplaceedit.jar" />
+	<property name="applet.title" value="EQUELLA In-place File Editor" />
+	
+	<property name="nativelibs.jar.name" value="nativelibs.jar" />
+	<proguardconfiguration id="config">
+		-keep class com.sun.jna.** {
+			*;
+		}
+
+		-keep class com.tle.web.inplaceeditor.** {
+			*;
+		}
+		-keepnames class com.tle.common.inplaceeditor.InPlaceEditorServerBackend
+		{
+			*;
+		}
+		-keep class org.rococoa.internal.MsgSendLibrary
+		{
+			*;
+		}
+		-keep class net.sf.cglib.**
+		{
+			*;
+		}
+		-keep class org.slf4j.**
+		{
+			*;
+		}
+		-dontwarn org.apache.tools.**,net.sf.cglib.**,org.slf4j.impl.**,org.junit.**
+	</proguardconfiguration>
+
+	<target name="make" depends="applet-common.make">
+		<jar destfile="${staging}/${nativelibs.jar.name}">
+			<manifest>
+				<attribute name="Codebase" value="*"/>
+				<attribute name="Application-Library-Allowable-Codebase" value="*" />
+				<attribute name="Caller-Allowable-Codebase" value="*" />
+				<attribute name="Permissions" value="all-permissions"/>
+				<attribute name="Application-Name" value="EQUELLA In-place File Editor Native Libraries"/>
+				<attribute name="Version" value="${version.mm}"/>
+				<!--
+http://www.oracle.com/technetwork/java/javase/7u45-relnotes-2016950.html
+Synopsis: Caller-Allowable-Codebase may be ignored when used with Trusted-Library.
+
+If a trusted, signed JAR file is using the Caller-Allowable-Codebase manifest attribute along with Trusted-Library 
+then the Caller-Allowable-Codebase manifest entry will be ignored and, as a result, a JavaScript -> Java call will show the native LiveConnect warning. 
+The workaround is to remove the Trusted-Library manifest entry.
+				-->
+				<!--<attribute name="Trusted-Library" value="true"/>-->
+			</manifest>
+			<fileset dir="${src}" includes="*.jnilib"/>
+		</jar>
+		<easy-sign-jar src="${staging}/${nativelibs.jar.name}" dest="${applet.jar.dest}/${nativelibs.jar.name}" />
+	</target>
+
+</project>

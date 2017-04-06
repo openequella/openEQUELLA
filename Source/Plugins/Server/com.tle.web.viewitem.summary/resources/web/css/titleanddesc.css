@@ -1,0 +1,20 @@
+.item-title-and-desc
+{
+	position: relative;
+}
+
+.item-title-and-desc .selectitem
+{
+	position: absolute;
+	right: 0px;
+}
+
+.item-title-and-desc .selectitem .btn
+{
+	margin-right: 1px;
+}
+
+.item-title-and-desc .item-title
+{
+	display: block;
+}

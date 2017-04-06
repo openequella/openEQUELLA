@@ -1,0 +1,61 @@
+.navNode {
+}
+
+.toggler {
+}
+
+.togglerBox {
+	display: table-cell;
+	vertical-align: middle;
+	padding-left: 5px;
+	width: 10px;
+}
+
+.iconBox
+{
+	display: table-cell;
+	padding-left: 5px;
+	vertical-align: middle;
+	width: 20px;
+}
+
+.icon {
+	border: 0;
+}
+
+.selected {
+	font-weight: bold;
+}
+
+.textBox {
+	display: table-cell;
+	padding-left: 5px;
+}
+
+.hidden {
+	display: none;
+}
+
+.drophover
+{
+	background: yellow;
+}
+
+.midhover
+{
+	background: black;
+}
+
+.before
+{
+	width: 85%;
+	height: 3px;
+	font-size: 0px;
+}
+
+.after
+{
+	width: 85%;
+	height: 3px;
+	font-size: 0px;
+}

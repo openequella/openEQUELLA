@@ -1,0 +1,32 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.payment.storefront" version="1">
+	<attributes>
+		<attribute id="type" value="admin-console" />
+	</attributes>
+	<requires>
+		<import plugin-id="com.tle.admin.collection.tool" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.admin.tools" />
+		<import plugin-id="com.tle.admin.schema.common" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="admin-console" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.collection.tool" point-id="summaryDisplay" id="purchasedItemSummarySection">
+		<parameter id="id" value="purchasedItemSummarySection" />
+		<parameter id="nameKey" value="com.tle.admin.payment.storefront.summarysection.title" />
+		<parameter id="defaultNameKey" value="com.tle.admin.payment.storefront.summarysection.defaultname" />
+		<parameter id="class" value="com.tle.admin.payment.storefront.PurchasedItemDisplayConfig" />
+	</extension>
+
+</plugin>

@@ -1,0 +1,179 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.hierarchy" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.hierarchy" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.favourites" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.hierarchy" />
+		<import plugin-id="com.tle.core.migration" />
+		<import plugin-id="com.tle.core.search" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.web.browseby" />
+		<import plugin-id="com.tle.web.core" />
+		<import plugin-id="com.tle.web.integration" />
+		<import plugin-id="com.tle.web.itemlist" />
+		<import plugin-id="com.tle.web.portal" />
+		<import plugin-id="com.tle.web.recipientselector" />
+		<import plugin-id="com.tle.web.remoting" />
+		<import plugin-id="com.tle.web.remoting.soap" />
+		<import plugin-id="com.tle.web.search" />
+		<import plugin-id="com.tle.web.searching" />
+		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.web.selection" />
+		<import plugin-id="com.tle.web.selection.home" />
+		<import plugin-id="com.tle.web.services" />
+		<import plugin-id="com.tle.web.viewitem" />
+		<import plugin-id="com.tle.web.viewitem.summary" />
+		<import plugin-id="com.tle.core.powersearch" />
+		<import plugin-id="com.tle.core.schema" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+		<parameter id="class" value="com.tle.web.sections.equella.guice.EquellaModule" />
+		<parameter id="class" value="com.tle.web.hierarchy.guice.HierarchySearchModule" />
+		<parameter id="class" value="com.tle.web.hierarchy.guice.BrowsePortletModule" />
+		<parameter id="class" value="com.tle.web.hierarchy.guice.SkinnyHierarchyModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="stringshelp">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.xml" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="helpstrings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.xml" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="hierarchy">
+		<parameter id="path" value="/hierarchy.do" />
+		<parameter id="root" value="bean:/hierarchy" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="skinny-hierarchy">
+		<parameter id="path" value="/access/skinny/hierarchy.do" />
+		<parameter id="root" value="bean:/access/skinny/hierarchy" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.services" point-id="invoker" id="dynaRemote">
+		<parameter id="class" value="com.tle.common.hierarchy.RemoteHierarchyService" />
+		<parameter id="bean" value="bean:com.tle.core.hierarchy.HierarchyService" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.equella" point-id="menuContributor" id="hierarchyMenuContributor">
+		<parameter id="menuContributorClass" value="bean:com.tle.web.hierarchy.HierarchyMenuContributor" />
+		<parameter id="enabledFor" value="loggedIn" />
+		<parameter id="enabledFor" value="guest" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="savedSearchToFavouriteSearchMigration">
+		<parameter id="id" value="com.tle.web.hierarchy.migration.SavedSearchToFavouriteSearchMigration" />
+		<parameter id="bean" value="bean:com.tle.web.hierarchy.migration.SavedSearchToFavouriteSearchMigration" />
+		<parameter id="date" value="1970-01-01" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.portal" point-id="portletEditor" id="browsePortletEditor">
+		<parameter id="id" value="browse" />
+		<parameter id="class" value="bean:com.tle.web.hierarchy.portlet.editor.BrowsePortletEditorSection" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.portal" point-id="portletRenderer" id="browsePortlet">
+		<parameter id="id" value="browse" />
+		<parameter id="class" value="bean:com.tle.web.hierarchy.portlet.renderer.BrowsePortletRenderer" />
+		<parameter id="nameKey" value="com.tle.web.hierarchy.portlet.browse.name" />
+		<parameter id="descriptionKey" value="com.tle.web.hierarchy.portlet.browse.description" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="section" id="browseSelectionPortal">
+		<parameter id="path" value="/access/selection/home.do" />
+		<parameter id="class" value="bean:com.tle.web.hierarchy.portlet.browseSelectionPortal" />
+		<parameter id="parentid" value="SELECTION_HOME" />
+		<parameter id="layout" value="{column:'left', order: 20}" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.selection" point-id="selectionNavActions" id="browseNavAction">
+		<parameter id="type" value="browse" />
+		<parameter id="class" value="bean:com.tle.web.hierarchy.selection.BrowseSelectable" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.selection" point-id="selectionNavActions" id="skinnyBrowseNavAction">
+		<parameter id="type" value="skinnybrowse" />
+		<parameter id="class" value="bean:com.tle.web.hierarchy.selection.SkinnyBrowseSelectable" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="savedSearchToFavouriteSearchXml">
+		<parameter id="id" value="com.tle.web.hierarchy.migration.SavedSearchToFavouriteSearchXml" />
+		<parameter id="bean" value="bean:com.tle.web.hierarchy.migration.SavedSearchToFavouriteSearchXml" />
+		<parameter id="date" value="1970-02-07" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="section" id="keyResourceSection">
+		<parameter id="class" value="bean:com.tle.web.hierarchy.addkey.HierarchyTreeSection" />
+		<parameter id="path" value="/viewitem/viewitem" />
+		<parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_CONTENT" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="addToHierarchy">
+		<parameter id="id" value="addToHierarchy" />
+		<parameter id="class" value="bean:com.tle.web.hierarchy.addkey.KeyResourceActionSection" />
+		<parameter id="order" value="500" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="legacySearchServlet">
+		<parameter id="bean" value="bean:com.tle.web.hierarchy.legacy.SearchDoServlet" />
+		<parameter id="url-pattern" value="/access/search.do" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="legacyRSSServlet">
+		<parameter id="bean" value="bean:com.tle.web.hierarchy.legacy.LegacyRSSServlet" />
+		<parameter id="url-pattern" value="/rss/search/" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.remoting.soap" point-id="endpoint-interface" id="hierarchyMethods">
+		<parameter id="path" value="/SoapService51" />
+		<parameter id="serviceInterface" value="com.tle.web.hierarchy.soap.HierarchySoapInterface" />
+		<parameter id="bean" value="bean:com.tle.web.hierarchy.soap.HierarchySoapService" />
+	</extension>
+
+
+	<extension plugin-id="com.tle.web.itemlist" point-id="itemListExtension" id="addToHierarchyLink">
+		<parameter id="bean" value="bean:com.tle.web.hierarchy.itemlist.AddToHierarchyLink" />
+		<parameter id="applies" value="standard" />
+		<parameter id="not-applies" value="hierarchy" />
+			<parameter id="applies" value="gallery" />
+			<parameter id="applies" value="video" />
+	</extension>
+
+
+	<extension plugin-id="com.tle.web.itemlist" point-id="itemListExtension" id="addOrDeleteKeyResourceLink">
+		<parameter id="bean" value="bean:com.tle.web.hierarchy.itemlist.AddOrDeleteKeyResourceLink" />
+		<parameter id="applies" value="hierarchy" />
+	</extension>
+	
+	<extension plugin-id="com.tle.web.selection" point-id="selectable" id="browseSelectable">
+		<parameter id="id" value="browse" />
+		<parameter id="selectBean" value="bean:com.tle.web.hierarchy.selection.BrowseSelectable" />
+	</extension>
+	
+	<extension plugin-id="com.tle.web.selection" point-id="selectable" id="skinnyBrowseSelectable">
+		<parameter id="id" value="skinnybrowse" />
+		<parameter id="selectBean" value="bean:com.tle.web.hierarchy.selection.SkinnyBrowseSelectable" />
+	</extension>
+</plugin>

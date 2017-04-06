@@ -1,0 +1,34 @@
+.contribution-selection-page UL 
+{
+	margin-left: 40px;
+	list-style: square;
+}
+
+.contribution-selection-page .resumeables
+{
+	margin-bottom: 3em;
+}
+
+.contribution-selection-page DIV.resumeables UL LI
+{
+	list-style-type:none;
+	font-size: 12px;
+	line-height: 1.5em;
+	width: 600px;
+	position: relative;
+}
+
+.contribution-selection-page DIV.resumeables UL LI SPAN.removelink
+{
+	position: absolute;
+	right: 3px;
+}
+
+.contribution-selection-page DIV.resumeables UL LI SPAN.resumable
+{
+	display:inline-block;
+	width:520px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}

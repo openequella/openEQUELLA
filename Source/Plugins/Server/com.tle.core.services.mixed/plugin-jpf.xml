@@ -1,0 +1,22 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.services.mixed" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.search" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.freetext" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.settings" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules" />
+
+	<extension plugin-id="com.tle.core.services" point-id="applicationEventListener" id="listeners">
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.ItemDefinitionDeletionListener" />
+	</extension>
+</plugin>

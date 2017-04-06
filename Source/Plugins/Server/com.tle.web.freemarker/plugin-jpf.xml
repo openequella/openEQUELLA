@@ -1,0 +1,40 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.freemarker" version="1">
+	<requires>
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.web.resources" />
+		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.common.licences" />
+		<import plugin-id="org.freemarker:freemarker" exported="true" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="templateModelProvider">
+		<parameter-def id="modelClass" multiplicity="one-or-more" type="string" />
+		<parameter-def id="class" multiplicity="one" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.web.freemarker.guice.FreemarkerModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="registrationHandler" id="viewFactory">
+		<parameter id="class" value="bean:com.tle.web.freemarker.annotations.FreemarkerFactoryHandler" />
+		<parameter id="order" value="1000" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="freemarkerLicenceName">
+		<parameter id="thirdPartyName" value="Freemarker" />
+		<parameter id="licenceName" value="Modified BSD" />
+		<parameter id="licenceURLInternal" value="freemarker.txt" />
+		<parameter id="licenceURLExternal" value="http://freemarker.org/docs/app_license.html" />
+		<parameter id="thirdPartyHome" value="http://freemarker.org/" />
+	</extension>
+</plugin>

@@ -1,0 +1,55 @@
+.result_imagemiddle
+{
+	float: left;
+	width: 70%;
+	min-height:70px;
+	height: auto !important;
+	height: 70px;
+}
+
+.result_imageright 
+{
+	float: left;
+	width: 26%;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+.result_with_actions .result_imagemiddle
+{
+	width: 55%;
+}
+
+.result_imageoverall 
+{
+	width: 100%;
+	overflow: auto;
+}
+
+.prettyGallery ul, ul.result_imagelist
+{
+	list-style: none;
+	padding: 0;
+	background-color: #E0E0EE;
+}	
+
+.result_imagelist li
+{
+	display: block;
+	float: left;
+	margin-right: 5px;
+}
+
+.result_imagelist
+{
+}
+
+.prettyGallery .prettyNavigation A, .pictureHolder A
+{
+	outline: none;
+}
+
+.result_imageoverall:hover
+{
+	background-color: #FFFFF3;
+}

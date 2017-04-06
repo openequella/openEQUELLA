@@ -1,0 +1,5143 @@
+<manifest xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" identifier="Manifest" version="1.1" xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd                             http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd                             http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
+  <metadata>
+    <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Alcohol</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a01</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Discover useful information about alcohol while working through language, literacy and numeracy activities and assessments that cover Certificate of General Education for Adults &#8211; CGEA &#8211; Level 2 in reading and writing for self expression, reading for knowledge, reading and writing for practical purposes. The numeracy activities cover maths skills involving percentage, alcohol concentrations, metric volumes and problem solving. You can use this information to work out how the type and amount of alcohol we drink relates to the number of standard drinks and the likely effects on the body. Warm-up quiz that involves reading and evaluating current knowledge about alcohol Reading personal text involving multiple options, decision making and exploring consequences Interpret and extrapolate facts from an information brochure. Interpret and extrapolate facts from an information sheet, integrate a variety of facts into a written response. Analyse a personal account, recognise structural features of writing, recognize topic and supporting sentences in a story. Write a personal account about bingeing incorporating features such as appropriate tone, spelling, punctuation and sentence structure. Identify the main features of good instructional writing including title, introduction, bullets and numbering. Incorporate the structure and language features discussed in Party Smart to write a set of instructions. Reading facts evaluating current knowledge about alcohol and BAC level utilize the facts to solve problem re BAC. Use metrics and percentages to find the number of standard drinks. Use percentages and metrics. Convert various drinks of differing alcoholic strengths and amounts into equivalent standard drinks and thus get a measure of BAC level.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">assessments</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">Reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">Writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">Self expression</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">Knowledge</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">Practical purposes</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">Structure of language</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">Percentages</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">metric</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+  </metadata>
+  <organizations default="ORG-8B337A06-5895-803F-F34F-6C6343CAB782">
+    <organization identifier="ORG-8B337A06-5895-803F-F34F-6C6343CAB782" structure="hierarchical">
+      <title>Where is the Party At?</title>
+      <item identifier="ITEM-B371FE9E-82A7-53B8-0D26-4E698181658B" isvisible="true">
+        <title>Alcohol</title>
+        <item identifier="ITEM-8851892C-416C-0FDF-8581-D484EC10B8D4" isvisible="true" identifierref="RES-89FCA5CA-A4C4-5F07-F05C-155553F775C9">
+          <title>Know it all?</title>
+          <metadata>
+            <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Know it all?</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a02</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Warm-up quiz that involves reading and valuating current knowledge about alcohol.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+  
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/01_know_it_all/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+          </metadata>
+        </item>
+        <item identifier="ITEM-9AB633DB-2666-8020-15DC-C367BB4C9902" isvisible="true" identifierref="RES-6FA58B1D-0A49-C872-8FC0-3455744CC760">
+          <title>What would you do?</title>
+          <metadata>
+            <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - What would you do?</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a03</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Reading personal text involving multiple options, decision making and exploring consequences.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/02_what_would_you_do/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+          </metadata>
+        </item>
+        <item identifier="ITEM-FBA54B9D-ED39-7A91-49D9-8350431E29CA" isvisible="true" identifierref="RES-ACA08CCE-BE19-0841-7590-053FC97EF175">
+          <title>Alcohol alert</title>
+          <metadata>
+            <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Alcohol alert</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a04</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Interpret and extrapolate facts from an information brochure.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/03_alcohol_alert/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+          </metadata>
+        </item>
+        <item identifier="ITEM-7545092D-B641-FEBE-1BAD-DBB7C24941B9" isvisible="true" identifierref="RES-5A731979-4EF1-4D2A-55CE-35773D763D33">
+          <title>Bingeing</title>
+          <metadata>
+            <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Bingeing</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a05</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Interpret and extrapolate facts from an information sheet, integrate a variety of facts into a written response.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/04_bingeing/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+          </metadata>
+        </item>
+        <item identifier="ITEM-AD4D381F-55C5-5DCC-1FD3-F1CF08840194" isvisible="true" identifierref="RES-E4341797-3C31-6558-AF1E-B8175BF312A9">
+          <title>Smashed and trashed</title>
+          <metadata>
+            <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Smashed and trashed</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a06</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Analyse a personal account, recognise structural features of writing, recognize topic and supporting sentences in a story.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/05_smashed_and_trashed/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+          </metadata>
+        </item>
+        <item identifier="ITEM-6CB2D0A4-3F11-5AC7-7318-998E7A9DA338" isvisible="true" identifierref="RES-9DE2DC65-1660-2651-688A-0B4600D6615D">
+          <title>How embarrassing</title>
+          <metadata>
+            <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - How embarrassing</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a07</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Write a personal account about bingeing incorporating features such as appropriate tone, spelling punctuation and sentence structure.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/06_how_embarrassing/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+          </metadata>
+        </item>
+        <item identifier="ITEM-2658317B-C645-070E-4783-583F69A919BB" isvisible="true" identifierref="RES-B447BFB3-F3C6-C76B-7369-828BE4B66988">
+          <title>Party smart</title>
+          <metadata>
+            <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Party smart</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a08</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Identify the main features of good instructional writing including title, introduction, bullets and numbering.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/07_party_smart/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+          </metadata>
+        </item>
+        <item identifier="ITEM-40C5976F-FF5F-31E0-1E73-9995927C0DFC" isvisible="true" identifierref="RES-AE2B8F90-0ECA-A3E2-CDB3-486752A523A4">
+          <title>Friends...</title>
+          <metadata>
+            <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Friends...</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a09</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Incorporate the structure and language features discussed in Party Smart to write a set of instructions.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/08_friends/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+          </metadata>
+        </item>
+        <item identifier="ITEM-B472D199-498B-C562-E059-53214FE03819" isvisible="true" identifierref="RES-12756E2D-5DC7-4BBF-55B9-66DF4B143955">
+          <title>Booze in blood</title>
+          <metadata>
+            <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Booze in blood</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a10</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Reading facts evaluating current knowledge about alcohol and BAC level utilize the facts to solve problem re BAC. Use metrics and percentages to find the number of standard drinks.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/09_booze_in_blood/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+          </metadata>
+        </item>
+        <item identifier="ITEM-028D6FC7-4135-4A59-B9D6-3E99DC8D6FE4" isvisible="true" identifierref="RES-75464A6D-24D5-6755-9BF6-C756E9BCE483">
+          <title>Getting home</title>
+          <metadata>
+            <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Getting home</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a11</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Use % and metrics. Convert various drinks of differing alcoholic strengths and amounts into equivalent standard drinks and thus get a measure of BAC level.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/10_getting_home/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+          </metadata>
+        </item>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource type="webcontent" adlcp:scormtype="asset" identifier="RES-Shared">
+      <file href="site/shared/common/calculator.htm" />
+      <file href="site/shared/common/close_pu.htm" />
+      <file href="site/shared/common/flash_detection.swf" />
+      <file href="site/shared/flash/calculator.swf" />
+      <file href="site/shared/flash/characters-ange01.swf" />
+      <file href="site/shared/flash/characters-ben01.swf" />
+      <file href="site/shared/flash/characters-ben02.swf" />
+      <file href="site/shared/flash/characters-dj01.swf" />
+      <file href="site/shared/flash/characters-emma01.swf" />
+      <file href="site/shared/flash/characters-emma02.swf" />
+      <file href="site/shared/flash/characters-emma03.swf" />
+      <file href="site/shared/flash/characters-juanita01.swf" />
+      <file href="site/shared/flash/characters-leyla01.swf" />
+      <file href="site/shared/flash/characters-nemo01.swf" />
+      <file href="site/shared/flash/characters-nick01.swf" />
+      <file href="site/shared/flash/characters-nick02.swf" />
+      <file href="site/shared/flash/int-choosepath.swf" />
+      <file href="site/shared/flash/int-end-001good.swf" />
+      <file href="site/shared/flash/int-end-002average.swf" />
+      <file href="site/shared/flash/int-end-003bad.swf" />
+      <file href="site/shared/flash/int-end-014lockup.swf" />
+      <file href="site/shared/flash/int-end-015police.swf" />
+      <file href="site/shared/flash/int-end-016sleep.swf" />
+      <file href="site/shared/flash/int-end-021good.swf" />
+      <file href="site/shared/flash/int-end-022average.swf" />
+      <file href="site/shared/flash/int-end-023bad.swf" />
+      <file href="site/shared/flash/int-header.swf" />
+      <file href="site/shared/flash/int-truefalse.swf" />
+      <file href="site/shared/flash/lib-fonts.swf" />
+      <file href="site/shared/images/common/chars-ange_talk_115x202.gif" />
+      <file href="site/shared/images/common/chars-ben_talk_115x200.gif" />
+      <file href="site/shared/images/common/chars-dj_talk_115x202.gif" />
+      <file href="site/shared/images/common/chars-emma_talk_115x202.gif" />
+      <file href="site/shared/images/common/chars-juanita_talk_115x206.gif" />
+      <file href="site/shared/images/common/chars-leyla_talk_115x202.gif" />
+      <file href="site/shared/images/common/chars-nemo_talk_115x215.gif" />
+      <file href="site/shared/images/common/chars-nick_talk_115x204.gif" />
+      <file href="site/shared/images/common/ico-excel_32x32.gif" />
+      <file href="site/shared/images/common/ico-get_flashplayer_88x31.gif" />
+      <file href="site/shared/images/common/ico-pdf_32x32.gif" />
+      <file href="site/shared/images/common/ico-word_32x32.gif" />
+      <file href="site/shared/images/common/voice_bubble01-e_44x8.gif" />
+      <file href="site/shared/images/common/voice_bubble01-e_point_44x20.gif" />
+      <file href="site/shared/images/common/voice_bubble01-ne_44x18.gif" />
+      <file href="site/shared/images/common/voice_bubble01-nw_18x18.gif" />
+      <file href="site/shared/images/common/voice_bubble01-n_8x18.gif" />
+      <file href="site/shared/images/common/voice_bubble01-se_44x18.gif" />
+      <file href="site/shared/images/common/voice_bubble01-sw_18x18.gif" />
+      <file href="site/shared/images/common/voice_bubble01-s_8x18.gif" />
+      <file href="site/shared/images/common/voice_bubble01-w_18x8.gif" />
+      <file href="site/shared/images/nav/header_backg.gif" />
+      <file href="site/shared/images/nav/header_backg2.gif" />
+      <file href="site/shared/images/nav/header_backg3.gif" />
+      <file href="site/shared/images/nav/header_curve.gif" />
+      <file href="site/shared/images/nav/header_info_logo.gif" />
+      <file href="site/shared/images/nav/header_info_lounge_backg1.gif" />
+      <file href="site/shared/images/nav/header_info_lounge_curve1.gif" />
+      <file href="site/shared/images/nav/header_info_lounge_curve2.gif" />
+      <file href="site/shared/images/nav/header_logo.gif" />
+      <file href="site/shared/images/nav/header_pu-btn_close_68x42.gif" />
+      <file href="site/shared/images/nav/header_pu-btn_print_68x42.gif" />
+      <file href="site/shared/images/nav/header_pu-curve1_28x42.gif" />
+      <file href="site/shared/images/nf/angie.gif" />
+      <file href="site/shared/images/nf/ben.gif" />
+      <file href="site/shared/images/nf/juanita.gif" />
+      <file href="site/shared/images/nf/leyla.gif" />
+      <file href="site/shared/images/nf/nemo.gif" />
+      <file href="site/shared/images/nf/nick.gif" />
+      <file href="site/shared/images/nf/Thumbs.db" />
+      <file href="site/shared/images/antalogo.gif" />
+      <file href="site/shared/images/antalogo2.gif" />
+      <file href="site/shared/images/bullet-arrow01.gif" />
+      <file href="site/shared/images/right_16x16.gif" />
+      <file href="site/shared/images/Thumbs.db" />
+      <file href="site/shared/images/transparent_1x1.gif" />
+      <file href="site/shared/images/white_block_16x16.gif" />
+      <file href="site/shared/images/wrong_16x16.gif" />
+      <file href="site/shared/scripts/AC_Flash.js" />
+      <file href="site/shared/scripts/AC_RunActiveContent.js" />
+      <file href="site/shared/scripts/library.js" />
+      <file href="site/shared/scripts/scorm.js" />
+      <file href="site/shared/styles/style_nn4.css" />
+      <file href="site/shared/styles/style_nonflash.css" />
+      <file href="site/shared/styles/style_w3c.css" />
+    </resource>
+    <resource type="webcontent" adlcp:scormtype="asset" identifier="RES-Shared-Drugs">
+      <file href="site/drugs/shared/lounge_bg.swf" />
+    </resource>
+    <resource type="webcontent" adlcp:scormtype="sco" identifier="RES-89FCA5CA-A4C4-5F07-F05C-155553F775C9" href="site/drugs/alc/01_know_it_all/default.htm">
+      <metadata>
+        <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Know it all?</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a02</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Warm-up quiz that involves reading and valuating current knowledge about alcohol.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+  
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/01_know_it_all/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+      </metadata>
+      <file href="site/drugs/alc/01_know_it_all/default.htm" />
+      <file href="site/drugs/alc/01_know_it_all/act1/f/default.htm" />
+      <file href="site/drugs/alc/01_know_it_all/act1/nf/default.htm" />
+      <file href="site/drugs/alc/01_know_it_all/images/thumb.gif" />
+      <file href="site/drugs/alc/01_know_it_all/act1/f/audio.swf" />
+      <file href="site/drugs/alc/01_know_it_all/act1/f/data.xml" />
+      <dependency identifierref="RES-Shared" />
+      <dependency identifierref="RES-Shared-Drugs" />
+    </resource>
+    <resource type="webcontent" adlcp:scormtype="sco" identifier="RES-6FA58B1D-0A49-C872-8FC0-3455744CC760" href="site/drugs/alc/02_what_would_you_do/default.htm">
+      <metadata>
+        <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - What would you do?</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a03</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Reading personal text involving multiple options, decision making and exploring consequences.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/02_what_would_you_do/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+      </metadata>
+      <file href="site/drugs/alc/02_what_would_you_do/default.htm" />
+      <file href="site/drugs/alc/02_what_would_you_do/act1/f/choice.htm" />
+      <file href="site/drugs/alc/02_what_would_you_do/act1/f/default.htm" />
+      <file href="site/drugs/alc/02_what_would_you_do/act1/nf/choice.htm" />
+      <file href="site/drugs/alc/02_what_would_you_do/act1/nf/default.htm" />
+      <file href="site/drugs/alc/02_what_would_you_do/images/thumb.gif" />
+      <file href="site/drugs/alc/02_what_would_you_do/act1/f/data.xml" />
+      <file href="site/drugs/alc/02_what_would_you_do/act1/f/intro.swf" />
+      <dependency identifierref="RES-Shared" />
+      <dependency identifierref="RES-Shared-Drugs" />
+    </resource>
+    <resource type="webcontent" adlcp:scormtype="sco" identifier="RES-ACA08CCE-BE19-0841-7590-053FC97EF175" href="site/drugs/alc/03_alcohol_alert/default.htm">
+      <metadata>
+        <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Alcohol alert</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a04</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Interpret and extrapolate facts from an information brochure.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/03_alcohol_alert/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+      </metadata>
+      <file href="site/drugs/alc/03_alcohol_alert/default.htm" />
+      <file href="site/drugs/alc/03_alcohol_alert/brochure-print.htm" />
+      <file href="site/drugs/alc/03_alcohol_alert/brochure.htm" />
+      <file href="site/drugs/alc/03_alcohol_alert/images/brochure-bg.jpg" />
+      <file href="site/drugs/alc/03_alcohol_alert/images/brochure-img1.gif" />
+      <file href="site/drugs/alc/03_alcohol_alert/images/brochure-img2.gif" />
+      <file href="site/drugs/alc/03_alcohol_alert/images/brochure-img3.gif" />
+      <file href="site/drugs/alc/03_alcohol_alert/images/brochure-r1_c1.jpg" />
+      <file href="site/drugs/alc/03_alcohol_alert/images/brochure-r1_c2.jpg" />
+      <file href="site/drugs/alc/03_alcohol_alert/images/brochure-r1_c3.jpg" />
+      <file href="site/drugs/alc/03_alcohol_alert/images/brochure-r3_c1.jpg" />
+      <file href="site/drugs/alc/03_alcohol_alert/images/brochure-r3_c2.jpg" />
+      <file href="site/drugs/alc/03_alcohol_alert/images/brochure-r3_c3.jpg" />
+      <file href="site/drugs/alc/03_alcohol_alert/images/questions-img1.gif" />
+      <file href="site/drugs/alc/03_alcohol_alert/images/questions-img2.jpg" />
+      <file href="site/drugs/alc/03_alcohol_alert/images/questions-img3.gif" />
+      <file href="site/drugs/alc/03_alcohol_alert/questions.htm" />
+      <file href="site/drugs/alc/03_alcohol_alert/images/questions-thumb.gif" />
+      <dependency identifierref="RES-Shared" />
+      <dependency identifierref="RES-Shared-Drugs" />
+    </resource>
+    <resource type="webcontent" adlcp:scormtype="sco" identifier="RES-5A731979-4EF1-4D2A-55CE-35773D763D33" href="site/drugs/alc/04_bingeing/default.htm">
+      <metadata>
+        <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Bingeing</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a05</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Interpret and extrapolate facts from an information sheet, integrate a variety of facts into a written response.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/04_bingeing/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+      </metadata>
+      <file href="site/drugs/alc/04_bingeing/default.htm" />
+      <file href="site/drugs/alc/04_bingeing/bingeing-assesment.doc" />
+      <file href="site/drugs/alc/04_bingeing/images/reading-img1.gif" />
+      <file href="site/drugs/alc/04_bingeing/images/reading-img2.gif" />
+      <file href="site/drugs/alc/04_bingeing/reading.htm" />
+      <dependency identifierref="RES-Shared" />
+      <dependency identifierref="RES-Shared-Drugs" />
+    </resource>
+    <resource type="webcontent" adlcp:scormtype="sco" identifier="RES-E4341797-3C31-6558-AF1E-B8175BF312A9" href="site/drugs/alc/05_smashed_and_trashed/default.htm">
+      <metadata>
+        <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Smashed and trashed</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a06</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Analyse a personal account, recognise structural features of writing, recognize topic and supporting sentences in a story.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/05_smashed_and_trashed/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+      </metadata>
+      <file href="site/drugs/alc/05_smashed_and_trashed/default.htm" />
+      <file href="site/drugs/alc/05_smashed_and_trashed/acts/f/base.swf" />
+      <file href="site/drugs/alc/05_smashed_and_trashed/acts/f/default.htm" />
+      <file href="site/drugs/alc/05_smashed_and_trashed/acts/nf/act2.htm" />
+      <file href="site/drugs/alc/05_smashed_and_trashed/acts/nf/default.htm" />
+      <file href="site/drugs/alc/05_smashed_and_trashed/images/thumb.gif" />
+      <file href="site/drugs/alc/05_smashed_and_trashed/acts/f/01.swf" />
+      <file href="site/drugs/alc/05_smashed_and_trashed/acts/f/02dialog-audio.swf" />
+      <file href="site/drugs/alc/05_smashed_and_trashed/acts/f/02dialog.swf" />
+      <file href="site/drugs/alc/05_smashed_and_trashed/acts/f/03.swf" />
+      <dependency identifierref="RES-Shared" />
+      <dependency identifierref="RES-Shared-Drugs" />
+    </resource>
+    <resource type="webcontent" adlcp:scormtype="sco" identifier="RES-9DE2DC65-1660-2651-688A-0B4600D6615D" href="site/drugs/alc/06_how_embarrassing/default.htm">
+      <metadata>
+        <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - How embarrassing</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a07</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Write a personal account about bingeing incorporating features such as appropriate tone, spelling punctuation and sentence structure.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/06_how_embarrassing/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+      </metadata>
+      <file href="site/drugs/alc/06_how_embarrassing/default.htm" />
+      <file href="site/drugs/alc/06_how_embarrassing/how_embarrassing-assessment.doc" />
+      <dependency identifierref="RES-Shared" />
+      <dependency identifierref="RES-Shared-Drugs" />
+    </resource>
+    <resource type="webcontent" adlcp:scormtype="sco" identifier="RES-B447BFB3-F3C6-C76B-7369-828BE4B66988" href="site/drugs/alc/07_party_smart/default.htm">
+      <metadata>
+        <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Party smart</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a08</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Identify the main features of good instructional writing including title, introduction, bullets and numbering.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/07_party_smart/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+      </metadata>
+      <file href="site/drugs/alc/07_party_smart/default.htm" />
+      <file href="site/drugs/alc/07_party_smart/acts/f/base.swf" />
+      <file href="site/drugs/alc/07_party_smart/acts/f/default.htm" />
+      <file href="site/drugs/alc/07_party_smart/acts/images/safe_partying-img01.gif" />
+      <file href="site/drugs/alc/07_party_smart/acts/images/safe_partying-img02.gif" />
+      <file href="site/drugs/alc/07_party_smart/acts/nf/act2.htm" />
+      <file href="site/drugs/alc/07_party_smart/acts/nf/act3.htm" />
+      <file href="site/drugs/alc/07_party_smart/acts/nf/default.htm" />
+      <file href="site/drugs/alc/07_party_smart/acts/safe_partying.htm" />
+      <file href="site/drugs/alc/07_party_smart/images/thumb.gif" />
+      <dependency identifierref="RES-Shared" />
+      <dependency identifierref="RES-Shared-Drugs" />
+    </resource>
+    <resource type="webcontent" adlcp:scormtype="sco" identifier="RES-AE2B8F90-0ECA-A3E2-CDB3-486752A523A4" href="site/drugs/alc/08_friends/default.htm">
+      <metadata>
+        <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Friends...</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a09</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Incorporate the structure and language features discussed in Party Smart to write a set of instructions.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/08_friends/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+      </metadata>
+      <file href="site/drugs/alc/08_friends/default.htm" />
+      <file href="site/drugs/alc/08_friends/friends-assessment.doc" />
+      <dependency identifierref="RES-Shared" />
+      <dependency identifierref="RES-Shared-Drugs" />
+    </resource>
+    <resource type="webcontent" adlcp:scormtype="sco" identifier="RES-12756E2D-5DC7-4BBF-55B9-66DF4B143955" href="site/drugs/alc/09_booze_in_blood/default.htm">
+      <metadata>
+        <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Booze in blood</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a10</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Reading facts evaluating current knowledge about alcohol and BAC level utilize the facts to solve problem re BAC. Use metrics and percentages to find the number of standard drinks.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/09_booze_in_blood/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+      </metadata>
+      <file href="site/drugs/alc/09_booze_in_blood/default.htm" />
+      <file href="site/drugs/alc/09_booze_in_blood/act1/f/base.swf" />
+      <file href="site/drugs/alc/09_booze_in_blood/act1/f/default.htm" />
+      <file href="site/drugs/alc/09_booze_in_blood/act1/nf/default.htm" />
+      <file href="site/drugs/alc/09_booze_in_blood/act2/f/base.swf" />
+      <file href="site/drugs/alc/09_booze_in_blood/act2/f/default.htm" />
+      <file href="site/drugs/alc/09_booze_in_blood/act2/nf/default.htm" />
+      <file href="site/drugs/alc/09_booze_in_blood/act3/f/base.swf" />
+      <file href="site/drugs/alc/09_booze_in_blood/act3/f/default.htm" />
+      <file href="site/drugs/alc/09_booze_in_blood/act3/nf/default.htm" />
+      <file href="site/drugs/alc/09_booze_in_blood/booze_in_blood-excel.doc" />
+      <file href="site/drugs/alc/09_booze_in_blood/booze_in_blood-percentages.doc" />
+      <file href="site/drugs/alc/09_booze_in_blood/quiz/f/default.htm" />
+      <file href="site/drugs/alc/09_booze_in_blood/quiz/nf/default.htm" />
+      <file href="site/drugs/alc/09_booze_in_blood/quiz/f/audio.swf" />
+      <file href="site/drugs/alc/09_booze_in_blood/quiz/f/data.xml" />
+      <dependency identifierref="RES-Shared" />
+      <dependency identifierref="RES-Shared-Drugs" />
+    </resource>
+    <resource type="webcontent" adlcp:scormtype="sco" identifier="RES-75464A6D-24D5-6755-9BF6-C756E9BCE483" href="site/drugs/alc/10_getting_home/default.htm">
+      <metadata>
+        <lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Getting home</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a11</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Use % and metrics. Convert various drinks of differing alcoholic strengths and amounts into equivalent standard drinks and thus get a measure of BAC level.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">maths</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">GCO</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">NRS</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">adolescents</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">youth</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">drugs</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">smoking</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">sexuality</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">relationships</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">mental health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">physical health</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">nutrition</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">site/drugs/alc/10_getting_home/default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+      </metadata>
+      <file href="site/drugs/alc/10_getting_home/default.htm" />
+      <file href="site/drugs/alc/10_getting_home/bac_calc.htm" />
+      <file href="site/drugs/alc/10_getting_home/getting_home-assessment.doc" />
+      <dependency identifierref="RES-Shared" />
+      <dependency identifierref="RES-Shared-Drugs" />
+    </resource>
+  </resources>
+</manifest>

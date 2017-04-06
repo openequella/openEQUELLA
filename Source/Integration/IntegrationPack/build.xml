@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="IntegrationPack" default="make" basedir=".">
+	<property file="../../../build.properties" />
+	<import file="../../common-build.xml" />
+
+	<property name="doctools" location="doctools" />
+	<property name="source.files" location="sourceFiles" />
+	<property name="apifolder" value="api" />
+
+	<!-- UPDATE THIS PROPERTY WHEN LATEST DOCO AVAILABLE -->
+	<property name="docprefix" value="EQUELLA ${version.mm} " />
+
+	<property name="soap.php.doc" value="${docprefix}PHP SOAP Tutorial" />
+	<property name="soap.java.doc" value="${docprefix}Java SOAP Tutorial" />
+	<property name="soap.csharp.doc" value="${docprefix}C# SOAP Tutorial" />
+	
+	<property name="soapapi.zip" value="equella-soap-api.zip" />
+	<property name="soapapi.source.files" location="${source.files}/soap" />
+	<property name="staging.soapapi" location="${staging}/soapapi" />
+	<property name="staging.soapapi.zipsource" location="${staging.soapapi}/zipsource" />
+
+	<property name="script.intro.doc" value="${docprefix}Scripting Guide (Advanced)" />
+	<property name="scriptapi.zip" value="equella-script-api.zip" />
+	<property name="scriptapi.source.files" location="${source.files}/script" />
+	<property name="staging.scriptapi" location="${staging}/scriptapi" />
+	<property name="staging.scriptapi.zipsource" location="${staging.scriptapi}/zipsource" />
+
+	<property name="integ.doc" value="${docprefix}Integration Interface Guide" />
+	<property name="integ.zip" value="equella-integration-interface.zip" />
+	<property name="staging.integ" location="${staging}/integ" />
+	<property name="staging.integ.zipsource" location="${staging.integ}/zipsource" />
+
+	<property name="rest.api.doc" value="${docprefix}REST API Guide" />
+	<property name="rest.java.doc" value="${docprefix}Java REST Tutorial" />
+	<property name="restapi.zip" value="equella-rest-api.zip" />
+	<property name="restapi.source.files" location="${source.files}/rest" />
+	<property name="staging.restapi" location="${staging}/restapi" />
+	<property name="staging.restapi.zipsource" location="${staging.restapi}/zipsource" />
+	
+	<property name="htmleditor.doc" value="${docprefix}HTML Editor Plugin Guide" />
+	<property name="htmleditor.zip" value="equella-htmleditorplugin-api.zip" />
+	<property name="htmleditor.source.files" location="${source.files}/htmleditor" />
+	<property name="staging.htmleditor" location="${staging}/htmleditor" />
+	<property name="staging.htmleditor.zipsource" location="${staging.htmleditor}/zipsource" />
+
+	<property name="integpack.zip" value="equella-integration-pack.zip" />
+
+	<property name="docletpath" location="${Tool Dependencies.base}/ktsdoclet-1.jar" />
+	<property name="docletclass" value="com.kpht.doc.KtsDoclet" />
+	<property name="stylesheet" location="${doctools}/javadoc/stylesheet.css" />
+
+	<patternset id="scriptObjectsPattern">
+		<include name="com/dytech/edge/common/valuebean/GroupBean.java" />
+		<include name="com/dytech/edge/common/valuebean/RoleBean.java" />
+		<include name="com/dytech/edge/common/valuebean/UserBean.java" />
+		<include name="**/objects/package-info.java" />
+		<include name="**/objects/*ScriptObject.java" />
+		<include name="**/types/package-info.java" />
+		<include name="**/types/*ScriptType.java" />
+		<include name="**/ScriptObject.java" />
+	</patternset>
+
+	<path id="scriptObjectsPath">
+		<fileset dir="${TLE Plugins.base}/Generic/com.tle.common.scripting/src">
+			<patternset refid="scriptObjectsPattern" />
+		</fileset>
+		<fileset dir="${TLE Plugins.base}/Generic/com.tle.common.usermanagement/src">
+			<patternset refid="scriptObjectsPattern" />
+		</fileset>
+		<fileset dir="${TLE Plugins.base}/Server/com.tle.web.scripting.advanced/src">
+			<patternset refid="scriptObjectsPattern" />
+		</fileset>
+		<fileset dir="${TLE Plugins.base}/Server/com.tle.web.wizard/src">
+			<patternset refid="scriptObjectsPattern" />
+		</fileset>
+		<fileset dir="${TLE Plugins.base}/Server/com.tle.core.entity.services/src">
+			<patternset refid="scriptObjectsPattern" />
+		</fileset>
+		<fileset dir="${TLE Plugins.base}/Controls/com.tle.web.wizard.controls.advancedscript/src">
+			<patternset refid="scriptObjectsPattern" />
+		</fileset>
+		<fileset dir="${TLE Plugins.base}/Taxonomy/com.tle.core.taxonomy/src">
+			<patternset refid="scriptObjectsPattern" />
+		</fileset>
+		<fileset dir="${TLE Plugins.base}/Discoverability/com.tle.web.discoverability/src">
+			<patternset refid="scriptObjectsPattern" />
+		</fileset>
+		<fileset dir="${TLE Plugins.base}/Metadata/com.tle.core.metadata/src">
+			<patternset refid="scriptObjectsPattern" />
+		</fileset>
+		<fileset dir="${TLE Plugins.base}/Payment/com.tle.core.payment.backend/src">
+			<patternset refid="scriptObjectsPattern" />
+		</fileset>
+	</path>
+
+	<taskdef classname="com.tle.ant.SoapInterfaceScanner" name="soapScanner">
+		<classpath>
+			<path refid="customtasks.classpath"/>
+			<pathelement location="${TLE Custom Build Tasks.base}/lib/javaparser-1.0.8.jar"/>	
+		</classpath>
+	</taskdef>
+	
+	<target name="generate-source" depends="init">
+		<!-- copy remote interfaces into gensrc -->
+		<soapScanner basedir="${TLE Plugins.base}" includes="**/plugin-jpf.xml" dest="${gensrc}/soapapi" fallbackLocation="${TLE Common.base}" show="true">
+
+			<!-- To generate 3.x and 4.0 documentation, comment out these 2 lines -->
+			<excludeInterface className="com.tle.core.remoting.SoapInterfaceV1" />
+			<excludeInterface className="com.tle.core.remoting.SoapInterfaceV2" />
+
+			<excludeInterface className="com.tle.core.remoting.ToolsService" />
+			<excludeInterface className="com.tle.core.remoting.IntegrationService" />
+			<excludeInterface className="com.tle.web.fedsearch.ecl.EclService" />
+		</soapScanner>
+
+		<!-- copy script interfaces into gensrc -->
+		<copy todir="${gensrc}/scriptapi">
+			<path refid="scriptObjectsPath" />
+		</copy>
+	</target>
+
+	<target name="make" depends="common.make,soap.make,script.make,rest.make,htmleditor.make,integ.make" />
+
+	<target name="download-documentation" depends="define-downloaddoco">
+		<downloadDoco query="${soap.csharp.doc}" filename="${soap.csharp.doc}.pdf" equellaVersion="${version.mm}" out="soap.csharp.pdf.location" />
+		<downloadDoco query="${soap.java.doc}" filename="${soap.java.doc}.pdf" equellaVersion="${version.mm}" out="soap.java.pdf.location" />
+		<downloadDoco query="${soap.php.doc}" filename="${soap.php.doc}.pdf" equellaVersion="${version.mm}" out="soap.php.pdf.location" />
+		
+		<downloadDoco query="${script.intro.doc}" filename="${script.intro.doc}.pdf" equellaVersion="${version.mm}" out="script.intro.pdf.location" />
+		<downloadDoco query="${integ.doc}" filename="${integ.doc}.pdf" equellaVersion="${version.mm}" out="integ.pdf.location" />
+		
+		<downloadDoco query="${rest.api.doc}" filename="${rest.api.doc}.pdf" equellaVersion="${version.mm}" out="rest.api.pdf.location" />
+		<downloadDoco query="${rest.java.doc}" filename="${rest.java.doc}.pdf" equellaVersion="${version.mm}" out="rest.java.pdf.location" />
+		
+		<downloadDoco query="${htmleditor.doc}" filename="${htmleditor.doc}.pdf" equellaVersion="${version.mm}" out="htmleditor.pdf.location" />
+	</target>
+
+	<target name="soap.make" depends="compile,download-documentation">
+		<mkdir dir="${staging.soapapi}" />
+
+		<!-- javadoc the soap interfaces -->
+		<!-- stylesheetfile="${doctools}/javadoc/stylesheet.css"-->
+		<javadoc sourcepath="${gensrc}/soapapi" destdir="${staging.soapapi}/${apifolder}"
+			public="true" nohelp="true" notree="true" nodeprecatedlist="true" nonavbar="true" noindex="true" doctitle="EQUELLA SOAP API"
+			overview="${soapapi.source.files}/overview.html">
+			<doclet name="${docletclass}" path="${docletpath}">
+				<param name="-noframeswitch"/>
+				<!--<param name="-userstylesheet" value="${stylesheet}"/>-->
+			</doclet>
+		</javadoc>
+
+		<!-- replace the kts docstyles.css with ours, since the stylesheet options doesn't quite work -->
+		<copy file="${stylesheet}" tofile="${staging.soapapi}/${apifolder}/docstyles.css" overwrite="true" />
+
+		<!-- copy files ready for zipping -->
+		<!-- grab the SOAP javadocs (not any of the frames rubbish) and samples -->
+		<copy todir="${staging.soapapi.zipsource}">
+			<fileset dir="${staging.soapapi}">
+				<include name="${apifolder}/**" />
+				<!--<exclude name="${apifolder}/all-classes.html" />-->
+				<exclude name="${apifolder}/index.html" />
+				<exclude name="${apifolder}/package-list" />
+				<exclude name="${apifolder}/all-packages.html" />
+			</fileset>
+			<fileset dir="${soapapi.source.files}">
+				<!--<include name="samples/**" />-->
+				<include name="**/*" />
+				<exclude name="overview.html" />
+			</fileset>
+		</copy>
+		
+		<copy todir="${staging.soapapi.zipsource}/samples/dotnet" file="${soap.csharp.pdf.location}" failonerror="false" />
+		<copy todir="${staging.soapapi.zipsource}/samples/php" file="${soap.php.pdf.location}" failonerror="false" />
+		<copy todir="${staging.soapapi.zipsource}/samples/java" file="${soap.java.pdf.location}" failonerror="false" />
+	</target>
+
+	<target name="script.make" depends="compile">
+		<mkdir dir="${staging.scriptapi}" />
+
+		<!-- javadoc the script interfaces -->
+		<!-- stylesheetfile="${doctools}/javadoc/stylesheet.css"-->
+		<javadoc sourcepath="${gensrc}/scriptapi" destdir="${staging.scriptapi}/${apifolder}" 
+			public="true" nohelp="true" notree="true" nodeprecatedlist="true" nonavbar="true" noindex="true" doctitle="EQUELLA Script API"
+			overview="${scriptapi.source.files}/overview.html">
+			<doclet name="${docletclass}" path="${docletpath}">
+				<param name="-noframeswitch"/>
+				<!--<param name="-userstylesheet" value="${stylesheet}"/>-->
+			</doclet>
+		</javadoc>
+
+		<!-- replace the kts docstyles.css with ours, since the stylesheet options doesn't quite work -->
+		<copy file="${stylesheet}" tofile="${staging.scriptapi}/${apifolder}/docstyles.css" overwrite="true" />
+
+		<!-- copy files ready for zipping -->
+		<!-- grab the script API javadocs (not any of the frames rubbish) -->
+		<copy todir="${staging.scriptapi.zipsource}" >
+			<fileset dir="${staging.scriptapi}">
+				<include name="${apifolder}/**" />
+				<!--<exclude name="${apifolder}/all-classes.html" />-->
+				<exclude name="${apifolder}/index.html" />
+				<exclude name="${apifolder}/package-list" />
+				<exclude name="${apifolder}/all-packages.html" />
+			</fileset>
+			<fileset dir="${scriptapi.source.files}">
+				<include name="**/*" />
+				<exclude name="overview.html" />
+			</fileset>
+		</copy>
+		<copy todir="${staging.scriptapi.zipsource}" failonerror="false">
+			<fileset file="${script.intro.pdf.location}" />
+		</copy>
+	</target>
+	
+	<target name="rest.make" depends="compile">
+		<mkdir dir="${staging.restapi}" />
+				
+		<copy todir="${staging.restapi.zipsource}" failonerror="false">
+			<fileset dir="${restapi.source.files}">
+				<include name="**/*" />
+				
+				<!-- Java sample guff -->
+				<exclude name=".gitignore" />
+				<exclude name="samples/java/public_html/WEB-INF/classes" />			
+			</fileset>
+			<fileset file="${rest.api.pdf.location}" />
+		</copy>
+		
+		<copy todir="${staging.restapi.zipsource}/samples/java" file="${rest.java.pdf.location}" failonerror="false" />
+	</target>
+	
+	<target name="htmleditor.make" depends="compile">
+		<mkdir dir="${staging.htmleditor}" />
+		<copy todir="${staging.htmleditor.zipsource}" file="${htmleditor.pdf.location}" failonerror="false" />
+		<copy todir="${staging.htmleditor.zipsource}">
+			<fileset dir="${htmleditor.source.files}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="integ.make" depends="compile">
+		<mkdir dir="${staging.integ.zipsource}" />
+		<copy todir="${staging.integ.zipsource}" file="${integ.pdf.location}" failonerror="false" />
+	</target>
+
+	<target name="product" depends="common.product">
+		<zip destfile="${product}/${soapapi.zip}">
+			<zipfileset dir="${staging.soapapi.zipsource}" prefix="EQUELLA SOAP API" />
+		</zip>
+		<zip destfile="${product}/${scriptapi.zip}">
+			<zipfileset dir="${staging.scriptapi.zipsource}" prefix="EQUELLA Script API" />
+		</zip>
+		<zip destfile="${product}/${integ.zip}">
+			<zipfileset dir="${staging.integ.zipsource}" prefix="EQUELLA Integration" />
+		</zip>
+		<zip destfile="${product}/${restapi.zip}">
+			<zipfileset dir="${staging.restapi.zipsource}" prefix="EQUELLA REST API" />
+		</zip>
+		<zip destfile="${product}/${htmleditor.zip}">
+			<zipfileset dir="${staging.htmleditor.zipsource}" prefix="EQUELLA HTML Editor Plugins" />
+		</zip>
+
+		<!-- make overall zip for download off EQUELLA Resource Centre Downloads page -->
+		<zip destfile="${product}/${integpack.zip}">
+			<zipfileset dir="${staging.soapapi.zipsource}" prefix="EQUELLA SOAP API" />
+			<zipfileset dir="${staging.scriptapi.zipsource}" prefix="EQUELLA Script API" />
+			<zipfileset dir="${staging.integ.zipsource}" prefix="EQUELLA Integration" />
+			<zipfileset dir="${staging.restapi.zipsource}" prefix="EQUELLA REST API" />
+			<zipfileset dir="${staging.htmleditor.zipsource}" prefix="EQUELLA HTML Editor Plugins" />
+		</zip>
+	</target>
+</project>

@@ -1,0 +1,11 @@
+<?xml version = '1.0' encoding = 'windows-1252'?>
+<!DOCTYPE application PUBLIC "-//Sun Microsystems, Inc.//DTD J2EE Application 1.3//EN" "http://java.sun.com/dtd/application_1_3.dtd">
+<application>
+   <display-name>UpgradeProxy</display-name>
+   <module>
+      <web>
+         <web-uri>upgrade.war</web-uri>
+         <context-root>/upgrade</context-root>
+      </web>
+   </module>
+</application>

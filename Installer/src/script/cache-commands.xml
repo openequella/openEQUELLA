@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<commands xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="C:/vss/dytech/Internal/Installer/schema/commands.xsd">
+	<command class="copy" mandatory="true">
+		<source uri="c:/temp/tle-install-2.6/data/"/>
+		<destination uri="${install.path}"/>
+		<force value="true"/>
+	</command>
+	<command class="foreign">
+		<class name="com.dytech.edge.installer.CacheConfig"/>
+	</command>
+</commands>

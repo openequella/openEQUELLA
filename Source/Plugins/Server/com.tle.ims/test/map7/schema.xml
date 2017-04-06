@@ -1,0 +1,14 @@
+<schema id="b9ca3f68-cf9b-30bf-9e3b-608a6e78d174">
+  <collaborators type="public" />
+  <definition>
+    <xml>
+      <item>
+        <lom>
+        	<general>
+	        	<title attribute="true" type="text" />
+        	</general>
+        </lom>
+      </item>
+    </xml>
+  </definition>
+</schema>

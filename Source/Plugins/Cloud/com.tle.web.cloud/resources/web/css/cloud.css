@@ -1,0 +1,26 @@
+#col #searchform .query-wrapper #querycontainer.cloud input[type="text"] 
+{
+    width: 636px;
+}
+
+#searchform .query-wrapper #querycontainer.cloud #q 
+{
+    margin-bottom: 0;
+    position: relative;
+    z-index: 999;
+    border-radius: 0 0 0 0;
+    border-right: medium none;
+    border-left: medium none;
+    height: 16px;
+}
+
+#searchform .query-wrapper #querycontainer.cloud .glyphicon-cloud
+{
+	border-top: 1px solid #7e765e;
+	border-bottom: 1px solid #cfcbbe;  
+}
+
+#col1 #searchform .query-wrapper #querycontainer.cloud #q
+{
+	width: 409px;
+}

@@ -1,0 +1,11 @@
+.selectitem
+{
+	/*float: right;*/
+	display: block;	
+}
+
+#fancybox-frame
+{
+	overflow: hidden !important;
+	overflow-y: hidden !important;
+}

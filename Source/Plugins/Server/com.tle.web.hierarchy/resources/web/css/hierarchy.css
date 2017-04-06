@@ -1,0 +1,29 @@
+.browse-layout .browse-topics h2.folder {
+	padding: 5px 0 5px 35px;
+	font-weight: bold;
+	background: url(../images/folder_big.png) 0 0 no-repeat;
+}
+
+.browse-layout .area.browse-topics {
+	margin: 0 0 11px;
+}
+
+.browse-layout #col .area.browse-topics {
+	padding-bottom: 16px;
+}
+
+.browse-layout .browse-topics ul {
+	margin: 5px 0 5px -18px;
+}
+
+.browse-topics ul li {
+	margin: 8px 0;
+	line-height: 1.2;
+	font-size: 12px;
+	padding: 0 0 0 18px;
+	background: url(../images/list-icon.ltr.png) 0 2px no-repeat;
+}
+
+.browse-topics ul li span {
+	font-size: 11px;
+}

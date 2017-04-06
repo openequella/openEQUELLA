@@ -1,0 +1,18 @@
+@import url("toolbar.css");
+
+.currenttoolbar .toolbarbutton,
+.availabletoolbar .toolbarbutton,
+.currenttoolbar .toolbarbutton *,
+.availabletoolbar .toolbarbutton *
+{
+	float: right;
+}
+.button_placeholder
+{
+	float: right;
+}
+
+.toolbaractions .toolbaractionbutton
+{
+	float: left;
+}

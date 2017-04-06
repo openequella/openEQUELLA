@@ -1,0 +1,36 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.service.oai" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.dynacollection" />
+		<import plugin-id="com.tle.common.search" />
+		<import plugin-id="com.tle.core.dynacollection" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.freetext" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.replicatedcache" />
+		<import plugin-id="com.tle.core.schema" />
+		<import plugin-id="com.tle.core.search" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.web.core" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.web.service.oai.OAIModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="mapping">
+		<parameter id="bean" value="bean:com.tle.web.service.oai.OAIServlet" />
+		<parameter id="url-pattern" value="/p/oai" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="legacyServlet">
+		<parameter id="bean" value="bean:com.tle.web.service.oai.legacy.OAIServletLegacy" />
+		<parameter id="url-pattern" value="/oai" />
+	</extension>
+</plugin>

@@ -1,0 +1,61 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.powersearch" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.powersearch" />
+		<import plugin-id="com.tle.core.migration" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.schema" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.hibernate" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="objects">
+		<parameter id="class" value="com.tle.beans.entity.PowerSearch" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.migration" point-id="initialSchema" id="schemaObjects">
+		<parameter id="class" value="com.tle.beans.entity.PowerSearch" />
+		<parameter id="index">
+			<parameter id="table" value="power_search_itemdefs" />
+			<parameter id="name" value="psid_search" />
+			<parameter id="column" value="power_search_id" />
+		</parameter>
+		<parameter id="index">
+			<parameter id="table" value="power_search_itemdefs" />
+			<parameter id="name" value="psid_itemdef" />
+			<parameter id="column" value="itemdefs_id" />
+		</parameter>
+	</extension>
+
+	<extension plugin-id="com.tle.core.services" point-id="applicationEventListener" id="listeners">
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.UserChangeListener" />
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.ItemDefinitionDeletionListener" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="entityService" id="powerSearch">
+		<parameter id="serviceClass" value="bean:com.tle.core.powersearch.PowerSearchService" />
+		<parameter id="order" value="1100" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.schema" point-id="schemaRefs" id="schemaRefs">
+		<parameter id="bean" value="bean:com.tle.core.powersearch.PowerSearchService" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="postreadmigration" id="savedSearchesMigrator">
+		<parameter id="id" value="com.tle.core.institution.migration.v41.SavedSearchesMigrator" />
+		<parameter id="bean" value="bean:com.tle.core.powersearch.impl.SavedSearchesMigrator" />
+		<parameter id="forconverter" value="preferences" />
+	</extension>
+
+</plugin>

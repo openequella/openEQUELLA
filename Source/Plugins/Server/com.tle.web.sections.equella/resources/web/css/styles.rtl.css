@@ -1,0 +1,344 @@
+@import url("styles.css");
+
+.float-left {
+	float: right;
+}
+
+.float-right {
+	float: left;
+}
+
+.text-right {
+	text-align: left;
+}
+
+#topbar-inner {
+	float: right;
+}
+
+#topmenu {
+	float: left;
+}
+
+#header {
+	background-image: url(../images/header-bg.rtl.gif);
+}
+
+#header-inner {
+	float: right;
+}
+
+#header-inner h1 a {
+	left: auto;
+	right: 0;
+}
+
+#header-inner h2 {
+	float: left;
+}
+
+#body {
+	float: right;
+}
+
+#body-wrap1 {
+	float: right;
+}
+
+#body-wrap2 {
+	float: right;
+	background-image: url(../images/body-bg.rtl.gif);
+}
+
+#body-inner {
+	padding: 0 27px 0 0;
+	float: right;
+}
+
+#button-bar {
+	right: auto;
+	left: 17px;
+	text-align: left;
+}
+
+.topblock p,.topblock ul {
+	margin: 10px 10px 10px 0;
+}
+
+.screen-option {
+	padding: 0 0 0 30px;
+}
+
+#content {
+	float: left;
+}
+
+#content-bottom {
+	float: right;
+}
+
+#content-inner {
+	float: right;
+}
+
+#menu {
+	float: right;
+	margin: 32px -30px 0 0;
+}
+
+#menu ul {
+	float: right;
+	box-shadow: -3px 3px 5px #888;
+	-moz-box-shadow: -3px 3px 5px #888;
+	-webkit-box-shadow: -3px 3px 5px #888;
+}
+
+#menu ul li a {
+	padding: 11px 45px 12px 10px;
+	background-position: 162px center;
+}
+
+#menu ul li .tooltip {
+	right: 0;
+	margin-left: 0;
+	margin-right: 30px;
+}
+
+.page-layout-menu-full #breadcrumbs {
+	left: auto;
+	right: 184px;
+}
+
+.page-layout-menu-collapsed #breadcrumbs {
+	left: auto;
+	right: 36px;
+}
+
+#content-body {
+	float: left;
+	padding: 32px 0 32px 18px;
+}
+
+#col1 {
+	float: right;
+}
+
+#col2 {
+	float: left;
+}
+
+.area .indent {
+	padding: 0 16px 0 0;
+}
+
+.area ol li,.area ul.standard li {
+	margin: 5px 30px 5px 0;
+}
+
+table.zebra th {
+	text-align: right;
+}
+
+table.zebra tr td {
+	text-align: right;
+}
+
+div.calendar img {
+	left: 16px;
+}
+
+fieldset.float {
+	float: right;
+	margin: 0 0 20px 50px;
+}
+
+.action-button {
+	padding: 0 30px 0 0;
+	text-align: right;
+	background-position: right 0;
+}
+
+.action-button:hover {
+	background-position: right -28px;
+}
+
+.button-strip {
+	text-align: left;
+}
+
+#footer {
+	float: right;
+}
+
+#footer-inner {
+	float: right;
+	background-position: left top;
+}
+
+#footer-links {
+	float: right;
+}
+
+#socialmedia {
+	padding: 8px 30px 0 0;
+	float: right;
+	background-position: 110% 0;
+}
+
+#socialmedia-rs {
+	left: auto;
+	right: 0;
+}
+
+.modal-content-background {
+	
+}
+
+.modal-footer-inner {
+	padding-left: 3px;
+	text-align: left;
+}
+
+.modal-footer-inner input {
+	margin-left: 0;
+	margin-right: 5px;
+}
+
+.modal img.modal_close {
+	right: auto;
+	left: 12px;
+}
+
+.modal a.feedlink {
+	padding: 5px 30px 5px 0;
+	background: url("../images/rss.png") no-repeat scroll right 0
+		transparent
+}
+
+.action-link {
+	padding: 0 12px 0 0;
+	background-position: right 3px;
+	background-image: url(../images/icons/blue-arrow.rtl.png);
+}
+
+.fullscreen-toolbar .float-left a.bigger {
+	float: right;
+}
+
+ul.blue li {
+	background: url(../images/icons/blue-arrow.rtl.png) right 2px no-repeat;
+	padding: 0 12px 0 0;
+}
+
+a.add {
+	display: inline-block;
+	background-position-x: right;
+	background-position-y: 1px;
+	background: url(../images/add.png) no-repeat right 1px;
+	padding: 2px 20px 2px 0;
+}
+
+a.add.disabled {
+	padding: 2px 20px 2px 0;
+	background-position: right 1px;
+}
+
+a.unselect {
+	background-position: right 0;
+}
+
+.selections td.actions {
+	text-align: left;
+}
+
+#header-inner .banner {
+	float: left;
+}
+
+a.roundedcount span {
+	right: 163px;
+}
+
+#header-inner .badge a {
+	right: 0;
+}
+
+div.input.checkbox input,div.input.radio input {
+	float: right;
+	margin-left: 10px;
+}
+
+div.input.checkbox label,div.input.radio label {
+	margin: 0 20px 0 6px;
+}
+
+*****************************************************************************
+ Bootstrap button RTL icon overrides
+*****************************************************************************
+	/
+
+.icon-step-backward {
+	background-position: -384px -72px;
+}
+
+.icon-fast-backward {
+	background-position: -360px -72px;
+}
+
+.icon-backward {
+	background-position: -336px -72px;
+}
+
+.icon-forward {
+	background-position: -240px -72px;
+}
+
+.icon-fast-forward {
+	background-position: -216px -72px;
+}
+
+.icon-step-forward {
+	background-position: -192px -72px; /* step-backward */
+}
+
+.icon-chevron-left {
+	background-position: -456px -72px;
+}
+
+.icon-chevron-right {
+	background-position: -432px -72px;
+}
+
+.icon-arrow-left {
+	background-position: -264px -96px;
+}
+
+.icon-arrow-right {
+	background-position: -240px -96px;
+}
+
+.icon-hand-right {
+	background-position: -168px -144px;
+}
+
+.icon-hand-left {
+	background-position: -144px -144px;
+}
+
+.icon-circle-arrow-right {
+	background-position: -264px -144px;
+}
+
+.icon-circle-arrow-left {
+	background-position: -240px -144px;
+}
+
+#wcag-compliance {
+	float: right;
+	padding: 32px 15px 0 0;
+}
+
+ul.dropdown-menu {
+	right: auto;
+	left: 0px;
+}

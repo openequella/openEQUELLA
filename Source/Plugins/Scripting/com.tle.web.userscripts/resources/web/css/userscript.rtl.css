@@ -1,0 +1,29 @@
+@import url("userscript.css");
+
+button.validate-button {
+	float: left;
+	margin-left: 62px;
+	margin-right: 0;
+}
+
+#syntax-div {
+	float: left;
+	margin-right: 0px;
+	margin-left: 367px;
+}
+
+#syntax-div span.fail {
+	padding-left: 0;
+	padding-right: 30px;
+	background-position-x: right;
+}
+
+#syntax-div span.ok {
+	padding: 3px 30px 5px 0;
+	background-position-x: right;
+}
+
+#syntax-div span.empty {
+	padding: 3px 30px 5px 0;
+	background-position-x: right;
+}

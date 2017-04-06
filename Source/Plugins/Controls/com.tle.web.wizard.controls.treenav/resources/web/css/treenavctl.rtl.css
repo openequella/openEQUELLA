@@ -1,0 +1,101 @@
+@import url("treenavctl.css");
+
+.leftPanel {
+	float: right;
+}
+
+.upDownContainerPanel {
+	float: right;
+}
+
+.upDownButtonPanel {
+	float: right;
+}
+
+.navChildren {
+	margin-left: 0;
+	margin-right: 15px;
+}
+
+.addRemovePanel {
+	left: 0;
+	right: 27px;
+	float: right;
+}
+
+.rightPanel {
+	float: left;
+	margin-right: 0;
+	margin-left: 20px;
+}
+
+div.formrow .buttons {
+	margin-right: 35%;
+	margin-left: 0;
+}
+
+div.formrow label,div.formrow span.name {
+	text-align: left;
+	float: right;
+	padding-right: 0;
+	padding-left: 15px;
+}
+
+div.formrow span.value {
+	float: right;
+}
+
+div.formrow .formcontrol {
+	float: right;
+}
+
+div.formrow span {
+	float: right;
+}
+
+.rightPanel .heading {
+	margin-left: 0;
+	margin-left: 10px;
+}
+
+div.checkrow {
+	padding-left: 0;
+	padding-right: 40px;
+}
+
+div.input.checkbox label , div.input.radio label {
+	margin: 0 3px 0 20px;
+}
+
+div.tabsettings {
+	margin-left: 0;
+	margin-right: 20px;
+	/*margin-top: 30px;*/
+	padding-left: 0;
+	padding-right: 20px;
+}
+
+.navChildren {
+	margin-left: 0;
+	margin-right: 15px;
+}
+
+.newListSelected {
+	margin-left: 0;
+	margin-right: 60px;
+}
+
+.form-label {
+	margin-right: 40px;
+	margin-left: 30px;
+}
+
+ul.tablist  li {
+	padding: 6px 10px 6px 50px !important;
+}
+
+ul.tablist .unselect {
+	right: auto;
+	left: 24px;
+}
+

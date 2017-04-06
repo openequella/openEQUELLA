@@ -1,0 +1,123 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.connectors" version="1">
+	<requires>
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.web.settings" />
+		<import plugin-id="com.tle.core.connectors" exported="true" />
+		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.common.recipientselector" />
+		<import plugin-id="com.tle.web.recipientselector" />
+		<import plugin-id="com.tle.web.viewitem" />
+		<import plugin-id="com.tle.web.viewitem.summary" />
+		<import plugin-id="com.tle.web.viewurl" />
+		<import plugin-id="com.tle.web.search" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.web.bulk" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.web.entities" exported="true" />
+		<import plugin-id="com.tle.web.remoting.rest" />
+		<import plugin-id="com.tle.web.api.search" />
+		<import plugin-id="com.tle.web.api.interfaces" />
+		<import plugin-id="com.tle.web.itemlist" />
+		<import plugin-id="com.tle.web.htmleditor" />
+		<import plugin-id="com.tle.common.interfaces.equella" />
+		<import plugin-id="com.tle.web.api.baseentity.serializer" />
+		<import plugin-id="com.tle.core.migration" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="connectorEditor">
+		<parameter-def id="id" multiplicity="one" type="string" />
+		<parameter-def id="class" multiplicity="one" type="string">
+			<doc>
+				<doc-text>Must implement ConnectorEditor interface. (Usually extend AbstractConnectorEditor)</doc-text>
+			</doc>
+		</parameter-def>
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+		<parameter id="class" value="com.tle.web.sections.equella.guice.EquellaModule" />
+		<parameter id="class" value="com.tle.web.connectors.guice.ConnectorsModule" />
+		<parameter id="class" value="com.tle.web.connectors.guice.ManageConnectorsSearchModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="file" value="lang/i18n.properties" />
+		<parameter id="group" value="resource-centre" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="connectorsSection">
+		<parameter id="path" value="/access/connectors.do" />
+		<parameter id="root" value="bean:connectorsTree" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="connectorsSettingSection">
+		<parameter id="class" value="bean:com.tle.web.connectors.section.ConnectorsSettingsSection" />
+		<parameter id="grouping" value="externalsettings" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="addToExternal">
+		<parameter id="id" value="addToExternal" />
+		<parameter id="class" value="bean:com.tle.web.connectors.export.LMSExportActionSection" />
+		<parameter id="order" value="700" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="section" id="addToExternalSystemPage">
+		<parameter id="class" value="bean:com.tle.web.connectors.export.LMSExportSection" />
+		<parameter id="path" value="/viewitem/viewitem" />
+		<parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_CONTENT" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="section" id="findUsesLinkSection">
+		<parameter id="class" value="bean:com.tle.web.connectors.viewitem.FindUsesLinkSection" />
+		<parameter id="path" value="/viewitem/viewitem" />
+		<parameter id="parentid" value="com.tle.web.viewitem.summary.sidebar.DETAILS_GROUP" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="section" id="findUsesContentSection">
+		<parameter id="class" value="bean:com.tle.web.connectors.viewitem.FindUsesContentSection" />
+		<parameter id="path" value="/viewitem/viewitem" />
+		<parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_CONTENT" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="connectorManage">
+		<parameter id="path" value="/access/manageconnectors.do" />
+		<parameter id="root" value="bean:/access/manageconnectors" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.equella" point-id="menuContributor" id="connectorManageMenuContributor">
+		<parameter id="menuContributorClass" value="bean:com.tle.web.connectors.manage.ConnectorManagementMenuContributor" />
+		<parameter id="enabledFor" value="loggedIn" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="connectorManagementPrivilegeTreeProvider">
+		<parameter id="provider" value="bean:com.tle.web.connectors.service.ConnectorManagementPrivilegeTreeProvider" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="connectorResource">
+		<parameter id="class" value="com.tle.web.connectors.api.search.ConnectorResource" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="postreadmigration" id="addPushToLMSACLPostMigrator">
+		<parameter id="id" value="com.tle.web.connectors.migration.AddPushToLMSACLPostMigrator" />
+		<parameter id="bean" value="bean:com.tle.web.connectors.migration.AddPushToLMSACLPostMigrator" />
+		<parameter id="forconverter" value="acls" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="addPushToLMSACLMigration">
+		<parameter id="id" value="com.tle.web.connectors.migration.AddPushToLMSACLMigration" />
+		<parameter id="bean" value="bean:com.tle.web.connectors.migration.AddPushToLMSACLMigration" />
+		<parameter id="date" value="2014-12-14" />
+	</extension>
+</plugin>

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="helpfavouritesresources"><![CDATA[
+<div id="favMain" >
+<h3>Favourite Resources Page</h3>
+<p>This page is used to display resources that have been saved as favourites. Resources are displayed with resource information and options for viewing, commenting or removing the favourite. Searches and resources can be saved as favourites from search results or resource summary pages. 
+</p>
+<p>Resources can be ordered or filtered using the Sort and Filter boxes. Select the Searches link to display favourite searches.</p>
+
+<p><a href="javascript:void(0)" onclick="switchText('moreFavResrcs')">More about Favourite resources...</a></p>
+
+<h3>Other page features</h3>
+
+  <ul>
+    <li style="float: left"><a href="javascript:void(0)" onclick="switchText('moreNavMenu')">More about the Navigation menu...</a></li>
+    <li style="float: left"><a href="javascript:void(0)" onclick="switchText('moreSortBox')">More about the Sort box...</a></li>
+    <li style="float: left"><a href="javascript:void(0)" onclick="switchText('moreFilterBox')">More about the Filter box...</a></li>
+  </ul>
+  <div style="clear: both;"></div>
+</div>
+
+<div id="moreFavResrcs" style="display: none">
+  <h3>More about Favourite resources...</h3>
+  <ul>
+  <li><b>Resource title</b> &mdash; select this link to display the resource.</li>
+  <li><b>Status</b> &mdash; displays the resource status and the period since the last update.</li>
+  <li>&lt;x&gt; <b>comments</b> &mdash; select this link to display the resource summary page where comments and ratings can be entered.</li>
+  <li><b>Remove from favourites</b> &mdash; select this link to remove the resource from the favourites list.</li>
+  </ul>
+  <p><a href="javascript:void(0)" onclick="switchText('favMain')"><b>Back</b></a></p>
+</div>
+]]></entry>
+
+<entry key="helpfavouritessearches"><![CDATA[
+<div id="favMain" >
+<h3>Favourite Searches Page</h3>
+<p>This page is used to display searches that have been saved as favourites. Searches are displayed with query and collection information. Searches and resources can be saved as favourites from search results or resource summary pages.</p>
+<p>Searches can be ordered or filtered using the Sort and Filter boxes. Select the Resources link to display a list of favourite resources.
+<p><a href="javascript:void(0)" onclick="switchText('moreFavSearches')">More about Favourite searches...</a></p>
+
+<h3>Other page features</h3>
+
+  <ul>
+    <li style="float: left"><a href="javascript:void(0)" onclick="switchText('moreNavMenu')">More about the Navigation menu...</a></li>
+    <li style="float: left"><a href="javascript:void(0)" onclick="switchText('moreSortBox')">More about the Sort box...</a></li>
+    <li style="float: left"><a href="javascript:void(0)" onclick="switchText('moreFilterBox')">More about the Filter box...</a></li>
+  </ul>
+  <div style="clear: both;"></div>
+</div>
+
+<div id="moreFavSearches" style="display: none">
+  <h3>More about Favourite searches...</h3>
+  <ul>
+  <li><b>Search name</b> &mdash; select this link to display the Search page with a list of filtered results.</li>
+  <li><b>Query</b> &mdash; displays the search query entered for the search.</li>
+  <li><b>Within</b> &mdash; displays the collection or advanced search selected for the search.</li>
+  <li><b>Criteria</b> &mdash; displays the search criteria selected for the search.</li>
+  <li><b>REMOVE</b> &mdash; select this button to remove the search from the list.</li>
+  </ul>
+  <p><a href="javascript:void(0)" onclick="switchText('favMain')"><b>Back</b></a></p>
+</div>
+]]></entry>
+
+<entry key="favportleteditorhelp">
+<![CDATA[
+<div id="favportletMain">
+	<h3>Edit Favourites portlet</h3>
+	
+	<p>The <b>Favourites</b> portlet provides access to all your favourite resources and searches.</p> 
+	<p>To configure the portlet:</p>
+	<ul>
+		<li><b>Title</b> &mdash; enter the portlet name displayed in the portlet title bar.</li>
+		<li>Select save to create the portlet and display it on the <b>Dashboard</b>.</li>
+		<li>Select cancel to discard any entered information and return to the <b>Dashboard</b>.</li>
+	</ul>
+	<br>
+	<h3>Other page features</h3>
+	<ul>
+		{0}
+		<li style="float: left"><a href="javascript:void(0)" onclick="switchText(''moreNavigation'')">More about the Navigation menu...</a></li>
+	</ul>
+	<div style="clear: both;"></div>
+</div>
+]]>
+</entry>
+
+<!-- unable to effectively the placeholder parameter for the small gifs. -->
+<entry key="commonmoredivs"><![CDATA[
+<div id="moreNavMenu" style="display: none">
+ <h3>More about the Navigation menu</h3>
+ <p>The navigation menu is displayed on the left-hand side of the page and displays links for accessing and managing content. The menu comprises standard EQUELLA, browse, custom and administration links. 
+ The links displayed depend on the privileges granted by the System Administrator.</p>
+ <ul> 
+ <li><b>Standard links</b> &mdash; links for accessing content and can include Dashboard, Favourites, Search, My resources, Contribute.</li>
+ <li><b>Browse links</b> &mdash; links for browsing EQUELLA topics. When more than five topics have been added the first four plus a <b>More...</b> link are displayed.</li>
+ <li><b>Custom links</b> &mdash; links for commonly accessed content that can be within EQUELLA or an external website.</li>
+ <li><b>Administration links</b> &mdash; links for managing or configuring EQUELLA that can include Tasks, Manage resources, Manage activations, Reporting, Settings.
+ Select a navigation menu link to display the corresponding page.</li>
+</ul>
+  <p><a href="javascript:void(0)" onclick="switchText(''favMain'')"><b>Back</b></a></p>
+</div>
+
+<div id="moreSortBox" style="display: none">
+  <h3>More about the Sort box...</h3>
+  <p>The Sort box provides options for sorting results lists. Select the <img src="{0}"> toggle button to maximise or minimise the box.</p>
+  <ul>
+	<li><b>Sort results by</b> &mdash; select an option from the drop-down list to change the sort order.</li>
+	<li><b>Reverse order of results</b> &mdash; check this checkbox to reverse the default sort order e.g. reverses a Title ordering from A-Z to Z-A.</li>
+  </ul>
+  <p><a href="javascript:void(0)" onclick="switchText(''favMain'')"><b>Back</b></a></p>
+</div>
+
+<div id="moreFilterBox" style="display: none">
+  <h3>More about the Filter box...</h3>
+  <p>The filter box provides options for reducing the number of displayed results. Select the <img src="{0}"> toggle button to maximise or minimise the box.</p>
+  <p>Multiple filters can be applied and can include the following filters:</p>
+  <ul>
+	<li><b>Filter by keyword</b> &mdash; enter a keyword then select the <b>SEARCH</b> button to reduce the display to matching results.</li>
+	<li><b>Filter by collection</b> &mdash; select an option from the drop-down list to only display results from the selected collection.</li>
+	<li><b>Filter by status</b> &mdash; select an option from the drop-down list to display results with the selected status.</li>
+	<li><b>Filter by owner</b> &mdash; select the <b>SELECT USER</b> button to display the <b>Select owner to filter by</b> dialog where owners can be found by name search then selected to filter the search results. Select the CHANGE USER button to change the owner selected or select the CLEAR button to remove.</li>
+	<li><b>Filter by date modified</b> &mdash; select an option from the drop-down list then enter or select a date. Select <b>Clear</b> to remove the date filter.</li>
+	<li><b>Filter by resource type</b> &mdash; select a checkbox to display only matching resources.</li>
+	<li><b>Filter by assignment</b> &mdash; select an option from the drop-down list to only display results with the selected user assignment. Check <b>Only show tasks that I must moderate</b> to display tasks that you must moderate.</li>
+	<li><b>Filter by course</b> &mdash; select the <b>SELECT COURSE</b> button to display the <b>Select a course</b> dialog where courses can be found by name search then selected to filter the search results.</li>
+	<li><b>Activation range</b> &mdash; enter or select a date for end date, start date and activated to filter results. Select <b>Clear</b> to remove the date filter.</li>
+	<li><b>Filter by type</b> &mdash; select an option from the drop-down list to display results with the selected type.</li>
+	<li><b>Filter by visibility</b> &mdash; select an option from the drop-down list to display results with the selected visibility.</li>	
+  </ul>
+  <p><a href="javascript:void(0)" onclick="switchText(''favMain'')"><b>Back</b></a></p>
+</div>
+]]>
+</entry>
+
+<entry key="commonportletmoredivs"><![CDATA[
+<div id="moreNavigation" style="display: none">
+	<h3>More about the Navigation menu</h3>
+	<p>The navigation menu is displayed on the left-hand side of the page and displays links for accessing and managing content. The menu comprises standard EQUELLA, browse, custom and administration links.
+	The links displayed depend on the privileges granted by the System Administrator.</p>
+	<ul> 
+		<li><b>Standard links</b> &mdash; links for accessing content and can include Dashboard, Favourites, Search, My resources, Contribute.</li>
+		<li><b>Browse links</b> &mdash; links for browsing EQUELLA topics. When more than five topics have been added the first four plus a <b>More...</b> link are displayed.</li>
+		<li><b>Custom links</b> &mdash; links for commonly accessed content that can be within EQUELLA or an external website.</li>
+		<li><b>Administration links</b> &mdash; links for managing or configuring EQUELLA that can include Tasks, Manage resources, Manage activations, Reporting, Settings.
+		Select a navigation menu link to display the corresponding page.</li>
+	</ul>
+	
+	<p><a href="javascript:void(0)" onclick="switchText(''favportletMain'')"><b>Back</b></a></p>
+
+</div>
+
+<div id="moreAdministrators" style="display: none">
+	<h3>Further information for portlet administrators</h3>
+	<p>The following controls are only displayed to portlet administrators:</p>
+	<ul>
+		<li><b>Disabled</b> &mdash; disables the portlet and removes it from the <b>Dashboard</b>.</li>
+		<li><b>Show for other users</b> &mdash check this checkbox to add this portlet to every user’s dashboard and enable the options:
+		<ul>
+			<li><b>Users can close</b> &mdash check this checkbox to allow users to remove the portlet from their dashboard.</li>
+			<li><b>Users can minimise</b> &mdash check this checkbox to allow users to reduce the portlet to its title bar.</li>
+			<li><b>Visible to</b> &mdash select the <b>CHANGE...</b> button to restrict the portlet to selected users, roles or groups. The selected users, roles or groups are displayed.</li>
+		</ul>
+		</li>
+	</ul>
+		
+	<p><a href="javascript:void(0)" onclick="switchText(''favportletMain'')"><b>Back</b></a></p>
+</div>
+]]>
+</entry>
+
+<entry key="selection.helpfavouritesresources"><![CDATA[
+<div id="favMain" >
+<h3>Favourite Resources Page</h3>
+<p>This page is used to display resources that have been saved as favourites. Resources are displayed with resource information and options for viewing, commenting or removing the favourite. Searches and resources can be saved as favourites from search results or resource summary pages. 
+</p>
+<p>Resources can be ordered or filtered using the Sort and Filter boxes. Select the Searches link to display favourite searches.</p>
+
+<p><a href="javascript:void(0)" onclick="switchText('moreFavResrcs')">More about Favourite resources...</a></p>
+
+<h3>Other page features</h3>
+  <ul>
+    <li style="float: left"><a href="javascript:void(0)" onclick="switchText('moreSortBox')">More about the Sort box...</a></li>
+    <li style="float: left"><a href="javascript:void(0)" onclick="switchText('moreFilterBox')">More about the Filter box...</a></li>
+  </ul>
+  <div style="clear: both;"></div>
+<h3>Choose EQUELLA resources</h3>
+	<p>Drag and drop resources to the required areas below or click the Select button to add the resource to the highlighted area. Click Save once selections are complete.</p>
+	<div style="clear: both;"></div>
+</div>
+
+<div id="moreFavResrcs" style="display: none">
+  <h3>More about Favourite resources...</h3>
+  <ul>
+  <li><b>Resource title</b> &mdash; select this link to display the resource.</li>
+  <li><b>Status</b> &mdash; displays the resource status and the period since the last update.</li>
+  <li>&lt;x&gt; <b>comments</b> &mdash; select this link to display the resource summary page where comments and ratings can be entered.</li>
+  <li><b>Remove from favourites</b> &mdash; select this link to remove the resource from the favourites list.</li>
+  </ul>
+  <p><a href="javascript:void(0)" onclick="switchText('favMain')"><b>Back</b></a></p>
+</div>
+]]></entry>
+
+<entry key="selection.helpfavouritessearches"><![CDATA[
+<div id="favMain" >
+<h3>Favourite Searches Page</h3>
+<p>This page is used to display searches that have been saved as favourites. Searches are displayed with query and collection information. Searches and resources can be saved as favourites from search results or resource summary pages.</p>
+<p>Searches can be ordered or filtered using the Sort and Filter boxes. Select the Resources link to display a list of favourite resources.
+<p><a href="javascript:void(0)" onclick="switchText('moreFavSearches')">More about Favourite searches...</a></p>
+
+<h3>Other page features</h3>
+  <ul>
+    <li style="float: left"><a href="javascript:void(0)" onclick="switchText('moreSortBox')">More about the Sort box...</a></li>
+    <li style="float: left"><a href="javascript:void(0)" onclick="switchText('moreFilterBox')">More about the Filter box...</a></li>
+  </ul>
+  <div style="clear: both;"></div> 
+<h3>Choose EQUELLA resources</h3>
+	<p>Drag and drop resources to the required areas below or click the Select button to add the resource to the highlighted area. Click Save once selections are complete.</p>
+	<div style="clear: both;"></div>
+</div>
+
+<div id="moreFavSearches" style="display: none">
+  <h3>More about Favourite searches...</h3>
+  <ul>
+  <li><b>Search name</b> &mdash; select this link to display the Search page with a list of filtered results.</li>
+  <li><b>Query</b> &mdash; displays the search query entered for the search.</li>
+  <li><b>Within</b> &mdash; displays the collection or advanced search selected for the search.</li>
+  <li><b>Criteria</b> &mdash; displays the search criteria selected for the search.</li>
+  <li><b>REMOVE</b> &mdash; select this button to remove the search from the list.</li>
+  </ul>
+  <p><a href="javascript:void(0)" onclick="switchText('favMain')"><b>Back</b></a></p>
+</div>
+]]></entry>
+
+<entry key="selection.commonmoredivs"><![CDATA[
+<div id="moreSortBox" style="display: none">
+  <h3>More about the Sort box...</h3>
+  <p>The Sort box provides options for sorting results lists. Select the <img src="{0}"> toggle button to maximise or minimise the box.</p>
+  <ul>
+	<li><b>Sort results by</b> &mdash; select an option from the drop-down list to change the sort order.</li>
+	<li><b>Reverse order of results</b> &mdash; check this checkbox to reverse the default sort order e.g. reverses a Title ordering from A-Z to Z-A.</li>
+  </ul>
+  <p><a href="javascript:void(0)" onclick="switchText(''favMain'')"><b>Back</b></a></p>
+</div>
+
+<div id="moreFilterBox" style="display: none">
+  <h3>More about the Filter box...</h3>
+  <p>The filter box provides options for reducing the number of displayed results. Select the <img src="{0}"> toggle button to maximise or minimise the box.</p>
+  <p>Multiple filters can be applied and can include the following filters:</p>
+  <ul>
+	<li><b>Filter by keyword</b> &mdash; enter a keyword then select the <b>SEARCH</b> button to reduce the display to matching results.</li>
+	<li><b>Filter by collection</b> &mdash; select an option from the drop-down list to only display results from the selected collection.</li>
+	<li><b>Filter by status</b> &mdash; select an option from the drop-down list to display results with the selected status.</li>
+	<li><b>Filter by owner</b> &mdash; select the <b>SELECT USER</b> button to display the <b>Select owner to filter by</b> dialog where owners can be found by name search then selected to filter the search results. Select the CHANGE USER button to change the owner selected or select the CLEAR button to remove.</li>
+	<li><b>Filter by date modified</b> &mdash; select an option from the drop-down list then enter or select a date. Select <b>Clear</b> to remove the date filter.</li>
+	<li><b>Filter by resource type</b> &mdash; select a checkbox to display only matching resources.</li>
+	<li><b>Filter by assignment</b> &mdash; select an option from the drop-down list to only display results with the selected user assignment. Check <b>Only show tasks that I must moderate</b> to display tasks that you must moderate.</li>
+	<li><b>Filter by course</b> &mdash; select the <b>SELECT COURSE</b> button to display the <b>Select a course</b> dialog where courses can be found by name search then selected to filter the search results.</li>
+	<li><b>Activation range</b> &mdash; enter or select a date for end date, start date and activated to filter results. Select <b>Clear</b> to remove the date filter.</li>
+	<li><b>Filter by type</b> &mdash; select an option from the drop-down list to display results with the selected type.</li>
+	<li><b>Filter by visibility</b> &mdash; select an option from the drop-down list to display results with the selected visibility.</li>	
+  </ul>
+  <p><a href="javascript:void(0)" onclick="switchText(''favMain'')"><b>Back</b></a></p>
+</div>
+]]>
+</entry>
+</properties>

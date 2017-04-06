@@ -1,0 +1,72 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.notification" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.core.email" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.hibernate" />
+		<import plugin-id="com.tle.core.hibernate.equella" exported="true" />
+		<import plugin-id="com.tle.core.institution" />
+		<import plugin-id="com.tle.core.migration" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.security.runasuser" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.usermanagement" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="notificationExtension">
+		<parameter-def id="type" type="string" multiplicity="one-or-more" />
+		<parameter-def id="bean" type="string" multiplicity="one" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.hibernate.guice.TransactionModule" />
+		<parameter id="class" value="com.tle.core.security.guice.SecurityModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="domainObjects">
+		<parameter id="class" value="com.tle.core.notification.beans.Notification" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.migration" point-id="initialSchema" id="initialSchema">
+		<parameter id="class" value="com.tle.core.notification.beans.Notification" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="migrateNotifications">
+		<parameter id="id" value="com.tle.core.notification.migrate.MigrateNotifications" />
+		<parameter id="bean" value="bean:com.tle.core.notification.migrate.MigrateNotifications" />
+		<parameter id="date" value="1970-01-01" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="migrateNotifications2">
+		<parameter id="id" value="com.tle.core.notification.migrate.MigrateNotifications2" />
+		<parameter id="bean" value="bean:com.tle.core.notification.migrate.MigrateNotifications2" />
+		<parameter id="depends" value="com.tle.core.notification.migrate.MigrateNotifications" />
+		<parameter id="date" value="1970-01-01" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="addLastAttempt">
+		<parameter id="id" value="com.tle.core.notification.migrate.AddLastAttempt" />
+		<parameter id="bean" value="bean:com.tle.core.notification.migrate.AddLastAttempt" />
+		<parameter id="depends" value="com.tle.core.notification.migrate.MigrateNotifications2" />
+		<parameter id="date" value="1970-01-01" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="constraintToAvoidDuplicateNotificationsMigration">
+		<parameter id="id" value="com.tle.core.notification.migrate.ConstraintToAvoidDuplicateNotificationsMigration" />
+		<parameter id="bean" value="bean:com.tle.core.notification.migrate.ConstraintToAvoidDuplicateNotificationsMigration" />
+		<parameter id="date" value="2013-04-08" />
+	</extension>
+</plugin>

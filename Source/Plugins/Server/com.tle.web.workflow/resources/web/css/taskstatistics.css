@@ -1,0 +1,62 @@
+
+div.controlcontainer {
+	padding: 15px 18px;
+}
+
+div.statscontrols {
+	position: relative;
+}
+
+div.workflow select {
+	width: 215px;
+}
+
+div.trend {
+	position: absolute;
+	bottom: 5px;
+	right: 0;
+}
+
+.taskstatsresults .noresults {
+	display: block;
+	padding: 20px 10px 10px;
+	text-align: center;
+}
+
+.portlet_taskstatistics_content .nomanageable {
+	padding: 25px 10px;
+	text-align: center;
+}
+
+.portlet_taskstatistics_content .box_content, .portlet_taskstatistics_content .box_content_inner {
+    padding: 0;
+}
+
+.taskstatsresults TABLE {
+	width: 100%;
+
+}
+
+.taskstatsresults th {
+	text-align: left;
+}
+
+.taskstatsresults td, .taskstatsresults th {
+	padding: 9px 10px 9px 32px;
+}
+
+.taskstatsresults .waiting, .taskstatsresults .trend {
+	text-align: center;
+	width: 15px;
+	padding: 9px 10px;
+}
+
+.taskstatsresults .bold {
+	font-weight: bold;
+}
+
+.taskstatsresults .resourcecount {
+	display: block;
+	padding: 15px 18px 0px;
+	text-align: left;
+}

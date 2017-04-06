@@ -1,0 +1,21 @@
+/**
+Used to make things look better on IE...
+*/
+
+/**
+still not very pretty, but at least it is much better...
+*/
+#statusversion dd {float:none; padding: 0.3em; }
+
+/**
+to prevent ie from stretching all buttons to the max...
+*/
+.button {
+    padding: 0 .3em;
+    width: 0; 
+    overflow: visible;
+}
+
+.upload {
+	font-size: 9px;
+}

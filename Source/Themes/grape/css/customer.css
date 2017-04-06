@@ -1,0 +1,127 @@
+body {
+	background-color: #45635A;
+}
+
+.area fieldset h3 {
+	color: #A55995;
+}
+
+#footer {
+	background-color: #45635A!important;
+}
+
+#body {
+	background-color: #7D3B63;
+}
+
+#header-inner h2 {
+	color: #9A548B;
+}
+
+#screen-options, #help {
+	border-color: #98618F;
+	background-color: #7A3D6D;
+}
+
+.button-down.active {
+	border-color: #995387;
+}
+
+.button-big:hover, input[type="submit"]:hover {
+	border-color: #541846 #A55695 #A55695 #541846;
+	text-shadow: 0 -1px 0px #541846;
+	-moz-text-shadow: 0 -1px 0px #541846;
+	-webkit-text-shadow: 0 -1px 0px #541846;
+}
+
+.button-big-right:hover {
+	border-color: #541846 #A55695 #A55695 #541846;
+	text-shadow: 0 -1px 0px #541846;
+	-moz-text-shadow: 0 -1px 0px #541846;
+	-webkit-text-shadow: 0 -1px 0px #541846;
+}
+
+.button-big.rightarrow:hover {
+	border-color: #541846 #A55695 #A55695 #541846;
+	text-shadow: 0 -1px 0px #541846;
+	-moz-text-shadow: 0 -1px 0px #541846;
+	-webkit-text-shadow: 0 -1px 0px #541846;
+}
+
+.itemsummary-layout #col2 ul li a {
+	color: #B474A7;
+}
+
+.comment-username {
+	color:#B474A7;
+}
+
+.area fieldset h3, .area .control h3  {
+	color:#B474A7;
+}
+
+.area .edit h3 {
+	color:#B474A7;
+}
+
+.alt-links a {
+	color:#B474A7 !important;
+}
+
+.alt-links a:hover {
+	color:#4b4842 !important;
+}
+
+.area h3 {
+	color:#B474A7;
+}
+
+.modal-content-inner h3 {
+	color:#B474A7;
+}
+
+.content a, .modal a {
+	color: #A55995;
+}
+
+.content a:hover, modal a:hover {
+	color: #B474A7;
+}
+
+#selection-header-content h3 a {
+	color: #A55995;
+}
+
+#selection-header-content h3 a:hover {
+    color: #B474A7;
+}
+
+.alt-links a:hover {
+	color:#B474A7 !important;
+}
+
+#wizard-actions a {
+    color: #B474A7;
+}
+
+.news-item h4 a, .news-item h4 a:hover 
+{
+	color: #A55995;
+}
+
+.recent-item h4 a, .recent-item h4 a:hover 
+{
+	color: #A55995;
+}
+
+.customfile-button:hover {
+    background-position:0 100%;
+}
+
+#breadcrumbs a {
+    color: #A55995;
+}
+
+#breadcrumbs a:hover {
+    color: #B474A7;
+}

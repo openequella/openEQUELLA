@@ -1,0 +1,16 @@
+@import url("jquery.fileinput.css");
+
+.customfile-feedback {
+	margin: 1px 5px 1px 1px;
+	padding: 5px 25px 3px 0;
+	background-position: right 50%;
+	/*
+	 * Arabic fonts seem to be generally missing italicised
+	 * fonts, so just always show the "normal" style
+	 */
+	font-style: normal;
+}
+
+.customfile-button {
+	float: left;
+}

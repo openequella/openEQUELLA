@@ -1,0 +1,5 @@
+@import url("schedulersettings.css");
+
+.schedulersettings .newListSelected, .schedulersettings .dayprefix {
+	float: right;
+}

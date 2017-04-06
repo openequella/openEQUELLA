@@ -1,0 +1,48 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.integration" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.core.auditlog" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.migration" />
+		<import plugin-id="com.tle.core.hibernate" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.core.guice" />
+
+		<import plugin-id="com.tle.core.hibernate.equella" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.hibernate.guice.TransactionModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="inst-strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.migration" point-id="initialSchema" id="initialSchema">
+		<parameter id="class" value="com.tle.core.integration.beans.AuditLogLms" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="createTable">
+		<parameter id="id" value="com.tle.core.integration.migration.CreateLogTable" />
+		<parameter id="bean" value="bean:com.tle.core.integration.migration.CreateLogTable" />
+		<parameter id="date" value="2010-12-08" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="domainObjects">
+		<parameter id="class" value="com.tle.core.integration.beans.AuditLogLms" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.auditlog" point-id="auditTable" id="logExt">
+		<parameter id="bean" value="bean:com.tle.core.integration.IntegrationLoggingService" />
+	</extension>
+</plugin>

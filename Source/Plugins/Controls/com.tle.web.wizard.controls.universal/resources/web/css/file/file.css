@@ -1,0 +1,101 @@
+.universalresourcedialog.fileHandler .progressbar 
+{
+	width: 200px;
+	height: 14px;
+	border: 1px solid #AAA;
+	float: left;
+	margin: 0 10px 0 0;
+	
+	-moz-border-radius: 3px;
+	-o-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
+.universalresourcedialog.fileHandler .progressbarOuter
+{
+	background-color: #FFFFFF;
+}
+
+.universalresourcedialog.fileHandler .progressbarInner 
+{
+	height: 14px;
+	background: #80D2EE !important;
+}
+
+.universalresourcedialog.fileHandler .progresstextOuter
+{
+	color: #000000;
+}
+
+.universalresourcedialog.fileHandler .progresstextInner 
+{
+	color: #FFFFFF;
+}
+
+.universalresourcedialog.fileHandler .file-upload 
+{
+	margin: 10px 0;
+	clear: both;
+}
+
+.universalresourcedialog.fileHandler .file-upload .file-name 
+{
+	width: 400px;
+	overflow: hidden;
+}
+
+.universalresourcedialog.fileHandler .file-upload-progress 
+{
+	float: right;
+	width: 300px;
+}
+
+.universalresourcedialog.fileHandler .file-upload-problem 
+{
+	background-color: #FF0000;
+}
+
+.universalresourcedialog.fileHandler .progress-bar 
+{
+	width: 200px;
+	height: 14px;
+	border: 1px solid #AAA;
+	float: left;
+	margin: 0 10px 0 0;
+	
+	-moz-border-radius: 3px;
+	-o-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
+.universalresourcedialog.fileHandler .progress-bar-inner 
+{
+	height: 14px;
+	background: #80D2EE;
+}
+
+.universalresourcedialog.fileHandler .progress-bar-inner.complete 
+{
+	background: #47E368;
+	width: 100%;
+}
+
+.universalresourcedialog.fileHandler .progress-bar + A 
+{
+	float: right;
+}
+
+.universalresourcedialog.fileHandler .ctrlinvalidmessage 
+{
+	color: red;
+	text-align: center;
+	font-size: 20px;
+	line-height: 24px
+}
+
+.universalresourcedialog.fileHandler .addlink
+{
+	margin-top: 1em;
+}

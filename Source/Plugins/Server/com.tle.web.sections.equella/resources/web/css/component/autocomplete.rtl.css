@@ -1,0 +1,5 @@
+@import url("autocomplete.css");
+
+.autocomplete-container input {
+	right: 30px;
+}

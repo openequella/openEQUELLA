@@ -1,0 +1,66 @@
+.customfile-input {
+	position: absolute;
+	height: 100px;
+	cursor: pointer;
+	background: transparent;
+	border: 0;
+	opacity: 0;
+	-moz-opacity: 0;
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0);
+	-ms-filter: "alpha(opacity=0)";
+	filter: alpha(opacity=0);
+	z-index: 999;
+}
+
+.customfile {
+	cursor: pointer;
+	overflow: hidden;
+	border: 1px solid;
+	border-color: #7E765E #C3BEAE #CFCBBE #CFCBBE;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	position: relative;
+	background-color: white;
+	line-height: normal;
+}
+
+.customfile-disabled {
+	opacity: .5;
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0);
+	-ms-filter: "alpha(opacity=0)";
+	filter: alpha(opacity=0);
+	cursor: default;
+}
+
+.customfile-feedback {
+	display: block;
+	margin: 1px 1px 1px 5px;
+	font-size: 12px;
+	font-style: italic;
+	padding: 5px 0 3px 25px;
+	background: url(../../images/render/fileinput-icon.png) 0 50% no-repeat;
+}
+
+.customfile-feedback-populated {
+	font-style: normal;
+}
+
+.customfile-button {
+	margin-top: 1px;
+	margin-bottom: 1px;
+	float: right;
+}
+
+.ajaxupload
+{
+	display: none;
+	background-color: #FF0000;
+	width: 200px;
+	height: 40px;
+}
+
+.ajaxuploadForm
+{
+	display: none;
+}

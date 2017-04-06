@@ -1,0 +1,448 @@
+#wrapper {
+	min-width: 549px;
+}
+
+#body-inner {
+	float: none;
+	padding: 0;
+}
+
+#selection-page {
+	margin: 0 auto;
+	width: 784px;
+	border-bottom: 1px solid #7C786C;
+	border-right: 1px solid #7C786C;
+	position: relative;
+}
+
+#selection-content {
+	background: url(../images/content-middle.gif) repeat-y 0px 0px;
+	position: relative;
+	min-width: 549px;
+	float: left;
+}
+
+#selection-content #breadcrumb-inner {
+	margin-left: 18px;
+}
+
+#selection-content-inner {
+	background: url(../images/content-top.gif) no-repeat 0px 0px;
+	min-height: 400px;
+	padding: 15px 17px;
+	float: left;
+}
+
+#selection-content-inner>.area {
+	margin-top: 15px;
+}
+
+#selection-content-inner #col1 {
+	width: 515px;
+	padding-top: 15px;
+}
+
+#selection-content-inner .richcontainer {
+	width: auto;
+	position: inherit;
+	left: auto;
+}
+
+#selection-content-inner.contribution-selection-page {
+	width: 749px
+}
+
+/******************************************
+	Header
+******************************************/
+#selection-header .navbar-equella-selection.course .navbar.navbar-fixed-top.navbar-inverse .navbar-inner .navbar-content
+	{
+	width: 784px;
+}
+
+#selection-header ul.nav li.dropdown button.dropdown-toggle {
+	background: none;
+	border: none;
+	box-shadow: none;
+	margin: 0;
+	padding: 10px 4px;
+}
+
+#selection-header ul.nav li.dropdown button.dropdown-toggle:hover {
+	background: none;
+}
+
+#selection-header-content .close {
+	margin-top: 10px;
+	margin-left: 10px;
+	cursor: pointer;
+}
+
+#selection-header {
+	background: #C9C3AA;
+	border-bottom: 1px solid #7C786C;
+	border-top: 1px solid #FEFEFE;
+	height: 40px;
+}
+
+#selection-header-content {
+	position: relative;
+	width: 549px;
+	margin: 0 auto;
+}
+
+#selection-header-content .logo {
+	position: absolute;
+	top: 2px;
+	left: 0;
+	width: 92px;
+	height: 32px;
+	background: url(../images/logo-small.png) no-repeat;
+	overflow: hidden;
+	text-indent: -9999px;
+}
+
+/******************************************
+	Wizard
+******************************************/
+#selection-content-inner.wizard-layout {
+	width: 749px;
+}
+
+#selection-content-inner.wizard-layout .treePanel {
+	min-width:
+}
+
+#selection-content-inner.wizard-layout div.calendar input[type="text"] {
+	width: 130px;
+}
+
+#selection-content-inner.wizard-layout input[type="text"],
+	#selection-content-inner.wizard-layout textarea,
+	#selection-content-inner.wizard-layout select.listbox {
+	width: 433px;
+}
+
+#selection-content-inner.wizard-layout .indent1 {
+	width: 406px;
+}
+
+#selection-content-inner.wizard-layout .indent1 .input.text input[type="text"],
+	#selection-content-inner.wizard-layout .indent1 .input.text textarea,
+	#selection-content-inner.wizard-layout .indent1 select.listbox {
+	width: 392px;
+}
+
+#selection-content-inner.wizard-layout div.autocompleteControl {
+	width: 443px;
+}
+
+.selection.selectItems .item-title, .selection.selectItems .itemresult-title.selectable
+	{
+	background-image: url(../images/drag.png);
+	background-repeat: no-repeat;
+	background-position: 2px 2px;
+	padding-left: 32px;
+	display: block;
+}
+
+.selection.selectItems .item-title {
+	padding-bottom: 2px;
+}
+
+.selection.selectItems .itemresult-title {
+	padding-top: 2px;
+	padding-bottom: 4px;
+}
+
+.selection.selectItems .item-title:hover, .selection.selectItems .itemresult-title:hover
+	{
+	background-color: #FFFFFF;
+	border-radius: 3px;
+}
+
+/*
+.selection .itemresult-title.courselist-dragged
+{
+	width: 450px;
+}*/
+.ui-draggable /*,.selection .itemresult-title .titlelink*/ {
+	cursor: move;
+}
+
+/************* Attachments ****************/
+.selection.selectAttachments .selectable .attachments-browse.structured .attachmentrow.courselist-dragged
+	{
+	width: 324px;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured .attachmentrow.with-select,
+	.selection.selectAttachments .selectable .attachments-browse.structured .attachmentrow.with-select:hover,
+	.selection.selectAttachments .selectable .attachments-browse.structured .attachmentrow.active.with-select
+	{
+	cursor: move;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured .attachmentrow
+	{
+	height: 27px;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured .attachmentrow.with-select
+	{
+	background-image: url(../images/attachments/pagewithdrag.png);
+	background-position: 6px 6px;
+	height: auto;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured
+	{
+	background: none repeat scroll 0 0;
+	border: none;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured li.attachmentrow,
+	.selection.selectAttachments .selectable .attachments-browse.structured li.folder,
+	.selection.selectAttachments .selectable .attachments-browse.structured li.attachmentrow:hover
+	{
+	border-left: 1px solid #FFFFFF;
+	border-bottom: 1px solid #CBCBCB;
+	border-right: 1px solid #DDDDDD;
+	border-top: 1px solid #EEEEEE;
+	margin-top: 2px;
+	background-color: #FFFFFF;
+	border-radius: 3px;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured .attachmentrow.active,
+	.selection.selectAttachments .selectable .attachments-browse.structured .attachmentrow.active:hover
+	{
+	border-radius: 3px 3px 0px 3px;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured .attachmentrow.active,
+	.selection.selectAttachments .selectable .attachments-browse li.attachmentrow .detail
+	{
+	background-color: #F7F7F7;
+}
+
+.selection.selectAttachments .selectable .attachments-browse li.attachmentrow .detail
+	{
+	border-radius: 0px 0px 3px 3px;
+	border-left: 1px solid #FFFFFF;
+	border-bottom: 1px solid #CBCBCB;
+	border-right: 1px solid #DDDDDD;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured li.attachmentrow:hover
+	{
+	background-color: #F7F7F7;
+	border-bottom: 1px solid #CBCBCB;
+	border-right: 1px solid #DDDDDD;
+	border-top: 1px solid #EEEEEE;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured li.attachmentrow:last-child
+	{
+	border-bottom: 1px solid #CBCBCB !important;
+	border-right: 1px solid #DDDDDD;
+	border-top: 1px solid #EEEEEE;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured li.level0.with-select
+	{
+	padding-left: 50px;
+	background-position: 10px 5px;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured li.level1.with-select
+	{
+	padding-left: 80px;
+	background-position: 40px 5px;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured li.level2.with-select
+	{
+	padding-left: 110px;
+	background-position: 70px 5px;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured li.level3.with-select
+	{
+	padding-left: 140px;
+	background-position: 100px 5px;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured li.level4.with-select
+	{
+	padding-left: 170px;
+	background-position: 130px 5px;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured li.level5.with-select
+	{
+	padding-left: 200px;
+	background-position: 160px 5px;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured li.level6.with-select
+	{
+	padding-left: 230px;
+	background-position: 190px 5px;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured li.level7.with-select
+	{
+	padding-left: 260px;
+	background-position: 220px 5px;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured li.level8.with-select
+	{
+	padding-left: 290px;
+	background-position: 250px 5px;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured li.level9.with-select
+	{
+	padding-left: 320px;
+	background-position: 280px 5px;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured li.level10.with-select
+	{
+	padding-left: 350px;
+	background-position: 310px 5px;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured .unselectable
+	{
+	height: 28px;
+	background-image: url(../images/attachments/page.png);
+	display: block !important;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured li.attachmentrow.active .droparrow
+	{
+	background-position: 0 -14px;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.structured li.attachmentrow div.non-button-div
+	{
+	display: table-cell;
+	width: 500px;
+}
+
+/* THUMBS SELECTION */
+.selection.selectAttachments .selectable .attachments-browse.thumbs {
+	border: none;
+	background: none;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.thumbs li.attachmentrow.unselectable
+	{
+	cursor: pointer;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.thumbs li.attachmentrow
+	{
+	border: none;
+	border-bottom: 1px solid #CBCBCB /*!important*/;
+	border-right: 1px solid #DDDDDD;
+	border-top: 1px solid #EEEEEE;
+	border-radius: 3px;
+	width: 31.9%; /* should use bootstrap scaffolding soon... */
+	margin: 2px 2px 2px 3px;
+	background-color: #FFFFFF;
+	cursor: move;
+	/*
+	background-image: url(../images/drag.png);
+	background-repeat: no-repeat;
+	background-position: 6px 6px;*/
+}
+
+.attachments-browse.thumbs li.attachmentrow .over-image {
+	position: absolute;
+	right: 24px;
+	top: 9px;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.thumbs li.attachmentrow:hover
+	{
+	background-color: #F7F7F7;
+	border-bottom: 1px solid #CBCBCB;
+	border-right: 1px solid #DDDDDD;
+	border-top: 1px solid #EEEEEE;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.thumbs li.attachmentrow:last-child
+	{
+	border-bottom: 1px solid #CBCBCB;
+	border-right: 1px solid #DDDDDD;
+	border-top: 1px solid #EEEEEE;
+}
+
+.selection.selectAttachments .selectable .attachments-browse.thumbs li.attachmentrow:first-child
+	{
+	border-top: 1px solid #EEEEEE;
+}
+
+/******************************************
+	Nav builder
+******************************************/
+#selection-header .navbar-equella-selection .navbar.navbar-fixed-top.navbar-inverse .centered-pills
+	{
+	width: 95%;
+}
+
+#selection-content-inner.wizard-layout .leftPanel {
+	width: 45%;
+}
+
+#selection-content-inner.wizard-layout .rightPanel {
+	width: 55%;
+	margin-right: 0px;
+}
+
+#selection-content-inner.wizard-layout .rightPanel .heading {
+	margin-left: 12px;
+}
+
+#selection-content-inner.wizard-layout ul.tablist {
+	width: 203px;
+}
+
+#selection-content-inner.wizard-layout .rightPanel input[type="text"] {
+	width: 130px;
+}
+
+#selection-content-inner.wizard-layout .rightPanel .newListSelected {
+	width: 145px !important;
+}
+
+/******************************************
+	Error page
+******************************************/
+#selection-content-inner div.area.error {
+	/* Not sure why it has to be this particular value.. */
+	width: 469px;
+	float: left;
+}
+
+.selection #selection-content #selection-content-inner {
+	width: 750px;
+}
+
+.selection #selection-content #selection-content-inner #affix-div {
+	padding-top: 15px;
+}
+
+/*Scrapbook text box*/
+#selection-content-inner .control.ctrlbody input[type="text"] {
+	width: 432px;
+}
+
+#selection-content-inner #page-edit .control.ctrlbody input[type="text"]
+	{
+	width: 395px;
+}

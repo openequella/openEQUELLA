@@ -1,0 +1,34 @@
+.modaldialog
+{
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-top: 5px;
+}
+
+.attachmentcontainer
+{
+	border-width: 1px;
+	border-style: solid;
+	border-color: #F0F0F0;
+	height: 200px;
+	overflow: auto;
+}
+
+/* IE 7 fix */
+.attachmentcontainer .resource_overall
+{
+	height: auto;
+	width: 460px;
+}
+
+.attachmentrow
+{
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.pagename
+{
+	font-weight: bolder;
+	margin-left: 5px;
+}

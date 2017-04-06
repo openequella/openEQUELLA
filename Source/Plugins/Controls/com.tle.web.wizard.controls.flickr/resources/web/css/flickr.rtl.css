@@ -1,0 +1,23 @@
+@import url("flickr.css");
+
+.flickrHandler #searchform #searchform-query {
+	-webkit-border-radius: 0 4px 4px 0;
+	-moz-border-radius: 0 4px 4px 0;
+	border-radius:0 4px 4px 0;
+	border-left: none;
+}
+
+
+.flickrHandler #searchform .query-wrapper .btn.btn-equella.btn-primary {
+	border-right-color: #0044CC;
+	border-left-color: #0044CC;
+}
+
+.flickrHandler .flickrresult .select {
+	float: right;
+}
+
+.flickrHandler .flickrresult .itemresult-content {
+	margin-left: 0;
+	margin-right: 25px;
+}

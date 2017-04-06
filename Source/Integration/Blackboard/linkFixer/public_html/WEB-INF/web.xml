@@ -1,0 +1,170 @@
+<?xml version = '1.0' encoding = 'windows-1252'?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd">
+<web-app>
+	<display-name>EQUELLA Link Fixer</display-name>
+	<description>EQUELLA Link Fixer</description>
+
+<!--
+	<servlet>
+		<servlet-name>Servlet</servlet-name>
+		<servlet-class>
+			com.dytech.edge.blackboard.servlet.Servlet
+		</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>Redirect</servlet-name>
+		<servlet-class>
+			com.dytech.edge.blackboard.servlet.Redirect
+		</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>PortalTabRenderer</servlet-name>
+		<servlet-class>
+			com.dytech.edge.blackboard.servlet.PortalTabRenderer
+		</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>ControlPanelRenderer</servlet-name>
+		<servlet-class>
+			com.dytech.edge.blackboard.servlet.ControlPanelRenderer
+		</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>ViewContent</servlet-name>
+		<servlet-class>
+			com.dytech.edge.blackboard.servlet.ViewContentServlet
+		</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>Scorm</servlet-name>
+		<servlet-class>
+			com.dytech.edge.blackboard.servlet.ScormServlet
+		</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>Cookie</servlet-name>
+		<servlet-class>
+			com.dytech.edge.blackboard.servlet.CookieServlet
+		</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>UserManagement</servlet-name>
+		<servlet-class>
+			com.dytech.edge.blackboard.servlet.UserManagement
+		</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>AxisServlet</servlet-name>
+		<display-name>Apache-Axis Servlet</display-name>
+		<servlet-class>org.apache.axis.transport.http.AxisServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>AxisServlet</servlet-name>
+		<url-pattern>/services/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>Servlet</servlet-name>
+		<url-pattern>/Facade</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>Redirect</servlet-name>
+		<url-pattern>/Redirect</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>PortalTabRenderer</servlet-name>
+		<url-pattern>/PortalTabRenderer.jsp</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>ControlPanelRenderer</servlet-name>
+		<url-pattern>/ControlPanelRenderer.jsp</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>ViewContent</servlet-name>
+		<url-pattern>/ViewContent</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>Scorm</servlet-name>
+		<url-pattern>/lmscmi</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>Scorm</servlet-name>
+		<url-pattern>/scorm</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>Cookie</servlet-name>
+		<url-pattern>/cookie</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>UserManagement</servlet-name>
+		<url-pattern>/user</url-pattern>
+	</servlet-mapping>
+	-->
+
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+	<mime-mapping>
+		<extension>html</extension>
+		<mime-type>text/html</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+		<extension>txt</extension>
+		<mime-type>text/plain</mime-type>
+	</mime-mapping>
+
+	
+	<taglib>
+		<taglib-uri>/bbUI</taglib-uri>
+		<taglib-location>/WEB-INF/bbUI.tld</taglib-location>
+	</taglib>
+
+	<taglib>
+		<taglib-uri>/tle</taglib-uri>
+		<taglib-location>/WEB-INF/tle.tld</taglib-location>
+	</taglib>
+
+	<taglib>
+		<taglib-uri>/bbData</taglib-uri>
+		<taglib-location>/WEB-INF/bbData.tld</taglib-location>
+	</taglib>
+<!--
+	<taglib>
+		<taglib-uri>http://struts.apache.org/tags-bean</taglib-uri>
+		<taglib-location>/WEB-INF/config/struts/struts-bean.tld</taglib-location>
+	</taglib>
+	<taglib>
+		<taglib-uri>http://struts.apache.org/tags-html</taglib-uri>
+		<taglib-location>/WEB-INF/config/struts/struts-html.tld</taglib-location>
+	</taglib>
+	<taglib>
+		<taglib-uri>http://struts.apache.org/tags-logic</taglib-uri>
+		<taglib-location>/WEB-INF/config/struts/struts-logic.tld</taglib-location>
+	</taglib>
+	<taglib>
+		<taglib-uri>http://struts.apache.org/tags-nested</taglib-uri>
+		<taglib-location>/WEB-INF/config/struts/struts-nested.tld</taglib-location>
+	</taglib>
+	<taglib>
+		<taglib-uri>http://struts.apache.org/tags-template</taglib-uri>
+		<taglib-location>/WEB-INF/config/struts/struts-template.tld</taglib-location>
+	</taglib>
+	-->
+</web-app>

@@ -1,0 +1,37 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.security.tool" version="1">
+	<attributes>
+		<attribute id="type" value="admin-console" />
+	</attributes>
+
+	<requires>
+		<import plugin-id="com.tle.admin.tools" />
+		<import plugin-id="com.tle.common.accesscontrolbuilder" />
+
+		<import plugin-id="com.tle.common.entity" />
+		<import plugin-id="com.tle.common.recipientselector" />
+
+		<import plugin-id="com.tle.common.powersearch" />
+		<import plugin-id="com.tle.common.search" />
+		<import plugin-id="com.tle.common.remoterepo" />
+		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="com.tle.common.item" />
+
+		<import plugin-id="com.tle.common.usermanagement" />
+		<import plugin-id="com.tle.common.activation" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension plugin-id="com.tle.admin.tools" point-id="tool" id="securitytool">
+		<parameter id="displayorder" value="1300" />
+		<parameter id="name" value="com.tle.admin.gui.securitymanagertool.name" />
+		<parameter id="class" value="com.tle.admin.security.tool.SecurityManagerTool" />
+		<parameter id="privilege" value="EDIT_SECURITY_TREE" />
+		<parameter id="privilege" value="VIEW_SECURITY_TREE" />
+	</extension>
+</plugin>

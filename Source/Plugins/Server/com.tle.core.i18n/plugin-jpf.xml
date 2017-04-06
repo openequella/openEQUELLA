@@ -1,0 +1,39 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.i18n" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.entity" />
+		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="com.tle.core.config" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.filesystem" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.hibernate.equella" />
+		<import plugin-id="com.tle.core.usermanagement" />
+		<import plugin-id="com.tle.web.core.equella" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.security.guice.SecurityModule" />
+		<parameter id="class" value="com.tle.core.hibernate.guice.TransactionModule" />
+		<parameter id="class" value="com.tle.core.i18n.guice.I18nModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.services" point-id="applicationEventListener" id="listeners">
+		<parameter id="listenerClass" value="com.tle.core.services.language.LanguagePackChangedListener" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="currentLocaleImpl" id="serverCurrentLocale">
+		<parameter id="bean" value="bean:com.tle.core.services.language.impl.ServerSideLocaleImplementation" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="currentTimeZoneImpl" id="serverCurrentTimeZone">
+		<parameter id="bean" value="bean:com.tle.core.services.language.impl.ServerSideTimeZoneImplementation" />
+	</extension>
+</plugin>

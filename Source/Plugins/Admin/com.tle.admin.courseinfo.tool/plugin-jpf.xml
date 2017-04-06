@@ -1,0 +1,38 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.courseinfo.tool" version="1">
+	<attributes>
+		<attribute id="type" value="admin-console" />
+	</attributes>
+
+	<requires>
+		<import plugin-id="com.tle.admin.common" />
+		<import plugin-id="com.tle.admin.tools" />
+
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.recipientselector" />
+
+		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="com.tle.common.usermanagement" />
+		<import plugin-id="com.tle.common.activation" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="admin-console" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.tools" point-id="tool" id="courseinfotool">
+		<parameter id="displayorder" value="1000" />
+		<parameter id="name" value="com.tle.admin.gui.courseinfotool.title" />
+		<parameter id="class" value="com.tle.admin.courseinfo.tool.CourseInfoTool" />
+		<parameter id="privilege" value="CREATE_COURSE_INFO" />
+		<parameter id="privilege" value="EDIT_COURSE_INFO" />
+	</extension>
+</plugin>

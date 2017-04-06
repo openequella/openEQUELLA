@@ -1,0 +1,19 @@
+p.warning {
+	background-color: #FFDFDF;
+	border: 1px solid;
+	color: #D8000C;
+	font-size: 1.2em;
+	margin-bottom: 1em;
+	padding: 1em 5em;
+	text-align: center
+}
+
+p label {
+	display: inline-block;
+	width: 100px;
+	text-align: right;
+}
+
+.autologinlink {
+	padding-left: 100px;
+}

@@ -1,0 +1,599 @@
+<manifest identifier="MANIFEST-1C6DC237-F2E9-3F40-0E92-5BF357DD328B" xmlns="http://www.imsglobal.org/xsd/imscp_v1p1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 imscp_v1p1.xsd http://www.imsglobal.org/xsd/imsmd_v1p2 imsmd_v1p2p2.xsd">
+  <metadata>
+    <imsmd:lom>
+      <imsmd:general>
+        <imsmd:title>
+          <imsmd:langstring xml:lang="en">Communicate effectively in a Customer Contact Centre</imsmd:langstring>
+        </imsmd:title>
+        <imsmd:catalogentry>
+          <imsmd:catalog>Australian Flexible Learning Toolboxes</imsmd:catalog>
+          <imsmd:entry>
+            <imsmd:langstring xml:lang="en"/>
+          </imsmd:entry>
+        </imsmd:catalogentry>
+        <imsmd:language>en</imsmd:language>
+        <imsmd:description>
+          <imsmd:langstring xml:lang="en">This unit applies to the wide variety of communication and media operating in a customer contact centre. It looks at verbal, non-verbal and written communication, as well as business letter and e-mail formats.</imsmd:langstring>
+        </imsmd:description>
+        <imsmd:keyword>
+          <imsmd:langstring xml:lang="en">customer contact centre</imsmd:langstring>
+          <imsmd:langstring xml:lang="en">communicate effectively</imsmd:langstring>
+          <imsmd:langstring xml:lang="en">analyse communication processes</imsmd:langstring>
+          <imsmd:langstring xml:lang="en">communicate verbally</imsmd:langstring>
+          <imsmd:langstring xml:lang="en">non-verbal communication cues</imsmd:langstring>
+          <imsmd:langstring xml:lang="en">communicate in writing</imsmd:langstring>
+          <imsmd:langstring xml:lang="en">communicate electronically</imsmd:langstring>
+          <imsmd:langstring xml:lang="en">e-mail</imsmd:langstring>
+          <imsmd:langstring xml:lang="en">workplace</imsmd:langstring>
+          <imsmd:langstring xml:lang="en">ICTCC101A</imsmd:langstring>
+        </imsmd:keyword>
+        <imsmd:aggregationlevel>
+          <imsmd:source>
+            <imsmd:langstring xml:lang="en"/>
+          </imsmd:source>
+          <imsmd:value>
+            <imsmd:langstring>3</imsmd:langstring>
+          </imsmd:value>
+        </imsmd:aggregationlevel>
+      </imsmd:general>
+      <imsmd:lifecycle>
+        <imsmd:version>
+          <imsmd:langstring xml:lang="en">1</imsmd:langstring>
+        </imsmd:version>
+        <imsmd:status>
+          <imsmd:source>
+            <imsmd:langstring xml:lang="en"/>
+          </imsmd:source>
+          <imsmd:value>
+            <imsmd:langstring>Final</imsmd:langstring>
+          </imsmd:value>
+        </imsmd:status>
+      </imsmd:lifecycle>
+      <imsmd:metametadata>
+        <imsmd:metadatascheme>LOM v1.0</imsmd:metadatascheme>
+      </imsmd:metametadata>
+      <imsmd:technical>
+        <imsmd:format>text/html</imsmd:format>
+      </imsmd:technical>
+      <imsmd:educational>
+        <imsmd:context>
+          <imsmd:source>
+            <imsmd:langstring xml:lang="en"/>
+          </imsmd:source>
+          <imsmd:value>
+            <imsmd:langstring>Vocational Training</imsmd:langstring>
+          </imsmd:value>
+        </imsmd:context>
+        <compound blah="true">
+        	<shouldntbehere/>
+        	<type test="a">
+                <source>
+                    <langstring xml:lang="x-none">LOM 6.4</langstring>
+                </source>
+                <value>
+                    <langstring xml:lang="x-none">Student</langstring>
+                </value>
+            </type>
+            <type test="b">
+                <source>
+                    <langstring xml:lang="x-none">LOM 6.4</langstring>
+                </source>
+                <value>
+                    <langstring xml:lang="x-none">Student</langstring>
+                </value>
+            </type>
+        </compound>
+        <audience >
+            
+            <sector>
+                <source>
+                    <langstring xml:lang="x-none">LOM 6.4</langstring>
+                </source>
+                <value>
+                    <langstring xml:lang="x-none">School</langstring>
+                </value>
+            </sector>
+            <userlevel>
+                <langstring xml:lang="en">4</langstring>
+            </userlevel>
+            <userlevel>
+                <langstring xml:lang="en">3</langstring>
+            </userlevel>
+        </audience>
+      </imsmd:educational>
+      <imsmd:rights>
+        <imsmd:cost>
+          <imsmd:source>
+            <imsmd:langstring xml:lang="en">10</imsmd:langstring>
+          </imsmd:source>
+          <imsmd:value>
+            <imsmd:langstring>No</imsmd:langstring>
+          </imsmd:value>
+        </imsmd:cost>
+        <imsmd:copyrightandotherrestrictions>
+          <imsmd:source>
+            <imsmd:langstring xml:lang="en"/>
+          </imsmd:source>
+          <imsmd:value>
+            <imsmd:langstring>Yes</imsmd:langstring>
+          </imsmd:value>
+        </imsmd:copyrightandotherrestrictions>
+        <imsmd:description>
+          <imsmd:langstring xml:lang="en">Copyright on the works in this TOOLBOX Learning Object is owned by the Australian National Training Authority (ANTA). You must not do anything that would infringe the copyright in regard to this Learning Object (LO). TAFE Tasmania has been granted permission to use this LO when used in the scope of TAFE Tasmania&#8217;s registration. ANTA nor TAFE Tasmania accepts no responsibility for material contained in this repository. The inclusion of material is not an endorsement by ANTA or TAFE Tasmania of that material and not an indication of ANTA's or TAFE Tasmania&#8217;s commitment to any particular course of action.</imsmd:langstring>
+        </imsmd:description>
+      </imsmd:rights>
+      <imsmd:classification>
+        <imsmd:purpose>
+          <imsmd:source>
+            <imsmd:langstring xml:lang="en"/>
+          </imsmd:source>
+          <imsmd:value>
+            <imsmd:langstring>Competency</imsmd:langstring>
+          </imsmd:value>
+        </imsmd:purpose>
+        <imsmd:description>
+          <imsmd:langstring xml:lang="en">ICTCC101A Communicate effectively in a Customer Contact Centre</imsmd:langstring>
+        </imsmd:description>
+        <imsmd:keyword>
+          <imsmd:langstring xml:lang="en">information, communication technology, AQF Level Certificate III</imsmd:langstring>
+        </imsmd:keyword>
+      </imsmd:classification>
+    </imsmd:lom>
+  </metadata>
+  <organizations default="ORG-51EF3131-02D8-8B64-49A0-E1E619541C4D">
+    <organization identifier="ORG-51EF3131-02D8-8B64-49A0-E1E619541C4D" structure="hierarchical">
+      <title>Communicate Effectively in a Customer Contact Centre</title>
+      <item identifier="ITEM-3626BC9C-4946-6974-6F95-206C49D2F185" identifierref="RES-A482BF33-CC82-B1F6-D8C9-305BB2F3F241" isvisible="true">
+        <title>Unit overview</title>
+      </item>
+      <item identifier="ITEM-2AE1E05C-EEA5-412D-6F39-F4AAADDCD740" identifierref="RES-1C639819-521B-4788-66E0-A37BB47A1C27" isvisible="true">
+        <title>Resources</title>
+      </item>
+      <item identifier="ITEM-088E8337-7746-C2B8-6A84-E1A9B4AC5889" isvisible="true">
+        <title>Activities</title>
+        <item identifier="ITEM-D2D01766-DB76-D31F-B36D-852D21D9F78B" identifierref="RES-36036097-29C0-F9A9-DB9A-255D66EB465C" isvisible="true">
+          <title>Analyse communication processes</title>
+        </item>
+        <item identifier="ITEM-F4D6C041-9508-AE55-9340-50782CFC245F" identifierref="RES-69BA4BED-B867-07E2-9EAF-F518EDEF239A" isvisible="true">
+          <title>Communicate verbally</title>
+        </item>
+        <item identifier="ITEM-7972B74F-579F-BCDD-E21F-D917697806FA" identifierref="RES-A73EA69E-3698-DB64-4B04-748DEE5FB205" isvisible="true">
+          <title>Recognise and use non-verbal cues</title>
+        </item>
+        <item identifier="ITEM-3DD2E7A8-EFFE-2BA3-F909-07CB829935E0" identifierref="RES-B2D9E65E-B691-C63A-DA26-DBBA61A7A9C0" isvisible="true">
+          <title>Communicate in writing</title>
+        </item>
+        <item identifier="ITEM-F911C141-78C7-8482-2EB8-401510CA3AE9" identifierref="RES-3B807F86-2EBC-A273-20DF-F6CCE6B1BF44" isvisible="true">
+          <title>Communicate using e-mail</title>
+        </item>
+      </item>
+      <item identifier="ITEM-1DDEB498-3DCE-B166-C012-EA5E2EF4239F" identifierref="RES-5161E0C5-B7F0-C0C9-11E3-5800A0AA6B1C" isvisible="true">
+        <title>Bushland Blooms Intranet</title>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource href="intranet/index.htm" identifier="RES-5161E0C5-B7F0-C0C9-11E3-5800A0AA6B1C" type="webcontent">
+      <metadata>
+        <imsmd:lom>
+          <imsmd:general>
+            <imsmd:title>
+              <imsmd:langstring xml:lang="en">Bushland Blooms Intranet</imsmd:langstring>
+            </imsmd:title>
+            <imsmd:catalogentry>
+              <imsmd:catalog>Australian Flexible Learning Toolboxes</imsmd:catalog>
+              <imsmd:entry>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:entry>
+            </imsmd:catalogentry>
+            <imsmd:language>en</imsmd:language>
+            <imsmd:description>
+              <imsmd:langstring xml:lang="en">The information on this Intranet will help you carry out your work as a call centre agent.</imsmd:langstring>
+            </imsmd:description>
+            <imsmd:keyword>
+              <imsmd:langstring xml:lang="en">customer contact centre</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">intranet</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">policy and procedures</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">services</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">staff</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">campaign</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">customer database</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">agent support manual</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">legislation</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">forms</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">ICTCC231A</imsmd:langstring>
+            </imsmd:keyword>
+            <imsmd:aggregationlevel>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>2</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:aggregationlevel>
+          </imsmd:general>
+          <imsmd:lifecycle>
+            <imsmd:version>
+              <imsmd:langstring xml:lang="en">1</imsmd:langstring>
+            </imsmd:version>
+            <imsmd:status>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>Final</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:status>
+          </imsmd:lifecycle>
+          <imsmd:metametadata>
+            <imsmd:metadatascheme>LOM v1.0</imsmd:metadatascheme>
+          </imsmd:metametadata>
+          <imsmd:technical>
+            <imsmd:format>text/html</imsmd:format>
+          </imsmd:technical>
+          <imsmd:educational>
+            <imsmd:context>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>Vocational Training</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:context>
+          </imsmd:educational>
+          <imsmd:rights>
+            <imsmd:cost>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>No</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:cost>
+            <imsmd:copyrightandotherrestrictions>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>Yes</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:copyrightandotherrestrictions>
+            <imsmd:description>
+              <imsmd:langstring xml:lang="en">Copyright on the works in this TOOLBOX Learning Object is owned by the Australian National Training Authority (ANTA). You must not do anything that would infringe the copyright in regard to this Learning Object (LO). TAFE Tasmania has been granted permission to use this LO when used in the scope of TAFE Tasmania&#8217;s registration. ANTA nor TAFE Tasmania accepts no responsibility for material contained in this repository. The inclusion of material is not an endorsement by ANTA or TAFE Tasmania of that material and not an indication of ANTA's or TAFE Tasmania&#8217;s commitment to any particular course of action.</imsmd:langstring>
+            </imsmd:description>
+          </imsmd:rights>
+          <imsmd:classification>
+            <imsmd:purpose>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>Competency</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:purpose>
+            <imsmd:description>
+              <imsmd:langstring xml:lang="en">ICTCC101A Communicate effectively in a Customer Contact Centre</imsmd:langstring>
+            </imsmd:description>
+            <imsmd:keyword>
+              <imsmd:langstring xml:lang="en">information, communication technology, Certificate III</imsmd:langstring>
+            </imsmd:keyword>
+          </imsmd:classification>
+        </imsmd:lom>
+      </metadata>
+    </resource>
+    <resource href="resources/index.htm" identifier="RES-1C639819-521B-4788-66E0-A37BB47A1C27" type="webcontent">
+      <metadata>
+        <imsmd:lom>
+          <imsmd:general>
+            <imsmd:title>
+              <imsmd:langstring xml:lang="en">Resources</imsmd:langstring>
+            </imsmd:title>
+            <imsmd:catalogentry>
+              <imsmd:catalog>Australian Flexible Learning Toolboxes</imsmd:catalog>
+              <imsmd:entry>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:entry>
+            </imsmd:catalogentry>
+            <imsmd:language>en</imsmd:language>
+            <imsmd:description>
+              <imsmd:langstring xml:lang="en">Resources for Communicate effectively in a Customer Contact Centre</imsmd:langstring>
+            </imsmd:description>
+            <imsmd:keyword>
+              <imsmd:langstring xml:lang="en">customer contact centre</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">communication</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">resources</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">links</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">live calls</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">Magazines</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">subject experts</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">ICTCC231A</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">training room</imsmd:langstring>
+            </imsmd:keyword>
+            <imsmd:aggregationlevel>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>2</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:aggregationlevel>
+          </imsmd:general>
+          <imsmd:lifecycle>
+            <imsmd:version>
+              <imsmd:langstring xml:lang="en">1</imsmd:langstring>
+            </imsmd:version>
+            <imsmd:status>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>Final</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:status>
+          </imsmd:lifecycle>
+          <imsmd:metametadata>
+            <imsmd:metadatascheme>LOM v1.0</imsmd:metadatascheme>
+          </imsmd:metametadata>
+          <imsmd:technical>
+            <imsmd:format>text/html</imsmd:format>
+          </imsmd:technical>
+          <imsmd:educational>
+            <imsmd:context>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>Vocational Training</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:context>
+          </imsmd:educational>
+          <imsmd:rights>
+            <imsmd:cost>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>No</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:cost>
+            <imsmd:copyrightandotherrestrictions>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>Yes</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:copyrightandotherrestrictions>
+            <imsmd:description>
+              <imsmd:langstring xml:lang="en">Copyright on the works in this TOOLBOX Learning Object is owned by the Australian National Training Authority (ANTA). You must not do anything that would infringe the copyright in regard to this Learning Object (LO). TAFE Tasmania has been granted permission to use this LO when used in the scope of TAFE Tasmania&#8217;s registration. ANTA nor TAFE Tasmania accepts no responsibility for material contained in this repository. The inclusion of material is not an endorsement by ANTA or TAFE Tasmania of that material and not an indication of ANTA's or TAFE Tasmania&#8217;s commitment to any particular course of action.</imsmd:langstring>
+            </imsmd:description>
+          </imsmd:rights>
+          <imsmd:classification>
+            <imsmd:purpose>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>Competency</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:purpose>
+            <imsmd:description>
+              <imsmd:langstring xml:lang="en">ICTCC101A Communicate effectively in a Customer Contact Centre</imsmd:langstring>
+            </imsmd:description>
+            <imsmd:keyword>
+              <imsmd:langstring xml:lang="en">information, communication technology, Certificate III</imsmd:langstring>
+            </imsmd:keyword>
+          </imsmd:classification>
+        </imsmd:lom>
+      </metadata>
+    </resource>
+    <resource href="101/activities/comm_verbally/index.htm" identifier="RES-69BA4BED-B867-07E2-9EAF-F518EDEF239A" type="webcontent">
+      <metadata>
+        <imsmd:lom>
+          <imsmd:general>
+            <imsmd:title>
+              <imsmd:langstring xml:lang="en">Communicate verbally</imsmd:langstring>
+            </imsmd:title>
+            <imsmd:catalogentry>
+              <imsmd:catalog>Australian Flexible Learning Toolboxes</imsmd:catalog>
+              <imsmd:entry>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:entry>
+            </imsmd:catalogentry>
+            <imsmd:language>en</imsmd:language>
+            <imsmd:description>
+              <imsmd:langstring xml:lang="en">Verbal communication, listening techniques, vocal techniques and written or electronic communication</imsmd:langstring>
+            </imsmd:description>
+            <imsmd:keyword>
+              <imsmd:langstring xml:lang="en">communication</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">customer contact centre</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">verbal communication</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">listening techniques</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">vocal techniques</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">written communication</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">electronic communication</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">ICTCC101A</imsmd:langstring>
+            </imsmd:keyword>
+            <imsmd:aggregationlevel>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>2</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:aggregationlevel>
+          </imsmd:general>
+          <imsmd:lifecycle>
+            <imsmd:version>
+              <imsmd:langstring xml:lang="en">1</imsmd:langstring>
+            </imsmd:version>
+            <imsmd:status>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>Final</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:status>
+          </imsmd:lifecycle>
+          <imsmd:metametadata>
+            <imsmd:metadatascheme>LOM v1.0</imsmd:metadatascheme>
+          </imsmd:metametadata>
+          <imsmd:technical>
+            <imsmd:format>text/html</imsmd:format>
+          </imsmd:technical>
+          <imsmd:educational>
+            <imsmd:context>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>Vocational Training</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:context>
+          </imsmd:educational>
+          <imsmd:rights>
+            <imsmd:cost>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>No</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:cost>
+            <imsmd:copyrightandotherrestrictions>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>Yes</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:copyrightandotherrestrictions>
+            <imsmd:description>
+              <imsmd:langstring xml:lang="en">Copyright on the works in this TOOLBOX Learning Object is owned by the Australian National Training Authority (ANTA). You must not do anything that would infringe the copyright in regard to this Learning Object (LO). TAFE Tasmania has been granted permission to use this LO when used in the scope of TAFE Tasmania&#8217;s registration. ANTA nor TAFE Tasmania accepts no responsibility for material contained in this repository. The inclusion of material is not an endorsement by ANTA or TAFE Tasmania of that material and not an indication of ANTA's or TAFE Tasmania&#8217;s commitment to any particular course of action.</imsmd:langstring>
+            </imsmd:description>
+          </imsmd:rights>
+          <imsmd:classification>
+            <imsmd:purpose>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>Competency</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:purpose>
+            <imsmd:description>
+              <imsmd:langstring xml:lang="en">ICTCC101A Communicate effectively in a Customer Contact Centre</imsmd:langstring>
+            </imsmd:description>
+            <imsmd:keyword>
+              <imsmd:langstring xml:lang="en">information, communication technology, AQF Level Certificate III</imsmd:langstring>
+            </imsmd:keyword>
+          </imsmd:classification>
+        </imsmd:lom>
+      </metadata>
+    </resource>
+    <resource href="101/activities/comm_process/index.htm" identifier="RES-36036097-29C0-F9A9-DB9A-255D66EB465C" type="webcontent">
+      <metadata>
+        <imsmd:lom>
+          <imsmd:general>
+            <imsmd:title>
+              <imsmd:langstring xml:lang="en">Analyse communication processes</imsmd:langstring>
+            </imsmd:title>
+            <imsmd:catalogentry>
+              <imsmd:catalog>Australian Flexible Learning Toolboxes</imsmd:catalog>
+              <imsmd:entry>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:entry>
+            </imsmd:catalogentry>
+            <imsmd:language>en</imsmd:language>
+            <imsmd:description>
+              <imsmd:langstring xml:lang="en">Identify communication pathways, elements of communication, recognise barriers and adopt strategies to reduce barriers.</imsmd:langstring>
+            </imsmd:description>
+            <imsmd:keyword>
+              <imsmd:langstring xml:lang="en">communication</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">customer contact centre</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">barriers to communication</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">strategies</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">communication processes</imsmd:langstring>
+              <imsmd:langstring xml:lang="en">ICTCC101A</imsmd:langstring>
+            </imsmd:keyword>
+            <imsmd:aggregationlevel>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>2</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:aggregationlevel>
+          </imsmd:general>
+          <imsmd:lifecycle>
+            <imsmd:version>
+              <imsmd:langstring xml:lang="en">1</imsmd:langstring>
+            </imsmd:version>
+            <imsmd:status>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>Final</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:status>
+          </imsmd:lifecycle>
+          <imsmd:metametadata>
+            <imsmd:metadatascheme>LOM v1.0</imsmd:metadatascheme>
+          </imsmd:metametadata>
+          <imsmd:technical>
+            <imsmd:format>text/html</imsmd:format>
+          </imsmd:technical>
+          <imsmd:educational>
+            <imsmd:context>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>Vocational Training</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:context>
+          </imsmd:educational>
+          <imsmd:rights>
+            <imsmd:cost>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>No</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:cost>
+            <imsmd:copyrightandotherrestrictions>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>Yes</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:copyrightandotherrestrictions>
+            <imsmd:description>
+              <imsmd:langstring xml:lang="en">Copyright on the works in this TOOLBOX Learning Object is owned by the Australian National Training Authority (ANTA). You must not do anything that would infringe the copyright in regard to this Learning Object (LO). TAFE Tasmania has been granted permission to use this LO when used in the scope of TAFE Tasmania&#8217;s registration. ANTA nor TAFE Tasmania accepts no responsibility for material contained in this repository. The inclusion of material is not an endorsement by ANTA or TAFE Tasmania of that material and not an indication of ANTA's or TAFE Tasmania&#8217;s commitment to any particular course of action.</imsmd:langstring>
+            </imsmd:description>
+          </imsmd:rights>
+          <imsmd:classification>
+            <imsmd:purpose>
+              <imsmd:source>
+                <imsmd:langstring xml:lang="en"/>
+              </imsmd:source>
+              <imsmd:value>
+                <imsmd:langstring>Competency</imsmd:langstring>
+              </imsmd:value>
+            </imsmd:purpose>
+            <imsmd:description>
+              <imsmd:langstring xml:lang="en">ICTCC101A Communicate effectively in a Customer Contact Centre</imsmd:langstring>
+            </imsmd:description>
+            <imsmd:keyword>
+              <imsmd:langstring xml:lang="en">information, communication technology, AQF Level Certificate III</imsmd:langstring>
+            </imsmd:keyword>
+          </imsmd:classification>
+        </imsmd:lom>
+      </metadata>
+    </resource>
+  </resources>
+</manifest>

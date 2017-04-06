@@ -1,0 +1,20 @@
+<com.tle.beans.entity.itemdef.MetadataMapping>
+  <imsMapping class="list">
+    <com.tle.beans.entity.itemdef.mapping.IMSMapping>
+      <ims>metadata/lom/general/title/langstring</ims>
+      <itemdef>/item/description</itemdef>
+      <type>repeat</type>
+      <repeat>false</repeat>
+      <replace>false</replace>
+    </com.tle.beans.entity.itemdef.mapping.IMSMapping>
+    <com.tle.beans.entity.itemdef.mapping.IMSMapping>
+      <ims>metadata/lom/educational/audience/userlevel/langstring</ims>
+      <itemdef>/item/keywords</itemdef>
+      <type>repeat</type>
+      <repeat>false</repeat>
+      <replace>false</replace>
+    </com.tle.beans.entity.itemdef.mapping.IMSMapping>
+  </imsMapping>
+  <htmlMapping class="list"/>
+  <literalMapping class="list"/>
+</com.tle.beans.entity.itemdef.MetadataMapping>

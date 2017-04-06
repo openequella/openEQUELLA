@@ -1,0 +1,156 @@
+.sortData {
+	display: none;
+}
+
+.filterData {
+	display: none;
+}
+
+DIV.tableContainer {
+	position: relative;
+}
+
+DIV.tableFilter {
+	text-align: left;
+	vertical-align: middle;
+	white-space: nowrap;
+	padding-bottom: 5px;
+	float: right;
+}
+
+DIV.tableContainer DIV.tableFilter {
+	position: absolute;
+	top: -30px;
+	right: 0;
+}
+
+DIV.tableFilter INPUT.filterBox {
+	width: 300px !important;
+	background-image: url(../../images/component/tablefilter.png);
+	background-repeat: no-repeat;
+	background-position: right;
+	padding-right: 22px;
+
+}
+
+DIV.tableFilter INPUT.blur {
+	color: #AAAAAA;
+	background-image: url(../../images/component/tablefilterdis.png);
+}
+
+TABLE.zebra {
+	border: 1px solid #8f8b7f;
+	width: 100%;
+	margin: 10px 0;
+}
+
+TABLE.zebra.withfilter {
+	margin-top: 5px;
+}
+
+TABLE.zebra TR.rowHidden {
+	display: none;
+}
+
+TABLE.zebra TR.rowShown {
+	display: table-row;
+}
+
+TABLE.zebra TR TH {
+	color: #fff;
+	background: #d4cfb9;
+	text-align: left;
+	vertical-align: middle;
+	padding: 8px 10px;
+	white-space: nowrap;
+}
+
+TABLE.zebra.large TH {
+	font-size: 13px;
+	font-weight: bold;
+	padding: 13px 11px 12px;
+}
+
+TABLE.zebra TR TD.nowrap {
+	white-space: nowrap;
+}
+
+TABLE.zebra TR TD {
+	text-align: left;
+	vertical-align: top;
+	padding: 8px 10px;
+}
+
+TABLE.zebra.large TR TD {
+	font-size: 12px;
+	padding: 11px 11px 9px;
+	line-height: 1.5;
+}
+
+TABLE.zebra TR TD.middle {
+	vertical-align: middle;
+}
+
+TABLE.zebra TR TD A.position {
+	padding-right: 2px;
+}
+
+
+TABLE.zebra TR.even TD {
+	background: #fefefe;
+}
+
+TABLE.zebra TR.odd TD {
+	background: #f3f1eb;
+}
+
+TABLE.zebra.alternate TR.even TD {
+	background: #f3f1eb;
+}
+
+TABLE.zebra.alternate TR.odd TD {
+	background: #fefefe;
+}
+
+TABLE.zebra TR:hover TD, TABLE.zebra TR:focus TD 
+{
+/* !important */
+	background-color: #ffc;
+}
+
+.area h2+TABLE.zebra {
+	margin-top: 20px;
+}
+
+.area h3+TABLE.zebra {
+	margin-top: 4px;
+}
+
+TABLE.zebra TH.sortable {
+	cursor: pointer;
+}
+
+TABLE.zebra TH.sortable:hover {
+	background-color: #E4DFC9;
+	text-decoration: underline;
+}
+
+TABLE.zebra TH.sortable DIV.sortArrow {
+	width: 8px;
+	height: 8px;
+	display: inline-block;
+	background-repeat: no-repeat;
+	margin-left: 1em;
+}
+
+TABLE.zebra TH.sortable.sortedasc DIV.sortArrow,TABLE.zebra TH.sortable.unsorted.sortAsc:hover DIV.sortArrow
+	{
+	background-image: url(../../images/component/tablesortasc.png);
+	/*background-color: #E4DFC9;*/
+}
+
+TABLE.zebra TH.sortable.sorteddesc DIV.sortArrow,TABLE.zebra TH.sortable.unsorted.sortDesc:hover DIV.sortArrow
+	{
+	background-image: url(../../images/component/tablesortdesc.png);
+	/*background-color: #E4DFC9;*/
+}

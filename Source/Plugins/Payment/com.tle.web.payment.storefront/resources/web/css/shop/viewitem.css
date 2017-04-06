@@ -1,0 +1,126 @@
+DIV.pricing
+{
+	background-color: #FFFFFF;
+	margin: 10px 0;
+	border: 1px solid #8F8B7F;
+}
+
+DIV.pricing
+{
+	padding: 10px;
+}
+
+DIV.pricing .total
+{
+   text-align: right;
+   font-size: 17px;
+   font-weight: normal;	
+   padding-right: 15px;
+}
+
+DIV.pricing .bottom
+{
+   margin-top: 10px;
+   text-align: right;
+   padding: 0 15px;
+}
+
+DIV.pricing TABLE.zebra 
+{
+	width:100%;
+}
+
+.startdateoption
+{
+	margin-bottom: 10px;
+	height: 1.5em;
+}
+
+.startdateoption DIV.input.radio INPUT[type="radio"]
+{
+	margin-left: 10px;
+}
+
+.startdateoption DIV.input.radio LABEL
+{
+	margin-left: 30px;
+}
+
+.startdateoption.calendar
+{
+ 	font-size:12px;	
+}
+
+.startdateoption.calendar DIV
+{
+	float: left;
+}
+
+.startdateoption.calendar DIV.calendarwrap
+{
+	margin-left: 20px;
+}
+
+.startdateoption.calendar input[type="text"]
+{
+	width: 80px;
+}
+
+DIV.pricing .purchaseoption
+{
+	font-weight: bold;
+	font-size: 12px;
+}
+
+DIV.pricing .purchaseoption LABEL
+{
+	margin-left: 15px;
+}
+
+DIV.pricing .purchaseoptiondiv
+{
+	margin-bottom: 30px;
+	padding: 0 15px;
+}
+
+DIV.pricing .numusers
+{
+	width:40px;
+	text-align: right;
+	margin-left:5px;
+}
+
+DIV.pricing p.morespaces 
+{
+	margin-top:20px;
+}
+
+TABLE.zebra TR TH.cost-heading-align,
+TABLE.zebra TR TD.cost-cell-align
+{
+	padding-right: 80px;
+	text-align: right;
+}
+
+TABLE.zebra TR TH.duration-heading-align, 
+TABLE.zebra TR TD.duration-cell-align
+{
+	padding-left: 40px;
+}
+
+DIV.pricing DIV.purchasedwarning
+{
+	color: red;
+	font-size: 14px;
+	padding: 5px;
+}
+
+DIV.alert-error, DIV.alert-info
+{
+	text-align: center;
+ }
+ 
+#breadcrumbs span.wrapped
+{
+	white-space: nowrap;
+}

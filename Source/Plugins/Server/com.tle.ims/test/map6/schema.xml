@@ -1,0 +1,22 @@
+<schema id="b9ca3f68-cf9b-30bf-9e3b-608a6e78d174">
+  <collaborators type="public" />
+  <definition>
+    <xml>
+      <item>
+        <name search="true" type="text" />
+        <description search="true" type="text" />
+        <keywords search="true" type="text" />
+        <datecreated type="text" />
+        <datemodified type="text" />
+        <lom>
+        	<general>
+        		<catalogentry>
+	        		<catalog attribute="true" type="text" />
+	        		<entry attribute="true" type="text" />
+	        	</catalogentry>
+        	</general>
+        </lom>
+      </item>
+    </xml>
+  </definition>
+</schema>

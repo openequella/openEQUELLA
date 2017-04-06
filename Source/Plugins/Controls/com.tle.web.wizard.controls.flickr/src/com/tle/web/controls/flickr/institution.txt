@@ -1,0 +1,53 @@
+# Lines beginning with # are ignored
+# Equella flickrHandler will prefix this list with a language specific "[Any]"
+# indicating no restriction (PlugKey add.search.includeallinstis)
+# A flickr ID is required. This will always be assumed as the leading expression before 1st single space.
+#33147718@N05 Australian National Maritime Museum on The Commons
+30115723@N02 Australian War Memorial collection
+#37381115@N04 Bergen Public Library
+#26577438@N06 Biblioteca de Arte-Fundação Calouste Gulbenkian
+#26134435@N05 Bibliothèque de Toulouse
+#83979593@N00 Brooklyn Museum
+#36988361@N08 Center for Jewish History, NYC
+#30515687@N05 Cornell University Library
+#36038586@N04 DC Public Library Commons
+#37547255@N08 Fylkesarkivet i Sogn og Fjordane
+#23686862@N03 Galt Museum & Archives on The Commons
+7167652@N06 George Eastman House
+#35532303@N08 Getty Research Institute
+#32300107@N06 Imperial War Museum Collections
+#48143042@N05 Jewish Historical Society of the Upper Midwest
+#36281769@N04 JWA Commons
+#9189488@N02 Keene and Cheshire County (NH) Historical Photos
+#9189488@N02 Ljósmyndasafn Reykjavíkur / Reykjavík Museum of
+#37199428@N06 LlGC ~ NLW
+#35128489@N07 LSE Library
+#25786829@N08 Musée McCord Museum
+#47908901@N03 Museum of Hartlepool
+44494372@N05 NASA on The Commons
+#29998366@N02 Nationaal Archief
+#30835311@N07 National Galleries of Scotland Commons
+32741315@N06 National Library NZ on The Commons
+#14456531@N07 National Library of Scotland
+#11334970@N05 National Maritime Museum
+26808453@N03 National Media Museum
+#32951986@N05 New York Public Library
+#34101160@N07 nha.library
+#34586311@N05 Oregon State University Archives
+#24785917@N03 Powerhouse Museum Collection
+#49487266@N07 San Diego Air & Space Museum Archives
+25053835@N03 Smithsonian Institution
+#41131493@N06 SMU Central University Libraries
+#31846825@N04 State Library and Archives of Florida
+#29454428@N08 State Library of New South Wales collection
+#32605636@N06 State Library of Queensland, Australia
+#34419668@N08 Swedish National Heritage Board
+#47326604@N02 Texas State Archives
+#35310696@N04 The Field Museum Library
+8623220@N02 The Library of Congress
+#30194653@N06 The Library of Virginia
+#31575009@N05 The National Archives UK
+#35740357@N03 The U.S. National Archives
+#37784107@N08 UA Archives | Upper Arlington History
+#8337233@N06 UW Digital Collections
+#41815917@N06 Woodrow Wilson Presidential Library Archives

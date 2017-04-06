@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="com.tle.integration.standard" basedir="." default="compile">
+	<import file="../../build/plugins-common-build.xml" />
+	
+	<target name="make" depends="common.make">
+		<!-- HTML Plugins -->
+		<ant inheritAll="false" target="product" dir="${HTML Editor Plugins.base}"/>
+		<copy file="${HTML Editor Plugins.base}/product/equella-htmleditorplugins.zip" tofile="${resources}/web/downloads/equella-htmleditorplugins.zip" />
+		
+		<!-- Integ Pack -->
+		<ant inheritAll="false" target="product" dir="${IntegrationPack.base}"/>
+		<copy file="${IntegrationPack.base}/product/equella-integration-pack.zip" tofile="${resources}/web/downloads/equella-integration-pack.zip" />
+
+		<!-- Active Cache Tool -->
+		<ant inheritAll="false" target="product" dir="${TLE Active Cacher.base}"/>
+		<copy file="${TLE Active Cacher.base}/product/equella-activecache.zip" tofile="${resources}/web/downloads/equella-activecache.zip" />
+	</target>
+</project>

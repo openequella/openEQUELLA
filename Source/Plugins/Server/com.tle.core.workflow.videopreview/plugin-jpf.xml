@@ -1,0 +1,36 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.workflow.video" version="1">
+	<requires>
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.mimetypes" />
+		<import plugin-id="com.tle.core.workflow" />
+		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.core.freetext" />
+		<import plugin-id="com.tle.core.libav" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	<extension-point id="supportedVideoMimeType">
+		<parameter-def id="bean" type="string" />
+	</extension-point>
+	
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.workflow" point-id="operation" id="videoPreviewOperation">
+		<parameter id="type" value="postSave" />
+		<parameter id="class" value="bean:com.tle.core.workflow.video.CreateVideoPreviewOperation" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.freetext" point-id="indexingExtension" id="videoIndexer">
+		<parameter id="class" value="bean:com.tle.core.workflow.video.VideoIndexer" />
+	</extension>
+</plugin>

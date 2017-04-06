@@ -1,0 +1,84 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.wizard.controls.universal" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.inplaceeditor" />
+		<import plugin-id="com.tle.common.wizard.controls.universal" exported="true" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.core.url" />
+		<import plugin-id="com.tle.mycontent" />
+		<import plugin-id="com.tle.web.core" />
+		<import plugin-id="com.tle.web.inplaceeditor" />
+		<import plugin-id="com.tle.web.mimetypes" />
+		<import plugin-id="com.tle.web.mycontent.files" />
+		<import plugin-id="com.tle.web.services" />
+		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.web.sections.standard" />
+		<import plugin-id="com.tle.web.selection" />
+		<import plugin-id="com.tle.web.viewurl" />
+		<import plugin-id="com.tle.web.wizard" />
+		<import plugin-id="org.apache.tika" />
+		<import plugin-id="com.tle.core.workflow.thumbnail" />
+		<import plugin-id="com.tle.core.workflow.video" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="universalResourceHandler">
+		<parameter-def id="class" multiplicity="one" type="string" />
+		<parameter-def id="order" multiplicity="one" type="number" />
+	</extension-point>
+	
+	<extension-point id="packageAttachmentHandler">
+		<parameter-def id="class" multiplicity="one" type="string" />
+		<parameter-def id="type" multiplicity="one-or-more" type="string" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModule">
+		<parameter id="class" value="com.tle.web.wizard.guice.WizardBindBothModule" />
+		<parameter id="class" value="com.tle.web.controls.universal.UniversalModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="file" value="lang/i18n.properties" />
+		<parameter id="group" value="resource-centre" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.wizard" point-id="webControl" id="universal">
+		<parameter id="class" value="bean:com.tle.web.controls.universal.UniversalWebControl" />
+		<parameter id="type" value="universal" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.wizard.controls.universal" point-id="universalResourceHandler" id="urlHandler">
+		<parameter id="class" value="bean:com.tle.web.controls.universal.handlers.UrlHandler" />
+		<parameter id="order" value="300" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.wizard.controls.universal" point-id="universalResourceHandler" id="fileHandler">
+		<parameter id="class" value="bean:com.tle.web.controls.universal.handlers.FileUploadHandler" />
+		<parameter id="order" value="100" />
+	</extension>
+	
+	<extension plugin-id="com.tle.web.wizard.controls.universal" point-id="packageAttachmentHandler" id="imsHandler">
+		<parameter id="class" value="bean:com.tle.web.controls.universal.handlers.fileupload.packages.IMSPackageAttachmentHandler" />
+		<parameter id="type" value="IMS" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.wizard.controls.universal" point-id="packageAttachmentHandler" id="scormHandler">
+		<parameter id="class" value="bean:com.tle.web.controls.universal.handlers.fileupload.packages.ScormPackageAttachmentHandler" />
+		<parameter id="type" value="SCORM" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.services" point-id="invoker" id="fileHandlerInPlaceEditServiceMapping">
+		<parameter id="url" value="/file.inplaceedit.service" />
+		<parameter id="class" value="com.tle.common.inplaceeditor.InPlaceEditorServerBackend" />
+		<parameter id="bean" value="bean:com.tle.web.controls.universal.handlers.FileHandlerInplaceEditorBackend" />
+	</extension>
+</plugin>

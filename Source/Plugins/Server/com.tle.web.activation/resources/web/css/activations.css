@@ -1,0 +1,40 @@
+.zebra {
+	table-layout:fixed;
+}
+
+.attachment
+{
+	width: 180px;
+}
+
+.status
+{
+}
+
+.info
+{
+}
+
+.actions
+{
+	width:60px;
+}
+
+#ea_sc
+{
+	margin-left: 8px;
+}
+
+span.date-error
+{
+	display: inline-block;
+	padding: 8px 0;
+	text-align: center;
+	width: 100%;
+	background-color: #FDD;
+	color: red;
+}
+
+div.selection span.date-error, div.selection div.button-strip, div.selection div.mandatoryHelp{
+	width: 90%
+}

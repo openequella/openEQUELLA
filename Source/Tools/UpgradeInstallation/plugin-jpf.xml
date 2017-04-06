@@ -1,0 +1,20 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin version="1" id="TLE Installation Upgrade">
+	<requires>
+		<import plugin-id="com.tle.log4j" />
+		<import plugin-id="com.tle.platform.equella" />
+		<import plugin-id="com.tle.platform.common" />
+		<import plugin-id="commons-configuration:commons-configuration" />
+		<import plugin-id="commons-io:commons-io" />
+		<import plugin-id="commons-lang:commons-lang" />
+		<import plugin-id="log4j:log4j" />
+		<import plugin-id="org.jvnet.hudson:xstream" />
+		<import plugin-id="TLE Upgrade Manager" />
+		<import plugin-id="com.google.guava:guava" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="code">
+			<export prefix="*" />
+		</library>
+	</runtime>
+</plugin>

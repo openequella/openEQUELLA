@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="UpgradeProxy" default="product" basedir=".">
+	<property file="../build.properties"/>
+
+	<property name="warname" value="upgrade.war" />
+	<property name="earname" value="upgrade.ear" />
+	
+	<property name="staging" location="staging" />
+	<property name="product" location="product" />
+	
+	<property name="websrc" location="public_html" />
+	<property name="build" location="${websrc}/WEB-INF/classes" />
+	<property name="src" location="src" />
+
+	<target name="init">
+		<mkdir dir="${build}" />
+		<mkdir dir="${staging}" />
+		<mkdir dir="${product}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac destdir="${build}">
+			<classpath path="${ThirdParty.base}/oracle/servlet.jar"/>
+			<src path="${src}" />
+		</javac>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build}" />
+		<delete dir="${staging}" />
+	</target>
+
+	<target name="product" depends="ear">
+		<copy file="${staging}/${earname}" todir="${product}" />
+	</target>
+
+	<target name="ear" depends="rebuild">
+		<war destfile="${staging}/${warname}" webxml="${src}/WEB-INF/web.xml" basedir="${websrc}" />
+		<ear destfile="${staging}/${earname}" appxml="${src}/META-INF/application.xml">
+			<fileset file="${staging}/${warname}"/>
+		</ear>
+	</target>
+
+	<target name="make" depends="compile" />
+
+	<target name="rebuild" depends="clean,make" />
+
+	<target name="all" depends="rebuild" />
+</project>

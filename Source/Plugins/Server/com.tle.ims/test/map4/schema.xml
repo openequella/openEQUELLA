@@ -1,0 +1,22 @@
+<schema id="0a9621fe-8e4e-415c-d961-c021c5b02897">
+  <collaborators type="public"/>
+  <definition>
+    <xml>
+      <item>
+        <name search="true" type="text"/>
+        <description search="true" type="text"/>
+        <keywords search="true" type="text"/>
+        <datecreated type="text"/>
+        <datemodified type="text"/>
+        <TrainingPackage>
+          <First_letter type="text"/>
+          <Training_Package_Name search="true" type="text"/>
+        </TrainingPackage>
+        <Unit_Of_Competency search="true" type="text"/>
+      </item>
+    </xml>
+  </definition>
+  <lockedby userid="" session=""/>
+  <name>Toolbox Content</name>
+  <owner>admin</owner>
+</schema>

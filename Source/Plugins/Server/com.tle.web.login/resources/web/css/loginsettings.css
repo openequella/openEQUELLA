@@ -1,0 +1,31 @@
+table.selections, table.zebra  {
+	margin-top: 2px !important;
+	line-height: normal;
+}
+
+table.selections a.unselect {
+	float: right;
+}
+
+html[dir = "rtl"] table.selections a.unselect {
+	float: left;
+}
+
+.area textarea.notice {
+	width: 467px;
+}
+
+#innercontrols 
+{
+	padding-left: 100px;
+}
+
+#innercontrols .settingRow .settingLabel
+{
+	width: 120px;
+}
+
+#innercontrols .settingRow .settingField
+{
+	width: 430px;
+}

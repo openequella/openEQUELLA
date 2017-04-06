@@ -1,0 +1,41 @@
+.dashboard #topwide
+{
+	width:750px;
+}
+
+.dashboard #col1 
+{
+	width: 366px;
+	padding-bottom: 60px;
+}
+
+.dashboard #col2 
+{
+	width: 366px;
+	padding-bottom: 60px;
+}
+
+.dashboard .portlet_placeholder
+{
+	border: dashed 2px;
+}
+
+.dashboard .droptarget
+{
+	background-color: #D0D0D0;
+}
+
+.dashboard .box_head
+{
+	cursor: auto;
+}
+
+.dashboard .box_head h3
+{
+	cursor: move;
+}
+
+.dashboard .box_head img.action
+{
+	display: none;
+}

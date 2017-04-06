@@ -1,0 +1,18 @@
+<manifest identifier="MANIFEST-1C6DC237-F2E9-3F40-0E92-5BF357DD328B" xmlns="http://www.imsglobal.org/xsd/imscp_v1p1" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 imscp_v1p1.xsd http://www.imsglobal.org/xsd/imsmd_v1p2 imsmd_v1p2p2.xsd">
+  <metadata>
+    <imsmd:lom>
+      <imsmd:general>
+        <imsmd:title>
+          <imsmd:langstring xml:lang="en">Communicate effectively in a Customer Contact Centre</imsmd:langstring>
+        </imsmd:title>
+       </imsmd:general>
+    </imsmd:lom>
+    <imsmd:lom>
+      <imsmd:general>
+        <imsmd:title>
+          <imsmd:langstring xml:lang="en">Communicate effectively in a Customer Contact Centre</imsmd:langstring>
+        </imsmd:title>
+        </imsmd:general>
+    </imsmd:lom>
+  </metadata>
+</manifest>

@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Blackboard 9 Building Block SP11+" default="make" basedir=".">
+
+	<property name="build" location="public_html/WEB-INF/classes" />
+	<import file="../../../common-build.xml" />
+
+	<property name="warname" value="equella-bb91.war" />
+	<property name="websrc" location="public_html" />
+	<property name="lib" location="public_html/WEB-INF/lib" />
+	<property name="bbstaging" location="${staging}/bblock/public_html" />
+
+	<property name="wsbuild" location="classes"/>
+	<property name="wsstaging" location="${staging}/webservice"/>
+	<property name="wsdocstaging" location="${staging}/webservicedoc"/>
+	<property name="wsdoczipname" value="documentation.zip"/>
+	<property name="wsjarname" value="webservice.jar"/>
+
+	<!-- set classpath for javadocs -->
+	<path id="wsclasspath">
+		<pathelement path="${wsbuild}"/>
+		<fileset dir="${External Dependencies.base}">
+			<include name="bb-platform-*.jar"/>
+			<include name="log4j*.jar" />
+			<include name="axis2*.jar" />
+			<include name="guava*.jar" />
+			<include name="servlet-api*.jar" />
+		</fileset>
+	</path>
+
+	<property name="version.properties.destination" location="${build}" />
+
+	<target name="clean" depends="common.clean">
+		<delete dir="${wsbuild}"/>
+	</target>
+
+	<target name="init" depends="common.init">
+		<mkdir dir="${wsbuild}"/>
+		<mkdir dir="${wsstaging}" />
+		<mkdir dir="${bbstaging}" />
+	</target>
+
+	<target name="compile" depends="generate-source,define-build.classpath, wscompile,bbcompile" if="src.enabled">
+	</target>
+	
+	<target name="bbcompile">
+		<javac srcdir="${src}" destdir="${build}" classpathref="build.classpath"
+			nowarn="${javac.nowarn}"
+			debug="${javac.debug}"
+			debuglevel="${javac.debuglevel}"
+			optimize="${javac.optimize}"
+			target="1.7"
+			source="1.7"
+			deprecation="off"
+			verbose="${javac.verbose}"
+			depend="${javac.depend}"
+			includeantruntime="false">
+
+			<include name="com/tle/blackboard/common/**" />
+			<include name="com/tle/blackboard/buildingblock/**" />
+			<include name="com/tle/web/remoting/soap/**" />
+		</javac>
+		<copy file="${src}/icons.xml" todir="${build}"/>
+	</target>
+
+	<target name="wscompile" depends="init">
+		<javac srcdir="${src}" destdir="${wsbuild}" classpathref="wsclasspath"
+			nowarn="${javac.nowarn}"
+			debug="${javac.debug}"
+			debuglevel="${javac.debuglevel}"
+			optimize="${javac.optimize}"
+			target="1.7"
+			source="1.7"
+			deprecation="off"
+			verbose="${javac.verbose}"
+			depend="${javac.depend}"
+			includeantruntime="false">
+
+			<include name="com/tle/blackboard/webservice/**" />
+			<include name="com/tle/blackboard/common/**" />
+		</javac>
+		<copy file="${src}/icons.xml" todir="${wsbuild}"/>
+	</target>
+
+	<target name="wsjavadoc" depends="compile">
+		<delete dir="${staging}/doctemp" />
+		<echo>Making temp copy of source...</echo>
+		<copy todir="${staging}/doctemp">
+			<fileset dir="src"
+	                includes="**/*.java"/>
+			<fileset dir="src">
+				<include name="**/*.html"/>
+			</fileset>
+		</copy>
+
+		<javadoc sourcepath="${staging}/doctemp"
+	               failonerror="true"
+	               author="false"
+	               version="true"
+	               use="true"
+	               destdir="${wsdocstaging}"
+	               additionalparam="-breakiterator"
+	      	       packagenames="com.tle.blackboard.webservice.*"
+	               classpathref="wsclasspath" />
+
+		<jar jarfile="${wsdocstaging}/${wsdoczipname}">
+			<manifest>
+				<attribute name="Version" value="1.0"/>
+			</manifest>
+			<fileset dir="${wsdocstaging}" includes="**"/>
+		</jar>
+
+		<delete dir="${staging}/doctemp" />
+	</target>
+
+	<target name="make" depends="common.make, wsjavadoc">
+		<property file="${build}/version.properties" />
+
+		<!-- copy public_html to a staging folder -->
+		<copy todir="${bbstaging}">
+			<fileset dir="${websrc}" />
+		</copy>
+		<copy file="bb-manifest-unresolved.xml" tofile="${bbstaging}/WEB-INF/bb-manifest.xml" overwrite="true">
+			<filterchain>
+				<tokenfilter>
+					<replacestring from="@VERSION@" to="${version.mm}" />
+				</tokenfilter>
+			</filterchain>
+		</copy>
+
+		<copy file="bb-manifest-webservice.xml" toFile="${wsstaging}/META-INF/bb-manifest.xml" overwrite="true" />
+		
+		<copy todir="${wsstaging}">
+			<fileset dir="${wsbuild}" includes="**" />
+		</copy>
+
+		<taskdef resource="proguard/ant/task.properties" classpathref="customtasks.classpath" />
+
+		<path id="proguard.libraryjars">
+			<fileset dir="${External Dependencies.base}">
+				<include name="bb-platform*.jar" />
+				<include name="log4j*.jar" />
+				<include name="axis2*.jar" />
+				<include name="guava*.jar" />
+				<include name="jackson-core-*.jar" />
+				<include name="jackson-databind-*.jar" />
+				<include name="commons-httpclient-*.jar" />
+				<include name="slf4j-api-*.jar" />
+				<include name="cxf-bundle-*.jar" />
+				<include name="neethi-*.jar" />
+				<include name="xmlschema-core-*.jar" />
+			</fileset>
+		</path>
+		<path id="proguard.injars">
+			<pathelement path="${wsstaging}"/>
+		</path>
+
+		<!-- debug -->
+		<property name="myclasspath" refid="proguard.injars"/>
+		<echo message="Proguard Injars = ${myclasspath}"/>
+
+		<proguardconfiguration id="config">
+			-include ../../../common-build.pro
+			-dontwarn javax.**,org.apache.log.**,org.apache.avalon.**,org.springframework.**,org.mozilla.javascript.**
+			-dontnote
+		</proguardconfiguration>
+
+		<proguard obfuscate="false" shrink="true" optimize="true">
+			<configuration refid="config" />
+			<injar refid="proguard.injars" />
+			<libraryjar refid="proguard.libraryjars" />
+			<outjar file="${wsstaging}/proguarded.jar" />
+			<keepclasseswithmembers name="com.tle.blackboard.webservice.impl.ZEquellaWebserviceImpl">
+				<method access="public" name="*" />
+			</keepclasseswithmembers>
+			<keepclasseswithmembers name="com.tle.blackboard.webservice.AddItemResult">
+				<method access="public" name="*" />
+			</keepclasseswithmembers>
+			<keepclasseswithmembers name="com.tle.blackboard.webservice.Base">
+				<method access="public" name="*" />
+			</keepclasseswithmembers>
+			<keepclasseswithmembers name="com.tle.blackboard.webservice.Content">
+				<method access="public" name="*" />
+			</keepclasseswithmembers>
+			<keepclasseswithmembers name="com.tle.blackboard.webservice.Course">
+				<method access="public" name="*" />
+			</keepclasseswithmembers>
+			<keepclasseswithmembers name="com.tle.blackboard.webservice.Folder">
+				<method access="public" name="*" />
+			</keepclasseswithmembers>
+			<keepclasseswithmembers name="com.tle.blackboard.webservice.SearchResult">
+				<method access="public" name="*" />
+			</keepclasseswithmembers>
+			
+			<keepclasseswithmembers name="com.tle.blackboard.common.content.*">
+				<method access="public" name="*" />
+			</keepclasseswithmembers>
+			<keepclasseswithmembers name="com.tle.blackboard.common.BbUtil">
+				<method access="public" name="*" />
+			</keepclasseswithmembers>
+			<keepclasseswithmembers name="com.tle.blackboard.common.SqlUtil">
+				<method access="public" name="*" />
+			</keepclasseswithmembers>
+			<keepclasseswithmembers name="com.tle.blackboard.common.BbContext">
+				<method access="public" name="*" />
+			</keepclasseswithmembers>
+			<keepclasseswithmembers name="com.tle.blackboard.common.PathUtils">
+				<method access="public" name="*" />
+			</keepclasseswithmembers>
+		</proguard>
+
+		<!-- add documentation to webservice jar -->
+		<jar destfile="${wsstaging}/${wsjarname}">
+			<zipfileset includes="**/*" src="${wsstaging}/proguarded.jar" />
+			<fileset dir="${wsdocstaging}">
+				<include name="${wsdoczipname}" />
+			</fileset>
+		</jar>
+
+		<!-- TODO: REINSTATE this when BB fix their "web service in a building block" issue
+				 https://behind.blackboard.com/s/sysadminas/support/casedetails.aspx?caseid=872696
+				 Also update the bb-manifest-unresolved.xml to add back the webservice -->
+		<!-- copy jar to Building Block staging root ... -->
+
+		<copy todir="${bbstaging}">
+			<fileset dir="${wsstaging}">
+				<include name="${wsjarname}" />
+			</fileset>
+		</copy>
+
+	</target>
+
+	<target name="product" depends="common.product">
+		<war destfile="${product}/${warname}" webxml="${bbstaging}/WEB-INF/web.xml" basedir="${bbstaging}">
+			<lib dir="${External Dependencies.base}">
+				<include name="log4j*.jar" />
+				<include name="guava*.jar" />
+				<include name="commons-beanutils*.jar" />
+				<include name="commons-codec*.jar" />
+				<include name="commons-discovery*.jar" />
+				<include name="commons-httpclient*.jar" />
+				<include name="jackson-core-*.jar" />
+				<include name="jackson-databind-*.jar" />
+				<include name="slf4j-api-*.jar" />
+				<include name="struts-core*.jar" />
+				<include name="struts-taglib*.jar" />
+				
+				<include name="cxf-bundle-*.jar" />
+				<include name="neethi-*.jar" />
+				<include name="xmlschema-core-*.jar" />
+				<include name="woodstox-core-asl-*.jar" />
+				<include name="stax2-api-*.jar" />
+				<include name="stax-api-1.0-2.jar" />
+				<include name="xalan-*.jar" />
+				<!--
+				<include name="xfire-aegis-*.jar" />-->
+			</lib>
+		</war>
+
+		<!-- TODO: REMOVE this when BB fix their "web service in a building block" issue
+				 https://behind.blackboard.com/s/sysadminas/support/casedetails.aspx?caseid=872696
+				 Also update the bb-manifest-unresolved.xml to add back the webservice -->
+		<copy todir="${product}">
+			<fileset dir="${wsstaging}">
+				<include name="${wsjarname}" />
+			</fileset>
+		</copy>
+	</target>
+</project>

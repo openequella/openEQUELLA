@@ -1,0 +1,79 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.mycontent.files" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.applet" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.mycontent" />
+		<import plugin-id="com.tle.web.appletcommon" />
+		<import plugin-id="com.tle.web.inplaceeditor" />
+		<import plugin-id="com.tle.web.htmleditor" />
+		<import plugin-id="com.tle.web.itemlist" />
+		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.web.search" />
+		<import plugin-id="com.tle.web.remoting" />
+		<import plugin-id="com.tle.web.viewurl" />
+		<import plugin-id="com.tle.web.viewitem" />
+		<import plugin-id="com.tle.web.services" />
+		<import plugin-id="jdom:jdom" />
+		<import plugin-id="commons-lang:commons-lang" />
+
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+		<parameter id="class" value="com.tle.web.sections.equella.guice.EquellaModule" />
+		<parameter id="class" value="com.tle.web.myresource.MyResourceModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.mycontent" point-id="contentHandler" id="myresource">
+		<parameter id="id" value="myresource" />
+		<parameter id="nameKey" value="com.tle.web.mycontent.files.handlerName" />
+		<parameter id="contributeBean" value="bean:com.tle.web.myresource.MyResourceHandler" />
+		<parameter id="summariserBean" value="bean:com.tle.web.myresource.MyResourceItemRenderer" />
+		<parameter id="order" value="1000" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="itemxmlmigration" id="myResourceConverter">
+		<parameter id="id" value="com.tle.web.myresource.converter.MyResourceConverter" />
+		<parameter id="bean" value="bean:com.tle.web.myresource.converter.MyResourceConverter" />
+		<parameter id="date" value="1970-01-07" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="myResourceSchemaMigrator">
+		<parameter id="id" value="com.tle.web.myresource.converter.MyResourceSchemaMigrator" />
+		<parameter id="bean" value="bean:com.tle.web.myresource.converter.MyResourceSchemaMigrator" />
+		<parameter id="date" value="1970-01-13" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="postreadmigration" id="myResourceACLMigrator">
+		<parameter id="id" value="com.tle.web.myresource.converter.MyResourceACLMigrator" />
+		<parameter id="bean" value="bean:com.tle.web.myresource.converter.MyResourceACLMigrator" />
+		<parameter id="forconverter" value="acls" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.services" point-id="invoker" id="serviceMapping">
+		<parameter id="class" value="com.tle.web.myresource.bulkupload.common.ServerBackend" />
+		<parameter id="bean" value="bean:com.tle.web.myresource.bulkupload.server.ServerBackendImpl" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.services" point-id="invoker" id="inPlaceEditServiceMapping">
+		<parameter id="url" value="/myresource.inplaceedit.service" />
+		<parameter id="class" value="com.tle.common.inplaceeditor.InPlaceEditorServerBackend" />
+		<parameter id="bean" value="bean:com.tle.web.myresource.inplaceedit.server.ScrapbookInPlaceEditorServerBackend" />
+	</extension>
+</plugin>

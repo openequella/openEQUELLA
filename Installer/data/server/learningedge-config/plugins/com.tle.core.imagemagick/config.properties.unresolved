@@ -1,0 +1,7 @@
+# ImageMagick is a set of different programs, and EQUELLA needs to know the directory that
+# contains these programs.  For example, running 'which convert' on a unix-like system may
+# return '/usr/bin/convert' so you should enter '/usr/bin'.  On a Windows system, you may
+# have installed to 'C:\ImageMagick6.4', then the programs can be found directly inside that
+# path.
+
+imageMagick.path = ${imagemagick/path#t\/}

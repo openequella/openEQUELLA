@@ -1,0 +1,16 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin version="1" id="TLE Admin Console">
+	<requires>
+		<import plugin-id="com.tle.platform.swing" />
+		<import plugin-id="com.tle.platform.equella" />
+		<import plugin-id="com.tle.platform.common" />
+		<import plugin-id="com.tle.webstart.admin" />
+		<import plugin-id="org.jvnet.hudson:xstream" />
+		<import plugin-id="jnlp:jnlp" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="code">
+			<export prefix="*" />
+		</library>
+	</runtime>
+</plugin>

@@ -1,0 +1,25 @@
+.portlet_favourites_content .box_content,.portlet_favourites_content .box_content_inner
+	{
+	padding: 0;
+}
+
+.button_content {
+	margin: 15px 18px 0;
+	padding-bottom: 15px;
+}
+
+.noresults {
+	display: block;
+	padding: 10px;
+	text-align: center;
+}
+
+.action-button.addToFavourites {
+	background-image:
+		url("../images/button-add-to-favourites-action.ltr.png");
+}
+
+.action-button.removeFromFavourites {
+	background-image:
+		url("../images/button-remove-from-favourites-action.ltr.png");
+}

@@ -1,0 +1,893 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:axis2="http://context.ws.blackboard/" xmlns:ns2="http://context.ws.blackboard" xmlns:ns1="http://context.ws.blackboard/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ns0="http://ws.platform.blackboard/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://context.ws.blackboard/">
+    <wsdl:types>
+        <xs:schema xmlns:ax27="http://ws.platform.blackboard/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://ws.platform.blackboard/xsd">
+            <xs:complexType name="CourseIdVO">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="externalId" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="VersionVO">
+
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="version" type="xs:long"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax28="http://context.ws.blackboard/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://context.ws.blackboard/xsd">
+            <xs:complexType name="DeactivateToolResultVO">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="failureErrors" nillable="true" type="xs:string"/>
+
+                    <xs:element minOccurs="0" name="status" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="RegisterToolResultVO">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="failureErrors" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="proxyToolGuid" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="status" type="xs:boolean"/>
+                </xs:sequence>
+
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ns="http://context.ws.blackboard" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://context.ws.blackboard">
+            <xs:element name="getMemberships">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="userid" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+
+            </xs:element>
+            <xs:element name="getMembershipsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ns0:CourseIdVO"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getMyMembershipsResponse">
+
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ns0:CourseIdVO"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServerVersion">
+                <xs:complexType>
+                    <xs:sequence>
+
+                        <xs:element minOccurs="0" name="unused" nillable="true" type="ns0:VersionVO"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServerVersionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ns0:VersionVO"/>
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="deactivateTool">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ignore" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="deactivateToolResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ns1:DeactivateToolResultVO"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="registerTool">
+                <xs:complexType>
+
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="clientVendorId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clientProgramId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="registrationPassword" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="initialSharedSecret" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="requiredToolMethods" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="requiredTicketMethods" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="registerToolResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ns1:RegisterToolResultVO"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="emulateUser">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="userToEmulate" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="emulateUserResponse">
+                <xs:complexType>
+
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="extendSessionLife">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="additionalSeconds" type="xs:long"/>
+
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="extendSessionLifeResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+
+            </xs:element>
+            <xs:element name="login">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="userid" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="password" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clientVendorId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clientProgramId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="loginExtraInfo" nillable="true" type="xs:string"/>
+
+                        <xs:element minOccurs="0" name="expectedLifeSeconds" type="xs:long"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="loginResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="loginTicket">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ticket" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clientVendorId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clientProgramId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="loginExtraInfo" nillable="true" type="xs:string"/>
+
+                        <xs:element minOccurs="0" name="expectedLifeSeconds" type="xs:long"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="loginTicketResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="loginTool">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="password" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clientVendorId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clientProgramId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="loginExtraInfo" nillable="true" type="xs:string"/>
+
+                        <xs:element minOccurs="0" name="expectedLifeSeconds" type="xs:long"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="loginToolResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="logoutResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="getSystemInstallationIdResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="initializeResponse">
+                <xs:complexType>
+
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="initializeVersion2Response">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getRequiredEntitlements">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="method" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+
+            </xs:element>
+            <xs:element name="getRequiredEntitlementsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+
+    </wsdl:types>
+    <wsdl:message name="deactivateToolRequest">
+        <wsdl:part name="parameters" element="ns2:deactivateTool"/>
+    </wsdl:message>
+    <wsdl:message name="deactivateToolResponse">
+        <wsdl:part name="parameters" element="ns2:deactivateToolResponse"/>
+    </wsdl:message>
+    <wsdl:message name="initializeVersion2Request"/>
+    <wsdl:message name="initializeVersion2Response">
+
+        <wsdl:part name="parameters" element="ns2:initializeVersion2Response"/>
+    </wsdl:message>
+    <wsdl:message name="loginTicketRequest">
+        <wsdl:part name="parameters" element="ns2:loginTicket"/>
+    </wsdl:message>
+    <wsdl:message name="loginTicketResponse">
+        <wsdl:part name="parameters" element="ns2:loginTicketResponse"/>
+    </wsdl:message>
+    <wsdl:message name="extendSessionLifeRequest">
+
+        <wsdl:part name="parameters" element="ns2:extendSessionLife"/>
+    </wsdl:message>
+    <wsdl:message name="extendSessionLifeResponse">
+        <wsdl:part name="parameters" element="ns2:extendSessionLifeResponse"/>
+    </wsdl:message>
+    <wsdl:message name="registerToolRequest">
+        <wsdl:part name="parameters" element="ns2:registerTool"/>
+    </wsdl:message>
+    <wsdl:message name="registerToolResponse">
+
+        <wsdl:part name="parameters" element="ns2:registerToolResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getMembershipsRequest">
+        <wsdl:part name="parameters" element="ns2:getMemberships"/>
+    </wsdl:message>
+    <wsdl:message name="getMembershipsResponse">
+        <wsdl:part name="parameters" element="ns2:getMembershipsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getMyMembershipsRequest"/>
+
+    <wsdl:message name="getMyMembershipsResponse">
+        <wsdl:part name="parameters" element="ns2:getMyMembershipsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getRequiredEntitlementsRequest">
+        <wsdl:part name="parameters" element="ns2:getRequiredEntitlements"/>
+    </wsdl:message>
+    <wsdl:message name="getRequiredEntitlementsResponse">
+        <wsdl:part name="parameters" element="ns2:getRequiredEntitlementsResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="loginToolRequest">
+        <wsdl:part name="parameters" element="ns2:loginTool"/>
+    </wsdl:message>
+    <wsdl:message name="loginToolResponse">
+        <wsdl:part name="parameters" element="ns2:loginToolResponse"/>
+    </wsdl:message>
+    <wsdl:message name="logoutRequest"/>
+    <wsdl:message name="logoutResponse">
+        <wsdl:part name="parameters" element="ns2:logoutResponse"/>
+
+    </wsdl:message>
+    <wsdl:message name="getSystemInstallationIdRequest"/>
+    <wsdl:message name="getSystemInstallationIdResponse">
+        <wsdl:part name="parameters" element="ns2:getSystemInstallationIdResponse"/>
+    </wsdl:message>
+    <wsdl:message name="loginRequest">
+        <wsdl:part name="parameters" element="ns2:login"/>
+    </wsdl:message>
+    <wsdl:message name="loginResponse">
+
+        <wsdl:part name="parameters" element="ns2:loginResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getServerVersionRequest">
+        <wsdl:part name="parameters" element="ns2:getServerVersion"/>
+    </wsdl:message>
+    <wsdl:message name="getServerVersionResponse">
+        <wsdl:part name="parameters" element="ns2:getServerVersionResponse"/>
+    </wsdl:message>
+    <wsdl:message name="emulateUserRequest">
+
+        <wsdl:part name="parameters" element="ns2:emulateUser"/>
+    </wsdl:message>
+    <wsdl:message name="emulateUserResponse">
+        <wsdl:part name="parameters" element="ns2:emulateUserResponse"/>
+    </wsdl:message>
+    <wsdl:message name="initializeRequest"/>
+    <wsdl:message name="initializeResponse">
+        <wsdl:part name="parameters" element="ns2:initializeResponse"/>
+    </wsdl:message>
+
+    <wsdl:portType name="Context.WSPortType">
+        <wsdl:operation name="deactivateTool">
+            <wsdl:input message="axis2:deactivateToolRequest" wsaw:Action="deactivateTool"/>
+            <wsdl:output message="axis2:deactivateToolResponse" wsaw:Action="http://context.ws.blackboard/Context/deactivateToolResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="initializeVersion2">
+            <wsdl:input message="axis2:initializeVersion2Request" wsaw:Action="initializeVersion2"/>
+            <wsdl:output message="axis2:initializeVersion2Response" wsaw:Action="http://context.ws.blackboard/Context/initializeVersion2Response"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="loginTicket">
+            <wsdl:input message="axis2:loginTicketRequest" wsaw:Action="loginTicket"/>
+            <wsdl:output message="axis2:loginTicketResponse" wsaw:Action="http://context.ws.blackboard/Context/loginTicketResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="extendSessionLife">
+            <wsdl:input message="axis2:extendSessionLifeRequest" wsaw:Action="extendSessionLife"/>
+            <wsdl:output message="axis2:extendSessionLifeResponse" wsaw:Action="http://context.ws.blackboard/Context/extendSessionLifeResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="registerTool">
+
+            <wsdl:input message="axis2:registerToolRequest" wsaw:Action="registerTool"/>
+            <wsdl:output message="axis2:registerToolResponse" wsaw:Action="http://context.ws.blackboard/Context/registerToolResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getMemberships">
+            <wsdl:input message="axis2:getMembershipsRequest" wsaw:Action="getMemberships"/>
+            <wsdl:output message="axis2:getMembershipsResponse" wsaw:Action="http://context.ws.blackboard/Context/getMembershipsResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getMyMemberships">
+            <wsdl:input message="axis2:getMyMembershipsRequest" wsaw:Action="getMyMemberships"/>
+
+            <wsdl:output message="axis2:getMyMembershipsResponse" wsaw:Action="http://context.ws.blackboard/Context/getMyMembershipsResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getRequiredEntitlements">
+            <wsdl:input message="axis2:getRequiredEntitlementsRequest" wsaw:Action="getRequiredEntitlements"/>
+            <wsdl:output message="axis2:getRequiredEntitlementsResponse" wsaw:Action="http://context.ws.blackboard/Context/getRequiredEntitlementsResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="loginTool">
+            <wsdl:input message="axis2:loginToolRequest" wsaw:Action="loginTool"/>
+            <wsdl:output message="axis2:loginToolResponse" wsaw:Action="http://context.ws.blackboard/Context/loginToolResponse"/>
+
+        </wsdl:operation>
+        <wsdl:operation name="logout">
+            <wsdl:input message="axis2:logoutRequest" wsaw:Action="logout"/>
+            <wsdl:output message="axis2:logoutResponse" wsaw:Action="http://context.ws.blackboard/Context/logoutResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getSystemInstallationId">
+            <wsdl:input message="axis2:getSystemInstallationIdRequest" wsaw:Action="getSystemInstallationId"/>
+            <wsdl:output message="axis2:getSystemInstallationIdResponse" wsaw:Action="http://context.ws.blackboard/Context/getSystemInstallationIdResponse"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="login">
+            <wsdl:input message="axis2:loginRequest" wsaw:Action="login"/>
+            <wsdl:output message="axis2:loginResponse" wsaw:Action="http://context.ws.blackboard/Context/loginResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getServerVersion">
+            <wsdl:input message="axis2:getServerVersionRequest" wsaw:Action="getServerVersion"/>
+            <wsdl:output message="axis2:getServerVersionResponse" wsaw:Action="http://context.ws.blackboard/Context/getServerVersionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="emulateUser">
+
+            <wsdl:input message="axis2:emulateUserRequest" wsaw:Action="emulateUser"/>
+            <wsdl:output message="axis2:emulateUserResponse" wsaw:Action="http://context.ws.blackboard/Context/emulateUserResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="initialize">
+            <wsdl:input message="axis2:initializeRequest" wsaw:Action="initialize"/>
+            <wsdl:output message="axis2:initializeResponse" wsaw:Action="http://context.ws.blackboard/Context/initializeResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="Context.WSSOAP11Binding" type="axis2:Context.WSPortType">
+
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="deactivateTool">
+            <soap:operation soapAction="deactivateTool" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="initializeVersion2">
+            <soap:operation soapAction="initializeVersion2" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="loginTicket">
+            <soap:operation soapAction="loginTicket" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="extendSessionLife">
+            <soap:operation soapAction="extendSessionLife" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="registerTool">
+            <soap:operation soapAction="registerTool" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="getMemberships">
+            <soap:operation soapAction="getMemberships" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="getMyMemberships">
+            <soap:operation soapAction="getMyMemberships" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="getRequiredEntitlements">
+            <soap:operation soapAction="getRequiredEntitlements" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="loginTool">
+            <soap:operation soapAction="loginTool" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="logout">
+            <soap:operation soapAction="logout" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="getSystemInstallationId">
+            <soap:operation soapAction="getSystemInstallationId" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="login">
+            <soap:operation soapAction="login" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="getServerVersion">
+            <soap:operation soapAction="getServerVersion" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="emulateUser">
+            <soap:operation soapAction="emulateUser" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+
+        </wsdl:operation>
+        <wsdl:operation name="initialize">
+            <soap:operation soapAction="initialize" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="Context.WSSOAP12Binding" type="axis2:Context.WSPortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="deactivateTool">
+            <soap12:operation soapAction="deactivateTool" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="initializeVersion2">
+            <soap12:operation soapAction="initializeVersion2" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="loginTicket">
+            <soap12:operation soapAction="loginTicket" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="extendSessionLife">
+            <soap12:operation soapAction="extendSessionLife" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="registerTool">
+            <soap12:operation soapAction="registerTool" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getMemberships">
+            <soap12:operation soapAction="getMemberships" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getMyMemberships">
+            <soap12:operation soapAction="getMyMemberships" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getRequiredEntitlements">
+            <soap12:operation soapAction="getRequiredEntitlements" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="loginTool">
+            <soap12:operation soapAction="loginTool" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="logout">
+            <soap12:operation soapAction="logout" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getSystemInstallationId">
+            <soap12:operation soapAction="getSystemInstallationId" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="login">
+            <soap12:operation soapAction="login" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getServerVersion">
+            <soap12:operation soapAction="getServerVersion" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="emulateUser">
+            <soap12:operation soapAction="emulateUser" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="initialize">
+            <soap12:operation soapAction="initialize" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="Context.WSHttpBinding" type="axis2:Context.WSPortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="deactivateTool">
+            <http:operation location="Context.WS/deactivateTool"/>
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="deactivateTool"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="deactivateTool"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="initializeVersion2">
+            <http:operation location="Context.WS/initializeVersion2"/>
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="initializeVersion2"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="initializeVersion2"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="loginTicket">
+            <http:operation location="Context.WS/loginTicket"/>
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="loginTicket"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="loginTicket"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="extendSessionLife">
+            <http:operation location="Context.WS/extendSessionLife"/>
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="extendSessionLife"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="extendSessionLife"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="registerTool">
+            <http:operation location="Context.WS/registerTool"/>
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="registerTool"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="registerTool"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getMemberships">
+            <http:operation location="Context.WS/getMemberships"/>
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="getMemberships"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getMemberships"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getMyMemberships">
+            <http:operation location="Context.WS/getMyMemberships"/>
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="getMyMemberships"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getMyMemberships"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getRequiredEntitlements">
+            <http:operation location="Context.WS/getRequiredEntitlements"/>
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="getRequiredEntitlements"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getRequiredEntitlements"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="loginTool">
+            <http:operation location="Context.WS/loginTool"/>
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="loginTool"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="loginTool"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="logout">
+            <http:operation location="Context.WS/logout"/>
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="logout"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="logout"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getSystemInstallationId">
+            <http:operation location="Context.WS/getSystemInstallationId"/>
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="getSystemInstallationId"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getSystemInstallationId"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="login">
+            <http:operation location="Context.WS/login"/>
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="login"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="login"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getServerVersion">
+            <http:operation location="Context.WS/getServerVersion"/>
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="getServerVersion"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getServerVersion"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="emulateUser">
+            <http:operation location="Context.WS/emulateUser"/>
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="emulateUser"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="emulateUser"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="initialize">
+            <http:operation location="Context.WS/initialize"/>
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="initialize"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="initialize"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="Context.WS">
+
+        <wsdl:port name="Context.WSSOAP11port_https" binding="axis2:Context.WSSOAP11Binding">
+            <soap:address location="https://bb91.thelearningedge.com.au:80/webapps/ws/services/Context.WS"/>
+        </wsdl:port>
+        <wsdl:port name="Context.WSSOAP11port_http1" binding="axis2:Context.WSSOAP11Binding">
+            <soap:address location="http://bb91.thelearningedge.com.au:8080/webapps/ws/services/Context.WS"/>
+        </wsdl:port>
+        <wsdl:port name="Context.WSSOAP12port_https" binding="axis2:Context.WSSOAP12Binding">
+            <soap12:address location="https://bb91.thelearningedge.com.au:80/webapps/ws/services/Context.WS"/>
+        </wsdl:port>
+
+        <wsdl:port name="Context.WSSOAP12port_http1" binding="axis2:Context.WSSOAP12Binding">
+            <soap12:address location="http://bb91.thelearningedge.com.au:8080/webapps/ws/services/Context.WS"/>
+        </wsdl:port>
+        <wsdl:port name="Context.WSHttpport" binding="axis2:Context.WSHttpBinding">
+            <http:address location="https://bb91.thelearningedge.com.au:80/webapps/ws/services/Context.WS"/>
+        </wsdl:port>
+        <wsdl:port name="Context.WSHttpport1" binding="axis2:Context.WSHttpBinding">
+            <http:address location="http://bb91.thelearningedge.com.au:8080/webapps/ws/services/Context.WS"/>
+        </wsdl:port>
+
+    </wsdl:service>
+</wsdl:definitions>

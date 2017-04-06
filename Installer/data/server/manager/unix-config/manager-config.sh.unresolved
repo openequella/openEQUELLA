@@ -1,0 +1,4 @@
+#export RUN_USER=equella
+export JAVA_HOME="${java/jdk#t\/}"
+export CLASSPATH="./manager-r592-gbce8199.jar"
+export JAVA_OPTS="-Demma.rt.control=false -Djava.io.tmpdir=../server/temp"

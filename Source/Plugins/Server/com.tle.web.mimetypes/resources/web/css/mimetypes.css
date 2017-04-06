@@ -1,0 +1,19 @@
+.settingContainer {
+	width: 100%;
+}
+
+.settingRow .settingLabel {
+	font-size: 11px;
+}
+
+#viewers h3 {
+	clear: both;
+}
+
+#viewers table td {
+	vertical-align: middle;
+}
+
+div.extension-buttons{
+	margin: 4px 0 4px 0;
+}

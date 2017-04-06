@@ -1,0 +1,61 @@
+<project name="CustomTasks">
+	<path id="customtasks.classpath">
+		<fileset dir="${TLE Custom Build Tasks.base}/lib">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${TLE Custom Build Tasks.classes}" />
+	</path>
+
+	<target name="define-downloaddoco">
+		<taskdef classname="com.tle.ant.documentation.DownloadDocoTask" name="downloadDoco" classpathref="customtasks.classpath" />
+	</target>
+	
+	 <macrodef name="eclipseClasspath">
+		<attribute name="pathId" default="eclipse.classpath" />
+		<attribute name="verbose" default="false"/>
+		<attribute name="followexports" default="true"/>
+		<attribute name="pluginId" default="${plugin.id}" />
+		<sequential>
+			<typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties" classpathref="customtasks.classpath" />
+			<typedef classname="com.tle.ant.JPFClasspath" name="jpfClasspath" classpathref="customtasks.classpath" />
+                        <jpfClasspath cache="${source.base}/Source/Build/staging/jpf.cache" basedir="${source.base}" excludes="**/Infrastructure/**/plugin-jpf.xml" includes="Interface/Plugins/*/plugin-jpf.xml,Platform/Plugins/*/plugin-jpf.xml,Source/Plugins/${External Dependencies.resource}/*.jar,Source/Tools/ToolDependencies/*.jar,Source/Plugins/*/*/plugin-jpf.xml,Source/Tools/*/plugin-jpf.xml,Installer/plugin-jpf.xml,Source/Server/*/plugin-jpf.xml,Source/Integration/**/plugin-jpf.xml" verbose="@{verbose}" followexports="@{followexports}" pathid="@{pathId}" pluginid="@{pluginId}"/>
+
+		</sequential>
+	</macrodef>
+    
+	<macrodef name="eclipseClasspathCustom">
+		<attribute name="pathId" default="eclipse.classpath" />
+		<attribute name="basedir" default="${basedir}"/>
+		<attribute name="verbose" default="false"/>
+		<attribute name="followexports" default="true"/>
+		<sequential>
+			<typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties" classpathref="customtasks.classpath" />
+			<typedef classname="com.tle.ant.JPFClasspath" name="jpfClasspath" classpathref="customtasks.classpath" />
+			<jpf-info manifest="@{basedir}/plugin-jpf.xml" propertyid="custom.plugin.id" propertyversion="custom.plugin.version"/>
+			<jpfClasspath cache="${source.base}/Source/Build/staging/jpf.cache" basedir="${source.base}" excludes="**/Infrastructure/**/plugin-jpf.xml" 
+				includes="**/plugin-jpf.xml,Source/Plugins/${External Dependencies.resource}/*.jar,Source/Tools/ToolDependencies/*.jar" 
+				verbose="@{verbose}" followexports="@{followexports}" pathid="@{pathId}" pluginid="${custom.plugin.id}"/>
+		</sequential>
+	</macrodef>
+    
+	<macrodef name="eclipseClasspathBlacklist">
+		<attribute name="pathId" default="eclipse.classpath" />
+		<attribute name="basedir" default="${basedir}"/>
+		<attribute name="verbose" default="false"/>
+		<attribute name="blacklist" />
+		<attribute name="followexports" default="true"/>
+		<sequential>
+			<typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties" classpathref="customtasks.classpath" />
+			<jpf-info manifest="@{basedir}/plugin-jpf.xml" propertyid="custom.plugin.id" propertyversion="custom.plugin.version"/>
+			<jpf-path basedir="${source.base}" blacklist="@{blacklist}" 
+				includes="**/plugin-jpf.xml,Source/Plugins/${External Dependencies.resource}/*.jar,Source/Tools/ToolDependencies/*.jar" 
+				followexports="@{followexports}" verbose="@{verbose}" pathid="@{pathId}" pluginid="${custom.plugin.id}"/>
+		</sequential>
+	</macrodef>
+
+	<target name="define-eclipseClasspath">
+		<!-- <taskdef classname="com.tle.ant.EclipseClasspath" name="eclipseClasspath" classpathref="customtasks.classpath"/> -->
+		<eclipseClasspath />
+	</target>
+</project>
+

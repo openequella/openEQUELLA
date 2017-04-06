@@ -1,0 +1,84 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.pss" version="1">
+	<requires>
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.pss" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.core.system" />
+		<import plugin-id="com.tle.common.externaltools" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.web.core" />
+		<import plugin-id="com.tle.web.itemlist" />
+		<import plugin-id="com.tle.web.lti.consumers" />
+		<import plugin-id="com.tle.web.oauth" />
+		<import plugin-id="com.tle.web.remoting.rest" />
+		<import plugin-id="com.tle.web.scorm" />
+		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.web.settings" />
+		<import plugin-id="com.tle.web.viewurl" />
+		<import plugin-id="com.tle.web.viewitem" />
+		<import plugin-id="com.pearson.pdn.icodeon:icodeon-java-sdk" />
+		<import plugin-id="net.oauth.core:oauth-provider" />
+		<import plugin-id="net.oauth.core:oauth" />
+		<import plugin-id="org.apache.httpcomponents:httpcore" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="classes">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+	
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.web.sections.equella.guice.EquellaModule" />
+		<parameter id="class" value="com.tle.web.pss.guice.ScormModule" />
+	</extension>
+	
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="pearsonScormServicesPrivilegeTreeProvider">
+		<parameter id="provider" value="bean:com.tle.web.pss.privileges.PearsonScormServicesSettingsPrivilegeTreeProvider" />
+	</extension>
+	
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="pssSection">
+		<parameter id="path" value="/access/psssettings.do" />
+		<parameter id="root" value="bean:/access/psssettings" />
+	</extension>
+	
+	<extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="pssSettingSection">
+		<parameter id="class" value="bean:com.tle.web.pss.settings.PearsonScormServicesSettingsLinkSection" />
+		<parameter id="grouping" value="externalsettings" />
+	</extension>
+	
+	<extension plugin-id="com.tle.web.viewurl" point-id="resourceViewer" id="pssViewer">
+		<parameter id="id" value="pssViewer" />
+		<parameter id="nameKey" value="com.tle.web.pss.viewer.title" />
+		<parameter id="class" value="bean:com.tle.web.pss.viewer.PearsonScormServicesViewer" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="section" id="pssViewerSection">
+		<parameter id="class" value="bean:com.tle.web.pss.viewer.PearsonScormServicesViewerSection" />
+		<parameter id="path" value="/viewitem/viewitem" />
+		<parameter id="parentid" value="" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="userStateHook" id="ltiConsumerUserStateHook">
+		<parameter id="bean" value="bean:com.tle.web.pss.filter.PearsonScormServicesUserStateHook" />
+		<parameter id="order" value="400" />
+	</extension>
+	
+	<extension plugin-id="com.tle.web.itemlist" point-id="itemListExtension" id="addPSSNotificationMetadata">
+		<parameter id="bean" value="bean:com.tle.web.pss.itemlist.PearsonScormServicesNotificationListEntry" />
+		<parameter id="applies" value="notification" />
+	</extension>
+	
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="pssReturnUrlServlet">
+		<parameter id="bean" value="bean:com.tle.web.pss.viewer.PearsonScormServicesReturnUrlServlet" />
+		<parameter id="url-pattern" value="/pss/pss_return_url/*" />
+	</extension>
+</plugin>

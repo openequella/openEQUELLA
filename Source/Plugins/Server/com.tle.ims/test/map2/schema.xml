@@ -1,0 +1,22 @@
+<schema id="5fb497aa-05ff-0300-9be8-b1d700a09799">
+  <collaborators type="private"/>
+  <definition>
+    <xml>
+      <item>
+        <name search="true" type="text"/>
+        <description search="true" type="text"/>
+        <keywords search="true" type="text"/>
+        <datecreated type="text"/>
+        <datemodified type="text"/>
+        <item_type type="text"/>
+        <item_body type="text"/>
+        <istestcase search="true" type="text"/>
+        <new_element search="true" type="text"/>
+      </item>
+    </xml>
+  </definition>
+  <description>An item definition test by me</description>
+  <lockedby session="" userid=""/>
+  <name>Item definition test SK</name>
+  <owner>27833b75-e8ce-eaf6-7d4e-a439ae843242</owner>
+</schema>

@@ -1,0 +1,88 @@
+{
+	"structure":
+	{
+		"name": "Test Course - Introduction to the Tao of the Dude",
+		"code": "DUDE101",
+		"id": "568",
+		"folders":
+		[ 
+			{
+				"name": "Week 1 - With a name that is really long so we can see the effects of word wrapping",
+				"id": "100"
+			},
+			{
+				"name": "Week 2 - With subfolders!ONE111!!",
+				"id": "101",
+				"folders": 
+				[
+					{
+						"name": "Week 2 Day 1",
+						"id": "101.1"
+					},
+					{
+						"name": "Week 2 Day 2",
+						"id": "101.2",
+						"selected": true
+					},
+					{
+						"name": "Week 2 Day 3 - Non targetable",
+						"id": "101.3",
+						"targetable": false,
+						"folders":
+						[
+							{
+								"name": "Week 2 Day 3 OVERTIME!",
+								"id": "101.3.1"
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "Week 3 - Non targetable",
+				"id": "102",
+				"targetable": false
+			},
+			{
+				"name": "Week 4",
+				"id": "103"
+			},
+			{
+				"name": "Week 5",
+				"id": "104"
+			},
+			{
+				"name": "Week 6",
+				"id": "105"
+			},
+			{
+				"name": "Week 7",
+				"id": "106"
+			},
+			{
+				"name": "Week 8",
+				"id": "107"
+			},
+			{
+				"name": "Week 9",
+				"id": "108"
+			},
+			{
+				"name": "Week 10",
+				"id": "109"
+			},
+			{
+				"name": "Week 11",
+				"id": "110"
+			},
+			{
+				"name": "Week 12",
+				"id": "111"
+			},
+			{
+				"name": "Week 13",
+				"id": "112"
+			}
+		]
+	}
+}

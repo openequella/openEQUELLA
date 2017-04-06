@@ -1,0 +1,64 @@
+{
+	"dependencies": [
+	 {
+	 	"groupId" : "org.eclipse.birt",
+	 	"artifactId" : "birt-osgi",
+	 	"version" : "LATEST",
+	 	"extension" : "zip",
+	 	"noSource": "true"
+	 },
+	 {
+	 	"groupId" : "com.tle.reporting",
+	 	"artifactId" : "reporting-common-6.3",
+	 	"version" : "LATEST",
+	 	"noSource": "true"
+	 },
+	 {
+	 	"groupId" : "com.tle.reporting",
+	 	"artifactId" : "reporting-oda-6.3",
+	 	"version" : "LATEST",
+	 	"noSource": "true"
+	 },	 
+	 {
+	 	"groupId" : "com.tle.reporting",
+	 	"artifactId" : "reporting-oda-connectors-6.3",
+	 	"version" : "LATEST",
+	 	"noSource": "true"
+	 },
+	 {
+	 	"groupId" : "org.apache.commons",
+	 	"artifactId" : "com.springsource.org.apache.commons.httpclient",
+	 	"version" : "3.1.0"
+	 },
+	 {
+	 	"groupId" : "org.apache.commons",
+	 	"artifactId" : "com.springsource.org.apache.commons.logging",
+	 	"version" : "1.1.1"
+	 },
+	 {
+	 	"groupId" : "org.apache.commons",
+	 	"artifactId" : "com.springsource.org.apache.commons.codec",
+	 	"version" : "1.6.0"
+	 },
+	 {
+	 	"groupId" : "com.thoughtworks.xstream",
+	 	"artifactId" : "com.springsource.com.thoughtworks.xstream",
+	 	"version" : "1.3.1"
+	 },
+	 {
+	 	"groupId" : "org.eclipse.birt",
+	 	"artifactId" : "org.eclipse.birt.api",
+	 	"version" : "1"
+	 },
+	 {
+	 	"groupId" : "org.xmlpull",
+	 	"artifactId" : "com.springsource.org.xmlpull",
+	 	"version" : "1.1.4.c"
+	 },
+	 {
+	 	"groupId" : "javax.xml.stream",
+	 	"artifactId" : "com.springsource.javax.xml.stream",
+	 	"version" : "1.0.1"
+	 }
+	]
+}

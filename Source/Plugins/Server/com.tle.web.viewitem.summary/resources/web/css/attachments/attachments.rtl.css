@@ -1,0 +1,145 @@
+@import url("attachments.css");
+
+.attachments-browse.structured li {
+	padding: 8px 25px 8px 20px;
+	background-position: 500px 5px;
+}
+
+.attachments-browse.structured li.with-select {
+	padding-left: 100px;
+	padding-right: 25px;
+}
+
+.attachments-browse.structured li.with-unselect {
+	padding-left: 112px;
+	padding-right: 25px;
+}
+
+.attachments-browse.structured li.level1 {
+	padding-left: 10px;
+	padding-right: 60px;
+	background-position: 465px 5px;
+}
+
+.attachments-browse.structured li.level2 {
+	padding-left: 10px;
+	padding-right: 90px;
+	background-position: 435px 5px;
+}
+
+.attachments-browse.structured li.level3 {
+	padding-left: 10px;
+	padding-right: 120px;
+	background-position: 405px 5px;
+}
+
+.attachments-browse.structured li.level4 {
+	padding-left: 10px;
+	padding-right: 150px;
+	background-position: 375px 5px;
+}
+
+.attachments-browse.structured li.level5 {
+	padding-left: 10px;
+	padding-right: 180px;
+	background-position: 345px 5px;
+}
+
+.attachments-browse.structured li.level6 {
+	padding-left: 10px;
+	padding-right: 210px;
+	background-position: 315px 5px;
+}
+
+.attachments-browse.structured li.level7 {
+	padding-left: 10px;
+	padding-right: 240px;
+	background-position: 285px 5px;
+}
+
+.attachments-browse.structured li.level8 {
+	padding-left: 10px;
+	padding-right: 270px;
+	background-position: 255px 5px;
+}
+
+.attachments-browse.structured li.level9 {
+	padding-left: 10px;
+	padding-right: 300px;
+	background-position: 225px 5px;
+}
+
+.attachments-browse.structured li.level10 {
+	padding-left: 10px;
+	padding-right: 330px;
+	background-position: 195px 5px;
+}
+
+
+.attachments-browse.structured li .droparrow {
+	right: auto;
+	left: 5px;
+}
+
+.attachments-browse.structured li.with-select .droparrow {
+	right: auto;
+	left: 80px;
+}
+
+.attachments-browse.structured li.with-unselect .droparrow {
+	right: auto;
+	left: 92px;
+}
+
+.attachments-browse.structured li input {
+	right: auto;
+	left: 5px;
+}
+
+.attachments-preview {
+	right: auto;
+	left: 0;
+}
+
+.link-fullscreen {
+	padding: 0;
+	background-position: 95% 0;
+}
+
+.attachment-meta-stars {
+	margin: 0 0 0 5px;
+}
+
+/* ################ THUMBS ################## */
+
+.thumbnails>li {
+	float: right;
+	margin-left: 0;
+	margin-right: 20px;
+}
+
+.thumbnails {
+	margin-left: 0;
+	margin-right: -20px;
+}
+
+.thumbnail-details .detail {
+	text-align: right;
+	left: 5px;
+	right: auto;
+}
+
+.thumbnails li .droparrow {
+	right: auto;
+	left: 5px;
+}
+
+.thumbnails li.with-select .droparrow {
+	right: auto;
+	left: 80px;
+}
+
+.thumbnails li.with-unselect .droparrow {
+	right: auto;
+	left: 92px;
+}

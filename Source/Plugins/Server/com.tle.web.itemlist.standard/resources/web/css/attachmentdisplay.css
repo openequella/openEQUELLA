@@ -1,0 +1,10 @@
+.selection .attachments-browse li:hover .droparrow,
+.attachments-browse li.active .droparrow 
+{
+	display: none;
+}
+
+.selection .attachments-browse li 
+{
+	background-color: #F7F7F7;
+}

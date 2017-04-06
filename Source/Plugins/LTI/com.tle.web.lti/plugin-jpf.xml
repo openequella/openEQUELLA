@@ -1,0 +1,85 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.lti" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.beans" />
+		<import plugin-id="com.tle.common.externaltools" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.migration" />
+		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.core.oauth" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.core.usermanagement" />
+		<import plugin-id="com.tle.web.core" />
+		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.web.viewurl" />
+		<import plugin-id="net.sf.json-lib:json-lib" />
+		<import plugin-id="com.google.gdata:core" />
+		<import plugin-id="com.google.http-client:google-http-client" />
+		<import plugin-id="com.tle.core.usermanagement.standard" />
+		<import plugin-id="com.tle.core.lti.consumers" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="ltiWrapperExtension">
+		<parameter-def id="id" type="string" />
+		<parameter-def id="bean" type="string">
+			<doc>
+				<doc-text>Must implement LtiWrapperExtension</doc-text>
+			</doc>
+		</parameter-def>
+		<parameter-def id="order" type="number" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+		<parameter id="class" value="com.tle.web.sections.equella.guice.EquellaModule" />
+		<parameter id="class" value="com.tle.web.lti.guice.LtiModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="ltiProviderServlet">
+		<parameter id="bean" value="bean:com.tle.web.lti.servlet.LtiProviderServlet" />
+		<parameter id="url-pattern" value="/lti/toolprovider" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="addLtiMimeTypeMigration">
+		<parameter id="id" value="com.tle.web.lti.migration.AddLtiMimeTypeMigration" />
+		<parameter id="bean" value="bean:com.tle.web.lti.migration.AddLtiMimeTypeMigration" />
+		<parameter id="date" value="2013-11-01" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="addLtiMimeTypeXmlMigration">
+		<parameter id="id" value="com.tle.web.lti.migration.AddLtiMimeTypeXmlMigration" />
+		<parameter id="bean" value="bean:com.tle.web.lti.migration.AddLtiMimeTypeXmlMigration" />
+	</extension>
+		
+	<extension plugin-id="com.tle.core.usermanagement" point-id="userManager" id="lti">
+		<parameter id="class" value="bean:com.tle.web.lti.usermanagement.LtiWrapper" />
+		<parameter id="settingsClass" value="com.tle.web.lti.usermanagement.LtiWrapperSettings" />
+		<parameter id="order" value="1900" />
+	</extension>
+	
+	<extension plugin-id="com.tle.web.lti" point-id="ltiWrapperExtension" id="lisLtiExt">
+		<parameter id="id" value="lis" />
+		<parameter id="bean" value="bean:com.tle.web.lti.usermanagement.LisLtiWrapperExtension" />
+		<parameter id="order" value="10000" />
+	</extension>
+	
+	<extension plugin-id="com.tle.web.sections.equella" point-id="htmlStyleClass" id="ltiStyleClass">
+		<parameter id="class" value="bean:com.tle.web.lti.LtiStyleClass"/>
+	</extension>
+</plugin>

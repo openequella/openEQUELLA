@@ -1,0 +1,36 @@
+@import url("box.css");
+
+.box_head .box_title_wrapper {
+	padding-left: 42px;
+	padding-right: 34px;
+}
+
+.box_head.nominimise .box_title_wrapper {
+	padding-left: 42px;
+	padding-right: 7px;
+}
+
+.box_head.noactions .box_title_wrapper {
+	padding-left: 7px;
+	padding-right: 34px;
+}
+
+.box_head.noactions.nominimise .box_title_wrapper {
+	padding-left: 7px;
+	padding-right: 7px;
+}
+
+.box_head  img.box_minimise {
+	left: auto;
+	right: 10px;
+}
+
+.box_head  img.box_edit {
+	right: auto;
+	left: 30px;
+}
+
+.box_head  img.box_close {
+	right: auto;
+	left: 5px;
+}

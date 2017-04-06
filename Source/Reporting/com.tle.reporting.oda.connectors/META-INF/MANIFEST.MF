@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TLE Connectors ODA Plug-in
+Bundle-SymbolicName: com.tle.reporting.oda.connectors;singleton:=true
+Bundle-Version: 6.3.0.20141006
+Require-Bundle: org.eclipse.ui;resolution:=optional,
+ org.eclipse.datatools.connectivity.oda.design.ui;resolution:=optional,
+ org.eclipse.birt.report.engine;bundle-version="2.3.1",
+ com.tle.reporting.oda,
+ com.tle.reporting.common
+Bundle-ClassPath: .
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: com.tle.reporting.oda.connectors.ui.TLEConnectorsOdaPlugin
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: com.tle.reporting.oda.connectors,
+ com.tle.reporting.oda.connectors.i18n,
+ com.tle.reporting.oda.connectors.ui,
+ org.eclipse.birt.report.data.oda.jdbc.ui.nls

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+	<title>Factors influencing Blood Alcohol Concentration?</title>
+	<character>characters-ben01.swf</character>
+	<instructions>Think you know everything there is to know about BAC? Test yourself in this quiz.</instructions>
+	<audio>audio.swf</audio>
+	<feedback>
+		<min>0</min>
+		<swf>int-end-023bad.swf</swf>
+	</feedback>
+	<feedback>
+		<min>5</min>
+		<swf>int-end-022average.swf</swf>
+	</feedback>
+	<feedback>
+		<min>8</min>
+		<swf>int-end-021good.swf</swf>
+	</feedback>
+	<question>
+		<text>Once blood alcohol concentration has been reached, the only way to lower it is by drinking lots of water.</text>
+		<answer>F</answer>
+		<feedback>Only time can sober a person up.  Black coffee, cold showers exercise, vomiting do not sober you up.  Alcohol leaves the body at a constant rate and if you stop drinking, your BAC drops by about 0.015 per hour.</feedback>
+	</question>
+	<question>
+		<text>10 grams of alcohol is a standard sized drink.</text>
+		<answer>T</answer>
+		<feedback>In Australia, the standard drink is taken to be 10 grams of alcohol.  In terms of volume, this is about 12.5ml of pure alcohol.  </feedback>
+	</question>
+	<question>
+		<text>Champagne raises blood alcohol concentration (BAC) more quickly because it is aerated.</text>
+		<answer>T</answer>
+		<feedback>Any alcoholic drinks that contain Carbon Dioxide are more quickly absorbed into the bloodstream and thus affect you more quickly.  Even drinking soda water between alcoholic drinks will mean that the alcohol is absorbed faster.</feedback>
+	</question>
+	<question>
+		<text>Males and females of around the same size can drink the same amount and have the same BAC.</text>
+		<answer>F</answer>
+		<feedback>Women are affected more rapidly by alcohol because the female body tends to have a slightly higher proportion of fat to lean muscle tissue and lower proportion of body water.  This concentrates the alcohol.</feedback>
+	</question>
+	<question>
+		<text>Women metabolise alcohol at a different rate to men, making women more vulnerable to its effects.</text>
+		<answer>T</answer>
+		<feedback>The female body  has less of the enzyme (dehydrogenase) that metabolizes or breaks down alcohol.  Thus alcohol affects women more than men, meaning that women need less alcohol to become drunk.</feedback>
+	</question>
+	<question>
+		<text>Women can go over .05 after two drinks in an hour.</text>
+		<answer>T</answer>
+		<feedback>Some of the factors involved in determining the blood Alcohol Concentration BAC include gender, age, amount of body fat, amount of body water, weight.  These can vary greatly and it is possible for 2 drinks in one hour  to put a female over BAC 0.05. </feedback>
+	</question>
+	<question>
+		<text>A strong coffee will lower your blood alcohol concentration.</text>
+		<answer>F</answer>
+		<feedback>Only time can sober a person up.  Black coffee, cold showers exercise, vomiting do not sober you up.  Alcohol leaves the body at a constant rate and if you stop drinking, your BAC drops by about 0.015 per hour.</feedback>
+	</question>
+	<question>
+		<text>If a man sticks to one standard drink per hour for a couple of hours he is likely to stay under a .05 limit.</text>
+		<answer>T</answer>
+		<feedback>Gender, age, amount of body fat, amount of body water, weight are some of the factors that affect how quickly the body absorbs alcohol.  It is a safe bet that drinking one standard drink for a couple of hours will mean that a male’s BAC will stay under BAC 0.05.</feedback>
+	</question>
+	<question>
+		<text>Spirits contain the same percentage of alcohol as heavy beer.</text>
+		<answer>F</answer>
+		<feedback>Spirits are usually between 35% to 40% alcohol.  Heavy beer is about 4.9% alcohol.  That is why a standard drink of spirits is 30ml while a standard drink of heavy beer is 285ml.</feedback>
+	</question>
+	<question>
+		<text>At .05 BAC the risk of being in a crash is double that of a sober driver.</text>
+		<answer>T</answer>
+		<feedback>Alcohol slows the reflexes and statistics show that the likelihood of being in an accident doubles when the BAC level is .05 compared to a sober driver.</feedback>
+	</question>
+</quiz>
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by FinPa New Media (FinPa New Media) -->

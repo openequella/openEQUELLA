@@ -1,0 +1,36 @@
+# Lines beginning with # are ignored, as are blank lines.
+# Otherwise meaningful linecontent is in 3 parts, value name extra.
+# value is akey, a simple integer, whichis used internally by flickr, and so
+# is the value that EQUELLA sets in a search filter sent to the flickr API,
+# and is the raw value returned in a result set from Flickr.
+# THe name is a licence descriptors which is assumed by EQUELLA to be recognisable
+# by EQUELLA users and is thus the displayed value of selectable filter options.
+# The remainder AFTER the the first 2 space-separated strings (ie, the 'extra')
+# is available as a plain-language rendition of the licence type, for example
+# rendered as a hover-over alt (tag:'title') text.
+#
+# Where not-for-display is the 'name' value, the licence type will not appear as a
+# selectable filter value.
+#
+#
+# In the event flickr has absolutely no licence information for an item returned
+# in a result set, we have this placeholder:
+
+no-data not-for-display No licence restriction recorded
+
+# The order is the order of the rendered list, and is the order given in  wikipedia
+# (http://en.wikipedia.org/wiki/Creative_Commons_licenses).
+# The given order is presumed to ascend in severity.
+#
+# The top value (7) is a feature of certain photos held by Flickr Common Institutions. It would
+# seem the average flickr user doesn't have the option of setting this for their photos.
+# Flickr default (0) is to reserve rights (a photo's licence attribute is integer value zero)
+
+7 unrestricted No known copyright restrictions
+4 by Attribution License
+2 by-nc Attribution-NonCommercial License
+6 by-nd Attribution-NoDerivs License
+5 by-sa Attribution-ShareAlike License
+3 by-nc-nd Attribution-NonCommercial-NoDerivs License
+1 by-nc-sa Attribution-NonCommercial-ShareAlike License
+0 not-for-display All Rights Reserved
