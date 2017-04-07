@@ -1,0 +1,102 @@
+<project name="REST Interfaces" default="build" basedir=".">
+	<property name="this.base" location="./../"/>
+	<property name="platform.base" location="${this.base}/../Platform/"/>
+	<property file="./config.properties" />
+	<property name="TLE Custom Build Tasks.base" location="${platform.base}/Infrastructure/CustomBuildTasks/"/>
+	<property name="TLE Custom Build Tasks.classes" location="${platform.base}/Infrastructure/CustomBuildTasks/classes/"/>
+	<property name="TLE Common.base" location="${platform.base}/Plugins/com.tle.platform.common"/>
+	<import file="${platform.base}/Build/build.xml" />
+	
+	<path id="build.classpath">
+		<fileset dir="${jars.dir}">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${TLE Common.base}/classes" />
+	</path>
+	
+	<path id="platform.external.classpath">
+		<fileset dir="${platform.base}/Plugins/ExternalPlatform">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	
+	<fileset id="plugin.manifests" dir="../../">
+		<include name="Interface/Plugins/*/plugin-jpf.xml" />
+		<include name="Interface/Dependencies/*.jar" />
+	</fileset>
+	
+	<target name="make-buildtasks">
+		<subant target="make" buildpath="${TLE Custom Build Tasks.base}" />
+	</target>
+	
+	<target name="build-platform">
+		<subant target="product" buildpath="${platform.base}/Build" />
+		<javac srcdir="${TLE Common.base}/src" destdir="${TLE Common.base}/classes" debug="true" classpathref="platform.external.classpath" />
+	</target>
+	
+	<target name="build" depends="download-jars, buildorder">
+		<parBuild targets="product" threadcount="${threadcount}" threadpool="${threadpool}">
+			<fileset refid="plugin.manifests" />
+		</parBuild>
+	</target>
+	
+	<target name="buildorder" depends="jpftasks">
+		<jpfClasspath cache="${jpf.cache}" generateOnly="true" clearCache="true">
+			<fileset refid="plugin.manifests" />
+		</jpfClasspath>
+	</target>
+	
+	<target name="-product">
+		<parBuild targets="product" threadcount="${threadcount}" threadpool="${threadpool}">
+			<fileset refid="plugin.manifests" />
+		</parBuild>
+	</target>
+	
+	<target name="product" depends="buildorder, download-jars, -product" />
+	
+	<target name="product-sans-customtasks" depends="buildorder, download-jars-sans-customtasks, -product" />
+	
+	<target name="define-tasks">
+		<path id="customtasks.classpath">
+			<fileset dir="${TLE Custom Build Tasks.base}/lib">
+				<include name="*.jar" />
+			</fileset>
+			<pathelement location="${TLE Custom Build Tasks.classes}" />
+		</path>
+		<typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties" classpathref="customtasks.classpath" />
+		<typedef classname="com.tle.ant.JPFClasspath" name="jpfClasspath" classpathref="customtasks.classpath" />
+	</target>
+	
+	<target name="-download-jars">
+		<taskdef classname="com.tle.ant.dependencies.DownloadJars" name="downloadJars" classpathref="customtasks.classpath" />
+		<delete>
+			<fileset dir="${this.base}/Dependencies">
+				<include name="*.jar" />
+				<include name="*.zip" />
+				<include name="lib-src" />
+			</fileset>
+		</delete>
+		<delete>
+			<fileset dir="${this.base}/Tests_Dependencies">
+				<include name="*.jar" />
+				<include name="*.zip" />
+				<include name="lib-src" />
+			</fileset>
+		</delete>
+		<downloadJars createJpf="true" createClasspath="true" destDir="${this.base}/Dependencies" sourcesDir="${this.base}/Dependencies/lib-src">
+			<repository id="local" url="file://${user.home}/equella-deps"/>
+			<repository id="maven" url="http://repo1.maven.org/maven2/"/>
+			<fileset file="deps.txt" />
+		</downloadJars>
+		<downloadJars createJpf="true" createClasspath="true" destDir="${this.base}/Tests_Dependencies" sourcesDir="${this.base}/Tests_Dependencies/lib-src">
+			<repository id="local" url="file://${user.home}/equella-deps"/>
+			<repository id="maven" url="http://repo1.maven.org/maven2/"/>
+			<fileset file="testdeps.txt" />
+		</downloadJars>
+		<copy file="${TLE Custom Build Tasks.base}/lib/ecj.jar" tofile="${user.home}/.ant/lib/ecj.jar" />
+	</target>
+	
+	<target name="download-jars-sans-customtasks" depends="-download-jars" />
+	
+	<target name="download-jars" depends="make-buildtasks, define-tasks, -download-jars" />
+</project>

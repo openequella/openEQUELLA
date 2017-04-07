@@ -3,26 +3,26 @@
 	 {
 	 	"groupId" : "org.eclipse.birt",
 	 	"artifactId" : "birt-osgi",
-	 	"version" : "LATEST",
+	 	"version" : "3.7.2",
 	 	"extension" : "zip",
 	 	"noSource": "true"
 	 },
 	 {
 	 	"groupId" : "com.tle.reporting",
 	 	"artifactId" : "reporting-common-6.3",
-	 	"version" : "LATEST",
+	 	"version" : "0.20141006",
 	 	"noSource": "true"
 	 },
 	 {
 	 	"groupId" : "com.tle.reporting",
 	 	"artifactId" : "reporting-oda-6.3",
-	 	"version" : "LATEST",
+	 	"version" : "0.20141006",
 	 	"noSource": "true"
 	 },	 
 	 {
 	 	"groupId" : "com.tle.reporting",
 	 	"artifactId" : "reporting-oda-connectors-6.3",
-	 	"version" : "LATEST",
+	 	"version" : "0.20141006",
 	 	"noSource": "true"
 	 },
 	 {

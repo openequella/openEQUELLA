@@ -1,0 +1,13 @@
+{
+  "id" : "f4c788d1-6e97-5247-e06c-3d4982b9469a",
+  "username" : "NoSearchCreateUser",
+  "firstName" : "No",
+  "lastName" : "SearchCreate",
+  "_export" : {
+    "exportVersion" : "1.0",
+    "passwordHash" : "SHA256:89c34d9b4577a01a816598fcbf156617f3bdc481dc1669d07cf91224b3dd3805"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/localuser/f4c788d1-6e97-5247-e06c-3d4982b9469a"
+  }
+}

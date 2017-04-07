@@ -39,7 +39,7 @@ build.compiler=org.eclipse.jdt.core.JDTCompilerAdapter
 
 tle.signer.alias=2015key
 tle.signer.password=dytech010
-tle.signer.certificate=Source/Build/cacerts
+tle.signer.certificate=${user.home}/equella.keystore
 
 #####################################################################################
 # Git Settings

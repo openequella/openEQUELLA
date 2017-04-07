@@ -1,0 +1,280 @@
+<TITLE>sco2</TITLE>
+<meta name=keywords content="RoboDemo 5.0">
+<HTML>
+<script language="JavaScript">
+<!--
+
+// Hook for Internet Explorer
+if (navigator.appName && navigator.appName.indexOf("Microsoft") != -1 &&
+          navigator.userAgent.indexOf("Windows") != -1 && navigator.userAgent.indexOf("Windows 3.1") == -1) {
+        document.write('<SCRIPT LANGUAGE=VBScript\> \n');
+        document.write('on error resume next \n');
+        document.write('Sub robodemo_FSCommand(ByVal command, ByVal args)\n');
+        document.write('  call robodemo_DoFSCommand(command, args)\n');
+        document.write('end sub\n');
+        document.write('</SCRIPT\> \n');
+}
+
+var InternetExplorer = navigator.appName.indexOf("Microsoft") != -1;
+var findAPITries = 0;
+function findAPI(win)
+{
+   // Check to see if the window (win) contains the API
+   // if the window (win) does not contain the API and
+   // the window (win) has a parent window and the parent window
+   // is not the same as the window (win)
+   while ( (win.API == null) &&
+           (win.parent != null) &&
+           (win.parent != win) )
+   {
+      // increment the number of findAPITries
+      findAPITries++;
+      // Note: 7 is an arbitrary number, but should be more than sufficient
+      if (findAPITries > 7)
+      {
+         alert("Error finding API -- too deeply nested.");
+         return null;
+      }
+
+      // set the variable that represents the window being
+      // being searched to be the parent of the current window
+      // then search for the API again
+      win = win.parent;
+   }
+   return win.API;
+}
+
+function getAPI()
+{
+   // start by looking for the API in the current window
+   var theAPI = findAPI(window);
+   // if the API is null (could not be found in the current window)
+   // and the current window has an opener window
+   if ( (theAPI == null) &&
+        (window.opener != null) &&
+        (typeof(window.opener) != "undefined") )
+   {
+
+      // try to find the API in the current window's opener
+      theAPI = findAPI(window.opener);
+   }
+   // if the API has not been found
+   if (theAPI == null)
+   {
+      // Alert the user that the API Adapter could not be found
+      alert("Unable to find an API adapter");
+   }
+
+   return theAPI;
+}
+
+function formatTimeSpan(t)
+	{
+	var x=3600;
+	var y=60;
+	var h=Math.round(t/x - t%x/x)+'';
+	var m=Math.round((t-h*x)/y-(t-h*x)%y/y)+'';
+	var s=Math.round(t-h*x-m*y)+'';
+	if (h.toString().length == 1) h='000'+h;
+	if (h.toString().length == 2) h='00'+h;
+	if (h.toString().length == 3) h='0'+h;
+	if (m.toString().length == 1) m='0'+m;
+	if (s.toString().length == 1) s='0'+s;
+	
+	return h+":"+m+":"+s;
+	}
+
+function RDSetSessionTime(nTime) 
+{
+   var SessionTime	= formatTimeSpan(nTime/1000);
+   rd_API.LMSSetValue("cmi.core.session_time", SessionTime);
+}
+
+var rd_API = getAPI();
+
+// make sure status conforms to scorm standards
+function normalizeStatus(status)
+	{
+	switch (status.toUpperCase().charAt(0))
+		{
+		case 'C':	return "completed";
+		case 'I':	return "incomplete";
+		case 'N':	return "not attempted";
+		case 'F':	return "failed";
+		case 'P':	return "passed";
+		}
+	return status;
+	}
+
+// make sure the question type conforms to scorm standards
+function normalizeType(theType)
+	{
+	switch (theType.toUpperCase().charAt(0))
+		{
+		case 'T':	return "true-false";
+		case 'C':	return "choice";
+		case 'F':	return "fill-in";
+		case 'M':	return "matching";
+		case 'P':	return "performance";
+		case 'S':	return "sequencing";
+		case 'L':	return "likert";
+		case 'N':	return "numeric";
+		}
+	return theType;
+	}
+
+// make sure the question result conforms to scorm standards
+function normalizeResult(result)
+	{
+	switch (result.toUpperCase().charAt(0))
+		{
+		case 'C':	return "correct";
+		case 'W':	return "wrong";
+		case 'U':	return "unanticipated";
+		case 'N':	return "neutral";
+		}
+	return result;
+	}
+var InternetExplorer = navigator.appName.indexOf("Microsoft") != -1;
+
+// Handle all the the FSCommand messages in a Flash movie
+function DoFSCommand(command, args)
+{
+  var robodemoObj = InternetExplorer ? robodemo : document.robodemo;
+
+  args = String(args);
+  command = String(command);
+  var F_intData = args.split(";");
+
+  // check for existence of scorm api
+  if (rd_API == null)
+     return;
+
+    switch (command)
+    {
+       case "MM_StartSession" :
+               break;
+
+       case "MM_cmiSendInteractionInfo" :
+               //MM_cmiSendInteractionInfo(date, time, intid, objid, intrtype, correct, student, result, weight, latency)
+               var	n	= rd_API.LMSGetValue("cmi.interactions._count");
+
+			   if(typeof(F_intData[2]) == "string" && F_intData[2].length > 0)
+	               rd_API.LMSSetValue("cmi.interactions." + n + ".id", F_intData[2]);
+
+			   if(typeof(F_intData[2]) == "string" && F_intData[2].length > 0)
+	               rd_API.LMSSetValue("cmi.interactions." + n + ".objectives.0.id", F_intData[3]);
+
+               rd_API.LMSSetValue("cmi.interactions." + n + ".time", F_intData[1]);
+               rd_API.LMSSetValue("cmi.interactions." + n + ".type", normalizeType(F_intData[4]));
+               rd_API.LMSSetValue("cmi.interactions." + n + ".correct_responses.0.pattern", F_intData[5]);
+               rd_API.LMSSetValue("cmi.interactions." + n + ".weighting", F_intData[8]);
+               rd_API.LMSSetValue("cmi.interactions." + n + ".student_response", F_intData[6]);
+               rd_API.LMSSetValue("cmi.interactions." + n + ".result", normalizeResult(F_intData[7]));
+               rd_API.LMSSetValue("cmi.interactions." + n + ".latency", F_intData[9]);
+               break;
+
+       case "MM_cmiSendObjectiveInfo" :
+               //MM_cmiSendObjectiveInfo(index, objid, score, status)
+               var	n	= rd_API.LMSGetValue("cmi.objectives._count");
+               rd_API.LMSSetValue("cmi.objectives." + n + ".id", F_intData[1]);
+               rd_API.LMSSetValue("cmi.objectives." + n + ".score.raw", F_intData[2]);
+               rd_API.LMSSetValue("cmi.objectives." + n + ".status", normalizeStatus(F_intData[3]));
+               break;
+
+       case "CMISetScore":
+       case "MM_cmiSendScore" :
+               //MM_cmiSendScore(theScore)
+               rd_API.LMSSetValue("cmi.core.score.raw", F_intData[0]);
+               break;
+
+       case "CMISetStatus":
+       case "MM_cmiSetLessonStatus" :
+               //MM_cmiSetLessonStatus(theStatus)
+               rd_API.LMSSetValue("cmi.core.lesson_status", normalizeStatus(F_intData[0]));
+               break;
+
+       case "CMISetTime" :
+               //CMISetTime(t)
+               rd_API.LMSSetValue("cmi.core.session_time", F_intData[0]);
+               break;
+
+       case "CMISetCompleted" :
+               //CMISetCompleted()
+               rd_API.LMSSetValue("cmi.core.lesson_status", "completed");
+               break;
+
+       case "CMISetStarted" :
+               //CMISetCompleted()
+               rd_API.LMSSetValue("cmi.core.lesson_status", "incomplete");
+               break;
+
+       case "CMISetPassed":
+               //CMISetCompleted()
+               rd_API.LMSSetValue("cmi.core.lesson_status", "passed");
+               break;
+
+       case "CMISetFailed":
+               //CMISetCompleted()
+               rd_API.LMSSetValue("cmi.core.lesson_status", "failed");
+               break;
+
+       case "CMISetData":
+               //CMISetData(data)
+               rd_API.LMSSetValue("cmi.suspend_data", F_intData[0]);
+               break;
+
+       case "CMISetLocation":
+               //CMISetLocation(loc)
+               rd_API.LMSSetValue("cmi.core.lesson_location", F_intData[0]);
+               break;
+
+       case "CMISetTimedOut":
+               //CMISetTimedOut()
+               rd_API.LMSSetValue("cmi.core.exit", "time-out");
+               break;
+
+       case "CMIInitialize":
+               //CMIInitialize()
+               rd_API.LMSInitialize(args);
+               break;
+
+       case "CMIFinish":
+               break;
+
+       case "CMISetSessionTime":
+               RDSetSessionTime(args);
+               break;
+
+       case "CMIExitAU":
+               rd_API.LMSFinish(args);
+               break;
+    }
+    // END OF CMI FUNCTION MAPPING
+}
+
+
+function robodemo_DoFSCommand(command, args)
+{
+   DoFSCommand(command,args);
+}
+//  -->
+</script>
+<script LANGUAGE="VBScript">
+<!--
+Sub robodemo_FSCommand(ByVal command, ByVal args)
+   call robodemo_DoFSCommand(command, args)
+end sub
+-->
+</script>
+
+<BODY onLoad="window.document.robodemo.focus();"><center><OBJECT CLASSID="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" WIDTH="640" HEIGHT="480" CODEBASE="http://active.macromedia.com/flash5/cabs/swflash.cab#version=5,0,0,0" id=robodemo>
+<PARAM NAME=movie VALUE="sco2.swf">
+<PARAM NAME=play VALUE=true>
+<PARAM NAME=loop VALUE=0>
+<PARAM NAME=quality VALUE=high>
+<EMBED NAME=robodemo SRC="sco2.swf" WIDTH=640 HEIGHT=480 loop=0 quality=high TYPE="application/x-shockwave-flash" PLUGINSPAGE="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash" swLiveConnect=true>
+</EMBED>
+</OBJECT>
+</center>
+</BODY></HTML>

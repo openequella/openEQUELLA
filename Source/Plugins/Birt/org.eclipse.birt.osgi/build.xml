@@ -8,8 +8,10 @@
 	
 	<target name="make">
 		<taskdef classname="com.tle.ant.dependencies.DownloadJars" name="downloadJars" classpathref="customtasks.classpath" />
-		<downloadJars destDir="${staging}" dependencies="deps-birt.txt">			
-			<!-- FIXME needs repos -->
+		<downloadJars destDir="${staging}" dependencies="deps-birt.txt">
+			<repository id="local" url="file://${user.home}/equella-deps"/>
+			<repository id="maven" url="http://repo1.maven.org/maven2/"/>
+			<repository id="springsource" type="springsource" url="http://repository.springsource.com/ivy/bundles/external/"/>
 		</downloadJars>
 		<unzip dest="${birt.dir}"  src="${staging}/birt-osgi-3.7.2.zip"/>
 		<copy todir="${birt.dir}/plugins">

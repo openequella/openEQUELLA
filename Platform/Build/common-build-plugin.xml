@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="common-plugin" basedir=".">
+	<dirname property="common-plugin.basedir" file="${ant.file.common-plugin}"/>
+	<import file="${common-plugin.basedir}/common-ant.xml" />
+
+	<property name="lib" location="lib" />
+	<property name="resources" location="resources" />
+
+	<target name="init" depends="common-ant.init">
+		<property name="jarname" value="${plugin.id}-${version.mmr}-${version.commit}.jar"/>
+	</target>
+
+	<target name="define-build.classpath" depends="init,define-eclipseClasspath">
+		<path id="build.classpath">
+			<path refid="eclipse.classpath" />
+		</path>
+	</target>
+
+	<target name="generate-source" depends="common-ant.generate-source" />
+
+	<target name="compile" depends="common-ant.compile" />
+
+	<target name="make" depends="common-ant.make" />
+
+	<target name="jar" depends="test">
+		<mkdir dir="${product}" />
+		<jar destfile="${product}/${jarname}" basedir="${basedir}">
+			<include name="classes/**/*"/>
+			<include name="resources/**/*"/>
+			<include name="lib/**/*"/>
+			<include name="plugin-jpf.xml"/>
+		</jar>
+	</target>
+
+	<target name="product" depends="clean, jar" />
+</project>

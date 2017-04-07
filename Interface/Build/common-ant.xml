@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="REST Interfaces common" basedir=".">
+
+	<property name="platform.base" location="../../Platform/"/>
+	<property file="./config.properties" />
+	<import file="${platform.base}/Build/common-ant.xml" />
+	<fileset id="plugin.manifests" dir="./">
+		<include name="${platform.base}/Plugins/*/plugin-jpf.xml" />
+		<include name="${this.base}/*/plugin-jpf.xml" />
+	</fileset>
+</project>
