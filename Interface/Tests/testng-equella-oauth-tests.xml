@@ -1,0 +1,14 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Auto Test Suite for OAuth EQUELLA" parallel="instances" data-provider-thread-count="4" thread-count="10" configfailurepolicy="continue">
+	<test name="EQUELLA tests">
+		<groups>
+			<run>
+				<exclude name="eps" />
+			</run>
+		</groups>
+		
+		<packages>	
+			<package name="com.tle.resttests.test.oauth" />
+		</packages>
+	</test>
+</suite>

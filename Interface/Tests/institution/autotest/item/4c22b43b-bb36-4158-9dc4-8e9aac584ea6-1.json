@@ -1,0 +1,64 @@
+{
+  "uuid" : "4c22b43b-bb36-4158-9dc4-8e9aac584ea6",
+  "version" : 1,
+  "name" : "SearchApiTest - Crabs",
+  "nameStrings" : {
+    "en_AU" : "SearchApiTest - Crabs"
+  },
+  "description" : "Description 3",
+  "descriptionStrings" : {
+    "en_AU" : "Description 3"
+  },
+  "metadata" : "<xml><item><name>SearchApiTest - Crabs</name><description>Description 3</description></item></xml>",
+  "status" : "live",
+  "createdDate" : "2014-05-12T15:43:45.265+10:00",
+  "modifiedDate" : "2014-05-12T15:43:57.379+10:00",
+  "owner" : {
+    "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  },
+  "collaborators" : [ ],
+  "collection" : {
+    "uuid" : "b28f1ffe-2008-4f5e-d559-83c8acd79316"
+  },
+  "rating" : -1.0,
+  "attachments" : [ ],
+  "navigation" : {
+    "hideUnreferencedAttachments" : false,
+    "showSplitOption" : false,
+    "nodes" : [ ]
+  },
+  "drm" : { },
+  "_export" : {
+    "exportVersion" : "1.0",
+    "history" : [ {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:45.265+10:00",
+      "type" : "edit",
+      "state" : "draft"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:45.311+10:00",
+      "type" : "statechange",
+      "state" : "live"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:50.379+10:00",
+      "type" : "edit",
+      "state" : "live"
+    } ],
+    "statuses" : [ ],
+    "moderating" : false,
+    "liveApprovalDate" : "2014-05-12T15:43:45.311+10:00",
+    "start" : "2014-05-12T15:45:23.537+10:00",
+    "lastAction" : "2014-05-12T15:43:45.311+10:00"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/item/4c22b43b-bb36-4158-9dc4-8e9aac584ea6/1"
+  }
+}

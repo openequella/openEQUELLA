@@ -1,0 +1,21 @@
+<html
+
+>
+	<head ><  title >This is a title</title>
+		<meta  http-equiv=metaname1 value="metavalue1"   />
+		<meta http-equiv='metaname2' value = metavalue2 /  >
+	</head>
+	<body bgcolor=  black  >
+		<ns:p nowrap>Some text followed by <b>stuff in bold</b> and a link <a    href
+		
+		=
+		
+		"http://fakeurl"           
+		
+		
+		/> and we
+		forget to close off the 'p' tag and we never escaped the apostrophes either.<  /  body>< /
+		
+		html
+		
+		>

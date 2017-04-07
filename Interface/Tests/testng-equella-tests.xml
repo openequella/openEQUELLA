@@ -1,0 +1,24 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Auto Test Suite for EQUELLA" parallel="instances" data-provider-thread-count="4" thread-count="10" configfailurepolicy="continue">
+	<test name="EQUELLA tests">
+		<groups>
+			<run>
+				<exclude name="eps" />
+			</run>
+		</groups>
+		<packages>	
+			<package name="com.tle.resttests.test.acl" />
+			<package name="com.tle.resttests.test.collection" />
+			<package name="com.tle.resttests.test.file" />
+			<package name="com.tle.resttests.test.item" />
+			<package name="com.tle.resttests.test.misc" />
+			<package name="com.tle.resttests.test.oauth" />
+			<package name="com.tle.resttests.test.search" />
+			<package name="com.tle.resttests.test.security" />
+			<package name="com.tle.resttests.test.user" />
+			<!-- 
+			<package name="com.tle.resttests.test.workflow" />
+			 -->
+		</packages>
+	</test>
+</suite>

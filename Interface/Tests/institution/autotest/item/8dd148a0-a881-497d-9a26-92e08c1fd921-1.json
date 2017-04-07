@@ -1,0 +1,80 @@
+{
+  "uuid" : "8dd148a0-a881-497d-9a26-92e08c1fd921",
+  "version" : 1,
+  "name" : "MyResourcesApiTest - Moderating",
+  "nameStrings" : {
+    "en_AU" : "MyResourcesApiTest - Moderating"
+  },
+  "metadata" : "<xml><item><name>MyResourcesApiTest - Moderating</name><description/><controls><checkboxes>true</checkboxes></controls></item></xml>",
+  "status" : "moderating",
+  "createdDate" : "2014-05-12T15:43:45.622+10:00",
+  "modifiedDate" : "2014-05-12T15:43:51.390+10:00",
+  "owner" : {
+    "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  },
+  "collaborators" : [ ],
+  "collection" : {
+    "uuid" : "3d31ac33-261e-404c-a157-487e51716268"
+  },
+  "rating" : -1.0,
+  "attachments" : [ ],
+  "navigation" : {
+    "hideUnreferencedAttachments" : false,
+    "showSplitOption" : false,
+    "nodes" : [ ]
+  },
+  "drm" : { },
+  "_export" : {
+    "exportVersion" : "1.0",
+    "history" : [ {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:45.622+10:00",
+      "type" : "edit",
+      "state" : "draft"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:45.803+10:00",
+      "type" : "statechange",
+      "state" : "moderating"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:45.803+10:00",
+      "step" : "95621c1d-5a9a-404d-9731-65f168b0d999",
+      "stepName" : "Start",
+      "type" : "resetworkflow",
+      "state" : "moderating"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:51.390+10:00",
+      "type" : "edit",
+      "state" : "moderating"
+    } ],
+    "statuses" : [ {
+      "uuid" : "ae6e65b2-eeef-4819-b605-ca6b964146c2",
+      "status" : "i",
+      "started" : "2014-05-12T15:43:45.803+10:00",
+      "causeIndex" : 1,
+      "acceptedUsers" : [ ]
+    }, {
+      "uuid" : "95621c1d-5a9a-404d-9731-65f168b0d999",
+      "status" : "i"
+    }, {
+      "uuid" : "38d1a6b0-9ac6-46d9-9443-4542b1fa4d4c",
+      "status" : "i"
+    } ],
+    "moderating" : true,
+    "start" : "2014-05-12T15:43:45.803+10:00",
+    "lastAction" : "2014-05-12T15:43:45.803+10:00"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/item/8dd148a0-a881-497d-9a26-92e08c1fd921/1"
+  }
+}

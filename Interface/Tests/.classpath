@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="com.tle.jpfclasspath.CONTAINER"/>
+	<classpathentry kind="lib" path="/External Dependencies/jcommander-1.35.jar" sourcepath="/External Dependencies/lib-src/jcommander-1.35-sources.jar"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>

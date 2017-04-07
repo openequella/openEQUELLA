@@ -1,0 +1,13 @@
+{
+  "id" : "3477e962-d9b4-4944-9da4-fe0dcd13a21c",
+  "username" : "serverSideFlowUser",
+  "firstName" : "serverSideFlowUser",
+  "lastName" : "serverSideFlowUser",
+  "_export" : {
+    "exportVersion" : "1.0",
+    "passwordHash" : "SHA256:4c7c92994b971053b8985adf19fbe24cf2b480e877aea39c29df44ac91788963"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/localuser/3477e962-d9b4-4944-9da4-fe0dcd13a21c"
+  }
+}

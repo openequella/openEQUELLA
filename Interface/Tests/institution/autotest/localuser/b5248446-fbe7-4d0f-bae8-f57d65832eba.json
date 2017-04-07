@@ -1,0 +1,14 @@
+{
+  "id" : "b5248446-fbe7-4d0f-bae8-f57d65832eba",
+  "username" : "DRMTest",
+  "firstName" : "DRM",
+  "lastName" : "Test",
+  "emailAddress" : "auto@test.com",
+  "_export" : {
+    "exportVersion" : "1.0",
+    "passwordHash" : "SHA256:f085ed90ecc5e9d050eb7067fe86e72e9c3137e6ec8e3489d401717a43d74d1d"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/localuser/b5248446-fbe7-4d0f-bae8-f57d65832eba"
+  }
+}

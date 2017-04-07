@@ -1,0 +1,29 @@
+#admin.url = http://host:port/context/
+server.url = http://host:port/context/
+server.password = ???
+
+#equella=true
+
+#moodle.url = http://host:port/context/
+#moodle.allowed = moodle21,moodle22
+#moodlebase.url = http://host:port/context/
+#blackboard.url = http://host:port/context/
+#test.suite = testng-local.xml
+#webdriver.firefox.bin=C:/Program Files (x86)/Mozilla Firefox/firefox.exe
+#oauth.redirector.url = http://tle-autotest:83/oauthredirector/
+#proxy.host=localhost
+#proxy.port=8888
+#source.base = /home/jolz/gitrepos/eps
+#synctest.included = cal
+
+#multidb.dbhost = localhost
+#multidb.dbuser = equellauser
+#multidb.dbpass = ??????
+#multidb.dbprefix = tle6.0dev-test
+#multidb.norestore = true
+#multidb.eclipse = true
+
+#ansible.plays = /home/dustin.repo/eps/Deploy/plays
+#ansible.hosts = ./config/hosts-local
+
+#logs.dir = ./logs
