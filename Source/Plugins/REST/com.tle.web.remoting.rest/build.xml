@@ -16,7 +16,8 @@
 	</target>
 		
 	<target name="download-documentation" depends="define-downloaddoco">
-		<downloadDoco query="${restapi.doc}" filename="${restapi.doc}.pdf" equellaVersion="${version.mm}" out="restapi.pdf.location" />
+		<!-- FIXME downloading doco -->
+		<!-- <downloadDoco query="${restapi.doc}" filename="${restapi.doc}.pdf" equellaVersion="${version.mm}" out="restapi.pdf.location" /> -->
 	</target>
 		
 	<target name="make" depends="common.make,download-documentation">
