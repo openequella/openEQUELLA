@@ -8,9 +8,9 @@
 		<copy file="${HTML Editor Plugins.base}/product/equella-htmleditorplugins.zip" tofile="${resources}/web/downloads/equella-htmleditorplugins.zip" />
 		
 		<!-- Integ Pack -->
-		<ant inheritAll="false" target="product" dir="${IntegrationPack.base}"/>
+<!--		<ant inheritAll="false" target="product" dir="${IntegrationPack.base}"/>
 		<copy file="${IntegrationPack.base}/product/equella-integration-pack.zip" tofile="${resources}/web/downloads/equella-integration-pack.zip" />
-
+-->
 		<!-- Active Cache Tool -->
 		<ant inheritAll="false" target="product" dir="${TLE Active Cacher.base}"/>
 		<copy file="${TLE Active Cacher.base}/product/equella-activecache.zip" tofile="${resources}/web/downloads/equella-activecache.zip" />
