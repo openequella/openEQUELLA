@@ -85,7 +85,7 @@ public class Hash
 	private static class SHA1Digester implements HashDigester
 	{
 		@SuppressWarnings("nls")
-		private static final String SHA256_SALT = FIXME // salt
+		private static final String SHA256_SALT = System.getProperty("equella.salt"); // SHA1 salt 
 
 		@Override
 		public String getDigest(String value)
