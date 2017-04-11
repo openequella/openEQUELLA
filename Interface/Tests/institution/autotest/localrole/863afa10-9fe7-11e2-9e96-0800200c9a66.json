@@ -1,0 +1,11 @@
+{
+  "id" : "863afa10-9fe7-11e2-9e96-0800200c9a66",
+  "name" : "Everyone",
+  "expression" : "*",
+  "_export" : {
+    "exportVersion" : "1.0"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/localrole/863afa10-9fe7-11e2-9e96-0800200c9a66"
+  }
+}

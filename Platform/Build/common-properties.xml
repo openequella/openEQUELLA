@@ -1,0 +1,13 @@
+<project name="common-properties">
+	<dirname property="common-properties.dir" file="${ant.file.common-properties}"/>
+	<property name="source.base" location="${common-properties.dir}/../"/>
+	<property name="jpf.cache" location="${source.base}/Build/staging/jpf.cache"/>
+	<property name="TLE Custom Build Tasks.base" location="${source.base}/Infrastructure/CustomBuildTasks/"/>
+	<property name="TLE Custom Build Tasks.classes" location="${source.base}/Infrastructure/CustomBuildTasks/classes/"/>
+	<property name="external.resource" value="Plugins/ExternalPlatform" />
+	<property name="external.jardir" location="${source.base}/${external.resource}" />
+	<property file="${common-properties.dir}/build.properties" />
+	<property file="${common-properties.dir}/version.properties" />
+	<property name="version.mmr" value="platform"/>
+	<property name="version.commit" value="commit"/>
+</project>

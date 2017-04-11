@@ -1,0 +1,13 @@
+{
+  "id" : "7e296f6f-8880-43a7-b00b-e42c6b816a1d",
+  "username" : "tokenuser",
+  "firstName" : "token",
+  "lastName" : "user",
+  "_export" : {
+    "exportVersion" : "1.0",
+    "passwordHash" : "SHA256:1da6f7d5cf4094b03bd54b5519ffef3d9195426afa7a7fa8aa1af698c5ddf90d"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/localuser/7e296f6f-8880-43a7-b00b-e42c6b816a1d"
+  }
+}

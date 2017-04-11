@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="ALL Auto Test Suite for EQUELLA" parallel="instances" data-provider-thread-count="4" thread-count="10"	configfailurepolicy="continue">
+	
+	<suite-files>
+		<suite-file path="testng-equella-scratch.xml" />
+		<suite-file path="testng-equella-tests.xml" />
+	</suite-files>
+</suite>

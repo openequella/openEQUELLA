@@ -1,0 +1,76 @@
+{
+  "uuid" : "9b835b7f-22db-4188-96df-426e8a6300f4",
+  "version" : 1,
+  "name" : "MyResourcesApiTest - Published",
+  "nameStrings" : {
+    "en_AU" : "MyResourcesApiTest - Published"
+  },
+  "metadata" : "<xml><item><name>MyResourcesApiTest - Published</name><description/></item></xml>",
+  "status" : "live",
+  "createdDate" : "2014-05-12T15:43:45.642+10:00",
+  "modifiedDate" : "2014-05-12T15:43:51.227+10:00",
+  "owner" : {
+    "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  },
+  "collaborators" : [ ],
+  "collection" : {
+    "uuid" : "3d31ac33-261e-404c-a157-487e51716268"
+  },
+  "rating" : -1.0,
+  "attachments" : [ ],
+  "navigation" : {
+    "hideUnreferencedAttachments" : false,
+    "showSplitOption" : false,
+    "nodes" : [ ]
+  },
+  "drm" : { },
+  "_export" : {
+    "exportVersion" : "1.0",
+    "history" : [ {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:45.642+10:00",
+      "type" : "edit",
+      "state" : "draft"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:45.648+10:00",
+      "type" : "statechange",
+      "state" : "moderating"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:45.648+10:00",
+      "step" : "95621c1d-5a9a-404d-9731-65f168b0d999",
+      "stepName" : "Start",
+      "type" : "resetworkflow",
+      "state" : "moderating"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:45.648+10:00",
+      "type" : "statechange",
+      "state" : "live"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:51.227+10:00",
+      "type" : "edit",
+      "state" : "live"
+    } ],
+    "statuses" : [ ],
+    "moderating" : false,
+    "liveApprovalDate" : "2014-05-12T15:43:45.648+10:00",
+    "start" : "2014-05-12T15:43:45.648+10:00",
+    "lastAction" : "2014-05-12T15:43:45.648+10:00"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/item/9b835b7f-22db-4188-96df-426e8a6300f4/1"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "uuid" : "117dead8-767d-4eff-ba06-5e1964f2f2db",
+  "name" : "Basic",
+  "nameStrings" : {
+    "en" : "Basic"
+  },
+  "modifiedDate" : "2014-05-12T15:43:40.848+10:00",
+  "createdDate" : "2014-05-12T15:43:40.809+10:00",
+  "owner" : {
+    "id" : "system"
+  },
+  "security" : {
+    "rules" : [ ]
+  },
+  "root" : {
+    "uuid" : "2dc15e1c-d2bb-46b4-b3ad-5bef43acee2b",
+    "name" : "Start",
+    "nameStrings" : {
+      "en_AU" : "Start"
+    },
+    "type" : "s",
+    "nodes" : [ {
+      "uuid" : "806c8b72-d53b-49e1-8cf1-60b474d0f0ec",
+      "name" : "Task1",
+      "nameStrings" : {
+        "en" : "Task1"
+      },
+      "type" : "t",
+      "users" : [ "49a04e57-561f-45b6-8187-e0b893ac739c", "adfcaf58-241b-4eca-9740-6a26d1c3dd58" ],
+      "groups" : [ ],
+      "roles" : [ ],
+      "escalate" : true,
+      "escalationdays" : 1,
+      "moveLive" : "no",
+      "autoAction" : "none",
+      "priority" : 20,
+      "actionDays" : 1,
+      "dueDatePath" : "/item/mod_date"
+    } ]
+  },
+  "moveLive" : false,
+  "_export" : {
+    "exportVersion" : "1.0"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/workflow/117dead8-767d-4eff-ba06-5e1964f2f2db"
+  }
+}

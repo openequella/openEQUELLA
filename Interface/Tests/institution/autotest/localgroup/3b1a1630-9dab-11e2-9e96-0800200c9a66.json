@@ -1,0 +1,11 @@
+{
+  "id" : "3b1a1630-9dab-11e2-9e96-0800200c9a66",
+  "name" : "Moderators",
+  "users" : [ "feb557d0-95db-11e2-9e96-0800200c9a66", "0f140450-95dc-11e2-9e96-0800200c9a66" ],
+  "_export" : {
+    "exportVersion" : "1.0"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/localgroup/3b1a1630-9dab-11e2-9e96-0800200c9a66"
+  }
+}

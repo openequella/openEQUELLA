@@ -1,0 +1,13 @@
+{
+  "id" : "c4c9471b-d3e1-4157-9847-2e6d1e8b9b4e",
+  "username" : "RESTNoPrivs",
+  "firstName" : "REST",
+  "lastName" : "NoPrivs",
+  "_export" : {
+    "exportVersion" : "1.0",
+    "passwordHash" : "SHA256:1da6f7d5cf4094b03bd54b5519ffef3d9195426afa7a7fa8aa1af698c5ddf90d"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/localuser/c4c9471b-d3e1-4157-9847-2e6d1e8b9b4e"
+  }
+}

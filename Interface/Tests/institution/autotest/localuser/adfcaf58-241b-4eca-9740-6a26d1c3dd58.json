@@ -1,0 +1,14 @@
+{
+  "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58",
+  "username" : "AutoTest",
+  "firstName" : "Auto",
+  "lastName" : "Test",
+  "emailAddress" : "auto@test.com",
+  "_export" : {
+    "exportVersion" : "1.0",
+    "passwordHash" : "SHA256:cc9e37d975bb25b2fcecd8c20d9c77dbe7ce2649de0127b9a5ca76038f852da0"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/localuser/adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  }
+}

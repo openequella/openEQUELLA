@@ -1,0 +1,26 @@
+{
+  "uuid" : "9a961a09-0c6a-b24f-b05b-eb21a696528b",
+  "name" : "DRM All Contributor Options",
+  "nameStrings" : {
+    "en" : "DRM All Contributor Options"
+  },
+  "modifiedDate" : "2014-05-12T15:43:41.699+10:00",
+  "createdDate" : "2014-05-12T15:43:41.697+10:00",
+  "owner" : {
+    "id" : "system"
+  },
+  "security" : {
+    "rules" : [ ],
+    "metadata" : { },
+    "statuses" : { }
+  },
+  "schema" : {
+    "uuid" : "d9aba963-4648-e497-d62b-fc1ddf2d0199"
+  },
+  "_export" : {
+    "exportVersion" : "1.0"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/collection/9a961a09-0c6a-b24f-b05b-eb21a696528b"
+  }
+}
