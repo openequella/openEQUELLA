@@ -393,6 +393,6 @@ public class ActivationResourceImpl implements ActivationResource
 
 	private URI getSelfLink(String requestUuid)
 	{
-		return urlLinkService.getMethodUriBuilder(getClass(), "get").build(requestUuid);
+		return urlLinkService.getMethodUriBuilder(ActivationResource.class, "get").build(requestUuid);
 	}
 }

@@ -23,7 +23,6 @@
 		<import plugin-id="com.tle.web.viewurl" exported="true" />
 		<import plugin-id="com.tle.web.itemadmin" />
 		<import plugin-id="com.tle.core.item" />
-		<import plugin-id="com.tle.web.remoting.rest" />
 		<import plugin-id="com.tle.web.api.search" />
 	</requires>
 	<runtime>

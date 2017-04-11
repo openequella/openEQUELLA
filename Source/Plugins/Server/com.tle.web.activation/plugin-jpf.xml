@@ -12,7 +12,6 @@
 		<import plugin-id="com.tle.core.usermanagement.standard" />
 		<import plugin-id="com.tle.web.bulk" />
 		<import plugin-id="com.tle.web.integration" />
-		<import plugin-id="com.tle.web.remoting.rest" />
 		<import plugin-id="com.tle.web.search" />
 		<import plugin-id="com.tle.web.sections" />
 		<import plugin-id="com.tle.web.sections.equella" />

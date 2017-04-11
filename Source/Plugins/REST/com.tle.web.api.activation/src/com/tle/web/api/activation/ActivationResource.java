@@ -20,7 +20,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 /**
  * @author Dongsheng Cai
  */
-@Path("activation")
+@Path("activation/")
 @Api(value = "/activation", description = "activation")
 @Produces({"application/json"})
 public interface ActivationResource
