@@ -13,7 +13,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.dytech.common.text.NumberStringComparator;
-import com.dytech.edge.exceptions.LicenseException;
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.filter.FilterList;
 import com.dytech.gui.filter.FilterModel;
@@ -222,22 +221,7 @@ public class UsersTab extends JChangeDetectorPanel implements ListSelectionListe
 		@Override
 		protected void bulkImport(byte[] array, boolean override) throws Exception
 		{
-			try
-			{
-				new UserBulkImporter(userService, groupService).bulkImport(array, override);
-			}
-			catch( Exception e )
-			{
-				Throwable cause = e.getCause();
-				if( cause instanceof LicenseException )
-				{
-					JOptionPane.showMessageDialog(null, cause.getMessage());
-				}
-				else
-				{
-					throw e;
-				}
-			}
+			new UserBulkImporter(userService, groupService).bulkImport(array, override);
 		}
 
 		@Override

@@ -4,9 +4,7 @@ import javax.inject.Inject;
 
 import com.tle.common.Pair;
 import com.tle.core.guice.Bind;
-import com.tle.core.payment.PaymentConstants;
 import com.tle.core.payment.StoreSettingsPrivilegeTreeProvider;
-import com.tle.core.system.LicenseService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.events.RenderEventContext;
@@ -25,14 +23,11 @@ public class StoreSettingsLinkSection extends AbstractParentSettingsSection<Obje
 
 	@Inject
 	private StoreSettingsPrivilegeTreeProvider securityProvider;
-	@Inject
-	private LicenseService licenseService;
 
 	@Override
 	public boolean canView(SectionInfo info)
 	{
-		return securityProvider.isAuthorised()
-			&& licenseService.isFeatureEnabled(PaymentConstants.LICENSE_FEATURE_CONTENT_EXCHANGE);
+		return securityProvider.isAuthorised();
 	}
 
 	@Override

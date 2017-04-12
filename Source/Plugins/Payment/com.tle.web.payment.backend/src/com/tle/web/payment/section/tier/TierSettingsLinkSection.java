@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import com.tle.core.guice.Bind;
 import com.tle.core.payment.PaymentConstants;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.system.LicenseService;
 import com.tle.web.entities.section.AbstractEntitySettingsLinkSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -26,8 +25,6 @@ public class TierSettingsLinkSection extends AbstractEntitySettingsLinkSection<O
 
 	@Inject
 	private TLEAclManager aclService;
-	@Inject
-	private LicenseService licenseService;
 
 	public static HtmlLinkState getShowTiersLink(SectionInfo info)
 	{
@@ -41,8 +38,7 @@ public class TierSettingsLinkSection extends AbstractEntitySettingsLinkSection<O
 	@Override
 	public boolean canView(SectionInfo info)
 	{
-		return !aclService.filterNonGrantedPrivileges(PRIV_CREATE_TIER, PRIV_EDIT_TIER).isEmpty()
-			&& licenseService.isFeatureEnabled(PaymentConstants.LICENSE_FEATURE_CONTENT_EXCHANGE);
+		return !aclService.filterNonGrantedPrivileges(PRIV_CREATE_TIER, PRIV_EDIT_TIER).isEmpty();
 	}
 
 	@Override

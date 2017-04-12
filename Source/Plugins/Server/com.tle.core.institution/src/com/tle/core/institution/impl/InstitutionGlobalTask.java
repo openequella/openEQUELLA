@@ -17,7 +17,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dytech.edge.common.valuebean.License;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -49,7 +48,6 @@ import com.tle.core.services.UrlService;
 import com.tle.core.services.impl.AlwaysRunningTask;
 import com.tle.core.services.impl.SimpleMessage;
 import com.tle.core.services.impl.TransientListStatusChange;
-import com.tle.core.system.LicenseService;
 import com.tle.core.system.SystemConfigService;
 import com.tle.core.system.service.SchemaDataSourceService;
 
@@ -76,8 +74,6 @@ public class InstitutionGlobalTask extends AlwaysRunningTask<SimpleMessage>
 	@Inject
 	private SystemConfigService systemConfigService;
 	@Inject
-	private LicenseService licenseService;
-	@Inject
 	private UrlService urlService;
 
 	private final Map<Long, InstitutionStatus> institutionMap = Maps.newHashMap();
@@ -98,15 +94,7 @@ public class InstitutionGlobalTask extends AlwaysRunningTask<SimpleMessage>
 	@Override
 	protected SimpleMessage waitFor() throws InterruptedException
 	{
-		License license = licenseService.getLicense();
-		if( license != null && !license.isExpired() )
-		{
-			return waitForMessage(license.getExpiry().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-		}
-		else
-		{
-			return waitForMessage();
-		}
+		return waitForMessage();
 	}
 
 	@Override
@@ -139,9 +127,6 @@ public class InstitutionGlobalTask extends AlwaysRunningTask<SimpleMessage>
 						break;
 					case CREATE:
 						processCreate((CreateInstitutionMessage) instMsg, response);
-						break;
-					case UPDATELICENCE:
-						// Nothing happens here. See updateInsts
 						break;
 				}
 			}
@@ -244,39 +229,16 @@ public class InstitutionGlobalTask extends AlwaysRunningTask<SimpleMessage>
 
 	private InstitutionStatus createStatus(Institution institution, long schemaId)
 	{
-		final License license = licenseService.getLicense();
-
 		InvalidReason reason = null;
-		if( license == null || license.isExpired() )
+		for( InstitutionStatus status : institutionMap.values() )
 		{
-			reason = InvalidReason.EXPIRED;
-		}
-		else if( Check.isEmpty(license.getVersion())
-			|| (!license.getVersion().startsWith(License.DEVELOPMENT_BUILD) && ApplicationVersion.get()
-				.greaterVersionThan(license.getVersion())) )
-		{
-			reason = InvalidReason.WRONGEQUELLAVERSION;
-		}
-		else if( !license.isFreeHostname() && !license.getHostnames().contains(institution.getUrlAsUrl().getHost()) )
-		{
-			reason = InvalidReason.HOSTNAME;
-		}
-		else if( institution.isEnabled() && enabledCount >= license.getInstitutions() )
-		{
-			reason = InvalidReason.COUNT;
-		}
-		else
-		{
-			for( InstitutionStatus status : institutionMap.values() )
+			if( status.isValid() )
 			{
-				if( status.isValid() )
+				Institution inst = status.getInstitution();
+				if( inst.getUniqueId() != institution.getUniqueId() && containsDuplicate(institution, inst) )
 				{
-					Institution inst = status.getInstitution();
-					if( inst.getUniqueId() != institution.getUniqueId() && containsDuplicate(institution, inst) )
-					{
-						reason = InvalidReason.INVALID;
-						break;
-					}
+					reason = InvalidReason.INVALID;
+					break;
 				}
 			}
 		}
@@ -527,7 +489,6 @@ public class InstitutionGlobalTask extends AlwaysRunningTask<SimpleMessage>
 		final String filestoreId = institution.getFilestoreId();
 		final String url = institution.getUrl();
 		final String name = institution.getName();
-		final License license = licenseService.getLicense();
 		final double quota = institution.getQuota();
 
 		URI uri = null;
@@ -539,18 +500,6 @@ public class InstitutionGlobalTask extends AlwaysRunningTask<SimpleMessage>
 			{
 				uri = null;
 				errors.add(new InstitutionValidationError(FIELD_URL, validateString("url.invalidhost")));
-			}
-			else if( !license.isFreeHostname() && !license.getHostnames().contains(hostname) )
-			{
-				if( !Check.isEmpty(license.getJoinedHostnames()) )
-				{
-					errors.add(new InstitutionValidationError(FIELD_URL, validateString("url.hosts", hostname,
-						license.getJoinedHostnames())));
-				}
-				else
-				{
-					errors.add(new InstitutionValidationError(FIELD_URL, validateString("url.nohost")));
-				}
 			}
 		}
 		catch( URISyntaxException urie )

@@ -11,7 +11,6 @@ import com.tle.web.institution.tab.EmailsTab;
 import com.tle.web.institution.tab.HealthTab;
 import com.tle.web.institution.tab.ImportTab;
 import com.tle.web.institution.tab.IntegrationDownloadTab;
-import com.tle.web.institution.tab.LicenseTab;
 import com.tle.web.institution.tab.PasswordTab;
 import com.tle.web.institution.tab.ServerMessageTab;
 import com.tle.web.institution.tab.ServerTab;
@@ -44,7 +43,6 @@ public class InstitutionModule extends SectionsModule
 		node.child(ServerMessageTab.class);
 		node.child(EmailsTab.class);
 		node.child(PasswordTab.class);
-		node.child(LicenseTab.class);
 		return node;
 	}
 }

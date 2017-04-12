@@ -45,11 +45,7 @@
 			</@setting>
 			<@setting label=b.key("install.initialpasswordconfirm") mandatory=true labelFor=s.passwordConfirm>
 				<@textfield password=true section=s.passwordConfirm size=25/>
-			</@setting>
-			
-			<@setting label=b.key("install.licence") mandatory=true error=m.errors["licence"] labelFor=s.licenceField>
-				<@textarea rows=6 section=s.licenceField spellcheck=false />
-			</@setting>
+			</@setting>			
 		</@settingContainer>
 		
 		<div class="button-strip">

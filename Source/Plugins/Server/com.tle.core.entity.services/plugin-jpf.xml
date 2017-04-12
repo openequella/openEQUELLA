@@ -837,13 +837,6 @@
 		<parameter id="scope" value="server" />
 	</extension>
 	
-	<extension plugin-id="com.tle.core.scheduler" point-id="scheduledTask" id="checkLicenceExpiry">
-		<parameter id="id" value="Check licence expiry date" />
-		<parameter id="bean" value="bean:com.tle.core.tasks.CheckLicenceExpiry" />
-		<parameter id="frequency" value="daily" />
-		<parameter id="scope" value="server" />
-	</extension>
-
 	<extension plugin-id="com.tle.core.scheduler" point-id="scheduledTask" id="removeAuditLogs">
 		<parameter id="id" value="Remove Old Audit Logs" />
 		<parameter id="bean" value="bean:com.tle.core.tasks.RemoveOldAuditLogs" />

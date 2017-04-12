@@ -6,24 +6,18 @@ package com.tle.core.usermanagement.standard.wrapper;
 import java.util.Calendar;
 import java.util.Objects;
 
-import javax.inject.Inject;
-
 import com.tle.common.Check;
 import com.tle.common.hash.Hash;
 import com.tle.common.hash.Hash.Digester;
 import com.tle.core.guice.Bind;
-import com.tle.core.system.LicenseService;
 
 @Bind
 public class RemoteSupportWrapper extends AbstractSystemUserWrapper
 {
-	@Inject
-	private LicenseService licenseService;
-
 	@Override
 	protected boolean authenticatePassword(String suppliedPassword)
 	{
-		final String supportKey = licenseService.getLicense().getSupportKey();
+		final String supportKey = ""; // FIXME
 		if( Check.isEmpty(supportKey) )
 		{
 			return false;

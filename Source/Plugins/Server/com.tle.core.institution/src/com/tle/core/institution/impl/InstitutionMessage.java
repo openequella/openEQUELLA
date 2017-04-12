@@ -13,7 +13,7 @@ public class InstitutionMessage implements Serializable
 {
 	public enum Type
 	{
-		SETENABLED, EDIT, DELETE, CREATE, SCHEMAS, VALIDATE, UPDATELICENCE
+		SETENABLED, EDIT, DELETE, CREATE, SCHEMAS, VALIDATE
 	}
 
 	private static final long serialVersionUID = 1L;

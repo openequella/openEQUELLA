@@ -135,7 +135,7 @@ public class EmailsTab extends AbstractPrototypeSection<EmailsTab.EmailsModel> i
 	@Override
 	public SectionResult renderHtml(RenderEventContext context)
 	{
-		if( systemConfigService.adminPasswordNotSet() || !institutionSection.isLicenseValid(context) )
+		if( systemConfigService.adminPasswordNotSet() )
 		{
 			return null;
 		}

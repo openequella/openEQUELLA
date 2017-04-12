@@ -12,11 +12,9 @@ import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dytech.edge.common.valuebean.License;
 import com.dytech.edge.common.valuebean.ValidationError;
 import com.dytech.edge.ejb.helpers.ValidationHelper;
 import com.dytech.edge.exceptions.InvalidDataException;
-import com.dytech.edge.exceptions.LicenseException;
 import com.dytech.edge.exceptions.NotFoundException;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
 import com.tle.beans.ump.RoleMapping;
@@ -45,7 +43,6 @@ import com.tle.core.services.config.ConfigurationService;
 import com.tle.core.services.user.TLEGroupService;
 import com.tle.core.services.user.TLEUserService;
 import com.tle.core.services.user.UserService;
-import com.tle.core.system.LicenseService;
 import com.tle.core.user.CurrentInstitution;
 import com.tle.core.user.CurrentUser;
 import com.tle.exceptions.AccessDeniedException;
@@ -64,8 +61,6 @@ public class TLEUserServiceImpl implements TLEUserService, UserChangeListener, G
 
 	@Inject
 	private TLEUserDao dao;
-	@Inject
-	private LicenseService licenseService;
 	@Inject
 	private EventService eventService;
 	@Inject
@@ -91,15 +86,6 @@ public class TLEUserServiceImpl implements TLEUserService, UserChangeListener, G
 		Check.checkNotNull(newUser);
 
 		newUser.setInstitution(CurrentInstitution.get());
-
-		License license = licenseService.getLicense();
-		if( license != null && !license.getVersion().startsWith(License.DEVELOPMENT_BUILD) )
-		{
-			if( dao.totalExistingUsers() >= license.getUsers() )
-			{
-				throw new LicenseException("License restriction: Maximum users (" + license.getUsers() + ") exceeded");
-			}
-		}
 
 		newUser.setId(0l);
 

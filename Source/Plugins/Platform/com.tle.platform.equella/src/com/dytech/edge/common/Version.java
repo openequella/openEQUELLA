@@ -6,7 +6,6 @@ import java.text.MessageFormat;
 import java.util.Properties;
 import java.util.Random;
 
-import com.dytech.edge.common.valuebean.License;
 import com.tle.common.Check;
 
 @SuppressWarnings("nls")
@@ -117,7 +116,7 @@ public final class Version
 		// Non-digit licence value? License.DEVELOPMENT_BUILD trumps
 		// this.version.
 		// Any other non-numeric value is deemed lower than this.version.
-		if( otherVersion.startsWith(License.DEVELOPMENT_BUILD) )
+		if( otherVersion.startsWith("dev") )
 		{
 			return false;
 		}

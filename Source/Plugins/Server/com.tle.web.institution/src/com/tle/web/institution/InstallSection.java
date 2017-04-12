@@ -5,8 +5,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.License;
-import com.dytech.edge.exceptions.LicenseException;
 import com.google.common.collect.Maps;
 import com.tle.common.Check;
 import com.tle.common.hash.Hash;
@@ -68,8 +66,6 @@ public class InstallSection extends AbstractPrototypeSection<InstallSection.Mode
 	private TextField password;
 	@Component(stateful = false)
 	private TextField passwordConfirm;
-	@Component(stateful = false)
-	private TextField licenceField;
 	@Component
 	@PlugKey("install.install")
 	private Button installButton;
@@ -110,25 +106,7 @@ public class InstallSection extends AbstractPrototypeSection<InstallSection.Mode
 	@EventHandlerMethod
 	public void runInstall(SectionInfo info)
 	{
-		License license = new License();
-		String licenseText = licenceField.getValue(info);
 		Model model = getModel(info);
-		if( Check.isEmpty(licenseText) )
-		{
-			model.addError("licence", LABEL_LICENCEBLANK);
-		}
-		else
-		{
-			try
-			{
-
-				license.decrypt(licenseText);
-			}
-			catch( LicenseException le )
-			{
-				model.addError("licence", LABEL_BADLICENCE);
-			}
-		}
 		String passwordText = password.getValue(info);
 		if( Check.isEmpty(passwordText) )
 		{
@@ -176,7 +154,7 @@ public class InstallSection extends AbstractPrototypeSection<InstallSection.Mode
 
 		if( model.getErrors().isEmpty() )
 		{
-			InstallSettings installSettings = new InstallSettings(Hash.hashPassword(passwordText), licenseText,
+			InstallSettings installSettings = new InstallSettings(Hash.hashPassword(passwordText),
 				emailsText, smtpText, mailUsername, mailPassword);
 			migrationService.setInstallSettings(installSettings);
 			migrationService.executeMigrationsForSchemas(Collections.singleton(-1L));
@@ -200,11 +178,6 @@ public class InstallSection extends AbstractPrototypeSection<InstallSection.Mode
 		{
 			return errors;
 		}
-	}
-
-	public TextField getLicenceField()
-	{
-		return licenceField;
 	}
 
 	public Button getInstallButton()

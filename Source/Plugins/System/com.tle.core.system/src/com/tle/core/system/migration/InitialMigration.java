@@ -98,7 +98,6 @@ public class InitialMigration extends AbstractHibernateSchemaMigration
 		else
 		{
 			InstallSettings installSettings = migrationService.getInstallSettings();
-			createConfig(session, "license", installSettings.getLicenseText());
 			createConfig(session, "admin.password", installSettings.getHashedPassword());
 			createConfig(session, "admin.emails", installSettings.getEmailsText());
 			createConfig(session, "smtpserver", installSettings.getSmtpServer());

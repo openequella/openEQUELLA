@@ -15,7 +15,6 @@ import javax.swing.JTextField;
 
 import com.dytech.edge.common.valuebean.ValidationError;
 import com.dytech.edge.exceptions.InvalidDataException;
-import com.dytech.edge.exceptions.LicenseException;
 import com.dytech.gui.ChangeDetector;
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
@@ -147,16 +146,9 @@ public class UserDetailsPanel extends JChangeDetectorPanel
 				@Override
 				public void doStuff()
 				{
-					try
-					{
-						saveLoadedUser();
-						JOptionPane.showMessageDialog(getComponent(),
-							CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.saved")); //$NON-NLS-1$
-					}
-					catch( LicenseException le )
-					{
-						JOptionPane.showMessageDialog(getComponent(), le.getMessage());
-					}
+					saveLoadedUser();
+					JOptionPane.showMessageDialog(getComponent(),
+						CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.saved")); //$NON-NLS-1$
 				}
 
 				@Override
@@ -204,16 +196,9 @@ public class UserDetailsPanel extends JChangeDetectorPanel
 					@Override
 					public void doStuff()
 					{
-						try
-						{
-							saveLoadedUser();
-							JOptionPane.showMessageDialog(getComponent(),
-								CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.saved")); //$NON-NLS-1$
-						}
-						catch( LicenseException le )
-						{
-							JOptionPane.showMessageDialog(getComponent(), le.getMessage());
-						}
+						saveLoadedUser();
+						JOptionPane.showMessageDialog(getComponent(),
+							CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.saved")); //$NON-NLS-1$
 					}
 
 					@Override
@@ -293,10 +278,6 @@ public class UserDetailsPanel extends JChangeDetectorPanel
 		{
 			clearErrors();
 			saveLoadedUser();
-		}
-		catch( LicenseException le )
-		{
-			JOptionPane.showMessageDialog(this, le.getMessage());
 		}
 		catch( InvalidDataException e )
 		{

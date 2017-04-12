@@ -55,7 +55,6 @@ import com.tle.core.security.RunAsUser;
 import com.tle.core.services.UrlService;
 import com.tle.core.services.config.ConfigurationService;
 import com.tle.core.services.item.ItemService;
-import com.tle.core.system.LicenseService;
 import com.tle.core.user.CurrentInstitution;
 import com.tle.core.user.CurrentUser;
 import com.tle.core.user.UserState;
@@ -73,8 +72,6 @@ public class PearsonScormServicesServiceImpl implements PearsonScormServicesServ
 {
 	private static Logger LOGGER = Logger.getLogger(PearsonScormServicesServiceImpl.class);
 
-	@Inject
-	private LicenseService licenseService;
 	@Inject
 	private ItemService itemService;
 	@Inject
@@ -101,8 +98,7 @@ public class PearsonScormServicesServiceImpl implements PearsonScormServicesServ
 	public boolean isEnabled()
 	{
 		PearsonScormServicesSettings settings = getPearsonScormServicesSettings();
-		return licenseService.isFeatureEnabled(PSSConstants.PEARSON_SCORM_SERVICES_LICENCE) && settings != null
-			&& settings.isEnable();
+		return settings.isEnable();
 	}
 
 	@Override

@@ -14,7 +14,6 @@ import com.tle.core.migration.MigrationStatus;
 import com.tle.core.migration.SchemaInfo;
 import com.tle.core.migration.impl.HibernateMigrationService;
 import com.tle.core.services.user.UserSessionService;
-import com.tle.core.system.LicenseService;
 import com.tle.core.system.SystemConfigService;
 import com.tle.core.user.CurrentUser;
 import com.tle.core.user.SystemUserState;
@@ -67,8 +66,6 @@ public class LogonMigrateSection extends AbstractPrototypeSection<LogonMigrateSe
 	private MigrationService migrationService;
 	@Inject
 	private SystemConfigService systemConfigService;
-	@Inject
-	private LicenseService licenseService;
 	@Inject
 	private UserSessionService userSessionService;
 
@@ -160,10 +157,6 @@ public class LogonMigrateSection extends AbstractPrototypeSection<LogonMigrateSe
 				return waitForSystem(context, waitForMigration, LABEL_WAITMIGRATE);
 			}
 		}
-		else if( !licenseService.isLicenseLoaded() )
-		{
-			return waitForSystem(context, waitForMigration, LABEL_WAITMIGRATE);
-		}
 		model.setFieldLabel(new LabelTagRenderer(password, null, FIELD_LABEL));
 		return viewFactory.createResult("logon/logon.ftl", this);
 	}
@@ -201,7 +194,7 @@ public class LogonMigrateSection extends AbstractPrototypeSection<LogonMigrateSe
 			return false;
 		}
 
-		return schemaInfo.isHasErrors() || (!runningMigrations && licenseService.isLicenseLoaded());
+		return schemaInfo.isHasErrors() || (!runningMigrations);
 	}
 
 	private void setupSystemUser(SectionInfo info)
@@ -307,7 +300,7 @@ public class LogonMigrateSection extends AbstractPrototypeSection<LogonMigrateSe
 	public boolean shouldShow(SectionInfo info, boolean adminPages)
 	{
 		UserState currentUser = CurrentUser.getUserState();
-		return !migrationService.isSystemSchemaUp() || !licenseService.isLicenseLoaded()
+		return !migrationService.isSystemSchemaUp() 
 			|| (adminPages && (!currentUser.isAuthenticated() || !currentUser.isSystem()));
 	}
 

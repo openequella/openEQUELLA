@@ -50,11 +50,6 @@
 		<parameter id="root" value="bean:/institutions" />
 	</extension>
 
-	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="unlicensed">
-		<parameter id="path" value="/unlicensed.do" />
-		<parameter id="root" value="bean:com.tle.web.institution.UnlicensedPage" />
-	</extension>
-
 	<extension plugin-id="com.tle.web.sections.equella" point-id="menuContributor" id="threadDumpMenuContributor">
 		<parameter id="menuContributorClass" value="bean:com.tle.web.institution.InstitutionMenuContributor" />
 		<parameter id="enabledFor" value="serverAdmin" />

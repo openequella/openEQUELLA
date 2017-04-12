@@ -692,7 +692,7 @@ public class DatabaseTab extends AbstractInstitutionTab<DatabaseTab.Model>
 	@Override
 	protected boolean isTabVisible(SectionInfo info)
 	{
-		return institutionSection.isLicenseValid(info);
+		return true;
 	}
 
 	@Override

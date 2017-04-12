@@ -5,7 +5,6 @@ import javax.inject.Inject;
 import com.tle.common.Pair;
 import com.tle.core.guice.Bind;
 import com.tle.core.pss.util.PSSConstants;
-import com.tle.core.system.LicenseService;
 import com.tle.web.pss.privileges.PearsonScormServicesSettingsPrivilegeTreeProvider;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -28,14 +27,11 @@ public class PearsonScormServicesSettingsLinkSection extends AbstractParentSetti
 
 	@Inject
 	private PearsonScormServicesSettingsPrivilegeTreeProvider securityProvider;
-	@Inject
-	private LicenseService licenseService;
 
 	@Override
 	public boolean canView(SectionInfo info)
 	{
-		return licenseService.isFeatureEnabled(PSSConstants.PEARSON_SCORM_SERVICES_LICENCE)
-			&& securityProvider.isAuthorised();
+		return securityProvider.isAuthorised();
 	}
 
 	@Override

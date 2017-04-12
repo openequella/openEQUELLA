@@ -5,8 +5,6 @@ import javax.inject.Inject;
 import com.tle.core.guice.Bind;
 import com.tle.core.payment.PaymentConstants;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.system.LicenseService;
-import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.entities.section.AbstractRootEntitySection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -24,16 +22,10 @@ public class RootTierSection extends AbstractRootEntitySection<OneColumnLayoutMo
 
 	@Inject
 	private TLEAclManager aclService;
-	@Inject
-	private LicenseService licenseService;
 
 	@Override
 	protected boolean canView(SectionInfo info)
 	{
-		if( !licenseService.isFeatureEnabled(PaymentConstants.LICENSE_FEATURE_CONTENT_EXCHANGE) )
-		{
-			throw new AccessDeniedException(LABEL_ERROR_LICENSE.getText());
-		}
 		return !aclService.filterNonGrantedPrivileges(PaymentConstants.PRIV_CREATE_TIER,
 			PaymentConstants.PRIV_EDIT_TIER).isEmpty();
 	}

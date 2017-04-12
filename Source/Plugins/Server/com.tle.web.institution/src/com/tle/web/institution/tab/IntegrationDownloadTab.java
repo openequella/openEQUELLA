@@ -71,7 +71,7 @@ public class IntegrationDownloadTab extends AbstractInstitutionTab<IntegrationDo
 	@Override
 	protected boolean isTabVisible(SectionInfo info)
 	{
-		return institutionSection.isLicenseValid(info);
+		return true;
 	}
 
 	@Override

@@ -229,7 +229,7 @@ public class ImportTab extends AbstractInstitutionTab<ImportTab.ImportTabModel>
 	@Override
 	protected boolean isTabVisible(SectionInfo info)
 	{
-		return institutionSection.isLicenseValid(info);
+		return true;
 	}
 
 	@Override

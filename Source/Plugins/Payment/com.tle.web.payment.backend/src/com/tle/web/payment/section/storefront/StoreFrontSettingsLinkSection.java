@@ -6,9 +6,7 @@ import static com.tle.core.payment.PaymentConstants.PRIV_EDIT_STOREFRONT;
 import javax.inject.Inject;
 
 import com.tle.core.guice.Bind;
-import com.tle.core.payment.PaymentConstants;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.system.LicenseService;
 import com.tle.web.entities.section.AbstractEntitySettingsLinkSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -26,8 +24,6 @@ public class StoreFrontSettingsLinkSection extends AbstractEntitySettingsLinkSec
 
 	@Inject
 	private TLEAclManager aclService;
-	@Inject
-	private LicenseService licenseService;
 
 	public static HtmlLinkState getShowStoreFrontsLink(SectionInfo info)
 	{
@@ -41,8 +37,7 @@ public class StoreFrontSettingsLinkSection extends AbstractEntitySettingsLinkSec
 	@Override
 	public boolean canView(SectionInfo info)
 	{
-		return !aclService.filterNonGrantedPrivileges(PRIV_DELETE_STOREFRONT, PRIV_EDIT_STOREFRONT).isEmpty()
-			&& licenseService.isFeatureEnabled(PaymentConstants.LICENSE_FEATURE_CONTENT_EXCHANGE);
+		return !aclService.filterNonGrantedPrivileges(PRIV_DELETE_STOREFRONT, PRIV_EDIT_STOREFRONT).isEmpty();
 	}
 
 	@Override

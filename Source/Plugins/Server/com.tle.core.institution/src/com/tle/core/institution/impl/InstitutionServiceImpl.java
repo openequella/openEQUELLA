@@ -49,9 +49,7 @@ import com.tle.core.services.TaskStatusListener;
 import com.tle.core.services.impl.BeanClusteredTask;
 import com.tle.core.services.impl.SimpleMessage;
 import com.tle.core.services.impl.Task;
-import com.tle.core.system.LicenseService;
 import com.tle.core.system.dao.DatabaseSchemaDao;
-import com.tle.core.system.events.LicenseChangeListener;
 
 @Bind(InstitutionService.class)
 @Singleton
@@ -61,8 +59,7 @@ public class InstitutionServiceImpl
 		InstitutionService,
 		InstitutionListener,
 		SchemaListener,
-		TaskStatusListener,
-		LicenseChangeListener
+		TaskStatusListener
 {
 	private static final long DEFAULT_TIMEOUT = TimeUnit.MINUTES.toMillis(1);
 
@@ -70,8 +67,6 @@ public class InstitutionServiceImpl
 	private EventService eventService;
 	@Inject
 	private TaskService taskService;
-	@Inject
-	private LicenseService licenseService;
 	@Inject
 	private DatabaseSchemaDao databaseSchemaDao;
 
@@ -289,15 +284,6 @@ public class InstitutionServiceImpl
 	{
 		// FIXME check licence
 		return true;
-	}
-
-	@Override
-	public void licenseUpdated()
-	{
-		if( licenseService.isLicenseLoaded() )
-		{
-			sendTaskMessage(new InstitutionMessage(InstitutionMessage.Type.UPDATELICENCE));
-		}
 	}
 
 	@Override

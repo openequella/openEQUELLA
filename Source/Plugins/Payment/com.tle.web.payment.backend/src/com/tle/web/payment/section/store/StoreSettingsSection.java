@@ -24,15 +24,12 @@ import com.tle.core.filesystem.SystemFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.imagemagick.ImageMagickService;
 import com.tle.core.mimetypes.MimeTypeService;
-import com.tle.core.payment.PaymentConstants;
 import com.tle.core.payment.StoreSettings;
 import com.tle.core.payment.StoreSettingsPrivilegeTreeProvider;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.services.StagingService;
 import com.tle.core.services.UrlService;
 import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.system.LicenseService;
-import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxGenerator;
@@ -127,8 +124,6 @@ public class StoreSettingsSection extends OneColumnLayout<StoreSettingsSection.S
 	private UrlService urlService;
 	@Inject
 	private EmailService emailService;
-	@Inject
-	private LicenseService licenseService;
 
 	@Component(name = "allow", stateful = false)
 	private Checkbox allowStore;
@@ -197,10 +192,6 @@ public class StoreSettingsSection extends OneColumnLayout<StoreSettingsSection.S
 	protected TemplateResult setupTemplate(RenderEventContext info)
 	{
 		securityProvider.checkAuthorised();
-		if( !licenseService.isFeatureEnabled(PaymentConstants.LICENSE_FEATURE_CONTENT_EXCHANGE) )
-		{
-			throw new AccessDeniedException(LABEL_ERROR_LICENSE.getText());
-		}
 
 		StoreSettingsModel model = getModel(info);
 		StoreSettings storeSettings = getStoreSettings();

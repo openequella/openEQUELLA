@@ -192,10 +192,7 @@ public class AdminTab extends AbstractInstitutionTab<AdminTab.AdminTabModel>
 			actions.add(new HtmlLinkState(LABEL_DELETE, events.getNamedHandler("deleteClicked", id).addValidator(
 				new Confirm(new KeyLabel(KEY_CONFIRM_DELETE, institution.getName())))));
 
-			if( institutionSection.isLicenseValid(context) )
-			{
-				actions.add(actionLink(LABEL_CLONE, "cloneClicked", id));
-			}
+			actions.add(actionLink(LABEL_CLONE, "cloneClicked", id));
 			actions.add(actionLink(LABEL_EXPORT, "dumpClicked", id));
 
 			// Put the status cell together
@@ -308,7 +305,7 @@ public class AdminTab extends AbstractInstitutionTab<AdminTab.AdminTabModel>
 	@Override
 	protected boolean isTabVisible(SectionInfo info)
 	{
-		return institutionSection.isLicenseValid(info);
+		return true;
 	}
 
 	@Override

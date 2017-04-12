@@ -94,7 +94,7 @@ public class ThreadDumpTab extends AbstractInstitutionTab<ThreadDumpTab.ThreadDu
 	@Override
 	protected boolean isTabVisible(SectionInfo info)
 	{
-		return institutionSection.isLicenseValid(info);
+		return true;
 	}
 
 	@Override

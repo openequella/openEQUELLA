@@ -8,15 +8,12 @@ import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import com.dytech.edge.common.valuebean.License;
 import com.google.common.io.ByteStreams;
 import com.tle.beans.Institution;
 import com.tle.core.filesystem.CustomisationFile;
 import com.tle.core.institution.InstitutionService;
-import com.tle.core.services.ApplicationVersion;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.services.user.UserSessionService;
-import com.tle.core.system.LicenseService;
 import com.tle.core.user.AnonymousUserState;
 import com.tle.core.user.CurrentInstitution;
 import com.tle.core.user.CurrentUser;
@@ -60,8 +57,6 @@ public class InstitutionSection extends AbstractPrototypeSection<InstitutionSect
 
 	@Inject
 	private InstitutionService institutionService;
-	@Inject
-	private LicenseService licenseService;
 	@Inject
 	private FileSystemService fileSystemService;
 
@@ -193,20 +188,6 @@ public class InstitutionSection extends AbstractPrototypeSection<InstitutionSect
 		tree.registerInnerSection(logonMigrateSection, id);
 		tabInterfaces = new CollectInterfaceHandler<Tabable>(Tabable.class);
 		tree.addRegistrationHandler(tabInterfaces);
-	}
-
-	/**
-	 * license deemed valid if not null and not expired and the current EQUELLA
-	 * version is not greater than the licence version
-	 * 
-	 * @param info
-	 * @return
-	 */
-	public boolean isLicenseValid(SectionInfo info)
-	{
-		License license = licenseService.getLicense();
-		return license != null && !license.isExpired()
-			&& !ApplicationVersion.get().greaterVersionThan(license.getVersion());
 	}
 
 	public CollectInterfaceHandler<Tabable> getTabInterfaces()

@@ -6,7 +6,6 @@ import javax.inject.Singleton;
 import com.tle.core.guice.Bind;
 import com.tle.core.mimetypes.MimeTypeConstants;
 import com.tle.core.pss.util.PSSConstants;
-import com.tle.core.system.LicenseService;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
@@ -21,14 +20,11 @@ public class PearsonScormServicesViewer extends AbstractResourceViewer
 {
 	@Inject
 	private ComponentFactory componentFactory;
-	@Inject
-	private LicenseService licenseService;
 
 	@Override
 	public boolean supports(SectionInfo info, ViewableResource resource)
 	{
-		return licenseService.isFeatureEnabled(PSSConstants.PEARSON_SCORM_SERVICES_LICENCE)
-			&& resource.getMimeType().equals(MimeTypeConstants.MIME_SCORM);
+		return resource.getMimeType().equals(MimeTypeConstants.MIME_SCORM);
 	}
 
 	@Override

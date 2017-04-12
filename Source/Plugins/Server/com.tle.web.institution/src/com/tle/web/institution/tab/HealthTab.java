@@ -333,7 +333,7 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel>
 	@Override
 	protected boolean isTabVisible(SectionInfo info)
 	{
-		return institutionSection.isLicenseValid(info);
+		return true;
 	}
 
 	@Override
