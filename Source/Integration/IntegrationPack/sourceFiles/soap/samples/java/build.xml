@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Java Sample REST Client" default="product" basedir=".">
+
+	<property name="src" location="src" />
+	<property name="lib" location="lib" />
+	<property name="build" location="classes" />
+	<property name="product" location="product" />
+	<property name="jar.name" value="soapclient.jar" />
+
+	<target name="clean">
+		<delete dir="${build}" />
+		<delete dir="${product}" />
+	</target>
+
+	<target name="init" depends="clean">
+		<mkdir dir="${build}" />
+		<mkdir dir="${product}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="${src}" destdir="${build}" source="1.7" target="1.7" debug="on" includeantruntime="false">
+			<classpath>
+				<fileset dir="${lib}" />
+			</classpath>
+		</javac>
+		
+		<!-- copy resources -->
+		<copy file="${src}/org/example/soap/settings.properties" todir="${build}/org/example/soap" />
+		<copy file="${src}/org/example/soap/testAttachment.jpg" todir="${build}/org/example/soap" />
+	</target>
+	
+	<target name="product" depends="compile">
+		<jar destfile="${product}/${jar.name}" basedir="${build}">
+			<manifest>
+				<attribute name="Main-Class" value="org.example.soap.Main"/>
+			</manifest>
+		</jar>
+		
+		<!-- copy libs jars to product -->
+		<copy todir="${product}">
+			<fileset dir="${lib}"/>
+		</copy>
+	</target>
+</project>

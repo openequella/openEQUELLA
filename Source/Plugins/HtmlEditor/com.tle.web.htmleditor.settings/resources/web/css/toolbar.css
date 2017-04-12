@@ -1,0 +1,88 @@
+.currenttoolbar .toolbarbutton,
+.availabletoolbar .toolbarbutton,
+.currenttoolbar .toolbarbutton *,
+.availabletoolbar .toolbarbutton *
+{
+	float: left;
+	cursor: move;
+}
+
+.currenttoolbar, .availabletoolbar
+{
+	height: auto;
+	min-height: 22px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #8F8B7F;
+}
+
+.currenttoolbar
+{
+	
+}
+
+.availabletoolbar
+{
+	margin-top: 1em;
+}
+
+.currenttoolbar.currenttoolbar0
+{
+	margin-top: 1em;
+	border-bottom-color: #D0D0D0;
+}
+
+.currenttoolbar.currenttoolbar1
+{
+	border-top: none;
+	border-bottom: none;
+}
+
+.currenttoolbar.currenttoolbar2
+{
+	margin-bottom: 1em;
+	border-top-color: #D0D0D0;
+}
+
+.button_placeholder
+{
+	border-width: 1px;
+	border-style: dotted;
+	border-color: #000000;
+	width: 20px;
+	height: 20px;
+	float: left;
+}
+
+.toolbaractions
+{
+	height: 30px;
+}
+
+.toolbaractions .toolbaractionbutton
+{
+	float: right;
+}
+
+/*
+Haxical
+*/
+.dynamicheighthack
+{
+    clear: both;
+    height: 1px;
+    overflow: hidden;
+}
+
+.availabletoolbar .toolbarbutton .tleSkin .mceSeparator
+{
+	background-image: url(../images/separator.png);
+	/*
+	background:url(img/button_bg.png) -22px 0; width:5px; height:22px*/
+	
+	/*
+	background-size: 300% 100%;
+	background-position: -66px 0px;*/
+	width: 22px;
+	/*background-repeat: repeat-x;*/
+}

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="bbUI.xsl"?>
+<!DOCTYPE taglib
+PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN"
+"http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
+<taglib>
+  <tlibversion>1.0</tlibversion>
+
+  <jspversion>1.1</jspversion>
+
+  <shortname>Blackboard Data Tag Library</shortname>
+
+  <uri>/bbData</uri>
+
+  <info>The Blackboard Data tag library encapsulates interaction
+  with the Blackboard data and logic layer to allow separation of
+  the UI elements (bbUI) and other page logic.</info>
+
+  <tag>
+    <name>context</name>
+
+    <tagclass>blackboard.servlet.tags.data.ContextTag</tagclass>
+
+    <teiclass>blackboard.servlet.tags.data.ContextTei</teiclass> 
+    <bodycontent>JSP</bodycontent>
+
+    <info>In order to support forward compatibility for 5.5
+    extension into 6, we need to build a hook that will allow us to
+    capture virtual installation info in 6. Programmatically, this
+    was going to be through the Context object. We need to
+    formalize the interface in 5.5 so that developers can use the
+    API to ensure 6.0 conformance. As a high-level wrapper, we also
+    need a taglib for simple inclusion. The taglib would be a
+    no-arg tag required before any service APIs were called, with a
+    required closing tag at the bottom of the page (ensuring
+    context is released). API calls would be Context.setInstance(
+    HttpServletRequest req ) and Context.releaseInstance(). We need
+    to include some kind of integrity checking/reference counting
+    to ensure proper behavior of nested calls.
+    
+    id -    may be used to explicitly reference the context object elsewhere 
+            in the page (also can access the context from the Java APIs, as
+            usual)
+            
+    license -   license key, used to ensure that page will not display if 
+                the license is not valid
+             
+    navItem -   initializes a NavigationItemControl that will automatically
+                handle entitlements, and also sets default values for the page title
+                and breadcrumbs on a given page. 
+    entitlements - a String[] containing entitlements to check before displaying the page
+                   entitlements as per 
+                   blackboard.platform.security.AccessManagerService.userHasAnyEntitlements()     
+    entitlement -  a String containing a single entitlement to check before displaying the page
+                   entitlement as per 
+                   blackboard.platform.security.AccessManagerService.userEntitlement()       
+    </info>
+    
+    
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>license</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>navItem</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>entitlements</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>entitlement</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    
+  </tag>
+</taglib>
+

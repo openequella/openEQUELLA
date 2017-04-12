@@ -1,0 +1,1 @@
+This plugin is included as a basis for developing your own plugins.  You can zip the contents of this directory and upload it into the "HTML editor" settings section of EQUELLA to see it in action.

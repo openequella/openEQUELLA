@@ -1,0 +1,42 @@
+@import url("controls.css");
+
+.calendar-control .calendar {
+	margin-right: 0;
+	margin-left: 40px;
+}
+
+#searchform .wizard-controls div.input.calendar {
+	margin: 8px 0 8px 40px;
+}
+
+.wizard-controls .indent1,.wizard-controls .indent2,.wizard-controls .indent3
+	{
+	padding: 0 40px 0 0px;
+}
+
+.repeater-remove {
+	right: 0;
+	left: 10px;
+	float: left;
+	position: static;
+}
+
+.calendar-control .calendar-clear {
+	display: inline !important;
+}
+
+div.calendar img {
+	position: relative;
+	top: 8px;
+	left: 0px;
+	margin: -1px 5px 0 5px;
+}
+
+div.error-receipt {
+	text-align: right;
+}
+
+div.error-receipt ul li {
+	margin-left: 0;
+	margin-right: 10px;
+}

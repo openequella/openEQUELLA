@@ -1,0 +1,17 @@
+@import url("packageviewer.css");
+
+#pv-content {
+	float: right;
+}
+
+#pv-content-left {
+	float: right;
+}
+
+#pv-content-right {
+	float: left;
+}
+
+#pv-divider {
+	float: right;
+}

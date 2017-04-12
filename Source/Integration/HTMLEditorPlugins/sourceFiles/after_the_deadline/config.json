@@ -1,0 +1,6 @@
+{
+	"atd_show_types": "Bias Language,Cliches,Complex Expression,Diacritical Marks,Double Negatives,Hidden Verbs,Jargon Language,Passive voice,Phrases to Avoid,Redundant Expression",
+	"atd_rpc_id" : "EQUELLA-DEV-${user.username}",
+	"atd_rpc_url" : "${institutionUrl}p/geturl?url=http%3A%2F%2Fservice.afterthedeadline.com",
+	"atd_css_url" : "${pluginUrl}css/content.css"
+}

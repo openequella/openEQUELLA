@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+
+<plugin version="1" id="Configmanager">
+	<requires>
+		<import plugin-id="com.tle.platform.equella" />
+		<import plugin-id="com.tle.platform.common" />
+		<import plugin-id="javax.servlet:servlet-api" />
+		<import plugin-id="com.miglayout:miglayout-swing" />
+		<import plugin-id="com.tle.platform.swing" />
+		<import plugin-id="org.jvnet.hudson:xstream" />
+		<import plugin-id="commons-io:commons-io" />
+		<import plugin-id="commons-configuration:commons-configuration" />
+		<import plugin-id="commons-lang:commons-lang" />
+		<import plugin-id="org.slf4j:slf4j-api" exported="true" />
+		<import plugin-id="log4j:log4j" exported="true" />
+	</requires>
+</plugin>
+

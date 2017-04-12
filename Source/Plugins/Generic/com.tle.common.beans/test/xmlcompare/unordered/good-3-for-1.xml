@@ -1,0 +1,12 @@
+<xml>
+	<a attr="another value">
+		<b>yes antoher thing here</b>
+	</a>
+	<a attr="some value">
+		<b>something here</b>
+	</a>
+	<a attr="some other value">
+		<c>a different element!</c>
+		<b>something else here</b>
+	</a>
+</xml>

@@ -1,0 +1,250 @@
+.area.order
+{
+	padding-bottom: 17px;
+    padding-left: 17px;
+    padding-right: 17px;
+    padding-top: 12px;
+}
+
+.orderinner
+{
+	padding-bottom: 18px;
+    padding-left: 18px;
+    padding-right: 18px;
+    padding-top: 13px;
+}
+
+.orderinner.cart
+{
+	border: 1px solid #8f8b7e;
+	background-color: #FFFFFF;
+	/*background-image: url("../../images/shop/cartbgfade.png");
+	background-repeat: no-repeat;
+	background-position: 50% 50%;*/
+	
+	background-image: url("../../images/shop/cartbig.png");
+	background-repeat: no-repeat;
+	background-position: 15px 5px;
+}
+
+.storeSection
+{
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+.storeTitle
+{
+	height: 32px;
+}
+
+.storeTitle IMG, .storeTitle H3
+{
+	float: left;
+}
+
+.storeTitle H3
+{
+	margin-top: 10px;
+	margin-left: 10px;
+}
+
+.tableActions
+{
+	height: 3em;
+	margin-bottom: 1em;
+}
+
+.tableActions .removeAll
+{
+	float:right;
+}
+
+A.unselect
+{
+	float: right;
+}
+
+.cartTotal
+{
+	height: 2em;
+}
+
+.cartTotal .totalTax
+{
+	font-size: 14px;
+}
+
+.cartTotal DIV
+{
+	float: right;
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.cartTotal DIV.float-left 
+{
+	float: left;
+	font-size: 12px;
+	font-weight: bold;
+	padding-left: 40px;
+    padding-top: 7px;
+}
+
+.shopTotal
+{
+	height: 2em;
+}
+
+.shopTotal DIV
+{
+	float: right;
+	/* same as h3 */
+	font-size: 17px;
+	font-weight: normal;
+}
+
+.shopTotal .shopTax
+{
+	float: right;
+	font-size: 14px;
+}
+
+.shopGateways
+{
+	height: 50px;
+}
+
+.shopGateways DIV
+{
+	float: right;
+}
+
+.orderhistory-add .orderhistory-action
+{
+	height: 2em;	
+}
+
+.orderhistory-add .orderhistory-action .reject,
+.orderhistory-add .orderhistory-action .redraft,
+.orderhistory-add .orderhistory-action .submit
+{
+	float: right;
+}
+
+.orderhistories
+{
+	
+}
+
+.orderhistories .orderhistory
+{
+	padding: 10px 17px;
+	border: 1px solid #8f8b7f;
+	background: #fefefe;
+	position: relative;
+	margin: 10px 0;
+}
+
+.orderhistories .orderhistory .orderhistory-username 
+{
+	color: #f6a03d;
+	padding: 5px 80px 5px 30px;
+	font-size: 17px;
+}
+
+.orderhistories .orderhistory.cart .orderhistory-username 
+{
+	background: url(../../images/shop/cart.png) 0 0 no-repeat;
+}
+
+.orderhistories .orderhistory.rejected .orderhistory-username 
+{
+	background: url(../../images/shop/rejected.png) 0 0 no-repeat;
+}
+
+.orderhistories .orderhistory.approval .orderhistory-username 
+{
+	background: url(../../images/shop/approval.ltr.png) 0 0 no-repeat;
+}
+
+.orderhistories .orderhistory.payment .orderhistory-username 
+{
+	background: url(../../images/shop/payment.png) 0 0 no-repeat;
+}
+
+.orderhistories .orderhistory.pending .orderhistory-username 
+{
+	background: url(../../images/shop/pending.png) 0 0 no-repeat;
+}
+
+.orderhistories .orderhistory.complete .orderhistory-username 
+{
+	background: url(../../images/shop/complete.png) 0 0 no-repeat;
+}
+
+.orderhistories .orderhistory .orderhistory-username .orderhistory-description 
+{
+	color: #b1b17b;
+	font-size: 10px;
+	padding: 0 0 0 5px;
+}
+
+.orderhistories .orderhistory .orderhistory-username .orderhistory-date 
+{
+	color: #b1b17b;
+	font-size: 10px;
+	padding: 0 0 0 5px;
+}
+
+.orderhistories .orderhistory .orderhistory-content P 
+{
+	margin: 5px 0;
+}
+
+.orderhistories .orderhistory.rejected
+{
+	color: #FF0000;
+	/*margin-left: 2em;*/
+}
+
+.orderhistory-add
+{
+	padding-top: 8px;
+}
+
+.orderhistory-add TEXTAREA 
+{
+	border: 1px solid #8f8b7f;
+	height: 80px;
+	border-radius: 0;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	/*
+	 * The following won't line up the text field perfectly on the right,
+	 * but a percentage works better with different widths
+	 */
+	width: 98%;
+}
+
+/*
+This is a somewhat compressed table
+*/
+.orderinner TABLE.zebra TR TH,
+.orderinner TABLE.zebra TR.rowShown TD
+{
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.orderinner TABLE.zebra TR.rowShown.error TD,
+.orderinner TABLE.zebra TR.rowShown.error:hover TD,
+.orderinner TABLE.zebra TR.rowShown.error:focus TD
+{
+	background-color: #FAA;
+}
+
+.orderinner TABLE.zebra DIV.namecol
+{
+	width: 150px;
+}

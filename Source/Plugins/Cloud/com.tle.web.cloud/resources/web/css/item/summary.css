@@ -1,0 +1,18 @@
+DIV.alert-error, DIV.alert-info
+{
+	text-align: center;
+ }
+ 
+#breadcrumbs span.wrapped
+{
+	white-space: nowrap;
+}
+
+
+.cloud-layout #col1 {
+	width: 592px;
+}
+
+.cloud-layout #col2 {
+	width: 139px;
+}

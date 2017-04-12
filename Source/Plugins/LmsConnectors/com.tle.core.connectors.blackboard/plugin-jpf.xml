@@ -1,0 +1,63 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.connectors.blackboard" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.common.search" />
+		<import plugin-id="com.tle.core.activation" />
+		<import plugin-id="com.tle.core.connectors" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.scheduler" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.web.integration" />
+		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.web.selection" />
+		<import plugin-id="com.tle.web.viewurl" />
+		<import plugin-id="commons-httpclient:commons-httpclient" />
+		<import plugin-id="org.apache.axis2:axis2-adb" />
+		<import plugin-id="org.apache.axis2:axis2-kernel" />
+		<import plugin-id="org.apache.axis2:axis2-codegen" />
+		<import plugin-id="org.apache.ws.commons.axiom:axiom-api" />
+		<import plugin-id="org.apache.axis2:axis2-transport-http" />
+		<import plugin-id="org.apache.axis2:axis2-transport-local" />
+		<import plugin-id="org.apache.ws.security:wss4j" />
+		<import plugin-id="org.apache.rampart:rampart-core" />
+		<import plugin-id="org.apache.ws.commons.axiom:axiom-impl" />
+		<import plugin-id="org.apache.ws.commons.schema:XmlSchema" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension plugin-id="com.tle.core.connectors" point-id="connectorImplementation" id="blackboard">
+		<parameter id="type" value="blackboard" />
+		<parameter id="class" value="bean:com.tle.core.connectors.blackboard.service.BlackboardConnectorService" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.connectors" point-id="connectorType" id="blackboardConnector">
+		<parameter id="id" value="blackboard" />
+		<parameter id="nameKey" value="com.tle.core.connectors.blackboard.connector.name" />
+		<parameter id="descriptionKey" value="com.tle.core.connectors.blackboard.connector.description" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="file" value="lang/i18n.properties" />
+		<parameter id="group" value="resource-centre" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.scheduler" point-id="scheduledTask" id="bbConnectorTask">
+		<parameter id="id" value="Blackboard Connector Synchronisation" />
+		<parameter id="bean" value="bean:com.tle.core.connectors.blackboard.scheduler.SynchroniseEquellaContentTask" />
+		<parameter id="frequency" value="weekly" />
+		<parameter id="scope" value="institution" />
+	</extension>
+</plugin>

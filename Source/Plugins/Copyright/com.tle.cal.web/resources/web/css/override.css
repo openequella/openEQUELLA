@@ -1,0 +1,15 @@
+p.override-message {
+	margin-top: 10px;
+	color: red;
+}
+
+#reason {
+	width: 97%;
+	height: 50px;
+	margin-top: 3px;
+}
+
+span.mandatory {
+	color: red;
+	padding-right: 1px;
+}

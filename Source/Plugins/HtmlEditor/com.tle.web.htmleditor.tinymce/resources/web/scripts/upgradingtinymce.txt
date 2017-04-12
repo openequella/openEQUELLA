@@ -1,0 +1,93 @@
+If you upgrade tinymce you need to perform the following surgery.  Note also that after making changes to _src files you need to run the
+javascript compressor over it (I used YUI compressor) to generate the non _src files.
+
+Make sure you also download *every* language pack too.
+
+  
+- tiny_mce_src.js 
+
+* needs editing (since it seems the EditorCommands can no longer be extended...)
+find the part about the cut,copy,paste not being supported in firefox (in tinymce 3.5 it was line 15110) and replace it with the following
+
+if (failed || !doc.queryCommandSupported(command)) {
+	if (tinymce.isGecko) {
+		//--------------------------------------------------------------------------------------------
+		//Added by TLE
+		editor.windowManager.confirmWithSize(editor.getLang('clipboard_msg'), function(state) {
+			if (state)
+			{
+				open('http://www.mozilla.org/editor/midasdemo/securityprefs.html', 'mceExternal');
+			}
+		}, null, 560, 420, false);
+		//--------------------------------------------------------------------------------------------
+		/*
+		editor.windowManager.confirm(editor.getLang('clipboard_msg'), function(state) {
+			if (state)
+				open('http://www.mozilla.org/editor/midasdemo/securityprefs.html', '_blank');
+		});*/
+	} else
+		editor.windowManager.alert(editor.getLang('clipboard_no_support'));
+}
+
+	
+you also need to add a new function to inlinepopups/editor_plugin_src.js:
+		/**
+		 * Added by TLE
+		 */
+		confirmWithSize: function(txt, cb, s, width, height, encode) 
+	    {
+			var t = this, w;
+			var cont = t.editor.getLang(txt, txt);
+			if (encode)
+			{
+				cont = DOM.encode(cont);
+			}
+			w = t.open({
+				title : t,
+				type : 'confirm',
+				button_func : function(s) 
+				{
+					if (cb)
+						cb.call(s || t, s);
+	
+					t.close(null, w.id);
+				},
+				content: cont,
+				inline : 1,
+				width : width,
+				height : height
+			});
+		},
+	
+	
+And still with inlinepopups:
+	
+
+* ( re #4413 ) approx line 560, change:
+	DOM.setAttrib(id + '_ifr', 'src', 'javascript:""'); // Prevent leak
+to
+	//Added by TLE
+	DOM.setAttrib(id + '_ifr', 'src', 'javascript:void(0);'); // Prevent leak
+	//DOM.setAttrib(id + '_ifr', 'src', 'javascript:""'); // Prevent leak
+
+
+* ( re #4827 ) approx line 162, add following else condition to this
+// Measure borders
+if (!f.type) {
+	dw += DOM.get(id + '_left').clientWidth;
+	dw += DOM.get(id + '_right').clientWidth;
+	dh += DOM.get(id + '_top').clientHeight;
+	dh += DOM.get(id + '_bottom').clientHeight;
+}
+// Added by TLE
+else
+{
+	dh += DOM.get(id + '_content').clientHeight + 20;
+	DOM.setStyles(id + '_content', {width: f.width + dw - 80});
+}
+
+
+
+- inlinepopups/skins/clearlooks2/window.css
+
+* So many changes, best to keep the modified file

@@ -1,0 +1,63 @@
+
+.k-pager-wrap {
+	background-color: #444;
+    border: 1px solid rgba(0,0,0,.3);
+    border-width: 1px 0;
+}
+.km-ios .k-pager-wrap {
+	background-color: #222;
+	background-image: none;
+}
+#android-pager, #android-notes-pager, #android-tasks-pager {
+	background-color: #222;
+	background-image: none;
+}
+#notes-pager a,
+#notes-pager span,
+#tasks-pager a,
+#tasks-pager span,
+#pager a,
+#pager span {
+	color: #DDD;
+}
+#pager .k-state-active,
+#notes-pager .k-state-active {
+	background color: #222;
+}
+.k-state-active, .k-state-active:hover, .k-active-filter {
+	background-color: #222;
+}
+.km-tablet .km-ios .km-content,
+.km-tablet .km-android .km-content {
+	background: url(./../images/body-bg.ltr.gif) center top repeat-x;
+	background-color: #0A84AC;
+}
+.km-tablet .km-ios .km-navbar {
+	background-image: -webkit-gradient(linear,50% 0,50% 100%,color-stop(0,rgba(255, 255, 255, 0.5)),color-stop(0.06,rgba(255, 255, 255, 0.45)),color-stop(0.5,rgba(255, 255, 255, 0.2)),color-stop(0.5,rgba(255, 255, 255, 0.15)),color-stop(1,rgba(100, 100, 100, 0)));
+	background-color: #05495f;
+    border: 1px solid rgba(0,0,0,.3);
+    border-width: 1px 0;
+}
+.km-tablet .km-android .km-navbar {
+	background-color: #000;
+    border: 1px solid rgba(0,0,0,.3);
+    border-width: 1px 0;
+}
+.km-tablet .km-ios .km-view-title {
+	color: #FFF;
+	text-shadow: none;
+}
+.km-tablet .km-ios :not(.km-tabstrip):not(.km-buttongroup) > .km-button {
+	background-color: #444;
+}
+.km-ios  .km-group-title,
+.km-android  .km-group-title {
+	color: #FFF;
+	text-shadow: none;
+}
+.km-android .km-list > li {
+    border-bottom: 1px solid #DDD;
+}
+.km-android .km-listview .km-list {
+    border-top: 1px solid #DDD;
+}

@@ -1,0 +1,1824 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="bbUI.xsl"?>
+
+
+<!DOCTYPE taglib
+ PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN"
+ "http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
+
+<taglib>
+
+  <tlibversion>1.0</tlibversion>
+  <jspversion>1.1</jspversion>
+  <shortname>Blackboard UI Tag Library</shortname>
+  <uri>/bbUI</uri>
+  <info>
+    The Blackboard User Interface tag library encapsulates Blackboard user 
+    interface elements to allow developers easy access to the Blackboard look and feel.
+  </info>
+
+ <tag>
+    <name>loginWelcome</name>
+    <tagclass>blackboard.servlet.tags.LoginWelcomeTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>
+      Creates the standard login welcome panel.
+    </info>
+    <attribute>
+      <name>errorMessage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+     
+       
+  <tag>
+    <name>loginForm</name>
+    <tagclass>blackboard.servlet.tags.LoginFormTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>
+      Creates the standard login form ( same look and feel as rendered by login.pl ).
+
+      validateFormScript - name of the inline script which will validate the login form.
+      errorMessage - error message from previous login attempt 
+    </info>
+    <attribute>
+      <name>validateFormScript</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>errorMessage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>createAccountForm</name>
+    <tagclass>blackboard.servlet.tags.CreateAccountFormTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>
+    Creates the create-account form.
+    
+    createAccountLink - name of the page that will create a new user account.
+    </info>
+    <attribute>
+        <name>createAccountLink</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+ 
+  <tag>
+    <name>copyright</name>
+    <tagclass>blackboard.servlet.tags.CopyrightTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>
+      Standard HTML snippet for Blackboard copyright notice.
+    </info>
+  </tag>     
+  
+   <tag>
+    <name>validateLoginFormScript</name>
+    <tagclass>blackboard.servlet.tags.ValidateLoginFormScriptTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>
+      Validates login form.
+    </info>
+  </tag>
+   
+  <tag>
+    <name>inlineScript</name>
+    <tagclass>blackboard.servlet.tags.InlineScriptTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      Inserts inline script into HTML.  
+      
+      scriptLanguage - assumed to be JavaScript, if no input is provided.
+      scriptRef1 - reference to existing script.
+      scriptRef2 - reference to another existing script.
+      scriptRef3 - reference to another existing script.
+      scriptRef4 - reference to another existing script.
+    </info>
+    <attribute>
+      <name>scriptLanguage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>scriptRef1</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>scriptRef2</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>scriptRef3</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>scriptRef4</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>       
+       
+  <tag>
+    <name>spacer</name>
+    <tagclass>blackboard.servlet.tags.SpacerTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>
+      Creates an invisible area on the page with the specified height
+      and width.
+
+      height - Vertical size of the spacer in pixels [1];
+      width  - Horizontal size of the spacer in pixels [1];
+    </info>
+    <attribute>
+      <name>height</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>width</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>align</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>devDocTemplate</name>
+    <tagclass>blackboard.servlet.tags.DocumentTemplateTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+	combines the docTemplateHead and docTemplateBody tag (for use
+	when you don't need to add items to the HEAD of the HTML doc.
+    </info>
+    <attribute>
+      <name>title</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>docTemplate</name>
+    <tagclass>blackboard.servlet.tags.ProductionDocTemplateTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>	combines the docTemplateHead and docTemplateBody tag (for use
+	when you don't need to add items to the HEAD of the HTML doc.
+
+    </info>
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>onLoad</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>onUnload</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>onSubmit</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>docTemplateHead</name>
+    <tagclass>blackboard.servlet.tags.ProductionDocTemplateHeadTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+	sets head defaults, such as including the base css sheet and validateForm.js
+	links. Use this tag if you wish to add more style sheets or javascript to 
+	the head of your HTML doc.
+    </info>
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>docTemplateBody</name>
+    <tagclass>blackboard.servlet.tags.ProductionDocTemplateBodyTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+	Sets the default body tag settings for the HTML page (such as attaching the
+	default style class to the body tag)
+    </info>
+    <attribute>
+      <name>onLoad</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>onUnload</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>coursePage</name>
+    <tagclass>blackboard.servlet.tags.CoursePageTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      Creates a course page element. It may be used to re-arrange elements on a page
+      from interface to interface. It makes the course available to sub-tags.
+      
+      course - Course data object [used in sub-tags to render course-specific elements];
+    </info>
+    <attribute>
+      <name>courseId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>course</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>courseTitleBar</name>
+    <tagclass>blackboard.servlet.tags.CourseTitlebarTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      Creates a course title bar
+    </info>
+  </tag>
+  
+  <tag>
+    <name>titleBar</name>
+    <tagclass>blackboard.servlet.tags.TitlebarTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      Creates a general use title bar.
+      iconUrl - the URL for the Icon image used in the titlebar;
+      pluginId - the Id for the plugin (known by the plugin developer;
+        and used as the directory root of the plugin, e.g. 
+        "/Blackboard/plugins/*pluginId*/images/pluginimg.gif")
+    </info>
+    <attribute>
+      <name>iconUrl</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>pluginId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+  </tag>
+  
+  <tag>
+    <name>step</name>
+    <tagclass>blackboard.servlet.tags.StepTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      Creates html for a wizard Step element.
+      number  - the number for the step (1, 2, 3 for 1st, 2nd, 3rd in wizard);
+      title   - the title of the step;
+    </info>
+    <attribute>
+      <name>number</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>title</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>    
+    <attribute>
+      <name>width</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+    <tag>
+    <name>stepSubmit</name>
+    <tagclass>blackboard.servlet.tags.StepSubmitTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>
+      Creates html for ane entire submit/cancel step element.
+      number  - the number for the step (1, 2, 3 for 1st, 2nd, 3rd in wizard);
+      title   - the title of the step;
+      cancelUrl - the url to recall the page to if the user cancels;
+      instructions - the message string displayed in this step;
+    </info>
+    <attribute>
+      <name>number</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>cancelUrl</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>instructions</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+ 
+  <tag>
+    <name>breadcrumbBar</name>
+    <tagclass>blackboard.servlet.tags.BreadcrumbBarTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      Creates the framework for the breadcrumb navigation.
+      environment - whether we are viewing this navigation in the 
+        course, control panel, portal, etc.
+        Acceptable values are: 
+        PORTAL,
+        COURSE,
+        CTRL_PANEL,
+        SYS_ADMIN;
+      handle - the database field used to uniquely identify the 
+        root nav item for the breadcrumb bar. (bar gets the appropriate
+        nav item from the handler, then traverses the navigation tree to
+        iteratively get the item's parents;   
+        target - the default target for bc items in this bar, defaults to none     
+    </info>
+    <attribute>
+      <name>environment</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>handle</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>isContent</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  
+  
+   <tag>
+    <name>breadcrumb</name>
+    <tagclass>blackboard.servlet.tags.BreadcrumbTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      Navigation item for the breadcrumb bar.
+      href - the optional attribute setting the link for the element;
+      target - the target attribute for the links in this breadcrumb, defaults
+      to none
+    </info>
+    <attribute>
+      <name>href</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  
+  <tag>
+    <name>dataElement</name>
+    <tagclass>blackboard.servlet.tags.DataElementTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      This tag will be superceded by type-safe form input tags.
+      label - the text label for the data (form) element;
+      should contain: form input tags.
+      required - indicates that the element is required before submitting
+        form. (Doesn't validate, simply adds *);
+    </info>
+    <attribute>
+      <name>label</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>required</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>instructions</name>
+    <tagclass>blackboard.servlet.tags.InstructionsTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      Instructions should only be called inside a step.
+    </info>
+  </tag>
+  
+  
+  <tag>
+    <name>stepContent</name>
+    <tagclass>blackboard.servlet.tags.StepContentTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      StepContent should only be called inside a step. It wraps the enclosed 
+      HTML in the appropriate table row and table data code to fit inside the
+      step tag. It is comparable to the specialized tags Instructions and 
+      DataElement, but is more generalized since it ONLY contains table code.
+    </info>
+  </tag>
+      
+  
+  <tag>
+    <name>button</name>
+    <tagclass>blackboard.servlet.tags.ButtonTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>
+      This tag will be superceded by type-safe button tags.
+      It hides the details of a button object (eventually will be functional 
+      in javascript and non-javascript modes).
+      
+      type    - whether the buton is FORM_ACTION, INLINE, LONG_INLINE, or TOOLBAR;
+
+			FORM_ACTION corresponds to the "submit"|"cancel" button type
+			ACTION_INLINE corresponds to the "modify"|"remove" button type
+			LONG_INLINE 	corresponds to inline buttons that don't have the standard button size (e.g., "properties")
+			TOOLBAR 	corresponds to the toolbar buttons (e.g. "add item") BUT NOT buttons used in actionbars (only old style toolbar buttons)
+
+
+      name    - the name of the button, which should correspond to the name of the 
+                image for the button, minus the "_off.gif";
+      alt     - used for the alt tag for the code;
+      action  - whether the button submits a form or links to another page;
+      targetUrl - the target for the page to link to, if it's a link-type button;
+      tabindex  - corresponds to the html tabindex property, used to set the tab order
+                  of a given link or button
+    </info>
+    <attribute>
+      <name>type</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>alt</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>action</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>targetUrl</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>tabindex</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  
+  <tag>
+    <name>receipt</name>
+    <tagclass>blackboard.servlet.tags.ReceiptTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      Creates a receipt page using titleBar and button components.
+      iconUrl - the URL for the Icon image used in the titlebar;
+      pluginId - the Id for the plugin (known by the plugin developer
+        and used as the directory root of the plugin, e.g. 
+        "/Blackboard/plugins/*pluginId*/images/pluginimg.gif");
+      recallUrl - OK button, if null will attempt to locate recallUrl from nav item
+        or use javascript back ONLY SHOWN IF submitUrl and cancelUrl are both null
+      submitUrl, cancelUrl - optional attributes to allow the receipt to have
+        two buttons (although either may be used alone).LINK  rather than FORM_SUBMIT action
+        
+    </info>
+    <attribute>
+      <name>type</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>iconUrl</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>pluginId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>recallUrl</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>cancelUrl</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>buttonName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>buttonAlt</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+ 
+ 
+ <tag>
+  <name>list</name>
+  <tagclass>blackboard.servlet.tags.ListTag</tagclass>
+  <teiclass>blackboard.servlet.tags.ListTei</teiclass>
+  <bodycontent>JSP</bodycontent>
+  <info>
+    Creates a list (UI determined by the TYPE attribute).
+    collection  - the collection passed to the list 
+        (usually a Blackboard filteredList resulting from a Load attempt
+        within the persistence layer. example: a list of users in a course)
+    collectionLabel - a label for the objects inthe list, default is "Objects"    
+    object      - the BbObject that will be iterated over in the list (example: user)
+        type    - the type of list (determines the UI)
+    description - description of the list (required for accessibility compliance)
+    sortUrl     - the URL to sort or paginate this list, probably of the form 
+        "myPage.jsp?id=_1_2&amp;name=test" or to control the list display, also specify
+        "myPage.jsp?id=_1_2&amp;name=test&amp;sortBy=" + listElement_index +
+        "&amp;startIndex=" + ind       
+    resultsPerPage - the number of items to display on a given page. Default is 20, and 
+        -1 is "show all"
+  </info>
+  <attribute>
+    <name>collection</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+  <attribute>
+    <name>objectId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+  <attribute>
+    <name>className</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+  <attribute>
+    <name>type</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+  <attribute>
+    <name>description</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+  <attribute>
+    <name>sortUrl</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+  <attribute>
+    <name>resultsPerPage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+  <attribute>
+    <name>collectionLabel</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+</tag> 
+ 
+  <tag>
+  <name>listElement</name>
+  <tagclass>blackboard.servlet.tags.ListElementTag</tagclass>
+  <bodycontent>JSP</bodycontent>
+  <info>
+    Creates a list item (one "cell" in a list)-- these items will be built up 
+      into rows and rendered as a list (examples: First Name, Last Name, Email)
+    width - the optional width setting (used for the width of the column of the list)
+    label - the optional label for the column
+    href - the optional url to use to sort the list by
+    abbr - the abbreviation for screen readers (required for accessibility if a LABEL is supplied)
+    comparator - an optional attribute to specify a comparator used to sort the list.
+  </info>
+  <attribute>
+    <name>width</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+  <attribute>
+    <name>label</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+  <attribute>
+    <name>href</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+  <attribute>
+    <name>abbr</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+  <attribute>
+    <name>comparator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+  <attribute>
+    <name>name</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+  <attribute>
+    <name>nowrap</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+  <attribute>
+    <name>align</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+  <attribute>
+    <name>valign</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+ </tag> 
+ 
+  
+ <tag>
+  <name>simpleList</name>
+  <tagclass>blackboard.servlet.tags.SimpleListTag</tagclass>
+  <bodycontent>empty</bodycontent>
+  <info>
+    Creates a list (UI determined by the TYPE attribute).
+    collection - the collection passed to the list 
+        (usually a Blackboard filteredList resulting from a Load attempt
+        within the persistence layer. example: a list of users in a course)
+    type - the type of list (determines the UI)
+    description - description of the list (required for accessibility compliance)
+  </info>
+  <attribute>
+    <name>collection</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+  <attribute>
+    <name>type</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+  <attribute>
+    <name>description</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>  
+  </attribute>
+ </tag>
+ 
+ 
+  <tag>
+    <name>dateAvailability</name>
+
+    <tagclass>
+    blackboard.servlet.tags.DateAvailabilityTag</tagclass>
+
+    <bodycontent>empty</bodycontent>
+
+    <info>creates the HTML and JavaScript for the date dropdown and
+    validation
+    
+    
+    TO CONNECT WITH FORM HANDLING:
+        
+    Read from hidden elements:
+    data__course_contents___pk1_pk2__restrict_start_date
+    data__course_contents___pk1_pk2__restrict_end_date
+    On edit, write to tag Date startDate and Date endDate
+    
+    NEW: can now rename these hidden fields with
+    startDateField
+    and
+    endDateField
+    
+    For use with the blackboard.struts.DateAvailabilityForm, set
+    startDateField = "blackboard.struts.DateAvailabilityForm.startDateField";
+    endDateField = "blackboard.struts.DateAvailabilityForm.endDateField";
+    
+    pickdate //unknown
+    pickname //unknown
+    
+    make sure that you include a link to the javascript file "/javascript/validateForm.js"
+    in the jsp page when this widget is used, if you are not using the docTemplate or docTemplateHead 
+	widgets. (this link has been removed
+    from the widget due to possible javascript conflicts)
+        
+    </info>
+
+    <attribute>
+      <name>formName</name>
+
+      <required>true</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    
+    <attribute>
+      <name>startCaption</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>endCaption</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>startDateField</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>endDateField</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>startDate</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>endDate</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  
+  <tag>
+    <name>dateSelection</name>
+    <tagclass>blackboard.servlet.tags.DateSelectionTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>
+        Creates the HTML for a date dropdown and related JavaScript validation
+        
+        TO CONNECT WITH FORM HANDLING:
+        Read from hidden elements:
+        data__course_contents___pk1_pk2__restrict_start_date
+        On edit, write to tag Date startDate and Date endDate
+    </info>
+    
+    <attribute>
+        <name>formName</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+        <name>elementName</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+        <name>date</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>caretList</name>
+    <tagclass>blackboard.servlet.tags.CaretListTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      Widget encapsulating a Caret List.
+      It works like the BreadcrumbBarTag, in that it can accept either
+      child tags (caret) or a collection of CaretBeans (blackboard.servlet.data.CaretBean).
+      
+      description: the table summary (for accessibility/screenreader functionality), describes
+        the function of the caret list.
+      
+    </info>
+    <attribute>
+      <name>description</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>collection</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+   <tag>
+    <name>caret</name>
+    <tagclass>blackboard.servlet.tags.CaretTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      Entry in a Caret List. Contains a title, description, and href 
+        (which is a link for the title attribute). Only the title is
+        required.
+        The description is set in the body of the tag
+    </info>
+    <attribute>
+      <name>title</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>href</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>module</name>
+    <tagclass>blackboard.servlet.tags.ModuleTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      Creates html for a module.
+    </info>
+    <attribute>
+      <name>title</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>bgColor</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>borderColor</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>borderSize</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>titleBgColor</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>titleColor</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>layoutUIStyle</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+  </tag>
+  
+  
+  <tag>
+    <name>actionItem</name>
+    <tagclass>blackboard.servlet.tags.ActionItemTag</tagclass>
+    <bodycontent>Empty</bodycontent>
+    <info>
+      Action items (such as Add Content), which appear in the 
+      ActionBar
+    </info>
+    <attribute>
+      <name>title</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>href</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>imgUrl</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+  </tag>
+  
+  <tag>
+    <name>actionBar</name>
+    <tagclass>blackboard.servlet.tags.ActionBarTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      Action items (such as Add Content) appear in the 
+      ActionBar
+    </info>
+    <attribute>
+      <name>action</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>icon</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>maxItems</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>collection</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>colorPicker</name>
+    <tagclass>blackboard.servlet.tags.ColorPickerTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>
+      Creates an form element for choosing a color.
+
+      name - Name of the form element;
+      color  - Current color;
+    </info>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>color</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>formName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>modulePersonalizationPage</name>
+    <tagclass>blackboard.servlet.tags.ModulePersonalizationPageTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      Creates the header and footer for a module personalization page.
+    </info>
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>iconUrl</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>modulePersonalizationReceipt</name>
+    <tagclass>blackboard.servlet.tags.ModulePersonalizationReceiptTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      Creates a module personalization receipt.
+    </info>
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>iconUrl</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>recallUrl</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>moduleAdminPage</name>
+    <tagclass>blackboard.servlet.tags.ModuleAdminPageTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      Creates the header and footer for a module personalization page.
+    </info>
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>iconUrl</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>moduleAdminReceipt</name>
+    <tagclass>blackboard.servlet.tags.ModuleAdminReceiptTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      Creates a module personalization receipt.
+    </info>
+    <attribute>
+      <name>title</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>iconUrl</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>recallUrl</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+
+
+  <tag>
+    <name>textbox</name>
+    <tagclass>blackboard.servlet.tags.TextboxTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>
+      Creates a textbox tag with formatting and MathML controls.
+      
+      isMathML          - should the widget include the MathML links?
+      isFormattedText   - should the widget include radio buttons for smart/plain/html?
+      mode              - modify|insert
+      name              - the name of the text area control, used in JS as well
+      label             - label for textarea
+      rows              - number of rows for textarea
+      cols              - number of columns for textarea
+      minLength         - validation-- must have a min length of this
+      maxLength         - text content can be no longer than maxLength (validation
+      text              - the text value of the area
+      xContent          - the structured text, in xml
+      format            - smarttext|plaintext|html
+      includeJs         - should only be true ONCE on a page-- set for the first MathML element on page
+      popupType         - defaults to html-- but can configure in future to popup.jsp instead
+    </info>
+    
+    
+    <attribute>
+      <name>isMathML</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    
+    <attribute>
+      <name>isFormattedText</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>mode</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    
+    <attribute>
+      <name>label</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>rows</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    
+    <attribute>
+      <name>cols</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    
+    <attribute>
+      <name>minLength</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>maxLength</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    
+    <attribute>
+      <name>text</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    
+    <attribute>
+      <name>xContent</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    
+    <attribute>
+      <name>format</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    
+    <attribute>
+      <name>includeJs</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    
+    <attribute>
+      <name>popupType</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+  </tag>
+
+  <!-- Begin toolbar tag definitions -->
+  <tag>
+    <name>toolbar</name>
+    <tagclass>blackboard.servlet.tags.ToolbarTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>A generic toolbar</info>
+    <attribute>
+      <name>borderColor</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>toolbarColor</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>height</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>width</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>toolbarButton</name>
+    <tagclass>blackboard.servlet.tags.ToolbarButtonTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>Very similar to an ActionItem containing a link, label and icon</info>
+    <attribute>
+      <name>label</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>link</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>icon</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>iconAlternative</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>iconHeight</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>iconWidth</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>toolbarDivider</name>
+    <tagclass>blackboard.servlet.tags.ToolbarDividerTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>A vertical divider element</info>
+    <attribute>
+      <name>height</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>toolbarEmpty</name>
+    <tagclass>blackboard.servlet.tags.ToolbarEmptyTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>A completely empty element ... do with it what you will, but check the documentation for toolbar eccentricities</info>
+  </tag>
+  
+  <tag>
+    <name>toolbarForm</name>
+    <tagclass>blackboard.servlet.tags.ToolbarFormTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>Wrapper for toolbar form elements</info>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>action</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>method</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>encType</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>toolbarText</name>
+    <tagclass>blackboard.servlet.tags.ToolbarTextTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>A text input form element</info>
+    <attribute>
+      <name>inputId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>label</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>size</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>icon</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>iconAlternative</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>iconHeight</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>iconWidth</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>toolbarSelect</name>
+    <tagclass>blackboard.servlet.tags.ToolbarSelectTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>Info.</info>
+    <attribute>
+      <name>inputId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>label</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+      <name>icon</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>iconAlternative</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>iconHeight</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>iconWidth</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  <!-- End toolbar tag definitions -->
+  
+  <!-- Begin navigation item tag definitions -->
+  <tag>
+    <name>navigationItemMenu</name>
+    <tagclass>blackboard.servlet.tags.NavigationItemMenuTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      A box defined by a cascading style sheet, containing all the navigation items belonging to a 
+      certain navigation family. Similar to a caret list, but designed for inline navigation links.
+    </info>
+    <attribute>
+      <name>family</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>substitutionMap</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  <!-- End navigation item tag definitions -->
+
+  <tag>
+    <name>box</name>
+    <tagclass>blackboard.servlet.tags.BoxTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      A basic box. The body of the tag is included inside the box.  Border color
+      and background color can be specified for visual interfaces.
+    </info>
+    <attribute>
+      <name>borderColor</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>backgroundColor</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>search</name>
+    <tagclass>blackboard.servlet.tags.SearchTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>
+      A tabbed search interface. Wraps the UI html around whatever content is in the body of 
+      the tag
+      
+      Attributes:
+      isShowAdvanced - defaults to false. if true, displays a second tab, for Advanced search,
+        and adds hyperlink wrappers for the inactive tab (note: tabbing between the two 
+        views, normal and advanced, is handled by the tab. If a searchUrl (below) is given,
+        the hyperlink for the tabs is created by appending "&amp;mode=advanced|normal". Otherwise,
+        a URL is determined from the request.
+      searchUrl: an optional attribute used to construct the hyperlink for the Advanced|Normal
+        tabs. Default- constructed from the request.  
+    </info>
+    <attribute>
+      <name>isShowAdvanced</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>searchUrl</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  
+  <tag>
+    <name>error</name>
+    <tagclass>blackboard.servlet.tags.ErrorTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>
+      Handles exception UI
+
+      exception - the exception that was thrown
+    </info>
+    <attribute>
+      <name>exception</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+         
+
+
+
+
+
+
+
+         
+  <tag>
+    <name>dateRangePicker</name>
+
+    <tagclass>
+    blackboard.servlet.tags.DatePickerTag</tagclass>
+
+    <bodycontent>empty</bodycontent>
+
+    <info>creates the HTML and JavaScript for the date dropdown and
+    validation
+    
+    Calendar startDate  - if null, defaults to the current time 
+    Calendar endDate    - if null, end date dropdown is omitted
+    
+    int datePickerIndex - defaults to 0, should be incremented for additional pickers on a page 
+    (NOTE: datePicker and dateRangePicker use the same field naming convention, and should not have the same index if on a page together)
+    
+    String formName     - defaults to "forms[0]", should be replaced by the form name attribute if more than one form is used on the page
+    String startCaption - label to use for start date picker, defaults to "Start"
+    String endCaption   - label to use for the end date picker, defaults to "End"
+    String endDateField - see below
+    String startDateField - see below
+    
+    
+    boolean checkPastDue - defaults to false, set to true if js validation for past due events is needed
+    boolean isEndChecked - defaults to false, set to true if the end date is set in the data object (as opposed to an as-yet-unset end date)
+    
+    
+    TO CONNECT WITH FORM HANDLING:    
+    Hidden field names are set with
+    startDateField 
+    and
+    endDateField
+    By default, read from hidden inputs:
+    start_date_0     
+    end_date_0 
+    (if manually setting these names, form name is rendered to page as: 
+        startDateField+"_" + datePickerIndex, to allow multiple pickers per page)
+            
+    make sure that you include a link to the javascript file "/javascript/validateForm.js"
+    in the jsp page when this widget is used, if you are not using the docTemplate or docTemplateHead 
+	widgets. (this link has been removed
+    from the widget due to possible javascript conflicts)
+        
+    </info>
+
+    <attribute>
+      <name>formName</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    
+    <attribute>
+      <name>startCaption</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>endCaption</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>startDateField</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>endDateField</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>startDate</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>endDate</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+  
+    <attribute>
+      <name>datePickerIndex</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    
+    <attribute>
+      <name>checkPastDue</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    
+    <attribute>
+      <name>isEndChecked</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+  </tag>
+  
+  
+  
+
+
+
+
+
+         
+  <tag>
+    <name>datePicker</name>
+
+    <tagclass>
+    blackboard.servlet.tags.DatePickerTag</tagclass>
+
+    <bodycontent>empty</bodycontent>
+
+    <info>creates the HTML and JavaScript for the date dropdown and
+    validation for a single date picker element
+    
+    Calendar startDate  - if null, defaults to the current time 
+    
+    int datePickerIndex - defaults to 0, should be incremented for additional pickers on a page
+    (NOTE: datePicker and dateRangePicker use the same field naming convention, and should not have the same index if on a page together)
+    
+    String formName     - defaults to "forms[0]", should be replaced by the form name attribute if more than one form is used on the page
+    String startCaption - label to use for start date picker, defaults to "Start"
+    String startDateField - see below
+    
+    
+    boolean checkPastDue - defaults to false, set to true if js validation for past due events is needed
+    
+    
+    TO CONNECT WITH FORM HANDLING:    
+    Hidden field name is set with
+    startDateField 
+    By default, read from hidden inputs:
+    start_date_0     
+    (if manually setting these names, form name is rendered to page as: 
+        startDateField+"_" + datePickerIndex, to allow multiple pickers per page)
+            
+    make sure that you include a link to the javascript file "/javascript/validateForm.js"
+    in the jsp page when this widget is used, if you are not using the docTemplate or docTemplateHead 
+	widgets. (this link has been removed
+    from the widget due to possible javascript conflicts)
+        
+    </info>
+
+    <attribute>
+      <name>formName</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    
+    <attribute>
+      <name>startCaption</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    <attribute>
+      <name>startDateField</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    <attribute>
+      <name>startDate</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  
+    <attribute>
+      <name>datePickerIndex</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    
+    <attribute>
+      <name>checkPastDue</name>
+
+      <required>false</required>
+
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    
+    
+  </tag>
+
+  <tag>
+    <name>errors</name>
+    <tagclass>blackboard.servlet.tags.ErrorsTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>
+      This is a replacement for the Struts html:error tag, which does not
+      include the internationalization features. It is assumed that the object
+      specified by "name" is an ActionErrors object, and that for each
+      ActionError it contains, the "key" property is actually the literal
+      message that should be displayed, and not a key into some ResourceBundle.
+      
+      Note that, due to a dependency on Struts, and the fact that Struts 1.0
+      cannot be loaded from the systemlib classloader, this class is NOT built
+      into the bb-taglib-api.jar. Instead, if you need to use this tag, you
+      must share the class into your webapp src directory. See tmoore for info.
+    </info>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>property</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>ppgBase</name>
+    <tagclass>blackboard.servlet.tags.PpgBaseTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info></info>
+  </tag>
+
+</taglib>

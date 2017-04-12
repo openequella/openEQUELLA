@@ -1,0 +1,17 @@
+@import url("userdetails.css");
+
+.profile-save-button {
+	background: url("../images/button-save-changes.rtl.png") right 0;
+}
+
+.profile-save-button:hover, .profile-save-button:focus, .change-pass-button:hover, .change-pass-button:focus {
+	background-position: right -28px;
+}
+
+.change-pass-button{
+	background: url("../images/button-change-password.rtl.png") right 0;
+}
+
+.area .edit.double h3 {
+	float: right;
+}

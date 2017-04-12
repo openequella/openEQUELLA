@@ -1,0 +1,9 @@
+<project>
+	<!--
+		Define selector patterns that match plug-ins you do
+		not want to be deployed by standard with the product.
+	-->
+	<selector id="withheld.selector">
+		<filename name="Custom/**" />
+	</selector>
+</project>

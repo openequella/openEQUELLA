@@ -1,0 +1,8 @@
+script/cache-commands.xml
+script/cache-script.xml
+images/back.gif
+images/browse.gif
+images/install.gif
+images/logo.gif
+images/next.gif
+images/quit.gif

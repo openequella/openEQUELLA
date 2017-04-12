@@ -1,0 +1,314 @@
+/*****************************************************************************
+ Selection Summary
+*****************************************************************************/
+.action-button.execute-action {
+	background-image: url("../images/returnselection.ltr.png");
+}
+
+/*****************************************************************************
+ Selection Dialog
+*****************************************************************************/
+#wrapper {
+	min-width: 784px;
+}
+
+#body-wrap2 {
+	padding-top: 0;
+}
+
+#body-wrap3,#body-inner {
+	width: auto;
+}
+
+#body-inner {
+	float: none;
+	padding: 0;
+}
+
+#footer {
+	background: url(../images/selection-footer-bg.gif) 0 0 repeat-x;
+	height: 2px;
+}
+
+#selection-header {
+	background: #C9C3AA;
+	border-bottom: 1px solid #7C786C;
+	border-top: 1px solid #FEFEFE;
+	height: 40px;
+}
+
+#selection-header-content {
+	position: relative;
+	width: 784px;
+	margin: 0 auto;
+}
+
+#selection-header-content .logo {
+	position: absolute;
+	top: 2px;
+	left: 0;
+	width: 92px;
+	height: 32px;
+	background: url(../images/logo-small.png) no-repeat;
+	overflow: hidden;
+	text-indent: -9999px;
+}
+
+#selection-header-content .selectactions {
+	position: absolute;
+	top: 6px;
+	left: 105px;
+}
+
+#selection-header-content .logo {
+	position: absolute;
+	top: 2px;
+	left: 0;
+	width: 92px;
+	height: 32px;
+	background: url(../images/logo-small.png) no-repeat;
+	overflow: hidden;
+	text-indent: -9999px;
+}
+
+#selection-header-content .close {
+	margin-top: 10px;
+	margin-left: 10px;
+	cursor: pointer;
+}
+
+#selection-page {
+	margin: 0 auto;
+	width: 784px;
+	border-bottom: 1px solid #7C786C;
+	border-right: 1px solid #7C786C;
+	position: relative;
+}
+
+#selection-content {
+	background: url(../images/content-middle.gif) repeat-y 0px 0px;
+	position: relative;
+	width: 784px;
+	float: left;
+}
+
+#selection-content #breadcrumb-inner {
+	margin-left: 18px;
+}
+
+#selection-header-content h3 a {
+	color: #045F7F;
+	text-decoration: none;
+}
+
+#selection-header-content h3 a:hover {
+	color: #045F7F;
+	text-decoration: underline;
+}
+
+#selection-content-bottom {
+	background: url(../images/content-bottom.gif) no-repeat 1px 100%;
+	float: left;
+	/* This is to ensure the above background logo shows */
+	padding-bottom: 90px;
+}
+
+#selection-content-inner {
+	background: url(../images/content-top.gif) no-repeat 0px 0px;
+	min-height: 400px;
+	padding: 32px 17px 0;
+	float: left;
+	width: 750px;
+}
+
+/*****************************************************************************
+ Selection dashboard
+*****************************************************************************/
+.selectiondashboard #col1,.selectiondashboard #col2 {
+	width: 368px;
+}
+
+/*****************************************************************************
+ Recent Portal - should be in the other plugin!
+*****************************************************************************/
+#searchresults-select {
+	background: none repeat scroll 0 0 #FBFBFB;
+	border: 1px solid #E9E9E6;
+	font-size: 10px;
+	padding: 4px;
+}
+
+.recent-portal .box_content_inner,.recent-portal .box_content {
+	padding: 0px;
+}
+
+/*****************************************************************************
+ Selection session nav bar overrides
+*****************************************************************************/
+#selection-header .navbar-equella-selection.normal .navbar.navbar-fixed-top.navbar-inverse .navbar-inner .navbar-content
+	{
+	width: 784px;
+}
+
+#selection-header .navbar-equella-selection.normal .navbar.navbar-fixed-top.navbar-inverse .navbar-inner .navbar-content .centered-pills
+{
+	width:95%;
+}
+
+/*****************************************************************************
+ Selection session wizard layout
+*****************************************************************************/
+#selection-content-inner.wizard-layout #col1 {
+	width: 592px;
+}
+
+#selection-content-inner.wizard-layout #col2,#selection-content-inner.wizard-layout #affix-div
+	{
+	width: 146px;
+}
+
+#selection-content-inner.wizard-layout .indent1 {
+	width: 486px;
+}
+
+#selection-content-inner.wizard-layout .indent2 {
+	width: 446px;
+}
+
+#selection-content-inner.wizard-layout .indent3 {
+	width: 406px;
+}
+
+/************************/
+#selection-content-inner.wizard-layout .input.text input[type="text"],#selection-content-inner.wizard-layout .input.text textarea,#selection-content-inner.wizard-layout select.listbox
+	{
+	width: 512px;
+}
+
+#selection-content-inner.wizard-layout .indent1 .input.text input[type="text"],#selection-content-inner.wizard-layout .indent1 .input.text textarea,#selection-content-inner.wizard-layout .indent1 select.listbox
+	{
+	width: 472px;
+}
+
+#selection-content-inner.wizard-layout .indent2 .input.text input[type="text"],#selection-content-inner.wizard-layout .indent2 .input.text textarea,#selection-content-inner.wizard-layout .indent2 select.listbox
+	{
+	width: 432px;
+}
+
+#selection-content-inner.wizard-layout .indent3 .input.text input[type="text"],#selection-content-inner.wizard-layout .indent3 .input.text textarea,#selection-content-inner.wizard-layout .indent3 select.listbox
+	{
+	width: 392px;
+}
+
+/************************/
+#selection-content-inner.wizard-layout .multieditbox input[type="text"],#selection-content-inner.wizard-layout .multieditbox select
+	{
+	width: 240px;
+}
+
+#selection-content-inner.wizard-layout .indent1 .multieditbox input[type="text"],#selection-content-inner.wizard-layout .indent1 .multieditbox select
+	{
+	width: 220px;
+}
+
+#selection-content-inner.wizard-layout .indent2 .multieditbox input[type="text"],#selection-content-inner.wizard-layout .indent2 .multieditbox select
+	{
+	width: 200px;
+}
+
+#selection-content-inner.wizard-layout .indent3 .multieditbox input[type="text"],#selection-content-inner.wizard-layout .indent3 .multieditbox select
+	{
+	width: 180px;
+}
+
+#selection-content-inner.wizard-layout .multieditbox DIV.singletranslation input[type="text"],#selection-content-inner.wizard-layout .multieditbox DIV.singletranslation textarea
+	{
+	width: 512px;
+}
+
+#selection-content-inner.wizard-layout .indent1 .multieditbox DIV.singletranslation input[type="text"],#selection-content-inner.wizard-layout .indent1 .multieditbox DIV.singletranslation textarea
+	{
+	width: 472px;
+}
+
+#selection-content-inner.wizard-layout .indent2 .multieditbox DIV.singletranslation input[type="text"],#selection-content-inner.wizard-layout .indent2 .multieditbox DIV.singletranslation textarea
+	{
+	width: 432px;
+}
+
+#selection-content-inner.wizard-layout .indent3 .multieditbox DIV.singletranslation input[type="text"],#selection-content-inner.wizard-layout .indent3 .multieditbox DIV.singletranslation textarea
+	{
+	width: 392px;
+}
+
+/************************/
+#selection-content-inner.wizard-layout .shuffle input[type="text"],#selection-content-inner.wizard-layout .shuffle select
+	{
+	width: 455px;
+}
+
+#selection-content-inner.wizard-layout .indent1 .shuffle input[type="text"],#selection-content-inner.wizard-layout .indent1 .shuffle select
+	{
+	width: 415px;
+}
+
+#selection-content-inner.wizard-layout .indent2 .shuffle input[type="text"],#selection-content-inner.wizard-layout .indent2 .shuffle select
+	{
+	width: 375px;
+}
+
+#selection-content-inner.wizard-layout .indent3 .shuffle input[type="text"],#selection-content-inner.wizard-layout .indent3 .shuffle select
+	{
+	width: 335px;
+}
+
+#selection-content-inner.wizard-layout .indent1 .shufflelist {
+	width: 556px;
+}
+
+#selection-content-inner.wizard-layout .indent2 .shufflelist {
+	width: 516px;
+}
+
+#selection-content-inner.wizard-layout .indent3 .shufflelist {
+	width: 476px;
+}
+
+#selection-content-inner.wizard-layout .shuffle-box-inner select {
+	width: 216px;
+}
+
+#selection-content-inner.wizard-layout .indent1 .shuffle-box-inner select
+	{
+	width: 196px;
+}
+
+#selection-content-inner.wizard-layout .indent2 .shuffle-box-inner select
+	{
+	width: 176px;
+}
+
+#selection-content-inner.wizard-layout .indent3 .shuffle-box-inner select
+	{
+	width: 156px;
+}
+
+#selection-content-inner.wizard-layout .indent0 .shuffle-box-inner label
+	{
+	width: 253px;
+}
+
+#selection-content-inner.wizard-layout .indent1 .shuffle-box-inner label
+	{
+	width: 233px;
+}
+
+#selection-content-inner.wizard-layout .indent2 .shuffle-box-inner label
+	{
+	width: 213px;
+}
+
+#selection-content-inner.wizard-layout .indent3 .shuffle-box-inner label
+	{
+	width: 193px;
+}

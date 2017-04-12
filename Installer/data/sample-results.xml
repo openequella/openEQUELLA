@@ -1,0 +1,49 @@
+<commands>
+	<installer>
+		<product>
+			<name>The Learning Edge</name>
+			<version>No Product Version</version>
+			<company>Dytech Solutions</company>
+		</product>
+		<local>/export/home/tle/install</local>
+		<platform>solaris</platform>
+	</installer>
+	<java>
+		<jdk>/usr/java</jdk>
+	</java>
+	<install.path>/export/home/tle/</install.path>
+	<datasource>
+		<dbtype>postgresql</dbtype>
+		<host>localhost</host>
+		<database>TLEdb</database>
+		<username>tleuser</username>
+		<password>kanazawa010</password>
+		<port>5432</port>
+	</datasource>
+	<webserver>
+		<url>http://learningedge.kanazawa-it.ac.jp:9000</url>
+		<binding>all</binding>
+		<host>learningedge.kanazawa-it.ac.jp</host>
+		<port>9000</port>
+		<context>/</context>
+		<defaultwebapp>&lt;default-web-app application=&quot;LearningEdge&quot; name=&quot;web&quot;/&gt;</defaultwebapp>
+	</webserver>
+	<service>
+		<port>3000</port>
+	</service>
+	<proxy>
+		<connection>false</connection>
+	</proxy>
+	<item.option>option3</item.option>
+	<memory>
+		<min>192m</min>
+		<max>512m</max>
+	</memory>
+	<admin.password>kanazawa010</admin.password>
+	<datastore>
+		<initialise>true</initialise>
+	</datastore>
+	<oracle>
+		<path>/export/home/tle/oracle</path>
+	</oracle>
+</commands>

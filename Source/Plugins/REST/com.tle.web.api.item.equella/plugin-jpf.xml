@@ -1,0 +1,43 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.api.item.equella" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.freetext" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.jackson" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.core.mimetypes" />
+		<import plugin-id="com.tle.core.services.item.relation" />
+		<import plugin-id="com.tle.web.viewurl" />
+		<import plugin-id="com.tle.web.core" />
+		<import plugin-id="com.tle.web.remoting.rest" />
+		<import plugin-id="com.tle.web.api.item.interfaces" exported="true" />
+		<import plugin-id="com.tle.web.api.item.equella.interfaces" exported="true" />
+		<import plugin-id="com.tle.web.api.item.equella.serializer" />
+		<import plugin-id="com.tle.web.api.staging.interfaces" />
+		<import plugin-id="com.tle.common.interfaces.equella" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModule" />
+	
+	<extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="itemResources">
+		<parameter id="class" value="com.tle.web.api.item.resource.EquellaItemResource" />
+		<parameter id="class" value="com.tle.web.api.item.interfaces.ItemActionsResource" />
+		<parameter id="class" value="com.tle.web.api.item.interfaces.ItemLockResource" />
+		<parameter id="class" value="com.tle.web.api.item.interfaces.ItemModerationResource" />
+		<parameter id="class" value="com.tle.web.api.item.interfaces.FileResource" />
+		<parameter id="class" value="com.tle.web.api.item.resource.impl.ItemRelationResourceImpl" />
+		<parameter id="class" value="com.tle.web.api.staging.interfaces.StagingResource" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.jackson" point-id="mapperExtension" id="itemMapperExtension">
+		<parameter id="mapper" value="rest" />
+		<parameter id="bean" value="bean:com.tle.web.api.item.impl.ItemMapperExtension" />
+	</extension>
+</plugin>

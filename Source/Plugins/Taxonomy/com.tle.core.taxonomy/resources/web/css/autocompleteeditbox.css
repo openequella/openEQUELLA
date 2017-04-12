@@ -1,0 +1,65 @@
+.ui-autocomplete li {
+	margin: 0px;
+	padding: 2px 5px;
+	cursor: default;
+	display: block;
+	font: menu;
+	font-size: 12px;
+	line-height: 16px;
+	overflow: hidden;
+}
+
+.autocompleteControl .autocomplete-container {
+	float: left;
+	width:513px;
+}
+
+#wizard-controls .autocompleteControl input[type="text"] {
+	height: 15px;
+}
+
+.ac_odd {
+	background-color: #FFFFEF;
+}
+
+.ui-autocomplete .ui-menu-item a.ui-state-focus {
+	color: #4B4842;
+	background:#ffc !important;
+}
+
+.wizard-layout .autocompleteControl input[type="text"] {
+	width: 500px;
+}
+
+.wizard-layout .indent1 .autocompleteControl input[type="text"] {
+	width: 460px;
+}
+
+.wizard-layout .indent2 .autocompleteControl input[type="text"] {
+	width: 405px;
+}
+
+.wizard-layout .indent3 .autocompleteControl input[type="text"] {
+	width: 380px;
+}
+
+#selection-content-inner.wizard-layout .autocompleteControl input[type="text"] {
+	width: 430px;
+}
+
+#selection-content-inner.wizard-layout .indent1 .autocompleteControl input[type="text"] {
+	width: 390px;
+}
+
+#selection-content-inner.wizard-layout .indent2 .autocompleteControl input[type="text"] {
+	width: 350px;
+}
+
+#selection-content-inner.wizard-layout .indent3 .autocompleteControl input[type="text"] {
+	width: 310px;
+}
+
+.autocompleteControl P.error {
+	color: #FF0000;
+	float: left;
+}

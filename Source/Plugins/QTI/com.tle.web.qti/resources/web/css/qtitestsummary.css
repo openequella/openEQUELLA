@@ -1,0 +1,59 @@
+body {
+	background-color: #707070;
+}
+
+.summary-box-container
+{
+	padding-left: 50%;
+	padding-top: 50%;
+	height: 100%;
+	width: 100%;
+}
+
+.summary-box {
+  	border: 1px solid transparent;
+  	width: 780px;
+  	height: 300px;
+    text-align: center;
+    box-shadow: 5px 10px 10px;
+  	border-radius: 5px 5px 5px 5px;
+  	background-color: #F1F1F1;
+  	
+  	position: absolute;
+  	top: 50%;
+  	left: 50%;
+   	margin-top:-150px;
+   	margin-left:-390px;
+}
+
+.summary-box .setting-row {
+	clear: both;
+    padding: 3px 0;
+}
+
+.summary-box h2 {	
+	margin-top:20px;
+}
+
+.summary-box p {
+	margin:40px 30px;
+}
+
+.summary-box .button-row {
+	margin-top: 25px;
+    position: relative;
+}
+
+.settingContainer {
+	width: 100%;
+	margin: auto;
+}
+
+.qti .settingLabel {
+	width: 49%;
+}
+
+.qti .settingField {
+	width: 49%;
+    text-align: left;
+}

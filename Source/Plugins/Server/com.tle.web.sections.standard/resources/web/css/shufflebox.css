@@ -1,0 +1,76 @@
+.shuffle-box {
+	margin: 20px 0;
+}
+
+.shuffle-box select {
+	width: 250px;
+	height: 150px;
+	float: left;
+}
+
+html[dir="rtl"] .shuffle-box select {
+	float: right;
+}
+
+.ctrlinvalid .shuffle-box select {
+	width: 245px;
+}
+
+.shuffle-box-controls {
+	margin: 20px 15px 0 12px;
+	width: 54px;
+	float: left;
+}
+
+html[dir="rtl"] .shuffle-box-controls {
+	margin: 20px 12px 0 15px;
+	float: right;
+}
+
+.shuffle-box-controls-left {
+	margin-top: 10px;
+}
+
+.shuffle-box-controls-right button,.shuffle-box-controls-left button
+	{
+	width: 50px;
+	margin: 0 0 0 3px;
+}
+
+html[dir="rtl"] .shuffle-box-controls-right button,html[dir="rtl"] .shuffle-box-controls-left button
+	{
+	margin: 0 3px 0 0;
+}
+
+.label-box {
+	margin: 7px 0 7px 0;
+	clear: both;
+	float: left;
+}
+
+html[dir="rtl"] .label-box {
+	float: right;
+}
+
+.shuffle-box-inner>.label-box>label {
+	font-size: 13px;
+	padding: 0 0 0 2px;
+	float: left;
+}
+
+html[dir="rtl"] .shuffle-box-inner>.label-box>label {
+	padding: 0 2px 0 0;
+	float: right;
+}
+
+.shuffle-box-inner>.label-box>label.label-right {
+	margin: 0 0 0 82px;
+}
+
+html[dir="rtl"] .shuffle-box-inner>.label-box>label.label-right {
+	margin: 0 82px 0 0;
+}
+
+.shuffle-box-inner label {
+	width: 245px;
+}

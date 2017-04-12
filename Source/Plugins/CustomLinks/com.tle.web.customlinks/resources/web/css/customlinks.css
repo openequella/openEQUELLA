@@ -1,0 +1,55 @@
+.checklist input {
+	display: none;
+}
+
+#cls_us {
+	list-style-type: none;
+	margin: 0;
+}
+
+#cls_us li {
+	margin: 5px 0px;
+	font-size: 13px;
+	height: 20px;
+	padding: 5px 10px 8px 45px;
+	/*margin-right: 10px;*/
+	background-position: 10px center;
+	background-repeat: no-repeat;
+}
+
+#cls_us li,#cls_us li label {
+	cursor: move;
+}
+
+html>body #cls_us li {
+	height: 20px;
+	line-height: 16px;
+}
+
+.ui-state-highlight {
+	height: 20px;
+	line-height: 16px;
+}
+
+.ui-state-default .link-name {
+	margin-top: 4px;
+	padding-left: 7px !important;
+	float: left;
+	width: 450px;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.customlinks .link-buttons {
+	float: right;
+}
+
+.highlight.ui-state-default {
+	background: #F1F0E9;
+}
+
+
+input[readonly="readonly"] {
+	color: grey; 
+	background-color: #F0F0F0;
+}

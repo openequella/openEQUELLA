@@ -1,0 +1,10 @@
+DIV.attachments
+{
+}
+
+DIV.attachments DIV.attachment
+{
+	float: left;
+	width: 200px;
+	margin-bottom: 20px;
+}

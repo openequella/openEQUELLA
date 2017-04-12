@@ -1,0 +1,10 @@
+{
+	"dependencies": [
+	 {
+	 	"groupId" : "com.tle.web.mycontent.files",
+	 	"artifactId" : "OfficeIntegrationInstaller",
+	 	"version" : "6.2",
+	 	"extension" : "msi",
+	 	"noSource": "true"
+	 }]
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.api.search" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.common.search" />
+		<import plugin-id="com.tle.core.dynacollection" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.search" />
+		<import plugin-id="com.tle.core.freetext" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.web.remoting.rest" />
+		<import plugin-id="com.tle.web.api.item.equella" />
+		<import plugin-id="com.tle.web.api.item.interfaces" />
+		<import plugin-id="com.tle.web.api.item.equella.serializer" />
+		<import plugin-id="com.tle.web.api.item.equella.interfaces" />
+		<import plugin-id="com.tle.web.api.search.interfaces" />
+		<import plugin-id="com.tle.core.powersearch" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModule" />
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="searchResource">
+		<parameter id="class" value="com.tle.web.api.search.EquellaSearchResource" />
+	</extension>
+</plugin>

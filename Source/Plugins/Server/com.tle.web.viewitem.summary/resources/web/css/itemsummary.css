@@ -1,0 +1,125 @@
+.itemsummary-layout {
+	width: 750px;
+}
+
+.itemsummary-layout #col1 {
+	width: 592px;
+}
+
+.itemsummary-layout #col2 {
+	width: 139px;
+}
+
+.itemsummary-layout #col1 .area td>h3 {
+	margin-top: 0px;
+}
+
+.itemsummary-layout #col1 .area td>p {
+	margin-bottom: 10px;
+}
+
+.itemsummary-layout #col2 h3 {
+	font-size: 14px;
+	font-weight: normal;
+}
+
+.itemsummary-layout #col2 ul {
+	margin: 10px 0px;
+}
+
+/* keeps li spacing even when one list follows another in the same section */
+.itemsummary-layout #adjacentuls ul {
+	margin: 5px 0px;
+}
+
+.itemsummary-layout #adjacentuls ul li {
+	margin: 5px 0px;
+}
+
+.itemsummary-layout #adjacentuls .prop
+{
+	clear: both;
+}
+
+.itemsummary-layout #col2 ul li {
+	line-height: 1.3;
+	margin: 4px 0px;
+}
+
+.itemsummary-layout #col2 ul li a {
+	color: #045F7F;
+}
+
+.itemsummary-layout .box {
+	width: 137px;
+}
+
+.itemsummary-layout #col1 ul.moderators {
+	list-style: disc;
+	margin-top: 4px;
+	padding-left: 2.5em;
+	padding-right: 2.5em;
+}
+
+.itemsummary-layout #col1 div.flowchart-thumb {
+	margin-top: 15px;
+	text-align: center;
+}
+
+.itemsummary-layout #col1 div.flowchart-thumb img {
+	border: 1px solid #8F8B7F;
+	max-width: 522px;
+}
+
+.itemsummary-layout #col1 #historyevents {
+	margin: 10px 0;
+}
+
+.itemsummary-layout #col1 .displayNodeHalf {
+	display: inline-block;
+	vertical-align: top;
+	margin: -15px 0;
+	width: 49%;
+}
+
+.action-button.select {
+	background-image: url("../images/addselected.ltr.png");
+}
+
+.action-button.unselect {
+	background-image: url("../images/removeselected.ltr.png");
+}
+
+.itemdetails {
+	padding-top: 8px;
+}
+
+div.in-selection  .itemdetails-left {
+	float: left;
+}
+
+div.in-selection ul.itemdetails-right {
+	float: right;
+}
+
+div.action_list {
+	margin-top: 110px;;
+}
+
+.htmlcontent {
+	word-wrap: break-word;
+	white-space: normal;
+	overflow: auto;
+	overflow-y: hidden;
+}
+
+/**
+	Versions table
+**/
+table.versions {
+	table-layout: fixed;
+}
+
+table.versions td {
+	word-wrap: break-word;
+}

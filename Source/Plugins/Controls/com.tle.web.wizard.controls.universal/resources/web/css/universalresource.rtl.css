@@ -1,0 +1,16 @@
+@import url("universalresource.css");
+
+.universalresourcedialog .file-header img.file-thumbnail {
+	float: right;
+}
+
+.universalresourcedialog .file-header .file-info {
+	float: right;
+	margin-left: 0;
+	margin-right: 20px;
+}
+
+.attachment-content {
+	margin-left: 15px;
+	margin-right: 0;
+}

@@ -1,0 +1,42 @@
+<schema id="b9ca3f68-cf9b-30bf-9e3b-608a6e78d174">
+<collaborators type="public"/>
+<definition>
+<xml>
+<item>
+<name search="true" type="text"/>
+<description search="true" type="text"/>
+<keywords search="true" type="text"/>
+<datecreated type="text"/>
+<datemodified type="text"/>
+<calendar>
+<new_element attribute="true" type="text"/>
+</calendar>
+<new_element>
+<new_element attribute="true" type="text"/>
+</new_element>
+<new_element_1 type="text"/>
+<new_element_2 type="text"/>
+<new_element_3 type="text"/>
+<new_element_4 type="text"/>
+<new_element_5 type="text"/>
+<new_element_6 type="text"/>
+<new_element_7 type="text"/>
+</item>
+<repeater repeatable="true">
+<a12 attribute="true" type="text"/>
+<ne121212121212 attribute="true" type="html"/>
+<new_element field="true" search="true" type="text"/>
+<new_element_1 type="text"/>
+</repeater>
+<new_element repeatable="true">
+<new_element attribute="true" type="text"/>
+<new_element_1 attribute="true" type="text"/>
+<new_element_2 attribute="true" type="text"/>
+</new_element>
+</xml>
+</definition>
+<description>hay</description>
+<lockedby session="" userid=""/>
+<name>jay</name>
+<owner>a7ccebdd-44b2-9c01-5a4e-28f9681cfa6d</owner>
+</schema>

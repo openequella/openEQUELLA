@@ -1,0 +1,60 @@
+package com.tle.admin.baseentity;
+
+import java.awt.Component;
+import java.awt.GridLayout;
+
+import com.tle.beans.entity.BaseEntity;
+import com.tle.common.accesscontrolbuilder.AccessEditor;
+import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.security.PrivilegeTree.Node;
+import com.tle.common.security.remoting.RemoteTLEAclManager;
+import com.tle.core.remoting.RemoteUserService;
+
+/**
+ * @author Nicholas Read
+ */
+public class AccessControlTab<T extends BaseEntity> extends BaseEntityTab<T>
+{
+	private final Node privilegeNode;
+
+	private AccessEditor editor;
+
+	public AccessControlTab(Node privilegeNode)
+	{
+		this.privilegeNode = privilegeNode;
+	}
+
+	@Override
+	public void init(Component parent)
+	{
+		editor = new AccessEditor(clientService.getService(RemoteTLEAclManager.class),
+			clientService.getService(RemoteUserService.class));
+
+		setLayout(new GridLayout(1, 1));
+		add(editor);
+	}
+
+	@Override
+	public void validation()
+	{
+		// Nothing to validate here.
+	}
+
+	@Override
+	public String getTitle()
+	{
+		return CurrentLocale.get("com.tle.admin.baseentity.accesscontroltab.title"); //$NON-NLS-1$
+	}
+
+	@Override
+	public void load()
+	{
+		editor.load(state.getEntity(), state.getEntityPack().getTargetList(), privilegeNode);
+	}
+
+	@Override
+	public void save()
+	{
+		state.getEntityPack().setTargetList(editor.save());
+	}
+}

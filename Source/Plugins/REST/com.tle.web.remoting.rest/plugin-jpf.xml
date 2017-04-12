@@ -1,0 +1,117 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.remoting.rest" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.licences" />
+		<import plugin-id="com.tle.web.core" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.core.jackson" exported="true" />
+		<import plugin-id="org.hibernate" />
+		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.core.mimetypes" />
+		<import plugin-id="com.tle.core.filesystem" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.web.api.interfaces" />
+		<import plugin-id="com.wordnik:swagger-core_2.11" exported="true" />
+		<import plugin-id="com.wordnik:swagger-jaxrs_2.11" exported="true" />
+		<import plugin-id="com.wordnik:swagger-annotations" exported="true" />
+		<import plugin-id="org.jboss.resteasy:resteasy-jackson-provider" exported="true" />
+		<import plugin-id="org.jboss.resteasy:resteasy-jaxrs" exported="true" />
+		<import plugin-id="org.jboss.resteasy:jaxrs-api" exported="true" />
+		<import plugin-id="org.scannotation:scannotation" exported="true" />
+		<import plugin-id="com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider" />
+		<import plugin-id="org.scala-lang:scala-library" exported="true" />
+		<import plugin-id="com.tle.common.interfaces.equella" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="resource">
+		<parameter-def id="class" multiplicity="one-or-more">
+			<parameter-def id="doc-listing" multiplicity="none-or-one" />
+		</parameter-def>
+	</extension-point>
+
+	<extension-point id="mapperExtension">
+		<parameter-def id="bean" multiplicity="one" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.jackson" point-id="mapperExtension" id="defaultConfig">
+		<parameter id="mapper" value="rest" />
+		<parameter id="bean" value="bean:com.tle.web.remoting.resteasy.RestEasyServlet" />
+	</extension>
+	
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="file" value="lang/i18n.properties" />
+		<parameter id="group" value="resource-centre" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModule">
+		<parameter id="class" value="com.tle.web.sections.equella.guice.EquellaModule" />
+		<parameter id="class" value="com.tle.web.remoting.resteasy.RestEasyModule" />
+		<parameter id="class" value="com.tle.web.remoting.rest.docs.DocsModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webFilter" id="jsonpFilter">
+		<parameter id="url-pattern" value="/api/*" />
+		<parameter id="bean" value="com.tle.web.remoting.resteasy.JsonpFilter" />
+		<parameter id="order" value="900" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="restServlet">
+		<parameter id="url-pattern" value="/api/*" />
+		<parameter id="bean" value="bean:com.tle.web.remoting.resteasy.RestEasyServlet" />
+		<parameter id="init-param">
+			<parameter id="name" value="resteasy.servlet.mapping.prefix" />
+			<parameter id="value" value="/api" />
+		</parameter>
+		<parameter id="init-param">
+			<parameter id="name" value="resteasy.scan" />
+			<parameter id="value" value="true" />
+		</parameter>
+		<parameter id="init-param">
+			<parameter id="name" value="resteasy.providers" />
+			<parameter id="value" value="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider,com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider,com.wordnik.swagger.jaxrs.listing.ResourceListingProvider" />
+		</parameter>
+		<parameter id="init-param">
+			<parameter id="name" value="javax.ws.rs.Application" />
+			<parameter id="value" value="com.tle.web.remoting.resteasy.RestEasyApplication" />
+		</parameter>
+		<parameter id="init-param">
+			<parameter id="name" value="swagger.api.format.string" />
+			<parameter id="value" value="" />
+		</parameter>
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="docsSection">
+		<parameter id="path" value="/apidocs.do" />
+		<parameter id="root" value="bean:/docsSection" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="docsResource">
+		<parameter id="class" value="com.tle.web.remoting.rest.docs.DocsResource" />
+		<parameter id="class" value="com.tle.web.remoting.rest.docs.ApiListingResource" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="swaggerLicenceName">
+		<parameter id="thirdPartyName" value="Swagger" />
+		<parameter id="licenceName" value="Apache 2.0" />
+		<parameter id="licenceURLInternal" value="apache-2.0.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
+		<parameter id="licenceURLExternal" value="http://opensource.org/licenses/apache2.0.php" />
+		<parameter id="thirdPartyHome" value="http://swagger.wordnik.com/" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="resteasyLicenceName">
+		<parameter id="thirdPartyName" value="RestEasy" />
+		<parameter id="licenceName" value="LGPL v2.1" />
+		<parameter id="licenceURLInternal" value="lgpl-2.1.txt" />
+		<parameter id="licenceURLExternal" value="http://www.gnu.org/copyleft/lesser.html" />
+		<parameter id="thirdPartyHome" value="http://www.redhat.com/products/jbossenterprisemiddleware/application-platform/" />
+	</extension>
+</plugin>

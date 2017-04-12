@@ -1,0 +1,11 @@
+.quick-search .prompt, 
+.quick-search .ui-autocomplete-input
+{
+	width: 300px;
+}
+
+.wide .quick-search .prompt,
+.wide .quick-search .ui-autocomplete-input
+{
+	width: 660px;
+}

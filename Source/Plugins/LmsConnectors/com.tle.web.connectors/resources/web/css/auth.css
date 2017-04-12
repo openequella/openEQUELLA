@@ -1,0 +1,11 @@
+#auth_container
+{
+	height: 540px;
+	overflow: hidden;
+}
+
+#auth_container iframe
+{
+	width: 100%;
+	height: 100%;
+}

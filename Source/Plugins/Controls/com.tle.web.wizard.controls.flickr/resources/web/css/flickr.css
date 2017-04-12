@@ -1,0 +1,80 @@
+.flickrHandler #searchform #searchform-query
+{
+	width: 435px;
+	
+	-webkit-border-radius: 4px 0 0 4px;
+  -moz-border-radius: 4px 0 0 4px;
+  border-radius: 4px 0 0 4px;
+  border-right: none;
+  
+  /* Bootstrap input-append input styles  */
+	position: relative;
+    margin-bottom: 0;
+    *margin-left: 0;
+    vertical-align: top;
+}
+
+.flickrHandler #searchform #searchform-search
+{
+	height: 27px;	
+}
+
+.flickrHandler #searchform .query-wrapper .btn.btn-equella.btn-primary 
+{
+	background-color: #006DCC;
+	border-bottom-color: #002A80;
+	border-left-color: #0044CC;
+	border-right-color: #0044CC;
+	border-top-color: #0044CC;
+	background-image: linear-gradient(to bottom, #0088cc, #0044cc);
+}
+
+.flickrHandler #searchform .query-wrapper .btn.btn-equella.btn-primary:hover
+{
+	background-color: #0044CC;
+}
+
+.flickrHandler #searchform #searchform-in
+{
+	width: 465px;
+}
+
+.flickrHandler .flickrresult .select
+{
+	float: left;
+}
+
+.flickrHandler .flickrresult .itemresult-content
+{
+	margin-left: 25px;
+	width: auto;
+}
+
+.flickrHandler .flickrresult .thumbnailinlist
+{
+	width: auto;
+}
+
+
+/* datepicker on a fancybox needs a z-index ~above~ 1100 */
+.flickrHandler .filter
+{
+	z-index: 1200;
+}
+
+.flickrHandler #flickr-sort
+{
+    z-index: 110;
+}
+
+.flickrHandler #flickr-preview-container
+{
+	text-align: center;
+}
+
+.flickrHandler #flickr-preview-container .preview
+{
+	width: 400px;
+	height: 200px;
+}
+

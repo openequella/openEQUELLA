@@ -1,0 +1,44 @@
+
+.kalturaservers div#controls {
+	margin-bottom: 15px;
+}
+
+.kalturaservers .ctrlinvalid {
+
+	color: red;
+
+}
+
+.kalturaservers #connectionstatus span {
+	padding-left: 30px;
+	display: inline-block;
+	height: 25px;
+}
+
+.kalturaservers #connectionstatus .ctrlinvalid span {
+	background: url(../images/fail.png) no-repeat;
+	height: 45px;
+}
+
+.kalturaservers #connectionstatus .success span {
+	background: url(../images/ok.png) no-repeat;
+}
+
+.kalturaservers .success {
+	color: green;
+	padding: 0 5px 0 5px;
+}
+
+.kalturaservers .waiting {
+	color: orange;
+	padding: 0 5px 0 5px;
+}
+
+#kalturaservers table.zebra tr td.actions {
+	width: 100px;
+	text-align: left;
+}
+
+.kalturaservers .settingField input[type="text"].edit {
+	width: 306px;
+}

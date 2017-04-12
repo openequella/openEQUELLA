@@ -1,0 +1,9 @@
+@import url("bulkresults.css");
+
+.action-button.execute-action {
+	background-image: url("../images/execute.rtl.png") !important;
+}
+
+#bulkresults_showing {
+	float: left !important;
+}

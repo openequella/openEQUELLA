@@ -1,0 +1,58 @@
+<xml>
+  <item>
+    <name search="true" type="text"/>
+    <description search="true" type="text"/>
+    <keywords search="true" type="text"/>
+    <datecreated search="true" type="text"/>
+    <datemodified search="true" type="text"/>
+    <itembody>
+      <rights>
+          <cost>
+          	<source type="text" />
+          	<value type="text" />
+          </cost>
+      </rights>
+      <language search="false" type="text"/>
+      <catalogentry>
+        <catalog search="false" type="text"/>
+        <entry search="false" type="text"/>
+      </catalogentry>
+      <curriculum>
+        <learningarea search="false" type="text"/>
+        <strand search="false" type="text"/>
+      </curriculum>
+      <audience>
+        <userlevel type="text"/>
+        <sector type="text"/>
+      </audience>
+      <compound>
+      	<blah attribute="true" type="text"/>
+        <type>
+        	<test attribute="true" type="text"/>
+          <source>
+            <langstring type="text"/>
+          </source>
+          <value>
+            <langstring type="text"/>
+          </value>
+        </type>
+      </compound>
+      <classification>
+        <purpose>
+          <source>
+          	<langstring type="text"/>
+          </source>
+        </purpose>
+        <description>
+         <langstring type="text"/>
+        </description>
+        <keyword>
+         <langstring type="text"/>
+        </keyword>
+      </classification>
+    </itembody>
+    <temp>
+      <audience search="false" type="text"/>
+    </temp>
+  </item>
+</xml>

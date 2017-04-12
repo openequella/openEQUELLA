@@ -1,0 +1,26 @@
+.progressbar {
+	border:1px solid #000000;
+	width: 200px;
+	height: 20px;
+	line-height: 20px;
+	text-align: center;
+	display: none;
+	margin-top: 5px;
+}
+
+.progressbarOuter{
+	background-color: #FFFFFF;
+	border-color: #000000;
+}
+
+.progressbarInner {
+	background-color: #6585AE;
+}
+
+.progresstextOuter{
+	color: #000000;
+}
+
+.progresstextInner {
+	color: #FFFFFF;
+}

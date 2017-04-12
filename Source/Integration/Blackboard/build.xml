@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	IMPORTANT
+
+	This file has been updated to use the new build.properties file and the new eclipse-classpath generator.
+	Any changes to this file must use the same constants.
+	See adame or nread if you have any queries.
+	31/05/2004 (adame)
+-->
+<project name="blackboard" default="product" basedir=".">
+  <property file="../../../build.properties"/>
+  
+    <property environment="env"/>
+
+    <property name="common" location="${Blackboard Gateway.base}"/>
+
+    <target name="product">
+    	<!--ant dir="${common}/5.5" target="product" inheritall="false"/-->
+		<subant buildpath="${common}/6.0" target="product" />
+    </target>
+</project>

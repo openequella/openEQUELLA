@@ -1,0 +1,20 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin version="1" id="TLE Conversion">
+	<requires>
+		<import plugin-id="com.tle.log4j" />
+		<import plugin-id="com.tle.platform.common" />
+		<import plugin-id="dhfjava:dhfjava" />
+		<import plugin-id="it.tidalwave.imageio:jrawio" />
+		<import plugin-id="it.tidalwave.imageio:reajent" />
+		<import plugin-id="jai_codec:jai_codec" />
+		<import plugin-id="jai_core:jai_core" />
+		<import plugin-id="log4j:log4j" />
+		<import plugin-id="mlibwrapper_jai:mlibwrapper_jai" />
+		<import plugin-id="freehep:freehep" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="code">
+			<export prefix="*" />
+		</library>
+	</runtime>
+</plugin>

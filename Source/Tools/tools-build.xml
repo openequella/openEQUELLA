@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="tools">
+	<import file="../common-build.xml" />
+
+	<target name="product" depends="rebuild">
+		<jar destfile="${product}/${jarname}">
+			<fileset file="${source.base}/version.properties"/>
+			<fileset dir="${build}">
+				<exclude name="*.properties" />
+				<exclude name="*.xml" />
+			</fileset>
+			<fileset dir="${staging}" />
+			<fileset dir="${TLE Common.classes}" />
+			<fileset dir="${Platform Commons.classes}" />
+			<fileset dir="${Platform Swing UI.classes}" />
+			<manifest>
+				<attribute name="Main-Class" value="${Main-Class}" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+		</jar>
+	</target>
+</project>

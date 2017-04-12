@@ -1,0 +1,16 @@
+.history-options
+{
+	margin-top: 1em;
+}
+
+.history-options .radiolist label
+{
+	margin: 0 6px 0 3px;	
+	vertical-align: middle;
+	padding-top: 2px;
+}
+
+.history-options .radiolist input
+{
+	vertical-align: middle;
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.itemadmin" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.entity" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.search" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.web.bulk" />
+		<import plugin-id="com.tle.web.htmleditor" />
+		<import plugin-id="com.tle.web.itemlist" />
+		<import plugin-id="com.tle.web.search" />
+		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.web.settings" />
+		<import plugin-id="com.google.guava:guava" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="bulkExtension">
+		<parameter-def id="bean" multiplicity="one" />
+		<parameter-def id="order" type="number" multiplicity="none-or-one" />
+	</extension-point>
+
+	<extension-point id="withinExtension">
+		<parameter-def id="id" multiplicity="one" />
+		<parameter-def id="bean" multiplicity="one" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.web.sections.equella.guice.EquellaModule" />
+		<parameter id="class" value="com.tle.web.itemadmin.guice.ItemAdminModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="stringshelp">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.xml" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="itemadmin">
+		<parameter id="path" value="/access/itemadmin.do" />
+		<parameter id="root" value="bean:/access/itemadmin" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections.equella" point-id="menuContributor" id="itemAdminMenuContributor">
+		<parameter id="menuContributorClass" value="bean:com.tle.web.itemadmin.ItemAdminMenuContributor" />
+		<parameter id="enabledFor" value="loggedIn" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="itemAdminPrivilegeTreeProvider">
+		<parameter id="provider" value="bean:com.tle.web.itemadmin.ItemAdminPrivilegeTreeProvider" />
+	</extension>
+</plugin>

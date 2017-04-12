@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Activity Cacher" basedir=".">
+	<import file="../../common-build.xml" />
+	<import file="../../common-tasks.xml" />
+
+	<taskdef resource="proguard/ant/task.properties" classpathref="customtasks.classpath" />
+
+	<property name="jarname" value="equella-activecache.jar" />
+	<property name="zipname" value="equella-activecache.zip" />
+	<property name="Main-Class" value="com.dytech.edge.cache.Main" />
+
+	<proguardconfiguration id="config">
+			-include ../../common-build.pro
+
+			-keep class org.apache.commons.logging.**, org.apache.log4j.**, org.apache.cxf.**, org.apache.neethi.**, org.apache.ws.**, javax.wsdl.**, com.ibm.wsdl.**, com.dytech.edge.cache.Main
+			{
+				*;
+			}
+
+			-dontwarn javax.**,org.jvnet.**,com.thoughtworks.xstream.**,org.apache.commons.logging.**, org.apache.axiom.**, org.apache.xmlbeans.**, org.apache.cxf.**, com.sun.msv.**, com.ctc.wstx.**, org.apache.velocity.**
+			-dontnote
+			-injars ${source.base}/version.properties
+	</proguardconfiguration>
+
+	<target name="product" depends="common-ant.make">
+	<eclipseClasspathBlacklist pathId="cacher.classpath" blacklist="blacklist.txt" />
+
+		<proguard obfuscate="false" optimize="false">
+			<configuration refid="config" />
+			<injar refid="cacher.classpath" />
+			<outjar file="${staging}/${jarname}" filter="!META-INF/**,!plugin-jpf.xml" />
+		</proguard>
+		<jar destfile="${staging}/${jarname}" update="true">
+			<manifest>
+				<attribute name="Main-Class" value="com.dytech.edge.cache.Main" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+		</jar>
+		<zip destfile="${product}/${zipname}">
+			<file file="${staging}/${jarname}" />
+			<fileset dir="resources" />
+		</zip>
+	</target>
+
+</project>

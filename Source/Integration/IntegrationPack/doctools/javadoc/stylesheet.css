@@ -1,0 +1,1142 @@
+/*
+ * Stylesheet for HTML files produced by KtsDoclet (and modified by TLE)
+ */
+
+BODY        
+{ 
+	margin: 0px 6px 3px 6px; 
+	font: 10pt Arial, Helvetica, sans-serif;
+	color: #333333;
+	background-color: #FFFFFF;
+}
+
+TT          
+{ 
+	font:   9pt "Courier New", Courier, monospace; 
+}
+
+CODE        
+{ 
+	font:   9pt "Courier New", Courier, monospace; 
+}
+
+PRE         
+{ 
+	font:   9pt "Courier New", Courier, monospace; 
+	margin: 8px 0px 8px 0px; 
+	padding: 0px 0px 0px 0px; 
+	white-space: pre; 
+}
+
+P           
+{ 
+	margin: 0.92em 0px 0px 0px; 
+}  /* slightly reduce line for regular paragraphs */
+
+/* do not underline links until mouse is over a link */
+A
+{
+	color: #0000D0;
+	text-decoration: none;
+}
+
+A:hover     
+{ 
+	text-decoration: underline;
+}
+
+
+/* end of redefining standard html tags, below only our specific styles */
+
+/* exact vertical gaps  */
+.ktsvdxxs   { height: 0.2em;  margin: 0px 0px 0px 0px; }
+.ktsvdxs    { height: 0.4em;  margin: 0px 0px 0px 0px; }
+.ktsvds     { height: 0.6em;  margin: 0px 0px 0px 0px; }
+.ktsvdms    { height: 0.8em;  margin: 0px 0px 0px 0px; }
+.ktsvd      { height: 1.0em;  margin: 0px 0px 0px 0px; }
+.ktsvdmt    { height: 1.2em;  margin: 0px 0px 0px 0px; }
+.ktsvdt     { height: 1.4em;  margin: 0px 0px 0px 0px; }
+.ktsvdxt    { height: 1.6em;  margin: 0px 0px 0px 0px; }
+.ktsvdxxt   { height: 2.0em;  margin: 0px 0px 0px 0px; }
+.ktszerom   { margin: 0px 0px 0px 0px; }
+
+/* horizontal lines */
+.ktshr      { height: 1px; 
+	margin: 2px 0px 2px 0px; 
+	padding: 0px 0px 0px 0px; 
+	border-top: solid 1px #FEFEFE; 
+	}
+	
+.ktsmhr     { height: 1px; margin: 6px 0px 2px 0px; padding: 0px 0px 0px 0px; border-top: solid 1px rgb(96,96,96); background-color: rgb(236,238,248); }
+.ktsbhr     { height: 0px; margin: 1px 0px 1px 0px; padding: 0px 0px 0px 0px; border-top: solid 4px rgb(80,104,255); }
+.ktslist    { margin-top: 0px; margin-bottom: 0px;       }
+
+
+/*main DIV block of a method description */
+.ktsdl      
+{ 
+	display: block; 
+	margin-bottom: 3em;
+	margin-left: 3em; 
+	margin-top: 0px;
+	margin-right: 0px;
+}
+
+.ktsfont    
+{	
+	font-size: 100%;
+	font-family:	Arial, Helvetica, sans-serif;      
+}
+.ktsfontl
+{	
+	font-size: 115%;
+	font-family:	Arial, Helvetica, sans-serif;      
+}
+.ktsfontxl
+{	
+	font-size: 130%;
+	font-family:	Arial, Helvetica, sans-serif;      
+}
+
+.ktscode    
+{ 
+	font-size:  100%;
+	font-family:	"Courier New", Courier, monospace; 
+}
+.ktscodel
+{ 
+	font-size:  115%;
+	font-family:	"Courier New", Courier, monospace; 
+}
+.ktscodexl
+{ 
+	font-size:  130%;
+	font-family:	"Courier New", Courier, monospace; 
+}
+
+
+/* styles for exandable blocks of inherited items, used only if expandable exists */
+.expandblock           .collapsedstate  { display: block; }
+.expandblock.expanded  .collapsedstate  { display: none;  }
+.expandblock           .expandedstate   { display: none;  }
+.expandblock.expanded  .expandedstate   { display: block; }
+.noextras                               { padding: 0px 0px 0px 0px; }
+
+/*===========================================================================
+ *
+ * Specific styles for all HTML pages.
+ *
+ ===========================================================================*/
+
+/*---------------------------------------------------------------------------
+ * Links to other pages used in hierarchy, constants, deprecated/version etc.
+ * Links in index pages are specific to index.
+ *--------------------------------------------------------------------------*/
+
+/* paragraph style */
+.LinksList
+{
+    margin:             0px 0px 0px 0px;
+    padding:            5px 5px 6px 5px;
+    font:               bold 9pt Arial, Helvetica, sans-serif;
+    border-top:         solid 1px rgb(126,142,154);
+    border-bottom:      solid 1px rgb(126,142,154);
+    background-color:   rgb(232,242,250);
+}
+
+.LinksTitle { background-color: rgb(255,255,255);  }
+.LinksCur   { color:            rgb(140,150,170);  }
+
+.PageTitle
+{
+    width:              100%;
+    margin:             0px 0px 0px 0px;
+    padding:            3px 4px 3px 4px;
+    font:               bold 16pt Arial, Helvetica, sans-serif;
+    text-align:         center;
+}
+
+.MidTitle
+{
+    width:              100%;
+    margin:             0px 0px 0px 0px;
+    padding:            3px 0px 3px 0px;
+    font:               bold 14pt Arial, Helvetica, sans-serif;
+    text-align:         center;
+}
+
+.Banner
+{
+    width:              100%;
+    margin:             1px 0px 0px 0px;
+    border-collapse:    separate;
+    border:             1px solid rgb(40,56,88);
+    background-color:   rgb(206,237,255);
+}
+
+.BannerHeadS
+{
+    padding:            3px 2px 2px 6px;
+    font:               bold 12pt Arial, Helvetica, sans-serif;
+    background-color:   rgb(206,237,255);
+}
+
+.BannerHeadM
+{
+    padding:            3px 2px 3px 6px;
+    font:               bold 14pt Arial, Helvetica, sans-serif;
+    background-color:   rgb(206,237,255);
+}
+
+.BannerHeadL
+{
+    padding:            4px 2px 3px 6px;
+    font:               bold 16pt Arial, Helvetica, sans-serif;
+    background-color:   rgb(206,237,255);
+}
+
+.SummaryTable
+{
+    width:              100%;
+    margin:             0px 0px 0px 0px;
+    border-collapse:    collapse;
+    border:             1px solid rgb(96,106,136);
+}
+
+.SummaryHeadL
+{
+    padding:            3px 4px 3px 6px;
+    font:               bold 14pt Arial, Helvetica, sans-serif;
+    /*border:             2px solid rgb(86,98,124);*/
+	background-color:   rgb(206,237,255);
+}
+
+.SummaryHeadM
+{
+    padding:            3px 4px 2px 6px;
+    font:               bold 13pt Arial, Helvetica, sans-serif;
+    /*border:             2px solid rgb(86,98,124);*/
+    background-color:   rgb(206,237,255);
+}
+
+.SummaryHeadS
+{
+    padding:            1px 4px 1px 6px;
+    font:               bold 11pt Arial, Helvetica, sans-serif;
+    /*border:             2px solid rgb(86,98,124);*/
+    background-color:   rgb(206,237,255);
+}
+
+.TagTable
+{
+    width:              100%;
+    margin:             2px 0px 0px 0px;
+    font:               9pt Arial, Helvetica, sans-serif;
+    border-collapse:    collapse;
+    border:             1px solid rgb(226,232,240);
+    background-color:   rgb(247,250,253);
+    padding:            0px 0px 0px 0px;
+}
+
+.TagName
+{
+    width:              1%;
+    padding:            1px 5px 1px 4px;
+    font:               9pt Arial, Helvetica, sans-serif;
+    white-space:        nowrap;
+    vertical-align:     top;
+    border-right:       1px solid rgb(226,232,240);
+    background-color:   rgb(236,242,250);
+    color:              rgb(32,32,64);
+}
+
+.TagText
+{
+    padding:            1px 1px 1px 4px;
+    vertical-align:     top;
+    border:             0px solid rgb(228,230,233);
+}
+
+/*---------------------------------------------------------------------------
+ * Styles for page bottom, common to all.
+ *--------------------------------------------------------------------------*/
+
+.PageBottom
+{
+    font:               8pt Arial, Helvetica, sans-serif;
+    padding:            2px 2px 3px 6px;
+    margin:             0px -4px 0px -4px;
+    border-top:         1px;
+    border-bottom:      0px;
+    border-left:        0px;
+    border-right:       0px;
+    border-style:       solid;
+    border-color:       rgb(190,190,196);
+    color:              rgb(76,76,76);
+    background-color:   rgb(238,248,252);
+}
+
+/* links at the bottom, currently only one but may later add other links */
+.BottomLinks
+{
+    margin:             3px 0px 4px -1px;
+    width:              auto;
+    border-collapse:    collapse;
+    border:             1px solid rgb(120,120,180);
+    background-color:   rgb(224,234,240);
+}
+
+.BottomLinkFont
+{
+    font:               bold 8pt Arial, Helvetica, sans-serif;
+    padding:            1px 1px 1px 1px;
+}
+
+/*---------------------------------------------------------------------------
+ * Main navigation bar in every page
+ *--------------------------------------------------------------------------*/
+
+.MainNavBar
+{
+    width:              100%;
+    margin:             2px 0px 2px 0px;
+    padding:            0px 0px 0px 0px;
+    border-collapse:    separate;
+    border-spacing:     1px 1px;
+    border:             1px solid rgb(50,60,70);
+    background-color:   rgb(255,255,244);
+}
+
+/* background of current item */
+.MainNavBarCur { background-color: rgb(255,255,255); }
+
+/* left part with links to Overview, etc. */
+.MainNavBarLinks
+{
+    font:               8pt Tahoma, Arial, Helvetica, sans-serif;
+    padding:            3px 5px 3px 3px;
+    vertical-align:     center;
+    border:             1px solid rgb(50,60,70);
+    background-color:   rgb(196,226,246);
+}
+
+.MainNavBarFrame
+{
+    padding:            0px 2px 0px 2px;
+    font:               8pt Tahoma, Arial, Helvetica, sans-serif;
+    width:              12px;
+    vertical-align:     middle;
+    border:             1px solid rgb(94,124,192);
+    background-color:   rgb(204,236,255);
+}
+
+/* right part with system name */
+.MainNavBarText
+{
+    font:               8pt Arial, Helvetica, sans-serif;
+    padding:            3px 6px 3px 6px;
+    vertical-align:     center;
+    text-align:         center;
+    border:             1px solid rgb(50,60,70);
+    background-color:   rgb(208,255,214);
+}
+
+/*---------------------------------------------------------------------------
+ * Styles for Serialization pages
+ *--------------------------------------------------------------------------*/
+
+.SerialSubtitle
+{
+    width:              100%;
+    margin:             6px 0px 0px 0px;
+    font:               bold 12pt Arial, Helvetica, sans-serif;
+    border-collapse:    collapse;
+    background-color:   rgb(224,234,243);
+}
+
+.SerialSubtitleHead { padding: 3px 2px 3px 3px; }
+
+/*---------------------------------------------------------------------------
+ * Styles for Use pages
+ *--------------------------------------------------------------------------*/
+
+.UseSummLeftCell
+{
+    width:              1%;
+    padding:            3px 12px 2px 5px;
+    vertical-align:     top;
+    text-align:         left;
+    border:             1px solid rgb(136,136,148);
+}
+
+.UseSummRightCell
+{
+    padding:            3px 2px 2px 5px;
+    vertical-align:     top;
+    border:             1px solid rgb(136,136,148);
+}
+
+.UseTable
+{
+    width:              100%;
+    margin:             10px 0px 0px 0px;
+    border-collapse:    collapse;
+    border:             1px solid rgb(136,136,148);
+    background-color:   rgb(249,250,246);
+}
+
+.UseLeftHead
+{
+    width:              1%;
+    padding:            2px 8px 3px 4px;
+    font:               bold 10pt Arial, Helvetica, sans-serif;
+    vertical-align:     middle;
+    text-align:         left;
+    border:             1px solid rgb(136,136,148);
+    background-color:   rgb(226,238,244);
+}
+
+.UseRightHead
+{
+    padding:            2px 2px 3px 4px;
+    font:               bold 10pt Arial, Helvetica, sans-serif;
+    vertical-align:     middle;
+    border:             1px solid rgb(136,136,148);
+    background-color:   rgb(226,238,244);
+}
+
+.UseLeft
+{
+    width:              1%;
+    padding:            3px 5px 3px 8px;
+    font:               9pt "Courier New", Courier, monospace;
+    vertical-align:     top;
+    text-align:         right;
+    border:             1px solid rgb(146,146,158);
+}
+
+.UseRight
+{
+    padding:            3px 2px 3px 4px;
+    vertical-align:     top;
+    border:             1px solid rgb(146,146,158);
+}
+
+.UseClassFont { color: rgb(80,88,58); }
+
+
+/*---------------------------------------------------------------------------
+ * Styles for Constant Values pages
+ *--------------------------------------------------------------------------*/
+
+.ConstTable
+{
+    margin:             6px 0px 14px 0px;
+    font:               9pt "Courier New", Courier, monospace;
+    border-collapse:    collapse;
+    border:             1px solid rgb(116,126,148);
+    background-color:   rgb(251,252,244);
+}
+
+.ConstHead
+{
+    font:               bold 10pt "Courier New", Courier, monospace;
+    border:             1px solid rgb(0,0,0);
+    padding:            2px 6px 2px 5px;
+    background-color:   rgb(216,234,250);
+}
+
+.ConstType
+{
+    padding:            1px 6px 1px 8px;
+    border:             1px solid rgb(96,96,118);
+    text-align:         right;
+    white-space:        pre;
+}
+
+.ConstName
+{
+    padding:            1px 12px 1px 6px;
+    border:             1px solid rgb(96,96,118);
+    white-space:        pre;
+}
+
+.ConstValue
+{
+    padding:            1px 6px 1px 12px;
+    border:             1px solid rgb(96,96,118);
+    text-align:         right;
+    white-space:        pre;
+}
+
+.ConstHex
+{
+    padding:            0px 4px 2px 8px;
+    color:              rgb(32,92,40);
+    text-align:         right;
+    white-space:        pre;
+}
+
+/*---------------------------------------------------------------------------
+ * Styles for Hierarchy pages
+ *--------------------------------------------------------------------------*/
+
+.TreeLine
+{
+    font:               9pt Arial, Helvetica, sans-serif;
+    margin-left:        12px;
+    margin-top:         0px;
+    margin-bottom:      1px;
+    white-space:        pre;
+}
+
+.TreePack
+{
+    font:               9pt "Courier New", Courier, monospace;
+    color:              rgb(62,66,76);
+}
+
+.TreeHide
+{
+    font:               9pt "Courier New", Courier, monospace;
+    color:              rgb(126,146,120);
+}
+
+.TreeImpl
+{
+    font:               9pt Tahoma, Arial, Helvetica, sans-serif;
+    color:              rgb(80,80,90);
+}
+
+/*---------------------------------------------------------------------------
+ * Styles for Alphabetical Index pages
+ *--------------------------------------------------------------------------*/
+
+/* reduce font */
+.IndexList { margin-top: 0px; margin-bottom: 0px;  font: 9pt Arial, Helvetica, sans-serif; }
+
+.IndexLinks { margin: 0px 4px 0px 8px; }
+.IndexLink  { font: bold 12pt Arial, Helvetica, sans-serif; background-color: rgb(208,218,240); }
+.IndexCur   { font: bold 12pt Arial, Helvetica, sans-serif; color: rgb(144,154,164); }
+.IndexBar   { height: 1px; margin: 3px 0px 5px 0px; padding: 0px 0px 0px 0px; border-top: solid 2px rgb(128,156,164); }
+
+.IndexCharBox
+{
+    margin:             0px 0px 0px 6px;
+    border-collapse:    separate;
+    border:             0px
+}
+
+.IndexChar
+{
+    font:               bold 20pt Tahoma, Arial, Helvetica, sans-serif;
+    padding:            1px 10px 3px 10px;
+    border:             3px solid rgb(120,150,130);
+    /*background-color:   rgb(212,248,226);*/
+	background-color:   rgb(206,237,255);
+}
+
+.IndexCount
+{
+    font:               bold 8pt Tahoma, Arial, Helvetica, sans-serif;
+    padding:            0px 0px 0px 10px;
+    vertical-align:     bottom;
+    color:              rgb(82,82,100);
+}
+
+.IndexHist  { font: bold 8pt Tahoma, Arial, Helvetica, sans-serif; color: rgb(90,90,90); }
+
+/*---------------------------------------------------------------------------
+ * Styles for History pages
+ *--------------------------------------------------------------------------*/
+
+.HistTable
+{
+    width:              100%;
+    margin:             5px 0px 2px 0px;
+    border-collapse:    collapse;
+    border:             2px solid rgb(90,95,100);
+    background-color:   rgb(252,252,246);
+}
+
+.HistSummLeft
+{
+    width:              1%;
+    font:               bold 9pt "Courier New", Courier, monospace;
+    padding:            2px 14px 1px 6px;
+    white-space:        pre;
+    border:             1px solid rgb(160,165,175);
+    vertical-align:     top;
+}
+
+.HistSummRight
+{
+    padding:            2px 4px 1px 6px;
+    border:             1px solid rgb(160,165,175);
+    vertical-align:     top;
+}
+
+.HistClassesHead
+{
+    font:               10pt Arial, Helvetica, sans-serif;
+    margin:             6px 2px 4px 0px;
+    padding:            2px 2px 2px 5px;
+    border:             1px solid rgb(206,208,210);
+    background-color:   rgb(222,236,248);
+}
+
+.HistMembersTitle
+{
+    padding:            5px 2px 5px 6px;
+    font:               bold 14pt Arial, Helvetica, sans-serif;
+    border:             2px solid rgb(90,95,100);
+    background-color:   rgb(238,234,228);
+}
+
+.HistMembersHead
+{
+    font:               10pt Arial, Helvetica, sans-serif;
+    margin:             6px 2px 2px 0px;
+    padding:            2px 2px 1px 5px;
+    border:             1px solid rgb(230,231,224);
+    background-color:   rgb(242,243,232);
+}
+
+.HistRef { font: 10pt "Courier New", Courier, monospace; }
+
+/*---------------------------------------------------------------------------
+ * List of all packages in top-left frame
+ *--------------------------------------------------------------------------*/
+
+.AllPackBody
+{
+    margin:             0px 0px 0px 0px;
+    color:              rgb(0,0,0);
+    background-color:   rgb(250,252,253);
+}
+
+.AllPackTop
+{
+    width:              100%;
+    margin:             2px 0px 0px 0px;
+    border-collapse:    separate;
+    border-spacing:     1px 0px;
+    border:             0px solid rgb(100,100,100);
+}
+
+.AllPackTopBar
+{
+    width:              100%;
+    margin:             2px 0px 0px 0px;
+    border-collapse:    separate;
+    border-spacing:     1px 1px;
+    border:             0px solid rgb(253,254,255);
+}
+
+.AllPackUser
+{
+    font:               8pt Arial, Helvetica, sans-serif;
+    padding:            3px 3px 3px 4px;
+    border:             1px solid rgb(100,110,120);
+    text-align:         center;
+    color:              rgb(0,0,0);
+    background-color:   rgb(208,255,214);
+}
+
+.AllPackMenu
+{
+    font:               8pt Arial, Helvetica, sans-serif;
+    padding:            0px 1px 1px 1px;
+    border:             1px solid rgb(193,194,198);
+    text-align:         center;
+    color:              rgb(0,0,0);
+    background-color:   rgb(234,243,255);
+}
+
+.AllPackAllWord
+{
+    font:               bold 10pt Arial, Helvetica, sans-serif;
+    margin:             4px 0px 0px 0px;
+    padding:            2px 1px 2px 7px;
+    white-space:        nowrap;
+}
+
+.AllPackHeader
+{
+    font:               bold 10pt Tahoma, Arial, Helvetica, sans-serif;
+    margin:             1px 0px 1px 0px;
+    padding:            1px 2px 2px 7px;
+    white-space:        nowrap;
+    border:             0px solid rgb(180,180,180);
+    color:              rgb(32,32,80);
+}
+
+.AllPackList
+{
+    font:               bold 10pt Arial, Helvetica, sans-serif;
+    margin:             0px 0px 1px 0px;
+    padding:            1px 2px 2px 7px;
+}
+
+/*---------------------------------------------------------------------------
+ * Bottom-left frame of classes (all or for package)
+ *--------------------------------------------------------------------------*/
+
+.ClassListBody
+{
+    font:               10pt Arial, Helvetica, sans-serif;
+    margin:             2px 3px 4px 7px;
+    background-color:   rgb(250,252,253);
+    color:              rgb(0,0,0);
+}
+
+.ClassListPack
+{
+    font:               bold 11pt Arial, Helvetica, sans-serif;
+    margin:             3px 0px 0px -5px;
+    padding:            1px 2px 2px 4px;
+}
+
+.IntfListHead
+{
+    font:               bold 10pt Tahoma, Arial, Helvetica, sans-serif;
+    margin:             6px 0px 2px -5px;
+    padding:            0px 2px 1px 4px;
+    border:             solid 1px rgb(186,214,186);
+    background-color:   rgb(206,237,255);
+}
+
+.ClassListHead
+{
+    font:               bold 10pt Tahoma, Arial, Helvetica, sans-serif;
+    margin:             6px 0px 2px -5px;
+    padding:            0px 2px 1px 4px;
+    border:             solid 1px rgb(184,202,225);
+    background-color:   rgb(206,237,255);
+}
+
+.EnumListHead
+{
+    font:               bold 10pt Tahoma, Arial, Helvetica, sans-serif;
+    margin:             6px 0px 2px -5px;
+    padding:            0px 2px 1px 4px;
+    border:             solid 1px rgb(220,204,168);
+    background-color:   rgb(206,237,255);
+}
+
+.ExcpListHead
+{
+    font:               bold 10pt Tahoma, Arial, Helvetica, sans-serif;
+    margin:             6px 0px 2px -5px;
+    padding:            0px 2px 1px 4px;
+    border:             solid 1px rgb(225,196,196);
+    background-color:   rgb(255,226,226);
+}
+
+.ErrorListHead
+{
+    font:               bold 10pt Tahoma, Arial, Helvetica, sans-serif;
+    margin:             6px 0px 2px -5px;
+    padding:            0px 2px 1px 4px;
+    border:             solid 1px rgb(225,180,180);
+    background-color:   rgb(206,237,255);
+}
+
+.AnnotListHead
+{
+    font:               bold 10pt Tahoma, Arial, Helvetica, sans-serif;
+    margin:             6px 0px 2px -5px;
+    padding:            0px 2px 1px 4px;
+    border:             solid 1px rgb(212,212,152);
+    background-color:   rgb(242,242,182);
+}
+
+.ClassList
+{
+    margin:             0px 0px 1px -5px;
+    padding:            1px 2px 2px 6px;
+}
+
+/*---------------------------------------------------------------------------
+ * Summary of packages and summary of package classes table columns
+ *--------------------------------------------------------------------------*/
+
+.OverSummLeft
+{
+    font:               bold 10pt Arial, Helvetica, sans-serif;
+    width:              1%;
+    padding:            2px 15px 2px 5px;
+    vertical-align:     top;
+    text-align:         left;
+    border:             1px solid rgb(106,116,130);
+}
+
+.OverSummRight
+{
+    padding:            3px 4px 1px 5px;
+    vertical-align:     top;
+    border:             1px solid rgb(106,116,130);
+}
+
+.PackSummLeft
+{
+    width:              1%;
+    padding:            2px 7px 2px 5px;
+    vertical-align:     top;
+    text-align:         left;
+    border:             1px solid rgb(106,116,130);
+}
+
+.PackSummRight
+{
+    padding:            2px 2px 2px 4px;
+    vertical-align:     top;
+    border:             1px solid rgb(106,116,130);
+}
+
+/*===========================================================================
+ *
+ * Class document styles
+ *
+ *==========================================================================*/
+
+/*---------------------------------------------------------------------------
+ * Class navigation bar and header table, also used by package header
+ *--------------------------------------------------------------------------*/
+
+.ClassHeader
+{
+    width:              100%;
+    margin:             1px 0px 0px 0px;
+    border-collapse:    collapse;
+}
+
+.ClassMenuName
+{
+    font:               bold 8pt Tahoma, Arial, Helvetica, sans-serif;
+    color:              rgb(56,92,126);
+}
+
+.ClassMenuLeft
+{
+    padding:            0px 0px 3px 1px;
+    font:               9pt Arial, Helvetica, sans-serif;
+    vertical-align:     bottom;
+}
+
+.ClassMenuRight
+{
+    width:              1%;
+    padding:            0px 0px 3px 0px;
+    font:               9pt Arial, Helvetica, sans-serif;
+    vertical-align:     bottom;
+    text-align:         right;
+}
+
+.ClassHeadName
+{
+    padding:            5px 3px 4px 6px;
+    vertical-align:     center;
+    text-indent:        0px;
+    border:             1px solid rgb(184,194,204);
+    /*background-color:   rgb(212,240,236);*/
+	background-color:   rgb(206,237,255);
+}
+
+.ClassHeadPackFont    { font: bold 11pt Arial, Helvetica, sans-serif;  }
+.ClassHeadNameFont    { font: bold 14pt Arial, Helvetica, sans-serif;  }
+
+.ClassHeadTree
+{
+    width:              auto;
+    padding:            0px 3px 0px 6px;
+    border:             1px solid rgb(190,196,210);
+    background-color:   rgb(252,253,249);
+}
+
+.ClassTreePara
+{
+    font:               9pt "Courier New", Courier, monospace;
+    margin:             0px 0px 0px 0px;
+    padding:            1px 0px 4px 0px;
+    white-space:        pre;
+}
+
+/*---------------------------------------------------------------------------
+ * Class declaration table, includes implemented interfaces, etc.
+ *--------------------------------------------------------------------------*/
+
+.ClassDeclTable
+{
+    width:              100%;
+    margin:             4px 0px 3px 0px;
+    border-collapse:    collapse;
+    background-color:   rgb(252,253,249);
+}
+
+.ClassDeclName
+{
+    width:              1%;
+    padding:            2px 5px 2px 4px;
+    font:               9pt Arial, Helvetica, sans-serif;
+    white-space:        nowrap;
+    vertical-align:     top;
+    border:             1px solid rgb(200,210,214);
+    background-color:   rgb(230,242,255);
+}
+
+.ClassDeclProto
+{
+    padding:            2px 4px 2px 4px;
+    font:               9pt "Courier New", Courier, monospace;
+    vertical-align:     top;
+    /*white-space:        pre-wrap;*/
+    border:             1px solid rgb(208,210,214);
+}
+
+.ClassDeclList
+{
+    padding:            2px 4px 2px 4px;
+    vertical-align:     top;
+    border:             1px solid rgb(208,210,214);
+}
+
+/*---------------------------------------------------------------------------
+ * Summary of class members, has specifics not shared with other styles
+ *--------------------------------------------------------------------------*/
+
+.SummTable
+{
+    width:              100%;
+    margin:             4px 0px 0px 0px;
+    border-collapse:    collapse;
+    border:             1px solid rgb(95,105,145);
+    background-color:   rgb(250,252,247);
+}
+
+.SummHead
+{
+    padding:            2px 4px 3px 5px;
+    font:               bold 14pt Arial, Helvetica, sans-serif;
+    border:             1px solid rgb(95,105,145);
+    vertical-align:     top;
+    text-align:         left;
+    background-color:   rgb(192,226,250);
+}
+
+.SummLeft
+{
+    font:               9pt "Courier New", Courier, monospace;
+    width:              1%;
+    padding:            2px 4px 2px 8px;
+    vertical-align:     top;
+    text-align:         right;
+    border:             1px solid rgb(116,116,128);
+}
+
+.SummRight
+{
+    padding:            2px 2px 2px 4px;
+    vertical-align:     top;
+    border:             1px solid rgb(116,116,128);
+}
+
+.SummDepr { font: 9pt "Courier New", Courier, monospace; color: rgb(132,160,132); }
+
+/*---------------------------------------------------------------------------
+ * Inherited members table
+ *--------------------------------------------------------------------------*/
+
+.InhTable
+{
+    width:              100%;
+    margin:             0px 0px 0px 0px;
+    border-collapse:    collapse;
+    border:             1px solid rgb(75,85,105);
+    background-color:   rgb(250,252,247);
+}
+
+.InhHead
+{
+    font:               bold 9pt Arial, Helvetica, sans-serif;
+    padding:            1px 2px 1px 4px;
+    vertical-align:     top;
+    text-align:         left;
+    border:             1px solid rgb(75,85,105);
+    background-color:   rgb(210,237,254);
+}
+
+.InhParentFont  { font: bold 9pt "Courier New", Courier, monospace; }
+
+.InhList
+{
+    font:               9pt "Courier New", Courier, monospace;
+    padding:            3px 3px 3px 4px;
+    border:             1px solid rgb(75,85,105);
+    background-color:   rgb(254,254,236);
+}
+
+/*===========================================================================
+ *
+ * Styles for detailed description of field, method, etc.
+ *
+ *==========================================================================*/
+
+/*---------------------------------------------------------------------------
+ * Field/Method declaration including name, params, throws, etc.
+ *--------------------------------------------------------------------------*/
+
+.MembTitle
+{
+    font:               bold 11pt Arial, Helvetica, sans-serif;
+	font-size:		150%;
+    margin:             0px 0px 2px 0px;
+    padding:            1px 0px 2px 2px;
+    /*
+	color:              rgb(50,55,60);
+	*/
+    background-color:   rgb(239,241,246);
+}
+
+.MembHead, .MembHeadB, .MembHLeft, .MembHParams, .MembHThrows, .MembHThrowList, .ParamFont
+{
+	font-size:        100%;
+	font-family:	"Courier New", Courier, monospace;
+}
+
+.MembHead
+{
+    font-size: 		150%;
+    width:            100%;
+    margin:           0px 0px 0px 1px;
+    padding:         0px 0px 0px 0px;
+}
+
+.MembHeadB
+{
+    width:              100%;
+    margin:             0px 0px 0px 1px;
+    padding:            1px 0px 1px 1px;
+    background-color:   rgb(239,241,246);
+}
+
+.MembHLeft              /* Left of name: "public static void" etc. May be missing. */
+{
+    width:              1%;
+    padding:            0px 0px 0px 0px;
+    white-space:        nowrap;
+    vertical-align:     top;
+    text-align:         right;
+}
+
+.MembFLeft              /* Left of field name: */
+{
+    width:              1%;
+    padding:            0px 0px 0px 0px;
+}
+
+.MembHParams
+{
+    padding:            0px 0px 0px 0px;
+    vertical-align:     top;
+}
+
+.MembHThrows
+{
+    width:              1%;
+    padding:            0px 0px 0px 5px;
+    white-space:        nowrap;
+    vertical-align:     top;
+    text-align:         right;
+}
+
+.MembHThrowList
+{
+    width:              90%;
+    padding:            0px 2px 0px 0px;
+    vertical-align:     top;
+}
+
+.ParamFont 
+{ 
+	color: rgb(78,86,82); 
+}
+
+/*---------------------------------------------------------------------------
+ * Table describing parameters, return and throws of a method or constructor
+ *--------------------------------------------------------------------------*/
+
+.MembDesc
+{
+    width:              auto;
+    margin:             4px 0px 0px 0px;
+    border-collapse:    collapse;
+    text-align:         left;
+}
+
+.MembDash
+{
+    font:               bold 9pt "Courier New", Courier, monospace;
+    padding:            0px 4px 0px 6px;
+    vertical-align:     top;
+}
+
+.MembDescHead   { padding: 3px 2px 1px 0px; }
+.MembDescName   { padding: 0px 0px 0px 32px; vertical-align: top; }
+.MembDescText   { padding: 0px 2px 0px 0px;  vertical-align: top; }
+.MembDescOnly   { padding: 0px 2px 0px 32px; vertical-align: top; }
+
+/* Font of parameter name in table of params. It is same as in member header but may be different.
+ * it is also used for exception names if they're not referenced. */
+.ParamFont2 { font: bold 9pt "Courier New", Courier, monospace; color: rgb(78,86,82); }
+
+
+
+
+
+*
+{
+	font-family: verdana, arial, sans-serif;
+	font-size: 10pt;
+}
+
+H1 
+{ 
+	font-size: 145%;
+}
+
+H2 
+{ 
+	font-size: 140%;
+}
+
+H3 
+{ 
+	padding-top: 1em;
+	font-size: 115%;
+	color: #000000;
+}
+
+/*
+.TableHeadingColor     
+{ 
+	background-color: #EFEFEF; 
+}
+
+.TableSubHeadingColor  
+{ 
+	background: #FFEEBB;  
+}
+
+.TableRowColor         
+{ 
+	background: #FFFFFF;  
+}
+*/
+
+DIV.block
+{
+	background-color: #E0FFE0;
+	margin-left: 3em;
+	margin-right: 3em;
+}

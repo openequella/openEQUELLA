@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.22" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 2.6.1.v20100902 Build &lt;2.6.1.v20100915-1750></property>
+    <property name="units">in</property>
+    <property name="theme">equella.defaultTheme</property>
+    <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">120</property>
+    <list-property name="libraries">
+        <structure>
+            <property name="fileName">equella.rptlibrary</property>
+            <property name="namespace">equella</property>
+        </structure>
+    </list-property>
+    <data-sources>
+        <oda-data-source extensionID="com.tle.reporting.oda.datasource" name="EQUELLA" id="7"
+ extends="equella.EQUELLA"/>
+    </data-sources>
+    <data-sets>
+        <oda-data-set extensionID="com.tle.reporting.oda.dataset.jdbc" name="DrmAcceptances" id="9">
+            <property name="nullsOrdering">nulls lowest</property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">uuid</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">version</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">name</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">acceptances</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">EQUELLA</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">uuid</property>
+                    <property name="nativeName">uuid</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">version</property>
+                    <property name="nativeName">version</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">name</property>
+                    <property name="nativeName">name</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">acceptances</property>
+                    <property name="nativeName">acceptances</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[SELECT i.uuid AS "uuid", i.version AS "version", s.text AS "name", sub."acceptances" 
+FROM item i 
+INNER JOIN 
+( 
+  SELECT d.item_id as "item_id", count(d.item_id) AS "acceptances" 
+  FROM item i
+  INNER JOIN drm_acceptance d 
+  ON i.id = d.item_id
+  WHERE i.institution_id = CURRENT_INSTITUTION
+  GROUP BY d.item_id 
+) sub 
+ON sub."item_id" = i.id
+INNER JOIN language_string s 
+ON i.name_id = s.bundle_id
+ORDER BY "acceptances" DESC]]></xml-property>
+        </oda-data-set>
+    </data-sets>
+    <styles>
+        <style name="report" id="4">
+            <property name="fontFamily">sans-serif</property>
+            <property name="fontSize">10pt</property>
+        </style>
+        <style name="crosstab-cell" id="5">
+            <property name="borderBottomColor">#CCCCCC</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1pt</property>
+            <property name="borderLeftColor">#CCCCCC</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1pt</property>
+            <property name="borderRightColor">#CCCCCC</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1pt</property>
+            <property name="borderTopColor">#CCCCCC</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1pt</property>
+        </style>
+        <style name="crosstab" id="6">
+            <property name="borderBottomColor">#CCCCCC</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1pt</property>
+            <property name="borderLeftColor">#CCCCCC</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1pt</property>
+            <property name="borderRightColor">#CCCCCC</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1pt</property>
+            <property name="borderTopColor">#CCCCCC</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1pt</property>
+        </style>
+    </styles>
+    <page-setup>
+        <simple-master-page name="EQUELLA" id="8" extends="equella.EQUELLA">
+            <overridden-values>
+                <ref-entry baseId="96" name="Header" id="96"/>
+                <ref-entry baseId="97" id="97"/>
+                <ref-entry baseId="101" id="101"/>
+                <ref-entry baseId="98" id="98"/>
+                <ref-entry baseId="99" id="99"/>
+                <ref-entry baseId="7" name="Logo" id="102"/>
+                <ref-entry baseId="100" id="100"/>
+                <ref-entry baseId="102" name="TitleLabel" id="103">
+                    <property name="text">Top items by acceptances</property>
+                </ref-entry>
+                <ref-entry baseId="24" name="NewTextData" id="24"/>
+            </overridden-values>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <table id="10">
+            <property name="width">7.9411764705882355in</property>
+            <property name="dataSet">DrmAcceptances</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">uuid</property>
+                    <text-property name="displayName">uuid</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["uuid"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">version</property>
+                    <text-property name="displayName">version</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["version"]</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="name">name</property>
+                    <text-property name="displayName">name</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["name"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">acceptances</property>
+                    <text-property name="displayName">acceptances</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["acceptances"]</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+            </list-property>
+            <column id="36">
+                <property name="width">6.2823529411764705in</property>
+            </column>
+            <column id="37">
+                <property name="width">1.6588235294117648in</property>
+            </column>
+            <header>
+                <row id="11">
+                    <cell id="16">
+                        <label id="17">
+                            <text-property name="text">Item</text-property>
+                        </label>
+                    </cell>
+                    <cell id="18">
+                        <label id="19">
+                            <text-property name="text">Acceptances</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <detail>
+                <row id="20">
+                    <cell id="25">
+                        <data id="26">
+                            <property name="whiteSpace">nowrap</property>
+                            <property name="resultSetColumn">name</property>
+                        </data>
+                    </cell>
+                    <cell id="27">
+                        <data id="28">
+                            <property name="textAlign">left</property>
+                            <property name="whiteSpace">nowrap</property>
+                            <property name="resultSetColumn">acceptances</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+            <footer>
+                <row id="29">
+                    <cell id="32"/>
+                    <cell id="33"/>
+                </row>
+            </footer>
+        </table>
+    </body>
+</report>

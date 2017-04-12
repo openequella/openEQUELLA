@@ -1,0 +1,25 @@
+@import url("googlebook.css");
+
+.modal-search-result {
+	padding: 10px 40px 10px 10px;
+	background: #f0f0f0;
+	float: right;
+}
+
+.modal-search-result input {
+	right: 8px;
+	left: 0;
+}
+
+.modal-search-result.googlebook img {
+	margin: 0 0 10px 20px;
+	float: right;
+}
+
+#googlebook-query label {
+	float: right;
+}
+
+.rating-stars {
+	margin: 0 0 0 5px;
+}

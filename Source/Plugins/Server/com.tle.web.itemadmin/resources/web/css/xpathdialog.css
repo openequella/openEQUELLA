@@ -1,0 +1,12 @@
+.xpathdialog .modal-content {
+	height: 300px;
+}
+
+/* hax */
+.modal-content-inner {
+	min-height: 284px;
+}
+
+.tree ul {
+	border: none;
+}

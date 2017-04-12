@@ -1,0 +1,5 @@
+@import url("share.css");
+
+.shareButton {
+	url(../images/share-action.rtl.png) right 0 no-repeat
+}

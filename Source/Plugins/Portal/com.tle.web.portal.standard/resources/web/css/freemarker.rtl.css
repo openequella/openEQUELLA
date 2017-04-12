@@ -1,0 +1,10 @@
+@import url("freemarker.css");
+
+div.load-action {
+	float: left;
+}
+
+div.load-action button.dropdown-toggle{
+	right: auto;
+	left: 0px;
+}

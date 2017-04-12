@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<installer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="C:\vss\dytech\Internal\Installer\docs\Schema\script.xsd">
+	<product>
+		<name>Equella Active Cache Service</name>
+		<company>The Learning Edge International</company>
+	</product>
+	<image uri="/images/logo.gif"/>
+	<pages>
+		<page number="1">
+			<controls>
+				<control class="heading">
+					<title>Equella Active Cache Service</title>
+				</control>
+				<control class="paragraph">
+					<title>Welcome!</title>
+					<description>You are about to install the Active Cache service for Equella.  This client-side service provides the means to "fill" caching and proxy servers with large content from Equella servers.  By downloading content during off-peak times, users of Equella are treated to massive speed-ups when working with the system.</description>
+				</control>
+				<control class="paragraph">
+					<title>Fully-Automated</title>
+					<description>This service is fully automated, requiring no human intervention after initial installation.  The Active Cache service talks to the Equella server and negotiates an off-peak time during which the caching can be performed.  The Equella server work to give each client a dedicated window of time in which the bandwidth can be best utilised, and hence providing greater download speeds.</description>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Next" callback="com.dytech.installer.BasicNextCallback" icon="/images/next.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+		<page number="2">
+			<controls>
+				<control class="heading">
+					<title>Installation Path</title>
+				</control>
+				<control class="directoryselector">
+					<title>Service Install Path</title>
+					<description>Please choose the directory that the Active Caching service should be installed in to.</description>
+					<target>install.path</target>
+					<items>
+						<item name="" value=""/>
+					</items>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>
+				<button label="Next" callback="com.dytech.installer.BasicNextCallback" icon="/images/next.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+		<page number="3">
+			<controls>
+				<control class="heading">
+					<title>Cache Server Details</title>
+				</control>
+				<control class="editbox">
+					<title>Cache Server Address</title>
+					<description>Please enter the hostname or IP address of the cache server.</description>
+					<target>proxy/host</target>
+					<items>
+						<item name="" value="localhost"/>
+					</items>
+				</control>
+				<control class="editbox">
+					<title>Cache Server Port</title>
+					<description>Please enter the port number to connect to the cache server on.</description>
+					<target>proxy/port</target>
+					<items>
+						<item name="" value="3128"/>
+					</items>
+				</control>
+				<control class="editbox">
+					<title>Username</title>
+					<description>Please enter the username the cache client should connect to the caching server with.  If the server is not authenticated, then this field can be left blank.</description>
+					<target>proxy/username</target>
+					<items>
+						<item name="" value=""/>
+					</items>
+				</control>
+				<control class="editbox">
+					<title>Password</title>
+					<description>Please enter the corresponding password for the above username.  If the server is not authenticated, then this field can be left blank.</description>
+					<target>proxy/password</target>
+					<items>
+						<item name="" value=""/>
+					</items>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>
+				<button label="Next" callback="com.dytech.installer.BasicNextCallback" icon="/images/next.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+		<page number="4">
+			<controls>
+				<control class="heading">
+					<title>Equella Server Details</title>
+				</control>
+				<control class="editbox">
+					<title>Equella Host</title>
+					<description>Please enter the hostname or IP address of the Equella server.</description>
+					<target>tle/host</target>
+					<items>
+						<item name="" value=""/>
+					</items>
+				</control>
+				<control class="editbox">
+					<title>Equella Port</title>
+					<description>Please enter the port to connect to Equella with.</description>
+					<target>tle/port</target>
+					<items>
+						<item name="" value="80"/>
+					</items>
+				</control>
+				<control class="editbox">
+					<title>Username</title>
+					<description>Please enter the username the cache client should connect to Equella with.  Note that the username must have been assigned permission to perform caching, and will require authorisation from the administrator of the Equella server.</description>
+					<target>tle/username</target>
+					<items>
+						<item name="" value=""/>
+					</items>
+				</control>
+				<control class="editbox">
+					<title>Password</title>
+					<description>Please enter the corresponding password for the above username.</description>
+					<target>tle/password</target>
+					<items>
+						<item name="" value=""/>
+					</items>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>
+				<button label="Next" callback="com.dytech.installer.BasicNextCallback" icon="/images/next.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+		<page number="3">
+			<controls>
+				<control class="heading">
+					<title>Ready To Install</title>
+				</control>
+				<control class="paragraph">
+					<title>Thank You!</title>
+					<description>You may now continue to perform the installation process.  If you quit now, no changes will be made to your system.</description>
+				</control>
+			</controls>
+			<buttons>
+				<button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>
+				<button label="Install" callback="com.dytech.installer.BasicFinishedCallback" icon="/images/install.gif" align="right"/>
+				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
+			</buttons>
+		</page>
+	</pages>
+</installer>

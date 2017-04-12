@@ -1,0 +1,36 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.tools" version="1">
+	<attributes>
+		<attribute id="type" value="admin-console" />
+	</attributes>
+
+	<requires>
+
+		<import plugin-id="com.tle.admin.common" exported="true" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.accesscontrolbuilder" />
+
+		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="com.tle.common.usermanagement" />
+		<import plugin-id="com.tle.common.entity" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="tool">
+		<parameter-def id="displayorder" type="number" multiplicity="one" />
+		<parameter-def id="name" type="string" multiplicity="one" />
+		<parameter-def id="class" type="string" multiplicity="one" />
+		<parameter-def id="privilege" type="string" multiplicity="any" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="admin-console" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+</plugin>

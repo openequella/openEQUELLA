@@ -1,0 +1,108 @@
+span.correct {
+	color: green;
+}
+
+span.incorrect {
+	color: red;
+}
+
+div.newListSelected.matching {
+	display: inline-block;
+	margin-left: 15px;
+	line-height: normal;
+}
+
+div.newListSelected.matching+.response-text {
+	
+}
+
+.questionContainer {
+	width: 25%;
+	background-color: white;
+	position: relative;
+	float: left;
+	border-right: 1px solid #8F8B7F;
+}
+
+.answerContainer {
+	background-color: white;
+	float: left;
+	width: 74%;
+	margin-left: -1px;
+	border-left: 1px solid #8F8B7F;
+}
+
+.quizContainer {
+	background-color: white;
+	border: 1px solid #8F8B7F;
+	position: relative;
+}
+
+.question {
+	padding: 10px;
+	font-size: 14px;
+}
+
+.answer {
+	position: relative;
+	padding-left: 15px;
+	clear: both;
+}
+
+.answer h3 {
+ margin-top: 15px;	
+}
+
+.answer ol {
+	list-style: lower-alpha;
+}
+
+ul.newList li {
+	margin: 0px;
+}
+
+.response {
+	position: relative;
+}
+
+.question:hover {
+	background-color: #F7F7F7;
+	cursor: pointer;
+}
+
+.question.active {
+	background-color: #EFF6FF;
+}
+
+html,body,form,div.qti {
+	height: 100%;
+}
+
+div.qti .area {
+	border: none;
+}
+
+div.qti {
+	background: #F1F1F1;
+	margin: none;
+	padding: 0px;
+	border: none;
+}
+
+.description
+{
+	padding-top: 10px;
+	font-size: 12px;
+}
+
+.matching-left
+{
+	float: left;
+}
+
+.matching-right
+{
+	float: left;
+	clear: right;
+	padding-left: 30px;
+}

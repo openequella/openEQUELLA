@@ -1,0 +1,124 @@
+{
+    "exclusions": [
+        "commons-logging:commons-logging"
+    ],
+    "versions": {
+            "jackson": "2.3.4"
+    },
+    "dependencies": [
+        {
+            "groupId": "ktsdoclet",
+            "artifactId": "ktsdoclet",
+            "version": "1",
+            "noSource": "true"
+        },
+        {
+	    "groupId": "com.fasterxml.jackson.core",
+     	    "artifactId": "jackson-annotations",
+     	    "version": "$jackson"
+        },
+        {
+            "groupId": "com.fasterxml.jackson.core",
+            "artifactId": "jackson-databind",
+            "version": "$jackson"
+        },
+        {
+            "groupId": "org.apache.struts",
+            "artifactId": "struts-core",
+            "version": "1.3.10",
+            "excludes": [
+                "antlr"
+            ]
+        },
+        {
+            "groupId": "org.apache.struts",
+            "artifactId": "struts-taglib",
+            "version": "1.3.10"
+        },
+        {
+            "groupId": "org.apache.struts",
+            "artifactId": "struts-extras",
+            "version": "1.3.10"
+        },
+        {
+            "groupId": "org.antlr",
+            "artifactId": "stringtemplate",
+            "version": "3.2.1",
+            "excludes": [
+                "antlr"
+            ]
+        },
+        {
+            "groupId": "dhfjava",
+            "artifactId": "dhfjava",
+            "version": "1",
+            "noSource": "true"
+        },
+        {
+            "groupId": "freehep",
+            "artifactId": "freehep",
+            "version": "1",
+            "noSource": "true"
+        },
+        {
+            "groupId": "jai_codec",
+            "artifactId": "jai_codec",
+            "version": "1",
+            "noSource": "true"
+        },
+        {
+            "groupId": "jai_core",
+            "artifactId": "jai_core",
+            "version": "1",
+            "noSource": "true"
+        },
+        {
+            "groupId": "mlibwrapper_jai",
+            "artifactId": "mlibwrapper_jai",
+            "version": "1",
+            "noSource": "true"
+        },
+        {
+            "groupId": "it.tidalwave.imageio",
+            "artifactId": "jrawio",
+            "version": "1.5.0",
+            "noSource": "true"
+        },
+        {
+            "groupId": "it.tidalwave.imageio",
+            "artifactId": "reajent",
+            "version": "1.5.0",
+            "noSource": "true"
+        },
+        {
+            "groupId": "commons-configuration",
+            "artifactId": "commons-configuration",
+            "version": "1.9"
+        },
+        {
+            "groupId": "commons-lang",
+            "artifactId": "commons-lang",
+            "version": "2.6"
+        },
+        {
+            "groupId": "axis",
+            "artifactId": "axis-ant",
+            "version": "1.4",
+            "noSource": "true"
+        },
+        {
+            "groupId": "commons-beanutils",
+            "artifactId": "commons-beanutils",
+            "version": "1.8.2-TLE",
+            "jpfIncludes": [
+                "commons-collections:commons-collections"
+            ],
+            "noSource": "true"
+        },
+        {
+            "groupId": "commons-chain",
+            "artifactId": "commons-chain",
+            "version": "1.2"
+        }
+    ]
+}

@@ -1,0 +1,26 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.hibernate" version="1">
+	<requires>
+		<import plugin-id="com.tle.core.config" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.xstream" />
+		<import plugin-id="com.zaxxer:hikaricp" />
+		<import plugin-id="com.tle.platform.common" />
+		<import plugin-id="org.hibernate" exported="true" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension-point id="domainObjects">
+		<parameter-def id="factory" multiplicity="none-or-one" />
+		<parameter-def id="class" multiplicity="one-or-more" />
+	</extension-point>
+
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModule">
+		<parameter id="class" value="com.tle.core.hibernate.factory.guice.HibernateFactoryModule" />
+	</extension>
+</plugin>

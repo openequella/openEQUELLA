@@ -1,0 +1,13 @@
+@import url("selectcourse.css");
+
+.modal-search-result li {
+	margin: 10PX 0 0 0 !important;
+	float: right;
+}
+
+.modal-search-result input {
+	left: auto;
+	right: 8px;
+}
+
+

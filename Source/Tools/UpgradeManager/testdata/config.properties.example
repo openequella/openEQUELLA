@@ -1,0 +1,35 @@
+# Folder for downloaded versions
+folder.versions = C:\\SVN\\TLE\\trunk\\Source\\Tools\\UpgradeManager\\testdata\\versions
+
+# File store folder
+filestore.root = C:\\equella\\filestore
+
+# Folder in which Equella is installed
+equella.install.directory=C:\\equella\\
+
+# Java binary to run when upgrading databases
+java.bin = C:\\devenv\\sdk\\jdk1.6.0_02\\bin\\java.exe
+
+# Username and password used to access the TLE upgrade server
+upgrade.username = cjones
+upgrade.password = cjones
+
+# Proxy information.
+proxy.host=
+proxy.port=
+proxy.username=
+proxy.password=
+
+# Time to wait for the server start up.
+#loading.timeout = 6000
+
+# Commands for Java Service Wrapper
+# You shouldn't have to touch these once they are set up.
+service.command=C:\\equella\\manager\\wrapper.exe
+service.confPath=C:\\equella\\manager\\wrapper.conf
+service.startCommand=-t
+service.stopCommand=-p
+service.statusCommand=-q
+
+# Tomcat upgrade
+tomcat.upgrade.url=ftp://50client:50client@support.thelearningedge.com.au/Installer/Tomcat/ 

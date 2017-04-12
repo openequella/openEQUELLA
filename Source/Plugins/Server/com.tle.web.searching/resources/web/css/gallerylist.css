@@ -1,0 +1,156 @@
+div.itemresult-wrapper {
+	float: left;
+	height: 135px;
+	width: 135px;
+	padding: 5px;
+	border: 1px solid #f1f1f1;
+	margin-left: -1px;
+	margin-bottom: -1px;
+	background-color: #D7D6D2;
+	position: relative;
+}
+
+div.itemresult-wrapper div.filecount {
+	position: absolute;
+	top: 4px;
+	left: 4px;
+	opacity: 1;
+	z-index: 99;
+	background-color: #D7D6D2;
+	padding: 0 2px 1px 2px;
+	box-shadow: 2px 2px 4px -1px grey;
+}
+
+div.itemresult-wrapper div.filecount span {
+	opacity: 0.65
+}
+
+div.itemresult-wrapper div.filecount span span {
+	position: relative;
+	top: 3px;
+	font-weight: bold;
+}
+
+#col1 div.itemresult-wrapper {
+	margin: 5px;
+}
+
+div.thumbfade {
+	position: relative;
+	height: 135px;
+	width: 135px;
+}
+
+div.thumbfade a img {
+	position: absolute;
+	margin: auto;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+
+.search-layout #col .area {
+	padding: 10px 9px 33px;
+}
+
+div.itemresult-wrapper div.thumb-bar {
+	background: rgba(0, 0, 0, 0.6);
+	border: 1px solid #f1f1f1;
+	border-top: none;
+	position: relative;
+	top: -18px;
+	height: 23px;
+	display: none;
+	text-align: center;
+	left: -6px;
+	width: 145px;
+}
+
+div.itemresult-wrapper:hover div.thumb-bar {
+	display: block;
+}
+
+div.itemresult-wrapper div.thumb-bar a.gallery-action {
+	padding-right: 8px;
+	position: relative;
+	line-height: 24px;
+	color: white;
+}
+
+div.itemresult-wrapper div.thumb-bar a.gallery-action:hover {
+	text-decoration: none;
+}
+
+div.itemresult-wrapper div.thumb-bar a.gallery-action i {
+	margin: 0
+}
+
+div.gallery-preview {
+	display: none;
+	position: relative;
+	width: 502px;
+	height: 502px;
+	z-index: 500;
+}
+
+div.gallery-preview img {
+	position: absolute;
+	margin: auto;
+	margin-right: 0px;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	border: 2px rgba(0, 0, 0, 0.6) inset;
+}
+
+div.gallery-preview div.preview-arrow {
+	position: absolute;
+	top: 45%;
+	width: 0;
+	height: 0;
+	border-top: 16px solid transparent;
+	border-bottom: 16px solid transparent;
+}
+
+div.gallery-preview div.preview-arrow.arrow-left+img {
+	margin-right: 0;
+	margin-left: 0px;
+}
+
+div.gallery-preview div.preview-arrow.arrow-left {
+	left: -16px;
+	border-right: 16px solid rgba(0, 0, 0, 0.6);
+}
+
+div.gallery-preview div.preview-arrow.arrow-right {
+	right: -16px;
+	border-left: 16px solid rgba(0, 0, 0, 0.6);
+}
+
+img.resize, div.resize {
+	max-width: 450px;
+	max-height: 450px;
+}
+
+#page {
+	padding-top: 8px;
+}
+
+/***
+** Selection session stuff
+**/
+#selection-content-inner #col {
+	width: 515px;
+}
+
+#selection-content-inner #col #searchform .query-wrapper #querycontainer input[type="text"]
+	{
+	width: 439px;
+}
+
+#selection-content-inner #col #searchform .query-wrapper #withincontainer div.selectedcontainer
+	{
+	width: auto !important;
+}

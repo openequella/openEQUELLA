@@ -1,0 +1,8 @@
+{
+	"bacon_example": 
+	{
+		"numberOfBaconStrips": 1,
+		"image1": "${resourcesUrl}/images/bacon1.png",
+		"keywords": "${xml.get('metadata/general/keyword')}"
+	}
+}

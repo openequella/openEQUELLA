@@ -1,0 +1,129 @@
+<!-- [%%//%%] --><html><body><br>&nbsp;<br>&nbsp;<br><p style="text-align:center;"><FONT size=+2 color=red><b>This file is a template-based prototype for processing by KtsDoclet,<br>it should not be opened in the browser.<br>Read KtsDoclet documentation for information on how to use this file.<br></b></font><br>&nbsp;<br></p></body></html>
+[%%//%%]
+[%%//%%]======================================================================
+[%%//%%] Prototype for custom user-created help file for the documentation
+[%%//%%] generated using KtsDoclet (and javadoc tool).
+[%%//%%]======================================================================
+[%%//%%]
+[%%//%%] The lines which have [%%//%%] ANYWHERE in the line are comment 
+[%%//%%] lines for the KtsDoclet, they will be removed from this file
+[%%//%%] before it is written into the documentation directory. The first
+[%%//%%] line is designed to show some info if this file is opened directly
+[%%//%%] in the browser (that shouldn't be done), it'll be removed in the final file.
+[%%//%%]
+[%%//%%] This prototype can be used to create custom help file for the
+[%%//%%] generated documentation. When custom help is created using this
+[%%//%%] prototype, it will have all the same standard decorations as
+[%%//%%] all pages in the documentation, including top navigation bar,
+[%%//%%] and other.
+[%%//%%]
+[%%//%%] All lines which have KtsDoclet templates which look like:
+[%%//%%] 
+[%%//%%]         [%%some-name%%]
+[%%//%%] 
+[%%//%%] AS WELL AS SURROUNDING LINES must be preserved and not altered
+[%%//%%] in any way. These templates are used by internal, proprietary
+[%%//%%] templates mechanism used by KtsDoclet to generate output HTML
+[%%//%%] pages. KtsDoclet does not document or expose its templates mechanism.
+[%%//%%] Templates are only exposed in this file in order to allow you
+[%%//%%] create custom help file which will have the same look and
+[%%//%%] functionality (top navigation bar etc) as all other documentation
+[%%//%%] pages. If you use this prototype, you can enter any HTML text
+[%%//%%] in the designted places documented below via comment
+[%%//%%] lines, however you must not change any of the template lines.
+[%%//%%]
+[%%//%%] ALTERING TEMPLATE LINES WILL LEAD TO UNPREDICTABLE RESULTS.       
+[%%//%%] COMMENT LINES BELOW SPECIFY WHERE USER LINES CAN BE ADDED.
+[%%//%%] 
+[%%//%%] When enterinig user text as designated below, you can remove 
+[%%//%%] the comment lines saying "you can add text here", or you can
+[%%//%%] leave them in this file so it'll be easier in the future to see
+[%%//%%] where your text was added. Keep in mind all lines with [%%//%%] 
+[%%//%%] are removed and never appear in the resulting HTML file.
+[%%//%%]
+[%%//%%]
+[%%//%%] This file will be placed into the root output directory of the
+[%%//%%] generated documentation. You can also provide a link, if necessary,
+[%%//%%] to the original help file via <A HREF="doc-help.html">.
+[%%//%%]
+[%%//%%] You can rename this file to any name except it cannot be named
+[%%//%%] "doc-help.html".
+[%%//%%]
+[%%//%%]======================================================================
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<HTML>
+<HEAD>
+<!-- [%%#GENERATED%%] -->
+[%%#META-CHARSET%%]
+[%%//%%]----------------------------------------------------------
+[%%//%%] YOU CAN ADD ALL HTML TEXT REQUIRED BEFORE <TITLE> HERE
+[%%//%%]----------------------------------------------------------
+
+[%%//%%] You can change "Documentation Help" words below to anything
+[%%//%%] but do not change the templates
+
+<TITLE>
+Documentation Help[%%{%%] ([%%#WINDOW-TITLE%%])[%%}%%]
+</TITLE>
+
+<META NAME="date" CONTENT="[%%#META-DATE%%]">
+<LINK REL="stylesheet" TYPE="text/css" HREF="[%%PATH-TO-ROOT%%][%%#STYLESHEET%%]">
+
+[%%//%%]----------------------------------------------------------
+[%%//%%] YOU CAN ADD ANY SCRIPTS, STYLES, <LINK> TAGS AND ALL
+[%%//%%] OTHER CONTROL STATEMENTS HERE
+[%%//%%]----------------------------------------------------------
+
+<SCRIPT type="text/javascript">
+function windowTitle()
+{
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="Documentation Help[%%{%%] ([%%#WINDOW-TITLE%%])[%%}%%]";
+    }
+}
+</SCRIPT>
+<NOSCRIPT>
+</NOSCRIPT>
+
+</HEAD>
+
+<BODY onload="windowTitle();" style="font: 10pt Arial, Helvetica, sans-serif";>
+<A NAME="(TOP)"></A>
+[%%#BANNER%%]
+[%%{%%]
+[%%@#DISCLPROTO%%]
+[%%}%%]
+[%%#MainNavBar%%]
+-----------------------------------------------------------------------------[%%//%%]
+<p class=ktsvdxs>&nbsp;</p>
+
+[%%//%%]----------------------------------------------------------
+[%%//%%] START OF YOUR HELP TEXT.
+[%%//%%] You can add any HTML lines after this comment.
+[%%//%%]----------------------------------------------------------
+
+  
+
+
+[%%//%%]----------------------------------------------------------
+[%%//%%] END OF YOUR HELP TEXT. 
+[%%//%%] Do not modify text below this comment.
+[%%//%%]----------------------------------------------------------
+
+-----------------------------------------------------------------------------[%%//%%]
+<P class=ktsvdxt>&nbsp;</P>
+[%%{%%]
+[%%#HAVE-BOTTOMNAVBAR%%]
+<TABLE CLASS="BottomLinks"><TR><TD><FONT class="BottomLinkFont"><A HREF="#(TOP)">&nbsp;Top of this page&nbsp;</A></FONT></TD></TR></TABLE>
+[%%}%%]
+-----------------------------------------------------------------------------[%%//%%]
+[%%{%%]
+<P CLASS="PageBottom">
+[%%#DOC-BOTTOM%%]
+</P>
+[%%}%%]
+-----------------------------------------------------------------------------[%%//%%]
+</BODY></HTML>
+-----------------------------------------------------------------------------[%%//%%]

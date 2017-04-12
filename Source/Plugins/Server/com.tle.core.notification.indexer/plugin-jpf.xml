@@ -1,0 +1,71 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.notification.indexer" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.freetext" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.notification" exported="true" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.common.search" />
+		<import plugin-id="com.tle.core.scheduler" />
+
+
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.hibernate.guice.TransactionModule" />
+		<parameter id="class" value="com.tle.core.security.guice.SecurityModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.freetext" point-id="freetextIndex" id="notificationIndex">
+		<parameter id="id" value="notifications" />
+		<parameter id="class" value="bean:com.tle.core.notification.indexer.NotificationIndex" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.freetext" point-id="indexingExtension" id="tasksIndexer">
+		<parameter id="class" value="bean:com.tle.core.notification.indexer.NotificationIndexer" />
+	</extension>
+
+	<!-- TODO move this when our dependencies for entity.services are fixed up -->
+	<extension plugin-id="com.tle.core.entity.services" point-id="converter" id="converter">
+		<parameter id="id" value="notifications" />
+		<parameter id="class" value="bean:com.tle.core.notification.institution.NotificationConverter" />
+		<parameter id="order" value="2000" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="itemxmlmigration" id="itemXmlConvert">
+		<parameter id="id" value="com.tle.core.notification.institution.NotificationConverter" />
+		<parameter id="bean" value="bean:com.tle.core.notification.institution.NotificationConverter" />
+		<parameter id="date" value="1970-01-11" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="notificationMigrator">
+		<parameter id="id" value="com.tle.core.notification.institution.MigrateNotifications2XML" />
+		<parameter id="bean" value="bean:com.tle.core.notification.institution.MigrateNotifications2XML" />
+		<parameter id="date" value="1970-02-12" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="itemDaoExtension" id="itemDao">
+		<parameter id="class" value="bean:com.tle.core.notification.institution.NotificationItemDao" />
+		<parameter id="order" value="101" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.scheduler" point-id="scheduledTask" id="checkForBatchEmails">
+		<parameter id="id" value="com.tle.core.notification.scheduler.CheckEmailsTask" />
+		<parameter id="bean" value="bean:com.tle.core.notification.scheduler.CheckEmailsTask" />
+		<parameter id="frequency" value="daily" />
+		<parameter id="scope" value="server" />
+	</extension>
+</plugin>

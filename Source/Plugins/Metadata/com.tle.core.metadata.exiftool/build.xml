@@ -1,0 +1,3 @@
+<project name="com.tle.core.metadata.exiftool" basedir="." default="compile">
+	<import file="../../build/plugins-common-build.xml" />
+</project>

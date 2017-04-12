@@ -1,0 +1,38 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.common.i18n" version="1">
+	<requires>
+		<import plugin-id="com.tle.platform.common" />
+		<import plugin-id="org.hibernate" exported="true" optional="true" />
+		<import plugin-id="com.tle.common.beans" />
+		<import plugin-id="org.jvnet.hudson:xstream" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension-point id="bundle">
+		<parameter-def id="locale" type="string" multiplicity="none-or-one" />
+		<parameter-def id="group" type="string" multiplicity="one-or-more">
+			<doc>
+				<doc-text>
+					Indicates which group this bundle should be contributed to.
+					For example, contributing to the Resource
+					Centre or Administration Console requires a value of
+					'resource-centre' or 'admin-console' respectively.
+				</doc-text>
+			</doc>
+		</parameter-def>
+		<parameter-def id="file" type="string" />
+		<parameter-def id="prepend-plugin" type="boolean" multiplicity="none-or-one" />
+	</extension-point>
+
+	<extension-point id="currentLocaleImpl">
+		<parameter-def id="bean" />
+	</extension-point>
+
+	<extension-point id="currentTimeZoneImpl">
+		<parameter-def id="bean" />
+	</extension-point>
+</plugin>

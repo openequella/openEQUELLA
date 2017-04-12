@@ -1,0 +1,435 @@
+<xml>
+	<errors>
+		<unknown>
+			<title>Problem Performing Action</title>
+			<message>An unknown error has occurred.  Please contact your system administrator.</message>
+		</unknown>
+		<system.settings>
+			<loading>
+				<title>Problem Loading Settings</title>
+				<message>An error has occurred while reading the system settings for this plugin.  You will not be able to save any settings.</message>
+			</loading>
+			<saving>
+				<title>Problem Saving Settings</title>
+				<message>An error has occurred while saving your settings to the system.  You settings may not have been recorded.</message>
+			</saving>
+		</system.settings>
+		<user.management>
+			<loading>
+				<title>Problem Loading Plugin</title>
+				<message>An error has occurred while loading the plugin.  Please contact your administrator</message>
+			</loading>
+			<saving>
+				<title>Problem Saving Settings</title>
+				<message>An error has occurred while saving your settings to the system.  You settings may not have been recorded.</message>
+			</saving>
+		</user.management>
+		<search.settings>
+			<loading>
+				<title>Problem Loading Search Gateway</title>
+				<message>An error has occurred while reading the settings for this search gatewayplugin.  You will not be able to save any settings.</message>
+			</loading>
+			<saving>
+				<title>Problem Saving Search Gateway</title>
+				<message>An error has occurred while saving your the search gateway(s) to the system.  You settings may not have been recorded.</message>
+			</saving>
+		</search.settings>
+		<login>
+			<version.difference>
+				<title>Incompatible Versions</title>
+				<message>The EQUELLA server you are connecting to is incompatible with this version of the Administration Console.  You can only administer a server with the same version number.  A compatible version of the Administration Console can be downloaded from the Resource Centre.</message>
+			</version.difference>
+			<class.not.found>
+				<!-- see Jira Issue TLE-720 : http://apps.dytech.com.au/jira/browse/TLE-720 -->
+				<title>Classes Not Found</title>
+				<message>The Administration Console is having problems finding one or more classes.  Please contact your system administrator immediately to help rectify the issue.</message>
+			</class.not.found>
+			<invalid.config>
+				<title>Invalid Configuration</title>
+				<message>The file config.xml contains invalid XML, or does not exist.  Please fix the XML, or reinstall the Administration Console.</message>
+			</invalid.config>
+			<initialisation.problem>
+				<title>Problem Initialising Login Session</title>
+				<message>An error has occurred while attempting to connect to the server.  Please ensure the details are correct, including the server password, and that you are using a version of the Administration Console that is compatible with the server you are connecting to.</message>
+			</initialisation.problem>
+			<unknown.problem>
+				<title>Problem Connecting To Server</title>
+				<message>"An major error has occurred while trying to login to the system.  Please ensure that your computer can access the server.</message>
+			</unknown.problem>
+		</login>
+		<itemEditor>
+			<convertToXML>
+				<title>Error Transforming XML</title>
+				<message>An error occurred while transforming the collection to XML.</message>
+			</convertToXML>
+			<deleting>
+				<title>Error Removing Collection</title>
+				<message>An error occurred while deleting the collection.  This could be due to the Administration Console being unable to connect to the EQUELLA server.  Please try to delete the item definition again.</message>
+			</deleting>
+			<enumerating>
+				<title>Error Listing Collection</title>
+				<message>An error occurred while retrieving a list of collections.  This is possible due to the Administration Console not being able to connect to the EQUELLA server.</message>
+			</enumerating>
+			<exporting>
+				<title>Problem Exporting Collection</title>
+				<message>An error occurred while exporting the collection to a file.  This could be due a combination of factors, such as:\n- The destination file is "read only"\n- You do not have permission to create and/or write files for the given path.</message>
+			</exporting>
+			<importing>
+				<title>Problem Importing Collection</title>
+				<message>An error occurred while importing your collection from the XML source.  This could be due a number of factors, either:\n- The XML does not representing a valid item definition\n- The XML is not well-structured, invalid, or corrupt\n- The file does not contain XML!</message>
+			</importing>
+			<cloning>
+				<title>Problem Cloning Collection</title>
+				<message>An error occurred while cloning the selected collection.  This may be due to the EQUELLA server becoming unreachable on the network.  Please retry the operation, and contact the system administrator if this problem continues.</message>
+			</cloning>
+			<listTypes>
+				<title>Error Listing Collection Types</title>
+				<message>An error has occurred while retrieving a list of collection types.  This may be due to the EQUELLA server becoming unreachable on the network.  Please retry the operation, and contact the system administrator if this problem continues.</message>
+			</listTypes>
+			<loading>
+				<title>Error Loading Collection</title>
+				<message>An error occurred while loading the collection.  This could be due to the Administration Console being unable to connect to the EQUELLA server, or the item definition is invalid or corrupt.</message>
+			</loading>
+			<saving>
+				<title>Error Saving Collection</title>
+				<message>An error occurred while saving the collection.  This could be due to a number of factors, either:\n- The Administration Console could not talk to connect to the EQUELLA server.\n- An item definition with the same identifier already exists.</message>
+			</saving>
+			<validation>
+				<title>Data Validation Error</title>
+				<message>An unknown part of the collection data is invalid.  We are sorry that we can not be more specific.</message>
+			</validation>
+			<schema>
+				<title>Error In Schema</title>
+				<message>An error has occurred while utilising the schema.  This usually means that an illegal schema node name has been entered.</message>
+			</schema>
+			<uploadingFile>
+				<title>Error Uploading File</title>
+				<message>An error occurred while attempting to uploaded your file. This could possibly be due to the Administration Console being unable to connect to the EQUELLA server. Please try again and if problem continues contact your Administrator.</message>
+			</uploadingFile>
+		</itemEditor>
+		<wizard>
+			<preview>
+				<wizard>
+					<title>Error Previewing Wizard</title>
+					<message>An error has occurred while generating a preview of the wizard.  This is most likely due to a one or more controls containing invalid data.  To help track down the problematic control, try previewing each page of your wizard until you receive another error, and then try previewing each control in this page.</message>
+				</wizard>
+				<control>
+					<title>Error Previewing Control</title>
+					<message>An error has occurred while generating a preview of the control.  This is most likely due to one of the fields containing invalid data.  Please review the data in each field.</message>
+				</control>
+				<lookAndFeel>
+					<title>Error Setting Look And Feel</title>
+					<message>An error has occurred while setting the "Look and Feel" of the preview to that of the EQUELLA.  While this will not affect the outcome of the wizard on the website, the preview functionality in the Administration Console will not be accurate.</message>
+				</lookAndFeel>
+			</preview>
+			<listCategories>
+				<title>Error Listing Wizard Categories</title>
+				<message>An error has occurred while retrieving a list of wizard categories.  This may be due to the EQUELLA server becoming unreachable on the network.  Please retry the operation, and contact the system administrator if this problem continues.</message>
+			</listCategories>
+			<control>
+				<title>Error Loading Control</title>
+				<message>An error has occurred while loading a control specified in configuration file.  Please check your configuration and try again.</message>
+			</control>
+			<controlImport>
+				<title>Error Importing Control</title>
+				<message>An error has occurred while importing this control.  Please ensure the exported control is for the correct version.</message>
+			</controlImport>
+		</wizard>
+		<displayTemplate>
+			<loadingXSLT>
+				<title>Error Loading XSLT</title>
+				<message>An error occurred while attempting to load the XSLT associated with this collections display template.  Please contact the system administrator.</message>
+			</loadingXSLT>
+			<readingXSLT>
+				<title>Error Reading XSLT</title>
+				<message>An error occurred while attempting to read the XSLT you wish to upload.  Please ensure the you have permission to read the file, and that the path to the file is correct.</message>
+			</readingXSLT>
+			<schemaProblem>
+				<title>Error Loading/Creating Display Node</title>
+				<message>The schema for this collection could not be successfully loaded for one or more display nodes.  Please close the item editor and attempt to load the item definition again.  If the problem persists, the item definition may be corrupt.</message>
+			</schemaProblem>
+			<uploadingXSLT>
+				<title>Error Uploading XSLT</title>
+				<message>An error occurred while attempting to upload the XSLT.  Please ensure that you can still connect to the EQUELLA server.</message>
+			</uploadingXSLT>
+			<unzippingXSLT>
+				<title>Error Unzipped XSLT Bundle</title>
+				<message>An error occurred while attempting to unzip the ZIP file you uploaded.  Please ensure that the ZIP file is not corrupt by checking it with a decompression program which supports the ZIP format, for example, Winzip.  If it is not corrupt, then try uploading the ZIP file again.</message>
+			</unzippingXSLT>
+		</displayTemplate>
+		<usersAndGroups>
+			<searchingUsers>
+				<title>Error Searching Users</title>
+				<message>An error has occurred while searching for users.  This may be due to the EQUELLA server becoming unreachable.  Please attempt the operation again.</message>
+			</searchingUsers>
+			<listingGroups>
+				<title>Error Listing Groups</title>
+				<message>An error has occurred while retrieving the list of groups.  This may be due to the EQUELLA server becoming unreachable.  Please attempt the operation again.</message>
+			</listingGroups>
+			<unknownUser>
+				<title>Invalid User ID</title>
+				<message>The Administration Console could not resolve a user ID.  This may be due to a network disconnection, or the user has been deleted from the system.  Please contact your system administrator if you believe that important users are not being displayed.</message>
+			</unknownUser>
+			<unknownGroup>
+				<title>Invalid Group ID</title>
+				<message>The Administration Console could not resolve a group ID.  This may be due to a network disconnection, or the group has been deleted from the system.  Please contact your system administrator to rectify this problem.</message>
+			</unknownGroup>
+		</usersAndGroups>
+		<bulkUpload>
+			<deleting>
+				<title>Error Removing Profile</title>
+				<message>An error occurred while removing the bulk upload profile.  Please try to remove the profile again.  If this problem persists, please contact the system administrator.</message>
+			</deleting>
+			<loading>
+				<title>Error Loading Profile</title>
+				<message>An error occurred while loading the bulk upload profile.  Please try to load the profile again.  If this problem persists, please contact the system administrator.</message>
+			</loading>
+			<saving>
+				<title>Error Saving Profile</title>
+				<message>An error occurred while saving the bulk upload profile.  Please try to save the profile again.  If this problem persists, please contact the system administrator.</message>
+			</saving>
+			<upload>
+				<title>Error Uploading CSV Sample</title>
+				<message>An error occurred while trying to read the sample CSV file that you selected.  Please ensure that you have permission to read the file in question, and that you have specified the correct path.</message>
+			</upload>
+		</bulkUpload>
+		<partitions>
+			<loading>
+				<title>Error Loading Partition</title>
+				<message>An error occurred while loading the partition.  Please try to load the partition again.  If this problem persists, please contact the system administrator.</message>
+			</loading>
+			<deleting>
+				<title>Error Removing Partition</title>
+				<message>An error occurred while removing the partition.  Please try to remove the partition again.  If this problem persists, please contact the system administrator.</message>
+			</deleting>
+			<saving>
+				<title>Error Saving Partition</title>
+				<message>An error occurred while saving the partition.  Please try to save the partition again.  If this problem persists, please contact the system administrator.</message>
+			</saving>
+		</partitions>
+		<script>
+			<exporting>
+				<title>Error Exporting Script</title>
+				<message>There was an error while exporting the script to the given file.  Please ensure that you have permission to create and/or write to files at the given path.</message>
+			</exporting>
+			<importing>
+				<title>Error Importing Script</title>
+				<message>There was an error while importing the script from the given file.  Please ensure that you have permission to read the file.</message>
+			</importing>
+			<invalid>
+				<title>Invalid Script</title>
+				<message>The script being loaded is seen to be invalid.  This is probably due to a syntactic error in the script, but there is also the chance that the item definition is corrupt.</message>
+			</invalid>
+		</script>
+		<serverProfile>
+			<saving>
+				<title>Error Saving Profile</title>
+				<message>An error occurred while saving the server profile.  Please ensure that your configuration file (config.xml) is writable.</message>
+			</saving>
+		</serverProfile>
+		<hierarchy>
+			<loading>
+				<title>Error Loading Hierarchy</title>
+				<message>An error occurred while loading the hierarchy from the database.  This may be due to the EQUELLA server becoming unreachable across the network, or the hierarchy configuration is corrupt.  Please try to load the hierarchy again, and contact the system administrator if the problem persists.</message>
+			</loading>
+			<saving>
+				<title>Error Saving Hierarchy</title>
+				<message>An error occurred while saving the hierarchy to the database.  This may be due to the EQUELLA server becoming unreachable across the network, or the hierarchy configuration is corrupt.  Please try to save the hierarchy again, and contact the system administrator if the problem persists.</message>
+			</saving>
+		</hierarchy>
+		<container>
+			<loading>
+				<title>Error Loading Container</title>
+				<message>An error occurred while trying to load the container.  This may be due to the EQUELLA server becoming unreachable across the network, or the container is corrupt.  Please try to edit the container again, and contact the system administrator if the problem persists.</message>
+			</loading>
+			<deleting>
+				<title>Error Removing Container</title>
+				<message>An error occurred while removing the container.  This may be due to the EQUELLA server becoming unreachable across the network.  Please try to remove the container again, and contact the system administrator if the problem persists.</message>
+			</deleting>
+			<enumerating>
+				<title>Error Listing Containers</title>
+				<message>An error occurred while listing the containers.  This may be due to the EQUELLA server becoming unreachable across the network.  Please try to do the operation again, and contact the system administrator if the problem persists.</message>
+			</enumerating>
+			<saving>
+				<title>Error Saving Container</title>
+				<message>An error occurred while saving the container to the database.  This may be due to the EQUELLA server becoming unreachable across the network, or the container configuration is corrupt.  Please try to save the container again, and contact the system administrator if the problem persists.</message>
+			</saving>
+		</container>
+		<workflow>
+			<creating>
+				<title>Error Adding Workflow Template</title>
+				<message>An error occurred while adding the workflow template.  This may be due to the EQUELLA server becoming unreachable across the network, or the workflow template is corrupt.  Please try to add the workflow template again, and contact the system administrator if the problem persists.</message>
+			</creating>
+			<deleting>
+				<title>Error Removing Workflow Template</title>
+				<message>An error occurred while removing the workflow template.  This may be due to the EQUELLA server becoming unreachable across the network.  Please try to remove the workflow template again, and contact the system administrator if the problem persists.</message>
+			</deleting>
+			<enumerating>
+				<title>Error Listing Workflow Templates</title>
+				<message>An error occurred while listing the workflow templates.  This may be due to the EQUELLA server becoming unreachable across the network.  Please try to perform the operation again, and contact the system administrator if the problem persists.</message>
+			</enumerating>
+			<saving>
+				<title>Error Saving Workflow Template</title>
+				<message>An error occurred while saving the workflow template to the database.  This may be due to the EQUELLA server becoming unreachable across the network, or the workflow template configuration is corrupt.  Please try to save the workflow template again, and contact the system administrator if the problem persists.</message>
+			</saving>
+			<cloning>
+				<title>Problem Cloning Workflow Template</title>
+				<message>An error occurred while cloning the selected workflow template.  This may be due to the EQUELLA server becoming unreachable across the network.  Please try to perform the operation again, and contact the system administrator if the problem persists.</message>
+			</cloning>
+			<exporting>
+				<title>Problem Exporting Workflow Template</title>
+				<message>An error occurred while exporting the workflow template to a file.  This could be due a combination of factors, such as:\n- The destination file is "read only"\n- You do not have permission to create and/or write files for the given path.</message>
+			</exporting>
+			<importing>
+				<title>Problem Importing Workflow Template</title>
+				<message>An error occurred while importing your workflow template from the XML source.  This could be due a number of factors, either:\n- The XML does not representing a valid workflow template\n- The XML is not well-structured, invalid, or corrupt\n- The file does not contain XML!</message>
+			</importing>
+			<validation>
+				<title>Data Validation Error</title>
+				<message>An unknown part of the workflow template data is invalid.  We are sorry that we can not be more specific.</message>
+			</validation>
+		</workflow>
+		<reporting>
+			<retrieving>
+				<title>Problem Retrieving Report</title>
+				<message>An error occurred while trying to retrieve your report from the system. Please attempt to delete the report again.  If the problem persists, please contact your system administrator.</message>
+			</retrieving>
+			<deleting>
+				<title>Problem Deleting Report</title>
+				<message>An error occurred while deleting your report. Please attempt to delete the report again.  If the problem persists, please contact your system administrator.</message>
+			</deleting>
+			<saving>
+				<title>Problem Saving Report</title>
+				<message>An error occurred while saving your report. Please attempt to execute the report again.  If the problem persists, please contact your system administrator.</message>
+			</saving>
+			<cloning>
+				<title>Problem Cloning Report</title>
+				<message>An error occurred while cloning your report. Please attempt to clone the report again.  If the problem persists, please contact your system administrator.</message>
+			</cloning>
+			<execute>
+				<title>Problem Executing Report</title>
+				<message>An error occurred while executing your report. Please attempt to execute the report again.  If the problem persists, please contact your system administrator.</message>
+			</execute>
+			<saving.output>
+				<title>Problem Saving Report Ouput</title>
+				<message>An error occurred while saving the output of your report. Please attempt to execute the report again.  If the problem persists, please contact your system administrator.</message>
+			</saving.output>
+		</reporting>
+		<schema>
+			<validation>
+				<title>Schema Validation Error</title>
+				<message>The schema could not be validated as an error has occurred while contacting the server.  Please try the operation again.</message>
+			</validation>
+			<saving>
+				<title>Error Saving Schema</title>
+				<message>An error occurred while saving the schema.  This could be due to a number of factors, either:\n- The Administration Console could not talk to connect to the EQUELLA server.\n- A schema with the same name already exists.</message>
+			</saving>
+			<loading>
+				<title>Error Loading Schema</title>
+				<message>An error occurred while loading the schema.  This could be due to the Administration Console being unable to connect to the EQUELLA server, or the schema is invalid or corrupt.</message>
+			</loading>
+			<deleting>
+				<title>Error Removing Schema(s)</title>
+				<message>An error occurred while deleting the schema(s).  This could be due to the Administration Console being unable to connect to the EQUELLA server.  Please try to delete the schema(s) again.</message>
+			</deleting>
+			<cloning>
+				<title>Problem Cloning Schema</title>
+				<message>An error occurred while cloning the selected schema.  This may be due to the EQUELLA server becoming unreachable on the network.  Please retry the operation, and contact the system administrator if this problem continues.</message>
+			</cloning>
+			<exporting>
+				<title>Problem Exporting Schema</title>
+				<message>An error occurred while exporting the schema to a file.  This could be due a combination of factors, such as:\n- The destination file is "read only"\n- You do not have permission to create and/or write files for the given path.</message>
+			</exporting>
+			<importing>
+				<title>Problem Importing Schema</title>
+				<message>An error occurred while importing your schema from the XML source.  This could be due a number of factors, either:\n- The XML does not representing a valid schema\n- The XML is not well-structured, invalid, or corrupt\n- The file does not contain XML!</message>
+			</importing>
+			<enumerating>
+				<title>Error Listing Schemas</title>
+				<message>An error occurred while listing the schemas.  This may be due to the EQUELLA server becoming unreachable across the network.  Please try to do the operation again, and contact the system administrator if the problem persists.</message>
+			</enumerating>
+			<delete.transform>
+				<title>Error deleting transformation</title>
+				<message>An error occurred while deleting the XSLT associated with this schema transformation.</message>
+			</delete.transform>
+			<upload.transform>
+				<title>Error uploading transformation</title>
+				<message>An error occurred while uploading the XSLT associated with this schema transformation.</message>
+			</upload.transform>
+		</schema>
+		<courseInfo>
+			<validation>
+				<title>Course Validation Error</title>
+				<message>The course could not be validated as an error has occurred while contacting the server.  Please try the operation again.</message>
+			</validation>
+			<saving>
+				<title>Error Saving Course</title>
+				<message>An error occurred while saving the course.  This could be due to a number of factors, either:\n- The Administration Console could not talk to connect to the EQUELLA server.\n- A course with the same name already exists.</message>
+			</saving>
+			<loading>
+				<title>Error Loading Course</title>
+				<message>An error occurred while loading the course.  This could be due to the Administration Console being unable to connect to the EQUELLA server, or the course is invalid or corrupt.</message>
+			</loading>
+			<deleting>
+				<title>Error Removing Course(s)</title>
+				<message>An error occurred while deleting the course(s).  This could be due to the Administration Console being unable to connect to the EQUELLA server.  Please try to delete the course(s) again.</message>
+			</deleting>
+			<cloning>
+				<title>Problem Cloning Course</title>
+				<message>An error occurred while cloning the selected course.  This may be due to the EQUELLA server becoming unreachable on the network.  Please retry the operation, and contact the system administrator if this problem continues.</message>
+			</cloning>
+			<exporting>
+				<title>Problem Exporting Course</title>
+				<message>An error occurred while exporting the course to a file.  This could be due a combination of factors, such as:\n- The destination file is "read only"\n- You do not have permission to create and/or write files for the given path.</message>
+			</exporting>
+			<importing>
+				<title>Problem Importing Course</title>
+				<message>An error occurred while importing your course from the XML source.  This could be due a number of factors, either:\n- The XML does not representing a valid course\n- The XML is not well-structured, invalid, or corrupt\n- The file does not contain XML!</message>
+			</importing>
+			<enumerating>
+				<title>Error Listing Course</title>
+				<message>An error occurred while listing the courses.  This may be due to the EQUELLA server becoming unreachable across the network.  Please try to do the operation again, and contact the system administrator if the problem persists.</message>
+			</enumerating>
+		</courseInfo>
+		<portal>
+			<validation>
+				<title>Portal Validation Error</title>
+				<message>The portal could not be validated as an error has occurred while contacting the server.  Please try the operation again.</message>
+			</validation>
+			<saving>
+				<title>Error Saving Portal</title>
+				<message>An error occurred while saving the portal.  This could be due to a number of factors, either:\n- The Administration Console could not talk to connect to the EQUELLA server.\n- A portal with the same name already exists.</message>
+			</saving>
+			<loading>
+				<title>Error Loading Portal</title>
+				<message>An error occurred while loading the portal.  This could be due to the Administration Console being unable to connect to the EQUELLA server, or the portal is invalid or corrupt.</message>
+			</loading>
+			<deleting>
+				<title>Error Removing Portal(s)</title>
+				<message>An error occurred while deleting the portal(s).  This could be due to the Administration Console being unable to connect to the EQUELLA server.  Please try to delete the portal(s) again.</message>
+			</deleting>
+			<cloning>
+				<title>Problem Cloning Portal</title>
+				<message>An error occurred while cloning the selected portal.  This may be due to the EQUELLA server becoming unreachable on the network.  Please retry the operation, and contact the system administrator if this problem continues.</message>
+			</cloning>
+			<exporting>
+				<title>Problem Exporting Portal</title>
+				<message>An error occurred while exporting the portal to a file.  This could be due a combination of factors, such as:\n- The destination file is "read only"\n- You do not have permission to create and/or write files for the given path.</message>
+			</exporting>
+			<importing>
+				<title>Problem Importing Portal</title>
+				<message>An error occurred while importing your portal from the XML source.  This could be due a number of factors, either:\n- The XML does not representing a valid portal\n- The XML is not well-structured, invalid, or corrupt\n- The file does not contain XML!</message>
+			</importing>
+			<enumerating>
+				<title>Error Listing Schemas</title>
+				<message>An error occurred while listing the portals.  This may be due to the EQUELLA server becoming unreachable across the network.  Please try to do the operation again, and contact the system administrator if the problem persists.</message>
+			</enumerating>
+		</portal>
+		<searching>
+			<validation>
+				<title>Validation Error</title>
+				<message>The given name is not unique. Please provide another name and try again.</message>
+			</validation>
+		</searching>
+	</errors>
+</xml>

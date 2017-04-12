@@ -1,0 +1,79 @@
+<xml>
+  <item>
+    <general>
+      <aggregationlevel>
+        <source>LOMv1.0</source>
+        <value>2</value>
+      </aggregationlevel>
+      <identifier>
+        <catalog>TLF</catalog>
+        <entry>L49</entry>
+      </identifier>
+      <title>
+        <main>It's not just wind</main>
+      </title>
+      <language>en</language>
+      <description>Test design settings for a windmill to generate electric power for an island lighthouse.  Set the blade length and pitch of the windmill to suit wind speed for each season.  Try to maximise energy efficiency of windmill operation while also minimising the back-up use of diesel fuel in power generation.</description>
+      <keywords>generators</keywords>
+      <keywords>electricity</keywords>
+      <keywords>islands</keywords>
+      <keywords>blades</keywords>
+      <keywords>pitch</keywords>
+    </general>
+    <name>It's not just wind</name>
+    <description>Test design settings for a windmill to generate electric power for an island lighthouse.  Set the blade length and pitch of the windmill to suit wind speed for each season.  Try to maximise energy efficiency of windmill operation while also minimising the back-up use of diesel fuel in power generation.</description>
+    <keywords>generators</keywords>
+    <keywords>electricity</keywords>
+    <keywords>islands</keywords>
+    <keywords>blades</keywords>
+    <keywords>pitch</keywords>
+    <lifecycle>
+      <version>3.0</version>
+      <assurance>
+        <status>Published</status>
+        <date>2004-02-27T15:29:52Z</date>
+      </assurance>
+    </lifecycle>
+    <technical>
+      <format>application/x-director</format>
+      <format>text/html</format>
+      <format>text/css</format>
+    </technical>
+    <qed>
+      <subject>Windmills</subject>
+      <subject>Wind vanes</subject>
+      <subject>Power stations</subject>
+      <subject>Stored energy</subject>
+      <subject>Seasons</subject>
+      <subject>Industrial design</subject>
+      <subject>Fuel</subject>
+      <subject>Batteries</subject>
+      <yearlevel>9</yearlevel>
+      <yearlevel>10</yearlevel>
+    </qed>
+    <tlf>
+      <learningarea>Science</learningarea>
+      <strand>Science\Physical sciences</strand>
+      <contentconcept>Science\Energy transformation</contentconcept>
+      <contentconcept>Science\Electricity</contentconcept>
+      <contentconcept>Science\Power technology</contentconcept>
+      <contentconcept>Science\Seasons</contentconcept>
+      <contentconcept>Science\Natural resources</contentconcept>
+      <contentconcept>Science\Quantitative data</contentconcept>
+      <skillsprocess>Analysis</skillsprocess>
+      <skillsprocess>Application</skillsprocess>
+      <skillsprocess>Comprehension</skillsprocess>
+      <skillsprocess>Knowledge</skillsprocess>
+      <studentactivity>Interactives</studentactivity>
+      <studentactivity>Experiment</studentactivity>
+      <studentactivity>Analysis</studentactivity>
+      <learningdesign>Experiential learning</learningdesign>
+      <learningdesign>Independent learning</learningdesign>
+      <learningdesign>Problem solving</learningdesign>
+      <learningdesign>Visual learning</learningdesign>
+    </tlf>
+    <educational>
+      <context>School</context>
+    </educational>
+  </item>
+</xml>

@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<configuration>
+	<soapserver>
+		<host>saidcomputer</host>
+		<port>8080</port>
+		<context>/test/</context>
+		<username>int.demosysadmin</username>
+		<password>equella</password>
+	</soapserver>
+	<proxy>
+		<host>localhost</host>
+		<port>3128</port>
+	</proxy>
+	<sleep>1</sleep>
+	<!-- Example headers -->
+	<!-- 
+	<headers>
+		<header name="Accept-Encoding">gzip,deflate</header>
+	</headers>
+	 -->
+</configuration>

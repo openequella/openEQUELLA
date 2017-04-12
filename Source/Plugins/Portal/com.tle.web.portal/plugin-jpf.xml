@@ -1,0 +1,85 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.portal" version="1">
+	<requires>
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.portal" exported="true" />
+		<import plugin-id="com.tle.common.recipientselector" />
+		<import plugin-id="com.tle.core.portal" exported="true" />
+		<import plugin-id="com.tle.web.recipientselector" />
+		<import plugin-id="com.tle.web.search" />
+		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.web.selection" />
+		<import plugin-id="com.tle.web.settings" />
+		<import plugin-id="com.tle.web.htmleditor" />
+		<import plugin-id="com.tle.web.itemlist" />
+		<import plugin-id="com.tle.core.accessibility" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="portletRenderer">
+		<parameter-def id="id" multiplicity="one" type="string" />
+		<parameter-def id="class" multiplicity="one" type="string">
+			<doc>
+				<doc-text>Must implement PortletSection interface. (Usually extend AbstractPortletRenderer)</doc-text>
+			</doc>
+		</parameter-def>
+		<parameter-def id="nameKey" multiplicity="one" type="string" />
+		<parameter-def id="descriptionKey" multiplicity="one" type="string" />
+	</extension-point>
+
+	<extension-point id="portletEditor">
+		<parameter-def id="id" multiplicity="one" type="string" />
+		<parameter-def id="class" multiplicity="one" type="string">
+			<doc>
+				<doc-text>Must implement PortletEditor interface. (Usually extend AbstractPortletEditor)</doc-text>
+			</doc>
+		</parameter-def>
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+		<parameter id="class" value="com.tle.web.sections.equella.guice.EquellaModule" />
+		<parameter id="class" value="com.tle.web.portal.service.PortalModule" />
+		<parameter id="class" value="com.tle.web.portal.service.PortalSearchModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="file" value="lang/i18n.properties" />
+		<parameter id="group" value="resource-centre" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="stringshelp">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.xml" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="portalTree">
+		<parameter id="path" value="/home.do" />
+		<parameter id="root" value="bean:portalTree" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="portalAdminTree">
+		<parameter id="path" value="/access/portaladmin.do" />
+		<parameter id="root" value="bean:portalAdminTree" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.services" point-id="applicationEventListener" id="listeners">
+		<parameter id="listener" value="bean:com.tle.web.portal.service.PortletWebService" />
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.UserSessionLogoutListener" />
+		<parameter id="listenerClass" value="com.tle.web.portal.events.PortletsUpdatedEventListener" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="portalAdmin">
+		<parameter id="class" value="bean:com.tle.web.portal.section.admin.PortalSettingsSection" />
+		<parameter id="grouping" value="interfacesettings" />
+	</extension>
+</plugin>

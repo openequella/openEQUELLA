@@ -1,0 +1,235 @@
+@import url("selector.css");
+
+.search-result li 
+{
+    float: right;
+    margin: 0 0 2px;
+    padding: 8px 10px 5px 40px;
+}
+
+.search-result input 
+{
+    right: 8px;
+}
+
+.search-result h4, .search-result li label 
+{
+    margin: 0 0 4px;
+}
+
+.search-result .username 
+{
+    float:right;
+}
+
+.search-result .add-user
+{
+	float:left;
+}
+
+.search-result .add-user a
+{
+	display: inline;
+}
+
+.search-result .displayname 
+{
+    margin-right: 16px;
+    float:right;
+}
+
+.resultlist .displayname 
+{
+	margin-right: 16px;
+}
+
+.resultlist .modal-search-result li 
+{
+    margin: 0 0 2px !important;
+    padding: 8px 10px 5px 40px !important;
+}
+
+.modal-search-result input 
+{
+    right: 8px;
+    position: absolute;
+}
+
+.modal-search-result h4, .modal-search-result li label 
+{
+    margin: 0 0 4px;
+}
+
+#typelist li
+{
+	padding-left: 20px;
+	padding-right:0;
+}
+
+#typelist li label
+{
+	margin-right: 3px;
+	margin-left:0;
+}
+
+.nav 
+{
+  margin-right: 0;
+}
+
+.nav-tabs > li
+{
+  float: right;
+}
+.nav-tabs > li > a
+{
+  padding-right: 12px;
+  padding-left: 12px;
+  margin-left: 2px;
+  margin-right:0;
+}
+
+.tabbable 
+{
+  float:right;
+}
+
+.modal-content-inner #right-cloumn
+{
+    float: right;
+    margin-right: 45px;
+    margin-left:0;
+}
+
+.add-group
+{
+    text-align: left;
+    margin-left: -3px;
+}
+
+.newListSelected, .newList
+{
+	float: right;
+}
+
+#right-cloumn .level1 li.select
+{
+ 	padding-right:3px;
+ 	padding-left:0;
+}
+
+#right-cloumn .level1 .expression-text
+{
+   padding-right:30px;
+   padding-left:0;
+}
+#right-cloumn .level2 li .newListSelected
+{
+   margin-right:30px;
+   margin-left:0;
+}
+
+
+#right-cloumn .level2 .expression-text
+{
+	 padding-right:60px;
+	 padding-left:0;
+}
+#right-cloumn .level3 li .newListSelected
+{
+	margin-right:60px;
+	margin-left:0;
+}
+
+#right-cloumn .level3 .expression-text
+{
+	 padding-right:90px;
+	 padding-left:0;
+}
+#right-cloumn .level4 li .newListSelected
+{
+	margin-right:90px;
+	margin-left:0;
+}
+
+#right-cloumn .level4 .expression-text
+{
+	 padding-right:120px;
+	 padding-left:0;
+}
+#right-cloumn .level5 li .newListSelected
+{
+	margin-right:120px;
+	margin-left:0;
+}
+
+#right-cloumn .level5 .expression-text
+{
+	 padding-right:150px;
+	 padding-left:0;
+}
+#right-cloumn .level6 li .newListSelected
+{
+	margin-right:150px;
+	margin-left:0;
+}
+
+#right-cloumn .level6 .expression-text
+{
+	 padding-right:180px;
+	 padding-left:0;
+}
+
+.grouping li 
+{    
+    float: right;
+    margin: 0 0 2px;
+}
+
+.expression-text
+{
+	float: right;
+}
+
+.other-options li label
+{
+	margin-left:0;
+	margin-right:3px;
+}
+
+input[type="text"]
+{
+	width:250px;
+	margin-right: 20px;
+	margin-left:0;
+}
+
+#right-cloumn a.unselect 
+{
+	 float: left;
+}
+
+.other-options .newListSelected
+{
+	float:none;
+	padding: 4px 6px !important;
+	margin-left: 20px;
+}
+
+.referrer-options
+{
+	margin-right:20px;
+	margin-left:0;
+}
+
+ #select-area button
+{
+	float:left;
+	margin-left: 13px;
+	margin-right:0;
+}
+
+#select-area .selectlinks 
+{
+	float: right;
+}

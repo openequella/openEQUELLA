@@ -1,0 +1,13 @@
+<export>
+	<mappings>
+		<map from="doc,xls,ppt,pps" to="html" class="com.dytech.export.DHFExport"/>
+		<map from="bmp,tiff,pnm" to="jpeg" class="com.dytech.export.ImageExport"/>
+		<map from="emf" to="jpeg" class="com.dytech.export.EMFExport"/>
+		<map from="wmf" to="jpeg" class="com.dytech.export.WMFExport"/>
+	</mappings>
+	<synonyms>
+		<synonym for="html" is="htm"/>
+		<synonym for="jpeg" is="jpg,jpe"/>
+		<synonym for="tiff" is="tif"/>
+	</synonyms>
+</export>

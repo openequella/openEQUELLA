@@ -1,0 +1,56 @@
+
+.recent-more
+{
+	margin-top: 1em;
+}
+
+.recent-item
+{
+	padding: 0 0 15px 0;
+	margin: 0 0 15px 0;
+	border-bottom: 1px solid #edece6;
+}
+
+.recent-item H4, .recent-item P
+{
+	overflow: hidden;
+}
+
+.recent-item H4 A
+{
+	color: #3baace;
+	text-decoration: none;
+	font-size: 14px;
+	font-weight: normal;
+	padding: 0 10px 0 0;
+	line-height: 17px;
+}
+
+.recent-item H4 A:hover
+{
+	text-decoration: underline;
+}
+
+.recent-collections
+{
+	margin-bottom: 1em;
+}
+
+.recent-item SPAN
+{
+	color: #b1b17b;
+	font-size: 10px;
+	padding: 5px 0 0 0;
+}
+
+.recent-item P
+{
+	clear: both;
+	padding: 4px 0;
+	line-height: 13px;
+}
+
+.portletedit .collections label
+{
+	padding-left: 10px;
+}

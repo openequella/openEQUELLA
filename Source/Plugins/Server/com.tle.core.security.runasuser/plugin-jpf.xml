@@ -1,0 +1,23 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.security.runasuser" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.beans" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.i18n" />
+		<import plugin-id="com.tle.core.institution" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.usermanagement" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.security.guice.SecurityModule" />
+	</extension>
+
+</plugin>

@@ -1,0 +1,13 @@
+<script>
+var token = getUrlVars()["access_token"];
+var error = getUrlVars()["error"];
+window.parent.closeLogin(token, error);
+
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&#]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+</script>

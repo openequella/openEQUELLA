@@ -1,0 +1,40 @@
+<xml>
+	<navigationNodes>
+		<node>
+			<uuid>2cbde4ac-9d2e-4e9f-acf6-4035b91eaa8e</uuid>
+			<name>Node 1</name>
+			<icon>ims.gif</icon>
+			<identifier>ident</identifier>
+			<tab attachment="2c3fa601-dcdc-44e7-8016-8034ee5cabf8">
+				<name>Tab 1</name>
+			</tab>
+			<tab attachment="fae0f46d-f8a8-497e-8f47-07518c9da153">
+				<name>Tab 2</name>
+			</tab>
+			<node>
+				<uuid>579fa85f-21fc-4d12-bcdf-6a6025a1b29c</uuid>
+				<name>Node 2</name>
+				<icon>ims2.gif</icon>
+				<identifier>ident2</identifier>
+				<tab attachment="2c3fa601-dcdc-44e7-8016-8034ee5cabf8">
+					<name>Tab 1</name>
+				</tab>
+				<tab attachment="fae0f46d-f8a8-497e-8f47-07518c9da153">
+					<name>Tab 2</name>
+				</tab>
+			</node>
+			<node>
+				<uuid>d3572b6f-c38b-41b6-9dbe-a977375746a1</uuid>
+				<name>Node 3</name>
+				<icon>ims3.gif</icon>
+				<identifier>ident3</identifier>
+				<tab attachment="2c3fa601-dcdc-44e7-8016-8034ee5cabf8">
+					<name>Tab 1</name>
+				</tab>
+				<tab attachment="fae0f46d-f8a8-497e-8f47-07518c9da153">
+					<name>Tab 2</name>
+				</tab>
+			</node>
+		</node>
+	</navigationNodes>
+</xml>

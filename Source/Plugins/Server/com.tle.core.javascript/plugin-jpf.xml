@@ -1,0 +1,30 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.javascript" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.javascript" exported="true" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.web.remoting" />
+		<import plugin-id="com.tle.web.services" />
+		<import plugin-id="com.tle.platform.common" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension-point id="javascriptLibrary">
+		<parameter-def id="id" type="string" multiplicity="one" />
+		<parameter-def id="class" type="string" multiplicity="one">
+			<doc caption="must implement com.tle.core.javascript.JavascriptLibrary" />
+		</parameter-def>
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules" />
+
+	<extension plugin-id="com.tle.web.services" point-id="invoker" id="javascriptService">
+		<parameter id="class" value="com.tle.common.javascript.RemoteJavascriptService" />
+		<parameter id="bean" value="bean:com.tle.core.javascript.JavascriptService" />
+	</extension>
+</plugin>

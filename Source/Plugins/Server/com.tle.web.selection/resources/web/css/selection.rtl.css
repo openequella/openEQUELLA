@@ -1,0 +1,28 @@
+@import url("selection.css");
+
+.action-button.execute-action {
+	background-image: url("../images/returnselection.rtl.png");
+}
+
+#selection-header-content .selectactions {
+	left: auto;
+	right: 105px;
+}
+
+#selection-header-content .close {
+	margin-left: auto;
+	margin-right: 10px;
+}
+
+#selection-content {
+	float: right;
+}
+
+#selection-content-bottom {
+	float: right;
+}
+
+#selection-content-inner {
+	min-height: 400px;
+	float: right;
+}

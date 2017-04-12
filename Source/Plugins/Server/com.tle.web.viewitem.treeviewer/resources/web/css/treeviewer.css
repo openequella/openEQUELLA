@@ -1,0 +1,72 @@
+table,table tr,table tr td {
+	border-spacing: 0;
+	border-width: 0;
+	border-collapse: collapse;
+	vertical-align: top;
+}
+
+#navrow
+{
+	height:30px;
+}
+
+/* ----------------------- CONTENT -------------------------- */
+#content1, #content2 
+{
+	padding: 0px;
+	margin: 0px;
+	/*background-color: #0000FF; DEBUG */
+}
+
+#pv-content-right
+{
+	width: 100%;
+	height: 100%;
+	display: table;
+}
+
+#pv-content-right-inner 
+{
+	width: 100%;
+	height: 100%;
+	display: table-row;
+}
+
+#content1, #content2 
+{
+	border-width: 0px;
+	border-style: none;
+	display:table-cell;
+	height: 100%;
+}
+
+#iframe1, #iframe2
+{
+	width: 100%;
+	height: 100%;
+}
+
+#treeWrapper 
+{
+	height: 100%;
+	overflow: auto;
+}
+
+/* ----------------------- TREE NODES -------------------------- */
+.nodeLine {
+	background-position: 26px 5px;
+	background-repeat: no-repeat;
+	position: relative;
+	padding: 8px 10px 8px 50px;
+	margin: 0 0 1px 0;
+}
+
+.nodeLine a {
+	color: #4B4842;
+	text-decoration: none;
+}
+
+#pv-content-left .btn-group {
+	text-align: center;
+	margin: 5px 0;
+}

@@ -1,0 +1,45 @@
+.comment {
+	padding: 10px 17px;
+	border: 1px solid #8f8b7f;
+	background: #fefefe;
+	position: relative;
+	margin: 10px 0;
+}
+
+.comment-username {
+	color: #f6a03d;
+	background: url(../images/user-big.png) 0 0 no-repeat;
+	padding: 5px 80px 5px 30px;
+	font-size: 17px;
+}
+
+.comment-date {
+	color: #b1b17b;
+	font-size: 10px;
+	padding: 0 0 0 5px;
+}
+
+.comment-content p {
+	margin: 5px 0;
+}
+
+.comment-form textarea {
+	border: 1px solid #8f8b7f;
+	width: 100%;
+	padding: 0;
+	margin: 10px 0;
+	height: 80px;
+	border-radius: 0;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+}
+
+.comment.rejection
+{
+	background: #ffefef;
+}
+
+.comment.approval
+{
+	background: #eefeee;
+}

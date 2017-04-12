@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="HTTPInvoker" basedir="." >
+
+	<import file="../../common-build.xml" />
+	
+	<property name="httpinvoker.jar.dest" location="${basedir}/product" />
+	<property name="httpinvoker.jar.file" location="${httpinvoker.jar.dest}/httpinvoker.jar" />
+
+	<target name="generate-jar">
+		<delete file="${httpinvoker.jar.file}" />
+		<unzip dest="${staging}">
+			<fileset dir="${External Dependencies.base}">
+				<include name="spring-*.jar" />
+				<include name="aopalliance-*.jar" />
+				<exclude name="*-sources.jar" />
+			</fileset>
+			<patternset includesfile="httpinvoker-minimal-classes.list"/>
+		</unzip>
+
+		<mkdir dir="${httpinvoker.jar.dest}" />
+		<zip destfile="${httpinvoker.jar.file}" basedir="${staging}" />
+		<jar update="true" destfile="${httpinvoker.jar.file}">
+			<manifest>
+				<attribute name="Trusted-Library" value="true"/>
+			</manifest>
+		</jar>
+		<quick-sign-jar jar="${httpinvoker.jar.file}" />
+		<delete dir="${staging}" />
+	</target>
+</project>

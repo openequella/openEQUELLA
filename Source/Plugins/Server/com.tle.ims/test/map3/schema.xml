@@ -1,0 +1,190 @@
+<schema id="0c50de41-3d2a-e87f-bd43-063e3fa193a5">
+  <collaborators type="public"/>
+  <definition>
+    <xml>
+      <item>
+        <name search="true" type="text"/>
+        <description search="true" type="text"/>
+        <keywords search="true" type="text"/>
+        <datecreated type="text"/>
+        <datemodified type="text"/>
+        <general>
+          <identifier>
+            <catalog type="text"/>
+            <entry type="text"/>
+          </identifier>
+          <title>
+            <main type="text"/>
+            <alternative type="text"/>
+          </title>
+          <language type="text"/>
+          <description type="text"/>
+          <keyword type="text"/>
+          <coverage>
+            <spatial type="text"/>
+            <temporal type="text"/>
+          </coverage>
+          <aggregationlevel>
+            <source type="text"/>
+            <value type="text"/>
+          </aggregationlevel>
+        </general>
+        <lifecycle>
+          <version type="text"/>
+          <assurance>
+            <status type="text"/>
+            <date type="text"/>
+            <remark type="text"/>
+          </assurance>
+          <contribute>
+            <role type="text"/>
+            <entity type="text"/>
+            <date type="text"/>
+            <remark type="text"/>
+          </contribute>
+        </lifecycle>
+        <technical>
+          <format type="text"/>
+          <size type="text"/>
+          <location type="text"/>
+          <requirement>
+            <type>
+              <source>
+                <langstring type="text"/>
+              </source>
+              <value>
+                <langstring type="text"/>
+              </value>
+            </type>
+            <name>
+              <source>
+                <langstring type="text"/>
+              </source>
+              <value>
+                <langstring type="text"/>
+              </value>
+            </name>
+            <minimumversion type="text"/>
+          </requirement>
+          <installationremarks type="text"/>
+          <otherplatformrequirements type="text"/>
+          <duration type="text"/>
+        </technical>
+        <educational>
+          <resourcetype type="text"/>
+          <intendedenduser type="text"/>
+          <context type="text"/>
+          <oldonesbelow type="text"/>
+          <subject>
+            <descriptor type="text"/>
+          </subject>
+        </educational>
+        <rights>
+          <cost type="text"/>
+          <copyrightandotherrestrictions type="text"/>
+          <description type="text"/>
+        </rights>
+        <relation>
+          <kind type="text"/>
+          <source type="text"/>
+          <resource>
+            <identifier>
+              <catalog type="text"/>
+              <entry type="text"/>
+            </identifier>
+            <description type="text"/>
+          </resource>
+        </relation>
+        <annotation>
+          <entity type="text"/>
+          <date type="text"/>
+          <description type="text"/>
+        </annotation>
+        <classification>
+          <purpose type="text"/>
+          <taxonpath>
+            <source type="text"/>
+            <taxon>
+              <id type="text"/>
+              <entry type="text"/>
+            </taxon>
+          </taxonpath>
+          <description type="text"/>
+          <keyword type="text"/>
+        </classification>
+        <qed>
+          <curriculumhost type="text"/>
+          <curriculumarea type="text"/>
+          <strand type="text"/>
+          <outcomelevel type="text"/>
+          <seniorsyllabus type="text"/>
+          <seniorstrand type="text"/>
+          <languagesyllabus type="text"/>
+          <crosscurriculur type="text"/>
+          <yearlevel type="text"/>
+          <phase type="text"/>
+          <subject>
+            <source type="text"/>
+            <value search="true" type="text"/>
+          </subject>
+          <dewey type="text"/>
+          <student type="text"/>
+          <prodpedgagies type="text"/>
+          <richtask type="text"/>
+          <lifelonglearner type="text"/>
+          <literacylearner type="text"/>
+          <newbasics type="text"/>
+          <multipleintelligences type="text"/>
+          <blooms type="text"/>
+          <sixthinkinghats type="text"/>
+          <profstandards type="text"/>
+          <countryid type="text"/>
+          <security type="text"/>
+          <folder type="text"/>
+          <rating type="text"/>
+          <correspondence type="text"/>
+          <function>
+            <keyword type="text"/>
+            <activity type="text"/>
+            <subject type="text"/>
+          </function>
+          <copyrightpermissions type="text"/>
+          <scisnumber type="text"/>
+        </qed>
+        <tlf>
+          <contentconcept type="text"/>
+          <skillprocess type="text"/>
+          <studentactivity type="text"/>
+          <learningdesign type="text"/>
+          <learningarea type="text"/>
+          <strand type="text"/>
+          <keylearningobjective type="text"/>
+          <educationalvalue type="text"/>
+          <accessprofile type="text"/>
+        </tlf>
+        <admin>
+          <visibility type="text"/>
+        </admin>
+        <recordmanagement>
+          <function>
+            <keyword type="text"/>
+            <activity type="text"/>
+            <subject type="text"/>
+          </function>
+          <businessarea type="text"/>
+        </recordmanagement>
+        <scisnumber type="text"/>
+        <metametadata>
+          <schema type="text"/>
+          <language type="text"/>
+        </metametadata>
+        <wizard type="text"/>
+        <eqspecial type="text"/>
+        <comments type="text"/>
+      </item>
+    </xml>
+  </definition>
+  <lockedby userid="" session=""/>
+  <name>Generic CX</name>
+  <owner>admin</owner>
+</schema>

@@ -1,0 +1,115 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.taxonomy.tool" version="1">
+	<attributes>
+		<attribute id="type" value="admin-console" />
+	</attributes>
+
+	<requires>
+		<import plugin-id="com.tle.admin.controls" />
+		<import plugin-id="com.tle.admin.remotesqlquerying" />
+		<import plugin-id="com.tle.admin.schema.common" />
+		<import plugin-id="com.tle.admin.tools" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.recipientselector" />
+		<import plugin-id="com.tle.common.taxonomy" />
+
+		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="com.tle.common.usermanagement" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core" />
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="dataSourceChoice">
+		<parameter-def id="nameKey" />
+		<parameter-def id="configPanel" />
+	</extension-point>
+
+	<extension-point id="predefinedTermDataKey">
+		<parameter-def id="key">
+			<doc>
+				<doc-text>The key string the term data will be referenced by</doc-text>
+			</doc>
+		</parameter-def>
+		<parameter-def id="name">
+			<doc>
+				<doc-text>I18N key for text to be displayed instead of the key value in the term data editor</doc-text>
+			</doc>
+		</parameter-def>
+		<parameter-def id="description">
+			<doc>
+				<doc-text>I18N key for text to be displayed in the dialog for adding new term data values in the
+					term data editor</doc-text>
+			</doc>
+		</parameter-def>
+	</extension-point>
+
+	<extension-point id="displayType">
+		<parameter-def id="nameKey" />
+		<parameter-def id="configPanel" multiplicity="none-or-one" />
+		<parameter-def id="supportsBrowsing" type="boolean" />
+		<parameter-def id="supportsSearching" type="boolean" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="admin-console" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.tools" point-id="tool" id="taxonomytool">
+		<parameter id="displayorder" value="450" />
+		<parameter id="name" value="com.tle.admin.taxonomy.tool.name" />
+		<parameter id="class" value="com.tle.admin.taxonomy.tool.TaxonomyTool" />
+		<parameter id="privilege" value="CREATE_TAXONOMY" />
+		<parameter id="privilege" value="EDIT_TAXONOMY" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.taxonomy.tool" point-id="dataSourceChoice" id="internalTaxonomyDataSource">
+		<parameter id="nameKey" value="com.tle.admin.taxonomy.tool.internal.choicetitle" />
+		<parameter id="configPanel" value="com.tle.admin.taxonomy.tool.internal.InternalDataSourceChoice" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.taxonomy.tool" point-id="dataSourceChoice" id="sqlTaxonomyDataSource">
+		<parameter id="nameKey" value="com.tle.admin.taxonomy.tool.sql.choicetitle" />
+		<parameter id="configPanel" value="com.tle.admin.taxonomy.tool.sql.SqlDataSourceChoice" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.controls" point-id="control" id="taxonomyControl">
+		<parameter id="id" value="termselector" />
+		<parameter id="name" value="com.tle.admin.taxonomy.tool.wizard.termselector.title" />
+		<parameter id="modelClass" value="com.tle.admin.taxonomy.wizard.TermControlModel" />
+		<parameter id="wrappedClass" value="com.tle.common.taxonomy.wizard.TermSelectorControl" />
+		<parameter id="editorClass" value="com.tle.admin.taxonomy.wizard.TermSelectorEditor" />
+		<parameter id="context" value="page" />
+		<parameter id="context" value="powersearch" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.taxonomy.tool" point-id="displayType" id="popupBrowser">
+		<parameter id="nameKey" value="com.tle.admin.taxonomy.tool.wizard.popupBrowser.title" />
+		<parameter id="configPanel" value="com.tle.admin.taxonomy.wizard.PopupBrowserConfig" />
+		<parameter id="supportsBrowsing" value="true" />
+		<parameter id="supportsSearching" value="true" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.taxonomy.tool" point-id="displayType" id="widePopupBrowser">
+		<parameter id="nameKey" value="com.tle.admin.taxonomy.tool.wizard.widePopupBrowser.title" />
+		<parameter id="configPanel" value="com.tle.admin.taxonomy.wizard.WidePopupBrowserConfig" />
+		<parameter id="supportsBrowsing" value="true" />
+		<parameter id="supportsSearching" value="true" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.taxonomy.tool" point-id="displayType" id="autocompleteEditBox">
+		<parameter id="nameKey" value="com.tle.admin.taxonomy.tool.wizard.autocompleteEditBox.title" />
+		<parameter id="configPanel" value="com.tle.admin.taxonomy.wizard.AutocompleteEditBoxConfig" />
+		<parameter id="supportsBrowsing" value="false" />
+		<parameter id="supportsSearching" value="true" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.taxonomy.tool" point-id="predefinedTermDataKey" id="longDataKey">
+		<parameter id="key" value="LONG_DATA" />
+		<parameter id="name" value="com.tle.admin.taxonomy.tool.internal.tab.termeditor.newdata.longdata.name" />
+		<parameter id="description" value="com.tle.admin.taxonomy.tool.internal.tab.termeditor.newdata.longdata.description" />
+	</extension>
+</plugin>

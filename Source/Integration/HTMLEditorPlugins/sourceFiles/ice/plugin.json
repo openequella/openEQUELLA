@@ -1,0 +1,37 @@
+{
+"id": "ice",
+"name": "ICE Track Changes",
+"author": "NY Times",
+"buttons": [ 
+	{
+		title : 'Accept Change',
+		image : 'img/ice-accept-change.png',
+		id : 'iceaccept'
+	}, 
+	{
+		title : 'Reject Change',
+		image : 'img/ice-reject-change.png',
+		id : 'icereject'
+	},
+	{
+		title : 'Accept All Changes',
+		image : 'img/ice-accept.png',
+		id : 'iceacceptall'
+	},
+	{
+		title : 'Reject All Changes',
+		image : 'img/ice-reject.png',
+		id : 'icerejectall'
+	}, 
+	{
+		title : 'Show/Hide Track Changes',
+		image : 'img/ice-showchanges.png',
+		id : 'ice_toggleshowchanges'
+	}, 
+	{
+		title : 'Turn On Track Changes ',
+		image : 'img/ice-togglechanges.png',
+		id : 'ice_togglechanges'
+	}
+	]
+}

@@ -1,0 +1,18 @@
+<schema id="b9ca3f68-cf9b-30bf-9e3b-608a6e78d174">
+	<collaborators type="public" />
+	<definition>
+		<xml>
+			<title type="text" />
+			<description type="text" />
+			<with_attributes>
+				<classification>
+						<source>
+							<string>
+								<language attribute="true" type="text" />
+							</string>
+						</source>
+				</classification>
+			</with_attributes>
+		</xml>
+	</definition>
+</schema>

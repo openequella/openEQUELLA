@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="All Plugins" basedir=".">
+	<property name="plugindocs" location="plugindocs" />
+
+	<property file="../../../build.properties"/>
+	<import file="../../common-tasks.xml"/>
+    
+	<target name="jpftasks">
+		<condition property="threadpool" value="${use.threadpool}" else="true">
+		    <isset property="use.threadpool" />
+		</condition>
+		<condition property="threadcount" value="${use.threadcount}" else="0">
+		    <isset property="use.threadcount" />
+		</condition>
+		<typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties" classpathref="customtasks.classpath"/>
+		<typedef classname="com.tle.ant.ParallelBuildTask" name="parBuild" classpathref="customtasks.classpath"/>
+		<typedef classname="com.tle.ant.JPFClasspath" name="jpfClasspath" classpathref="customtasks.classpath" />
+	</target>
+
+	<fileset id="plugin.manifests" dir="${source.base}">
+		<include name="Source/Plugins/*/*/plugin-jpf.xml" />
+		<include name="Source/Plugins/${External Dependencies.resource}/*.jar" />
+		<include name="Source/Tools/ToolDependencies/*.jar" />
+		<include name="Platform/Plugins/*/plugin-jpf.xml" />
+		<include name="Interface/Plugins/*/plugin-jpf.xml" />
+		<include name="Source/Integration/**/plugin-jpf.xml" />
+		<include name="Source/Tools/**/plugin-jpf.xml" />
+		<include name="Source/Server/**/plugin-jpf.xml" />
+	</fileset>
+	
+	<fileset id="exclude.manifests" dir="${source.base}">
+		<include name="Platform/Plugins/*/plugin-jpf.xml" />
+		<include name="Interface/Plugins/*/plugin-jpf.xml" />
+	</fileset>
+	
+	<target name="buildorder" depends="jpftasks">
+        <jpfClasspath cache="${source.base}/Source/Build/staging/jpf.cache" generateOnly="true">
+                <fileset refid="plugin.manifests" />
+        </jpfClasspath>
+	</target>
+	
+	<target name="clean" depends="buildorder">
+            <parBuild targets="clean" threadcount="${threadcount}" threadpool="${threadpool}" excluderefid="exclude.manifests">
+                <fileset refid="plugin.manifests" />
+            </parBuild>
+	</target>
+
+	<target name="generate-spring-scanner-cache-standalone" depends="buildorder">
+	    <parBuild targets="generate-spring-scanner-cache-standalone" threadcount="${threadcount}" threadpool="${threadpool}" excluderefid="exclude.manifests">
+                <fileset refid="plugin.manifests" />
+            </parBuild>
+	</target>
+
+    <target name="product" depends="buildorder, platform-product, interface-product">
+        <parBuild targets="product" threadcount="${threadcount}" threadpool="${threadpool}" excluderefid="exclude.manifests">
+            <fileset refid="plugin.manifests" />
+        </parBuild>
+		<jpfClasspath clearCache="true" />
+    </target>
+
+	<target name="compile" depends="buildorder">
+	    <parBuild targets="init,compile" threadcount="${threadcount}" threadpool="${threadpool}" excluderefid="exclude.manifests">
+                <fileset refid="plugin.manifests" />
+            </parBuild>
+	</target>
+
+	<target name="platform-product" depends="jpftasks">
+		<jpfClasspath clearCache="true" />
+		<subant target="product" buildpath="../../../Platform/Build" inheritall="false" />
+	</target>
+
+	<target name="interface-product" depends="jpftasks">
+		<jpfClasspath clearCache="true" />
+		<subant target="product" buildpath="${Interface.base}/Build" inheritall="false" />
+	</target>
+	
+    <target name="make" depends="buildorder, platform-product, interface-product">
+        <parBuild targets="make" threadcount="${threadcount}" threadpool="${threadpool}" excluderefid="exclude.manifests">
+            <fileset refid="plugin.manifests" />
+        </parBuild>
+    </target>
+
+    <target name="generate-source" depends="buildorder">
+        <parBuild targets="generate-source" threadcount="${threadcount}" threadpool="${threadpool}" excluderefid="exclude.manifests">
+            <fileset refid="plugin.manifests" />
+        </parBuild>
+    </target>
+
+	<target name="doc" depends="jpftasks">
+		<jpf-doc basedir="${basedir}/../" includes="**/plugin-jpf.xml" destdir="${plugindocs}" />
+	</target>
+</project>

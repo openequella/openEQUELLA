@@ -1,0 +1,89 @@
+.infobox
+{
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+.twentyspaced
+{
+	margin: 20px 0 20px 0;
+}
+
+.bulkuploadbutton
+{
+	text-align: center;
+	margin-top: 10px;
+}
+
+.editing
+{
+	margin-top: 1em;
+	height: 80px;
+}
+
+.editing .icon
+{
+	width: 120px;
+	height: 64px;
+	float: left;
+}
+
+.editing .fileinfo
+{
+	float: left;
+}
+
+.editing .fileinfo .filename
+{
+	font-weight: bold;
+}
+
+.editing .inplaceAppletDiv
+{
+	float: right;
+	height: 1px;
+}
+
+.editing .clear
+{
+	clear: both;
+}
+
+.editLinks
+{
+	display: none;
+}
+
+.editLink
+{
+}
+
+.editFileWithLink
+{
+}
+
+#inplace_applet
+{
+	width: 320px;
+	height: 50px;
+}
+
+#returntoscrapbookdiv
+{
+	text-align: right;
+}
+
+#returntoscrapbookdiv a.linkasbutton
+{
+	color: #FFFFFF;
+	font-size: 9px;
+	border: medium none;
+	padding: 4px 5px 4px 5px;
+	background: grey;
+	text-transform: uppercase;
+}
+
+#dndOptionsList ul.dropdown-menu {
+	right: auto;
+	left: 0px;
+}

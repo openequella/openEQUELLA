@@ -1,0 +1,12 @@
+div.defaultstext {
+	margin: 10px 0;
+}
+
+div.input.defaults {
+	margin-left: 20px;
+}
+
+input[type="radio"]
+{
+	margin: 4px 7px;
+}

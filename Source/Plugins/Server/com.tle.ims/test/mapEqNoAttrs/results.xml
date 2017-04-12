@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <xml>
+      <no_attributes>
+        <classification>
+          <purpose>
+            <source>
+LOMv1.0
+            </source>
+            <value>
+idea
+            </value>
+          </purpose>
+          <taxonPath>
+            <source>
+              <string>
+ATED
+              </string>
+            </source>
+            <taxon>
+              <entry>
+                <string>
+Counting
+                </string>
+              </entry>
+            </taxon>
+          </taxonPath>
+        </classification>
+        <classification>
+          <purpose>
+            <source>
+LOMv1.0
+            </source>
+            <value>
+discipline
+            </value>
+          </purpose>
+          <taxonPath>
+            <source>
+              <string>
+edna-kla
+              </string>
+            </source>
+            <taxon>
+              <entry>
+                <string>
+Mathematics
+                </string>
+              </entry>
+            </taxon>
+          </taxonPath>
+        </classification>
+        <classification>
+          <purpose>
+            <source>
+LOMv1.0
+            </source>
+            <value>
+discipline
+            </value>
+          </purpose>
+          <taxonPath>
+            <source>
+              <string>
+TLF_strand_v2.1
+              </string>
+            </source>
+            <taxon>
+              <entry>
+                <string>
+Mathematics
+                </string>
+              </entry>
+            </taxon>
+            <taxon>
+              <entry>
+                <string>
+Number
+                </string>
+              </entry>
+            </taxon>
+          </taxonPath>
+        </classification>
+        <classification>
+          <purpose>
+            <source>
+LOMv1.0
+            </source>
+            <value>
+educational level
+            </value>
+          </purpose>
+          <taxonPath>
+            <source>
+              <string>
+edna-userlevel v1.1
+              </string>
+            </source>
+            <taxon>
+              <entry>
+                <string>
+0; 1
+                </string>
+              </entry>
+            </taxon>
+          </taxonPath>
+        </classification>
+        <classification>
+          <purpose>
+            <source>
+LOMv1.0
+            </source>
+            <value>
+accessibility restrictions
+            </value>
+          </purpose>
+          <taxonPath>
+            <source>
+              <string>
+TLF_accessprofile_v2.1
+              </string>
+            </source>
+            <taxon>
+              <entry>
+                <string>
+Generic
+                </string>
+              </entry>
+            </taxon>
+          </taxonPath>
+        </classification>
+        <classification>
+          <purpose>
+            <source>
+LOMv1.0
+            </source>
+            <value>
+educational objective
+            </value>
+          </purpose>
+          <taxonPath>
+            <source>
+              <string>
+TLF_studentactivity_v2.1
+              </string>
+            </source>
+            <taxon>
+              <entry>
+                <string>
+Interactives
+                </string>
+              </entry>
+            </taxon>
+          </taxonPath>
+        </classification>
+      </no_attributes>
+    </xml>

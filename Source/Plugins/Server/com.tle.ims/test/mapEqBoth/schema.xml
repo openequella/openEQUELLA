@@ -1,0 +1,50 @@
+<schema id="b9ca3f68-cf9b-30bf-9e3b-608a6e78d174">
+	<collaborators type="public" />
+	<definition>
+		<xml>
+			<title type="text" />
+			<description type="text" />
+			<with_attributes>
+				<classification>
+					<purpose>
+						<source type="text" />
+						<value type="text" />
+					</purpose>
+					<taxonPath>
+						<source>
+							<string>
+								<language attribute="true" type="text" />
+							</string>
+						</source>
+						<taxon>
+							<entry>
+								<string>
+									<language attribute="true"
+										type="text" />
+								</string>
+							</entry>
+						</taxon>
+					</taxonPath>
+				</classification>
+			</with_attributes>
+			<no_attributes>
+				<classification>
+					<purpose>
+						<source type="text" />
+						<value type="text" />
+					</purpose>
+					<taxonPath>
+						<source>
+							<string type="text" />
+						</source>
+						<taxon>
+							<entry>
+								<string type="text" />
+							</entry>
+						</taxon>
+					</taxonPath>
+				</classification>
+			</no_attributes>
+		</xml>
+	</definition>
+</schema>

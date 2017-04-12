@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Blackboard Gradebook Fixer" default="make" basedir=".">
+
+	<property name="build" location="public_html/WEB-INF/classes" />
+	<import file="../../../common-build.xml" />
+
+	<property name="warname" value="gb-fixer.war" />
+	<property name="websrc" location="public_html" />
+	<property name="lib" location="public_html/WEB-INF/lib" />
+	<property name="staging" location="${staging}/gbfixer/public_html" />
+
+	<property name="version.properties.destination" location="${build}" />
+
+	<target name="init" depends="common.init">
+		<mkdir dir="${staging}" />
+	</target>
+
+	<target name="compile" depends="generate-source,define-build.classpath, gbfcombile" if="src.enabled">
+	</target>
+
+	<target name="gbfcombile">
+		<javac srcdir="${src}" destdir="${build}" classpathref="build.classpath"
+			nowarn="${javac.nowarn}"
+			debug="${javac.debug}"
+			debuglevel="${javac.debuglevel}"
+			optimize="${javac.optimize}"
+			target="1.7"
+			source="1.7"
+			deprecation="off"
+			verbose="${javac.verbose}"
+			depend="${javac.depend}"
+			includeantruntime="false">
+			<include name="com/tle/integration/blackboard/gbfixer/**" />
+		</javac>
+	</target>
+
+	<target name="make" depends="common.make">
+		<property file="${build}/version.properties" />
+
+		<!-- copy public_html to a staging folder -->
+		<copy todir="${staging}">
+			<fileset dir="${websrc}" />
+		</copy>
+		<copy file="${websrc}/WEB-INF/bb-manifest.xml" tofile="${staging}/WEB-INF/bb-manifest.xml" overwrite="true">
+			<filterchain>
+				<tokenfilter>
+					<replacestring from="@VERSION@" to="${version.mm}" />
+				</tokenfilter>
+			</filterchain>
+		</copy>
+
+	</target>
+
+	<target name="product" depends="common.product">
+		<war destfile="${product}/${warname}" webxml="${staging}/WEB-INF/web.xml" basedir="${staging}">
+			<lib dir="${External Dependencies.base}">
+				<include name="bb-platfform-*.jar" />
+				<include name="slf4j-api-*.jar" />
+				<include name="slf4j-log4j12-*.jar" />
+				<include name="jcl-over-sl4j-*.jar"/>					
+				<include name="commons-codec*.jar" />
+				<include name="guava*.jar" />
+				<include name="jpf-*.jar"/>
+				<include name="servlet-api*.jar"/>
+			</lib>
+		</war>
+	</target>
+</project>

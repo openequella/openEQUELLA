@@ -1,0 +1,24 @@
+#versions li.selected {
+	background: #80D2EE !important;
+}
+
+#versions li.even {
+	background-color: #ecebea;
+}
+
+#versions li.odd {
+	background-color: #f1f0ef;
+}
+
+#versions ul li {
+	padding: 8px;
+}
+
+#versions ul li div.title {
+	font-size: 14px;
+}
+
+#versions ul li div.status {
+	color: #8D897E;
+	font-style: italic;
+}

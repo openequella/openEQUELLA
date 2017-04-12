@@ -1,0 +1,21 @@
+@import url("zip.css");
+
+.file-list div {
+	background-position: 370px 5px;	
+	padding: 8px 50px 8px 10px;
+
+}
+
+.file-list input
+{
+	right: 5px;
+	left: 0;
+}
+
+.file-list .level2 
+{
+	padding-right: 70px;
+	padding-left: 0;
+	background-position: 350px 5px !important;
+
+}

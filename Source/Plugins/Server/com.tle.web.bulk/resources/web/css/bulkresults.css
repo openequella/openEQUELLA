@@ -1,0 +1,65 @@
+#bulk-help {
+	margin-top: 5px;
+}
+
+.action-button.execute-action {
+	background-image: url("../images/execute.ltr.png");
+}
+
+.failedmsg .status,.simpleopsmessage {
+	color: red;
+	font-style: italic;
+}
+
+td.itemname {
+	width: 50%;
+}
+
+td.status {
+	width: 50%;
+}
+
+#bulkresults_container {
+	height: 380px;
+	overflow-y: scroll;
+}
+
+#bulkresults_container table.bulkresults_resultlist {
+	width: 98%;
+}
+
+#bulkresults_inner {
+	height: 382px;
+}
+
+#bulkresults_showing {
+	float: right;
+}
+
+select.bulkactions {
+	width: 550px;
+}
+
+#fancybox-inner {
+	overflow: visible !important;
+}
+
+#bulkdialog td.unselect {
+	width: 10%;
+}
+
+#bulkdialog td.label {
+	width: 90%;
+}
+
+#bulk-selection+hr {
+	display: none;
+}
+
+pre.preview-error {
+	color: red;
+	font-weight: bold;
+	font-size: 15px;
+	padding-top: 30px;
+	word-wrap: break-word;
+}

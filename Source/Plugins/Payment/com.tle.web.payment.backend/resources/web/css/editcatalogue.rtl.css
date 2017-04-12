@@ -1,0 +1,16 @@
+@import url("editcatalogue.css");
+
+ul.checklist li {
+	float: right;
+	margin-left: 0;
+	margin-right: 2px;
+}
+
+.status {
+	padding-left: 0;
+	padding-right: 30px;
+}
+
+.status.fail {
+	background-position-x: right;
+}

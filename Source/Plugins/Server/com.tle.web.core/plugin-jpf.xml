@@ -1,0 +1,206 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.core" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.licences" />
+		<import plugin-id="com.tle.common.search" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.freetext" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.migration" />
+		<import plugin-id="com.tle.core.mimetypes" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.core.system" />
+		<import plugin-id="commons-fileupload:commons-fileupload" />
+		<import plugin-id="org.springframework:spring-webmvc" exported="true" />
+		<import plugin-id="javax.servlet:servlet-api" exported="true" />
+		<import plugin-id="net.sf.json-lib:json-lib" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension-point id="webFilter">
+		<parameter-def id="bean" />
+		<parameter-def id="url-pattern" multiplicity="one-or-more" />
+		<parameter-def id="exclude" multiplicity="any" />
+		<parameter-def id="dispatcher" multiplicity="any" />
+		<parameter-def id="order" multiplicity="none-or-one" type="number" />
+	</extension-point>
+
+	<extension-point id="webServlet">
+		<parameter-def id="bean" />
+		<parameter-def id="url-pattern" multiplicity="one-or-more" />
+		<parameter-def id="init-param" multiplicity="any">
+			<parameter-def id="name" type="string" multiplicity="one" />
+			<parameter-def id="value" type="string" multiplicity="one" />
+		</parameter-def>
+	</extension-point>
+
+	<extension-point id="userStateHook">
+		<parameter-def id="bean" multiplicity="one">
+			<doc>
+				<doc-text>Must implement UserStateHook</doc-text>
+			</doc>
+		</parameter-def>
+		<parameter-def id="order" multiplicity="one" type="number" />
+	</extension-point>
+
+	<extension-point id="webSessionListener">
+		<parameter-def id="bean" />
+		<parameter-def id="order" multiplicity="none-or-one" type="number" />
+	</extension-point>
+
+	<extension-point id="threadLocal">
+		<parameter-def id="id" />
+		<parameter-def id="bean">
+			<doc>
+				<doc-text>Must implement com.tle.web.core.filter.ThreadLocalExtension</doc-text>
+			</doc>
+		</parameter-def>
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.services" point-id="applicationEventListener" id="listeners">
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.UserSessionLogoutListener" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webFilter" id="threadLocalFilter">
+		<parameter id="bean" value="bean:com.tle.web.core.filter.ThreadLocalFilter" />
+		<parameter id="url-pattern" value="/*" />
+		<parameter id="order" value="100" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webFilter" id="characterEncodingFilter">
+		<parameter id="bean" value="bean:com.tle.web.core.filter.CharacterEncodingFilter" />
+		<parameter id="url-pattern" value="/*" />
+		<parameter id="order" value="200" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webFilter" id="hibernateFilter">
+		<parameter id="bean" value="bean:com.tle.web.core.filter.HibernateFilter" />
+		<parameter id="url-pattern" value="/*" />
+		<parameter id="order" value="400" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webFilter" id="sessionFilter">
+		<parameter id="bean" value="bean:com.tle.web.core.filter.TleSessionFilter" />
+		<parameter id="url-pattern" value="/*" />
+		<parameter id="order" value="500" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webFilter" id="customerFilter">
+		<parameter id="bean" value="bean:com.tle.web.core.filter.CustomerFilter" />
+		<parameter id="url-pattern" value="*.css" />
+		<parameter id="url-pattern" value="*.ico" />
+		<parameter id="url-pattern" value="*.jpeg" />
+		<parameter id="url-pattern" value="*.jpg" />
+		<parameter id="url-pattern" value="*.png" />
+		<parameter id="url-pattern" value="*.gif" />
+		<parameter id="url-pattern" value="*.js" />
+		<parameter id="order" value="550" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webFilter" id="requestFilter">
+		<parameter id="bean" value="bean:com.tle.web.core.filter.RequestFilter" />
+		<parameter id="url-pattern" value="/*" />
+		<parameter id="order" value="700" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webFilter" id="logonFilter">
+		<parameter id="bean" value="bean:com.tle.web.core.filter.LogonFilter" />
+		<parameter id="url-pattern" value="/logon.do" />
+		<parameter id="url-pattern" value="/oauth/authorise" />
+		<parameter id="url-pattern" value="/oauth/authorize" />
+		<parameter id="order" value="750" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webFilter" id="loggingFilter">
+		<parameter id="bean" value="bean:com.tle.web.core.filter.LoggingContextFilter" />
+		<parameter id="url-pattern" value="/*" />
+		<parameter id="order" value="800" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="doNotServeServlet">
+		<parameter id="bean" value="bean:com.tle.web.core.servlet.DoNotServeServlet" />
+		<parameter id="url-pattern" value="/WEB-INF/*" />
+		<parameter id="url-pattern" value="/META-INF/*" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="heartbeatServlet">
+		<parameter id="bean" value="bean:com.tle.web.core.servlet.HeartbeatServlet" />
+		<parameter id="url-pattern" value="/invoke.heartbeat" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="languageServlet">
+		<parameter id="bean" value="bean:com.tle.web.core.servlet.LanguageServlet" />
+		<parameter id="url-pattern" value="/language/download/*" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="webdavServlet">
+		<parameter id="bean" value="bean:com.tle.web.core.servlet.WebdavServlet" />
+		<parameter id="url-pattern" value="/wd/*" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="entityAttachmentServlet">
+		<parameter id="bean" value="bean:com.tle.web.core.servlet.EntityAttachmentsServlet" />
+		<parameter id="url-pattern" value="/entity/*" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="publicFileServlet">
+		<parameter id="bean" value="bean:com.tle.web.core.servlet.PublicFileServlet" />
+		<parameter id="url-pattern" value="/public/*" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="cacheFileServlet">
+		<parameter id="bean" value="bean:com.tle.web.core.servlet.CacheFileServlet" />
+		<parameter id="url-pattern" value="/cache/*" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="flagsServlet">
+		<parameter id="bean" value="bean:com.tle.web.core.servlet.FlagsServlet" />
+		<parameter id="url-pattern" value="/rsp/*" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="progressServlet">
+		<parameter id="bean" value="bean:com.tle.web.core.servlet.ProgressServlet" />
+		<parameter id="url-pattern" value="/progress/" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="shortcutServlet">
+		<parameter id="bean" value="bean:com.tle.web.core.servlet.ShortcutServlet" />
+		<parameter id="url-pattern" value="/s/*" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="scormServlet">
+		<parameter id="bean" value="bean:com.tle.web.core.servlet.ScormServlet" />
+		<parameter id="url-pattern" value="/scorm/" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webSessionListener" id="sessionListener">
+		<parameter id="bean" value="bean:com.tle.web.core.listener.UserSessionDestructionListener" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="oaiCatLicenceName">
+		<parameter id="thirdPartyName" value="OAICat" />
+		<parameter id="licenceName" value="Apache 2.0" />
+		<parameter id="licenceURLInternal" value="apache-2.0.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
+		<parameter id="licenceURLExternal" value="http://www.apache.org/licenses/LICENSE-2.0.html" />
+		<parameter id="thirdPartyHome" value="http://www.oclc.org/research/activities/oaicat/default.htm" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="userStateHook" id="tokenUserStateHook">
+		<parameter id="bean" value="bean:com.tle.web.core.filter.TokenUserStateHook" />
+		<parameter id="order" value="1000" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="userStateHook" id="systemUserStateHook">
+		<parameter id="bean" value="bean:com.tle.web.core.filter.SystemUserStateHook" />
+		<parameter id="order" value="100" />
+	</extension>
+</plugin>

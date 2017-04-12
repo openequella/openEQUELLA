@@ -1,0 +1,18 @@
+@import url("zebratable.css");
+
+TABLE.zebra TR TH {
+	text-align: right;
+}
+
+TABLE.zebra TR TD {
+	text-align: right;
+}
+
+DIV.tableFilter {
+	text-align: right;
+}
+
+table.zebra th.sortable div.sortArrow{
+	margin-left:0;
+	margin-right: 1em;
+}

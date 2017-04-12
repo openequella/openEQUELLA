@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="TLE Installation Upgrader" default="make" basedir=".">
+	<property file="../../../build.properties" />
+	<property name="compile.for.server" value="true" />
+	<import file="../../common-build.xml" />
+
+	<taskdef resource="proguard/ant/task.properties" classpathref="customtasks.classpath" />
+	<property name="jar" value="${product}/database-upgrader.jar" />
+
+	<proguardconfiguration id="config">
+		-include ../../common-build.pro
+
+		-keep class org.apache.commons.logging.**,com.tle.upgrade.UpgradeMain,
+					org.apache.log4j.**,com.dytech.common.log4j.**,com.thoughtworks.xstream.** { *; }
+		-keep class * extends com.tle.upgrademanager.handlers.AbstractDispatchHandler { *; }
+
+		-dontwarn javax.**,org.jvnet.**,com.thoughtworks.xstream.**,org.apache.commons.**
+		-dontnote
+		-injars ${source.base}/version.properties
+	</proguardconfiguration>
+
+	<target name="product" depends="common.product">
+		<eclipseClasspath />
+		<path id="proguard.classpath">
+		    <path refid="eclipse.classpath" />
+			<fileset dir="${External Dependencies.base}">
+				<include name="antlr*.jar" />
+			</fileset>
+		</path>
+		<proguard obfuscate="false" optimize="false">
+			<configuration refid="config" />
+			<injar refid="proguard.classpath" />
+			<outjar file="${jar}" filter="!META-INF/**,!plugin-jpf.xml" />
+		</proguard>
+		<jar update="true" destfile="${jar}">
+			<manifest>
+				<attribute name="Main-Class" value="com.tle.upgrade.UpgradeMain" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="resources"/>
+			<zipfileset prefix="manager" dir="${TLE Upgrade Manager.base}/product">
+				<include name="manager.jar"/>
+			</zipfileset>
+		</jar>
+	</target>
+</project>

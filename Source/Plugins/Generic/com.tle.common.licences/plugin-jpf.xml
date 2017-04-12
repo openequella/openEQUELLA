@@ -1,0 +1,14 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.common.licences" version="1">
+	<!-- This plugin and its extension point are isolated so as to avoid circular dependencies. The plugin making effective 
+		use of this functionality is com.tle.web.licence. We need to refer to these parameter ids in the LicenceSection class, so 
+		any additions or change in spelling would need to be reflected there. -->
+	<extension-point id="licenceExtension">
+		<parameter-def id="thirdPartyName" type="string" />
+		<parameter-def id="licenceName" type="string" />
+		<parameter-def id="licenceURLInternal" type="string" />
+		<parameter-def id="licenceURLExternal" type="string" />
+		<parameter-def id="thirdPartyHome" type="string" />
+	</extension-point>
+
+</plugin>

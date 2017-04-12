@@ -1,0 +1,81 @@
+BODY
+{
+	font-family: sans-serif;
+	background-color: #EEEEFF;
+}
+
+DIV.nav
+{
+	float: left;
+	width: 100px;
+	margin-left: 20px;
+	margin-right: 20px;
+	background-color: #FFAA00;
+}
+
+DIV.nav DIV.navlink
+{
+	padding: 10px;
+}
+
+DIV.container
+{
+	float: left;
+	width: 800px;
+	/*
+	position: absolute;
+	left: 50%;
+	margin-left: -500px;
+	width: 1000px;*/
+	
+}
+
+H1
+{
+	
+}
+
+FIELDSET
+{
+	
+}
+
+LEGEND
+{
+	color: #000070;
+}
+
+.formfield
+{
+	padding-bottom: 1em;
+}
+
+.formfield LABEL
+{
+	font-weight: bold;
+}
+
+SELECT
+{
+	width: 100%;
+}
+
+INPUT[type='text']
+{
+	width: 100%;
+}
+
+INPUT[type='file']
+{
+	width: 100%;
+}
+
+DIV.help
+{
+	font-size: 80%;
+}
+
+DIV.help CODE
+{
+	font-size: 120%;
+}

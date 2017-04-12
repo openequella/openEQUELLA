@@ -1,0 +1,16 @@
+<root>
+	<A>
+		<A1>
+			<A1_1>A1_1 VALUE</A1_1>
+		</A1>
+		<A2>
+			<A2_1>A2_1 VALUE</A2_1>
+			<A2_2>A2_2 VALUE</A2_2>
+		</A2>
+	</A>
+	<B>
+		<B1>B1 VALUE</B1>
+	</B>
+	<C>
+	</C>
+</root>

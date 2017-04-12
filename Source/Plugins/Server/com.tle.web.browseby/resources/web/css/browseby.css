@@ -1,0 +1,21 @@
+.selected
+{
+	font-weight: bold;
+}
+
+.pareselected
+{
+	font-weight: bold;
+	font-style: italic;
+}
+
+#matrix-results ul
+{
+	list-style: disc;
+	margin-left: 20px;
+}
+
+#matrix-tree
+{
+	margin-top: 5px;
+}

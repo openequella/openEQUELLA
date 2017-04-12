@@ -1,0 +1,256 @@
+#!/bin/sh
+
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# resolve links - $0 may be a softlink
+ARG0="$0"
+while [ -h "$ARG0" ]; do
+  ls=`ls -ld "$ARG0"`
+  link=`expr "$ls" : '.*-> \(.*\)$'`
+  if expr "$link" : '/.*' > /dev/null; then
+    ARG0="$link"
+  else
+    ARG0="`dirname $ARG0`/$link"
+  fi
+done
+DIRNAME="`dirname $ARG0`"
+PROGRAM="`basename $ARG0`"
+
+cd "$DIRNAME"
+. "./tomcat-config.sh"
+
+# Setup parameters for running the jsvc
+#
+test ".$RUN_USER" != . && USER_FLAG="-user $RUN_USER"
+# Set JAVA_HOME to working JDK or JRE
+# JAVA_HOME=/opt/jdk-1.6.0.22
+# If not set we'll try to guess the JAVA_HOME
+# from java binary if on the PATH
+#
+if [ -z "$JAVA_HOME" ]; then
+    JAVA_BIN="`which java 2>/dev/null || type java 2>&1`"
+    test -x "$JAVA_BIN" && JAVA_HOME="`dirname $JAVA_BIN`"
+    test ".$JAVA_HOME" != . && JAVA_HOME=`cd "$JAVA_HOME/.." >/dev/null; pwd`
+else
+    JAVA_BIN="$JAVA_HOME/bin/java"
+fi
+
+# Only set CATALINA_HOME if not already set
+test ".$CATALINA_HOME" = . && CATALINA_HOME=`cd "./../tomcat" >/dev/null; pwd`
+test ".$CATALINA_BASE" = . && CATALINA_BASE="$CATALINA_HOME"
+test ".$CATALINA_MAIN" = . && CATALINA_MAIN=org.apache.catalina.startup.Bootstrap
+test ".$JSVC" = . && JSVC="./jsvc"
+
+# Ensure that any user defined CLASSPATH variables are not used on startup,
+# but allow them to be specified in setenv.sh, in rare case when it is needed.
+
+# Add on extra jar files to CLASSPATH
+test ".$CLASSPATH" != . && CLASSPATH="${CLASSPATH}:"
+CLASSPATH="$CLASSPATH$CATALINA_HOME/bin/bootstrap.jar:$CATALINA_HOME/bin/commons-daemon.jar"
+
+
+test ".$LOGS_HOME" = . && LOGS_HOME=`cd "./../logs" >/dev/null; pwd`
+
+test ".$CATALINA_OUT" = . && CATALINA_OUT="$LOGS_HOME/tomcat.log"
+test ".$CATALINA_TMP" = . && CATALINA_TMP="$CATALINA_BASE/temp"
+
+# Add tomcat-juli.jar to classpath
+# tomcat-juli.jar can be over-ridden per instance
+if [ -r "$CATALINA_BASE/bin/tomcat-juli.jar" ] ; then
+  CLASSPATH="$CLASSPATH:$CATALINA_BASE/bin/tomcat-juli.jar"
+else
+  CLASSPATH="$CLASSPATH:$CATALINA_HOME/bin/tomcat-juli.jar"
+fi
+# Set juli LogManager config file if it is present and an override has not been issued
+if [ -z "$LOGGING_CONFIG" ]; then
+  if [ -r "$CATALINA_BASE/conf/logging.properties" ]; then
+    LOGGING_CONFIG="-Djava.util.logging.config.file=$CATALINA_BASE/conf/logging.properties"
+  else
+    # Bugzilla 45585
+    LOGGING_CONFIG="-Dnop"
+  fi
+fi
+
+test ".$LOGGING_MANAGER" = . && LOGGING_MANAGER="-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager"
+JAVA_OPTS="$JAVA_OPTS $LOGGING_MANAGER"
+
+# Set -pidfile
+test ".$CATALINA_PID" = . && CATALINA_PID="$CATALINA_BASE/logs/catalina-daemon.pid"
+
+# ----- Execute The Requested Command -----------------------------------------
+case "$1" in
+    console     )
+      shift
+      "$JSVC" $* \
+      -java-home "$JAVA_HOME" \
+       $USER_FLAG \
+      -pidfile "$CATALINA_PID" \
+      -jvm server \
+      -nodetach \
+      -outfile "&1" \
+      -errfile "&2" \
+      -classpath "$CLASSPATH" \
+      "$LOGGING_CONFIG" $JAVA_OPTS $CATALINA_OPTS \
+      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" \
+      -Dcatalina.base="$CATALINA_BASE" \
+      -Dcatalina.home="$CATALINA_HOME" \
+      -Djava.io.tmpdir="$CATALINA_TMP" \
+      $CATALINA_MAIN
+      exit $?
+    ;;
+    start   )
+      echo "Starting EQUELLA app server..."
+      "$JSVC" \
+      -java-home "$JAVA_HOME" \
+       $USER_FLAG \
+      -pidfile "$CATALINA_PID" \
+      -jvm server \
+      -outfile "$CATALINA_OUT" \
+      -errfile "$CATALINA_OUT" \
+      -classpath "$CLASSPATH" \
+      "$LOGGING_CONFIG" $JAVA_OPTS $CATALINA_OPTS \
+      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" \
+      -Dcatalina.base="$CATALINA_BASE" \
+      -Dcatalina.home="$CATALINA_HOME" \
+      -Djava.io.tmpdir="$CATALINA_TMP" \
+      $CATALINA_MAIN
+      exit $?
+    ;;
+    stop    )
+      echo "Stopping EQUELLA app server..."
+      "$JSVC" \
+      -stop \
+      -java-home "$JAVA_HOME" \
+      -pidfile "$CATALINA_PID" \
+      -classpath "$CLASSPATH" \
+      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" \
+      -Dcatalina.base="$CATALINA_BASE" \
+      -Dcatalina.home="$CATALINA_HOME" \
+      -Djava.io.tmpdir="$CATALINA_TMP" \
+      $CATALINA_MAIN
+      exit 0
+    ;;
+      restart    )
+      echo "Restarting EQUELLA app server..."
+      echo "Stopping EQUELLA app server..."
+      "$JSVC" \
+      -stop \
+      -java-home "$JAVA_HOME" \
+      -pidfile "$CATALINA_PID" \
+      -classpath "$CLASSPATH" \
+      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" \
+      -Dcatalina.base="$CATALINA_BASE" \
+      -Dcatalina.home="$CATALINA_HOME" \
+      -Djava.io.tmpdir="$CATALINA_TMP" \
+      $CATALINA_MAIN
+
+      echo "Starting EQUELLA app server..."
+      "$JSVC" \
+      -java-home "$JAVA_HOME" \
+       $USER_FLAG \
+      -pidfile "$CATALINA_PID" \
+      -jvm server \
+      -outfile "$CATALINA_OUT" \
+      -errfile "$CATALINA_OUT" \
+      -classpath "$CLASSPATH" \
+      "$LOGGING_CONFIG" $JAVA_OPTS $CATALINA_OPTS \
+      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" \
+      -Dcatalina.base="$CATALINA_BASE" \
+      -Dcatalina.home="$CATALINA_HOME" \
+      -Djava.io.tmpdir="$CATALINA_TMP" \
+      $CATALINA_MAIN
+      exit $?
+    ;;
+    quickstatus    )
+      OUTPUT=`"$JSVC" \
+      -check \
+      -java-home "$JAVA_HOME" \
+      -pidfile "$CATALINA_PID" \
+      -nodetach \
+      -errfile "&1" \
+      -outfile "&2" \
+      -classpath "$CLASSPATH" \
+      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" \
+      -Dcatalina.base="$CATALINA_BASE" \
+      -Dcatalina.home="$CATALINA_HOME" \
+      -Djava.io.tmpdir="$CATALINA_TMP" \
+      $CATALINA_MAIN`
+
+      case "$OUTPUT" in
+      *Still*)
+          exit 2
+          ;;
+      *)
+          exit 0
+         ;;
+      esac
+    ;;
+    status    )
+      OUTPUT=`"$JSVC" \
+      -check \
+      -java-home "$JAVA_HOME" \
+      -pidfile "$CATALINA_PID" \
+      -nodetach \
+      -errfile "&1" \
+      -outfile "&2" \
+      -classpath "$CLASSPATH" \
+      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" \
+      -Dcatalina.base="$CATALINA_BASE" \
+      -Dcatalina.home="$CATALINA_HOME" \
+      -Djava.io.tmpdir="$CATALINA_TMP" \
+      $CATALINA_MAIN`
+
+      case "$OUTPUT" in
+      *Still*)
+          echo "The EQUELLA app server is running"
+          ;;
+      *)
+          echo "The EQUELLA app server is stopped"
+         ;;
+      esac
+    ;;
+    version  )
+      "$JSVC" \
+      -java-home "$JAVA_HOME" \
+      -pidfile "$CATALINA_PID" \
+      -classpath "$CLASSPATH" \
+      -errfile "&2" \
+      -version \
+      -check \
+      $CATALINA_MAIN
+      if [ "$?" = 0 ]; then
+        "$JAVA_BIN" \
+        -classpath "$CATALINA_HOME/lib/catalina.jar" \
+        org.apache.catalina.util.ServerInfo
+      fi
+      exit $?
+    ;;
+    *       )
+      echo "Unkown command: \`$1'"
+      echo "Usage: $PROGRAM ( commands ... )"
+      echo "commands:"
+      echo "  console           Start the EQUELLA app server without detaching from console"
+      echo "  start             Start the EQUELLA app server"
+      echo "  stop              Stop the EQUELLA app server"
+      echo "  restart           Restart the EQUELLA app server"
+      echo "  status            Check the status of the EQUELLA app server"
+      echo "  version           What version of commons daemon and Tomcat"
+      echo "                    are you running?"
+      exit 1
+    ;;
+esac
+

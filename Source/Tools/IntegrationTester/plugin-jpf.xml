@@ -1,0 +1,27 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin version="1" id="TLE Integration Tester">
+	<requires>
+		<import plugin-id="org.slf4j:slf4j-api" exported="true" />
+		<import plugin-id="commons-logging:commons-logging" exported="true" />
+		<import plugin-id="log4j:log4j" />
+		<import plugin-id="javax.servlet:servlet-api" />
+		<import plugin-id="com.tle.platform.common" />
+		<import plugin-id="com.tle.platform.equella" />
+		<import plugin-id="org.apache.struts:struts-core" />
+		<import plugin-id="org.apache.struts:struts-extras" />
+		<import plugin-id="org.apache.struts:struts-taglib" />
+		<import plugin-id="commons-beanutils:commons-beanutils" />
+		<import plugin-id="commons-digester:commons-digester" />
+		<import plugin-id="commons-collections:commons-collections" />
+		<import plugin-id="commons-codec:commons-codec" />
+		<import plugin-id="commons-chain:commons-chain" />
+		<import plugin-id="com.fasterxml.jackson.core:jackson-databind" />
+		<import plugin-id="com.fasterxml.jackson.core:jackson-core" />
+		<import plugin-id="com.fasterxml.jackson.core:jackson-annotations" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="code">
+			<export prefix="*" />
+		</library>
+	</runtime>
+</plugin>

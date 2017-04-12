@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="com.tle.common.htmleditor" basedir=".">
+	<import file="../../build/plugins-common-build.xml" />
+</project>

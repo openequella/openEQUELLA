@@ -1,0 +1,44 @@
+@import url("settings.css");
+
+.settingField .ctrlinvalid {
+	left: auto;
+	right: -5px;
+}
+
+.settingRow .settingLabel {
+	float: right;
+	text-align: left;
+}
+
+.settingRow .settingField {
+	float: right;
+	padding-left: 0;
+	padding-right: 10px;
+}
+
+.settingField img.ui-datepicker-trigger {
+	padding-left: 0;
+	padding-right: 5px;
+}
+
+.settingHelp {
+	text-align: right;
+}
+
+.mandatoryHelp {
+	text-align: left;
+}
+
+.settingRow .ctrlinvalid {
+	left: auto;
+	right: -5px;
+}
+
+a.add.disabled {
+	background-position-x: right;	
+}
+
+.settingField input[type="text"].hasDatepicker {
+
+	float: right;
+}

@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<!--
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//	Copyright 2000, Microsoft Corp.  All rights reserved.
+//
+//	@doc Internal
+//
+//  @module LMS_Errors.xml |
+//		This module contains error codes set by this viewer's LMSAPI implementation.
+//		Use LMSGetLastError to retrieve error code.
+//	
+//	@end
+//	Creator:		a-mbatem		
+//	Created:		11/29/99
+//	Current Owner:	ymwong
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////
+AICC LMS Error Code Key 
+The return values of LMSGetLastError are integer numbers that identify errors falling into the
+following categories:
+	100	General errors
+	200	Syntax errors
+	300	LMS errors	
+	400	Data model errors
+-->
+<ROOT>
+	<LRNError ID="0">No error</LRNError>
+	<LRNError ID="101">General Exception</LRNError>
+	<LRNError ID="201">Invalid argument error</LRNError>
+	<LRNError ID="202">Element cannot have children</LRNError>
+	<LRNError ID="203">Element not an array. Cannot have a count</LRNError>
+	<LRNError ID="205">Incorrect datatype</LRNError>
+	<LRNError ID="206">Invalid set value</LRNError>
+	<LRNError ID="301">Not initialized</LRNError>
+	<LRNError ID="401">Not implemented error</LRNError>
+	<LRNError ID="402">Invalid set value, element is a keyword</LRNError>
+	<LRNError ID="403">Element is read only</LRNError>
+	<LRNError ID="404">Element is write only</LRNError>
+	<LRNError ID="405">Incorrect Data Type</LRNError>
+</ROOT>

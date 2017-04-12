@@ -1,0 +1,1 @@
+<#assign div = "com.tle.web.sections.ajax.freemarker.AjaxCaptureDirective"?new()>

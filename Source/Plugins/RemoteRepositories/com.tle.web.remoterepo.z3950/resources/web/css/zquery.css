@@ -1,0 +1,70 @@
+#col #searchform.z3950 
+{
+	padding: 16px 17px;
+	margin: 0 0 11px 0;
+}
+
+#col #searchform.z3950 H2 
+{
+	margin-bottom: 1em;
+}
+
+#col #searchform .row 
+{
+	margin-bottom: 8px;
+	height: 32px;
+	clear: both;
+}
+
+#col #searchform .row .operator.where,
+#col #searchform .row .is
+{
+	padding-top: 6px;
+}
+
+#col #searchform .row .operator.where
+{
+	margin-left: 2px;	
+}
+
+#col #searchform .row .operator select 
+{
+	width: 68px;
+}
+
+#col #searchform .row .operator 
+{
+	width: 93px;
+}
+
+#col #searchform .row .use 
+{
+	width: 210px;
+}
+
+#col #searchform .row input.term 
+{
+	width: 270px;
+}
+
+#col #searchform .row .newListSelected,
+#col #searchform .row select,
+#col #searchform .row .operator,
+#col #searchform .row .use,
+#col #searchform .row .is,
+#col #searchform .row .term,
+#col #searchform .row #searchform-search 
+{
+	float: left;
+}
+
+#col #searchform .row .is 
+{
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+#col #searchform .row #searchform-search 
+{
+	margin-left: 5px;
+}

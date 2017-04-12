@@ -1,0 +1,44 @@
+@import url("popupbrowser.css");
+
+/**************/
+/* View arrow */
+/**************/
+
+a.viewterm {
+ 	display: inline-block;
+	background-position-x: right;
+	background-position-y: 1px;
+	background: url(../images/viewterm.png) no-repeat right 1px;
+	padding: 2px 20px 2px 0;
+}
+
+
+#termChooser {
+	left: auto;
+	right: 5px;
+}
+
+
+.widepopupbrowserdialog #termChooser {
+	left: 5px;
+	right: auto;
+}
+
+#selectedTerms {
+	left: 5px;
+	right: auto;
+}
+
+.widepopupbrowserdialog #selectedTerms {
+	right: 5px;
+	left: auto;
+}
+
+.popupbrowserdialog #termViewer {
+	left: 5px;
+	right: auto;
+}
+#searchResults ul {
+	padding-right: 15px;
+	padding-left: 0;
+}

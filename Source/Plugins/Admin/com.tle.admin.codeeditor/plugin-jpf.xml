@@ -1,0 +1,14 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.codeeditor" version="1">
+	<attributes>
+		<attribute id="type" value="admin-console" />
+	</attributes>
+	<requires>
+		<import plugin-id="com.fifesoft:rsyntaxtextarea" exported="true" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+</plugin>

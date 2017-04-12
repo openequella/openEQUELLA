@@ -1,0 +1,1 @@
+Copy the Wiris TinyMCE plugin files into this directory.

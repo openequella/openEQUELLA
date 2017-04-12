@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://soap.mycontent.tle.com" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" name="ScrapbookSoapService" targetNamespace="http://soap.mycontent.tle.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://soap.mycontent.tle.com">
+      <xsd:complexType name="ArrayOfString">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="update" type="tns:update" />
+      <xsd:complexType name="update">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="in0" nillable="true" type="xsd:string" />
+          <xsd:element minOccurs="0" name="in1" nillable="true" type="xsd:string" />
+          <xsd:element minOccurs="0" name="in2" nillable="true" type="xsd:string" />
+          <xsd:element minOccurs="0" name="in3" nillable="true" type="xsd:string" />
+          <xsd:element minOccurs="0" name="in4" nillable="true" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="updateResponse" type="tns:updateResponse" />
+      <xsd:complexType name="updateResponse">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="out" nillable="true" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="create" type="tns:create" />
+      <xsd:complexType name="create">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="in0" nillable="true" type="xsd:string" />
+          <xsd:element minOccurs="0" name="in1" nillable="true" type="xsd:string" />
+          <xsd:element minOccurs="0" name="in2" nillable="true" type="xsd:string" />
+          <xsd:element minOccurs="0" name="in3" nillable="true" type="xsd:string" />
+          <xsd:element minOccurs="0" name="in4" nillable="true" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="createResponse" type="tns:createResponse" />
+      <xsd:complexType name="createResponse">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="out" nillable="true" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="search" type="tns:search" />
+      <xsd:complexType name="search">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="in0" nillable="true" type="xsd:string" />
+          <xsd:element name="in1" nillable="true" type="tns:ArrayOfString" />
+          <xsd:element name="in2" nillable="true" type="tns:ArrayOfString" />
+          <xsd:element name="in3" type="xsd:int" />
+          <xsd:element name="in4" type="xsd:int" />
+          <xsd:element name="in5" type="xsd:int" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="searchResponse" type="tns:searchResponse" />
+      <xsd:complexType name="searchResponse">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="out" nillable="true" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="exists" type="tns:exists" />
+      <xsd:complexType name="exists">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="in0" nillable="true" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="existsResponse" type="tns:existsResponse" />
+      <xsd:complexType name="existsResponse">
+        <xsd:sequence>
+          <xsd:element name="out" type="xsd:boolean" />
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="update">
+    <wsdl:part name="parameters" element="tns:update" />
+  </wsdl:message>
+  <wsdl:message name="updateResponse">
+    <wsdl:part name="parameters" element="tns:updateResponse" />
+  </wsdl:message>
+  <wsdl:message name="searchResponse">
+    <wsdl:part name="parameters" element="tns:searchResponse" />
+  </wsdl:message>
+  <wsdl:message name="search">
+    <wsdl:part name="parameters" element="tns:search" />
+  </wsdl:message>
+  <wsdl:message name="exists">
+    <wsdl:part name="parameters" element="tns:exists" />
+  </wsdl:message>
+  <wsdl:message name="createResponse">
+    <wsdl:part name="parameters" element="tns:createResponse" />
+  </wsdl:message>
+  <wsdl:message name="existsResponse">
+    <wsdl:part name="parameters" element="tns:existsResponse" />
+  </wsdl:message>
+  <wsdl:message name="create">
+    <wsdl:part name="parameters" element="tns:create" />
+  </wsdl:message>
+  <wsdl:portType name="ScrapbookSoapServicePortType">
+    <wsdl:operation name="update">
+      <wsdl:input name="update" message="tns:update" />
+      <wsdl:output name="updateResponse" message="tns:updateResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="create">
+      <wsdl:input name="create" message="tns:create" />
+      <wsdl:output name="createResponse" message="tns:createResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="search">
+      <wsdl:input name="search" message="tns:search" />
+      <wsdl:output name="searchResponse" message="tns:searchResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="exists">
+      <wsdl:input name="exists" message="tns:exists" />
+      <wsdl:output name="existsResponse" message="tns:existsResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ScrapbookSoapServiceSoapBinding" type="tns:ScrapbookSoapServicePortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="update">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="update">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="updateResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="create">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="create">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="createResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="search">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="search">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="searchResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="exists">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="exists">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="existsResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ScrapbookSoapService">
+    <wsdl:port name="ScrapbookSoapServicePort" binding="tns:ScrapbookSoapServiceSoapBinding">
+      <soap:address location="http://origliasso/Shiny/my/services/ScrapbookSoapService" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

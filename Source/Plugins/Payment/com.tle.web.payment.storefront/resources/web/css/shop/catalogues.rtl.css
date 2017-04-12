@@ -1,0 +1,16 @@
+@import url("catalogues.css");
+
+.storeTitle IMG,.storeTitle H2 {
+	float: right;
+}
+
+.storeTitle H2 {
+	margin-left: 0;
+	margin-right: 10px;
+}
+
+.area .indent ul li {
+	background: url("../../images/list-icon.rtl.png") no-repeat scroll 0 2px transparent;
+	background-position: right;
+	padding: 0 21px 0 0;
+}

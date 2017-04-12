@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="HTMLEditorPlugins" default="make" basedir=".">
+	<property file="../../../build.properties" />
+	<import file="../../common-build.xml" />
+
+	<!--<property name="html.pdf" value="${docprefix} Integration Interface Guide.pdf" />-->
+	<property name="htmleditorplugins.zip" value="equella-htmleditorplugins.zip" />
+	<property name="source" location="${HTML Editor Plugins.base}/sourceFiles" />
+	<property name="staging.zipsource" location="${staging}/zipsource" />
+	
+	<property name="zip.ice" value="ice.zip" />
+	<property name="readme.ice" value="ice_README.txt" />
+	<property name="source.ice" location="${source}/ice" />
+	<property name="staging.ice" location="${staging}/ice" />
+	<property name="staging.ice.zipsource" location="${staging.ice}/zipsource" />
+	
+	<property name="zip.wiris" value="wiris.zip" />
+	<property name="readme.wiris" value="wiris_README.txt" />
+	<property name="source.wiris" location="${source}/wiris" />
+	<property name="staging.wiris" location="${staging}/wiris" />
+	<property name="staging.wiris.zipsource" location="${staging.wiris}/zipsource" />
+	
+	<property name="zip.atd" value="after_the_deadline.zip" />
+	<property name="readme.atd" value="after_the_deadline_README.txt" />
+	<property name="source.atd" location="${source}/after_the_deadline" />
+	<property name="staging.atd" location="${staging}/atd" />
+	<property name="staging.atd.zipsource" location="${staging.atd}/zipsource" />
+	
+	<target name="compile">
+	</target>
+	
+	<target name="make" depends="common.make">
+		<mkdir dir="${staging.zipsource}" />
+		<mkdir dir="${staging.ice}" />
+		<mkdir dir="${staging.ice.zipsource}" />
+		<mkdir dir="${staging.wiris}" />
+		<mkdir dir="${staging.wiris.zipsource}" />
+		<mkdir dir="${staging.atd}" />
+		<mkdir dir="${staging.atd.zipsource}" />
+		
+		<copy todir="${staging.ice.zipsource}">
+			<fileset dir="${source.ice}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<copy todir="${staging.ice}">
+			<fileset dir="${source.ice}">
+				<include name="${readme.ice}" />
+			</fileset>
+		</copy>
+		<zip destfile="${staging.ice}/${zip.ice}">
+			<zipfileset dir="${staging.ice.zipsource}" prefix="" />
+		</zip>
+		
+		<copy todir="${staging.wiris.zipsource}">
+			<fileset dir="${source.wiris}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<copy todir="${staging.wiris}">
+			<fileset dir="${source.wiris}">
+				<include name="${readme.wiris}" />
+			</fileset>
+		</copy>
+		<zip destfile="${staging.wiris}/${zip.wiris}">
+			<zipfileset dir="${staging.wiris.zipsource}" prefix="" />
+		</zip>
+		
+		<copy todir="${staging.atd.zipsource}">
+			<fileset dir="${source.atd}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<copy todir="${staging.atd}">
+			<fileset dir="${source.atd}">
+				<include name="${readme.atd}" />
+			</fileset>
+		</copy>
+		<zip destfile="${staging.atd}/${zip.atd}">
+			<zipfileset dir="${staging.atd.zipsource}" prefix="" />
+		</zip>
+				
+		<copy todir="${staging.zipsource}">
+			<fileset dir="${staging.ice}">
+				<include name="${zip.ice}" />
+				<include name="${readme.ice}" />
+			</fileset>
+			<fileset dir="${staging.wiris}">
+				<include name="${zip.wiris}" />
+				<include name="${readme.wiris}" />
+			</fileset>
+			<fileset dir="${staging.atd}">
+				<include name="${zip.atd}" />
+				<include name="${readme.atd}" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="product" depends="common.product">
+		<zip destfile="${product}/${htmleditorplugins.zip}">
+			<zipfileset dir="${staging}/zipsource" prefix="" />
+		</zip>
+	</target>
+</project>

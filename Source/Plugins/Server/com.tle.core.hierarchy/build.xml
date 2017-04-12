@@ -1,0 +1,3 @@
+<project name="com.tle.core.hierarchy" basedir="." default="compile">
+	<import file="../../build/plugins-common-build.xml" />
+</project>

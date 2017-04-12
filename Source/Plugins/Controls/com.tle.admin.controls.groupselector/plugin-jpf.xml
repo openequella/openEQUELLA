@@ -1,0 +1,36 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.controls.groupselector" version="1">
+	<attributes>
+		<attribute id="type" value="admin-console" />
+	</attributes>
+
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.admin.controls" />
+		<import plugin-id="com.tle.admin.schema.common" />
+		<import plugin-id="com.tle.common.wizard.controls.groupselector" />
+		<import plugin-id="com.tle.common.usermanagement" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="admin-console" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.controls" point-id="control" id="groupSelectorControl">
+		<parameter id="id" value="groupselector" />
+		<parameter id="name" value="com.tle.admin.controls.groupselector.title" />
+		<parameter id="modelClass" value="com.tle.admin.controls.groupselector.GroupSelectorControlModel" />
+		<parameter id="wrappedClass" value="com.tle.common.wizard.controls.groupselector.GroupSelectorControl" />
+		<parameter id="editorClass" value="com.tle.admin.controls.groupselector.GroupSelectorControlEditor" />
+		<parameter id="context" value="page" />
+		<parameter id="context" value="powersearch" />
+	</extension>
+</plugin>

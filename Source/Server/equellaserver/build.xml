@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="EQUELLA Server" basedir="." default="make">
+	<property name="compile.for.server" value="true" />
+	<property name="jarname" value="equella-server.jar" />
+	<import file="../../common-build.xml" />
+
+	<taskdef resource="proguard/ant/task.properties" classpathref="customtasks.classpath" />
+
+	<proguardconfiguration id="config">
+		-libraryjars ${java.home}/lib/rt.jar
+		-libraryjars ${java.home}/lib/jsse.jar
+
+		-keep class com.tle.core.equella.runner.* {
+			*;
+		}
+		
+		-keep class org.apache.commons.** {
+			*;
+		}
+
+		-keep class org.apache.log4j.** {
+			*;
+		}
+
+		-keep class org.java.plugin.** {
+			*;
+		}
+		
+		-keep class org.slf4j.** {
+			*;
+		}
+
+
+		-dontnote
+		-dontwarn org.apache.log4j.**, org.apache.commons.**, org.slf4j.**
+		-injars ${source.base}/version.properties
+	</proguardconfiguration>
+
+	<target name="product" depends="common.product">
+
+		<proguard obfuscate="false" optimize="false">
+			<configuration refid="config" />
+			<injar refid="eclipse.classpath" />
+			<outjar file="${staging}/${jarname}" filter="!META-INF/MANIFEST.MF,!plugin-jpf.xml" />
+		</proguard>
+
+		<jar destfile="${product}/${jarname}">
+			<zipfileset src="${staging}/${jarname}" />
+			<manifest>
+				<attribute name="Main-Class" value="com.tle.core.equella.runner.EQUELLAServer" />
+			</manifest>
+		</jar>
+	</target>
+</project>

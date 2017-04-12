@@ -1,0 +1,16 @@
+<project name="com.tle.applet.filemanager" basedir="." default="compile">
+	<import file="../../Applet/com.tle.common.applet/appletcommon-build.xml" />
+	<property name="applet.jar.name" value="filemanager.jar" />
+	<property name="applet.title" value="EQUELLA File Manager" />
+
+	<proguardconfiguration id="config">
+		-keep class org.jvnet.flamingo.bcb.** {
+			*;
+		}
+
+		-keep class com.tle.web.filemanager.** {
+			*;
+		}
+
+	</proguardconfiguration>
+</project>

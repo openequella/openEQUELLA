@@ -1,0 +1,19 @@
+<com.tle.beans.entity.itemdef.MetadataMapping>
+  <imsMapping class="list"/>
+  <htmlMapping class="list">
+    <com.tle.beans.entity.itemdef.mapping.HTMLMapping>
+      <html>description</html>
+      <itemdef>/item/description</itemdef>
+    </com.tle.beans.entity.itemdef.mapping.HTMLMapping>
+    <com.tle.beans.entity.itemdef.mapping.HTMLMapping>
+      <html>dc.title</html>
+      <itemdef>/item/keywords</itemdef>
+    </com.tle.beans.entity.itemdef.mapping.HTMLMapping>
+  </htmlMapping>
+  <literalMapping class="list">
+    <com.tle.beans.entity.itemdef.mapping.LiteralMapping>
+      <value>/item/name</value>
+      <literals class="list"/>
+    </com.tle.beans.entity.itemdef.mapping.LiteralMapping>
+  </literalMapping>
+</com.tle.beans.entity.itemdef.MetadataMapping>

@@ -1,0 +1,12 @@
+@import url("altlinks.css");
+
+div.alt-links a {
+	padding: 9px 32px 9px 10px;
+	background-position: 339px 7px;
+}
+.alt-links a.level2 {
+	padding-left: 0;
+	padding-right: 50px;
+	background-position: 321px 7px;
+}
+

@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Overview</title>
+    <link rel="apple-touch-icon" href="./images/EQUELLAlogo.png">
+    <link rel="apple-touch-startup-image" media="(orientation: portrait)" href="./images/Pearson_EQUELLA_logo_768x1004.png" />
+    <link rel="apple-touch-startup-image" media="(orientation: landscape)" href="./images/Pearson_EQUELLA_logo_1024x748.png" />
+    <script src="./js/jquery.min.js?v=1"></script>
+    <script src="./js/kendo/kendo.mobile.min.js?v=1"></script>
+    <script src="./js/properties.js?v=1" type="text/javascript"></script>
+    <script src="./js/add2home.js?v=1" type="text/javascript"></script>
+    <script src="./js/parsing.js?v=1" type="text/javascript"></script>
+    <script >
+    	var perPage = 50;
+    	var token;
+    	var itemUUID;
+    	var itemSummaryDS;
+    	var itemHistoryDS;
+    	
+		var notificationsData = {results : [] };
+		var tasksData = {results : [] };
+		var loadingItems = 0;
+		
+		var myResourcesLiveDS;
+		var myResourcesDraftDS;
+		var myResourcesModDS;
+		var myResourcesArchivedDS;
+		var myResourcesAllDS;
+		var myResourcesPurchasedDS;
+		var notificationsDS;
+		var tasksDS;
+		
+		var allResourcesDS;
+		var notesAndTasksDS;
+		
+		var maxTasks = 100;
+		var maxNotifications = 100;
+		
+		var openInEQUELLAurl = "";
+		var openInNewWindowurl = "";
+		
+		var loadedItemUuid = "";
+		var loadedItemVersion = "";
+    </script>
+    <link href="./css/kendo.common.min.css?v=1" rel="stylesheet" />
+    <link href="./css/kendo.mobile.all.min.css?v=1" rel="stylesheet" />
+    <link href="./css/kendo.default.min.css?v=1" rel="stylesheet" />
+    <link href="./css/default.css?v=1" rel="stylesheet" />
+    <link href="./css/equella-theme.css?v=1" rel="stylesheet" />
+    <link href="./css/add2home.css?v=1" rel="stylesheet" />
+</head>
+<body>
+<script>
+$(document.body).css("visibility", "hidden");
+</script>
+
+<div data-role="view" id="login" data-title="Log in to EQUELLA">
+    <header data-role="header">
+        <div data-role="navbar">
+            <span data-role="view-title">Log in to EQUELLA</span>
+        </div>
+    </header>
+    <iframe id="loginFrame" src="" scrolling="no"></iframe>
+</div>
+
+<div data-role="view" data-layout="overview-layout" data-init="myResourcesViewInit" id="resources-page" data-title="My resources" data-after-show="fixScrollerHeights">
+
+    <header data-role="header">
+        <div data-role="navbar">
+            <span data-role="view-title">My resources</span>
+            <form onSubmit="return false;" data-align="right" >
+            	<input type="search" name="search" results=5 id="searchResources" placeholder="search..."/>
+            </form>
+        </div>
+    </header>
+
+    <ul id="my-resources-selector" data-role="buttongroup" >
+  		<li>Published</li>
+  		<li>Draft</li>
+  		<li>Moderating</li>
+  		<li>Archived</li>
+  		<li>All</li>
+  		<li>Purchased</li>
+	</ul>
+    <div data-role="scroller" id="my-resources-scroller">
+       	<ul id="my-resources" data-role="listview" data-source="myResourcesLiveDS" data-template="template"
+       		data-pull-to-refresh="true" data-endless-scroll="true" data-auto-bind="true"></ul>
+		<div id="my-resources-empty" style="display: none">
+			<h2>No results</h2>
+		</div>
+	</div>
+    <footer data-role="footer">
+        <div data-role="tabstrip" id="my-resources-tabstrip" data-select="synchTabs">
+            <a data-icon="contacts" href="#resources-page">My resources</a>
+            <a data-icon="featured" href="#notifications-page">Notifications</a>
+        </div>
+    </footer>
+</div>
+
+<div data-role="view" data-layout="overview-layout" id="notifications-page" data-init="notificationsViewInit" data-title="Notifications" data-after-show="fixScrollerHeights">
+
+    <header data-role="header">
+        <div data-role="navbar">
+            <span id="notification-header">Notifications and Tasks</span>
+            <a data-align="right" data-role="button" id="refresh-notifications-button" data-click="refreshNotifications">Refresh</a>
+        </div>
+    </header>
+    
+	<ul id="notes-and-tasks-selector" data-role="buttongroup" >
+  		<li>Notifications</li>
+  		<li>Tasks</li>
+	</ul>
+	
+    <div data-role="scroller" id="notes-and-tasks-scroller">
+       	<ul id="notes-and-tasks" data-role="listview" data-source="notificationsDS" data-template="notifications-template"
+       		data-pull-to-refresh="true" data-endless-scroll="true" data-auto-bind="true"></ul>
+		<div id="notes-and-tasks-empty" style="display: none">
+			<h2>No results</h2>
+		</div>
+	</div>
+    
+    <footer data-role="footer">
+        <div data-role="tabstrip" id="notifications-tabstrip" data-select="synchTabs">
+            <a data-icon="contacts" href="#resources-page">My resources</a>
+            <a data-icon="featured" href="#notifications-page">Notifications</a>
+        </div>
+    </footer>
+</div>
+
+<div data-role="view" data-layout="overview-layout" data-init="itemSummaryInit" id="item-detail" data-title="Summary" data-transition="slide" data-before-show="getItemSummary">
+   	
+    <header data-role="header">
+        <div data-role="navbar">
+            <a data-role="backbutton" data-align="left">Back</a>
+            <a class="nav-button km-button" data-align="right" id="open-in-equella" data-role="button" data-click="openInEQUELLA">Open in EQUELLA</a>
+            <span id="item-detail-title">Summary</span>
+        </div>
+    </header>
+   	
+   	<ul id="itemSelector" data-role="buttongroup" >
+  		<li id="summary-tab">Summary</li>
+  		<li>Moderation</li>
+	</ul>
+	<ul id="item-summary-panel" data-role="listview" data-type="group">
+        <li id="item-summary"></li>
+    </ul>
+   	<ul id="mod-progress-panel" data-role="listview" data-type="group" style="display:none">
+   		<li id="mod-progress">
+   		</li>
+   		<li><div class="km-group-title"><span class="km-text">
+    	Moderation history:
+    	</span></div>
+   		<ul id="mod-history"></ul>
+   		</li>
+	</ul>
+    <ul id="item-uses-panel" data-role="listview" data-type="group" style="display:none">
+   		<li><div class="km-group-title"><span class="km-text">
+    		Uses:
+    		</span></div>
+            <ul class="km-list" id="find-uses">
+        	</ul>
+	    </li>
+    </ul>
+    
+    <footer data-role="footer">
+        <div data-role="tabstrip" id="item-tabstrip" data-select="synchTabs">
+            <a data-icon="contacts" href="#resources-page">My resources</a>
+            <a data-icon="featured" href="#notifications-page">Notifications</a>
+        </div>
+    </footer>
+</div>
+
+<div data-role="view" data-layout="overview-layout" id="attachment-view" data-title="Resource" data-transition="slide" data-show="prepareAttachmentView" data-zoom=true>
+	<header data-role="header" id="attachment-header">
+        <div data-role="navbar">
+            <a data-role="backbutton" data-align="left" >Back</a>
+            <span id="attachment-title">Resources</span>
+            <a data-align="right" id="new-window-button" class="new-window-button km-button" data-role="button" data-click="openInNewWindow">Open in new window</a>
+        </div>
+        <div id="compat-warning" style="display:hidden">This attachment may not display properly, if you experience problems try opening in a new window.</div>
+    </header>
+	<div id="attachment-content"></div>
+</div>
+
+<div data-role="view" data-layout="overview-layout" id="attachment-view-noscroll" data-title="Resource" data-transition="slide" data-show="prepareAttachmentView" data-stretch=true>
+	<header data-role="header" id="attachment-header-noscroll">
+        <div data-role="navbar">
+            <a data-role="backbutton" data-align="left" >Back</a>
+            <span id="attachment-title-noscroll">Resources</span>
+            <a data-align="right" id="new-window-button-noscroll" class="new-window-button km-button" data-role="button" data-click="openInNewWindow">Open in new window</a>
+        </div>
+        <div id="compat-warning-noscroll" style="display:hidden">This attachment may not display properly, if you experience problems try opening in a new window.</div>
+    </header>
+	<div id="attachment-content-noscroll"></div>
+</div>
+
+<div data-role="layout" data-id="overview-layout">
+</div>
+
+<script> 
+    function myResourcesViewInit() {
+        
+        $("#my-resources-selector").kendoMobileButtonGroup({
+            select: function() {            	
+            	var sel = this.selectedIndex;
+            	var ds = allResourcesDS[sel];
+        		$("#my-resources").data('kendoMobileListView').setDataSource(ds);
+        		$("#my-resources-scroller").data("kendoMobileScroller").reset();
+            },
+            index: 0
+        });
+        
+        $.each(allResourcesDS, function(i, ds) {
+        	ds.bind("change", function(e){
+	            if(this.data().length == 0){
+	                $("#my-resources-empty").show();
+	            }
+	            else {
+	                $("#my-resources-empty").hide();	            	
+	            }
+        	});
+        });
+    }
+    
+    function notificationsViewInit() {
+        
+        $("#notes-and-tasks-selector").kendoMobileButtonGroup({
+            select: function() {            	
+            	var sel = this.selectedIndex;
+            	var ds = notesAndTasksDS[sel];
+            	
+        		$("#notes-and-tasks").data('kendoMobileListView').setDataSource(ds);
+        		$("#notes-and-tasks-scroller").data("kendoMobileScroller").reset();
+            },
+            index: 0
+        });
+
+        $.each(notesAndTasksDS, function(i, ds) {
+        	ds.bind("change", function(e){
+	            if(this.data().length == 0){
+		            if(this.data().length == 0){
+		                $("#notes-and-tasks-empty").show();
+		            }
+		            else {
+		                $("#notes-and-tasks-empty").hide();	            	
+		            }
+	            }
+        	});
+        });
+        
+        $("#notifications-tabstrip").data("kendoMobileTabStrip").switchTo($("#my-resources-tabstrip").data("kendoMobileTabStrip").currentItem()[0].hash);
+    }
+    
+    function fixScrollerHeights()
+	{
+    	//I had hoped I wouldn't need to do any more of this sort of crap, but lo and behold
+		$("#my-resources-scroller").css("height", $("#my-resources-scroller").parent().parent().height() - 40 + "px");
+		$("#notes-and-tasks-scroller").css("height", $("#notes-and-tasks-scroller").parent().parent().height() - 40 + "px");
+    }
+
+    function itemSummaryInit() {
+        var listviews = this.element.find("ul.km-listview");
+
+        $("#itemSelector").kendoMobileButtonGroup({
+            select: function() {
+                listviews.hide()
+                         .eq(this.selectedIndex)
+                         .show();
+            },
+            index: 0
+        });
+
+        if($("#my-resources-tabstrip").data("kendoMobileTabStrip")) {
+        	$("#item-tabstrip").data("kendoMobileTabStrip").switchTo($("#my-resources-tabstrip").data("kendoMobileTabStrip").currentItem()[0].hash);
+        }
+    }
+</script>
+
+<script id="template" type="text/x-kendo-template">
+	<a id="#= uuid #" class="km-listview-link" href="\#item-detail?uuid=#= uuid #&version=#= version #&equella-link=#= links.view #">
+		# if(data.image != undefined) { #
+				<img src = "#= image #" alt=""/>
+		# } #
+		# if(data.image == undefined) { #
+				<img src = "./images/white.png" alt=""/>
+		# } #
+		<h2 class="item-name-header">
+			# if(name != "") { #
+				#= parseDisplay(name) #
+			# } else { #
+				#= uuid #
+			# } #
+			# if(data.status != undefined) { #
+				: (#= status #)
+			# } #
+		</h2>
+		<br/><br/><br/>
+	</a>
+	<span></span>
+</script>
+
+<script id="notifications-template" type="text/x-kendo-template">
+	<a id="#= item.uuid #" class="km-listview-link #= item.uuid #" href="\#item-detail?uuid=#= item.uuid #&version=#= item.version #&equella-link=#= item.links.view #">
+				
+		# if(data.item.image) { #
+			<img src = "#= item.image #" alt=""/>
+		# } else { #
+			<img src = "./images/white.png" alt=""/>
+		# } #
+		
+		<h2 class="item-name-header"> #= name # </h2>
+		<br/><br/><br/>
+	</a>
+	<span></span>
+</script>
+
+<script id="itemTemplate" type="text/x-kendo-template">
+	<div class="km-group-title"><span class="km-text">
+    	Summary:
+    </span></div>
+	<ul class="km-list"><li>
+    	<h2>
+			# if(name != "") { #
+				#= parseDisplay(name) #
+			# } else { #
+				#= uuid #
+			# } #
+		: (#= status #)</h2>
+		# if(data.description != undefined) { #
+				<p>#= parseDisplay(description) #</p>
+		# } #
+	</li></ul>
+	# if(data.attachmentsNav != undefined && data.attachmentsNav[0] != undefined ) { #
+		<br/>
+		<div class="km-group-title"><span class="km-text">
+        	Links to resources:
+        </span></div>
+		<ul class="km-list">
+		#for(var i = 0; i < data.attachmentsNav.length; i++) { #
+			<li>
+			# if( data.attachmentsNav[i].attachment != undefined ) { #
+				# if( data.attachmentsNav[i].attachment.type == "image" ) { #
+					<a class="km-listview-link" href="\#attachment-view?type=image&index=#= i #&url=#= equellaurl + "/file/" + data.uuid + "/" + data.version + "/" + encodeURIComponent(data.attachmentsNav[i].attachment.filename) #">
+				# } else if ( data.attachmentsNav[i].attachment.type== "url" ) { #
+					<a class="km-listview-link" href="\#attachment-view-noscroll?type=external&index=#= i #&url=#= data.attachmentsNav[i].attachment.url #">
+				# } else if ( data.attachmentsNav[i].attachment.type == "linked-resource" || data.attachmentsNav[i].attachment.type == "htmlpage" || data.attachmentsNav[i].attachment.type == "lti" || data.attachmentsNav[i].attachment.type.indexOf("custom/") >= 0 ) { #
+					<a class="km-listview-link" href="\#attachment-view?type=attachment&index=#= i #&url=#= data.attachmentsNav[i].attachment.links.view #">
+				# } else if ( data.attachmentsNav[i].attachment.type== "file" ){ #
+					<a class="km-listview-link" href="\#attachment-view?type=attachment&index=#= i #&url=#= equellaurl + "/file/" + data.uuid + "/" + data.version + "/" + encodeURIComponent(data.attachmentsNav[i].attachment.filename) #">
+				# } else { #
+					<a class="km-listview-link" href="\#attachment-view?type=attachment&index=#= i #&url=#= data.attachmentsNav[i].attachment.url #">
+				# } #
+			# } #
+			# if(data.attachmentsNav[i].type == "folder") { #
+				<img class="attf" src="./images/folder.png" alt="" style="margin-left : #= .05 + data.attachmentsNav[i].level * 3 #em;" >
+			# } else { #
+				<img class="att" src="#= data.attachmentsNav[i].attachment.links.thumbnail #" alt="" style="margin-left : #= .05 + data.attachmentsNav[i].level * 3 #em;" />
+			# } #
+			<h2 class="attachment-header">#= parseDisplay(data.attachmentsNav[i].name) #<br/>
+			# if( data.attachmentsNav[i].attachment != undefined && data.attachmentsNav[i].attachment.size != undefined ) { #
+				#= data.attachmentsNav[i].attachment.size #
+			# } #
+			</h2>
+			<br/><br/><br/>
+			# if( data.attachmentsNav[i].attachment != undefined ) { #
+				</a>
+			# } #
+			</li>
+		# } #
+		</ul>
+	# } #
+</script>
+
+<script id="itemModTemplate" type="text/x-kendo-template">
+	# if(data.status != "live" && data.status != "draft") { #
+	<div class="km-group-title"><span class="km-text">
+    	Moderation progress:
+    </span></div>
+   	<ul class="km-list">
+		<li>
+    		<h2>
+			# if(name != "") { #
+				#= parseDisplay(name) #
+			# } else { #
+				#= uuid #
+			# } #
+			</h2><br/>
+			<img id="mod-progress-chart" src="#= selfLink #statusimage.png?access_token=#= token #" alt="moderation progress chart">
+		</li>
+	</ul>
+	# } #
+</script>
+
+<script id="historyTemplate" type="text/x-kendo-template">
+	<li>#= parseDisplay(description) #</li>
+</script>
+
+<script>
+	function getItemSummary(e) {
+		
+		var params = getUrlVarsNoHash();
+		var uuid = params["uuid"];
+		var version = params["version"];
+		var equellaLink = params["equella-link"];
+		
+		if(uuid == loadedItemUuid && version == loadedItemVersion) {
+			return;
+			//Stops the content from force-reloading when we go back to here from an attachment
+		}
+		$("#item-summary").html("");
+
+		openInEQUELLAurl = addGet(equellaLink, "access_token=" + token);
+		
+		loadAndDo(function() {
+			itemUUID = uuid + "/" + version;
+				
+			itemHistoryDS.read();
+			itemSummaryDS.read();
+			findUses(uuid,version);
+  			
+			var buttongroup = $("#itemSelector").data("kendoMobileButtonGroup");
+			if(buttongroup != undefined )buttongroup.select(0);
+			$("#item-summary-panel").attr("style", "");
+			$("#mod-progress-panel").attr("style", "display:none;");
+			$("#item-uses-panel").attr("style", "display:none;");
+
+			loadedItemUuid = uuid;
+			loadedItemVersion = version;
+		});
+	}
+	
+	function openInEQUELLA() {
+		location.href = openInEQUELLAurl;
+	}
+	
+	function prepareAttachmentView(e) {
+		
+		var params = getUrlVarsNoHash();
+		var url = params["url"];
+		var type = params["type"];
+		var index = params["index"];
+		var suffix = type == "external" ? "-noscroll" : ""; //This might be useful for other things later too
+
+		$("#attachment-title" + suffix).html(parseDisplay(itemSummaryDS.data()[0].attachmentsNav[index].name));
+		//Reset the zoom and position
+		if(type != "external") {
+			var scroller = $("#attachment-view" + suffix).data("kendoMobileView").scroller;
+			//Reset the panning position
+			scroller.reset();
+
+			// Hackery, likely to break if Kendo is upgraded
+			scroller.scrollElement.css("-webkit-transform", "");
+            scroller.movable.scaleTo(1);
+            scroller.dimensions.rescale(scroller.movable.scale);
+			//If you were zoomed in on the last image, it will zoom you back out			
+		}
+		if(type == "external") {
+			getExternalView(url, index);
+		}
+		else if(type == "image") {
+			getImageView(url, index);
+		}
+		else if(type == "attachment") {
+			getAttachmentView(url, index);
+		}
+	}
+	
+	function getAttachmentView(url, index) { //Files, opens the EQUELLA page for the file in an I-Frame, with token
+		loadAndDo(function() {
+			//We don't want to pass names through the DOM and try to escape them, so find by index
+			$("#attachment-content").html("<iframe id=\"attachmentFrame\" src=" + addGet(url,"access_token=" + token) + ">");
+			$("#compat-warning").show();
+			openInNewWindowurl = addGet(url,"access_token=" + token);
+			
+		});
+	}
+	
+	function openInNewWindow() {
+		//window.open(openInNewWindowurl, "_blank");
+	    var a = document.createElement('a');
+	    a.setAttribute("href", openInNewWindowurl);
+	    a.setAttribute("target", "_blank");
+
+	    var dispatch = document.createEvent("HTMLEvents")
+	    dispatch.initEvent("click", true, true);
+	    a.dispatchEvent(dispatch);
+	}
+	
+
+	function getExternalView(url, index) { //URL opens in I-Frame, no need for access token
+		loadAndDo(function() {
+			if(url.indexOf("youtube") >= 0)
+			{
+				url = createYoutubeEmbed(url);
+			}
+			$("#attachment-content-noscroll").html("<iframe id=\"webFrame\" src=" + url + ">");
+			$("#compat-warning-noscroll").show();
+			openInNewWindowurl = addGet(url,"access_token=" + token);
+			//openInNewWindowurl = openInNewWindowurl.replace("www","m");
+			$("#attachment-content-noscroll").css({
+	            overflow: 'auto',
+	            height: $("#attachment-content-noscroll").parent().height(),
+	            '-webkit-overflow-scrolling': 'touch'
+            });
+		});
+	}
+	
+	function createYoutubeEmbed(url)
+	{
+		var video_id = url.split('v/')[1];
+		var ampersandPosition = video_id.indexOf('&');
+		if(ampersandPosition != -1) {
+		  video_id = video_id.substring(0, ampersandPosition);
+		}
+		return "http://www.youtube.com/embed/" + video_id;
+	}
+	
+	function getImageView(url, index) { //Image opens in an IMG tag
+		loadAndDo(function() {
+			$("#attachment-content").html("<img src=\"" + addGet(url,"access_token=" + token) + "\" class=\"attached-image\" id=\"attached-image\">");
+			if(itemSummaryDS.data()[0].drm.options != undefined ) {
+				$("#compat-warning").show();
+			}
+			else $("#compat-warning").hide();
+			openInNewWindowurl = addGet(url,"access_token=" + token);
+		});
+	}
+	
+	function refreshNotifications() {
+		loadAndDo(function() {
+			tasksDS.read();
+			notificationsDS.read();
+		});
+	}
+	
+	function loadAndDo(whatToDo) {
+
+    	kendoMobileApplication.showLoading();
+    	
+		var seconds = 1;
+		
+	    interval = setInterval(function() {
+		
+		    if (seconds == 0) {
+		    	whatToDo();
+		    	kendoMobileApplication.hideLoading();
+		        clearInterval(interval);
+		    }
+	    	seconds--;
+		}, 500); //Load while doing nothing, like a boss
+		//Actually it preloads and seems to work, don't know why
+	}
+	
+	function findUses(uuid, version) {
+		
+		var usesStrings = {};
+		var isUses = 0;
+		
+		$("#itemSelector").html('<li id="summary-tab">Summary</li><li>Moderation</li>');
+		var listviews = $("#item-detail").find("ul.km-listview");
+    		        
+		$("#itemSelector").kendoMobileButtonGroup({
+            select: function() {
+                listviews.hide()
+                         .eq(this.selectedIndex)
+                         .show();
+            },
+            index: 0
+        });
+		
+		$.ajax({
+				type: "GET",
+	            url: equellaurl + "/api/connector/" + uuid + "/" + version,
+	            dataType:"json",
+	            data: {
+	            	access_token: token
+	            },
+    			success : function(connectors) {
+    				
+    				if(connectors.length > 0 && isUses == 0) {
+        				$("#itemSelector").html($("#itemSelector").html() + '<li>Find uses</li>');
+						isUses = 1;
+    				}
+        			else {
+    					$("#find-uses").html("");
+        			}
+    				
+    		        var listviews = $("#item-detail").find("ul.km-listview");
+    		        
+    				$("#itemSelector").kendoMobileButtonGroup({
+    		            select: function() {
+    		                listviews.hide()
+    		                         .eq(this.selectedIndex)
+    		                         .show();
+    		            },
+    		            index: 0
+    		        });
+        			
+    				$.each(connectors, function(i,val) {
+    					usesStrings[i] = { "name" : parseDisplay(val.name), "type" : parseDisplay(val.type), uses : {} } ;
+    					$.ajax({
+    						type: "GET",
+    				        url:val.links.usage,
+    			            dataType:"json",
+    				        data: {
+   		        				access_token: token
+   		        			},
+   		        			success: function(usage) {
+   		        				
+   		        				if(usage.length == 0) //no usages found
+   		        				{
+   		        					usesStrings[i].uses[0] = { "course" : "No uses" };
+   		        				}
+   		        				else {
+   		        					$.each(usage.results, function(j, usageValues) {
+   		        						if(usageValues.dateAdded != undefined) {
+   		        							var d = new Date(usageValues.dateAdded);
+   	   		        						var dateAdded = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear();
+   		        						}
+   		        						usesStrings[i].uses[j] = {"course" : parseDisplay(usageValues.course), "dateAdded" : parseDisplay(dateAdded), "folder" : parseDisplay(usageValues.folder) };
+   		        					});
+   		        				}
+   		        			},
+   		        			error: function() {
+   		        				//The connector may be un-available, we don't want to be logged out if it is
+   		        				//Some error handling would be good here, but for now just do nothing and over-ride
+   		        				//The default error popup
+   		        				usesStrings[i].uses[0] = { "course" : "There was an error contacting the LMS: " + val.connectorName };
+   		        			},
+   		        			complete: function() {
+   		     				
+	   		     				var output = "<li>";
+	   		     				$.each(usesStrings, function(i, val) {
+	   		     					output += "<h2>" + val.name + ": (" + val.type + ")</h2><p>";
+	   		         				$.each(val.uses, function(j, val2) {
+	   		         					output += val2.course + "<br/>";
+	   		         					if(val2.dateAdded!=undefined)output += "Added: " + val2.dateAdded + "<br/>";
+	   		         					if(val2.folder!=undefined)output += "Location: " + val2.folder + "<br/>";
+	   		         					output += "<br/>";
+	   		         				});
+	   		         				output += "</p>";
+	   		     				});
+	   		     				output += "</li>";
+	   		         			$("#find-uses").html(output);
+		        			}
+    					});
+    				});
+    			}
+		});
+	}
+</script>
+
+<script>
+
+	$(document).ready(function() {
+		
+		token = localStorage.getItem(equellaurl + "/access_token");
+		if(token==null) {
+			$("#loginFrame").attr("src", getLoginUrl());
+			window.location = "#login";
+		}
+		else {
+			touchEquella();
+			if(window.location.hash == "#login" || window.location.hash == "") {
+				window.location = "#resources-page";				
+			}
+		}
+
+		var uagent = navigator.userAgent.toLowerCase();
+		
+  		if (uagent.search("ipad") > -1) {
+  			$("#searchResources").attr("data-align", ""); //Make search keyboard work
+  		}
+	});
+	
+	function touchEquella() { //Test for connection and authentication, handle things that go wrong
+		var req = $.ajax({ //Make a REST call to do this more sensibly
+            type: "GET",
+            url: equellaurl + "/api/search?",
+            dataType:"json",
+            timeout : 10000,
+            data: {
+            	info: "basic",
+            	access_token: token,
+            	length: 1
+            },
+			error : defaultError,			
+			success : function() {
+				mainFunction();
+			}
+        });
+	}
+	
+    function initResources() {
+		myResourcesLiveDS = newDS( equellaurl + "/api/search/myresources/published", "#searchResources", "basic,attachment,detail", parseData );
+		myResourcesDraftDS = newDS( equellaurl + "/api/search/myresources/draft", "#searchResources", "basic,attachment", parseData );
+		myResourcesModDS = newDS( equellaurl + "/api/search/myresources/modqueue", "#searchResources", "basic,attachment,detail", parseData );
+		myResourcesArchivedDS = newDS( equellaurl + "/api/search/myresources/archived", "#searchResources", "basic,attachment", parseData );
+		myResourcesAllDS = newDS( equellaurl + "/api/search/myresources/all", "#searchResources", "basic,attachment,detail", parseData );
+		myResourcesPurchasedDS = newDS( equellaurl + "/api/search/myresources/purchased", "#searchResources", "basic,attachment,detail", parseData );
+		allResourcesDS = [ myResourcesLiveDS, myResourcesDraftDS, myResourcesModDS, myResourcesArchivedDS, myResourcesAllDS, myResourcesPurchasedDS ];
+     		        
+		$("#searchResources").keydown(function(e) {
+			if (e.keyCode === kendo.keys.ENTER) {
+				var scroller = $("#my-resources-scroller").data("kendoMobileScroller");
+				var ds = $("#my-resources").data('kendoMobileListView').dataSource;
+				ds.page(1);
+				ds.read();
+				scroller.reset();
+				$(this).blur();
+			}
+		});
+    }
+    
+    function initTasks() {
+		tasksDS =  newDS( equellaurl + "/api/task", "", "", parseTasks );
+		notificationsDS = newDS( equellaurl + "/api/notification", "", "", parseNotifications );
+		notesAndTasksDS = [ notificationsDS, tasksDS ];
+    }
+    
+    function mainFunction() {
+        var itemTemplate = kendo.template($("#itemTemplate").html());
+        var itemModTemplate = kendo.template($("#itemModTemplate").html());
+        var historyTemplate = kendo.template($("#historyTemplate").html());
+        
+		itemSummaryDS = newDS( getItemURL, null, "all", parseForItem );
+		itemSummaryDS.bind("change", function(e) {
+			$("#item-detail-title").html(itemSummaryDS.data()[0].name);
+			$("#item-summary").html(kendo.render(itemTemplate, this.view()));
+			$("#mod-progress").html(kendo.render(itemModTemplate, this.view()));
+		});
+		itemHistoryDS = newDS( getHistoryURL, null, "all", parseForHistory );
+		itemHistoryDS.bind("change", function(e) {
+			$("#mod-history").html(kendo.render(historyTemplate, this.view()));
+		});
+    }
+    
+    function newDS ( url, searchfield, info, parseFunction ) {
+     	
+      var searchDataSource = new kendo.data.DataSource({
+          transport: {
+              read: {
+                  url: url,
+                  dataType: "json",
+                  timeout: 10000
+              },
+              parameterMap: function(options) {
+                  return {
+                     	length: perPage,
+                     	start: options.skip,
+                  	q: function() {
+                          if(searchfield && searchfield != "") {
+                          	return $(searchfield).val();
+                          }
+                          return "";
+                      },
+                      info: info,
+                      access_token: token,
+                      order: function() {
+                      	if(searchfield!=null) {
+                      		var q = $(searchfield).val();
+                      		if(q != null && q != "") {
+                      			return "relevance";
+                      		}
+                      		else return "modified";
+                          }
+                      }
+                  }
+              }
+          },
+          schema: {
+              parse: parseFunction,
+              data: "results",
+              total: "available"
+          },
+          requestStart: function () { 
+          	if (this.pageSize() === undefined || this.page() === 1) { 
+          		kendoMobileApplication.showLoading();
+          	}
+          },
+          requestEnd: function () { kendoMobileApplication.hideLoading(); },
+          serverPaging: true,
+          pageSize: perPage,
+          error: defaultError
+      });
+      return searchDataSource;
+	}
+    
+    function defaultError(error)
+    {
+    	if(error && error.xhr && error.status) 
+    	{		
+	    	var status = error.xhr.status;
+    	}
+    	else if(error.status) {
+    		var status = error.status;
+    	}
+    	else {
+    		status = 0;
+    	}
+    	
+    	if(status == 500) {
+    		alert("Received an internal server error from EQUELLA, this application will attempt to continue, but may not function normally.");
+    	}
+    	else if(status == 403) {
+    		alert("Received an access denied error from EQUELLA, it's possible that your login has expired, taking you to the login screen.");
+    		$("#loginFrame").attr("src", getLoginUrl());
+    		location.href="#login";
+    	}
+    	else {
+    		alert("Received an unknown error while trying to get data from EQUELLA, this application will attempt to continue, but may not function normally.");    		
+        }
+    }
+     
+     function parseNotifications(data) {
+     	var requests = Array();
+     	loadingItems = data.results.length;
+     	
+     	$.each(data.results, function(i, val) {
+			requests.push($.getJSON( //Don't forget that this will all be asynch
+   			val.item.links.self,
+   			{
+   				access_token: token,
+   				info: "basic,attachment"
+   			},
+   			function(item) {
+   				var note = notificationsDS.at(i);
+   				var name = item.name;
+   				if(!name || name=="") {
+   					name = item.uuid;
+   				}
+   				note.name = parseDisplay(name) + " " + notificationParse(val.reason);
+                
+   				if ( item.attachments != undefined && item.attachments[0] != undefined ) {
+                   	item.image = item.attachments[0].links.thumbnail;
+           		}
+   				note.item = item;
+   				loadingItems--;
+   				
+   				if(loadingItems == 0) {   					
+        			$("#notes-and-tasks").data('kendoMobileListView').refresh();
+   				}
+   			}));
+		});
+     	return data;
+     }
+     
+     function parseTasks(data) {
+      	var requests = Array();
+     	loadingItems = data.results.length;
+      	
+      	$.each(data.results, function(i, val) {
+ 			requests.push($.getJSON( //Don't forget that this will all be asynch
+    			val.item.links.self,
+    			{
+    				access_token: token,
+    				info: "basic,attachment"
+    			},
+    			function(item) {
+    				var task = tasksDS.at(i);
+       				var name = item.name;
+       				if(!name || name=="") {
+       					name = item.uuid;
+       				}
+
+    				task.name = parseDisplay(name) + " at: " + parseDisplay(val.task.name);
+   					task.task = parseDisplay(val.task.name);
+                   	item.links.view = val.links["web-moderate"];
+                 
+    				if ( item.attachments != undefined && item.attachments[0] != undefined ) {
+                    	item.image = item.attachments[0].links.thumbnail;
+            		}
+    				task.item = item;
+    				loadingItems--;
+       				if(loadingItems == 0) {   					
+            			$("#notes-and-tasks").data('kendoMobileListView').refresh();
+       				}
+    			}));
+ 		});
+      	return data;
+      }
+             
+     function parseForItem (data) {
+     	
+ 		var itemJSON = { results : [] };
+ 		
+     	if( data[0] == undefined ) {
+			itemJSON.results[0] = data;
+     	}
+     	else itemJSON.results[0] = data[0];
+     	var imgRegex = /\.(jpeg|jpg|gif|png|bmp)$/gi;
+     		
+		$.each(itemJSON.results[0].attachments, function(i, val) {
+	      	var filename = val.filename;
+	      	if(filename != undefined) {
+	      		if(filename.match(imgRegex))val.type = "image";
+	      	}
+	      	if(val.viewUrl != undefined) {
+	      		val.url = val.viewUrl;
+	      		val.type = "url";
+	      	}
+	      	if(val.size != undefined) val.size = parseSize(val.size);
+		});
+     	itemJSON.results[0].selfLink = itemJSON.results[0].links.view;
+     	
+   		itemJSON.results[0].attachmentsNav = [];
+   		if(itemJSON.results[0].navigation.nodes.length > 0) {
+   			convertTreeToFlat(itemJSON.results[0].navigation.nodes, 0, itemJSON.results[0].attachmentsNav);
+   			if(itemJSON.results[0].navigation.hideUnreferencedAttachments == false ) {
+   				convertFlatToFlat(itemJSON.results[0].attachments, 0, itemJSON.results[0].attachmentsNav);
+   			}
+   		}
+   		else convertFlatToFlat(itemJSON.results[0].attachments, 0, itemJSON.results[0].attachmentsNav);
+   		
+   		function convertFlatToFlat(list, level, flat) {
+   			$.each(list, function(i, val) {
+   				if(val.visited != true) itemJSON.results[0].attachmentsNav[itemJSON.results[0].attachmentsNav.length] = { "name" : val.description, "level" : 0, "attachment" : val };
+   			});
+   		}
+     	
+   		function convertTreeToFlat(nodes, level, flat) { //Take a node array (The head or any other)
+   			//This function adds the indenting to the heirarchy structures
+
+   			$.each(nodes, function(i,val){ //For each node in the array
+   				var type;
+   				var attachment;
+   				if( val.tabs.length == 1 && val.tabs[0].attachment != undefined) {
+   					attachment = findAttachmentByUUID(val.tabs[0].attachment.$ref);
+   				}
+   				if( val.tabs.length > 1 || val.nodes.length > 0 ) type = "folder";
+   				if( (val.tabs.length == 0 || val.tabs[0].attachment == undefined) && val.nodes==0 )return true; // We don't show it
+   				
+   				itemJSON.results[0].attachmentsNav[itemJSON.results[0].attachmentsNav.length] = { "name" : val.name, "level" : level, "type" : type, "attachment" : attachment };
+    			convertTreeToFlat(val.nodes, level + 1, flat); //Recursion ftw
+    			
+    			if( attachment == undefined ) { //Not one so do the mumbo jumbo
+        			$.each(val.tabs, function(i,tab){ //For each tab
+        				if(tab.attachment != undefined) { //It's an actual attachment instead of a bogus tab
+        					itemJSON.results[0].attachmentsNav[itemJSON.results[0].attachmentsNav.length] = { "name" : tab.name, "level" : level + 1, "attachment" : findAttachmentByUUID(tab.attachment.$ref)};
+        				}
+        			});
+    			}
+        	});
+   		}
+   		
+   		function findAttachmentByUUID(uuid) {
+   			var toReturn;
+   			
+			$.each(itemJSON.results[0].attachments, function(i, att) {
+				if(att.uuid == uuid) {
+					toReturn = att;
+					att.visited = true;
+					return false; //Break the loop
+				}
+			});
+	
+			return toReturn;
+   		}
+     	return itemJSON;
+     }
+        
+	function getItemURL() {
+    	return equellaurl + "/api/item/" + itemUUID;
+    }
+        
+    function getHistoryURL() {
+    	return equellaurl + "/api/item/" + itemUUID + "/history";
+    }
+        
+    function parseSize(size) {
+    	
+    	var unit = "B";
+    	
+    	if(size > 1000) {
+    		size/=1024;
+    		unit = " KB";
+    	}
+    	if(size > 1000) {
+    		size/=1024;
+    		unit = " MB";
+    	}
+    	return Math.round(size*10)/10 + unit;
+    }
+    
+    function parseDisplay(input) {
+    	if(input!=null) {
+        	input = input.replace(/&/g, "&amp");
+        	input = input.replace(/</g, "&lt");
+        	return input = input.replace(/>/g, "&gt");
+    	}
+    }
+    
+    function synchTabs(e) {
+    	
+    	var selected = e.item[0].hash;
+    	
+    	synchTab("#item-tabstrip", selected);
+    	synchTab("#notifications-tabstrip", selected);
+    	synchTab("#my-resources-tabstrip", selected);
+    }
+    
+    function synchTab(tab, selected) {
+    	
+    	if($(tab).data("kendoMobileTabStrip")) {
+        	$(tab).data("kendoMobileTabStrip").switchTo(selected);    		
+    	}
+    }
+    
+    function closeLogin(tk, err) { //This gets called on a successful login (From the I-Frame)
+    	
+    	token = tk;
+    	if(err!=undefined) {
+    		alert("You cannot continue without logging in");
+			$("#loginFrame").attr("src", getLoginUrl());	
+			return;
+    	}
+    	try 
+        {
+            localStorage.setItem(equellaurl + "/access_token", token);
+        } catch (e) 
+        {
+        	if (e == QUOTA_EXCEEDED_ERR) {
+        		alert('Your local storage quota has run out.');
+       		}
+        }
+    	$("#loginframe").attr("src","");
+
+        var address = window.location.href.split("#")[0];
+		
+		if($("#my-resources-selector").data("kendoMobileButtonGroup")){
+    		$("#my-resources-selector").data("kendoMobileButtonGroup").select(0);
+    		$("#my-resources").data('kendoMobileListView').setDataSource(myResourcesLiveDS);
+		}
+		if($("#notes-and-tasks-selector").data("kendoMobileButtonGroup")) {
+			$("#notes-and-tasks-selector").data("kendoMobileButtonGroup").select(0);
+    		$("#notes-and-tasks").data('kendoMobileListView').setDataSource(notificationsDS);
+		}
+        window.parent.location = address + "#resources-page";
+    	mainFunction();
+    }
+    
+    function getLoginUrl() {
+    	return equellaurl + "/oauth/authorise?response_type=token&client_id=equella-tablet&redirect_uri=" + 
+    			equellaurl + "/p/r/dev/com.tle.web.mobile/js/closelogin.html";
+    }
+</script>
+
+<script>
+	initResources();
+    initTasks();    
+    $(window).bind('resize', fixScrollerHeights);
+	window.kendoMobileApplication = new kendo.mobile.Application($(document.body));
+    $(document.body).css("visibility", "visible");
+</script>
+</body>
+</html>

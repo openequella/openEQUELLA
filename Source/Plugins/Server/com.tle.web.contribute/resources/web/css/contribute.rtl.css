@@ -1,0 +1,12 @@
+@import url("contribute.css");
+
+.contribution-selection-page UL 
+{
+	margin-right: 40px;
+}
+
+.contribution-selection-page DIV.resumeables UL LI SPAN.removelink
+{
+	right: auto;
+	left: 3px;
+}

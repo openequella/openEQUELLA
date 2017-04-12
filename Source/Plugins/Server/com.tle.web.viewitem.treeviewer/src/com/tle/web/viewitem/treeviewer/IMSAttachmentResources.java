@@ -1,0 +1,47 @@
+package com.tle.web.viewitem.treeviewer;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import com.tle.beans.item.attachments.Attachment;
+import com.tle.beans.item.attachments.ImsAttachment;
+import com.tle.core.guice.Bind;
+import com.tle.core.mimetypes.MimeTypeConstants;
+import com.tle.core.mimetypes.RegisterMimeTypeExtension;
+import com.tle.web.sections.SectionInfo;
+import com.tle.web.viewurl.ViewableResource;
+import com.tle.web.viewurl.attachments.AttachmentResourceExtension;
+import com.tle.web.viewurl.attachments.AttachmentResourceService;
+
+@Bind
+@Singleton
+public class IMSAttachmentResources
+	implements
+		AttachmentResourceExtension<Attachment>,
+		RegisterMimeTypeExtension<Attachment>
+{
+
+	@Inject
+	private AttachmentResourceService attachmentResourceService;
+
+	@Override
+	public ViewableResource process(SectionInfo info, ViewableResource resource, Attachment attachment)
+	{
+		String viewUrl = TreeNavigationSection.VIEWIMS_JSP;
+		ViewableResource res = attachmentResourceService.createPathResource(info, resource.getViewableItem(), viewUrl,
+			attachment.getDescription(), MimeTypeConstants.MIME_IMS, attachment);
+
+		ImsAttachment imsAttachment = (ImsAttachment) attachment;
+		if( imsAttachment.isExpand() )
+		{
+			res.setAttribute(ViewableResource.KEY_HIDDEN, true);
+		}
+		return new IMSResource(res);
+	}
+
+	@Override
+	public String getMimeType(Attachment attachment)
+	{
+		return MimeTypeConstants.MIME_IMS;
+	}
+}

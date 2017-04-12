@@ -1,0 +1,31 @@
+.compactQuery {
+	position: relative;
+}
+
+.compactQuery input {
+	margin: 0 3px 0 0;
+	padding: 5px 5px 4px;
+}
+
+.compactQuery .compactQueryButton {
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	height: 26px;
+}
+
+.quick-search .compactQuery input {
+	width: 280px;
+}
+
+.compactQuery input[disabled], input[disabled="disabled"] {
+    opacity: 1;
+}
+
+#col .filter .compactQuery input {
+	width: 665px;
+}
+
+#col1 .filter .compactQuery input {
+	width: 435px;
+}

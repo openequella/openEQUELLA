@@ -1,0 +1,46 @@
+@import url("search.css");
+
+.search-layout #col2 .action-button.remote-repo {
+	background-image: url("../images/button-search-remote-repo.rtl.png");
+}
+
+.search-layout #col2 .action-button.share-search {
+	background-image: url("../images/button-share-search-action.rtl.png");
+}
+
+.search-layout #col2 .action-button.add-to-favourites {
+	background-image: url("../images/button-add-to-favourites-action.rtl.png");
+}
+
+.search-layout .sortandfilter div.input .clear-filter {
+	float: left;
+}
+
+.search-layout .sortandfilter div.input.text input,
+.search-layout .sortandfilter div.input.password input
+	{
+	margin: 5px 0 5px 5px;
+}
+
+.search-layout .sortandfilter div.input.select SELECT {
+	margin: 0 0 0 4px;
+}
+
+#searchform-search {
+	left: auto;
+	right: 401px;
+}
+
+#searchform .query-wrapper div.input {
+	margin: 0 0 5px 3px;
+	padding: 0 70px 0 0;
+}
+
+#searchform .query-wrapper div.input label {
+	left: auto;
+	right: 0;
+}
+
+#searchform .query-wrapper input[type="text"], #searchform .query-wrapper select {
+	right: 0;
+}

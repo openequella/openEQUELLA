@@ -1,0 +1,53 @@
+<icons>
+	<types>
+		<type id="ims_package" description="ims package" icon="icons/IMSpackage.gif" />
+		<type id="plan" description="plan" icon="icons/plan.gif" />
+		<type id="sound" description="sound" icon="icons/sound.gif" />
+		<type id="snippet" description="snippet" icon="icons/snippettemplate.gif" />
+		<type id="template" description="template" icon="icons/template.gif" />
+		<type id="generic" description="generic" icon="icons/generic.gif" />
+		<type id="msWord" description="ms word" icon="icons/WordDocSmall.gif" />
+		<type id="msExcel" description="ms excel" icon="icons/XLSDocSmall.gif" />
+		<type id="msPower" description="ms powerpoint" icon="icons/PPTDocSmall.gif" />
+		<type id="image" description="image" icon="icons/image.gif" />
+		<type id="archive" description="archive" icon="icons/ZipSmall.gif" />
+		<type id="html" description="html document" icon="icons/web.gif" />
+		<type id="text" description="text document" icon="icons/whitepage.gif" />
+		<type id="audio" description="audio" icon="icons/sound.gif" />
+		<type id="attachment" description="attachment" icon="icons/attachment.gif" />
+	</types>
+	<extensions>
+		<extension id=".doc" type="msWord" />
+		<extension id=".xls" type="msExcel" />
+		<extension id=".ppt" type="msPower" />
+		<extension id=".bmp" type="image" />
+		<extension id=".tif" type="image" />
+		<extension id=".tiff" type="image" />
+		<extension id=".jpg" type="image" />
+		<extension id=".jpeg" type="image" />
+		<extension id=".gif" type="image" />
+		<extension id=".png" type="image" />
+		<extension id=".jif" type="image" />
+		<extension id=".jfif" type="image" />
+		<extension id=".zip" type="archive" />
+		<extension id=".gz" type="archive" />
+		<extension id=".tar" type="archive" />
+		<extension id=".tgz" type="archive" />
+		<extension id=".rar" type="archive" />
+		<extension id=".z" type="archive" />
+		<extension id=".ace" type="archive" />
+		<extension id=".htm" type="html" />
+		<extension id=".html" type="html" />
+		<extension id=".txt" type="text" />
+		<extension id=".wav" type="audio" />
+		<extension id=".mp3" type="audio" />
+		<extension id=".wma" type="audio" />
+		<extension id=".ogg" type="audio" />
+		<extension id="viewplan.jsp" type="plan" />
+		<extension id="viewims.jsp" type="ims_package" />
+		<extension id="viewscorm.jsp" type="ims_package" />
+		<extension id="treenav.jsp" type="ims_package" />
+		<extension id="viewitem.jsp" type="generic" />
+		<extension id="attachment" type="attachment" />
+	</extensions>
+</icons>

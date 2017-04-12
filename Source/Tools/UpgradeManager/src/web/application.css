@@ -1,0 +1,73 @@
+
+/* ------------------------------------------------------------
+	CSS RESET
+------------------------------------------------------------ */
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address,
+big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd,
+ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0; padding: 0; border: 0; outline: 0; vertical-align: baseline;
+	font-weight: inherit; font-style: inherit; font-size: 100%; font-family: inherit;	
+}
+
+:focus { outline: 0; }
+
+body { line-height: 1; color: black; background: white; }
+
+ol, ul { list-style: none; }
+
+table {	border-collapse: separate; border-spacing: 0; }
+caption, th, td { text-align: left; font-weight: normal; }
+
+blockquote:before, blockquote:after, q:before, q:after { content: ""; }
+blockquote, q {	quotes: "" ""; }
+
+
+/* ------------------------------------------------------------
+	APPLICATION STYLES
+------------------------------------------------------------ */
+
+body { font-family: sans-serif; color: #333; }
+
+#title h1 { padding-left: 0.5em; border-bottom: solid 5px black; border-top: solid 5px black;
+			line-height: 1.5em; font-size: 2em; color: white; background-color: #99D; }
+
+#content { padding: 1em; }
+
+#footer { text-align: center; font-size: 0.6em; color: grey; }
+
+#statusversion dt { float: left; width: 12em; clear: both; padding: 0.5em; font-weight: bold; }
+#statusversion dd { float: none; padding: 0.3em; }
+
+#ajaxstatus span.statusStarted { color: green; }
+#ajaxstatus span.statusLoading { color: blue; }
+#ajaxstatus span.statusStopped { color: red; }
+#ajaxstatus span.statusError   { color: red; }
+
+#ajaxstatus dd input { margin-left: 1em; }
+
+#deploy { clear: both; padding-top: 1em; }
+
+.error { color: red; }
+
+.heading-content h2  { font-weight: bold; }
+.heading-content div { padding-left: 1.5em; padding-bottom: 2em; padding-top: 1em }
+
+.heading-content ul li       { line-height: 1.2em; }
+.heading-content ul li input { margin-right: 0.5em; }
+
+.ui-tabs-panel { border: 1px solid #97a5b0; }
+
+.heading {font-weight: bold; font-size: large; color: #99D; padding-left:10px; padding-top:5px; padding-bottom:5px;}
+.basic {padding-left:25px; font-size: small}
+.console {padding-left:35px; font-size: x-small; font:courier, serif;}
+.error {color: #FF0000; padding-left: 25px; font-size: medium}
+.finish {margin-top: 1em; margin-left: 100px; margin-right: 100px; text-align: center; margin-bottom: 1em }
+
+FIELDSET
+{
+	border-style: solid;
+	border-width: 1px;
+	padding: 1em;
+	margin-bottom: 1em;
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.remoterepo.sru" version="1">
+	<requires>
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.fedsearch" />
+		<import plugin-id="com.tle.core.remoterepo.parser.mods" />
+		<import plugin-id="com.tle.common.licences" />
+		<import plugin-id="com.tle.common.remoterepo.sru" />
+		<import plugin-id="com.tle.core.remoterepo.srw" />
+		<import plugin-id="com.tle.web.endpoint.srw" /><!-- same endpoint class for SRW/U ...? -->
+		<import plugin-id="commons-httpclient:commons-httpclient" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="srucore">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules" />
+
+	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="sruLicenceName">
+		<parameter id="thirdPartyName" value="SRU" />
+		<parameter id="licenceName" value="Apache 2.0" />
+		<parameter id="licenceURLInternal" value="apache-2.0.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
+		<parameter id="licenceURLExternal" value="http://www.apache.org/licenses/LICENSE-2.0.html" />
+		<parameter id="thirdPartyHome" value="http://www.oclc.org/research/activities/srw/default.htm" /><!-- same href 
+			for SRW/U -->
+	</extension>
+
+</plugin>

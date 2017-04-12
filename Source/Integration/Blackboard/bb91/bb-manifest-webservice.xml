@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <webservice>
+    <name value="EQUELLA.WS"/>
+    <description value="EQUELLA web service for use with LMS connectors in EQUELLA" />
+    <permissions>
+      <permission type="attribute" name="com.tle.*" actions="get,set"/>
+      <permission type="attribute" name="com.dytech.*" actions="get,set"/>
+      <permission type="java.io.FilePermission" name="&lt;&lt;ALL FILES&gt;&gt;" actions="read,write,delete"/>
+       <permission type="persist" name="Content" actions="create,modify,delete"/>
+       <permission type="persist" name="GradableItem" actions="create,modify,delete" />
+	   <permission type="persist" name="BasicLTIPlacement" actions="create,modify,delete" />
+      <permission type="attribute" name="User.AuthInfo" actions="get"/>
+      <permission type="attribute" name="User.PersonalInfo" actions="get"/>
+      <permission type="java.lang.RuntimePermission" name="getClassLoader" />
+      <permission type="java.lang.RuntimePermission" name="setContextClassLoader" />
+    </permissions>
+  </webservice>
+</manifest>

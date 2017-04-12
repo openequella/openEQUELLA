@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+	<plugin>
+		<name value="EQUELLA Gradebook Fixer Plugin"/>
+		<handle value="tleLinkFix"/>
+		<description value="Removes all non-gradable content from the gradebook"/>
+		<version value="@VERSION@"/>
+
+		<vendor>
+			<id value="dych" />
+			<name value="Pearson" />
+			<url value="http://www.equella.com/" />
+			<description value="" />
+		</vendor>
+			
+		<http-actions>
+			<config value="admin/config.jsp"/>
+		</http-actions>
+			
+		<requires>
+			<bbversion value="9.1.0" />
+		</requires>
+			
+		<permissions>
+			<permission type="persist" name="Content" actions="create,modify,delete" />
+			<permission type="persist" name="GradableItem" actions="create,modify,delete" />
+			<permission type="persist" name="BasicLTIPlacement" actions="create,modify,delete" />
+			<permission type="persist" name="ContentHandler" actions="create,modify" />
+			<permission type="attribute" name="user.authinfo" actions="get" />
+			<permission type="attribute" name="user.personalinfo"
+				actions="get" />
+			<permission type="socket" name="*" actions="connect" />			
+			<permission type="runtime" name="db.connection.bb_bb60"
+				actions="" />
+			<permission type="java.io.FilePermission"
+				name="&amp;lt;&amp;lt;ALL FILES&amp;gt;&amp;gt;" actions="read, write" />
+			<permission type="basiclti" name="*"
+				actions="sendroles,sendname,sendemail" />
+			<!-- Blind SSL -->	
+			<permission type="java.lang.RuntimePermission" name="setFactory" actions="setFactory" />
+			<permission type="javax.net.ssl.SSLPermission" name="setHostnameVerifier"
+				actions="setHostnameVerifier" />
+			<!-- CXF -->
+			<permission type="java.lang.RuntimePermission" name="setContextClassLoader" />
+			<permission type="java.lang.reflect.ReflectPermission" name="suppressAccessChecks" />
+		</permissions>
+	</plugin>
+</manifest>

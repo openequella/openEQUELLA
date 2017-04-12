@@ -1,0 +1,66 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.ims" version="1">
+	<requires>
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.web.viewurl" />
+		<import plugin-id="com.tle.ims" />
+		<import plugin-id="com.tle.web.viewitem" />
+		<import plugin-id="com.tle.web.viewitem.summary" />
+		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.web.wizard" />
+		<import plugin-id="com.tle.web.viewitem.treeviewer" />
+		<import plugin-id="com.tle.core.schema" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="imsFileExporter">
+		<parameter-def id="id" multiplicity="one" type="string" />
+		<parameter-def id="class" multiplicity="one" type="string">
+			<doc>
+				<doc-text>Must implement IMSFileExporter</doc-text>
+			</doc>
+		</parameter-def>
+	</extension-point>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.web.sections.equella.guice.EquellaModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.wizard" point-id="packagetreebuilder" id="imspackagetreebuilder">
+		<parameter id="class" value="bean:com.tle.ims.imsimport.IMSTreeBuilder" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.wizard" point-id="metadatamapper" id="imsmetadatamapper">
+		<parameter id="class" value="bean:com.tle.ims.metadata.IMSMetadataMapper" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.viewitem.summary" point-id="itemExporter" id="imsExport">
+		<parameter id="id" value="imsExport" />
+		<parameter id="class" value="bean:com.tle.ims.export.IMSExporter" />
+		<parameter id="order" value="1000" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="postreadmigration" id="imsTreeMigrator">
+		<parameter id="id" value="com.tle.ims.migration.IMSNavigationCreation" />
+		<parameter id="bean" value="bean:com.tle.ims.migration.IMSNavigationCreation" />
+		<parameter id="forconverter" value="items" />
+	</extension>
+
+	<extension plugin-id="com.tle.ims" point-id="imsAttachmentExporter" id="imsResourceAttachmentExporter">
+		<parameter id="id" value="imsResourceAttachmentExporter" />
+		<parameter id="class" value="bean:com.tle.ims.export.ResourceAttachmentExporter" />
+	</extension>
+</plugin>

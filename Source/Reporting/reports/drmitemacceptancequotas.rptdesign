@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.22" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 2.6.1.v20100902 Build &lt;2.6.1.v20100915-1750></property>
+    <property name="units">in</property>
+    <property name="theme">equella.defaultTheme</property>
+    <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">120</property>
+    <list-property name="libraries">
+        <structure>
+            <property name="fileName">equella.rptlibrary</property>
+            <property name="namespace">equella</property>
+        </structure>
+    </list-property>
+    <data-sources>
+        <oda-data-source extensionID="com.tle.reporting.oda.datasource" name="EQUELLA" id="7"
+ extends="equella.EQUELLA"/>
+    </data-sources>
+    <data-sets>
+        <oda-data-set extensionID="com.tle.reporting.oda.dataset.jdbc" name="ItemMaxUsageRatio" id="9">
+            <property name="nullsOrdering">nulls lowest</property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">itemName</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">uuid</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">version</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">count</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">ratio</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">max_usage</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">EQUELLA</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">itemName</property>
+                    <property name="nativeName">itemName</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">uuid</property>
+                    <property name="nativeName">uuid</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">version</property>
+                    <property name="nativeName">version</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">count</property>
+                    <property name="nativeName">count</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">ratio</property>
+                    <property name="nativeName">ratio</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">max_usage</property>
+                    <property name="nativeName">max_usage</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[select ls.text as "itemName", i.uuid as "uuid", i.version as "version", sub."count", sub."count" / drm.muc as "ratio", drm.muc as "max_usage"
+from item i
+INNER JOIN drm_settings drm
+ON i.drm_settings_id = drm.id
+INNER JOIN language_string ls
+on i.name_id = ls.bundle_id
+INNER JOIN 
+( select drm.id as id, count(drm.id) as "count"
+FROM item i 
+INNER JOIN drm_settings drm
+ON i.drm_settings_id = drm.id
+INNER JOIN drm_acceptance da
+ON i.id = da.item_id
+WHERE drm.muc > 0 
+AND i.institution_id = CURRENT_INSTITUTION
+group by drm.id
+) sub on sub.id = drm.id
+order by "ratio" desc]]></xml-property>
+        </oda-data-set>
+    </data-sets>
+    <styles>
+        <style name="report" id="4">
+            <property name="fontFamily">sans-serif</property>
+            <property name="fontSize">10pt</property>
+        </style>
+        <style name="crosstab-cell" id="5">
+            <property name="borderBottomColor">#CCCCCC</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1pt</property>
+            <property name="borderLeftColor">#CCCCCC</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1pt</property>
+            <property name="borderRightColor">#CCCCCC</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1pt</property>
+            <property name="borderTopColor">#CCCCCC</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1pt</property>
+        </style>
+        <style name="crosstab" id="6">
+            <property name="borderBottomColor">#CCCCCC</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1pt</property>
+            <property name="borderLeftColor">#CCCCCC</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1pt</property>
+            <property name="borderRightColor">#CCCCCC</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1pt</property>
+            <property name="borderTopColor">#CCCCCC</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1pt</property>
+        </style>
+    </styles>
+    <page-setup>
+        <simple-master-page name="EQUELLA" id="8" extends="equella.EQUELLA">
+            <overridden-values>
+                <ref-entry baseId="96" name="Header" id="96"/>
+                <ref-entry baseId="97" id="97"/>
+                <ref-entry baseId="101" id="101"/>
+                <ref-entry baseId="98" id="98"/>
+                <ref-entry baseId="99" id="99"/>
+                <ref-entry baseId="7" name="Logo" id="102"/>
+                <ref-entry baseId="100" id="100"/>
+                <ref-entry baseId="102" name="TitleLabel" id="103">
+                    <property name="text">Top DRM quota usage</property>
+                </ref-entry>
+                <ref-entry baseId="24" name="NewTextData" id="24"/>
+            </overridden-values>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <table id="104">
+            <property name="width">7.9411764705882355in</property>
+            <property name="dataSet">ItemMaxUsageRatio</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">itemName</property>
+                    <text-property name="displayName">itemName</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["itemName"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">uuid</property>
+                    <text-property name="displayName">uuid</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["uuid"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">version</property>
+                    <text-property name="displayName">version</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["version"]</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="name">count</property>
+                    <text-property name="displayName">count</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["count"]</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="name">ratio</property>
+                    <text-property name="displayName">ratio</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["ratio"]</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="name">max_usage</property>
+                    <text-property name="displayName">max_usage</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["max_usage"]</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+            </list-property>
+            <column id="138">
+                <property name="width">4.623529411764705in</property>
+            </column>
+            <column id="141">
+                <property name="width">1.4470588235294117in</property>
+            </column>
+            <column id="142">
+                <property name="width">1.4823529411764707in</property>
+            </column>
+            <column id="143">
+                <property name="width">0.38823529411764707in</property>
+            </column>
+            <header>
+                <row id="105">
+                    <cell id="106">
+                        <label id="107">
+                            <text-property name="text">Item</text-property>
+                        </label>
+                    </cell>
+                    <cell id="112">
+                        <label id="113">
+                            <text-property name="text">Acceptances</text-property>
+                        </label>
+                    </cell>
+                    <cell id="114">
+                        <label id="117">
+                            <text-property name="text">Max. Allowed</text-property>
+                        </label>
+                    </cell>
+                    <cell id="116">
+                        <label id="115">
+                            <text-property name="text">%</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <detail>
+                <row id="118">
+                    <cell id="119">
+                        <data id="120">
+                            <property name="whiteSpace">nowrap</property>
+                            <property name="resultSetColumn">itemName</property>
+                        </data>
+                    </cell>
+                    <cell id="125">
+                        <data id="126">
+                            <property name="whiteSpace">nowrap</property>
+                            <property name="resultSetColumn">count</property>
+                        </data>
+                    </cell>
+                    <cell id="127">
+                        <data id="130">
+                            <property name="whiteSpace">nowrap</property>
+                            <property name="resultSetColumn">max_usage</property>
+                        </data>
+                    </cell>
+                    <cell id="129">
+                        <data id="128">
+                            <structure name="numberFormat">
+                                <property name="category">Percent</property>
+                                <property name="pattern">###0%{RoundingMode=HALF_UP}</property>
+                            </structure>
+                            <property name="whiteSpace">nowrap</property>
+                            <property name="resultSetColumn">ratio</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+            <footer>
+                <row id="131">
+                    <cell id="132"/>
+                    <cell id="135"/>
+                    <cell id="136"/>
+                    <cell id="137"/>
+                </row>
+            </footer>
+        </table>
+    </body>
+</report>

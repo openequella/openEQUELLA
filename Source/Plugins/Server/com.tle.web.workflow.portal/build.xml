@@ -1,0 +1,3 @@
+<project name="com.tle.web.workflow.portal" basedir="." default="compile">
+	<import file="../../build/plugins-common-build.xml" />
+</project>

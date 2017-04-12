@@ -1,0 +1,26 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin version="1" id="Blackboard Building Block 9 SP11+">
+	<requires>
+		<import plugin-id="blackboard:bb-platform" />
+		<import plugin-id="commons-codec:commons-codec" />
+		<import plugin-id="commons-httpclient:commons-httpclient" />
+		<import plugin-id="org.slf4j:slf4j-api" />
+		<import plugin-id="javax.servlet:servlet-api" />
+		<import plugin-id="jdom:jdom" />
+		<import plugin-id="log4j:log4j" />
+		<import plugin-id="com.fasterxml.jackson.core:jackson-databind" />
+		<import plugin-id="com.fasterxml.jackson.core:jackson-core" />
+		<import plugin-id="org.apache.cxf:cxf-bundle" />
+		<import plugin-id="org.apache.neethi:neethi" />
+		<import plugin-id="org.apache.ws.xmlschema:xmlschema-core" />
+		<import plugin-id="org.codehaus.woodstox:woodstox-core-asl" />
+		
+		<import plugin-id="tomcat:jsp-api" />
+		<import plugin-id="com.google.guava:guava" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="code">
+			<export prefix="*" />
+		</library>
+	</runtime>
+</plugin>

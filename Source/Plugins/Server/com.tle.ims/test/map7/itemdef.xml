@@ -1,0 +1,13 @@
+<com.tle.beans.entity.itemdef.MetadataMapping>
+  <imsMapping class="list">
+    <com.tle.beans.entity.itemdef.mapping.IMSMapping>
+      <ims>metadata/lom</ims>
+      <itemdef>/item/lom</itemdef>
+      <type>compound</type>
+      <repeat>false</repeat>
+      <replace>false</replace>
+    </com.tle.beans.entity.itemdef.mapping.IMSMapping>
+  </imsMapping>
+  <htmlMapping class="list"/>
+  <literalMapping class="list"/>
+</com.tle.beans.entity.itemdef.MetadataMapping>

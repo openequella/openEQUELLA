@@ -1,0 +1,29 @@
+.autocomplete-container {
+	height: 25px;
+	position: relative;
+}
+
+.autocomplete-container input {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	height: 16px;
+}
+
+html[dir="rtl"] .autocomplete-container input {
+	right: 33px;
+}
+
+.autocomplete-container .real {
+	background: url("../../images/trans.gif") repeat transparent;
+	z-index: 999;
+}
+
+.autocomplete-container .prompt {
+	color: #A4A4A4;
+	z-index: 888;
+}
+
+ul.ui-autocomplete {
+	font-size: 11px;
+}

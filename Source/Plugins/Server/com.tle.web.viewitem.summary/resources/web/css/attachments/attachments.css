@@ -1,0 +1,534 @@
+.attachments-browse.structured {
+	background: #fefefe;
+	border: 1px solid #8F8B7F;
+}
+
+.attachments-browse.structured li.attachmentrow,.attachments-browse.structured li.folder
+	{
+	position: relative;
+	border-top: 1px solid transparent;
+	border-bottom: 1px solid transparent;
+	padding: 8px 20px 8px 25px;
+	background-position: 5px 5px;
+	background-repeat: no-repeat;
+	background-image: url(../../images/attachments/page.png);
+}
+
+.attachments-browse.structured li.folder {
+	background-image: url(../../images/folder_small.png);
+}
+
+.itemresult-container .itemresult .attachments-browse.structured li.attachmentrow:hover {
+	cursor: default;
+}
+
+.attachments-browse.structured li.attachmentrow:hover {
+	background-color: #F7F7F7;
+	border-color: #8F8B7F;
+	cursor: pointer;
+}
+
+.attachments-browse.structured li:first-child {
+	border-top-color: transparent !important;
+}
+
+.attachments-browse.structured li:last-child {
+	border-bottom-color: transparent !important;
+}
+
+.attachments-browse.structured li.attachmentrow.active {
+	background-color: #EFF6FF;
+	border-color: #8F8B7F;
+	cursor: auto;
+}
+
+.attachments-browse.structured li.level0 {
+	padding-left: 30px;
+	background-position: 10px 5px;
+}
+
+.attachments-browse.structured li.level1 {
+	padding-left: 60px;
+	background-position: 40px 5px;
+}
+
+.attachments-browse.structured li.level2 {
+	padding-left: 90px;
+	background-position: 70px 5px;
+}
+
+.attachments-browse.structured li.level3 {
+	padding-left: 120px;
+	background-position: 100px 5px;
+}
+
+.attachments-browse.structured li.level4 {
+	padding-left: 150px;
+	background-position: 130px 5px;
+}
+
+.attachments-browse.structured li.level5 {
+	padding-left: 180px;
+	background-position: 160px 5px;
+}
+
+.attachments-browse.structured li.level6 {
+	padding-left: 210px;
+	background-position: 190px 5px;
+}
+
+.attachments-browse.structured li.level7 {
+	padding-left: 240px;
+	background-position: 220px 5px;
+}
+
+.attachments-browse.structured li.level8 {
+	padding-left: 270px;
+	background-position: 250px 5px;
+}
+
+.attachments-browse.structured li.level9 {
+	padding-left: 300px;
+	background-position: 280px 5px;
+}
+
+.attachments-browse.structured li.level10 {
+	padding-left: 330px;
+	background-position: 310px 5px;
+}
+
+.attachments-browse.structured li.attachmentrow.ios7 .droparrow {
+	display: block;
+}
+
+.attachments-browse.structured li.attachmentrow .droparrow {
+	display: none;
+	position: absolute;
+	right: 15px;
+	top: 5px;
+	height: 14px;
+	width: 14px;
+	background-image: url("../../images/attachments/droparrow.gif");
+	background-repeat: no-repeat;
+	text-indent: -9999px;
+}
+
+/* .selection .selectable .attachments-browse.structured li.attachmentrow.with-select .droparrow  */
+/* { */
+/* 	right: 35px; */
+/* } */
+
+.selection .selectable .attachments-browse.structured li {
+	display: table;
+}
+
+.selection .selectable .attachments-browse.structured li .link-div {
+	display: table-cell;
+	width: 100%;
+	padding-top: 8px;
+}	
+
+.selection .selectable .attachments-browse.structured li .button-div {
+	display: table-cell;
+	width: 1%;
+}
+
+.selection .selectable .attachments-browse.structured li .button-div .btn {
+	margin-right: 0;
+	margin-right: 0;
+	border-radius: 0 2px 2px 0;
+}
+
+
+.selection .selectable .attachments-browse.structured li.attachmentrow
+{
+	padding-top: 0;
+	padding-right: 0;
+	padding-bottom: 0;
+} 
+
+.selection .selectable .attachments-browse.structured li.folder {
+	display: block;
+}
+
+.attachments-browse.structured li.attachmentrow:hover .droparrow,
+.attachments-browse.structured li.attachmentrow.active .droparrow,
+.selection .selectable .attachments-browse.structured li.attachmentrow:hover .droparrow,
+.selection .selectable .attachments-browse.structured li.attachmentrow.active .droparrow  
+{
+	display: block;
+}
+
+.attachments-browse.structured li.attachmentrow.active .droparrow,
+.attachments-browse.thumbs li.attachmentrow.active .droparrow,
+.selection .selectable .attachments-browse.structured li.attachmentrow.active .droparrow,
+.selection .selectable .attachments-browse.thumbs li.attachmentrow.active .droparrow  
+{
+	background-position: 0 -14px;
+}
+
+.selection .selectable .attachments-browse.structured li.attachmentrow .droparrow
+{
+	right: 35px;
+}
+
+.attachments-browse.structured li.attachmentrow .detail {
+	display: none;
+	position: absolute;
+	right: 0;
+	width: 221px;
+	padding: 17px;
+	padding-top: 4px;
+	background-color: #EFF6FF;
+	border: 1px solid #8F8B7F;
+	border-top: 0;
+	z-index: 1000;
+}
+
+.attachments-browse.structured li.attachmentrow .detail .attachments-thumb
+	{
+	width: 221px;
+	height: 66px;
+	text-align: center;
+	padding: 0px;
+	margin: 0px auto;
+}
+
+.attachments-browse.structured li.attachmentrow .detail .attachments-thumb img
+	{
+	height: 66px;
+}
+
+.attachments-browse.structured li.attachmentrow .detail .attachments-meta
+	{
+	width: 221px;
+	margin: 7px 0;
+	font-size: 10px;
+	line-height: 1.5em;
+	margin: 7px auto;
+	overflow-x: hidden;
+}
+
+.attachments-browse.structured li.attachmentrow .detail .attachments-actions li
+	{
+	font-size: 12px;
+	padding: 3px 0;
+}
+
+.preview-tag {
+	margin-left: 0.5em;
+}
+
+.rating-stars {
+	width: 52px;
+	height: 10px;
+	background-image: url(../../images/attachments/stars-small.png);
+	background-repeat: no-repeat;
+	display: inline-block;
+	margin: 0 5px 0 0;
+}
+
+.rating-stars.zero {
+	background-position: 0 0;
+}
+
+.rating-stars.one {
+	background-position: 0 -10px;
+}
+
+.rating-stars.two {
+	background-position: 0 -20px;
+}
+
+.rating-stars.three {
+	background-position: 0 -30px;
+}
+
+.rating-stars.four {
+	background-position: 0 -40px;
+}
+
+.rating-stars.five {
+	background-position: 0 -50px;
+}
+
+/** ####################### THUMBS ############################ */
+.attachments-browse.thumbs {
+	background: none repeat scroll 0 0 #FEFEFE;
+	border: 1px solid #8F8B7F;
+	list-style: none outside none;
+}
+
+.attachments-browse.thumbs li.attachmentrow {
+	margin-bottom: 0;
+	padding: 5px 0px;
+	position: relative;
+	width: 33%; /* should use bootstrap scaffolding soon... */
+	/* three thumbnails in a row */
+	display: inline-block;
+}
+
+.attachments-browse.thumbs li.attachmentrow:hover {
+	background-color: #F7F7F7;
+	border-color: #8F8B7F;
+	cursor: pointer;
+}
+
+.attachments-browse.thumbs li.attachmentrow:first-child {
+	border-top-color: transparent !important;
+}
+
+.attachments-browse.thumbs li.attachmentrow:last-child {
+	border-bottom-color: transparent !important;
+}
+
+.attachments-browse.thumbs li.attachmentrow.active {
+	background-color: #EFF6FF;
+	border-color: #8F8B7F;
+	cursor: auto;
+}
+
+.attachments-browse.thumbs li.attachmentrow.ios7 .droparrow {
+	display: block;
+}
+
+.attachments-browse.thumbs li.attachmentrow .droparrow {
+	display: none;
+	position: absolute;
+	right: 5px;
+	top: 5px;
+	height: 14px;
+	width: 14px;
+	background-image: url("../../images/attachments/droparrow.gif");
+	background-repeat: no-repeat;
+	text-indent: -9999px;
+}
+
+.attachments-browse.thumbs li.attachmentrow:hover .droparrow,
+.attachments-browse.thumbs li.attachmentrow.active .droparrow
+	{
+	display: block;
+}
+
+.attachments-browse.thumbs li.attachmentrow.active .droparrow 
+{
+	/*background-position: 0 -14px;*/
+	background-color: #EFF6FF;
+	border-top: 1px solid #8F8B7F;
+	border-left: 1px solid #8F8B7F;
+	border-right: 1px solid #8F8B7F;
+	z-index: 10000;
+	border-radius: 3px 3px 0px 0px;
+}
+
+.attachments-browse.thumbs li.attachmentrow .detail {
+	display: none;
+	background-color: #EFF6FF;
+	-moz-border-bottom-colors: none;
+	-moz-border-left-colors: none;
+	-moz-border-right-colors: none;
+	-moz-border-top-colors: none;
+	background: none repeat scroll 0 0 #EFF6FF;
+	border-color: #8F8B7F;
+	border-image: none;
+	padding: 17px;
+	text-align: left;
+	border-style: solid;
+	border-width: 1px;
+	position: absolute;
+	right: 5px;
+	top: 19px;
+	z-index: 1;
+	font-size: 10px;
+	line-height: 1.5em;
+	width: 221px;
+	/* experimental */
+	border-radius: 3px 0px 3px 3px;
+}
+
+.thumbnail {
+	text-align: center;
+	border-radius: 0;
+	border: none;
+	box-shadow: none;
+}
+
+.thumbnail a img {
+	margin: auto;
+	border: 1px solid #8F8B7E;
+	height: 66px;
+	max-width: 88px;
+}
+
+.thumbnail a img.noBorder {
+	border: none;
+}
+
+.thumbnail .caption {
+	text-align: center;
+	padding: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.thumbnail .defaultviewer {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.attachments-actions li {
+	font-size: 12px;
+}
+
+.attcontainer {
+	clear: both;
+	padding: 0 0 10px;
+}
+
+button.package-select
+{
+	float:right;
+	margin-right: 1px;
+}
+
+div.attachments .button-expandable:hover
+{
+	width:125px;
+}
+ 
+h3.taller 
+{
+	margin-bottom: 15px;
+}
+
+h3.taller .button-expandable:hover 
+{
+	width:160px;
+}
+
+.btn-plus 
+{
+    padding-bottom: 4px !important;
+    padding-top: 3px !important;
+}
+
+.over-image
+{
+	position: absolute;
+	right: 40px;
+    top: 9px;
+}
+
+.overlay 
+{
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 150;
+	background: rgba(0, 0, 0, 0.6);
+}
+
+a.reorder-structured.movedown {
+	position: absolute;
+	right: 54px;
+	margin-top: -14px;
+}
+
+a.reorder-structured.moveup {
+	position: absolute;
+	right: 32px;
+	margin-top: -14px;
+}
+
+.reorder-button {
+	cursor: pointer;
+}
+
+a.reorder-tiled {
+	position: absolute;
+	bottom: 58px;
+	-webkit-transform: rotate(90deg);
+	-moz-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	-o-transform: rotate(90deg);
+	transform: rotate(90deg);
+}
+
+a.tiled-left {
+	left: 25px;
+}
+
+a.tiled-right {
+	right: 25px;
+}
+
+.reorder-button:focus i, .reorder-button:hover i 
+{
+	background-color: black;
+	border-bottom-left-radius: 8px;
+	border-bottom-right-radius: 8px;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+	background-image:
+		url("../../../com.tle.web.sections.equella/bootstrap/img/glyphicons-halflings-white.png")
+}
+
+.modal-attachments
+{
+	position: relative;
+	z-index: 175;
+}
+
+a.modal-control {
+	position: relative;
+	float: right;
+	font-size: 14px;
+	color: white;
+	margin-top: -11px;
+	padding: 6px;
+	border-bottom-left-radius: 8px;
+	border-bottom-right-radius: 8px;
+	z-index: 175;
+}
+
+a.modal-control:hover {
+	cursor: pointer;
+	color: white;
+	text-decoration: none;
+}
+
+a.modal-control:focus {
+	color: black;
+	text-decoration: underline;
+}
+
+a.modal-control.modal-save {
+	position: absolute;
+	right: 273px;
+	background-color: #51a351;
+}
+
+a.modal-control.modal-cancel {
+	background-color: #AAA
+}
+
+.extras a {
+	margin-left: 6px;
+}
+
+.modal-hide {
+	display: none !important;
+}
+
+.attachment-placeholder
+{
+	background-color: #E0E0E0;
+}
+
+div.attachments.row-fluid {
+	padding-top: 4px;
+} 

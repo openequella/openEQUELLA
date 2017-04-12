@@ -1,0 +1,291 @@
+.settingContainer
+{
+	width: 515px;
+}
+
+.settingContainer.wide
+{
+	width: 660px;
+}
+.settingContainer.skinny
+{
+	width: 447px;
+}
+
+.settingRow:after
+{
+	content: ".";
+	display: block;
+	height: 0;
+	font-size: 0;
+	clear: both;
+	visibility: hidden;
+}
+
+.settingRow
+{
+	padding: 3px 0px;
+	clear: both;
+	vertical-align: middle;
+}
+
+.settingContainer>.settingRow:first-child
+{
+	padding-top: 20px;
+}
+
+.settingField .ctrlinvalidmessage
+{
+	color: red;
+	text-align: center;
+	margin: 0px !important;
+	display: block;
+	padding: 3px;
+}
+
+.settingField .ctrlinvalid
+{
+	padding: 5px;
+	left: -5px;
+	top: -5px;
+	background-color: #FFDDDD;
+	position: relative;
+	padding-bottom: 0px;
+}
+
+.settingField .ctrlinvalid .ctrlinvalidmessage:first-child
+{
+	padding-bottom: 7px;
+}
+
+.settingRow .settingLabel
+{
+	float: left;
+	width: 120px;
+	text-align: right;
+	padding-top: 6px;
+	line-height: 20px;
+}
+
+.wide .settingRow .settingLabel
+{
+	width: 160px;
+}
+
+.settingRow .settingField
+{
+	float: left;
+	padding-left: 10px;
+	width: 385px;
+	line-height: 20px;
+	padding-top: 6px;
+}
+
+.settingRow .settingField .control > input[type="checkbox"],
+.settingRow .settingField .control > input[type="radio"]
+{
+	min-height: 20px;
+}
+
+.wide .settingRow .settingField
+{
+	width: 480px;
+}
+.skinny .settingRow .settingField
+{
+	width: 317px;
+}
+
+.settingField input[type="text"],
+.settingField input[type="password"],
+.settingField TEXTAREA,
+.settingField SELECT,
+.settingField .multieditbox .singletranslation input[type="text"]
+{
+	width: 360px;
+}
+.wide .settingField input[type="text"],
+.wide .settingField input[type="password"],
+.wide .settingField TEXTAREA,
+.wide .settingField SELECT,
+.wide .settingField .multieditbox .singletranslation input[type="text"]
+{
+	width: 455px;
+}
+
+.wide .settingField .customfile {
+	width: 467px;
+}
+
+.skinny .settingField input[type="text"],
+.skinny .settingField input[type="password"],
+.skinny .settingField TEXTAREA,
+.skinny .settingField SELECT,
+.skinny .settingField .customfile,
+.skinny .settingField .multieditbox .singletranslation input[type="text"]
+{
+	width: 294px;
+}
+
+.skinny .settingField .customfile {
+	width: 306px;
+}
+
+.settingField input[type="text"].hasDatepicker
+{
+	width: 125px;
+}
+.wide .settingField input[type="text"].hasDatepicker
+{
+	width: 220px;
+}
+
+.settingField img.ui-datepicker-trigger
+{
+	padding-left: 5px;
+}
+
+.settingField input[type="file"]
+{
+	background: white;
+}
+
+.settingField input
+{
+	vertical-align: middle;
+}
+
+.settingField img
+{
+	vertical-align: middle;
+}
+
+.settingField .newListSelected
+{
+	line-height: 1;
+}
+
+.settingField .multieditbox
+{
+	margin: 0;
+}
+
+.settingField .multieditbox .universaltranslation input[type="text"],
+.settingField .multieditbox .universaltranslation TEXTAREA
+{
+	width: 200px;
+}
+
+.wide .settingField .multieditbox .universaltranslation input[type="text"],
+.wide .settingField .multieditbox .universaltranslation TEXTAREA
+{
+	width: 265px;
+}
+
+.settingField .multieditbox .universaltranslation SELECT
+{
+	width: 140px;
+}
+
+.wide .settingField .multieditbox .universaltranslation SELECT
+{
+	width: 160px;
+}
+
+.settingField .multieditbox .alltranslations input[type="text"],
+.settingField .multieditbox .alltranslations textarea
+{
+	width: 220px !important;
+}
+
+.wide .settingField .multieditbox .alltranslations input[type="text"]
+{
+	width: 315px !important;
+}
+
+
+.settingField .multieditbox .alltranslations
+{
+	line-height: 1;
+}
+
+.settingHelp
+{
+	color: grey;
+	line-height: normal;
+	padding-top: 3px;
+	text-align: left;
+}
+
+.mandatory
+{
+	color: red;
+}
+
+.mandatoryHelp
+{
+	text-align: right;
+	padding-top: 10px;
+	margin-top: 2px;
+	clear: both;
+}
+
+.settingRow .ctrlinvalid
+{
+	padding: 5px;
+	left: -5px;
+	top: -5px;
+	background-color: #FFDDDD;
+	position: relative;
+	padding-bottom: 0px;
+}
+
+.settingRow.ctrlinvaliddiv
+{
+	padding-top: 10px;
+}
+
+.settingRow.ctrlinvaliddiv+.settingRow.ctrlinvaliddiv
+{
+	padding-top: 3px;
+}
+
+.settingRow .settingField .shuffle-box-inner select
+{
+	width: 145px;
+}
+
+.settingRow .settingField .shuffle-box-inner label
+{
+	width: 143px;
+}
+
+.wide .settingRow .settingField .shuffle-box-inner select {
+	width: 193px;
+}
+
+.wide .settingRow .settingField .shuffle-box-inner label {
+	width: 190px;
+}
+
+.wide .settingRow .settingField .shuffle-box {
+	margin: 0px;
+}
+
+.settingRow .settingField div.input.checkbox,
+.settingRow .settingField div.input.radio
+{
+	line-height: 11px;
+}
+
+.settingRow .settingField div.input.radio UL.checklist LI
+{
+	line-height: normal;
+	padding-bottom: 4px;
+}
+
+.settingRow .settingField div.input.checkbox UL.checklist label,
+.settingRow .settingField div.input.radio UL.checklist label
+{
+	padding-top: 0px;
+}

@@ -1,0 +1,28 @@
+.cartbox DIV.items
+{	
+	margin-bottom: 1em;
+}
+
+.cartbox DIV.totals
+{
+	text-align: right;
+}
+
+.cartbox DIV.carttotal
+{
+	margin-bottom: 0.5em;
+}
+
+.cartbox DIV.total
+{
+	/*margin-bottom: 1em;*/
+	
+	font-weight: bold;
+	font-size: 1.2em;
+}
+
+.cartbutton
+{
+	margin-top: 1em;
+	width: 100%;
+}

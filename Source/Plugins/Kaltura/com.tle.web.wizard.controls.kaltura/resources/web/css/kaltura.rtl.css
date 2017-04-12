@@ -1,0 +1,46 @@
+@import url("kaltura.css");
+
+.modal-search-result {
+	padding: 10px 40px 10px 10px;
+	float: right;
+}
+
+.modal-search-result input {
+	left: auto;
+	right: 8px;
+}
+
+.modal-search-result.kaltura img {
+	margin: 0 0 10px 20px;
+	float: right;
+}
+
+}
+p.info {
+	padding-right: 2px;
+	padding-left: 0;
+}
+
+#kaltura-query div.input label {
+	left: auto;
+	right: 0;
+}
+
+#kaltura-query div.input {
+	margin: 0 0 5px 3px;
+	padding: 0 50px 0 0;
+}
+
+.upload-list div {
+	padding: 12px 32px 5px 10px;
+}
+
+.upload-list input,.choice-list input {
+	left: auto;
+	right: 10px;
+}
+
+img#kaltura-logo {
+	right: auto;
+	left: 35px;
+}

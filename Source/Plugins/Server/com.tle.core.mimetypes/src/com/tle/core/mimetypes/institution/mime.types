@@ -1,0 +1,158 @@
+# Default Mime-Types
+
+application/illustrator			ai
+application/java-archive		jar
+application/mac-binhex40		hqx
+application/mac-compactpro		cpt
+application/msword				doc
+application/octet-stream		bin dms lha lzh exe class a
+application/oda					oda
+application/pdf					pdf
+application/photoshop			psd
+application/postscript			eps ps
+application/powerpoint			ppt pps
+application/rtf					rtf
+application/vnd.ms-excel    	xls
+application/vnd.ms-excel.sheet.binary.macroEnabled.12						xlsb
+application/vnd.ms-excel.sheet.macroEnabled.12								xlsm
+application/vnd.ms-powerpoint.presentation.macroEnabled.12					pptm
+application/vnd.ms-powerpoint.slideshow.macroEnabled.12						ppsm
+application/vnd.ms-word.document.macroEnabled.12							docm
+application/vnd.ms-word.template.macroEnabled.12							dotm
+application/vnd.ms-xpsdocument												xps
+application/vnd.openxmlformats-officedocument.presentationml.presentation	pptx
+application/vnd.openxmlformats-officedocument.presentationml.slideshow		ppsx
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet			xlsx
+application/vnd.openxmlformats-officedocument.wordprocessingml.document		docx
+application/vnd.openxmlformats-officedocument.wordprocessingml.template		dotx
+application/vnd.truetype		ttf
+application/vnd.wap.wmlc        wmlc
+application/vnd.wap.wmlscriptc  wmlsc
+application/x-autocad				dxf
+application/x-bcpio					bcpio
+application/x-bzip					bz2
+application/x-bzip-compressed-tar	tbz
+application/x-cdlink				vcd
+application/x-compress				Z
+application/x-cpio					cpio
+application/x-csh					csh
+application/x-director				dcr dir dxr
+application/x-dvi					dvi
+application/x-gtar					gtar
+application/x-gzip					gz
+application/x-hdf					hdf
+application/x-iwork-pages-sffpages	pages
+application/x-java-jnlp-file		jnlp
+application/x-koan					skp skd skt skm
+application/x-latex					latex
+application/x-mif					mif
+application/x-ms-wmd				wmd
+application/x-ms-wmz				wmz
+application/x-mspublisher   		pub
+application/x-netcdf				nc cdf
+application/x-sh					sh
+application/x-shar					shar
+application/x-shockwave-flash	    fla swf
+application/x-stuffit				sit
+application/x-sv4cpio				sv4cpio
+application/x-sv4crc				sv4crc
+application/x-tar					tar
+application/x-tcl					tcl
+application/x-tex					tex
+application/x-texinfo				texinfo texi
+application/x-troff					t tr roff
+application/x-troff-man				man
+application/x-troff-me				me
+application/x-troff-ms				ms
+application/x-ustar					ustar
+application/x-wais-source			src
+application/zip						zip
+
+audio/basic						au snd
+audio/mp4						m4a
+audio/mpeg						mpga mp2
+audio/x-aiff					aif aiff aifc
+audio/x-gsm         	    	gsm
+audio/x-mp3			            mp3
+audio/x-ms-wax					wax
+audio/x-ms-wma					wma
+audio/x-pn-realaudio			ram rm
+audio/x-pn-realaudio-plugin		rpm
+audio/x-realaudio				ra
+audio/x-wav						wav
+chemical/x-pdb					pdb xyz
+
+image/bmp						bmp
+image/gif			            gif
+image/ief						ief
+image/jpeg			            jpeg jpg jpe jfif jif
+image/png						png
+image/svg+xml					svg
+image/tiff						tiff tif
+image/vnd.wap.wbmp      	    wbmp
+image/x-cmu-raster				ras
+image/x-icon					ico
+image/x-portable-anymap			pnm
+image/x-portable-bitmap			pbm
+image/x-portable-graymap		pgm
+image/x-portable-pixmap			ppm
+image/x-rgb						rgb
+image/x-xbitmap					xbm
+image/x-xpixmap					xpm
+image/x-xwindowdump				xwd
+image/x-canon-cr2				cr2
+image/x-kodak-dcr				dcr
+image/x-olympus-orf				orf
+image/x-canon-crw				crw
+image/x-minolta-mrw				mrw
+image/x-pef						pef
+image/x-sony-srf				srf
+image/x-nikon-nef				nef
+image/x-adobe-dng				dng
+
+text/css						css
+text/dtd						dtd
+text/html						html htm shtml
+text/javascript					js
+text/plain						txt
+text/richtext					rtx
+text/tab-separated-values		tsv
+text/vbscript					vbs
+text/vnd.sun.j2me.app-descriptor jad
+text/vnd.wap.wml            	wml
+text/vnd.wap.wmlscript      	wmls
+text/x-setext					etx
+text/x-sgml						sgml sgm
+text/xml						xml ent cat sty
+text/xsl						xsl
+
+video/mp4						mp4 m4v
+video/mpeg						mpeg mpg mpe
+video/quicktime					qt mov
+video/x-flv						flv
+video/x-ms-asf					asf asx
+video/x-ms-wm					wm
+video/x-ms-wmv					wmv
+video/x-ms-wmx					wmx
+video/x-ms-wvx					wvx
+video/x-msvideo					avi
+video/x-sgi-movie				movie
+
+windows/metafile				wmf emf
+
+x-conference/x-cooltalk			ice
+x-world/x-vrml					wrl vrml
+
+#Equella types
+equella/link
+equella/item
+equella/attachment-itunesu
+equella/attachment-youtube
+equella/attachment-googlebook
+equella/attachment-flickr
+equella/attachment-kaltura
+equella/attachment-echo
+equella/ims-package
+equella/scorm-package
+equella/qtitest
+equella/attachment-lti

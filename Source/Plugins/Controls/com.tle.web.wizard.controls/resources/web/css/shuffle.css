@@ -1,0 +1,8 @@
+
+.shuffle.disabled .shuffle-remove {
+	cursor: default;
+}
+
+.shuffle table.shuffle a {
+	cursor: pointer;
+}

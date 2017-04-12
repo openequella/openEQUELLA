@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This is a Reload version 1.3 Metadata document-->
+<!--Spawned from the Reload Metadata Generator - http://www.reload.ac.uk-->
+<lom xmlns="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd">
+  <general>
+    <title>
+      <langstring xml:lang="en">Where is the Party at? - Alcohol</langstring>
+    </title>
+    <catalogentry>
+      <catalog>Australian Flexible Learning Toolboxes</catalog>
+      <entry>
+        <langstring xml:lang="en">519a01</langstring>
+      </entry>
+    </catalogentry>
+    <language>en-AU</language>
+    <description>
+      <langstring xml:lang="en">Discover useful information about alcohol while working through language, literacy and numeracy activities and assessments that cover Certificate of General Education for Adults – CGEA – Level 2 in reading and writing for self expression, reading for knowledge, reading and writing for practical purposes. The numeracy activities cover maths skills involving percentage, alcohol concentrations, metric volumes and problem solving. You can use this information to work out how the type and amount of alcohol we drink relates to the number of standard drinks and the likely effects on the body. Warm-up quiz that involves reading and evaluating current knowledge about alcohol Reading personal text involving multiple options, decision making and exploring consequences Interpret and extrapolate facts from an information brochure. Interpret and extrapolate facts from an information sheet, integrate a variety of facts into a written response. Analyse a personal account, recognise structural features of writing, recognize topic and supporting sentences in a story. Write a personal account about bingeing incorporating features such as appropriate tone, spelling, punctuation and sentence structure. Identify the main features of good instructional writing including title, introduction, bullets and numbering. Incorporate the structure and language features discussed in Party Smart to write a set of instructions. Reading facts evaluating current knowledge about alcohol and BAC level utilize the facts to solve problem re BAC. Use metrics and percentages to find the number of standard drinks. Use percentages and metrics. Convert various drinks of differing alcoholic strengths and amounts into equivalent standard drinks and thus get a measure of BAC level.</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">alcohol</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">literacy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">numeracy</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">assessments</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">CGEA</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">Reading</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">Writing</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">Self expression</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">Knowledge</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">Practical purposes</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">Structure of language</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">Percentages</langstring>
+    </keyword>
+    <keyword>
+      <langstring xml:lang="en">metric</langstring>
+    </keyword>
+    <aggregationlevel>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">4</langstring>
+      </value>
+    </aggregationlevel>
+  </general>
+  <lifecycle>
+    <version>
+      <langstring xml:lang="en">v1.0</langstring>
+    </version>
+    <status>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Final</langstring>
+      </value>
+    </status>
+    <contribute>
+      <role>
+        <source>
+          <langstring xml:lang="x-none">LOMv1.0</langstring>
+        </source>
+        <value>
+          <langstring xml:lang="x-none">Content Provider</langstring>
+        </value>
+      </role>
+      <centity>
+        <vcard>begin:vcard orgname: Swinburne University of Technology TAFE Division end:vcard</vcard>
+      </centity>
+      <date>
+        <datetime>2004-04-22</datetime>
+      </date>
+    </contribute>
+  </lifecycle>
+  <metametadata>
+    <metadatascheme>LOMv1.0</metadatascheme>
+    <metadatascheme>VETADATAv0.1</metadatascheme>
+  </metametadata>
+  <technical>
+    <format>text/html</format>
+    <format>image/jpeg</format>
+    <format>image/gif</format>
+    <format>application/x-shockwave-flash</format>
+    <location type="URI">default.htm</location>
+  </technical>
+  <educational>
+    <context>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Vocational Training</langstring>
+      </value>
+    </context>
+  </educational>
+  <rights>
+    <cost>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">no</langstring>
+      </value>
+    </cost>
+    <copyrightandotherrestrictions>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">yes</langstring>
+      </value>
+    </copyrightandotherrestrictions>
+    <description>
+      <langstring xml:lang="en">Copyright is owned by the Australian National Training Authority (ANTA). This material may be freely used by Australian training organisations for educational purposes. On selling of the material in any form requires agreement from ANTA.</langstring>
+    </description>
+  </rights>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Discipline</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">MyFuture Industry http://www.myfuture.edu.au/services/default.asp?FunctionID=5106&amp;Action=List&amp;Letter=*</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Literacy</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Literacy and Numeracy</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Literacy</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Level</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">AQF http://www.aqf.edu.au/thirteen.htm</langstring>
+      </source>
+      <taxon>
+        <id />
+        <entry>
+          <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">Certificate of General Education for Adults (CGEA) Level 2</langstring>
+    </keyword>
+  </classification>
+  <classification>
+    <purpose>
+      <source>
+        <langstring xml:lang="x-none">LOMv1.0</langstring>
+      </source>
+      <value>
+        <langstring xml:lang="x-none">Educational Objective</langstring>
+      </value>
+    </purpose>
+    <taxonpath>
+      <source>
+        <langstring xml:lang="en">NTIS http://www.ntis.gov.au</langstring>
+      </source>
+      <taxon>
+        <id>RUHHH208A</id>
+        <entry>
+          <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+        </entry>
+      </taxon>
+    </taxonpath>
+    <description>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </description>
+    <keyword>
+      <langstring xml:lang="en">To develop reading, writing, numeracy and general skills</langstring>
+    </keyword>
+  </classification>
+</lom>
+

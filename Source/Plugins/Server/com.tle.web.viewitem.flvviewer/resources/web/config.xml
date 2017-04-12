@@ -1,0 +1,15 @@
+title=FLV Viewer
+playercolor=808094
+bgcolor1=9293a9
+bgcolor2=808094
+buttoncolor=dddddd
+buttonovercolor=f9bf37
+slidercolor1=dddddd
+slidercolor2=cccccc
+sliderovercolor=f9bf37
+loadingcolor=ffff00
+showstop=1
+showvolume=1
+showtime=1
+showfullscreen=1
+autoplay=1

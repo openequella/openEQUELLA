@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Equella Themes" basedir=".">
+	
+	<patternset id="patternset.exclude.designfiles">
+		<exclude name="**/*.ai" />
+	</patternset>
+
+	<macrodef name="package-theme">
+		<attribute name="dir" />
+		<sequential>
+			<zip destfile="@{dir}.zip">
+				<fileset dir="@{dir}">
+					<patternset refid="patternset.exclude.designfiles" />
+				</fileset>
+			</zip>
+		</sequential>
+	</macrodef>
+
+	<target name="clean">
+		<delete>
+			<fileset dir="." includes="*.zip" />
+		</delete>
+	</target>
+
+	<target name="product">
+		<package-theme dir="red" />
+		<package-theme dir="grape" />
+	</target>
+</project>

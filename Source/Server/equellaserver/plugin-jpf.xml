@@ -1,0 +1,15 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin version="1" id="EQUELLA Server">
+	<requires>
+		<import plugin-id="jpf:jpf" />
+		<import plugin-id="log4j:log4j" />
+		<import plugin-id="commons-logging:commons-logging" />
+		<import plugin-id="commons-daemon:commons-daemon" />
+		<import plugin-id="org.slf4j:slf4j-api" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="code">
+			<export prefix="*" />
+		</library>
+	</runtime>
+</plugin>

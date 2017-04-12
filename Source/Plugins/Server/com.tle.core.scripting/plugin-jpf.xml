@@ -1,0 +1,41 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.scripting" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.scripting" exported="true" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.common.beans" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.common.usermanagement" />
+		<import plugin-id="org.mozilla:rhino" />
+		<import plugin-id="com.tle.core.guice" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="scriptObjects">
+		<parameter-def id="id" multiplicity="one" />
+		<parameter-def id="class" multiplicity="one">
+			<doc caption="Must implement ScriptObjectContributor" />
+		</parameter-def>
+	</extension-point>
+	
+	<extension-point id="userScriptObjects">
+		<parameter-def id="id" multiplicity="one" />
+		<parameter-def id="class" multiplicity="one">
+			<doc caption="Must implement UserScriptObjectContributor" />
+		</parameter-def>
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules" />
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="file" value="lang/i18n.properties" />
+		<parameter id="group" value="resource-centre" />
+	</extension>
+</plugin>

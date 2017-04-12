@@ -1,0 +1,16 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.core.equella" version="1">
+	<requires>
+		<import plugin-id="com.tle.platform.common" />
+		<import plugin-id="com.tle.platform.equella" />
+		<import plugin-id="log4j:log4j" exported="true" />
+		<import plugin-id="javax.servlet:servlet-api" exported="true" />
+		<import plugin-id="com.tle.core.application" />
+		<import plugin-id="com.tle.core.guice" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+</plugin>

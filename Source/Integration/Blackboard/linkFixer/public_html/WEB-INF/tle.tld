@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="bbUI.xsl"?>
+<!DOCTYPE taglib
+PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN"
+"http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
+<taglib>
+	<tlibversion>1.0</tlibversion>
+
+	<jspversion>1.1</jspversion>
+
+	<shortname>The Learning Edge Data Tag Library</shortname>
+
+	<uri>/tle</uri>
+
+	<info>
+		The Blackboard Data tag library encapsulates interaction with
+		the Blackboard data and logic layer to allow separation of the
+		UI elements (bbUI) and other page logic.
+	</info>
+
+	<tag>
+		<name>context</name>
+
+		<tagclass>com.dytech.edge.blackboard.net.ContextTag</tagclass>
+
+		<bodycontent>JSP</bodycontent>
+	</tag>
+</taglib>
+

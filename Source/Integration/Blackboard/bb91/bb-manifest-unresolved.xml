@@ -1,0 +1,128 @@
+<manifest xmlns="http://www.blackboard.com/bb-manifest-plugin" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.blackboard.com/bb-manifest-plugin  bb-manifest-plugin.xsd">
+	<plugin>
+		<name value="EQUELLA Plugin" />
+		<handle value="tle" />
+		<description value="Integration with Blackboard 9.1" />
+		<version value="@VERSION@" />
+
+		<vendor>
+			<id value="dych" />
+			<name value="Pearson" />
+			<url value="http://www.equella.com/" />
+			<description value="Portal to the EQUELLA LCMS for Blackboard 9.1" />
+		</vendor>
+
+		<requires>
+			<bbversion value="9.1.0" />
+		</requires>
+		<!-- Reinstate when BB fix this:
+		 https://behind.blackboard.com/s/sysadminas/support/casedetails.aspx?caseid=872696 
+		<webservice>
+			<filename value="webservice.jar" />
+		</webservice>
+	 	-->
+		<http-actions>
+			<config value="admin/config.jsp" />
+		</http-actions>
+
+		<module-defs>
+			<module-type ext-ref="tle-dych-module" title="EQUELLA"
+				uicreatable="true">
+				<jsp-dir>portal</jsp-dir>
+				<jsp>
+					<view>view.jsp</view>
+				</jsp>
+			</module-type>
+			<module type="tle-dych-module" useraddable="true" isdeletable="true"
+				isdetachable="true" title="EQUELLA">
+				<ExtraInfo />
+				<description>A portal to the EQUELLA Resource Centre</description>
+			</module>
+		</module-defs>
+
+		<!-- Custom content types defined by this extension -->
+		<content-handlers>
+			<content-handler>
+				<name value="EQUELLA Object" />
+				<handle value="resource/tle-resource" />
+				<http-actions>
+					<create value="contribute/create.jsp?action=structured"/>
+					<modify value="contribute/modify.jsp" />
+					<remove value="contribute/remove.jsp" />
+					<view value="ViewContent?course_id=@X@course.pk_string@X@&amp;content_id=@X@content.pk_string@X@" />
+				</http-actions>
+				<icons>
+					<listitem value="/images/tle.gif" />
+					<toolbar value="/images/tle.gif" />
+				</icons>
+			</content-handler>
+		</content-handlers>
+
+		<application-defs>
+			<application handle="course-tool-link" type="course"
+				use-ssl="false" name="EQUELLA" can-allow-guest="true" small-icon=""
+				large-icon="">
+				<description>Equella Building Block</description>
+				<links>
+					<link>
+						<type value="course_tool" />
+						<name value="EQUELLA Search" />
+						<url value="Redirect?forward=access%2fsearching.do" />
+						<description value="EQUELLA Content Repository" />
+						<icons>
+							<listitem value="/images/tle.gif" />
+						</icons>
+					</link>
+					<link>
+						<type value="course_tool" />
+						<name value="EQUELLA Contribute" />
+						<url value="Redirect?forward=access%2fcontribute.do" />
+						<description value="EQUELLA Content Repository" />
+						<icons>
+							<listitem value="/images/tle.gif" />
+						</icons>
+					</link>
+					<link>
+						<type value="course_tool" />
+						<name value="EQUELLA My Resources" />
+						<url
+							value="Redirect?forward=access%2fmyresources.do" />
+						<description value="EQUELLA Content Repository" />
+						<icons>
+							<listitem value="/images/tle.gif" />
+						</icons>
+					</link>
+				</links>
+			</application>
+		</application-defs>
+
+		<!-- code permissions required for proper operation -->
+		<permissions>
+			<permission type="persist" name="Content" actions="create,modify,delete" />
+			<permission type="persist" name="GradableItem" actions="create,modify,delete" />
+			<permission type="persist" name="BasicLTIPlacement" actions="create,modify,delete" />
+			<permission type="persist" name="ContentHandler" actions="create,modify" />
+			<permission type="persist" name="ScoreProvider" actions="create,modify" />
+			<permission type="attribute" name="user.authinfo" actions="get" />
+			<permission type="attribute" name="user.personalinfo"
+				actions="get" />
+			<permission type="socket" name="*" actions="connect" />			
+			<permission type="runtime" name="db.connection.bb_bb60"
+				actions="" />
+			<permission type="java.io.FilePermission"
+				name="&amp;lt;&amp;lt;ALL FILES&amp;gt;&amp;gt;" actions="read, write" />
+			<permission type="basiclti" name="*"
+				actions="sendroles,sendname,sendemail" />
+			<!-- Blind SSL -->	
+			<permission type="java.lang.RuntimePermission" name="setFactory" actions="setFactory" />
+			<permission type="javax.net.ssl.SSLPermission" name="setHostnameVerifier"
+				actions="setHostnameVerifier" />
+			<!-- CXF -->
+			<permission type="java.lang.RuntimePermission" name="getClassLoader" />
+			<permission type="java.lang.RuntimePermission" name="setContextClassLoader" />
+			<permission type="java.lang.reflect.ReflectPermission" name="suppressAccessChecks" />
+		</permissions>
+	</plugin>
+</manifest>

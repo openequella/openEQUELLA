@@ -1,0 +1,25 @@
+.configureEquellaRow
+{
+	margin-top: 1em;
+}
+
+.tokenRow
+{
+	/*margin-top: 1em;*/
+}
+
+.helpLinks
+{
+	margin-top: 1em;
+}
+
+.helpLinks UL
+{
+	margin-left: 1em;
+}
+
+.helpLinks UL LI
+{
+	margin-left: 2em;
+	list-style: decimal;
+}

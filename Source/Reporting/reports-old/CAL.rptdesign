@@ -1,0 +1,1194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.17" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 2.3.1.v20080911 Build &lt;2.3.1.v20080922-1151></property>
+    <property name="units">in</property>
+    <property name="comments">Copyright (c) 2006 &lt;&lt;Your Company Name here>></property>
+    <parameters>
+        <scalar-parameter name="StartDate" id="448">
+            <text-property name="helpText">DD/MM/YYYY</text-property>
+            <property name="valueType">static</property>
+            <property name="dataType">dateTime</property>
+            <text-property name="promptText">Please enter monitoring start date in the form DD/MM/YYYY</text-property>
+            <property name="isRequired">true</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Custom</property>
+                <property name="pattern">Medium Date</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="ReportingPeriod" id="527">
+            <property name="hidden">false</property>
+            <property name="valueType">static</property>
+            <property name="dataType">decimal</property>
+            <text-property name="promptText">Number of Days for reporting period</text-property>
+            <property name="isRequired">true</property>
+            <property name="controlType">text-box</property>
+            <property name="defaultValue">83</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+    </parameters>
+    <data-sources>
+        <oda-data-source extensionID="com.tle.reporting.oda.datasource" name="Data Source" id="4">
+            <text-property name="displayName">Data Source</text-property>
+            <property name="webserviceUrl">http://boorah/dev/cal</property>
+            <property name="webserviceUser">caladmin</property>
+            <encrypted-property name="webservicePassword" encryptionID="base64">YGBgYGBg</encrypted-property>
+        </oda-data-source>
+    </data-sources>
+    <data-sets>
+        <oda-data-set extensionID="com.tle.reporting.oda.dataset.jdbc" name="Activations" id="299">
+            <text-property name="displayName">Activations</text-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">uuid</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">course_id</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">type</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">attachment_name</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">attachment_type</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">holding_title</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">portion_title</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">8</property>
+                        <property name="name">publisher</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">9</property>
+                        <property name="name">from</property>
+                        <property name="dataType">date-time</property>
+                    </structure>
+                    <structure>
+                        <property name="position">10</property>
+                        <property name="name">authors</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">11</property>
+                        <property name="name">portion_authors</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">12</property>
+                        <property name="name">pagerange</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">13</property>
+                        <property name="name">ids</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">14</property>
+                        <property name="name">volume</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">15</property>
+                        <property name="name">issue_number</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">16</property>
+                        <property name="name">issue_date</property>
+                        <property name="dataType">date-time</property>
+                    </structure>
+                    <structure>
+                        <property name="position">17</property>
+                        <property name="name">date_created</property>
+                        <property name="dataType">date-time</property>
+                    </structure>
+                    <structure>
+                        <property name="position">18</property>
+                        <property name="name">published_date</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">19</property>
+                        <property name="name">departmentname</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">20</property>
+                        <property name="name">num_people</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">21</property>
+                        <property name="name">course_type</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">22</property>
+                        <property name="name">illustration</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">23</property>
+                        <property name="name">coursename</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">Data Source</property>
+            <list-property name="parameters">
+                <structure>
+                    <property name="name">startDate</property>
+                    <property name="dataType">dateTime</property>
+                    <property name="nativeDataType">0</property>
+                    <property name="position">1</property>
+                    <expression name="defaultValue">params["StartDate"]</expression>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                </structure>
+                <structure>
+                    <property name="name">endDate</property>
+                    <property name="dataType">dateTime</property>
+                    <property name="nativeDataType">0</property>
+                    <property name="position">2</property>
+                    <expression name="defaultValue">new Date()</expression>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
+            </list-property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">uuid</property>
+                    <property name="nativeName">uuid</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">course_id</property>
+                    <property name="nativeName">course_id</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">type</property>
+                    <property name="nativeName">type</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">attachment_name</property>
+                    <property name="nativeName">attachment_name</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">attachment_type</property>
+                    <property name="nativeName">attachment_type</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">holding_title</property>
+                    <property name="nativeName">holding_title</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">portion_title</property>
+                    <property name="nativeName">portion_title</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">8</property>
+                    <property name="name">publisher</property>
+                    <property name="nativeName">publisher</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">9</property>
+                    <property name="name">from</property>
+                    <property name="nativeName">from</property>
+                    <property name="dataType">date-time</property>
+                </structure>
+                <structure>
+                    <property name="position">10</property>
+                    <property name="name">authors</property>
+                    <property name="nativeName">authors</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">11</property>
+                    <property name="name">portion_authors</property>
+                    <property name="nativeName">portion_authors</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">12</property>
+                    <property name="name">pagerange</property>
+                    <property name="nativeName">pagerange</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">13</property>
+                    <property name="name">ids</property>
+                    <property name="nativeName">ids</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">14</property>
+                    <property name="name">volume</property>
+                    <property name="nativeName">volume</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">15</property>
+                    <property name="name">issue_number</property>
+                    <property name="nativeName">issue_number</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">16</property>
+                    <property name="name">issue_date</property>
+                    <property name="nativeName">issue_date</property>
+                    <property name="dataType">date-time</property>
+                </structure>
+                <structure>
+                    <property name="position">17</property>
+                    <property name="name">date_created</property>
+                    <property name="nativeName">date_created</property>
+                    <property name="dataType">date-time</property>
+                </structure>
+                <structure>
+                    <property name="position">18</property>
+                    <property name="name">published_date</property>
+                    <property name="nativeName">published_date</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">19</property>
+                    <property name="name">departmentname</property>
+                    <property name="nativeName">departmentname</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">20</property>
+                    <property name="name">num_people</property>
+                    <property name="nativeName">num_people</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">21</property>
+                    <property name="name">course_type</property>
+                    <property name="nativeName">course_type</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">22</property>
+                    <property name="name">illustration</property>
+                    <property name="nativeName">illustration</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">23</property>
+                    <property name="name">coursename</property>
+                    <property name="nativeName">coursename</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <property name="queryText">select i.uuid as "uuid", cibe.uuid as "course_id", 
+ch.type as "type", at.url as "attachment_name", 
+at.type as "attachment_type",
+ch.title as "holding_title", 
+cp.title as "portion_title", 
+ch.publisher as "publisher",
+ar."from" as "from",
+ch.author_list as "authors", 
+cp.author_list as "portion_authors",
+cs.range as "pagerange",
+ch.id_list as "ids",
+ch.volume as "volume",
+ch.issue_number as "issue_number",
+ch.issue_date as "issue_date",
+i.date_created as "date_created",
+ch.pub_date as "published_date",
+ci.department_name as "departmentname",
+ci.students as "num_people",
+ci.course_type as "course_type",
+cs.illustration as "illustration",
+(select text from language_string where bundle_id = cibe.name_id) as "coursename"
+from activate_request ar 
+inner join item i on ar.item_id = i.id AND i.institution_id = CURRENT_INSTITUTION
+inner join course_info ci on ar.course_info_id = ci.id
+inner join base_entity cibe on ci.id = cibe.id
+inner join attachment at on at.uuid = ar.attachment and at.item_id = i.id
+inner join cal_portion cp on cp.item_id = i.id
+inner join cal_section cs on at.uuid = cs.attachment and cs.portion_id = cp.id
+inner join cal_holding ch on ch.id = cp.holding_id
+where (ar."from" > ? and ar."from" &lt; ?) and cs.copyright_status in ('copyright', 'outofprint') order by ar."from"</property>
+        </oda-data-set>
+    </data-sets>
+    <styles>
+        <style name="CSV" id="141">
+            <structure name="stringFormat">
+                <property name="category">Custom</property>
+                <property name="pattern">@,</property>
+            </structure>
+            <property name="display">inline</property>
+        </style>
+        <style name="Title" id="189">
+            <property name="fontFamily">"Arial"</property>
+            <property name="fontSize">small</property>
+            <property name="fontWeight">bold</property>
+            <property name="borderTopStyle">none</property>
+            <property name="paddingRight">10pt</property>
+            <property name="whiteSpace">nowrap</property>
+        </style>
+        <style name="Row Border" id="201">
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">thin</property>
+            <property name="borderLeftWidth">thin</property>
+            <property name="borderRightWidth">thin</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">thin</property>
+        </style>
+        <style name="Table Border Rows (light)" id="261">
+            <property name="borderBottomColor">#C0C0C0</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">thin</property>
+            <property name="borderLeftWidth">thin</property>
+            <property name="borderRightWidth">thin</property>
+            <property name="borderTopColor">#C0C0C0</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">thin</property>
+        </style>
+        <style name="DetailsStyle" id="461">
+            <property name="backgroundColor">#0000FF</property>
+            <property name="fontFamily">"Arial"</property>
+            <property name="fontSize">small</property>
+            <property name="paddingRight">0pt</property>
+            <property name="whiteSpace">nowrap</property>
+        </style>
+        <style name="HowMuchStyle" id="462">
+            <property name="backgroundColor">#FFFF80</property>
+            <property name="fontFamily">"Arial"</property>
+            <property name="color">#000000</property>
+            <property name="borderBottomStyle">none</property>
+            <property name="borderBottomWidth">thin</property>
+            <property name="borderLeftStyle">none</property>
+            <property name="borderLeftWidth">thin</property>
+            <property name="borderRightStyle">none</property>
+            <property name="borderRightWidth">thin</property>
+            <property name="borderTopStyle">none</property>
+            <property name="borderTopWidth">thin</property>
+        </style>
+        <style name="TableHeaderStyle" id="463">
+            <property name="fontFamily">"Arial"</property>
+            <property name="fontSize">large</property>
+            <property name="fontWeight">bold</property>
+            <property name="fontStyle">normal</property>
+            <property name="color">#FFFFFF</property>
+            <property name="borderTopStyle">none</property>
+            <property name="textAlign">center</property>
+        </style>
+        <style name="CopyingStyle" id="496">
+            <property name="backgroundColor">#800080</property>
+        </style>
+        <style name="CommunicationStyle" id="497">
+            <property name="backgroundColor">#FF8000</property>
+        </style>
+        <style name="AdditionalStyle" id="501">
+            <property name="backgroundColor">#FF80C0</property>
+        </style>
+        <style name="table-detail" id="502">
+            <property name="fontFamily">"Arial"</property>
+            <property name="fontSize">small</property>
+        </style>
+        <style name="CodeStyle" id="504">
+            <property name="backgroundColor">#FF0000</property>
+        </style>
+        <style name="Grey1Style" id="505">
+            <property name="backgroundColor">#808080</property>
+            <property name="color">#FFFFFF</property>
+        </style>
+        <style name="Grey2Style" id="506">
+            <property name="backgroundColor">#C0C0C0</property>
+        </style>
+        <style name="TitlesStyle" id="507">
+            <property name="fontFamily">"Arial"</property>
+            <property name="paddingTop">5pt</property>
+            <property name="paddingLeft">5pt</property>
+            <property name="paddingBottom">5pt</property>
+            <property name="paddingRight">5pt</property>
+            <property name="textAlign">center</property>
+            <property name="verticalAlign">middle</property>
+            <property name="whiteSpace">nowrap</property>
+        </style>
+        <style name="WhomStyle" id="514">
+            <property name="backgroundColor">#008000</property>
+        </style>
+        <style name="AdditionalComStyle" id="520">
+            <property name="backgroundColor">#8080C0</property>
+        </style>
+    </styles>
+    <page-setup>
+        <simple-master-page name="MasterPage" id="2">
+            <property name="type">a4</property>
+            <property name="orientation">landscape</property>
+            <property name="topMargin">10pt</property>
+            <property name="leftMargin">5pt</property>
+            <property name="bottomMargin">10pt</property>
+            <property name="rightMargin">0in</property>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <grid id="541">
+            <property name="borderBottomColor">#000000</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">medium</property>
+            <property name="borderLeftColor">#000000</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">medium</property>
+            <property name="borderRightColor">#000000</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">medium</property>
+            <property name="borderTopColor">#000000</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">medium</property>
+            <property name="height">0.7684210526315789in</property>
+            <property name="width">5.778947368421052in</property>
+            <column id="542">
+                <property name="width">2.8947368421052633in</property>
+                <property name="backgroundColor">#80FF80</property>
+            </column>
+            <column id="543">
+                <property name="width">2.8842105263157896in</property>
+                <property name="backgroundColor">#FFFF80</property>
+            </column>
+            <row id="544">
+                <cell id="545">
+                    <text id="218">
+                        <property name="contentType">plain</property>
+                        <text-property name="content"><![CDATA[Monitoring starts]]></text-property>
+                    </text>
+                </cell>
+                <cell id="546">
+                    <text-data id="525">
+                        <expression name="valueExpr">params["StartDate"]</expression>
+                        <property name="contentType">html</property>
+                    </text-data>
+                </cell>
+            </row>
+            <row id="547">
+                <cell id="548">
+                    <text id="219">
+                        <property name="contentType">plain</property>
+                        <text-property name="content"><![CDATA[Monitoring ends]]></text-property>
+                    </text>
+                </cell>
+                <cell id="549">
+                    <text-data id="526">
+                        <expression name="valueExpr">new Date(params["StartDate"].getTime() + 86400000*params["ReportingPeriod"])</expression>
+                        <property name="contentType">html</property>
+                    </text-data>
+                </cell>
+            </row>
+            <row id="550">
+                <property name="height">0.25263157894736843in</property>
+                <cell id="551">
+                    <text id="522">
+                        <property name="contentType">plain</property>
+                        <text-property name="content"><![CDATA[Date report run]]></text-property>
+                    </text>
+                </cell>
+                <cell id="552">
+                    <text-data id="524">
+                        <expression name="valueExpr">new Date()</expression>
+                        <property name="contentType">html</property>
+                    </text-data>
+                </cell>
+            </row>
+        </grid>
+        <table id="312">
+            <property name="width">100%</property>
+            <property name="dataSet">Activations</property>
+            <list-property name="paramBindings">
+                <structure>
+                    <property name="paramName">startDate</property>
+                    <expression name="expression">params["StartDate"]</expression>
+                </structure>
+                <structure>
+                    <property name="paramName">endDate</property>
+                    <expression name="expression">new Date(params["StartDate"].getTime() + 86400000*params["ReportingPeriod"])</expression>
+                </structure>
+            </list-property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">uuid</property>
+                    <expression name="expression">dataSetRow["uuid"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">course_id</property>
+                    <expression name="expression">dataSetRow["course_id"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">type</property>
+                    <expression name="expression">dataSetRow["type"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">attachment_name</property>
+                    <expression name="expression">dataSetRow["attachment_name"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">holding_title</property>
+                    <expression name="expression">dataSetRow["holding_title"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">portion_title</property>
+                    <expression name="expression">dataSetRow["portion_title"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">publisher</property>
+                    <expression name="expression">dataSetRow["publisher"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">authors</property>
+                    <expression name="expression">dataSetRow["authors"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">portion_authors</property>
+                    <expression name="expression">dataSetRow["portion_authors"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">ids</property>
+                    <expression name="expression">var val = dataSetRow["ids"];
+if (!val &amp;&amp; dataSetRow["attachment_type"] == 'attachment')
+{
+	val = dataSetRow["attachment_name"];
+}
+val;</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">volume</property>
+                    <expression name="expression">dataSetRow["volume"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">issue_number</property>
+                    <expression name="expression">dataSetRow["issue_number"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">issue_date</property>
+                    <expression name="expression">dataSetRow["issue_date"]</expression>
+                    <property name="dataType">date-time</property>
+                </structure>
+                <structure>
+                    <property name="name">published_date</property>
+                    <expression name="expression">var ret = "";
+if (dataSetRow["type"] == 'journal')
+{
+	var vol = dataSetRow["volume"];
+	var issue_number = dataSetRow["issue_number"];
+	var issue_date = dataSetRow["issue_date"];
+	if (vol != null &amp;&amp; vol.length > 0)
+	{
+		ret += "v."+ vol;
+	}
+	if (issue_number != null &amp;&amp; issue_number.length > 0)
+	{
+		if (ret.length > 0)
+		{
+			ret += " : ";
+		}			
+		ret += issue_number;
+	}
+	if (issue_date != null)
+	{
+		ret += " , "+ issue_date.toLocaleDateString();
+	}
+}
+if (dataSetRow["published_date"] != null)
+{
+	if (ret.length > 0)
+	{
+		ret += ", ";
+	}
+	ret += dataSetRow["published_date"];
+}
+ret;</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">from</property>
+                    <expression name="expression">dataSetRow["from"].toLocaleDateString()</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">departmentname</property>
+                    <expression name="expression">dataSetRow["departmentname"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">coursename</property>
+                    <expression name="expression">dataSetRow["coursename"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">attachment_type</property>
+                    <expression name="expression">dataSetRow["attachment_type"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">pagerange</property>
+                    <expression name="expression">dataSetRow["pagerange"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">date_created</property>
+                    <expression name="expression">dataSetRow["date_created"].toLocaleDateString()</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">NumInternalCopies</property>
+                    <expression name="expression">var ret=0;
+if (dataSetRow["course_type"] != 'e' &amp;&amp; dataSetRow["course_type"] != 's')
+{
+	ret = 1;
+}
+ret;</expression>
+                    <property name="dataType">any</property>
+                </structure>
+                <structure>
+                    <property name="name">NumExternalCopies</property>
+                    <expression name="expression">var ret=0;
+if (dataSetRow["course_type"] == 'e')
+{
+	ret = 1;
+}
+ret;</expression>
+                </structure>
+                <structure>
+                    <property name="name">NumStaffCopies</property>
+                    <expression name="expression">var ret=0;
+if (dataSetRow["course_type"] == 's')
+{
+	ret = 1;
+}
+ret;</expression>
+                    <property name="dataType">any</property>
+                </structure>
+                <structure>
+                    <property name="name">NumInternalCom</property>
+                    <expression name="expression">var ret=0;
+if (dataSetRow["course_type"] != 'e' &amp;&amp; dataSetRow["course_type"] != 's')
+{
+	ret = dataSetRow["num_people"];
+}
+ret;</expression>
+                </structure>
+                <structure>
+                    <property name="name">NumExternalCom</property>
+                    <expression name="expression">var ret=0;
+if (dataSetRow["course_type"] == 'e')
+{
+	ret = dataSetRow["num_people"];
+}
+ret;</expression>
+                </structure>
+                <structure>
+                    <property name="name">NumStaffCom</property>
+                    <expression name="expression">var ret=0;
+if (dataSetRow["course_type"] == 's')
+{
+	ret = dataSetRow["num_people"];
+}
+ret;</expression>
+                </structure>
+                <structure>
+                    <property name="name">illustration</property>
+                    <expression name="expression">var ret = 'No';
+if (dataSetRow["illustration"])
+{
+	ret = "Yes";
+}
+ret;</expression>
+                </structure>
+                <structure>
+                    <property name="name">filename</property>
+                    <expression name="expression">var ret = "";
+if (dataSetRow["attachment_type"] == 'file' &amp;&amp; dataSetRow["illustration"])
+{
+	ret = dataSetRow["attachment_name"];
+}
+ret;</expression>
+                </structure>
+            </list-property>
+            <property name="pageBreakInterval">50</property>
+            <column id="346"/>
+            <column id="347"/>
+            <column id="348"/>
+            <column id="349"/>
+            <column id="350"/>
+            <column id="351"/>
+            <column id="352"/>
+            <column id="353"/>
+            <column id="354"/>
+            <column id="355"/>
+            <column id="369"/>
+            <column id="373"/>
+            <column id="377"/>
+            <column id="381"/>
+            <column id="385"/>
+            <column id="393"/>
+            <column id="397"/>
+            <column id="401"/>
+            <column id="405"/>
+            <column id="414"/>
+            <column id="418"/>
+            <column id="422"/>
+            <column id="426"/>
+            <column id="437"/>
+            <column id="441"/>
+            <column id="430"/>
+            <header>
+                <row id="464">
+                    <property name="style">TableHeaderStyle</property>
+                    <cell id="465">
+                        <property name="style">CodeStyle</property>
+                    </cell>
+                    <cell id="466">
+                        <property name="colSpan">6</property>
+                        <property name="rowSpan">1</property>
+                        <property name="style">DetailsStyle</property>
+                        <text id="493">
+                            <property name="contentType">plain</property>
+                            <text-property name="content"><![CDATA[Details about the material copied and/or communicated  (please put DK in columns where information is unknown)]]></text-property>
+                        </text>
+                    </cell>
+                    <cell id="472">
+                        <property name="colSpan">2</property>
+                        <property name="rowSpan">1</property>
+                        <property name="style">HowMuchStyle</property>
+                        <label id="492">
+                            <text-property name="text">How much?</text-property>
+                        </label>
+                    </cell>
+                    <cell id="474">
+                        <property name="style">WhomStyle</property>
+                        <label id="494">
+                            <text-property name="text">For whom?</text-property>
+                        </label>
+                    </cell>
+                    <cell id="475">
+                        <property name="style">WhomStyle</property>
+                        <label id="503">
+                            <text-property name="text">Copied or communicated?</text-property>
+                        </label>
+                    </cell>
+                    <cell id="476">
+                        <property name="colSpan">5</property>
+                        <property name="rowSpan">1</property>
+                        <property name="style">CopyingStyle</property>
+                        <label id="495">
+                            <text-property name="text">Copying (e.g. scanning, making CDs)</text-property>
+                        </label>
+                    </cell>
+                    <cell id="481">
+                        <property name="colSpan">6</property>
+                        <property name="rowSpan">1</property>
+                        <property name="style">CommunicationStyle</property>
+                        <label id="498">
+                            <text-property name="text">Communication (e.g. posting on intranet, emailing)</text-property>
+                        </label>
+                    </cell>
+                    <cell id="487">
+                        <property name="colSpan">3</property>
+                        <property name="rowSpan">1</property>
+                        <property name="style">AdditionalStyle</property>
+                        <label id="500">
+                            <text-property name="text">Additional Questions</text-property>
+                        </label>
+                    </cell>
+                    <cell id="490">
+                        <property name="style">AdditionalComStyle</property>
+                        <label id="521">
+                            <text-property name="text">Additional Information?</text-property>
+                        </label>
+                    </cell>
+                </row>
+                <row id="313">
+                    <property name="style">TitlesStyle</property>
+                    <cell id="314">
+                        <property name="style">Grey1Style</property>
+                        <label id="356">
+                            <text-property name="text">Centre Code</text-property>
+                        </label>
+                    </cell>
+                    <cell id="315">
+                        <property name="style">Grey2Style</property>
+                        <label id="357">
+                            <text-property name="text">ISBN/ISSN etc or URL</text-property>
+                        </label>
+                    </cell>
+                    <cell id="316">
+                        <property name="style">Grey1Style</property>
+                        <label id="358">
+                            <text-property name="text">Publisher Name</text-property>
+                        </label>
+                    </cell>
+                    <cell id="317">
+                        <property name="style">Grey2Style</property>
+                        <label id="359">
+                            <text-property name="text">Title of Publication</text-property>
+                        </label>
+                    </cell>
+                    <cell id="318">
+                        <property name="style">Grey1Style</property>
+                        <label id="360">
+                            <text-property name="text">Date of Publication</text-property>
+                        </label>
+                    </cell>
+                    <cell id="319">
+                        <property name="style">Grey2Style</property>
+                        <label id="361">
+                            <text-property name="text">Title of Work</text-property>
+                        </label>
+                    </cell>
+                    <cell id="320">
+                        <property name="style">Grey1Style</property>
+                        <label id="362">
+                            <text-property name="text">Author(s) / Creator(s) of work</text-property>
+                        </label>
+                    </cell>
+                    <cell id="321">
+                        <property name="style">Grey2Style</property>
+                        <label id="363">
+                            <text-property name="text">Type of count</text-property>
+                        </label>
+                    </cell>
+                    <cell id="322">
+                        <property name="style">Grey1Style</property>
+                        <label id="364">
+                            <text-property name="text">Amount Copied or Communicated</text-property>
+                        </label>
+                    </cell>
+                    <cell id="323">
+                        <property name="style">Grey2Style</property>
+                        <label id="365">
+                            <text-property name="text">Department name</text-property>
+                        </label>
+                    </cell>
+                    <cell id="366">
+                        <property name="style">Grey1Style</property>
+                        <label id="386">
+                            <text-property name="text">What have you done with the published material?</text-property>
+                        </label>
+                    </cell>
+                    <cell id="370">
+                        <property name="style">Grey2Style</property>
+                        <label id="387">
+                            <text-property name="text">Date material copied</text-property>
+                        </label>
+                    </cell>
+                    <cell id="374">
+                        <property name="style">Grey1Style</property>
+                        <label id="388">
+                            <text-property name="text">Scan or Other Digital Copy?</text-property>
+                        </label>
+                    </cell>
+                    <cell id="378">
+                        <property name="style">Grey2Style</property>
+                        <text id="508">
+                            <property name="contentType">html</property>
+                            <text-property name="content"><![CDATA[Number of copies for<br>Internal Students<br>
+(unique individuals, not EFTSU)]]></text-property>
+                        </text>
+                    </cell>
+                    <cell id="382">
+                        <property name="style">Grey1Style</property>
+                        <text id="509">
+                            <property name="contentType">html</property>
+                            <text-property name="content"><![CDATA[Number of copies for<br>
+External Students<br>
+(unique individuals, not EFTSU)]]></text-property>
+                        </text>
+                    </cell>
+                    <cell id="390">
+                        <property name="style">Grey2Style</property>
+                        <text id="510">
+                            <property name="contentType">html</property>
+                            <text-property name="content"><![CDATA[Number of copies for<br>
+Staff<br>
+(unique individuals, not FTE)]]></text-property>
+                        </text>
+                    </cell>
+                    <cell id="394">
+                        <property name="style">Grey1Style</property>
+                        <label id="408">
+                            <text-property name="text">Date of Communication</text-property>
+                        </label>
+                    </cell>
+                    <cell id="398">
+                        <property name="style">Grey2Style</property>
+                        <label id="409">
+                            <text-property name="text">Type of Communication</text-property>
+                        </label>
+                    </cell>
+                    <cell id="402">
+                        <property name="style">Grey1Style</property>
+                        <label id="410">
+                            <text-property name="text">General or Specific Intended Audience?</text-property>
+                        </label>
+                    </cell>
+                    <cell id="411">
+                        <property name="style">Grey2Style</property>
+                        <text id="511">
+                            <property name="contentType">html</property>
+                            <text-property name="content"><![CDATA[Target Audience<br>
+Internal Students<br>
+(unique individuals, not EFTSU)]]></text-property>
+                        </text>
+                    </cell>
+                    <cell id="415">
+                        <property name="style">Grey1Style</property>
+                        <text id="512">
+                            <property name="contentType">html</property>
+                            <text-property name="content"><![CDATA[Target Audience<br>
+External Students<br>
+(unique individuals, not EFTSU)]]></text-property>
+                        </text>
+                    </cell>
+                    <cell id="419">
+                        <property name="style">Grey2Style</property>
+                        <text id="513">
+                            <property name="contentType">html</property>
+                            <text-property name="content"><![CDATA[Target Audience<br>
+Staff<br>
+(unique individuals, not FTE)]]></text-property>
+                        </text>
+                    </cell>
+                    <cell id="423">
+                        <property name="style">Grey1Style</property>
+                        <label id="442">
+                            <text-property name="text">Is the item to be included in a Course Pack?</text-property>
+                        </label>
+                    </cell>
+                    <cell id="434">
+                        <property name="style">Grey2Style</property>
+                        <label id="443">
+                            <text-property name="text">Does the item contain Incidental Artistic Works?</text-property>
+                        </label>
+                    </cell>
+                    <cell id="438">
+                        <property name="style">Grey1Style</property>
+                        <label id="444">
+                            <text-property name="text">Name of file provided (unique identifier)</text-property>
+                        </label>
+                    </cell>
+                    <cell id="427">
+                        <property name="style">Grey2Style</property>
+                        <label id="445">
+                            <text-property name="text">Comment</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <detail>
+                <row id="324">
+                    <cell id="325"/>
+                    <cell id="326">
+                        <data id="529">
+                            <property name="resultSetColumn">ids</property>
+                        </data>
+                    </cell>
+                    <cell id="327">
+                        <data id="447">
+                            <property name="resultSetColumn">publisher</property>
+                        </data>
+                    </cell>
+                    <cell id="328">
+                        <data id="452">
+                            <property name="resultSetColumn">holding_title</property>
+                        </data>
+                    </cell>
+                    <cell id="329">
+                        <data id="453">
+                            <property name="resultSetColumn">published_date</property>
+                        </data>
+                    </cell>
+                    <cell id="330">
+                        <data id="454">
+                            <property name="resultSetColumn">portion_title</property>
+                        </data>
+                    </cell>
+                    <cell id="331">
+                        <data id="455">
+                            <property name="resultSetColumn">portion_authors</property>
+                        </data>
+                    </cell>
+                    <cell id="332">
+                        <label id="515">
+                            <text-property name="text">P</text-property>
+                        </label>
+                    </cell>
+                    <cell id="333">
+                        <data id="530">
+                            <property name="resultSetColumn">pagerange</property>
+                        </data>
+                    </cell>
+                    <cell id="334">
+                        <data id="458">
+                            <property name="resultSetColumn">departmentname</property>
+                        </data>
+                    </cell>
+                    <cell id="367">
+                        <label id="516">
+                            <text-property name="text">Both</text-property>
+                        </label>
+                    </cell>
+                    <cell id="371">
+                        <data id="531">
+                            <property name="resultSetColumn">date_created</property>
+                        </data>
+                    </cell>
+                    <cell id="375">
+                        <label id="517">
+                            <text-property name="text">Scanned</text-property>
+                        </label>
+                    </cell>
+                    <cell id="379">
+                        <data id="532">
+                            <property name="resultSetColumn">NumInternalCopies</property>
+                        </data>
+                    </cell>
+                    <cell id="383">
+                        <data id="533">
+                            <property name="resultSetColumn">NumExternalCopies</property>
+                        </data>
+                    </cell>
+                    <cell id="391">
+                        <data id="534">
+                            <property name="resultSetColumn">NumStaffCopies</property>
+                        </data>
+                    </cell>
+                    <cell id="395">
+                        <data id="460">
+                            <property name="resultSetColumn">from</property>
+                        </data>
+                    </cell>
+                    <cell id="399">
+                        <label id="459">
+                            <text-property name="text">New</text-property>
+                        </label>
+                    </cell>
+                    <cell id="403">
+                        <label id="518">
+                            <text-property name="text">S</text-property>
+                        </label>
+                    </cell>
+                    <cell id="412">
+                        <data id="535">
+                            <property name="resultSetColumn">NumInternalCom</property>
+                        </data>
+                    </cell>
+                    <cell id="416">
+                        <data id="536">
+                            <property name="resultSetColumn">NumExternalCom</property>
+                        </data>
+                    </cell>
+                    <cell id="420">
+                        <data id="537">
+                            <property name="resultSetColumn">NumStaffCom</property>
+                        </data>
+                    </cell>
+                    <cell id="424">
+                        <label id="519">
+                            <text-property name="text">N</text-property>
+                        </label>
+                    </cell>
+                    <cell id="435">
+                        <data id="538">
+                            <property name="resultSetColumn">illustration</property>
+                        </data>
+                    </cell>
+                    <cell id="439">
+                        <data id="539">
+                            <property name="resultSetColumn">filename</property>
+                        </data>
+                    </cell>
+                    <cell id="428">
+                        <data id="540">
+                            <property name="resultSetColumn">coursename</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+            <footer>
+                <row id="335">
+                    <cell id="336"/>
+                    <cell id="337"/>
+                    <cell id="338"/>
+                    <cell id="339"/>
+                    <cell id="340"/>
+                    <cell id="341"/>
+                    <cell id="342"/>
+                    <cell id="343"/>
+                    <cell id="344"/>
+                    <cell id="345"/>
+                    <cell id="368"/>
+                    <cell id="372"/>
+                    <cell id="376"/>
+                    <cell id="380"/>
+                    <cell id="384"/>
+                    <cell id="392"/>
+                    <cell id="396"/>
+                    <cell id="400"/>
+                    <cell id="404"/>
+                    <cell id="413"/>
+                    <cell id="417"/>
+                    <cell id="421"/>
+                    <cell id="425"/>
+                    <cell id="436"/>
+                    <cell id="440"/>
+                    <cell id="429"/>
+                </row>
+            </footer>
+        </table>
+    </body>
+</report>

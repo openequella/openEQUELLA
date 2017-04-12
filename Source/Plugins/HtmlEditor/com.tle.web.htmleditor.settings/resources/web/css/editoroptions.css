@@ -1,0 +1,17 @@
+.editoroptions .editor
+{
+	width: 670px;
+	height: 220px;
+}
+
+/* Remove the stupid negative offsets */
+.editoroptions .settingField .ctrlinvalid
+{
+	left: 0px;
+	top: 0px;
+}
+
+.editoroptions .settingField 
+{
+	margin-bottom: 1em;
+}

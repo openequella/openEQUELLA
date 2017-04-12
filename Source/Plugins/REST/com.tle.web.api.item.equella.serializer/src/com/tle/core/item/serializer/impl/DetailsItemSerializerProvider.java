@@ -1,0 +1,91 @@
+package com.tle.core.item.serializer.impl;
+
+import static com.tle.core.item.serializer.ItemSerializerService.CATEGORY_DETAIL;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
+import javax.inject.Singleton;
+
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
+
+import com.google.common.collect.Lists;
+import com.tle.common.interfaces.BaseEntityReference;
+import com.tle.core.guice.Bind;
+import com.tle.core.item.serializer.ItemSerializerProvider;
+import com.tle.core.item.serializer.ItemSerializerState;
+import com.tle.core.item.serializer.XMLStreamer;
+import com.tle.web.api.interfaces.beans.UserBean;
+import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
+
+@SuppressWarnings("nls")
+@Bind
+@Singleton
+public class DetailsItemSerializerProvider implements ItemSerializerProvider
+{
+	private static final String CREATED_PROPERTY = "dateCreated";
+	private static final String MODIFIED_PROPERTY = "dateModified";
+	private static final String RATING_PROPERTY = "rating";
+	private static final String THUMBNAIL_PROPERTY = "thumb";
+
+	@Override
+	public void prepareItemQuery(ItemSerializerState state)
+	{
+		if( state.hasCategory(CATEGORY_DETAIL) )
+		{
+			final ProjectionList projection = state.getItemProjection();
+			state.addOwnerQuery();
+			state.addStatusQuery();
+			state.addCollectionQuery();
+			projection.add(Projections.property(CREATED_PROPERTY), CREATED_PROPERTY);
+			projection.add(Projections.property(MODIFIED_PROPERTY), MODIFIED_PROPERTY);
+			projection.add(Projections.property(RATING_PROPERTY), RATING_PROPERTY);
+			projection.add(Projections.property(THUMBNAIL_PROPERTY), THUMBNAIL_PROPERTY);
+		}
+	}
+
+	@Override
+	public void performAdditionalQueries(ItemSerializerState state)
+	{
+		// none - done in collabs
+	}
+
+	@Override
+	public void writeXmlResult(XMLStreamer xml, ItemSerializerState state, long itemId)
+	{
+		if( state.hasCategory(CATEGORY_DETAIL) )
+		{
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	@Override
+	public void writeItemBeanResult(EquellaItemBean equellaItemBean, ItemSerializerState state, long itemId)
+	{
+		if( state.hasCategory(CATEGORY_DETAIL) )
+		{
+			equellaItemBean.setOwner(new UserBean((String) state.getData(itemId, ItemSerializerState.OWNER_ALIAS)));
+			equellaItemBean.setStatus(((String) state.getData(itemId, ItemSerializerState.STATUS_ALIAS)).toLowerCase());
+			equellaItemBean.setModifiedDate((Date) state.getData(itemId, MODIFIED_PROPERTY));
+			equellaItemBean.setCreatedDate((Date) state.getData(itemId, CREATED_PROPERTY));
+			equellaItemBean.setRating((Float) state.getData(itemId, RATING_PROPERTY));
+			String collectionUuid = state.getData(itemId, ItemSerializerState.COLLECTIONUUID_ALIAS);
+			equellaItemBean.setCollection(new BaseEntityReference(collectionUuid));
+			equellaItemBean.setThumbnail((String) state.getData(itemId, THUMBNAIL_PROPERTY));
+
+			final List<UserBean> collabBeans = Lists.newArrayList();
+			final Collection<String> collabs = state.getData(itemId, ItemSerializerState.COLLAB_ALIAS);
+			if( collabs != null )
+			{
+				for( String collab : collabs )
+				{
+					collabBeans.add(new UserBean(collab));
+				}
+			}
+			equellaItemBean.setCollaborators(collabBeans);
+		}
+	}
+
+}

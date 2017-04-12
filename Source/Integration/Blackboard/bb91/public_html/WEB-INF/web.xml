@@ -1,0 +1,97 @@
+<?xml version = '1.0' encoding = 'windows-1252'?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd">
+<web-app>
+	<display-name>EQUELLA</display-name>
+	<description>EQUELLA Integration with Blackboard</description>
+
+	<servlet>
+		<servlet-name>Redirect</servlet-name>
+		<servlet-class>
+			com.tle.blackboard.buildingblock.servlet.RedirectServlet
+		</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>Content</servlet-name>
+		<servlet-class>
+			com.tle.blackboard.buildingblock.servlet.ContentServlet
+		</servlet-class>
+	</servlet>
+<!-- 
+	<servlet>
+     	<servlet-name>Wrapper</servlet-name>
+     	<jsp-file>contribute/contentWrapper.jsp</jsp-file>
+	</servlet>
+ -->
+	<servlet-mapping>
+		<servlet-name>Redirect</servlet-name>
+		<url-pattern>/Redirect</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>Content</servlet-name>
+		<url-pattern>/ViewContentBody</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Content</servlet-name>
+		<url-pattern>/ViewContent</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Content</servlet-name>
+		<url-pattern>/AddContentCallback</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Content</servlet-name>
+		<url-pattern>/AddContentBody</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Content</servlet-name>
+		<url-pattern>/ViewGradebook</url-pattern>
+	</servlet-mapping>
+	<!-- 
+	<servlet-mapping>
+    	 <servlet-name>Wrapper</servlet-name>
+ 		 <url-pattern>/Wrapper</url-pattern>
+	</servlet-mapping>
+ -->
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+	<mime-mapping>
+		<extension>html</extension>
+		<mime-type>text/html</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+		<extension>txt</extension>
+		<mime-type>text/plain</mime-type>
+	</mime-mapping>
+
+	<!-- Taglibs -->
+
+	<taglib>
+		<taglib-uri>/tle</taglib-uri>
+		<taglib-location>/WEB-INF/tle.tld</taglib-location>
+	</taglib>
+
+	<taglib>
+		<taglib-uri>/bbNG</taglib-uri>
+		<taglib-location>/WEB-INF/config/bbNG.tld</taglib-location>
+	</taglib>
+
+	<taglib>
+		<taglib-uri>http://struts.apache.org/tags-bean</taglib-uri>
+		<taglib-location>/WEB-INF/config/struts/struts-bean.tld</taglib-location>
+	</taglib>
+	<taglib>
+		<taglib-uri>http://struts.apache.org/tags-html</taglib-uri>
+		<taglib-location>/WEB-INF/config/struts/struts-html.tld</taglib-location>
+	</taglib>
+	<taglib>
+		<taglib-uri>http://struts.apache.org/tags-logic</taglib-uri>
+		<taglib-location>/WEB-INF/config/struts/struts-logic.tld</taglib-location>
+	</taglib>
+	<taglib>
+		<taglib-uri>http://struts.apache.org/tags-nested</taglib-uri>
+		<taglib-location>/WEB-INF/config/struts/struts-nested.tld</taglib-location>
+	</taglib>
+</web-app>

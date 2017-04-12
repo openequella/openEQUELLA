@@ -1,0 +1,130 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.activation" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.activation" exported="true" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.search" />
+		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.freetext" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.scheduler" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.web.resources" />
+		<import plugin-id="com.tle.web.services" />
+		<import plugin-id="com.tle.core.migration" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="activationImplementation">
+		<parameter-def id="type" multiplicity="one" type="string" />
+		<parameter-def id="class" multiplicity="one" type="string">
+			<doc>
+				<doc-text>Must implement com.tle.core.activation.service.ActivationImplementation</doc-text>
+			</doc>
+		</parameter-def>
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="itemxmlmigration" id="fixActivations">
+		<parameter id="id" value="com.tle.core.activation.migration.MigrateActivations" />
+		<parameter id="bean" value="bean:com.tle.core.activation.migration.MigrateActivations" />
+		<parameter id="date" value="1970-01-08" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="itemExtrasConverter" id="activationExtras">
+		<parameter id="order" value="1000" />
+		<parameter id="class" value="bean:com.tle.core.activation.ActivationsConverter" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="itemDaoExtension" id="activationRequestItemDao">
+		<parameter id="class" value="bean:com.tle.core.activation.ActivateRequestDao" />
+		<parameter id="order" value="100" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="itemIdExtension" id="activationIdExt">
+		<parameter id="bean" value="bean:com.tle.core.activation.service.ActivationService" />
+		<parameter id="id" value="activation" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.freetext" point-id="securityReindexHandler" id="reindexActivations">
+		<parameter id="privilege" value="VIEW_ACTIVATION_ITEM" />
+		<parameter id="privilege" value="DELETE_ACTIVATION_ITEM" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.security" point-id="securityTargetHandler" id="activateRequestTargetHandler">
+		<parameter id="handlesOwnershipFor" value="com.tle.beans.activation.ActivateRequest" />
+		<parameter id="handlesTransformationOf" value="com.tle.beans.activation.ActivateRequest" />
+		<parameter id="handler" value="bean:com.tle.core.activation.service.ActivateRequestSecurityTargetHandler" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.freetext" point-id="freetextIndex" id="activationIndex">
+		<parameter id="id" value="activation" />
+		<parameter id="class" value="bean:com.tle.core.activation.index.ActivationIndex" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.freetext" point-id="indexingExtension" id="activationIndexer">
+		<parameter id="class" value="bean:com.tle.core.activation.index.ActivationIndexer" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.scheduler" point-id="scheduledTask" id="updateActivations">
+		<parameter id="id" value="com.tle.core.activation.tasks.UpdateActivationStatusTask" />
+		<parameter id="bean" value="bean:com.tle.core.activation.tasks.UpdateActivationStatusTask" />
+		<parameter id="frequency" value="daily" />
+		<parameter id="scope" value="institution" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.entity.services" point-id="entityService" id="courseInfo">
+		<parameter id="serviceClass" value="bean:com.tle.core.activation.service.CourseInfoService" />
+		<parameter id="order" value="1200" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.services" point-id="invoker" id="courseInfoInvoker">
+		<parameter id="class" value="com.tle.core.remoting.RemoteCourseInfoService" />
+		<parameter id="bean" value="bean:com.tle.core.activation.service.CourseInfoService" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.services" point-id="applicationEventListener" id="listeners">
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.UserChangeListener" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.entity.services" point-id="postreadmigration" id="addViewLinkedPortionsACLPostMigrator">
+		<parameter id="id" value="com.tle.core.activation.migration.AddViewLinkedPortionsACLPostMigrator" />
+		<parameter id="bean" value="bean:com.tle.core.activation.migration.AddViewLinkedPortionsACLPostMigrator" />
+		<parameter id="forconverter" value="acls" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="addViewLinkedPortionACLMigration">
+		<parameter id="id" value="com.tle.core.activation.migration.AddViewLinkedPortionACLMigration" />
+		<parameter id="bean" value="bean:com.tle.core.activation.migration.AddViewLinkedPortionACLMigration" />
+		<parameter id="date" value="2014-02-02" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="addOverrideReasonMigration">
+	 	<parameter id="id" value="com.tle.core.activation.migration.AddOverrideReasonMigration" />
+	 	<parameter id="bean" value="bean:com.tle.core.activation.migration.AddOverrideReasonMigration" />
+	 	<parameter id="date" value="2014-02-10" />
+	 </extension>
+	 
+	 	<extension plugin-id="com.tle.core.migration" point-id="migration" id="reIndexActivationsMigration">
+	 	<parameter id="id" value="com.tle.core.activation.migration.ReIndexActivationsMigration" />
+	 	<parameter id="bean" value="bean:com.tle.core.activation.migration.ReIndexActivationsMigration" />
+	 	<parameter id="date" value="2014-03-03" />
+	 </extension>
+ 
+</plugin>

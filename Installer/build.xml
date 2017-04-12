@@ -1,0 +1,88 @@
+<?xml version = '1.0' encoding = 'windows-1252'?>
+<project name="installer" default="usage" basedir=".">
+	<import file="../Source/common-ant.xml" />
+	<property name="data" location="data" />
+	<property name="all-iso" location="iso" />
+	<property name="thirdparty" location="../Source/ThirdParty" />
+
+	<property name="ant-active-cache" location="ant/active-cache.xml" />
+	<property name="ant-enterprise" location="ant/enterprise.xml" />
+
+	<target name="thorough-clean" depends="clean">
+		<delete dir="staging" />
+		<delete dir="${all-iso}" />
+	</target>
+
+	<target name="usage">
+		<echo>Use one of the following commands to build an ISO:</echo>
+		<echo>    ant enterprise</echo>
+		<echo>
+		</echo>
+		<echo>For a very thorough clean of any modifications, just use:</echo>
+		<echo>    ant thorough-clean</echo>
+	</target>
+
+	<target name="define-build.classpath" depends="init,define-eclipseClasspath">
+		<path id="build.classpath">
+			<path refid="eclipse.classpath" />
+		</path>
+	</target>
+
+	<!--
+		***********************************************************************
+		**                          ENTERPRISE                               **
+		***********************************************************************
+	-->
+
+	<target name="enterprise">
+		<property name="iso" location="${all-iso}/enterprise" />
+		<property name="iso-server-dest" location="${iso}/learningedge" />
+
+		<antcall target="-enterprise" />
+	</target>
+
+	<target name="-enterprise" depends="thorough-clean,-common-server-prep,enterprise-installer,active-cache-installer">
+		<!-- Build the installers -->
+		<copy todir="${iso}/learningedge" overwrite="true">
+			<fileset file="staging/enterprise/enterprise-install.jar" />
+		</copy>
+		<copy todir="${iso}/active-cache">
+			<fileset file="staging/active-cache/active-cache-install.jar" />
+		</copy>
+	</target>
+
+	<!--
+		***********************************************************************
+		**                       COMMON PREPARATION                          **
+		***********************************************************************
+	-->
+
+	<!-- Performs common preparation of the /data/server directory -->
+	<target name="-common-server-prep">
+
+		<fail message="'iso' has not been set" unless="iso" />
+		<fail message="'iso-server-dest' has not been set" unless="iso-server-dest" />
+
+		<!-- Remove any existing traces -->
+		<delete dir="${iso}" />
+
+		<!-- Copy in the server folder -->
+		<touch file="${data}/server/manager/all/manager.jar" />
+		<copy todir="${iso-server-dest}">
+			<fileset dir="${data}/server">
+				<exclude name="conversion/.git"/>
+			</fileset>
+		</copy>
+
+		<!-- Build the Upgrade Manager -->
+		<ant antfile="${TLE Upgrade Manager.base}/build.xml" target="product" inheritall="false" />
+	</target>
+
+	<target name="active-cache-installer" depends="make">
+		<ant antfile="${ant-active-cache}" />
+	</target>
+
+	<target name="enterprise-installer" depends="make">
+		<ant antfile="${ant-enterprise}" />
+	</target>
+</project>

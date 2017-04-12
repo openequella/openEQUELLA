@@ -1,0 +1,3 @@
+<project name="com.tle.admin.controls.echo" basedir="." default="compile">
+	<import file="../../build/plugins-common-build.xml" />
+</project>

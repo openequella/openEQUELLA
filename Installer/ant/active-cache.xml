@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Installer: Active Cache" default="product" basedir="../">
+
+	<property name="actstaging" location="staging/active-cache"/>
+	<property name="jarname" value="active-cache-install.jar"/>
+
+	<target name="init">
+		<mkdir dir="${actstaging}"/>
+	</target>
+
+	<target name="clean">
+		<delete dir="${actstaging}"/>
+	</target>
+
+    <target name="jar" depends="clean,init">
+    	<copy todir="${actstaging}">
+    		<fileset dir="${build}" />
+    	</copy>
+
+		<jar destfile="${actstaging}/${jarname}">
+			<fileset dir="${staging}" />
+			<manifest>
+				<attribute name="Main-Class" value="com.dytech.edge.installer.CacheInstaller"/>
+			</manifest>
+			<fileset dir="${src}" includesfile="ant/active-cache-extra-files.txt"/>
+		</jar>
+    </target>
+
+    <target name="product" depends="jar"/>
+</project>
+

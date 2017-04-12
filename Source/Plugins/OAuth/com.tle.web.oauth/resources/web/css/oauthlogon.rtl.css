@@ -1,0 +1,31 @@
+@import url("oauthlogon.css");
+
+.usernamepwd label
+{
+	float: right;
+	text-align: left;
+	padding-right: 0;
+	padding-left: 20px; 
+}
+
+.buttons
+{
+	margin-right: 45px;
+	margin-left: 0px;
+}
+
+.buttons *
+{
+	margin-right: 0;
+	margin-left: 5px;
+}
+#oauth_title
+{
+	margin-left: 0;
+	margin-right: 100px;
+}
+
+#oauth_topbarcontent
+{
+	background-position-x: right;
+}

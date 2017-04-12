@@ -1,0 +1,80 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.usermanagement" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.usermanagement" />
+		<import plugin-id="com.tle.common.usermanagement.standard" />
+		<import plugin-id="com.tle.core.auditlog" />
+		<import plugin-id="com.tle.core.config" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.hibernate.equella" />
+		<import plugin-id="com.tle.core.institution" />
+		<import plugin-id="com.tle.core.migration" />
+		<import plugin-id="com.tle.core.replicatedcache" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.xstream" />
+		<import plugin-id="com.tle.web.core.equella" exported="true" />
+		<import plugin-id="com.google.code.gson:gson" />
+		<import plugin-id="com.tle.core.application" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="code">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="userManager">
+		<parameter-def id="class" />
+		<parameter-def id="settingsClass" />
+		<parameter-def id="order" type="number" />
+	</extension-point>
+
+	<extension-point id="logonFilter">
+		<parameter-def id="bean" />
+		<parameter-def id="settingsClass" multiplicity="none-or-one" />
+		<parameter-def id="order" type="number" multiplicity="none-or-one" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="file" value="lang/i18n.properties" />
+		<parameter id="group" value="resource-centre" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.hibernate.guice.TransactionModule" />
+		<parameter id="class" value="com.tle.core.security.guice.SecurityModule" />
+		<parameter id="class" value="com.tle.core.services.user.guice.UserManagementModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.migration" point-id="initialSchema" id="lowercaseUsernameIndex">
+		<parameter id="class" value="com.tle.beans.user.TLEUser" />
+		<parameter id="index">
+			<parameter id="table" value="tleuser" />
+			<parameter id="name" value="lowercase_username" />
+			<parameter id="column" value="username" />
+			<parameter id="function" value="lower" />
+		</parameter>
+	</extension>
+
+	<extension plugin-id="com.tle.core.services" point-id="applicationEventListener" id="listeners">
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.InstitutionListener" />
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.UMPChangedListener" />
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.UserEditListener" />
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.UserChangeListener" />
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.GroupChangedListener" />
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.UserSessionLogoutListener" />
+		<parameter id="listenerClass" value="com.tle.core.events.listeners.UserSessionLoginListener" />
+	</extension>
+
+	<!-- Migration to add index on lowercase username to TLEUser -->
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="addLowerUsernameIndex">
+		<parameter id="id" value="com.tle.core.usermanagement.migration.AddLowerUsernameIndex" />
+		<parameter id="bean" value="bean:com.tle.core.usermanagement.migration.AddLowerUsernameIndex" />
+		<parameter id="date" value="1970-01-01" />
+	</extension>
+	
+</plugin>

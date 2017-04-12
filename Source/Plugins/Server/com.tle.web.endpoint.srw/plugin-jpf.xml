@@ -1,0 +1,44 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.endpoint.srw" version="1">
+	<requires>
+		<import plugin-id="wsdl4j:wsdl4j" />
+		<import plugin-id="axis:axis" exported="true" />
+		<import plugin-id="com.tle.common.licences" />
+		<import plugin-id="com.tle.common.search" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.freetext" />
+		<import plugin-id="com.tle.web.core" />
+		<import plugin-id="org.dspace:srw" exported="true" />
+		<import plugin-id="org.dspace:cql-java" exported="true" />
+		<import plugin-id="com.tle.core.schema" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.web.endpoint.srw.guice.SRWModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="srwServlet">
+		<parameter id="bean" value="bean:com.tle.web.endpoint.srw.SRWServletExt" />
+		<parameter id="url-pattern" value="/srw/*" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="sruServlet">
+		<parameter id="bean" value="bean:com.tle.web.endpoint.srw.SRWServletExt" />
+		<parameter id="url-pattern" value="/sru/*" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="cqlLicenceName">
+		<parameter id="thirdPartyName" value="CQL-Java" />
+		<parameter id="licenceName" value="LGPL v2.1" />
+		<parameter id="licenceURLInternal" value="lgpl-2.1.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
+		<parameter id="licenceURLExternal" value="http://www.gnu.org/copyleft/lesser.html" />
+		<parameter id="thirdPartyHome" value="http://zing.z3950.org/cql/java/" />
+	</extension>
+</plugin>

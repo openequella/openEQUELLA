@@ -1,0 +1,147 @@
+Index: ./src/org/hibernate/cfg/Configuration.java
+===================================================================
+RCS file: /cvsroot/hibernate/Hibernate3/src/org/hibernate/cfg/Configuration.java,v
+retrieving revision 1.75
+diff -U2 -r1.75 Configuration.java
+--- ./src/org/hibernate/cfg/Configuration.java	1 Jul 2005 16:38:03 -0000	1.75
++++ ./src/org/hibernate/cfg/Configuration.java	13 Jul 2005 15:11:04 -0000
+@@ -579,4 +579,6 @@
+ 			while ( iter.hasNext() ) {
+ 				Table table = ( Table ) iter.next();
++                                String schema = (table.getSchema() != null) ? table.getSchema() : defaultSchema;
++                                String catalog = (table.getCatalog() != null) ? table.getCatalog() : defaultCatalog;
+ 				if ( table.isPhysicalTable() ) {
+ 					Iterator subIter = table.getForeignKeyIterator();
+@@ -586,6 +588,6 @@
+ 							script.add( fk.sqlDropString( 
+ 									dialect, 
+-									defaultCatalog,
+-									defaultSchema ) );
++									catalog,
++									schema ) );
+ 						}
+ 					}
+@@ -599,4 +601,6 @@
+ 
+ 			Table table = ( Table ) iter.next();
++                        String schema = (table.getSchema() != null) ? table.getSchema() : defaultSchema;
++                        String catalog = (table.getCatalog() != null) ? table.getCatalog() : defaultCatalog;
+ 			if ( table.isPhysicalTable() ) {
+ 
+@@ -611,6 +615,6 @@
+ 				script.add( table.sqlDropString( 
+ 						dialect, 
+-						defaultCatalog,
+-						defaultSchema ) );
++						catalog,
++						schema ) );
+ 
+ 			}
+@@ -642,11 +646,13 @@
+ 		while ( iter.hasNext() ) {
+ 			Table table = ( Table ) iter.next();
++                        String schema = (table.getSchema() != null) ? table.getSchema() : defaultSchema;
++                        String catalog = (table.getCatalog() != null) ? table.getCatalog() : defaultCatalog;
+ 			if ( table.isPhysicalTable() ) {
+ 				script.add( table.sqlCreateString( 
+ 						dialect, 
+ 						mapping, 
+-						defaultCatalog,
+-						defaultSchema ) );
+-				Iterator comments = table.sqlCommentStrings(dialect, defaultCatalog, defaultSchema);
++						catalog,
++						schema ) );
++				Iterator comments = table.sqlCommentStrings(dialect, catalog, schema);
+ 				while ( comments.hasNext() ) {
+ 					script.add( comments.next() );
+@@ -658,4 +664,6 @@
+ 		while ( iter.hasNext() ) {
+ 			Table table = ( Table ) iter.next();
++                        String schema = (table.getSchema() != null) ? table.getSchema() : defaultSchema;
++                        String catalog = (table.getCatalog() != null) ? table.getCatalog() : defaultCatalog;
+ 			if ( table.isPhysicalTable() ) {
+ 				
+@@ -664,5 +672,5 @@
+ 				    while ( subIter.hasNext() ) {
+ 				        UniqueKey uk = (UniqueKey) subIter.next();
+-				        script.add( uk.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema ) );
++				        script.add( uk.sqlCreateString(dialect, mapping, catalog, schema ) );
+ 				    }
+ 				}
+@@ -674,6 +682,6 @@
+ 					script.add( index.sqlCreateString( dialect, 
+ 							mapping, 
+-							defaultCatalog,
+-							defaultSchema ) );
++							catalog,
++							schema ) );
+ 				}
+ 
+@@ -683,6 +691,6 @@
+ 						ForeignKey fk = ( ForeignKey ) subIter.next();
+ 						if ( fk.isPhysicalConstraint() ) script.add( fk.sqlCreateString( dialect, mapping, 
+-								defaultCatalog,
+-								defaultSchema ) );
++								catalog,
++								schema ) );
+ 					}
+ 				}
+@@ -716,15 +724,17 @@
+ 		while ( iter.hasNext() ) {
+ 			Table table = ( Table ) iter.next();
++                        String schema = (table.getSchema() != null) ? table.getSchema() : defaultSchema;
++                        String catalog = (table.getCatalog() != null) ? table.getCatalog() : defaultCatalog;
+ 			if ( table.isPhysicalTable() ) {
+ 
+ 				TableMetadata tableInfo = databaseMetadata.getTableMetadata( table.getName(),
+-						table.getSchema(),
+-						table.getCatalog() );
++						schema,
++						catalog );
+ 				if ( tableInfo == null ) {
+ 					script.add( table.sqlCreateString( 
+ 							dialect, 
+ 							mapping, 
+-							defaultCatalog,
+-							defaultSchema ) );
++							catalog,
++							schema ) );
+ 				}
+ 				else {
+@@ -733,10 +743,10 @@
+ 							mapping, 
+ 							tableInfo, 
+-							defaultCatalog,
+-							defaultSchema );
++							catalog,
++							schema );
+ 					while ( subiter.hasNext() ) script.add( subiter.next() );
+ 				}
+ 
+-				Iterator comments = table.sqlCommentStrings(dialect, defaultCatalog, defaultSchema);
++				Iterator comments = table.sqlCommentStrings(dialect, catalog, schema);
+ 				while ( comments.hasNext() ) {
+ 					script.add( comments.next() );
+@@ -749,9 +759,11 @@
+ 		while ( iter.hasNext() ) {
+ 			Table table = ( Table ) iter.next();
++                        String schema = (table.getSchema() != null) ? table.getSchema() : defaultSchema;
++                        String catalog = (table.getCatalog() != null) ? table.getCatalog() : defaultCatalog;
+ 			if ( table.isPhysicalTable() ) {
+ 
+ 				TableMetadata tableInfo = databaseMetadata.getTableMetadata( table.getName(),
+-						table.getSchema(),
+-						table.getCatalog() );
++						schema,
++						catalog );
+ 
+ 				if ( dialect.hasAlterTable() ) {
+@@ -770,6 +782,6 @@
+ 									dialect, 
+ 									mapping, 
+-									defaultCatalog,
+-									defaultSchema ) );
++									catalog,
++									schema ) );
+ 						}
+ 					}

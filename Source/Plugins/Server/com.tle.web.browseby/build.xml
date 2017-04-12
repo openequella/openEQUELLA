@@ -1,0 +1,4 @@
+<project basedir="." default="compile" name="com.tle.web.browseby">
+	<property name="compile.for.server" value="true" />
+	<import file="../../build/plugins-common-build.xml"/>
+</project>

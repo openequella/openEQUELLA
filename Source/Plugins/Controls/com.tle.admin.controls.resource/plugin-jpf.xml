@@ -1,0 +1,37 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.controls.resource" version="1">
+	<attributes>
+		<attribute id="type" value="admin-console" />
+	</attributes>
+
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.admin.schema.common" />
+		<import plugin-id="com.tle.admin.controls" />
+		<import plugin-id="com.tle.admin.controls.universal" />
+		<import plugin-id="com.tle.common.wizard.controls.resource" />
+		<import plugin-id="com.tle.common.dynacollection" />
+
+		<import plugin-id="com.tle.common.powersearch" />
+		<import plugin-id="com.tle.common.collection" />
+		<import plugin-id="com.tle.common.usermanagement" />
+		<import plugin-id="com.tle.common.entity" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="admin-console" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.admin.controls.universal" point-id="editor" id="resourceHandler">
+		<parameter id="nameKey" value="com.tle.admin.controls.resource.settings.title" />
+		<parameter id="configPanel" value="com.tle.admin.controls.resource.universal.ResourceSettingsPanel" />
+	</extension>
+</plugin>

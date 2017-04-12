@@ -1,0 +1,28 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.common.connectors" version="1">
+	<attributes>
+		<!-- We need to mark this as an Admin Console plug-in because there is no specific Admin Console plug-in for Connectors 
+			that depends on this. We still need this plug-in for the Security Manager though -->
+		<attribute id="type" value="admin-console" />
+	</attributes>
+
+	<requires>
+		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.common.entity" exported="true" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.collection" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="admin-console" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+</plugin>

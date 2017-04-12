@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xalan="http://xml.apache.org/xslt">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="http://TESTSERVER/ledge.css">
+</head>
+<body>
+<table border="0" width="80%" cellspacing="0" cellpadding="7" class="MainTable">
+<tr>
+<td colspan="2" width="100%" valign="top">
+<table border="0" width="100%" cellspacing="0" cellpadding="0" background="http://TESTSERVER/images/FrameBannerRepeat.jpg">
+<tr>
+<td width="33%"><img border="0" src="http://TESTSERVER/images/FrameBanner.jpg" width="570" height="70" alt="EQUELLA"></td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td colspan="2" style="padding-left:20px" class="pagetext">Hello TEST GIVEN&nbsp;TEST SURNAME,</td>
+</tr>
+<tr>
+<td colspan="2" style="padding-left:20px" class="pagetext">The following item(s) are now publicly available in EQUELLA:</td>
+</tr>
+<td height="15">&nbsp;</td>
+<tr>
+<td width="100%" background="http://TESTSERVER/images/dottedline.gif" height="12"></td>
+</tr>
+<tr>
+<td>
+<table border="0" width="100%" cellspacing="1" cellpadding="3">
+<tr>
+<td width="10%" bgcolor="#666666"><font class="labeltextwhite">Version</font></td><td width="55%" bgcolor="#666666"><font class="labeltextwhite">Title</font></td><td width="35%" bgcolor="#666666"><font class="labeltextwhite">Owner</font></td>
+</tr>
+<tr>
+<td width="10%" bgcolor="#E5E5E5"><font class="pagetext">1</font></td><td width="55%" bgcolor="#E5E5E5"><a class="itemheading" href="http://TESTSERVER/items/c812adf0-70df-61f0-bc7d-b7b97e782847/1/">Oh yeah</a></td><td bgcolor="#E5E5E5"><span class="pagetext">  ()</span></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

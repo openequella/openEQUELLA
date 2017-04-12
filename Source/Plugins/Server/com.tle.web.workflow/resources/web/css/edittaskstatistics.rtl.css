@@ -1,0 +1,6 @@
+@import url("edittaskstatistics.css");
+
+.trend div.input.checkbox label , div.input.radio label {
+	display: inline;
+	margin: 0 4px 0 20px;
+}

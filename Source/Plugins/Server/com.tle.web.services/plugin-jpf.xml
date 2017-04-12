@@ -1,0 +1,54 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.services" version="1">
+	<requires>
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.web.remoting" />
+		<import plugin-id="com.tle.web.core" />
+		<import plugin-id="org.springframework:spring-aop" exported="true" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension-point id="invoker">
+		<parameter-def id="url" type="string" multiplicity="none-or-one">
+			<doc>
+				<doc-text>
+					This is a path which will be matched with getPathInfo() of the servlet.
+					E.g. If the
+					servlet is mapped
+					to
+					/invoker/*, you would need &quot;/something.service&quot; here in order to
+					match
+					&quot;/invoker/something.service&quot;. Usually you shouldn't specify this, as the default
+					is to map as the fully
+					qualified name of the class followed by ".service".
+				</doc-text>
+			</doc>
+		</parameter-def>
+		<parameter-def id="class" type="string" multiplicity="none-or-one">
+			<doc>
+				<doc-text>The fully qualified name of the interface class which will be published.</doc-text>
+			</doc>
+		</parameter-def>
+		<parameter-def id="bean" type="string" multiplicity="one">
+			<doc>
+				<doc-text>The bean which will implement the interface.</doc-text>
+			</doc>
+		</parameter-def>
+		<parameter-def id="allowGuests" type="boolean" multiplicity="none-or-one" />
+		<parameter-def id="enableRequestCapturing" type="boolean" multiplicity="none-or-one" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules" />
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="invokerServlet">
+		<parameter id="url-pattern" value="/invoker/*" />
+		<parameter id="bean" value="bean:com.tle.web.remoting.impl.InvokerHandler" />
+	</extension>
+
+</plugin>

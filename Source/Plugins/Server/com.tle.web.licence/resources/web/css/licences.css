@@ -1,0 +1,10 @@
+.thirdPartyHome
+{
+	width:330px;
+	overflow:hidden;
+	text-overflow:ellipsis;
+}
+
+.area p {
+	margin: 5px 0;
+}

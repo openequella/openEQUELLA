@@ -1,0 +1,23 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.google" version="1">
+	<requires>
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.platform.common" />
+		<import plugin-id="javax.mail:mail" />
+		<import plugin-id="com.google.api-client:google-api-client" exported="true" />
+		<import plugin-id="com.google.apis:google-api-services-youtube" exported="true" />
+		<import plugin-id="com.google.apis:google-api-services-books" exported="true" />
+		<import plugin-id="com.google.http-client:google-http-client" exported="true" />
+		<import plugin-id="com.google.http-client:google-http-client-jackson2" exported="true" />
+		<import plugin-id="com.google.gdata:core" exported="true" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.web.google.api" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="code">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModule" />
+</plugin>

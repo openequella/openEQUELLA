@@ -1,0 +1,16 @@
+.portlet_iframe_content IFRAME
+{
+	width: 100%;
+}
+
+.portlet_iframe_content .box_content_inner, .portlet_iframe_content .box_content  
+{
+	padding: 0;
+	margin: 0;
+}
+
+.portlet_iframe_content .box_content_inner
+{
+	/*width: 366px;*/
+	border: none;
+}

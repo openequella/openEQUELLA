@@ -1,0 +1,25 @@
+#searchform input[type=text],#searchform SELECT {
+	width: 304px;
+}
+
+html.accessibility #searchform div.input
+{
+	height: 25px;	
+}
+
+html.accessibility #searchform select
+{
+	margin-top: 5px;
+	margin-left: 12px;
+}
+
+#searchform .merlotwithin
+{
+	margin-top: 10px;
+}
+
+#searchform .merlotwithin label
+{
+	display: block;
+	margin-bottom: 4px;
+}

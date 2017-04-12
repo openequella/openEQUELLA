@@ -1,0 +1,40 @@
+
+Bootstrap - http://twitter.github.com/bootstrap/download.html
+
+Listed below are the included options when downloading customized Bootstrap library from the twitter github
+
+--------------
+1. Components
+--------------
+
+Base CSS
+- Buttons
+- Icons
+- Forms (only all the input-append stuff was kept, the rest manually deleted)
+ 
+Components
+- Button groups and dropdowns
+- Navbar
+- Alerts
+- Thumbnails
+ 
+JS Components
+- Dropdowns
+ 
+Misc
+- Close icon
+ 
+------------------
+2. jQuery Plugins
+------------------
+
+- Affix
+- Alert messages
+- Dropdowns
+- Buttons
+  
+-------------
+3. Variables
+------------
+
+All options were left on default settings

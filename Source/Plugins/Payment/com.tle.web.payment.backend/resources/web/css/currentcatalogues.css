@@ -1,0 +1,44 @@
+#catalogues .zebra tr td.image
+{
+	padding: 0px 0px 0px 5px;
+	margin: 0px;
+}
+
+#catalogues .zebra tr td
+{
+	vertical-align: middle;
+}
+
+#catalogues .zebra tr.disabled
+{
+	color: gray;
+}
+
+#key div
+{
+	background-repeat: no-repeat;
+	background-position: left;
+	padding-left: 20px;
+	height: 27px;
+	vertical-align: middle;
+}
+
+#key div p
+{
+	padding: 0px;
+	padding-left: 10px;
+	margin: 0px;
+	line-height: 27px;
+}
+
+#key div.live
+{
+	background-image: url("../images/included.png");
+	float: left;
+}
+
+#key div.notlive
+{
+	background-image: url("../images/excluded.png");
+	float: right;
+}

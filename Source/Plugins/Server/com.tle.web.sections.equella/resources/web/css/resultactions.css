@@ -1,0 +1,75 @@
+
+#searchresults-actions {
+	position: relative;
+}
+
+#searchresults-actions .area {
+	position: relative;
+	padding: 0px;
+}
+
+#actionbuttons {
+    position: relative;
+    right: 17px;
+    text-align: right;
+    top: -23px;
+    z-index: 10;
+    height: 0px;
+}
+
+#actionbuttons button.filtered {
+	background-color: #faa732
+}
+
+#actioncontent.resulttopblock {
+	display: block;
+	background: none repeat scroll 0 0 #1276AF;
+    border: 1px solid #429CC5;
+	padding: 20px 15px;
+}
+
+#searchresults-actions #actioncontent h3 {
+    color: #F6A03D;
+    font-size: 16px;
+    font-weight: normal;
+    margin: 10px 0 10px;
+}
+
+#searchresults-actions #actioncontent a {
+    color: #88CCFF;
+   	text-decoration: none;
+}
+
+#searchresults-actions #actioncontent a:hover {
+   	text-decoration: underline;
+}
+
+#searchresults-actions #actioncontent label {
+    color: white;
+}
+
+#searchresults-actions #actioncontent p {
+    color: white;
+   	text-decoration: none;
+}
+
+#searchresults-actions #actioncontent h3:first-child, #searchresults-actions #actioncontent p:first-child {
+    margin-top: 0;
+}
+
+#searchresults-actions #actioncontent p {
+    font-size: 11px;
+    line-height: 14px;
+    margin: 10px 0;
+}
+
+#searchresults-actions #actioncontent #date-range-filter div.input.select SELECT {
+    margin: 0 4px 0 0;
+    width: 160px;
+}
+
+#searchresults-actions #actioncontent div.input.select SELECT {
+    margin: 0 4px 0 0;
+    width: 166px;
+}
+

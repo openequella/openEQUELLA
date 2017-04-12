@@ -1,0 +1,11 @@
+@import url("favouritesearch.css");
+
+.favouritesearch .mandatory 
+{
+	text-align: left;
+}
+
+.favouritesearch .addButton 
+{
+	float: left;
+}

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="EQUELLA Link Fixer Plugin" default="make" basedir=".">
+	<property file="../../../../build.properties" />
+	<import file="../../../common-build.xml" />
+
+	<property name="staging" location="staging" />
+	<property name="product" location="product" />
+	<property name="build" location="build" />
+	<property name="classes" location="classes" />
+	
+	<property name="websrc" location="public_html"/>
+	<property name="staging.classes" location="${staging}/WEB-INF/classes"/>
+	
+	<property name="warname" value="tle_fixer.war"/>
+	
+	<target name="doCopy">
+		<copy todir="${staging}" overwrite="true">
+			<fileset dir="${websrc}">
+				<exclude name="**/.svn/**" />
+				<exclude name="**/_svn/**" />
+				<exclude name="bb-manifest.xml" />
+			</fileset>
+		</copy>
+		<copy todir="${build}" overwrite="true">
+			<fileset dir="${classes}" />
+		</copy>
+	</target>
+	
+	<target name="version" depends="doCopy">
+		<property file="${source.base}/version.properties" />
+		<mkdir dir="${staging}/WEB-INF"/>
+		<copy file="${websrc}/WEB-INF/bb-manifest.xml" tofile="${staging}/WEB-INF/bb-manifest.xml" overwrite="true">
+			<filterchain>
+				<tokenfilter>
+					<replacestring from="@VERSION@" to="${version.major}.${version.minor}.${version.build}" />
+				</tokenfilter>
+			</filterchain>
+		</copy>
+	</target>
+
+	<target name="mymake" depends="version">
+		<copy todir="${build}" file="${source.base}/version.properties" />
+		<copy todir="${staging}">
+			<fileset dir="${websrc}" />
+		</copy>
+	</target>
+
+	<target name="retroweave" depends="make,mymake">
+		<copy todir="${staging.classes}">
+			<fileset dir="${build}" />
+			<fileset dir="${Platform Commons.classes}" />
+		</copy>
+	</target>
+
+	<target name="war" depends="retroweave">
+		<mkdir dir="${product}"/>
+		<war destfile="${product}/${warname}" webxml="${staging}/WEB-INF/web.xml" basedir="${staging}" />
+	</target>
+
+	<target name="product" depends="rebuild,war" />
+</project>

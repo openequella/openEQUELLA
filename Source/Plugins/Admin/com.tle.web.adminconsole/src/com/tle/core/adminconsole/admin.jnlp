@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp>
+	<information>
+		<title>EQUELLA: Administration Console</title>
+		<vendor>Pearson</vendor>
+		<homepage href="http://www.equella.com/"/>
+	</information>
+	<security>
+		<all-permissions />
+	</security>
+	<resources>
+		<j2se version="1.7+" />
+	</resources>
+	<resources os="Mac">
+		<!-- We do this to work around Mac temp folder shinanigans: see #2966 -->
+		<property name="jnlp.java.io.tmpdir" value="/tmp" />
+	</resources>
+	<application-desc main-class="com.tle.admin.boot.Bootstrap" />
+</jnlp>

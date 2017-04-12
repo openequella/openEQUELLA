@@ -1,0 +1,80 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.search" version="1">
+	<requires>
+		<import plugin-id="com.sun.syndication" />
+		<import plugin-id="com.tle.common.dynacollection" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.core.dynacollection" />
+		<import plugin-id="com.tle.core.email" />
+		<import plugin-id="com.tle.core.favourites" exported="true" />
+		<import plugin-id="com.tle.core.fedsearch" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.search" />
+		<import plugin-id="com.tle.core.security.runasuser" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.core.wizard" />
+		<import plugin-id="com.tle.web.core" />
+		<import plugin-id="com.tle.web.integration" exported="true" />
+		<import plugin-id="com.tle.web.itemlist" />
+		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.web.selection" exported="true" />
+		<import plugin-id="com.tle.web.settings" />
+		<import plugin-id="com.tle.web.viewitem" />
+		<import plugin-id="com.tle.web.viewurl" exported="true" />
+		<import plugin-id="commons-codec:commons-codec" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+	
+	<extension-point id="searchSetting">
+		<parameter-def id="bean" type="string" />
+		<parameter-def id="order" type="number" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.web.sections.equella.guice.EquellaModule" />
+		<parameter id="class" value="com.tle.web.search.guice.SearchSettingsModule" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="group" value="admin-console" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="helpstrings">
+		<parameter id="file" value="lang/i18n.xml" />
+		<parameter id="group" value="resource-centre" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="searchingSettings">
+		<parameter id="path" value="/access/searchsettings.do" />
+		<parameter id="root" value="bean:/access/searchsettings" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="search">
+		<parameter id="class" value="bean:com.tle.web.search.settings.SearchSettingsLinksSection" />
+		<parameter id="grouping" value="systemsettings" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.itemlist" point-id="itemListExtension" id="selectSearchResult">
+		<parameter id="bean" value="bean:com.tle.web.search.selection.SelectItemListExtension" />
+		<parameter id="applies" value="standard" />
+		<parameter id="order" value="10000" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="feedServlet">
+		<parameter id="bean" value="bean:com.tle.web.search.feeds.FeedServlet" />
+		<parameter id="url-pattern" value="/feed" />
+	</extension>
+
+	<extension plugin-id="com.tle.web.itemlist" point-id="itemListExtension" id="thumbnailItemListViewer">
+		<parameter id="bean" value="bean:com.tle.web.search.itemlist.ThumbnailDisplay" />
+		<parameter id="applies" value="standard" />
+	</extension>
+</plugin>
