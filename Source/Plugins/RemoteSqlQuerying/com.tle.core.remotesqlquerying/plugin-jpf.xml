@@ -5,7 +5,7 @@
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.hibernate.equella" />
 		<import plugin-id="com.tle.web.services" />
-		<import plugin-id="com.zaxxer:hikaricp" />
+		<import plugin-id="com.zaxxer:HikariCP" />
 		<import plugin-id="com.google.guava:guava" />
 	</requires>
 

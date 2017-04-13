@@ -707,8 +707,9 @@
 	 },
 	 {
 		"groupId" : "com.zaxxer",
-		"artifactId" : "hikaricp",
-		"version" : "2.2.5"
+		"artifactId" : "HikariCP",
+		"version" : "2.6.1",
+		"jpfIncludes": ["org.postgresql:postgresql", "com.oracle:ojdbc6", "com.microsoft.sqlserver:mssql-jdbc"]
 	 },
 	 {
 	 	"groupId" : "com.oracle",

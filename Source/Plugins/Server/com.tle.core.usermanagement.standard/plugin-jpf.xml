@@ -1,7 +1,7 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.core.usermanagement.standard" version="1">
 	<requires>
-		<import plugin-id="com.zaxxer:hikaricp" />
+		<import plugin-id="com.zaxxer:HikariCP" />
 		<import plugin-id="com.tle.common.usermanagement" />
 		<import plugin-id="com.tle.common.usermanagement.standard" exported="true" />
 		<import plugin-id="com.tle.core.guice" />

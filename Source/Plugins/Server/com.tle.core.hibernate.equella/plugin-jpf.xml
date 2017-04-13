@@ -10,7 +10,7 @@
 		<import plugin-id="org.hibernate" exported="true" />
 		<import plugin-id="org.springframework:spring-orm" exported="true" />
 		<import plugin-id="org.springframework:spring-jdbc" exported="true" />
-		<import plugin-id="com.zaxxer:hikaricp" />
+		<import plugin-id="com.zaxxer:HikariCP" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

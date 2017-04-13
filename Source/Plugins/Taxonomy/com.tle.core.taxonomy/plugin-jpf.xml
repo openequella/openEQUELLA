@@ -22,7 +22,7 @@
 		<import plugin-id="com.tle.web.wizard" />
 		<import plugin-id="com.tle.core.hibernate.equella" />
 		<import plugin-id="commons-codec:commons-codec" />
-		<import plugin-id="com.zaxxer:hikaricp" />
+		<import plugin-id="com.zaxxer:HikariCP" />
 	</requires>
 
 	<runtime>
