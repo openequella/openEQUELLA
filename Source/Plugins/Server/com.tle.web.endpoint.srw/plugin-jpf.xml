@@ -9,7 +9,7 @@
 		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.core.freetext" />
 		<import plugin-id="com.tle.web.core" />
-		<import plugin-id="org.dspace:srw" exported="true" />
+		<import plugin-id="org.dspace.oclc:oclc-srw" exported="true" />
 		<import plugin-id="org.dspace:cql-java" exported="true" />
 		<import plugin-id="com.tle.core.schema" />
 	</requires>
@@ -20,9 +20,7 @@
 		<library type="resources" path="resources/" id="resources" />
 	</runtime>
 
-	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
-		<parameter id="class" value="com.tle.web.endpoint.srw.guice.SRWModule" />
-	</extension>
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules"/>
 
 	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="srwServlet">
 		<parameter id="bean" value="bean:com.tle.web.endpoint.srw.SRWServletExt" />

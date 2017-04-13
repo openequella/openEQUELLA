@@ -3,17 +3,16 @@
  */
 package com.tle.web.endpoint.srw;
 
-import java.io.IOException;
-
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import ORG.oclc.os.SRW.SRWServletInfo;
 
 import com.tle.core.guice.Bind;
+import com.tle.web.endpoint.srwext.SRWDatabaseExt;
 
 @Bind
 @Singleton
@@ -23,6 +22,10 @@ public class SRWServletExt extends ORG.oclc.os.SRW.SRWServlet
 
 	private static final String DB_NAME = "tle"; //$NON-NLS-1$
 
+	
+	@Inject 
+	private EquellaSRWDatabase srwDatabase;
+	
 	@Override
 	public void init() throws ServletException
 	{
@@ -41,14 +44,9 @@ public class SRWServletExt extends ORG.oclc.os.SRW.SRWServlet
 			}
 		};
 		srwInfo.init(config);
-		srwInfo.getProperties().put("defaultSchema", SRWDatabaseExt.DEFAULT_SCHEMA.getTleId()); //$NON-NLS-1$
+		srwInfo.getProperties().put("defaultSchema", EquellaSRWDatabase.DEFAULT_SCHEMA.getTleId()); //$NON-NLS-1$
 		srwInfo.getProperties().put("db." + DB_NAME + ".class", SRWDatabaseExt.class.getName()); //$NON-NLS-1$ //$NON-NLS-2$
+		SRWDatabaseExt.impl = srwDatabase;
 	}
 
-	@Override
-	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
-	{
-		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-		super.service(req, resp);
-	}
 }

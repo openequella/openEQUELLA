@@ -110,9 +110,9 @@
 	   "noSource": "true"
 	 },
 	 {
-	   "groupId": "org.dspace",
-	   "artifactId": "srw",
-	   "version": "1.0",
+	   "groupId": "org.dspace.oclc",
+	   "artifactId": "oclc-srw",
+	   "version": "1.0.20080328",
 	   "noSource": "true",
 	   "jpfIncludes" : ["org.dspace:cql-java", "axis:axis", "org.apache.axis:axis-jaxrpc", "javax.servlet:servlet-api", "commons-logging:commons-logging"]
 	 },

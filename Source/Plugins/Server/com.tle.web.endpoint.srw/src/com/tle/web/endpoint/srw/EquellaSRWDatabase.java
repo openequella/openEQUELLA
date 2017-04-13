@@ -18,10 +18,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.axis.types.NonNegativeInteger;
 import org.apache.axis.types.PositiveInteger;
@@ -41,15 +40,20 @@ import com.tle.beans.item.ItemPack;
 import com.tle.common.Utils;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.searching.Search;
+import com.tle.core.guice.Bind;
 import com.tle.core.schema.SchemaService;
 import com.tle.core.services.item.FreeTextService;
 import com.tle.core.services.item.FreetextSearchResults;
 import com.tle.core.services.item.ItemService;
 import com.tle.core.util.ItemHelper;
+import com.tle.web.endpoint.srwext.ISRWDatabase;
+import com.tle.web.endpoint.srwext.ISRWExplainer;
 
-public class SRWDatabaseExt extends ORG.oclc.os.SRW.SRWDatabase
+@Bind
+@Singleton
+public class EquellaSRWDatabase implements ISRWDatabase
 {
-	private static final Logger LOGGER = Logger.getLogger(SRWDatabaseExt.class);
+	private static final Logger LOGGER = Logger.getLogger(EquellaSRWDatabase.class);
 	private static final ThreadLocal<String> EXPLAIN = new ThreadLocal<String>();
 
 	protected static final Map<String, SchemaInfo> SCHEMAS = new HashMap<String, SchemaInfo>();
@@ -69,13 +73,13 @@ public class SRWDatabaseExt extends ORG.oclc.os.SRW.SRWDatabase
 	static final SchemaInfo DEFAULT_SCHEMA = SCHEMAS.get("tle"); //$NON-NLS-1$
 
 	@Inject
-	private static FreeTextService freeTextService;
+	private FreeTextService freeTextService;
 	@Inject
-	private static ItemService itemService;
+	private ItemService itemService;
 	@Inject
-	private static SchemaService schemaService;
+	private SchemaService schemaService;
 	@Inject
-	private static ItemHelper itemHelper;
+	private ItemHelper itemHelper;
 
 	@Override
 	public String getExtraResponseData(QueryResult result, SearchRetrieveRequestType request)
@@ -147,23 +151,6 @@ public class SRWDatabaseExt extends ORG.oclc.os.SRW.SRWDatabase
 		return ""; //$NON-NLS-1$
 	}
 
-	@Override
-	public void init(String dbname, String srwHome, String dbHome, String dbPropertiesFileName,
-		Properties dbProperties, HttpServletRequest request)
-	{
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		dbf.setNamespaceAware(true);
-		try
-		{
-			dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false); //$NON-NLS-1$
-			docb = dbf.newDocumentBuilder();
-		}
-		catch( ParserConfigurationException e )
-		{
-			// log.error(e, e);
-		}
-	}
-
 	// TODO: This should be implemented. See TLERecordIterator.nextRecord
 	@Override
 	public Record transform(Record rec, String schemaID) throws SRWDiagnostic
@@ -184,7 +171,7 @@ public class SRWDatabaseExt extends ORG.oclc.os.SRW.SRWDatabase
 		return false;
 	}
 
-	private static class TLEQueryResult extends QueryResult
+	private class TLEQueryResult extends QueryResult
 	{
 		private final FreetextSearchResults<?> searchResults;
 
@@ -265,21 +252,21 @@ public class SRWDatabaseExt extends ORG.oclc.os.SRW.SRWDatabase
 	}
 
 	@Override
-	public String getExplainRecord(HttpServletRequest request)
+	public String getExplainRecord(HttpServletRequest request, ISRWExplainer explainer)
 	{
 		// This is so it can be generated at run time because we may change the
 		// available schemas
 		String ex = EXPLAIN.get();
 		if( ex == null )
 		{
-			makeExplainRecord(request);
+			explainer.makeExplainRecord(request);
 			ex = EXPLAIN.get();
 		}
 		EXPLAIN.remove();
 		return ex;
 	}
 
-	private static class TLERecordIterator implements RecordIterator
+	private class TLERecordIterator implements RecordIterator
 	{
 		private final FreetextSearchResults<?> searchResults;
 
@@ -406,5 +393,11 @@ public class SRWDatabaseExt extends ORG.oclc.os.SRW.SRWDatabase
 		{
 			return title;
 		}
+	}
+
+	@Override
+	public void init(String arg0, String arg1, String arg2, String arg3, Properties arg4) throws Exception 
+	{
+		// nothing		
 	}
 }
