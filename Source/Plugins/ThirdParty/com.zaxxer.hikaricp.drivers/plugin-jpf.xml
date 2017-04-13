@@ -3,6 +3,6 @@
 	<requires>
 		<import plugin-id="org.postgresql:postgresql" exported="true" />
 		<import plugin-id="com.oracle:ojdbc6" exported="true" />
-		<import plugin-id="com.microsoft:sqljdbc4" exported="true" />
+		<import plugin-id="com.microsoft.sqlserver:mssql-jdbc" exported="true" />
 	</requires>
 </plugin-fragment>

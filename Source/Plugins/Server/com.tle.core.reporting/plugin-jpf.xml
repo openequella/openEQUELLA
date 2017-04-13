@@ -24,6 +24,7 @@
 		<import plugin-id="org.eclipse.birt:birt-api" exported="true" />
 		<import plugin-id="rhino:js" />
 		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="org.eclipse.birt.runtime:org.eclipse.datatools.connectivity.oda" />
 	</requires>
 
 	<runtime>

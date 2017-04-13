@@ -1,5 +1,5 @@
 {
-	"exclusions" : ["org.apache.geronimo.specs", "xerces", "xml-apis"],
+	"exclusions" : ["org.apache.geronimo.specs", "xerces", "xml-apis", "*:servlet-api"],
         "versions" : {
             "swagger": "1.3.12",
             "scala": "2.11.7",
@@ -138,9 +138,9 @@
 	   "jpfIncludes": ["javax.servlet:servlet-api"]
 	 },
 	 {
-	   "groupId": "kaltura",
-	   "artifactId": "kaltura",
-	   "version": "314.1"
+	   "groupId": "com.kaltura",
+	   "artifactId": "kalturaClient",
+	   "version": "3.2.1"
 	 },
 	 {
 	   "groupId": "edu.asu.itunesu",
@@ -508,8 +508,8 @@
 	   "artifactId": "reporting-common-6.2",
 	   "version": "2",
 	   "noSource": "true",
-	   "jpfIncludes" : ["org.eclipse.birt:datatools-connectivity-oda"],
-	   "jpfExports" : ["org.eclipse.birt:datatools-connectivity-oda"]
+	   "jpfIncludes" : ["org.eclipse.birt.runtime:org.eclipse.datatools.connectivity.oda"],
+	   "jpfExports" : ["org.eclipse.birt.runtime:org.eclipse.datatools.connectivity.oda"]
 	 },
 	 {
 	   "groupId": "commons-codec",
@@ -648,9 +648,9 @@
 	 	"jpfExports" : ["com.ibm.icu:icu4j", "com.tle.reporting:reporting-common-6.2"]
 	 },
 	 {
-	 	"groupId" : "org.eclipse.birt",
-	 	"artifactId" : "datatools-connectivity-oda",
-	 	"version" : "3.3.3"
+	 	"groupId" : "org.eclipse.birt.runtime",
+	 	"artifactId" : "org.eclipse.datatools.connectivity.oda",
+	 	"version" : "3.3.3.v201110130935"
 	 },
 	 {
 	 	"groupId" : "org.apache.httpcomponents",
@@ -679,7 +679,7 @@
 	 {
 	 	"groupId" : "com.flickr4java",
 	 	"artifactId" : "flickr4java",
-	 	"version" : "2.8",
+	 	"version" : "2.16",
 	 	"excludes" : ["org.apache.axis:axis"]
 	 },
 	 {
@@ -717,10 +717,9 @@
 	 	"noSource": "true"
 	 },
 	 {
-	 	"groupId" : "com.microsoft",
-	 	"artifactId" : "sqljdbc4",
-	 	"version" : "4.2",
-	 	"noSource": "true"
+	 	"groupId" : "com.microsoft.sqlserver",
+	 	"artifactId" : "mssql-jdbc",
+	 	"version" : "6.1.0.jre8"
 	 },
  	{
 	 	"groupId" : "com.wordnik",
@@ -785,11 +784,6 @@
 	 	"groupId" : "log4j",
 	 	"artifactId" : "log4j",
 	 	"version" : "1.2.17"
-	 },
-	 {
-	   "groupId": "javax.servlet",
-	   "artifactId": "servlet-api",
-	   "version": "3.1.0"
 	 },
 	 {
 	   "groupId": "xml-resolver",
@@ -912,7 +906,7 @@
 	   "groupId": "org.apache.tomcat",
 	   "artifactId": "tomcat-catalina",
 	   "version": "8.0.15",
-	   "jpfIncludes": ["javax.servlet:servlet-api", "org.postgresql:postgresql", "com.oracle:ojdbc6", "com.microsoft:sqljdbc4"],
+	   "jpfIncludes": ["javax.servlet:servlet-api", "org.postgresql:postgresql", "com.oracle:ojdbc6", "com.microsoft.sqlserver:mssql-jdbc"],
 	   "excludes" : ["*"]
 	 },
 	 {

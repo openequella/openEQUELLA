@@ -10,7 +10,7 @@
 		<import plugin-id="com.tle.core.migration" />
 		<import plugin-id="com.tle.web.services" />
 		<import plugin-id="commons-io:commons-io" />
-		<import plugin-id="kaltura:kaltura" exported="true" />
+		<import plugin-id="com.kaltura:kalturaClient" exported="true" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

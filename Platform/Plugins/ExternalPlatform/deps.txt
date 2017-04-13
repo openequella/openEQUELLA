@@ -1,5 +1,5 @@
 {
-	"exclusions" : ["org.apache.geronimo.specs", "xerces", "xml-apis"],
+	"exclusions" : ["org.apache.geronimo.specs", "xerces", "xml-apis", "*:servlet-api"],
 	"ignoredArtifacts" : ["commons-beanutils:commons-beanutils", "commons-logging:commons-logging"],
 	"versions" : {
 		"guice": "3.0",

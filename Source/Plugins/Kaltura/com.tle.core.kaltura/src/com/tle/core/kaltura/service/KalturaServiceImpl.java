@@ -116,7 +116,6 @@ public class KalturaServiceImpl extends AbstractEntityServiceImpl<EntityEditingB
 			.getUserSecret();
 
 		KalturaConfiguration kConfig = new KalturaConfiguration();
-		kConfig.setPartnerId(pid);
 		kConfig.setEndpoint(kalturaServer.getEndPoint());
 
 		KalturaClient kClient = new KalturaClient(kConfig);
