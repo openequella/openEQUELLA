@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -43,7 +42,6 @@ import com.tle.core.institution.impl.InstitutionMessage.SetEnabledMessage;
 import com.tle.core.institution.impl.InstitutionMessage.ValidateInstitutionMessage;
 import com.tle.core.migration.MigrationService;
 import com.tle.core.plugins.impl.PluginServiceImpl;
-import com.tle.core.services.ApplicationVersion;
 import com.tle.core.services.UrlService;
 import com.tle.core.services.impl.AlwaysRunningTask;
 import com.tle.core.services.impl.SimpleMessage;
@@ -78,7 +76,6 @@ public class InstitutionGlobalTask extends AlwaysRunningTask<SimpleMessage>
 
 	private final Map<Long, InstitutionStatus> institutionMap = Maps.newHashMap();
 	private final Set<Long> knownSchemas = Sets.newHashSet();
-	private int enabledCount = 0;
 
 	@Override
 	public void init()
@@ -185,29 +182,11 @@ public class InstitutionGlobalTask extends AlwaysRunningTask<SimpleMessage>
 	{
 		Institution institution = status.getInstitution();
 		institutionMap.put(institution.getUniqueId(), status);
-		if( institution.isEnabled() && status.isValid() )
-		{
-			enabledCount++;
-		}
 	}
 
 	private InstitutionStatus removeInstitution(long instId)
 	{
-		InstitutionStatus status = institutionMap.remove(instId);
-		if( status != null )
-		{
-			fixEnabledCount(status);
-		}
-		return status;
-	}
-
-	private void fixEnabledCount(InstitutionStatus status)
-	{
-		Institution institution = status.getInstitution();
-		if( status.isValid() && institution.isEnabled() )
-		{
-			enabledCount--;
-		}
+		return institutionMap.remove(instId);
 	}
 
 	private Institution processCreate(CreateInstitutionMessage msg, InstitutionMessageResponse response)
@@ -451,7 +430,6 @@ public class InstitutionGlobalTask extends AlwaysRunningTask<SimpleMessage>
 			if( toRemove.contains(status.getSchemaId()) )
 			{
 				iter.remove();
-				fixEnabledCount(status);
 			}
 		}
 		knownSchemas.removeAll(schemas);
@@ -551,8 +529,8 @@ public class InstitutionGlobalTask extends AlwaysRunningTask<SimpleMessage>
 
 					if( msg != null )
 					{
-						errors.add(new InstitutionValidationError(FIELD_URL, validateString("url." + msg,
-							otherUri.toString())));
+						errors.add(new InstitutionValidationError(FIELD_URL,
+							validateString("url." + msg, otherUri.toString())));
 					}
 				}
 			}

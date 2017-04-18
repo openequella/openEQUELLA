@@ -5,7 +5,6 @@ import javax.inject.Inject;
 import com.tle.core.guice.Bind;
 import com.tle.core.payment.PaymentConstants;
 import com.tle.core.security.TLEAclManager;
-import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.entities.section.AbstractRootEntitySection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -27,8 +26,9 @@ public class RootRegionSection extends AbstractRootEntitySection<OneColumnLayout
 	@Override
 	protected boolean canView(SectionInfo info)
 	{
-		return !aclService.filterNonGrantedPrivileges(PaymentConstants.PRIV_CREATE_REGION,
-			PaymentConstants.PRIV_EDIT_REGION).isEmpty();
+		return !aclService
+			.filterNonGrantedPrivileges(PaymentConstants.PRIV_CREATE_REGION, PaymentConstants.PRIV_EDIT_REGION)
+			.isEmpty();
 	}
 
 	@Override

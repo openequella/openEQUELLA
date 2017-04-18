@@ -1,8 +1,0 @@
-<!DOCTYPE plugin-fragment PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
-<plugin-fragment id="com.zaxxer.hikaricp.drivers" version="1" plugin-id="com.zaxxer:hikaricp">
-	<requires>
-		<import plugin-id="org.postgresql:postgresql" exported="true" />
-		<import plugin-id="com.oracle:ojdbc6" exported="true" />
-		<import plugin-id="com.microsoft.sqlserver:mssql-jdbc" exported="true" />
-	</requires>
-</plugin-fragment>

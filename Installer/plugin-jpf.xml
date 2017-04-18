@@ -9,7 +9,7 @@
 		<import plugin-id="jpf:jpf" />
 		<import plugin-id="org.postgresql:postgresql" />
 		<import plugin-id="com.oracle:ojdbc6" />
-		<import plugin-id="com.microsoft:sqljdbc4" />
+		<import plugin-id="com.microsoft.sqlserver:mssql-jdbc" />
 		<import plugin-id="log4j:log4j" />
 		<import plugin-id="commons-io:commons-io" />
 	</requires>

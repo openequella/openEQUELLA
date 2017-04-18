@@ -6,10 +6,10 @@ import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tle.json.entity.Users;
+import com.tle.json.framework.AdminTokenProvider;
 import com.tle.json.requests.InstitutionRequests;
 import com.tle.json.requests.UserRequests;
 import com.tle.resttests.AbstractRestAssuredTest;
-import com.tle.resttests.util.OAuthTokenCache;
 import com.tle.resttests.util.RequestsBuilder;
 import com.tle.resttests.util.RestTestConstants;
 import com.tle.resttests.util.UserRequestsBuilder;
@@ -54,16 +54,17 @@ public class GlobalAclsTest extends AbstractRestAssuredTest
 	public void setup()
 	{
 		String name = context.getFullName("ACL inst");
-		ObjectNode created = institutions.create(institutions.jsonAppendBaseUrl(name, context.getTestConfig().getAdminPassword(), "blah", "acls", true));
-		RequestsBuilder builder = new RequestsBuilder(this, OAuthTokenCache.ADMIN_TOKEN, URI.create(created.get("url")
-			.asText()));
+		ObjectNode created = institutions.create(
+			institutions.jsonAppendBaseUrl(name, context.getTestConfig().getAdminPassword(), "blah", "acls", true));
+		RequestsBuilder builder = new RequestsBuilder(this, new AdminTokenProvider(testConfig.getAdminPassword()),
+			URI.create(created.get("url").asText()));
 		//acls = builder.acls();
 		UserRequestsBuilder userRequests = new UserRequestsBuilder(builder);
 		UserRequests users = userRequests.users();
-		users.createId(Users.json(RestTestConstants.USERID_AUTOTEST, "AutoTest", "Auto", "Test", "auto@test.com",
-			"automated"));
-		//OAuthTokenCache tokenCache = builder.tokenCache();
-		//RequestsBuilder autoTestBuilder = builder.user(tokenCache.getProvider(RestTestConstants.USERID_AUTOTEST));
+		users.createId(
+			Users.json(RestTestConstants.USERID_AUTOTEST, "AutoTest", "Auto", "Test", "auto@test.com", "automated"));
+			//OAuthTokenCache tokenCache = builder.tokenCache();
+			//RequestsBuilder autoTestBuilder = builder.user(tokenCache.getProvider(RestTestConstants.USERID_AUTOTEST));
 
 		//collections = autoTestBuilder.collections();
 		//schemas = autoTestBuilder.schemas();
@@ -86,7 +87,7 @@ public class GlobalAclsTest extends AbstractRestAssuredTest
 		aclList = addGlobalRule(aclList, autoTestGrant("VIEW_SCHEMA"));
 		aclList = addGlobalRule(aclList, autoTestGrant("VIEW_COLLECTION"));
 		acls.edit(aclList);
-
+	
 		final ObjectNode schemaJsonInp = schemaJson;
 		schemaJson = schemas.untilSuccess(new Callable<ObjectNode>()
 		{
@@ -99,16 +100,16 @@ public class GlobalAclsTest extends AbstractRestAssuredTest
 		String schemaUuid = schemas.getId(schemaJson);
 		ObjectNode collectionJson = collections.create(CollectionJson.json(context.getFullName("ACL Collection"),
 			schemaUuid, null));
-
+	
 		collectionUuid = collections.getId(collectionJson);
 		itemJson = Items.json(collectionUuid, "item/name", context.getFullName("ACL Item"));
 		items.createFail(items.accessDeniedRequest(), itemJson);
-
+	
 		collections.listAclsFail(collections.accessDeniedRequest());
-
+	
 		schemaJson.put("name", context.getFullName("Edited ACL Schema"));
 		schemas.editNoPermission(schemaJson);
-
+	
 		aclList = addGlobalRule(aclList, autoTestGrant("EDIT_SECURITY_TREE"));
 		acls.edit(aclList);
 		ObjectNode schemaAcls = schemas.listAcls();
@@ -123,12 +124,12 @@ public class GlobalAclsTest extends AbstractRestAssuredTest
 		collections.editAcls(collectionAcls);
 		itemJson = items.create(itemJson);
 	}
-
+	
 	private ObjectNode autoTestGrant(String priv)
 	{
 		return autoTestRule(priv, true, false);
 	}
-
+	
 	private ObjectNode autoTestRule(String priv, boolean grant, boolean override)
 	{
 		return AclLists.userRule(priv, grant, override, RestTestConstants.USERID_AUTOTEST);
@@ -145,7 +146,7 @@ public class GlobalAclsTest extends AbstractRestAssuredTest
 		collections.editAcls(collectionAcls);
 		itemId = items.editId(itemJson);
 	}
-
+	
 	@Test(dependsOnMethods = "globalStatusPrivs", groups = "eps")
 	public void reindexTest()
 	{
@@ -170,21 +171,21 @@ public class GlobalAclsTest extends AbstractRestAssuredTest
 		collections.editId(collectionJson);
 		searches.waitUntil(request, SearchRequests.resultAvailable(itemId));
 	}
-
+	
 	@Test(dependsOnMethods = "reindexTest", groups = "eps")
 	public void listAndViewEntity()
 	{
 		String schemaId = schemas.getId(schemas.create(Schemas.basicJson("listViewEntity")));
 		String collectionId = collections.getId(collections.create(CollectionJson.json("", schemaId, null)));
-
+	
 		schemas.listFail(schemas.accessDeniedRequest());
 		collections.listFail(collections.accessDeniedRequest());
-
+	
 		ObjectNode aclList = addGlobalRule(null, autoTestGrant("LIST_COLLECTION"));
 		// Resets everything
 		aclList = addGlobalRule(aclList, autoTestGrant("LIST_SCHEMA"));
 		acls.edit(aclList);
-
+	
 		Assert.assertTrue(schemas.list().get("results").get(0).get("definition") == null,
 			"Shouldn't have permissions to see the definition");
 		Assert.assertTrue(collections.list().get("results").get(0).get("schema") == null,
@@ -193,11 +194,11 @@ public class GlobalAclsTest extends AbstractRestAssuredTest
 			"Shouldn't have permissions to see the definition");
 		Assert.assertTrue(collections.get(collectionId).get("schema") == null,
 			"Shouldn't have permissions to see the schema");
-
+	
 		aclList = addGlobalRule(aclList, autoTestGrant("VIEW_COLLECTION"));
 		aclList = addGlobalRule(aclList, autoTestGrant("VIEW_SCHEMA"));
 		acls.edit(aclList);
-
+	
 		Assert.assertTrue(schemas.list().get("results").get(0).get("definition") != null,
 			"Should have permissions to see the definition");
 		Assert.assertTrue(collections.list().get("results").get(0).get("schema").get("uuid").asText() != null,

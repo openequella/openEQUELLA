@@ -6,7 +6,6 @@ import static com.tle.core.payment.PaymentConstants.PRIV_EDIT_REGION;
 import javax.inject.Inject;
 
 import com.tle.core.guice.Bind;
-import com.tle.core.payment.PaymentConstants;
 import com.tle.core.security.TLEAclManager;
 import com.tle.web.entities.section.AbstractEntitySettingsLinkSection;
 import com.tle.web.sections.SectionInfo;

@@ -59,7 +59,6 @@ import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.layout.RepositoryLayout;
 import org.eclipse.aether.spi.connector.layout.RepositoryLayoutFactory;
-import org.eclipse.aether.spi.connector.layout.RepositoryLayout.Checksum;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transfer.NoRepositoryLayoutException;
 import org.eclipse.aether.transport.wagon.WagonProvider;
@@ -287,7 +286,7 @@ public class DownloadJars extends Task
 			final BuildException[] throwable = new BuildException[1];
 			for( final DependencyNode n : nodes )
 			{
-				if (throwable[0] != null)
+				if( throwable[0] != null )
 				{
 					break;
 				}
@@ -311,11 +310,11 @@ public class DownloadJars extends Task
 			executor.shutdown();
 			executor.awaitTermination(30, TimeUnit.MINUTES);
 
-			if ( throwable[0] != null )
+			if( throwable[0] != null )
 			{
 				throw throwable[0];
 			}
-			
+
 			if( createClasspath )
 			{
 				FileOutputStream fileOutputStream = new FileOutputStream(new File(destDir, ".classpath"));
@@ -357,7 +356,7 @@ public class DownloadJars extends Task
 			if( createClasspath )
 			{
 				String name = artifact.getFile().getName();
-				synchronized (classpathRoot) 
+				synchronized( classpathRoot )
 				{
 					classpathRoot.addContent(new Element("classpathentry").setAttribute("kind", "lib")
 						.setAttribute("path", name).setAttribute("exported", "true")
@@ -388,8 +387,8 @@ public class DownloadJars extends Task
 	private Exclusion convertExclusion(String exclusion)
 	{
 		String[] parts = exclusion.split(":");
-		Exclusion exclude = new Exclusion(parts[0], parts.length > 1 ? parts[1] : "*", parts.length > 2 ? parts[2]
-			: "*", parts.length > 3 ? parts[3] : "*");
+		Exclusion exclude = new Exclusion(parts[0], parts.length > 1 ? parts[1] : "*",
+			parts.length > 2 ? parts[2] : "*", parts.length > 3 ? parts[3] : "*");
 		return exclude;
 	}
 
@@ -490,8 +489,8 @@ public class DownloadJars extends Task
 	}
 
 	private synchronized String createXmlString(OptionalDependancyFilter filter, String artifactId, String jpfId,
-		String fragmentHost, String pluginXml, Dep localDep, List<DependencyNode> children) throws JDOMException,
-		IOException
+		String fragmentHost, String pluginXml, Dep localDep, List<DependencyNode> children)
+			throws JDOMException, IOException
 	{
 		System.out.println("Creating jpf plugin " + artifactId);
 		Document jpfXml = sax.build(new StringReader(pluginXml));
@@ -617,103 +616,112 @@ public class DownloadJars extends Task
 		return locator.getService(RepositorySystem.class);
 	}
 
-	public static class SpringSourceLayoutFactory implements RepositoryLayoutFactory {
+	public static class SpringSourceLayoutFactory implements RepositoryLayoutFactory
+	{
 
 		@Override
-		public float getPriority() {
+		public float getPriority()
+		{
 			return 0;
 		}
 
 		@Override
 		public RepositoryLayout newInstance(RepositorySystemSession repoSystem, RemoteRepository repo)
-				throws NoRepositoryLayoutException {
-			if ("springsource".equals(repo.getContentType()))
+			throws NoRepositoryLayoutException
+		{
+			if( "springsource".equals(repo.getContentType()) )
 			{
-				return new RepositoryLayout() {
+				return new RepositoryLayout()
+				{
 
-					private URI toUri( String path )
-			        {
-			            try
-			            {
-			                return new URI( null, null, path, null );
-			            }
-			            catch ( URISyntaxException e )
-			            {
-			                throw new IllegalStateException( e );
-			            }
-			        }
-					
-					public List<Checksum> getChecksums( Artifact artifact, boolean upload, URI location )
-			        {
-			            return getChecksums( location );
-			        }
-
-			        public List<Checksum> getChecksums( Metadata metadata, boolean upload, URI location )
-			        {
-			            return getChecksums( location );
-			        }
-
-					private List<Checksum> getChecksums( URI location )
-			        {
-			            return Arrays.asList( Checksum.forLocation( location, "SHA-1" ), Checksum.forLocation( location, "MD5" ) );
-			        }
-					
-					@Override
-					public URI getLocation(Artifact artifact, boolean arg1) {
-						StringBuilder path = new StringBuilder( 128 );
-
-			            path.append( artifact.getGroupId() ).append( '/' );
-
-			            path.append( artifact.getArtifactId() ).append( '/' );
-
-			            path.append( artifact.getBaseVersion() ).append( '/' );
-
-			            path.append( artifact.getArtifactId() ).append( '-' ).append( artifact.getVersion() );
-
-			            if ( artifact.getClassifier().length() > 0 )
-			            {
-			                path.append( '-' ).append( artifact.getClassifier() );
-			            }
-
-			            if ( artifact.getExtension().length() > 0 )
-			            {
-			                path.append( '.' ).append( artifact.getExtension() );
-			            }
-
-			            return toUri( path.toString() );
+					private URI toUri(String path)
+					{
+						try
+						{
+							return new URI(null, null, path, null);
+						}
+						catch( URISyntaxException e )
+						{
+							throw new IllegalStateException(e);
+						}
 					}
 
 					@Override
-					public URI getLocation(Metadata metadata, boolean arg1) {
-						StringBuilder path = new StringBuilder( 128 );
-
-			            if ( metadata.getGroupId().length() > 0 )
-			            {
-			                path.append( metadata.getGroupId() ).append( '/' );
-
-			                if ( metadata.getArtifactId().length() > 0 )
-			                {
-			                    path.append( metadata.getArtifactId() ).append( '/' );
-
-			                    if ( metadata.getVersion().length() > 0 )
-			                    {
-			                        path.append( metadata.getVersion() ).append( '/' );
-			                    }
-			                }
-			            }
-
-			            path.append( metadata.getType() );
-
-			            return toUri( path.toString() );
+					public List<Checksum> getChecksums(Artifact artifact, boolean upload, URI location)
+					{
+						return getChecksums(location);
 					}
-					
+
+					@Override
+					public List<Checksum> getChecksums(Metadata metadata, boolean upload, URI location)
+					{
+						return getChecksums(location);
+					}
+
+					private List<Checksum> getChecksums(URI location)
+					{
+						return Arrays.asList(Checksum.forLocation(location, "SHA-1"),
+							Checksum.forLocation(location, "MD5"));
+					}
+
+					@Override
+					public URI getLocation(Artifact artifact, boolean arg1)
+					{
+						StringBuilder path = new StringBuilder(128);
+
+						path.append(artifact.getGroupId()).append('/');
+
+						path.append(artifact.getArtifactId()).append('/');
+
+						path.append(artifact.getBaseVersion()).append('/');
+
+						path.append(artifact.getArtifactId()).append('-').append(artifact.getVersion());
+
+						if( artifact.getClassifier().length() > 0 )
+						{
+							path.append('-').append(artifact.getClassifier());
+						}
+
+						if( artifact.getExtension().length() > 0 )
+						{
+							path.append('.').append(artifact.getExtension());
+						}
+
+						return toUri(path.toString());
+					}
+
+					@Override
+					public URI getLocation(Metadata metadata, boolean arg1)
+					{
+						StringBuilder path = new StringBuilder(128);
+
+						if( metadata.getGroupId().length() > 0 )
+						{
+							path.append(metadata.getGroupId()).append('/');
+
+							if( metadata.getArtifactId().length() > 0 )
+							{
+								path.append(metadata.getArtifactId()).append('/');
+
+								if( metadata.getVersion().length() > 0 )
+								{
+									path.append(metadata.getVersion()).append('/');
+								}
+							}
+						}
+
+						path.append(metadata.getType());
+
+						return toUri(path.toString());
+					}
+
 				};
 			}
 			throw new NoRepositoryLayoutException(repo);
 		}
-		
+
 	}
-	
+
 	public static class ManualWagonProvider implements WagonProvider
 	{
 		@Override
