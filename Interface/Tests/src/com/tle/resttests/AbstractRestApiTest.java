@@ -86,13 +86,11 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest
 	private ClientConnectionManager conMan;
 	private SSLSocketFactory blindFactory;
 	private String adminToken;
-	private String systemToken;
 
 	@BeforeClass
 	public void setup() throws Exception
 	{
 		adminToken = "admin_token=" + testConfig.getAdminPassword();
-		systemToken = "system_token=" + testConfig.getAdminPassword();
 		conMan = new PoolingClientConnectionManager();
 
 		// Allows us to just accept all SSL certs
