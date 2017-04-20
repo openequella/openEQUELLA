@@ -32,7 +32,9 @@
 			
 			-dontwarn javax.**,org.apache.commons.**,org.bouncycastle.**,
 				org.apache.tools.tar.**,org.antlr.stringtemplate.**,
-				de.schlichtherle.**,oracle.jdbc.**,oracle.sql.**,oracle.net.ano.AuthenticationService*,com.dytech.common.log4j.**
+				de.schlichtherle.**,oracle.jdbc.**,oracle.sql.**,oracle.net.ano.AuthenticationService*,com.dytech.common.log4j.**,
+				com.microsoft.azure.**,
+				com.microsoft.sqlserver.jdbc.KeyVaultCredential
 
 			-dontnote
 			-injars ${source.base}/version.properties

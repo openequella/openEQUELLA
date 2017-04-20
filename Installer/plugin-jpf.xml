@@ -10,8 +10,11 @@
 		<import plugin-id="org.postgresql:postgresql" />
 		<import plugin-id="com.oracle:ojdbc6" />
 		<import plugin-id="com.microsoft.sqlserver:mssql-jdbc" />
+		<import plugin-id="com.microsoft.azure:azure-keyvault" />
 		<import plugin-id="log4j:log4j" />
 		<import plugin-id="commons-io:commons-io" />
+		<import plugin-id="org.apache.httpcomponents:httpclient" />
+		<import plugin-id="org.apache.httpcomponents:httpcore" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="code">
