@@ -869,12 +869,6 @@
 	 	"noSource": "true"
 	 },
 	 {
-		"groupId": "com.pearson.pdn.icodeon",
-	 	"artifactId": "icodeon-java-sdk",
-	  	"version": "1.0",
-        "jpfIncludes": ["org.apache.httpcomponents:httpcore"]
-	 },
-	 {
 	 	"groupId": "uk.ac.ed.ph.qtiworks",
 	 	"artifactId": "qtiworks-jqtiplus",
 	 	"version": "1.0-beta3",
