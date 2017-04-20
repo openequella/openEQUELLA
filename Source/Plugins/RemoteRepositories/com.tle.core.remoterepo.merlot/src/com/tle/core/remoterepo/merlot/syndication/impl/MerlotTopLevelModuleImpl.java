@@ -1,6 +1,7 @@
 package com.tle.core.remoterepo.merlot.syndication.impl;
 
-import com.sun.syndication.feed.module.ModuleImpl;
+import com.rometools.rome.feed.CopyFrom;
+import com.rometools.rome.feed.module.ModuleImpl;
 import com.tle.core.remoterepo.merlot.syndication.MerlotTopLevelModule;
 
 /**
@@ -19,12 +20,11 @@ public class MerlotTopLevelModuleImpl extends ModuleImpl implements MerlotTopLev
 	}
 
 	@Override
-	public void copyFrom(Object obj)
-	{
+	public void copyFrom(CopyFrom obj) {
 		MerlotTopLevelModule other = (MerlotTopLevelModule) obj;
 		totalCount = other.getTotalCount();
 		resultCount = other.getResultCount();
-		lastRecNumber = other.getLastRecNumber();
+		lastRecNumber = other.getLastRecNumber();		
 	}
 
 	@Override
@@ -68,4 +68,5 @@ public class MerlotTopLevelModuleImpl extends ModuleImpl implements MerlotTopLev
 	{
 		this.lastRecNumber = lastRecNumber;
 	}
+
 }

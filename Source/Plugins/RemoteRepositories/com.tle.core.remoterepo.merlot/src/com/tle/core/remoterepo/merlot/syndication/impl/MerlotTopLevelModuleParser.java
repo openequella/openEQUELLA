@@ -1,9 +1,11 @@
 package com.tle.core.remoterepo.merlot.syndication.impl;
 
-import org.jdom.Element;
+import java.util.Locale;
 
-import com.sun.syndication.feed.module.Module;
-import com.sun.syndication.io.ModuleParser;
+import org.jdom2.Element;
+
+import com.rometools.rome.feed.module.Module;
+import com.rometools.rome.io.ModuleParser;
 import com.tle.common.Utils;
 import com.tle.core.remoterepo.merlot.syndication.MerlotTopLevelModule;
 
@@ -20,7 +22,7 @@ public class MerlotTopLevelModuleParser implements ModuleParser
 
 	@Override
 	@SuppressWarnings("nls")
-	public Module parse(Element element)
+	public Module parse(Element element, Locale locale)
 	{
 		MerlotTopLevelModule merlot = new MerlotTopLevelModuleImpl();
 		boolean foundSomething = false;

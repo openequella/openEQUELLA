@@ -19,18 +19,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 
-import com.sun.syndication.feed.WireFeed;
-import com.sun.syndication.feed.atom.Feed;
-import com.sun.syndication.feed.synd.SyndCategory;
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndEnclosure;
-import com.sun.syndication.feed.synd.SyndEnclosureImpl;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.feed.synd.SyndFeedImpl;
-import com.sun.syndication.feed.synd.SyndLink;
-import com.sun.syndication.feed.synd.SyndLinkImpl;
-import com.sun.syndication.io.WireFeedOutput;
+import com.rometools.rome.feed.CopyFrom;
+import com.rometools.rome.feed.WireFeed;
+import com.rometools.rome.feed.atom.Feed;
+import com.rometools.rome.feed.synd.SyndCategory;
+import com.rometools.rome.feed.synd.SyndContent;
+import com.rometools.rome.feed.synd.SyndEnclosure;
+import com.rometools.rome.feed.synd.SyndEnclosureImpl;
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndEntryImpl;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.feed.synd.SyndFeedImpl;
+import com.rometools.rome.feed.synd.SyndLink;
+import com.rometools.rome.feed.synd.SyndLinkImpl;
+import com.rometools.rome.io.WireFeedOutput;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.AttachmentType;
@@ -288,7 +290,7 @@ public class FeedServlet extends HttpServlet
 
 	{
 		SyndFeed feed = new SyndFeedImpl();
-		List<SyndEntryImpl> entries = new ArrayList<SyndEntryImpl>();
+		List<SyndEntry> entries = new ArrayList<SyndEntry>();
 		ItemList<? extends ItemListEntry> itemList = searchResults.getItemList(info);
 		if( itemList instanceof SearchResultsListener )
 		{
@@ -427,6 +429,17 @@ public class FeedServlet extends HttpServlet
 		{
 			throw new UnsupportedOperationException();
 		}
+
+		@Override
+		public Class<? extends CopyFrom> getInterface() {
+			return SyndCategory.class;
+		}
+
+		@Override
+		public void copyFrom(CopyFrom obj) {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 
 	public static class LabelContent implements SyndContent
@@ -487,15 +500,15 @@ public class FeedServlet extends HttpServlet
 		}
 
 		@Override
-		public void copyFrom(Object obj)
-		{
-			throw new UnsupportedOperationException();
+		public Class<? extends CopyFrom> getInterface() {
+			return SyndContent.class;
 		}
 
 		@Override
-		public Class<?> getInterface()
-		{
-			throw new UnsupportedOperationException();
+		public void copyFrom(CopyFrom obj) {
+			// TODO Auto-generated method stub
+			
 		}
+
 	}
 }

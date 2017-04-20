@@ -271,10 +271,10 @@
 	   "version": "2.2"
 	 },
 	 {
-	   "groupId": "com.sun.syndication",
+	   "groupId": "com.rometools",
 	   "artifactId": "rome",
-	   "version": "1.0-TLE",
-	   "jpfIncludes" : ["jdom:jdom"]
+	   "version": "1.7.2",
+	   "jpfExports" : ["org.jdom:jdom2"]
 	 },
 	 {
 	   "groupId": "org.scannotation",

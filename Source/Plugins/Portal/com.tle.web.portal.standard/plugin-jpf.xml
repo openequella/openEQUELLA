@@ -1,8 +1,8 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.web.portal.standard" version="1">
 	<requires>
-		<import plugin-id="jdom:jdom" />
-		<import plugin-id="com.sun.syndication" />
+		<import plugin-id="com.rometools:rome" />
+		<import plugin-id="org.jdom:jdom2" />
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.common.portal" />
 		<import plugin-id="com.tle.common.search" />

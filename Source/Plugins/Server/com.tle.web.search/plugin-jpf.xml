@@ -1,7 +1,7 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.web.search" version="1">
 	<requires>
-		<import plugin-id="com.sun.syndication" />
+		<import plugin-id="com.rometools:rome" />
 		<import plugin-id="com.tle.common.dynacollection" />
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.core.dynacollection" />

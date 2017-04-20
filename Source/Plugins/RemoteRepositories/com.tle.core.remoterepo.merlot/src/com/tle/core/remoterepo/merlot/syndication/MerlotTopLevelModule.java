@@ -1,8 +1,9 @@
 package com.tle.core.remoterepo.merlot.syndication;
 
-import org.jdom.Namespace;
 
-import com.sun.syndication.feed.module.Module;
+import org.jdom2.Namespace;
+
+import com.rometools.rome.feed.module.Module;
 
 /**
  * @author aholland
