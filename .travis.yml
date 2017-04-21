@@ -6,8 +6,8 @@ jdk:
 before_install:
   - sudo apt-get install awscli
 install:
-  - aws s3 cp s3://doolse-subba/equella.keystore $HOME
-  - aws s3 cp s3://doolse-subba/equella-deps.zip $HOME
+  - aws s3 --region us-east-1 cp s3://doolse-subba/equella.keystore $HOME
+  - aws s3 --region us-east-1 cp s3://doolse-subba/equella-deps.zip $HOME
   - unzip $HOME/equella-deps.zip -d $HOME
 script: ant release
 env:
