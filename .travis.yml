@@ -1,2 +1,12 @@
 language: java
+before_install:
+  - sudo apt-get install awscli
+install:
+  - aws s3 cp s3://doolse-subba/equella.keystore $HOME
+  - aws s3 cp s3://doolse-subba/equella-deps.zip $HOME
+  - unzip $HOME/equella-deps.zip -d $HOME
 script: ant release
+env:
+  global:
+  - secure: i3+DgoTlxfSqkUvO218nGnjZVhJ/1h/+VzoBYEE7I75r707uZAFhR3mEtopN3DPCcDzw4uT1SGtMRS6JF3/u3IGcd0VVc0Y6PQcFsujFMyGNoN71kUv7KWdBMaiAeYd2pcXw8DPXLOd/E7YnjzmngBnlWJOKCXlgIrC+7ljhw+GQEUebjvePG9b/1rfuL24gAJESY+0r5cpeYuYmN782lb0NV8vGOVEbwlha3asMSgh+tjym3cP9AoeVcVGA0f+4Jnz77eFwm15/BRY1f8l8vEsVH+DrfcfHk+0JyehmIwUQsvY+MzXtNP1ivkVflWQi8BNzNrng9BX8Xxt+qBWcS39mwyQC1ppXqonaRs+u5xW/qyms2Ee0Kf6M+NLFUzTGyYP13YmqNpHjcYqgNUvobrL7iqJbikir+euFQvzw2TFfHa6N3A+1gP/VhaNbgyf4G18mcV0ngdMeEMf02SDEkCj06VHdobwMCdGZVBqThEdcLgePmaSEeh80VNZKewCBl95hsFxoOuqndE/b7t328OOnB8Zy4UDR1lbjP2ny2TDdnu85UEGSTdQ+daoMDWGvhiibtMJDtm+LxPQ8PH1O6Jhiq5dkq+IkrCUlcIIP9I2UB+GMEQZfvzLLgcUvErfX/osz+evz6x+qLFyevwSWqRlxTOvnHm25aLOswoTQ50U=
+  - secure: j+mmhPvxEKNAFsdcwA19gSpDxKVKpXgspRkTvybmOL6i7COWQEHSvi8WWA71sh70J8+E/bVleZxbrJ8bAgVluO+X72OKx3gX/kHt7DD9ueNWQ70j4+oAeyhc4m2VTnUM5trgReWX4e7eJCnSj+DS2g/Y2CiExx23oNLdx4lC7wneiB8h/Ru5naOwxIjRkIdw/GA9muoM0VALxqwvONoMbwqMaXfetdbXDskvlXoJlRygSnRJ2NZIJ+RO8yjYtdJ4iGpgZRlQid2/HYAZwgFqFLsePQKyYC8mfJg3ZJPTnVzFgBdfvWdZ/6mrj+NFGGMs2D+7hG23eFnEkueEQcYUBRnc2nigYViI2IzfLv3uvviM8KzXZQ/f2332cWeqEF3NoYpQQfbKKg55iAKv/JeMsxILWDMjERJQPOkd45tmDuRzmZMGbAfBUWOs/XkjZvCa+cIUIVeLV+VvB7VQ9amIMjxX2aeOvYBbvyGCbFr5Kzv+K96YnPAqHPUUdoJwvKXm5DnR8UrEwseV0hyYdesQRxPM01RTM1VdcQhDTS5/uj/KmwyF0Cis5/syLQZ1IJVk6F2pKm233trmsQnBewfJtMzrh4+xtHzM3IRBx6aY9nvJwe3Pypj36AWMKTQq32yzsE0whFJJr1KbH/F/DnHmdCgWqrhs2SPY9vN3ZZ7P+E4=
