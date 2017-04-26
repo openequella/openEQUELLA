@@ -11,7 +11,6 @@ test.reports
 /.recommenders
 /Servers
 /RemoteSystemsTempFiles
-/learningedge-config*
 /Source/Server/equellaserver/*.launch
 /workspace*
 /workbench
@@ -27,9 +26,6 @@ test.reports
 .ant-targets-build.xml
 ######### Build artifacts ###################
 spring-scanner-cache.csv
-/Source/Plugins/Integrations/com.tle.integration.blackboard/resources/web/downloads
-/Source/Plugins/Integrations/com.tle.integration.standard/resources/web/downloads
-/Source/Plugins/Server/com.tle.web.institution/resources/web/downloads
 /Installer/iso
 /Source/Build/language-packs
 /Source/Build/themes

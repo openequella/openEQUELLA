@@ -232,4 +232,7 @@
 		<publish-jars to="language-packs" from="${source.base}/Source/Build/language-packs/" />
 		<publish-jars to="jar" from="${TLE Import Export Utils.base}/product" />
 	</target>
+	<target name="generate-config">
+		<subant inheritAll="false" target="generate-config" buildpath="Dev/learningedge-config" />
+	</target>
 </project>

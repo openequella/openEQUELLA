@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="learningedge-config" default="generate-config" basedir=".">
+	<property file="../../build.properties" />
+	<property file="dev.properties" />
+	<property name="hostname" value="localhost"/>
+	<property name="port" value="8080"/>
+	<property name="admin.url" value="http://${hostname}:${port}/"/>
+	<property name="imagemagickbin.dir" value="/usr/bin" />
+	<property name="installerconfig.dir" value="${TLE Installer.base}/data/server/learningedge-config"/>
+	<property name="defaults.dir" location="${basedir}/defaults"/>
+	<target name="generate-config">
+		<copy file="${installerconfig.dir}/mandatory-config.properties" tofile="mandatory-config.properties"/>
+		<copy file="${installerconfig.dir}/hikari.properties" tofile="hikari.properties"/>
+		<copy file="${installerconfig.dir}/plugins/com.tle.web.viewitem/mandatory.properties" todir="plugins/com.tle.web.viewitem"/>
+		<copy file="${installerconfig.dir}/plugins/com.tle.core.imagemagick/config.properties.unresolved" tofile="plugins/com.tle.core.imagemagick/config.properties"/>
+		<copy file="${defaults.dir}/learningedge-log4j.properties.default" tofile="learningedge-log4j.properties"/>
+		<copy file="${defaults.dir}/optional-config.properties.default" tofile="optional-config.properties"/>
+		<copy file="${defaults.dir}/hibernate.properties.default" tofile="hibernate.properties"/>
+		<propertyfile file="mandatory-config.properties">
+			<entry key="java.home" value="${java.home}"/>
+			<entry key="http.port" value="8080"/>
+			<entry key="filestore.root" value="${basedir}/data/filestore"/>
+			<entry key="freetext.index.location" value="${basedir}/data/freetext"/>
+			<entry key="admin.url" value="${admin.url}"/>
+			<entry key="freetext.stopwords.file" value="${installerconfig.dir}/en-stopWords.txt" />
+			<entry key="plugins.location" value="${source.base}/Source/Plugins,${source.base}/Interface/Plugins,${source.base}/Platform/Plugins"/>
+		</propertyfile>
+		<propertyfile file="plugins/com.tle.core.imagemagick/config.properties">
+			<entry key="imageMagick.path" value="${imagemagickbin.dir}"/>
+		</propertyfile>
+		<echo>Dev configuration with admin url of "${admin.url}"</echo>
+		<echo>ImageMagick binary dir set to "${imagemagickbin.dir}" - edit at "${basedir}/plugins/com.tle.web.imagemagick/config.properties"</echo>
+		<echo>Please edit database configuration file at "${basedir}/hibernate.properties"</echo>
+	</target>
+</project>
