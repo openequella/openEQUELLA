@@ -85,12 +85,9 @@ public class ViewItemServiceImpl implements ViewItemService, ItemDefinitionDelet
 				Parameter p2 = extensions.get(o2.getValue()).getParameter("order");
 				if( p1 != null && p2 != null )
 				{
-					Integer x = p1.valueAsNumber().intValue();
-					Integer y = p2.valueAsNumber().intValue();
-					if( x != null && y != null )
-					{
-						return Integer.compare(x, y);
-					}
+					int x = p1.valueAsNumber().intValue();
+					int y = p2.valueAsNumber().intValue();
+					return Integer.compare(x, y);
 				}
 				return Format.NAME_VALUE_COMPARATOR.compare(o1, o2);
 			}

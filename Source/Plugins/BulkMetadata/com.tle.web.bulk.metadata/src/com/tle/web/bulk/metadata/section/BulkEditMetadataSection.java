@@ -215,8 +215,8 @@ public class BulkEditMetadataSection extends AbstractPrototypeSection<BulkEditMe
 		{
 			chooseActionButton.setClickHandler(context,
 				new StatementHandler(getAjaxUpate(getTree(), "chooseAction", false, AJAX_DIV, BUTTON_FOOTER_DIV))
-					.addValidator(pathValues.createNotBlankValidator().setFailureStatements(
-						Js.alert_s(BLANK_TERMS_LABEL))));
+					.addValidator(
+						pathValues.createNotBlankValidator().setFailureStatements(Js.alert_s(BLANK_TERMS_LABEL))));
 		}
 	}
 
@@ -234,10 +234,10 @@ public class BulkEditMetadataSection extends AbstractPrototypeSection<BulkEditMe
 		modsTable.setSelectionsModel(new ModificationTableModel(move, delete, edit));
 		modsTable.setAddAction(addModification);
 
-		addModification.setClickHandler(new StatementHandler(getAjaxUpate(tree, "addMod", false, AJAX_DIV,
-			BUTTON_FOOTER_DIV)));
-		editNodesButton.setClickHandler(new StatementHandler(getAjaxUpate(tree, "addMod", false, AJAX_DIV,
-			BUTTON_FOOTER_DIV)));
+		addModification
+			.setClickHandler(new StatementHandler(getAjaxUpate(tree, "addMod", false, AJAX_DIV, BUTTON_FOOTER_DIV)));
+		editNodesButton
+			.setClickHandler(new StatementHandler(getAjaxUpate(tree, "addMod", false, AJAX_DIV, BUTTON_FOOTER_DIV)));
 		editNodesButton.setComponentAttribute(ButtonType.class, ButtonType.EDIT);
 
 		schemaList.setListModel(new SchemaListModel());
@@ -247,24 +247,24 @@ public class BulkEditMetadataSection extends AbstractPrototypeSection<BulkEditMe
 		schemaTree.setModel(new SchemaTreeModel());
 
 		ScriptVariable nodeVar = new ScriptVariable("node");
-		addNodeFunc = new SimpleFunction("addNode", new FunctionCallStatement(getAjaxUpate(tree, "addNode", false,
-			"selected-nodes"), nodeVar), nodeVar);
+		addNodeFunc = new SimpleFunction("addNode",
+			new FunctionCallStatement(getAjaxUpate(tree, "addNode", false, "selected-nodes"), nodeVar), nodeVar);
 
 		chooseActionButton.setLabel(new IconLabel(Icon.COG, CHOOSE_ACTION_LABEL));
 
-		StatementHandler actionUpdate = new StatementHandler(getAjaxUpate(tree, "actionChange", true, "action-form",
-			BUTTON_FOOTER_DIV));
+		StatementHandler actionUpdate = new StatementHandler(
+			getAjaxUpate(tree, "actionChange", true, "action-form", BUTTON_FOOTER_DIV));
 		actionList.setEventHandler(JSHandler.EVENT_CHANGE, actionUpdate);
 		actionList.setListModel(new EnumListModel<ActionTypes>(KEY_ACTIONS_PFX, true, ActionTypes.values()));
 
-		SimpleHtmlListModel<NameValue> setTextOptionsList = new SimpleHtmlListModel<NameValue>(new BundleNameValue(
-			SET_OPTION_ALWAYS, "always"), new BundleNameValue(SET_OPTION_EXISTS, "exists"), new BundleNameValue(
-			SET_OPTION_CREATE, "create"));
+		SimpleHtmlListModel<NameValue> setTextOptionsList = new SimpleHtmlListModel<NameValue>(
+			new BundleNameValue(SET_OPTION_ALWAYS, "always"), new BundleNameValue(SET_OPTION_EXISTS, "exists"),
+			new BundleNameValue(SET_OPTION_CREATE, "create"));
 		setTextOptions.setListModel(setTextOptionsList);
 		setTextOptions.setAlwaysSelect(true);
 
-		modificationReturnButton.setClickHandler(new StatementHandler(getAjaxUpate(tree, "modReturn", false, AJAX_DIV,
-			BUTTON_FOOTER_DIV)));
+		modificationReturnButton
+			.setClickHandler(new StatementHandler(getAjaxUpate(tree, "modReturn", false, AJAX_DIV, BUTTON_FOOTER_DIV)));
 		modificationReturnButton.setComponentAttribute(ButtonType.class, ButtonType.PREV);
 
 		pathValues.setEventHandler(JSHandler.EVENT_KEYUP,
@@ -285,23 +285,23 @@ public class BulkEditMetadataSection extends AbstractPrototypeSection<BulkEditMe
 		{
 			saveActionButton.setClickHandler(context,
 				new StatementHandler(getAjaxUpate(getTree(), "saveAction", true, AJAX_DIV, BUTTON_FOOTER_DIV))
-					.addValidator(findTextField.createNotBlankValidator().setFailureStatements(
-						Js.alert_s(BLANK_FIND_LABEL))));
+					.addValidator(
+						findTextField.createNotBlankValidator().setFailureStatements(Js.alert_s(BLANK_FIND_LABEL))));
 		}
 		else if( selection.equals(ActionTypes.ADD) )
 		{
 			saveActionButton.setClickHandler(context,
 				new StatementHandler(getAjaxUpate(getTree(), "saveAction", true, AJAX_DIV, BUTTON_FOOTER_DIV))
-					.addValidator(addXMLTextArea.createNotBlankValidator().setFailureStatements(
-						Js.alert_s(BLANK_XML_LABEL))));
+					.addValidator(
+						addXMLTextArea.createNotBlankValidator().setFailureStatements(Js.alert_s(BLANK_XML_LABEL))));
 		}
 	}
 
 	private UpdateDomFunction getAjaxUpate(SectionTree tree, String eventHandlerName, boolean useLoad,
 		String... ajaxIds)
 	{
-		JSCallable effectFunction = useLoad ? ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING) : ajax
-			.getEffectFunction(EffectType.REPLACE_IN_PLACE);
+		JSCallable effectFunction = useLoad ? ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING)
+			: ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE);
 		return ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler(eventHandlerName), effectFunction,
 			ajaxIds);
 	}
@@ -448,8 +448,8 @@ public class BulkEditMetadataSection extends AbstractPrototypeSection<BulkEditMe
 		@Override
 		protected Option<Schema> convertToOption(SectionInfo info, Schema schema)
 		{
-			return new NameValueOption<Schema>(new BundleNameValue(schema.getName(), String.valueOf(schema.getId()),
-				bundleCache), schema);
+			return new NameValueOption<Schema>(
+				new BundleNameValue(schema.getName(), String.valueOf(schema.getId()), bundleCache), schema);
 		}
 
 		@Override
@@ -471,8 +471,8 @@ public class BulkEditMetadataSection extends AbstractPrototypeSection<BulkEditMe
 		public List<HtmlTreeNode> getChildNodes(SectionInfo info, String xpath)
 		{
 			final List<HtmlTreeNode> list = Lists.newArrayList();
-			Long schemaId = getModel(info).getSelectedSchema();
-			if( schemaId == null || schemaId == 0 )
+			long schemaId = getModel(info).getSelectedSchema();
+			if( schemaId == 0 )
 			{
 				return Collections.emptyList();
 			}
@@ -552,17 +552,17 @@ public class BulkEditMetadataSection extends AbstractPrototypeSection<BulkEditMe
 				HtmlComponentState selectLink = new HtmlComponentState(new OverrideHandler(addNodeFunc, id));
 				selectLink.setLabel(ADD_NODE_LABEL);
 				selectLink.addClass("add");
-				nodeDiv = new DivRenderer(new CombinedRenderer(new LabelRenderer(getLabel()), new LinkRenderer(
-					selectLink)));
+				nodeDiv = new DivRenderer(
+					new CombinedRenderer(new LabelRenderer(getLabel()), new LinkRenderer(selectLink)));
 			}
 			else
 			{
-				HtmlComponentState deselectLink = new HtmlComponentState(new OverrideHandler(getAjaxUpate(getTree(),
-					"removeNode", false, "selected-nodes"), id));
+				HtmlComponentState deselectLink = new HtmlComponentState(
+					new OverrideHandler(getAjaxUpate(getTree(), "removeNode", false, "selected-nodes"), id));
 				deselectLink.setLabel(REMOVE_NODE_LABEL);
 				deselectLink.addClass("unselect");
-				nodeDiv = new DivRenderer(new CombinedRenderer(new LabelRenderer(getLabel()), new LinkRenderer(
-					deselectLink)));
+				nodeDiv = new DivRenderer(
+					new CombinedRenderer(new LabelRenderer(getLabel()), new LinkRenderer(deselectLink)));
 
 				nodeDiv.addClass("selected-node");
 

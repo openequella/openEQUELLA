@@ -19,35 +19,41 @@ public class MerlotModuleImpl extends ModuleImpl implements MerlotModule
 		super(MerlotModule.class, MerlotModule.URI);
 	}
 
+	@Override
 	public String getTitle()
 	{
 		return title;
 	}
-	
+
+	@Override
 	public void setTitle(String title)
 	{
 		this.title = title;
 	}
 
+	@Override
 	public String getUrl()
 	{
 		return url;
 	}
 
+	@Override
 	public void setUrl(String url)
 	{
 		this.url = url;
 	}
 
 	@Override
-	public void copyFrom(CopyFrom obj) {
+	public void copyFrom(CopyFrom obj)
+	{
 		MerlotModule other = (MerlotModule) obj;
 		title = other.getTitle();
-		url = other.getUrl();		
+		url = other.getUrl();
 	}
 
 	@Override
-	public Class<? extends CopyFrom> getInterface() {
+	public Class<? extends CopyFrom> getInterface()
+	{
 		return Module.class;
 	}
 }

@@ -93,7 +93,9 @@ import com.tle.web.sections.standard.model.SimpleOption;
 @Bind
 public class ExpressionSelectorSection
 	extends
-		AbstractPrototypeSection<ExpressionSelectorSection.ExpressionSelectorModel> implements HtmlRenderer
+		AbstractPrototypeSection<ExpressionSelectorSection.ExpressionSelectorModel>
+	implements
+		HtmlRenderer
 {
 	protected static final int SEARCH_LIMIT = 50;
 	public static final String RESULTS_DIVID = "search-result-list";
@@ -283,9 +285,10 @@ public class ExpressionSelectorSection
 
 		JSCallable replaceInPlace = ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE);
 
-		SimpleHtmlListModel<NameValue> typeOptions = new SimpleHtmlListModel<NameValue>(new NameValue(
-			CurrentLocale.get(STRING_USER), TypeValue.USER.toString()), new NameValue(CurrentLocale.get(STRING_GROUP),
-			TypeValue.GROUP.toString()), new NameValue(CurrentLocale.get(STRING_ROLE), TypeValue.ROLE.toString()));
+		SimpleHtmlListModel<NameValue> typeOptions = new SimpleHtmlListModel<NameValue>(
+			new NameValue(CurrentLocale.get(STRING_USER), TypeValue.USER.toString()),
+			new NameValue(CurrentLocale.get(STRING_GROUP), TypeValue.GROUP.toString()),
+			new NameValue(CurrentLocale.get(STRING_ROLE), TypeValue.ROLE.toString()));
 		types.setListModel(typeOptions);
 		types.setAlwaysSelect(true);
 
@@ -293,23 +296,23 @@ public class ExpressionSelectorSection
 			ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING), GROUP_FILTER_DIV, RESULTS_DIVID, SELECT_AREA_DIV);
 		types.addChangeEventHandler(new OverrideHandler(updateFunction));
 
-		SimpleHtmlListModel<NameValue> otherOptions = new SimpleHtmlListModel<NameValue>(new NameValue(
-			CurrentLocale.get(STRING_EVERYONE), OtherTypeValue.EVERYONE.toString()), new NameValue(
-			CurrentLocale.get(STRING_OWNER), OtherTypeValue.OWNER.toString()), new NameValue(
-			CurrentLocale.get(STRING_LOGGEDIN), OtherTypeValue.LOGGEDIN.toString()), new NameValue(
-			CurrentLocale.get(STRING_GUEST), OtherTypeValue.GUEST.toString()), new NameValue(
-			CurrentLocale.get(STRING_SHARED_SECRET_ID), OtherTypeValue.SHARE_SECRET.toString()), new NameValue(
-			CurrentLocale.get(STRING_IP_ADDRESS), OtherTypeValue.IP_ADDRESS.toString()), new NameValue(
-			CurrentLocale.get(STRING_REFERRER), OtherTypeValue.HTTP_REFERRER.toString()));
+		SimpleHtmlListModel<NameValue> otherOptions = new SimpleHtmlListModel<NameValue>(
+			new NameValue(CurrentLocale.get(STRING_EVERYONE), OtherTypeValue.EVERYONE.toString()),
+			new NameValue(CurrentLocale.get(STRING_OWNER), OtherTypeValue.OWNER.toString()),
+			new NameValue(CurrentLocale.get(STRING_LOGGEDIN), OtherTypeValue.LOGGEDIN.toString()),
+			new NameValue(CurrentLocale.get(STRING_GUEST), OtherTypeValue.GUEST.toString()),
+			new NameValue(CurrentLocale.get(STRING_SHARED_SECRET_ID), OtherTypeValue.SHARE_SECRET.toString()),
+			new NameValue(CurrentLocale.get(STRING_IP_ADDRESS), OtherTypeValue.IP_ADDRESS.toString()),
+			new NameValue(CurrentLocale.get(STRING_REFERRER), OtherTypeValue.HTTP_REFERRER.toString()));
 		otherTypes.setListModel(otherOptions);
 		otherTypes.setAlwaysSelect(true);
 
 		otherTypes.addChangeEventHandler(ajax.getAjaxUpdateDomFunction(tree, this,
 			events.getEventHandler("setupOtherTypeDisabled"), replaceInPlace, OTHER_TYPE_DIV));
 
-		SimpleHtmlListModel<NameValue> referrers = new SimpleHtmlListModel<NameValue>(new NameValue(
-			CurrentLocale.get(STRING_REFFERRER_EXACT), "EXACT"), new NameValue(
-			CurrentLocale.get(STRING_REFERRER_PARTIAL), "PARTIAL"));
+		SimpleHtmlListModel<NameValue> referrers = new SimpleHtmlListModel<NameValue>(
+			new NameValue(CurrentLocale.get(STRING_REFFERRER_EXACT), "EXACT"),
+			new NameValue(CurrentLocale.get(STRING_REFERRER_PARTIAL), "PARTIAL"));
 		referrerOptions.setListModel(referrers);
 		referrerOptions.setAlwaysSelect(true);
 
@@ -354,8 +357,8 @@ public class ExpressionSelectorSection
 
 		deleteGroupingFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("deleteGrouping"),
 			replaceInPlace, SELECTED_AREA);
-		deleteExpressionFunction = ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("deleteExpression"), replaceInPlace, SELECTED_AREA);
+		deleteExpressionFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("deleteExpression"),
+			replaceInPlace, SELECTED_AREA);
 
 		tokenIdList.setStyle("width: 250px");
 	}
@@ -548,8 +551,8 @@ public class ExpressionSelectorSection
 		super.treeFinished(id, tree);
 
 		OverrideHandler handler = new OverrideHandler(updateFunction);
-		handler.addValidator(Js.validator(Js.notEquals(query.createGetExpression(), Js.str(""))).setFailureStatements(
-			Js.alert_s(ENTER_QUERY_LABEL)));
+		handler.addValidator(Js.validator(Js.notEquals(query.createGetExpression(), Js.str("")))
+			.setFailureStatements(Js.alert_s(ENTER_QUERY_LABEL)));
 		search.setClickHandler(handler);
 	}
 
@@ -719,11 +722,7 @@ public class ExpressionSelectorSection
 		}
 		for( SelectionGroupingTreeNode group : rootNode.getChildren() )
 		{
-			Boolean find = recipientExistInTree(recipient, group);
-			if( find != null )
-			{
-				return find;
-			}
+			return recipientExistInTree(recipient, group);
 		}
 		return false;
 	}
@@ -796,8 +795,8 @@ public class ExpressionSelectorSection
 		{
 			HtmlLinkState state = new HtmlLinkState();
 			state.addClass("add");
-			state.setClickHandler(new OverrideHandler(SELECT_RESULT, Jq.$(state), events
-				.getSubmitValuesFunction("addSingleExpression"), user.getUniqueID()));
+			state.setClickHandler(new OverrideHandler(SELECT_RESULT, Jq.$(state),
+				events.getSubmitValuesFunction("addSingleExpression"), user.getUniqueID()));
 			return new SelectUserResultOption(user, userLinkSection.createLinkFromBean(info, user), state);
 		}
 	}
@@ -814,8 +813,8 @@ public class ExpressionSelectorSection
 		{
 			HtmlLinkState state = new HtmlLinkState();
 			state.addClass("add");
-			state.setClickHandler(new OverrideHandler(SELECT_RESULT, Jq.$(state), events
-				.getSubmitValuesFunction("addSingleExpression"), group.getUniqueID()));
+			state.setClickHandler(new OverrideHandler(SELECT_RESULT, Jq.$(state),
+				events.getSubmitValuesFunction("addSingleExpression"), group.getUniqueID()));
 			return new SelectGroupResultOption(group, state);
 		}
 	}
@@ -833,8 +832,8 @@ public class ExpressionSelectorSection
 		{
 			HtmlLinkState state = new HtmlLinkState();
 			state.addClass("add");
-			state.setClickHandler(new OverrideHandler(SELECT_RESULT, Jq.$(state), events
-				.getSubmitValuesFunction("addSingleExpression"), role.getUniqueID()));
+			state.setClickHandler(new OverrideHandler(SELECT_RESULT, Jq.$(state),
+				events.getSubmitValuesFunction("addSingleExpression"), role.getUniqueID()));
 			return new SelectRoleResultOption(role, state);
 		}
 	}
@@ -1166,8 +1165,8 @@ public class ExpressionSelectorSection
 		boolean isNewAddGrouping = selectionNode.isNewGrouping();
 		display.setGrouping(createDropdownList(info, selectionNode.getGrouping(), groupingId));
 		display.setId(groupingId);
-		display.getGrouping().addReadyStatements(
-			Js.call_s(SETUP_CLICK, display.getId(), Jq.$(selected), isNewAddGrouping));
+		display.getGrouping()
+			.addReadyStatements(Js.call_s(SETUP_CLICK, display.getId(), Jq.$(selected), isNewAddGrouping));
 		// highlight the new added grouping in js then set the value to false
 		if( isNewAddGrouping )
 		{
