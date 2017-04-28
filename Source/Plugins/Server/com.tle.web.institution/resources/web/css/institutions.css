@@ -183,39 +183,6 @@ span.selected {
 	width: 99%;
 }
 
-.integdownloads {
-	list-style-type: none;
-}
-
-.integdownloads LI {
-	margin: 0;
-	padding: 0;
-	padding-left: 75px;
-	background-position: 0 0;
-	background-repeat: no-repeat;
-	margin-bottom: 3em;
-}
-
-.integdownloads LI H3 {
-	padding-top: 5px;
-	margin-top: 0px;
-	font-size: 1.5em;
-}
-
-dl.integdownload dt {
-	font-size: 1.2em;
-	font-weight: bolder;
-	padding-top: 0.5em;
-}
-
-dl.integdownload dd {
-	padding-top: 0.2em;
-}
-
-dl.integdownload dd a {
-	color: blue;
-}
-
 .detail {
 	width: 300px;
 }

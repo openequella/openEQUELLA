@@ -26,11 +26,6 @@
 		<library type="resources" path="resources/" id="resources" />
 	</runtime>
 
-	<extension-point id="integrationDownloadSection">
-		<parameter-def id="class" />
-		<parameter-def id="order" type="number" />
-	</extension-point>
-
 	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
 		<parameter id="class" value="com.tle.web.sections.equella.guice.EquellaModule" />
 		<parameter id="class" value="com.tle.web.institution.guice.InstitutionModule" />

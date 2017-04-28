@@ -58,7 +58,6 @@ public class InstitutionMenuContributor implements MenuContributor
 		add(mcs, tabHandlers, "isdt", 1, 3, "databases.menu", "images/databases-menu-icon.png");
 
 		add(mcs, tabHandlers, "isservertab", 2, 1, "settings.menu", "images/settings-menu-icon.png");
-		add(mcs, tabHandlers, "isintegdownload", 2, 2, "downloads.menu", "images/downloads-menu-icon.png");
 
 		add(mcs, tabHandlers, "isclusternodes", 3, 1, "health.menu", "images/clusterhealth-menu-icon.png");
 		add(mcs, tabHandlers, "isthreaddump", 3, 2, "threaddump.menu", "images/threaddump-menu-icon.png");

@@ -30,23 +30,4 @@
 		<parameter id="file" value="lang/i18n-institution.properties" />
 	</extension>
 
-	<extension plugin-id="com.tle.web.institution" point-id="integrationDownloadSection" id="moodledownload">
-		<parameter id="class" value="bean:com.tle.integration.standard.moodle.MoodleIntegDownloadSection" />
-		<parameter id="order" value="3000" />
-	</extension>
-
-	<extension plugin-id="com.tle.web.institution" point-id="integrationDownloadSection" id="integpackdownload">
-		<parameter id="class" value="bean:com.tle.integration.standard.IntegrationPackDownload" />
-		<parameter id="order" value="6000" />
-	</extension>
-
-	<extension plugin-id="com.tle.web.institution" point-id="integrationDownloadSection" id="activecachedownload">
-		<parameter id="class" value="bean:com.tle.integration.standard.ActiveCacheToolDownload" />
-		<parameter id="order" value="7000" />
-	</extension>
-	
-	<extension plugin-id="com.tle.web.institution" point-id="integrationDownloadSection" id="htmlpluginsdownload">
-		<parameter id="class" value="bean:com.tle.integration.standard.HTMLPluginsDownload" />
-		<parameter id="order" value="10000" />
-	</extension>
 </plugin>
