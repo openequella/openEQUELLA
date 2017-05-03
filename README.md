@@ -8,6 +8,26 @@
 * JDK 8
 * `equella-deps.zip` unzipped into your home directory
 
+**NOTE: KEYSTORE**
+A keystore with a certificate is required to sign some of the jars or the build will fail.
+In the build.properties.in file you can modify the parameters to configure your own keystore. the needed ones are:
+    
+* In the build.properties.in file:
+       * The route to the keystore file, by default the root of the user home folder: `tle.signer.certificate=${user.home}/equella.keystore`
+       * Set to false to avoid the self-generation of the keystore:  `tle.signer.generateKeystore=false`
+       * The alias: `tle.signer.alias=keystorealias`
+       * The keystore pass: `tle.signer.password=keystorepass`
+       * The key pass (if any): `tle.signer.keypass=keypass`
+
+There is an option to self geneate a keystore if you don't have one for dev and test purposes setting `tle.signer.generateKeystore` to true.
+And configure the other parameters with the data you want in the certificate and keystore.
+
+**IMPORTANT**: A self registered certificate implies that the jars won't be secured and a security exception will appear when trying to launch the jars.
+To avoid this it is needed to add the domain you want to trust as a security exception in your java configuration.
+It can be done with the Java Control Panel or directly adding the domain in a new line in this file:
+${user.home}/.java/deployment/security/exception.sites 
+
+
 ### Building
 
 ```bash
