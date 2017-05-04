@@ -10,7 +10,6 @@ import com.tle.web.institution.tab.DatabaseTab;
 import com.tle.web.institution.tab.EmailsTab;
 import com.tle.web.institution.tab.HealthTab;
 import com.tle.web.institution.tab.ImportTab;
-import com.tle.web.institution.tab.IntegrationDownloadTab;
 import com.tle.web.institution.tab.PasswordTab;
 import com.tle.web.institution.tab.ServerMessageTab;
 import com.tle.web.institution.tab.ServerTab;
@@ -31,7 +30,6 @@ public class InstitutionModule extends SectionsModule
 		node.innerChild(ImportTab.class);
 		node.innerChild(DatabaseTab.class);
 		node.innerChild(serverTab());
-		node.innerChild(IntegrationDownloadTab.class);
 		node.innerChild(ThreadDumpTab.class);
 		node.innerChild(HealthTab.class);
 		bind(Object.class).annotatedWith(Names.named("/institutions")).toProvider(node);

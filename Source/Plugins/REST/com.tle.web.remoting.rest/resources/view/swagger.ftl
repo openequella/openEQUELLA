@@ -100,7 +100,7 @@ $(function()
 <div class="area">
 	<h2>${b.key('docs.title')}</h2>
 
-	<p>${b.key('guide.download', p.url('downloads/EQUELLA REST API Guide.pdf'))}</p>
+	<p>${b.key('guide.download', 'https://equella.github.io/')}</p>
 	
 	<div class="swagger">
 		<input id="input_baseUrl" name="baseUrl" type="hidden">

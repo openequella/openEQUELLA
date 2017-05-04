@@ -30,11 +30,6 @@
 		<parameter id="file" value="lang/i18n-institution.properties" />
 	</extension>
 
-	<extension plugin-id="com.tle.web.institution" point-id="integrationDownloadSection" id="blackboarddownload">
-		<parameter id="class" value="bean:com.tle.integration.blackboard.BlackboardIntegDownloadSection" />
-		<parameter id="order" value="1000" />
-	</extension>
-
 	<extension plugin-id="com.tle.web.integration" point-id="integration" id="integration">
 		<parameter id="id" value="bb" />
 		<parameter id="class" value="bean:com.tle.integration.blackboard.BlackboardIntegration" />

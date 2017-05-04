@@ -1,10 +1,6 @@
 <project name="com.tle.web.remoting.rest" basedir="." default="compile">
 	<import file="../../build/plugins-common-build.xml" />
-	
-	<property name="restapi.doc" value="EQUELLA ${version.mm} REST API Guide" />
-	<!-- Versionless filename to avoid updating Freemarker every version... -->
-	<property name="restapi.doc.dest" value="EQUELLA REST API Guide.pdf" />
-	
+
 	<property name="documentation.download.folder.dest" location="${resources}/web/downloads" />
 	
 	<target name="clean" depends="common.clean">
@@ -15,14 +11,6 @@
 		<mkdir dir="${documentation.download.folder.dest}" />
 	</target>
 		
-	<target name="download-documentation" depends="define-downloaddoco">
-		<!-- FIXME: temporarily disabled 
-		<downloadDoco query="${restapi.doc}" filename="${restapi.doc}.pdf" equellaVersion="${version.mm}" out="restapi.pdf.location" />
-		-->
-	</target>
-		
-	<target name="make" depends="common.make,download-documentation">
-		<!-- copy the REST API doc to the web folder -->
-		<copy file="${restapi.pdf.location}" tofile="${documentation.download.folder.dest}/${restapi.doc.dest}" failonerror="false" />
+	<target name="make" depends="common.make">
 	</target>
 </project>

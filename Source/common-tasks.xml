@@ -5,10 +5,6 @@
 		</fileset>
 		<pathelement location="${TLE Custom Build Tasks.classes}" />
 	</path>
-
-	<target name="define-downloaddoco">
-		<taskdef classname="com.tle.ant.documentation.DownloadDocoTask" name="downloadDoco" classpathref="customtasks.classpath" />
-	</target>
 	
 	 <macrodef name="eclipseClasspath">
 		<attribute name="pathId" default="eclipse.classpath" />
