@@ -92,11 +92,6 @@
 		<parameter id="listenerClass" value="com.tle.core.events.listeners.ItemDeletedListener" />
 	</extension>
 	
-	<!-- 
-	<extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="privilegeTreeProvider">
-		<parameter id="provider" value="bean:com.tle.core.payment.privileges.RegionPrivilegeTreeProvider" />
-	</extension>
-	 -->
 	<extension plugin-id="com.tle.core.workflow" id="qtiPostSave" point-id="operation">
 		<parameter id="type" value="postSave" />
 		<parameter id="class" value="bean:com.tle.core.qti.item.operation.CreateTestEntitiesOperation" />

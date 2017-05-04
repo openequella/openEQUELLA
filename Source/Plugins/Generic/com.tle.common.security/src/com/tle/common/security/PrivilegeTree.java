@@ -482,31 +482,6 @@ public final class PrivilegeTree
 		// Regions
 		PrivilegeNode regions = buildBasic(Node.REGION, Node.ALL_REGIONS, "REGION");
 
-		// Catalogues
-		PrivilegeNode catalogues = buildBasic(Node.CATALOGUE, Node.ALL_CATALOGUES, "CATALOGUE");
-		catalogues.registerPrivilege("MANAGE_CATALOGUE");
-		PrivilegeNode catalogue = catalogues.getChildren().get(0);
-		catalogue.registerPrivilege("MANAGE_CATALOGUE");
-
-		// Payment Gatewyas
-		PrivilegeNode paymentGateways = buildBasic(Node.PAYMENT_GATEWAY, Node.ALL_PAYMENT_GATEWAYS, "PAYMENT_GATEWAY");
-
-		// Tiers
-		PrivilegeNode tiers = buildBasic(Node.TIER, Node.ALL_TIERS, "TIER");
-
-		// Store fronts
-		PrivilegeNode storefronts = buildBasic(Node.STOREFRONT, Node.ALL_STOREFRONTS, "STOREFRONT");
-
-		// Stores
-		PrivilegeNode stores = buildBasic(Node.STORE, Node.ALL_STORES, "STORE");
-		stores.registerPrivilege("BROWSE_STORE");
-		PrivilegeNode storeChildren = stores.getChildren().get(0);
-		storeChildren.registerPrivilege("ACCESS_SHOPPING_CART");
-		storeChildren.registerPrivilege("BROWSE_STORE");
-
-		// Taxes
-		PrivilegeNode taxes = buildBasic(Node.TAX, Node.ALL_TAX, "TAX");
-
 		// User scripts
 		PrivilegeNode userScripts = buildBasic(Node.USER_SCRIPTS, Node.ALL_USER_SCRIPTS, "USER_SCRIPTS");
 
@@ -566,13 +541,7 @@ public final class PrivilegeTree
 		instChildren.add(oauthClients);
 		instChildren.add(htmlEditorPluginss);
 		instChildren.add(regions);
-		instChildren.add(catalogues);
-		instChildren.add(tiers);
-		instChildren.add(paymentGateways);
-		instChildren.add(storefronts);
-		instChildren.add(stores);
 		instChildren.add(kalturas);
-		instChildren.add(taxes);
 		instChildren.add(userScripts);
 		instChildren.add(echos);
 		instChildren.add(externalTools);
