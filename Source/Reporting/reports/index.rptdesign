@@ -355,36 +355,6 @@
             <row id="175">
                 <cell id="176">
                     <label id="177">
-                        <text-property name="text">Transactions over time</text-property>
-                        <list-property name="action">
-                            <structure>
-                                <property name="linkType">drill-through</property>
-                                <property name="reportName">transactions.rptdesign</property>
-                                <property name="targetWindow">_parent</property>
-                                <property name="targetFileType">report-design</property>
-                            </structure>
-                        </list-property>
-                    </label>
-                </cell>
-            </row>
-            <row id="178">
-                <cell id="179">
-                    <label id="180">
-                        <text-property name="text">Purchased resources</text-property>
-                        <list-property name="action">
-                            <structure>
-                                <property name="linkType">drill-through</property>
-                                <property name="reportName">purchaseditems.rptdesign</property>
-                                <property name="targetWindow">_parent</property>
-                                <property name="targetFileType">report-design</property>
-                            </structure>
-                        </list-property>
-                    </label>
-                </cell>
-            </row>
-            <row id="181">
-                <cell id="182">
-                    <label id="183">
                         <text-property name="text">Resources activity</text-property>
                         <list-property name="action">
                             <structure>

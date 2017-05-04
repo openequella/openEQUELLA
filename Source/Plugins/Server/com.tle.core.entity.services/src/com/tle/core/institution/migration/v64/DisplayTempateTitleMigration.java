@@ -112,12 +112,6 @@ public class DisplayTempateTitleMigration extends AbstractHibernateDataMigration
 	{
 		switch( sectionValue )
 		{
-			case "purchasedItemSummarySection":
-				addNewBundleTitle("Purchase details", config);
-				break;
-			case "paymentSummarySection":
-				addNewBundleTitle("Pricing Information", config);
-				break;
 			case "basicSection":
 				addNewBundleTitle("Basic Information", config);
 				break;

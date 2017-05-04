@@ -1,8 +1,0 @@
-@import url("editstorefront.css")
-
-DIV.settingRow.enabledRow div.settingLabel
-{
-	padding-left: 0;
-	padding-right: 10px;
-	text-align: right;
-}
