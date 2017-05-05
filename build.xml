@@ -1,8 +1,16 @@
-<project name="EQUELLA-Build" default="build" basedir=".">
+<project name="EQUELLA-Build" default="build" basedir="." xmlns:if="ant:if"
+    xmlns:unless="ant:unless">
 	<property name="mm" value="6.4" />
 
-	<target name="generate-build-properties">
-		<delete file="build.properties" />
+	<target name="build-properties-exists">
+		<condition property="buildPropExists">     
+	    		<and>
+	    			<available file="build.properties}"/> 
+	    		</and>
+		</condition>  
+	</target>
+
+	<target name="generate-build-properties" depends="build-properties-exists">
 
 		<echo file="path.tmp" message="temp.source.base=${basedir}" />
 		<replace file="path.tmp" token="\" value="/" />
@@ -13,7 +21,7 @@
 			<istrue value="${ENABLE.DEBUG.BUILD}" />
 		</condition>
 
-		<copy file="build.properties.in" tofile="build.properties">
+		<copy file="build.properties.in" tofile="build.properties" unless:true="buildPropExists">
 			<filterchain>
 				<tokenfilter>
 					<replacestring from="@BASEDIR@" to="${temp.source.base}" />

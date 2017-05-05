@@ -10,7 +10,7 @@
 
 **NOTE: KEYSTORE**
 A keystore with a certificate is required to sign some of the jars or the build will fail.
-In the build.properties.in file you can modify the parameters to configure your own keystore:
+In the build.properties file you can modify the parameters to configure your own keystore:
     
  * The route to the keystore file, by default the root of the user home folder: `tle.signer.certificate=${user.home}/equella.keystore`
  * Set to false to avoid the self-generation of the keystore:  `tle.signer.generateKeystore=false`
