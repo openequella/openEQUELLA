@@ -16,6 +16,7 @@
 
 package com.tle.core.institution.migration.v64;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -54,11 +55,21 @@ public class NewPagesACLsMigration extends AbstractHibernateDataMigration
 	private FakeAccessExpression createLoggedInUserExpression(Session session)
 	{
 		FakeAccessExpression loggedInUser = new FakeAccessExpression();
+		
 		loggedInUser = new FakeAccessExpression();
 		loggedInUser.dynamic = false;
 		loggedInUser.expression = "R:TLE_LOGGED_IN_USER_ROLE ";
 		session.save(loggedInUser);
 		return loggedInUser;
+	}
+	
+	private void createAccessExpressionP(Session session, FakeAccessExpression loggedInUser)
+	{
+		FakeAccessExpressionExpressionP ae = new FakeAccessExpressionExpressionP();
+		ae.accessExpressionId = loggedInUser.id;
+		ae.element = loggedInUser.expression.trim();
+		session.save(ae);
+		
 	}
 
 	@SuppressWarnings("unchecked")
@@ -69,6 +80,7 @@ public class NewPagesACLsMigration extends AbstractHibernateDataMigration
 		List<FakeAccessExpression> qr = session
 			.createQuery("from AccessExpression where expression = 'R:TLE_LOGGED_IN_USER_ROLE '").list();
 		FakeAccessExpression loggedInUser = qr.isEmpty() ? createLoggedInUserExpression(session) : qr.get(0);
+		createAccessExpressionP(session, loggedInUser);
 
 		List<FakeInstitution> institutions = session.createQuery("FROM Institution").list();
 		for( FakeInstitution inst : institutions )
@@ -114,7 +126,7 @@ public class NewPagesACLsMigration extends AbstractHibernateDataMigration
 	@Override
 	protected Class<?>[] getDomainClasses()
 	{
-		return new Class<?>[]{FakeAccessEntry.class, FakeAccessExpression.class, FakeInstitution.class};
+		return new Class<?>[]{FakeAccessEntry.class, FakeAccessExpression.class, FakeAccessExpressionExpressionP.class, FakeInstitution.class};
 	}
 
 	@Entity(name = "ItemDefinition")
@@ -168,6 +180,17 @@ public class NewPagesACLsMigration extends AbstractHibernateDataMigration
 		long id;
 	}
 
+	@AccessType("field")
+	@Entity(name = "AccessExpressionExpression_P")
+	public static class FakeAccessExpressionExpressionP implements Serializable
+	{
+		private static final long serialVersionUID = 1L;
+		@Id
+		long accessExpressionId;
+		@Id
+		String element;
+	}
+	
 	@AccessType("field")
 	@Entity(name = "AccessExpression")
 	public static class FakeAccessExpression
