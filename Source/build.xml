@@ -9,7 +9,7 @@
 	<property name="withheld-plugins" location="${product}/withheld-plugins" />
 	<property name="themes" location="${build}/themes" />
 	<property name="language-packs" location="${build}/language-packs" />
-	<property name="prev.langpack.url" value="http://maestro.equella.com/file/527661ac-9631-472e-96ea-7b224848b583/1/reference-language-pack.zip" />
+	<property name="previous.langpack" value="${language-packs}/prev-reference-language-pack.zip" />
 	<property name="current.langpack" value="${language-packs}/reference-language-pack.zip" />
 	<import file="${TLE Plugins.base}/build/withheld.xml" />
 	<import file="common-tasks.xml" />
@@ -176,8 +176,7 @@
 	
 	<target name="language-pack-diff" depends="clean,language-pack">
 		<mkdir dir="${staging}/diff-reference-language-pack" />
-		<get src="${prev.langpack.url}" dest="${staging}/prev-reference-language-pack.zip" verbose="true" />
-		<unzip src="${staging}/prev-reference-language-pack.zip" dest="${staging}/previous-reference-language-pack" />
+		<unzip src="${previous.langpack}" dest="${staging}/previous-reference-language-pack" />
 		<unzip src="${current.langpack}" dest="${staging}/current-reference-language-pack" />
 		<taskdef classname="com.tle.ant.LanguagePackDiff" name="languagePackDiff" classpathref="customtasks.classpath" />
 		<languagePackDiff previous="${staging}/previous-reference-language-pack" current="${staging}/current-reference-language-pack" diff="${staging}/diff-reference-language-pack" />
