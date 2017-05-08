@@ -5,7 +5,7 @@
 	<target name="build-properties-exists">
 		<condition property="buildPropExists">     
 	    		<and>
-	    			<available file="build.properties}"/> 
+	    			<available file="build.properties"/> 
 	    		</and>
 		</condition>  
 	</target>
