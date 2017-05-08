@@ -2,15 +2,7 @@
     xmlns:unless="ant:unless">
 	<property name="mm" value="6.4" />
 
-	<target name="build-properties-exists">
-		<condition property="buildPropExists">     
-	    		<and>
-	    			<available file="build.properties"/> 
-	    		</and>
-		</condition>  
-	</target>
-
-	<target name="generate-build-properties" depends="build-properties-exists">
+	<target name="generate-build-properties">
 
 		<echo file="path.tmp" message="temp.source.base=${basedir}" />
 		<replace file="path.tmp" token="\" value="/" />
@@ -21,7 +13,7 @@
 			<istrue value="${ENABLE.DEBUG.BUILD}" />
 		</condition>
 
-		<copy file="build.properties.in" tofile="build.properties" unless:true="buildPropExists">
+		<copy file="build.properties.in" tofile="build.properties">
 			<filterchain>
 				<tokenfilter>
 					<replacestring from="@BASEDIR@" to="${temp.source.base}" />
