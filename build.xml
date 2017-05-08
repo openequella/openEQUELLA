@@ -1,5 +1,4 @@
-<project name="EQUELLA-Build" default="build" basedir="." xmlns:if="ant:if"
-    xmlns:unless="ant:unless">
+<project name="EQUELLA-Build" default="build" basedir=".">
 	<property name="mm" value="6.4" />
 
 	<target name="generate-build-properties">
