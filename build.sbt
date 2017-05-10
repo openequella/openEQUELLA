@@ -16,7 +16,6 @@ lazy val equellaServer = (project in file("Source/Server/equellaserver")).settin
   unmanagedSourceDirectories in Test := (javaSource in Test).value :: Nil,
   updateOptions := updateOptions.value.withCachedResolution(true),
   unmanagedClasspath in Runtime += (baseDirectory in learningedge_config).value,
-  resolvers += "Local EQUELLA deps" at "file://" + Path.userHome.absolutePath + "/equella-deps",
   libraryDependencies += "junit" % "junit" % "4.12" % Test,
   libraryDependencies ++= Seq(
     "axis" % "axis" % "1.4",
