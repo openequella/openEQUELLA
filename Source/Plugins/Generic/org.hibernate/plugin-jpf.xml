@@ -12,6 +12,8 @@
 		<import plugin-id="com.google.guava:guava" />
 	</requires>
 
+	<runtime/>
+
 	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="hibernateLicenceName">
 		<parameter id="thirdPartyName" value="Hibernate" />
 		<parameter id="licenceName" value="LGPL v2.1" />

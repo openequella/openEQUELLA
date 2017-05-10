@@ -37,4 +37,7 @@ spring-scanner-cache.csv
 /Source/Integration/Moodle/moodle-2/mod/equella/version.properties
 /Source/Integration/Blackboard/bb9/public_html/WEB-INF/bb-manifest.xml
 /Source/Server/web/public_html/version.properties
-
+.gradle
+.idea
+build/
+target/

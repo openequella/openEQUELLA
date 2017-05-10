@@ -4,6 +4,7 @@
 
 package com.tle.web.endpoint.srw;
 
+import ORG.oclc.os.SRW.*;
 import gov.loc.www.zing.srw.ExtraDataType;
 import gov.loc.www.zing.srw.ScanRequestType;
 import gov.loc.www.zing.srw.ScanResponseType;
@@ -27,12 +28,6 @@ import org.apache.axis.types.PositiveInteger;
 import org.apache.log4j.Logger;
 import org.z3950.zing.cql.CQLTermNode;
 
-import ORG.oclc.os.SRW.QueryResult;
-import ORG.oclc.os.SRW.Record;
-import ORG.oclc.os.SRW.RecordIterator;
-import ORG.oclc.os.SRW.SRWDiagnostic;
-import ORG.oclc.os.SRW.TermList;
-
 import com.dytech.devlib.PropBagEx;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.item.Item;
@@ -46,12 +41,10 @@ import com.tle.core.services.item.FreeTextService;
 import com.tle.core.services.item.FreetextSearchResults;
 import com.tle.core.services.item.ItemService;
 import com.tle.core.util.ItemHelper;
-import com.tle.web.endpoint.srwext.ISRWDatabase;
-import com.tle.web.endpoint.srwext.ISRWExplainer;
 
 @Bind
 @Singleton
-public class EquellaSRWDatabase implements ISRWDatabase
+public class EquellaSRWDatabase extends SRWDatabase
 {
 	private static final Logger LOGGER = Logger.getLogger(EquellaSRWDatabase.class);
 	private static final ThreadLocal<String> EXPLAIN = new ThreadLocal<String>();
@@ -252,14 +245,14 @@ public class EquellaSRWDatabase implements ISRWDatabase
 	}
 
 	@Override
-	public String getExplainRecord(HttpServletRequest request, ISRWExplainer explainer)
+	public String getExplainRecord(HttpServletRequest request)
 	{
 		// This is so it can be generated at run time because we may change the
 		// available schemas
 		String ex = EXPLAIN.get();
 		if( ex == null )
 		{
-			explainer.makeExplainRecord(request);
+			makeExplainRecord(request);
 			ex = EXPLAIN.get();
 		}
 		EXPLAIN.remove();

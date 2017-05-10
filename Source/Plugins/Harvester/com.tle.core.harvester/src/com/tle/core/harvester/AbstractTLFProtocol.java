@@ -11,11 +11,11 @@ import java.util.Date;
 
 import javax.inject.Inject;
 
+import com.google.gdata.util.common.util.Base64;
 import org.apache.log4j.Logger;
 
 import com.dytech.devlib.PropBagEx;
 import com.google.common.io.Closeables;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
 import com.tle.beans.item.ItemStatus;
 import com.tle.common.Check;
 import com.tle.common.harvester.HarvesterProfile;
@@ -432,7 +432,7 @@ public abstract class AbstractTLFProtocol extends AbstractHarvesterProtocol
 			call.callWithSoapSAX(handler, getContentType());
 			responseXml = new PropBagEx(handler.getElementResult());
 			String base64Data = responseXml.getNode("retrieveContentResult");
-			Base64.decode(base64Data, out);
+			out.write(Base64.decode(base64Data));
 		}
 		catch( Exception ex )
 		{

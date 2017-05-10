@@ -3,11 +3,11 @@ package com.tle.web.selection;
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sun.xml.internal.txw2.annotation.XmlElement;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
 import com.tle.common.Check;

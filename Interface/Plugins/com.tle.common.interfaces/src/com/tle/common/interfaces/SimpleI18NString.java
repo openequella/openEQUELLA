@@ -1,6 +1,6 @@
 package com.tle.common.interfaces;
 
-import com.sun.istack.internal.Nullable;
+import javax.annotation.Nullable;
 
 public class SimpleI18NString implements I18NString
 {

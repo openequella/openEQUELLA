@@ -52,7 +52,6 @@ public final class XsltServiceImpl implements XsltService
 		xsltCache = new WeakHashMap<String, Pair<Long, Templates>>();
 		stringXsltCache = new WeakHashMap<String, Templates>();
 		factory = TransformerFactory.newInstance();
-		factory.setAttribute("debug", true); //$NON-NLS-1$
 	}
 
 	@Override

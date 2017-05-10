@@ -1,10 +1,6 @@
 package com.tle.web.remoting.resteasy;
 
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.FieldPosition;
-import java.text.NumberFormat;
-import java.text.ParsePosition;
+import java.text.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -46,8 +42,11 @@ public class ISO8061DateFormatWithTZ extends DateFormat
 		{
 			toParse = toParse + "T00:00:00Z";
 		}
-		pos.setIndex(toParse.length());
-		return ISO8601Utils.parse(toParse);
+		try {
+			return ISO8601Utils.parse(toParse, pos);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	// Sonar has trouble determining that superclass implements cloneable

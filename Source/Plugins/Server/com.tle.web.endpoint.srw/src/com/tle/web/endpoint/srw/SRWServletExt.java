@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import ORG.oclc.os.SRW.SRWServletInfo;
 
 import com.tle.core.guice.Bind;
-import com.tle.web.endpoint.srwext.SRWDatabaseExt;
 
 @Bind
 @Singleton
@@ -22,10 +21,7 @@ public class SRWServletExt extends ORG.oclc.os.SRW.SRWServlet
 
 	private static final String DB_NAME = "tle"; //$NON-NLS-1$
 
-	
-	@Inject 
-	private EquellaSRWDatabase srwDatabase;
-	
+
 	@Override
 	public void init() throws ServletException
 	{
@@ -45,8 +41,7 @@ public class SRWServletExt extends ORG.oclc.os.SRW.SRWServlet
 		};
 		srwInfo.init(config);
 		srwInfo.getProperties().put("defaultSchema", EquellaSRWDatabase.DEFAULT_SCHEMA.getTleId()); //$NON-NLS-1$
-		srwInfo.getProperties().put("db." + DB_NAME + ".class", SRWDatabaseExt.class.getName()); //$NON-NLS-1$ //$NON-NLS-2$
-		SRWDatabaseExt.impl = srwDatabase;
+		srwInfo.getProperties().put("db." + DB_NAME + ".class", EquellaSRWDatabase.class.getName()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 }

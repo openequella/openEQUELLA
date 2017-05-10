@@ -67,8 +67,7 @@ public class PluginDownloadService implements RemotePluginDownloadService
 				StringWriter manWriter = new StringWriter();
 				try
 				{
-					CharStreams.copy(Resources.newReaderSupplier(location.getManifestLocation(), Charsets.UTF_8),
-						manWriter);
+					Resources.asCharSource(location.getManifestLocation(), Charsets.UTF_8).copyTo(manWriter);
 
 					URL jarUrl = location.getContextLocation();
 					if( jarUrl.getProtocol().equals("jar") )
