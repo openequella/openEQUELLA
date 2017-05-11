@@ -63,7 +63,8 @@ object JPFScanPlugin extends AutoPlugin {
               managedClasspath in Compile ++= (managedClasspath in(parentRef, Compile)).value,
               managedClasspath in Compile ++= {
                 jpfLibraryJars.all(ScopeFilter(inProjects(depsWithExports(deps, parsedMap, Set.empty).map(toLocalProject).toSeq: _*))).value.flatten
-              }
+              },
+              managedClasspath in Test ++= (managedClasspath in Compile).value
             )
             .enablePlugins(JPFPlugin)
           (a, prj :: l)

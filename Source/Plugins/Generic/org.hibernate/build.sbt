@@ -1,4 +1,5 @@
 lazy val Hibernate = config("hibernate")
+lazy val CustomCompile = config("compile") extend Hibernate
 
 libraryDependencies := Seq(
   "org.hibernate" % "hibernate-core" % "3.6.8.Final",
@@ -21,6 +22,6 @@ excludeDependencies ++= Seq(
   "aopalliance" % "aopalliance"
 )
 
-ivyConfigurations := overrideConfigs(Hibernate)(ivyConfigurations.value)
+ivyConfigurations := overrideConfigs(Hibernate, CustomCompile)(ivyConfigurations.value)
 
 jpfLibraryJars := Classpaths.managedJars(Hibernate, Set("jar"), update.value)

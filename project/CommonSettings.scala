@@ -15,6 +15,7 @@ object CommonSettings extends AutoPlugin {
     javacOptions ++= Seq("-source", "1.8"),
     compileOrder := CompileOrder.JavaThenScala,
     headerLicense := Some(HeaderLicense.ALv2("2015", "Apereo")),
-    resolvers += "Local EQUELLA deps" at "file://" + Path.userHome.absolutePath + "/equella-deps"
+    resolvers += "Local EQUELLA deps" at "file://" + Path.userHome.absolutePath + "/equella-deps",
+    libraryDependencies += "junit" % "junit" % "4.12" % Test
   )
 }
