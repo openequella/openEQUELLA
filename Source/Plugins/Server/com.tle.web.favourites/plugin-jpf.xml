@@ -50,14 +50,12 @@
 		<parameter id="path" value="/viewitem/viewitem" />
 		<parameter id="class" value="bean:com.tle.web.favourites.actions.AddToFavouritesSection" />
 		<parameter id="parentid" value="com.tle.web.viewitem.summary.sidebar.MAJOR_ACTIONS" />
-		<parameter id="afterid" value="com.tle.web.searching.prevnext.SearchPrevNextSection"/>
 	</extension>
 
 	<extension plugin-id="com.tle.web.sections" point-id="section" id="removefromfavouritessection">
 		<parameter id="path" value="/viewitem/viewitem" />
 		<parameter id="class" value="bean:com.tle.web.favourites.actions.RemoveFromFavouritesSection" />
 		<parameter id="parentid" value="com.tle.web.viewitem.summary.sidebar.MAJOR_ACTIONS" />
-		<parameter id="afterid" value="com.tle.web.searching.prevnext.SearchPrevNextSection"/>
 	</extension>
 
 	<extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="favourites">

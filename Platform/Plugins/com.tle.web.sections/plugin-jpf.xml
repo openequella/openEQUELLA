@@ -34,6 +34,7 @@
 		<parameter-def id="afterid" multiplicity="none-or-one" />
 		<parameter-def id="beforeid" multiplicity="none-or-one" />
 		<parameter-def id="layout" multiplicity="none-or-one" />
+		<parameter-def id="order" multiplicity="none-or-one" />
 	</extension-point>
 
 	<extension-point id="sectionFilter">

@@ -36,6 +36,7 @@
 		<parameter id="path" value="/viewitem/viewitem" />
 		<parameter id="class" value="bean:com.tle.web.searching.prevnext.SearchPrevNextSection" />
 		<parameter id="parentid" value="com.tle.web.viewitem.summary.sidebar.MAJOR_ACTIONS" />
+		<parameter id="order" value="1000" />
 	</extension>
 
 </plugin>

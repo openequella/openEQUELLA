@@ -59,6 +59,7 @@ public class TreeRegistry implements RegistrationController
 {
 	private PluginService pluginService;
 	private PluginTracker<Object> sectionTreePlugin;
+	private PluginTracker<Object> sectionPlugin;
 	private PluginTracker<RegistrationHandler> registrationPlugins;
 	private final LoadingCache<String, SectionTreeData> treeMap = CacheBuilder.newBuilder().build(
 		CacheLoader.from(new TreeMaker()));
@@ -100,7 +101,7 @@ public class TreeRegistry implements RegistrationController
 			Parameter param = treeExtension.getParameter("url");
 			boolean url = param == null || param.valueAsBoolean();
 			DefaultSectionTree sectionTree = createTree(treeExtension);
-			Collection<Extension> extensions = pluginService.getConnectedExtensions("com.tle.web.sections", "section");
+			Collection<Extension> extensions = sectionPlugin.getExtensions();
 			for( Extension extension : extensions )
 			{
 				String sectPath = extension.getParameter("path").valueAsString();
@@ -260,6 +261,8 @@ public class TreeRegistry implements RegistrationController
 	{
 		this.pluginService = pluginService;
 		sectionTreePlugin = new PluginTracker<Object>(pluginService, "com.tle.web.sections", "sectionTree", "path");
+		sectionPlugin = new PluginTracker<Object>(pluginService, "com.tle.web.sections", "section", null,
+				new PluginTracker.ExtensionParamComparator("order"));
 		registrationPlugins = new PluginTracker<RegistrationHandler>(pluginService, "com.tle.web.sections",
 			"registrationHandler", null, new PluginTracker.ExtensionParamComparator("order"));
 		registrationPlugins.setBeanKey("class");

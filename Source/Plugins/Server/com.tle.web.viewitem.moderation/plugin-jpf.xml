@@ -34,7 +34,6 @@
 		<parameter id="class" value="bean:com.tle.web.viewitem.moderation.ViewMetadataAction" />
 		<parameter id="path" value="/viewitem/viewitem.do" />
 		<parameter id="parentid" value="com.tle.web.viewitem.summary.sidebar.MAJOR_ACTIONS" />
-		<parameter id="afterid" value="com.tle.web.searching.prevnext.SearchPrevNextSection"/>
 	</extension>
 
 
