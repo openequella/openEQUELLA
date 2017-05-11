@@ -1,12 +1,12 @@
 import javax.xml.parsers.SAXParserFactory
 
+import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
 import org.jdom2.input.SAXBuilder
 import org.jdom2.input.sax.XMLReaders
 import sbt._
 import sbt.Keys._
 import JPFPlugin.autoImport._
-
 import scala.annotation.tailrec
 import Common._
 
@@ -57,17 +57,15 @@ object JPFScanPlugin extends AutoPlugin {
         case ParsedJPF(baseDir, _, internalDeps, _) =>
           val deps = internalDeps.map(_._1)
           val (a, l) = convertAll(parsedMap, already + pId, processed, deps)
-          val sbtFile = Option(baseDir / "build.sbt").filter(_.exists)
           val prjDeps = deps.toSeq.map(classpathDep)
           val prj = Project(toSbtPrj(pId), baseDir, dependencies = prjDeps)
             .settings(
-              managedClasspath in Compile ++= (managedClasspath in (parentRef, Compile)).value,
+              managedClasspath in Compile ++= (managedClasspath in(parentRef, Compile)).value,
               managedClasspath in Compile ++= {
                 jpfLibraryJars.all(ScopeFilter(inProjects(depsWithExports(deps, parsedMap, Set.empty).map(toLocalProject).toSeq: _*))).value.flatten
               }
             )
             .enablePlugins(JPFPlugin)
-            .addSbtFiles(sbtFile.toSeq : _*)
           (a, prj :: l)
       }.getOrElse {
         System.err.println(s"Could not find plugin for id $pId")
@@ -82,8 +80,8 @@ object JPFScanPlugin extends AutoPlugin {
     val baseDir = proj.base
     val allManifests = dirs.foldLeft(Seq.empty[File])((m, dir) => ((baseDir / dir) ** "plugin-jpf.xml").get ++ m)
     val manifestMap = allManifests.map(parseJPF).map(p => (p.id, p)).toMap
-    val pluginList = manifestMap.keys
-//    val pluginList = Seq("com.tle.common.remoterepo.z3950", "com.tle.core.application")
+
+    val pluginList = if (buildConfig.hasPath("plugin.whitelist")) buildConfig.getStringList("plugin.whitelist").asScala else manifestMap.keys
     val (_, projects) = convertAll(manifestMap, Set.empty, Nil, pluginList)
     val allPlugins = Project("allPlugins", baseDir / "Source/Plugins").aggregate(projects.map(Project.projectToRef): _*)
     allPlugins +: projects
