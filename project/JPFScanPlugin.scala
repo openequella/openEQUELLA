@@ -12,9 +12,12 @@ import Common._
 
 object JPFScanPlugin extends AutoPlugin {
   val dirs = Seq("Source/Plugins", "Platform/Plugins", "Interface/Plugins")
-  val parentRef = LocalProject("equellaServer")
 
-  case class ParsedJPF(baseDir: File, id: String, internalDeps: Set[(String, Boolean)], externalDeps: Set[(String, Boolean)])
+  val serverRef = LocalProject("equellaserver")
+  val adminRef = LocalProject("adminTool")
+
+  case class ParsedJPF(baseDir: File, id: String, internalDeps: Set[(String, Boolean)],
+                       externalDeps: Set[(String, Boolean)], adminConsole: Boolean)
 
 
   def parseJPF(f: File): ParsedJPF = {
@@ -25,7 +28,11 @@ object JPFScanPlugin extends AutoPlugin {
       (e.getAttributeValue("plugin-id"), e.getAttributeValue("exported", "false") == "true")
     }.partition(_._1.contains(":"))
 
-    ParsedJPF(f.getParentFile, pluginId, deps.toSet, extDeps.toSet)
+    val adminConsole = root.getChildren("attributes").flatMap(a => a.getChildren("attribute")).find {
+      _.getAttributeValue("id") == "type"
+    }.exists(_.getAttributeValue("value") == "admin-console")
+
+    ParsedJPF(f.getParentFile, pluginId, deps.toSet, extDeps.toSet, adminConsole)
   }
 
   def toLocalProject(pluginId: String) = LocalProject(toSbtPrj(pluginId))
@@ -50,17 +57,19 @@ object JPFScanPlugin extends AutoPlugin {
     }
   }
 
+  def parentForPlugin(pjpf: ParsedJPF): LocalProject = if (pjpf.adminConsole) adminRef else serverRef
+
   def convertOne(parsedMap: Map[String, ParsedJPF], already: Set[String],
                  processed: List[Project], pId: String): (Set[String], List[Project]) = {
     if (already.contains(pId)) (already, processed) else {
       parsedMap.get(pId).map {
-        case ParsedJPF(baseDir, _, internalDeps, _) =>
+        case pjpf@ParsedJPF(baseDir, _, internalDeps, _, _) =>
           val deps = internalDeps.map(_._1)
           val (a, l) = convertAll(parsedMap, already + pId, processed, deps)
           val prjDeps = deps.toSeq.map(classpathDep)
           val prj = Project(toSbtPrj(pId), baseDir, dependencies = prjDeps)
             .settings(
-              managedClasspath in Compile ++= (managedClasspath in(parentRef, Compile)).value,
+              managedClasspath in Compile ++= (managedClasspath in(parentForPlugin(pjpf), Compile)).value,
               managedClasspath in Compile ++= {
                 jpfLibraryJars.all(ScopeFilter(inProjects(depsWithExports(deps, parsedMap, Set.empty).map(toLocalProject).toSeq: _*))).value.flatten
               },
@@ -82,7 +91,8 @@ object JPFScanPlugin extends AutoPlugin {
     val allManifests = dirs.foldLeft(Seq.empty[File])((m, dir) => ((baseDir / dir) ** "plugin-jpf.xml").get ++ m)
     val manifestMap = allManifests.map(parseJPF).map(p => (p.id, p)).toMap
 
-    val pluginList = if (buildConfig.hasPath("plugin.whitelist")) buildConfig.getStringList("plugin.whitelist").asScala else manifestMap.keys
+    val adminPlugins = manifestMap.values.filter(_.adminConsole).map(_.id).toSet
+    val pluginList = (if (buildConfig.hasPath("plugin.whitelist")) buildConfig.getStringList("plugin.whitelist").asScala.toSet else manifestMap.keySet) ++ adminPlugins
     val (_, projects) = convertAll(manifestMap, Set.empty, Nil, pluginList)
     val allPlugins = Project("allPlugins", baseDir / "Source/Plugins").aggregate(projects.map(Project.projectToRef): _*)
     allPlugins +: projects

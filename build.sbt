@@ -7,13 +7,16 @@ lazy val learningedge_config = project in file("Dev/learningedge-config")
 
 lazy val allPlugins = LocalProject("allPlugins")
 
-lazy val equellaServer = (project in file("Source/Server/equellaserver")).settings(
-  version := "1.0",
-  scalaVersion := "2.11.7",
+val legacyPaths = Seq(
   javaSource in Compile := baseDirectory.value / "src",
   javaSource in Test := baseDirectory.value / "test",
   unmanagedSourceDirectories in Compile := (javaSource in Compile).value :: Nil,
-  unmanagedSourceDirectories in Test := (javaSource in Test).value :: Nil,
+  unmanagedSourceDirectories in Test := (javaSource in Test).value :: Nil
+)
+
+lazy val equellaserver = (project in file("Source/Server/equellaserver")).settings(legacyPaths).settings(
+  version := "1.0",
+  scalaVersion := "2.11.7",
   updateOptions := updateOptions.value.withCachedResolution(true),
   unmanagedClasspath in Runtime += (baseDirectory in learningedge_config).value,
   libraryDependencies ++= Seq(
@@ -27,7 +30,6 @@ lazy val equellaServer = (project in file("Source/Server/equellaserver")).settin
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
     "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-base" % jacksonVersion,
     "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonVersion,
-    "com.fifesoft" % "rsyntaxtextarea" % "1.5.2",
     "com.flickr4java" % "flickr4java" % "2.16" excludeAll (
       ExclusionRule(organization = "org.apache.axis", name = "axis")
       ),
@@ -49,7 +51,6 @@ lazy val equellaServer = (project in file("Source/Server/equellaserver")).settin
     "com.ning" % "async-http-client" % "1.7.8",
     "com.oracle" % "ojdbc6" % "11.2.0.3",
     "com.paypal.sdk" % "paypal-base" % "1.0",
-    //  "com.pearson.equella" % "httpinvoker" % "2.5.5.1",
     "com.rometools" % "rome" % "1.7.2",
     "com.tle.reporting" % "reporting-common-6.2" % "2",
     "com.wordnik" % "swagger-annotations" % "1.3.12",
@@ -260,6 +261,12 @@ lazy val equellaServer = (project in file("Source/Server/equellaserver")).settin
   runnerTasks(allPlugins)
 ).enablePlugins(JPFRunnerPlugin)
 
-lazy val equella = (project in file(".")).enablePlugins(JPFScanPlugin).aggregate(equellaServer, allPlugins)
+lazy val adminTool = (project in file("Source/Server/adminTool")).settings(legacyPaths).dependsOn(
+  LocalProject("com_tle_platform_swing"),
+  LocalProject("com_tle_platform_equella"),
+  LocalProject("com_tle_webstart_admin")
+)
+
+lazy val equella = (project in file(".")).enablePlugins(JPFScanPlugin).aggregate(equellaserver, allPlugins, adminTool)
 
 name := "Equella"
