@@ -4,18 +4,21 @@
 
 ### Prerequisites
 
-* [Ant](https://ant.apache.org)
+* [SBT](http://www.scala-sbt.org/)
 * JDK 8
 * `equella-deps.zip` unzipped into your home directory
-* `equella.keystore` in your home directory. This is the keystore containing the certificate for signing the webstart apps and applets.
 
 ### Building
 
-```bash
-ant release
-```
+TODO
 
-The build artifacts will be produced in the `product` folder.
+### Running a dev instance
+
+Ensure you have your `Dev/learningedge-config` setup.
+
+```bash
+sbt compile equellaserver/run
+```
 
 ## Installing
 
