@@ -9,7 +9,7 @@ libraryDependencies ++= Seq(
   "jpf" % "jpf" % "1.0.7",
   "com.fifesoft" % "rsyntaxtextarea" % "1.5.2",
   "com.miglayout" % "miglayout-swing" % "4.2",
-  "jnlp" % "jnlp" % "1.0" % Provided
+  "jnlp" % "jnlp" % "1.0"
 )
 
 fork in run := true
