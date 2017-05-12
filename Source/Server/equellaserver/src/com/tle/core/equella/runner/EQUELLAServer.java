@@ -128,7 +128,7 @@ public class EQUELLAServer
 			props.setProperty("org.java.plugin.standard.StandardPluginLifecycleHandler.probeParentLoaderLast", "false");
 			ObjectFactory objectFactory = ObjectFactory.newInstance(props);
 
-			List<String> folders = Arrays.asList(mandatory.getProperty("plugins.location"));
+			List<String> folders = Arrays.asList(System.getProperty("plugins.location", mandatory.getProperty("plugins.location")));
 			manager = objectFactory.createManager();
 
 			Map<String, TLEPluginLocation> registered = new HashMap<String, TLEPluginLocation>();
