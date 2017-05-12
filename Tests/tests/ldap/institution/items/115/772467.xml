@@ -1,0 +1,95 @@
+<com.tle.beans.item.Item>
+  <id>772467</id>
+  <uuid>f0863665-cd0b-4bc9-a124-5110c924e97c</uuid>
+  <version>1</version>
+  <owner>andrew.gibb</owner>
+  <dateModified class="sql-timestamp">2012-10-11 12:41:04.905</dateModified>
+  <dateCreated class="sql-timestamp">2012-10-11 12:41:04.912</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.371</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="b28f1ffe-2008-4f5e-d559-83c8acd79316"/>
+  <collaborators/>
+  <badUrls/>
+  <moderation>
+    <id>772479</id>
+    <liveApprovalDate class="sql-timestamp">2012-10-11 12:41:04.905</liveApprovalDate>
+    <start class="sql-timestamp">2012-10-29 10:43:31.684</start>
+    <lastAction class="sql-timestamp">2012-10-11 12:41:04.905</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>772486</id>
+      <user>andrew.gibb</user>
+      <date class="sql-timestamp">2012-10-11 12:41:04.905</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>772489</id>
+      <user>andrew.gibb</user>
+      <date class="sql-timestamp">2012-10-11 12:41:04.905</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>772492</id>
+      <user>andrew.gibb</user>
+      <date class="sql-timestamp">2012-10-11 12:41:04.905</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>772482</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>772483</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>LDAPTest - Cool</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>772470</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>772473</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Only cool people can see this item</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

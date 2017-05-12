@@ -1,0 +1,322 @@
+<project name="TLE Automated tests" default="build" basedir="." xmlns:jacoco="antlib:org.jacoco.ant">
+
+	<property file="config/localserver.properties" />
+	<property name="source.base" location="../" />
+	<property name="platform.base" location="${source.base}/Platform" />
+	<property name="selenium.base" location="${source.base}/SeleniumLibs" />
+	<property name="interface.base" location="${source.base}/Interface" />
+	<property name="customtasks.base" location="${platform.base}/Infrastructure/CustomBuildTasks" />
+	<property name="platform.common.base" location="${platform.base}/Plugins/com.tle.platform.common" />
+	<property name="test.reports" location="results/" />
+	<property name="coverage.output" location="results/coverage/" />
+	<property name="coverage.host" value="tle-autotest" />
+	<property name="coverage.port" value="47657" />
+	<property name="coverage.enabled" value="true" />
+	<property name="server.url" value="http://tle-autotest:83/" />
+	<property name="server.password" value="tle010" />
+	<property name="server.serviceurl" value="http://tle-autotest:3400/" />
+	<property name="server.servicepassword" value="admin" />
+	<property name="server.waittimeout" value="300" />
+	<property name="hudson.artifacturl" value="http://dev-builds.equella.com/job/EQUELLA-Build/lastSuccessfulBuild/artifact/" />
+	<property name="hudson.username" value="AutoTest" />
+	<property name="hudson.password" value="c6be9f9dd50da55c32cef44ba33fb2b8" />
+	<property name="institution.includepattern" value="*" />
+	<property name="interface.tests.location" location="${interface.base}/Tests" />
+	<property name="test.includepattern" value="**/*Test.java" />
+	<property name="test.suite" value="testng-database-local.xml" />
+	<property name="test.deleteitems" value="false" />
+	<property name="testng.extrajvmargs" value="-DX" />
+	<property name="equella" value="true" />
+
+	<path id="customtasks.classpath">
+		<fileset dir="${customtasks.base}/lib">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${customtasks.base}/classes" />
+	</path>
+
+	<propertyset id="testng-propset">
+		<propertyref name="test.deleteitems" />
+		<propertyref name="moodlebase.url" />
+		<propertyref name="moodle.allowed" />
+		<propertyref name="blackboard.url" />
+		<propertyref name="canvas.url" />
+		<propertyref name="webdriver.chrome.driver" />
+		<propertyref name="webdriver.firefox.bin" />
+		<propertyref name="grid.url" />
+		<propertyref name="oauth.redirector.url" />
+		<propertyref name="echoserver.url" />
+		<propertyref name="testinteg.url" />
+		<propertyref name="interface.tests.location" />
+		<propertyref name="equella" />
+		<propertyref prefix="server" />
+		<propertyref prefix="multidb" />
+		<propertyref builtin="commandline" />
+	</propertyset>
+
+	<fileset id="selenium.jars" dir="${selenium.base}">
+		<filename name="*.jar" />
+	</fileset>
+
+	<path id="interface.build.classpath">
+		<pathelement location="${platform.common.base}/classes" />
+		<fileset dir="${interface.base}/Dependencies">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${interface.base}/Tests_Dependencies">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${platform.base}/Plugins/ExternalPlatform">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${interface.base}/Tests_JSON/classes" />
+	</path>
+
+	<path id="build.classpath">
+		<fileset dir="lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="lib/adminjars">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${selenium.base}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="interface.test.classpath">
+		<pathelement location="${platform.common.base}/classes" />
+		<fileset dir="${interface.base}/Tests_Dependencies">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="test.classpath">
+		<path refid="build.classpath" />
+		<path refid="interface.test.classpath" />
+		<fileset refid="selenium.jars" />
+		<pathelement location="config" />
+	</path>
+
+	<path id="platform.external.classpath">
+		<fileset dir="${platform.base}/Plugins/ExternalPlatform">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<fileset id="plugin.manifests" dir="../../">
+		<include name="Interface/Plugins/*/plugin-jpf.xml" />
+		<include name="Interface/Dependencies/*.jar" />
+	</fileset>
+
+	<target name="init">
+		<mkdir dir="${test.reports}" />
+		<mkdir dir="${coverage.output}" />
+		<mkdir dir="classes" />
+		<mkdir dir="${interface.base}/Tests/classes" />
+		<mkdir dir="${interface.base}/Tests_JSON/classes" />
+		<mkdir dir="staging" />
+	</target>
+
+	<target name="declare-contrib">
+		<path id="contribclasspath">
+			<path location="lib/ant-contrib.jar" />
+		</path>
+		<taskdef name="for" classname="net.sf.antcontrib.logic.ForTask" classpathref="contribclasspath" />
+		<taskdef name="urlencode" classname="net.sf.antcontrib.property.URLEncodeTask" classpathref="contribclasspath" />
+		<taskdef name="propertyregex" classname="net.sf.antcontrib.property.RegexTask" classpathref="contribclasspath" />
+	</target>
+
+	<target name="clean-results">
+		<delete dir="${test.reports}" />
+	</target>
+
+	<target name="clean" depends="clean-results, declare-contrib">
+		<delete dir="classes" />
+		<delete dir="${interface.base}/Tests/classes" />
+		<delete dir="${interface.base}/Tests_JSON/classes" />
+		<delete dir="staging" />
+		<!--<delete dir="${interface.base}/Tests/staging" />-->
+	</target>
+
+	<target name="define-customtasks" depends="build-platform">
+		<!--<subant target="make" buildpath="${customtasks.base}" />-->
+
+		<typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties" classpathref="customtasks.classpath" />
+		<typedef classname="com.tle.ant.JPFClasspath" name="jpfClasspath" classpathref="customtasks.classpath" />
+		<taskdef classname="com.tle.ant.dependencies.DownloadJars" name="downloadJars" classpathref="customtasks.classpath" />
+	</target>
+
+	<target name="download-jars" depends="define-customtasks">
+		<!--
+		<delete>
+			<fileset dir="${platform.base}/Plugins/ExternalPlatform">
+				<include name="*.jar" />
+				<include name="*.zip" />
+				<include name="lib-src/*" />
+			</fileset>
+		</delete>
+		<downloadJars createJpf="true" createClasspath="true" destDir="${platform.base}/Dependencies" sourcesDir="${interface.base}/Dependencies/lib-src">
+			<repository id="dev" url="http://dev-libs.equella.com/artifactory/main" username="tleuser" password="tle010" />
+
+			<fileset file="${platform.base}/Plugins/ExternalPlatform/deps.txt" />
+			<fileset file="${interface.base}/Build/deps.txt" />
+		</downloadJars>
+		-->
+
+		<delete>
+			<fileset dir="${interface.base}/Dependencies">
+				<include name="*.jar" />
+				<include name="*.zip" />
+				<include name="lib-src/*" />
+			</fileset>
+		</delete>
+		<downloadJars createJpf="true" createClasspath="true" destDir="${interface.base}/Dependencies" sourcesDir="${interface.base}/Dependencies/lib-src">
+			<repository id="maven" url="http://repo1.maven.org/maven2/"/>
+			<repository id="local" url="file://${user.home}/equella-deps"/>
+			<fileset file="${platform.base}/Plugins/ExternalPlatform/deps.txt" />
+			<fileset file="${interface.base}/Build/deps.txt" />
+		</downloadJars>
+
+		<delete>
+			<fileset dir="${interface.base}/Tests_Dependencies">
+				<include name="*.jar" />
+				<include name="*.zip" />
+				<include name="lib-src/*" />
+			</fileset>
+		</delete>
+		<downloadJars createJpf="true" createClasspath="true" destDir="${interface.base}/Tests_Dependencies" sourcesDir="${interface.base}/Tests_Dependencies/lib-src">
+			<repository id="maven" url="http://repo1.maven.org/maven2/"/>
+			<repository id="local" url="file://${user.home}/equella-deps"/>
+			<!--<fileset file="${platform.base}/Plugins/ExternalPlatform/deps.txt" />-->
+			<fileset file="${interface.base}/Build/testdeps.txt" />
+		</downloadJars>
+
+		<delete>
+			<fileset dir="${selenium.base}">
+				<include name="*.jar" />
+				<include name="*.zip" />
+				<include name="lib-src/*" />
+			</fileset>
+		</delete>
+		<downloadJars createJpf="true" createClasspath="true" destDir="${selenium.base}" sourcesDir="${selenium.base}/lib-src">
+			<repository id="maven" url="http://repo1.maven.org/maven2/"/>
+			<repository id="local" url="file://${user.home}/equella-deps"/>
+			<fileset file="${selenium.base}/selenium-deps.txt" />
+		</downloadJars>
+	</target>
+
+	<target name="build-platform">
+		<subant target="product" buildpath="${platform.base}/Build" />
+		<javac srcdir="${platform.common.base}/src" destdir="${platform.common.base}/classes" debug="true" classpathref="platform.external.classpath" />
+	</target>
+
+	<target name="build" depends="init, declare-contrib, download-jars">
+		<javac srcdir="src" destdir="classes" debug="true" classpathref="build.classpath" includeantruntime="false" source="1.8" target="1.8" />
+		<copy todir="classes">
+			<fileset dir="src" excludes="**/*.java" />
+		</copy>
+
+		<javac srcdir="${interface.base}/Tests_JSON/src" destdir="${interface.base}/Tests_JSON/classes" debug="true" classpathref="interface.build.classpath" includeantruntime="false" source="1.8" target="1.8" />
+		<copy todir="${interface.base}/Tests_JSON/classes">
+			<fileset dir="${interface.base}/Tests_JSON/src" excludes="**/*.java" />
+		</copy>
+
+		<javac srcdir="${interface.base}/Tests/src" destdir="${interface.base}/Tests/classes" debug="true" classpathref="interface.build.classpath" includeantruntime="false" source="1.8" target="1.8" />
+		<copy todir="${interface.base}/Tests/classes">
+			<fileset dir="${interface.base}/Tests/src" excludes="**/*.java" />
+		</copy>
+	</target>
+
+	<target name="declare" depends="build, -declare"/>
+
+	<target name="-declare" depends="declare-contrib">
+		<path id="taskclasspath">
+			<path refid="build.classpath" />
+			<path location="classes" />
+		</path>
+		<taskdef resource="testngtasks" classpath="lib/testng-6.8.jar" />
+		<taskdef name="servicecontrol" classname="com.tle.webtests.framework.ant.ServiceControl" classpathref="taskclasspath" />
+		<taskdef name="equellawait" classname="com.tle.webtests.framework.ant.EquellaWait" classpathref="taskclasspath" />
+		<taskdef name="coveragereport" classname="com.tle.webtests.framework.ant.PluginReport" classpathref="taskclasspath" />
+		<taskdef uri="antlib:org.jacoco.ant" classpath="lib/jacocoant.jar" resource="org/jacoco/ant/antlib.xml" />
+	</target>
+
+	<target name="download.upgrade" depends="declare">
+		<get src="${hudson.artifacturl}product/version.properties" dest="staging/version.properties" verbose="true" username="${hudson.username}" password="${hudson.password}" />
+		<property file="staging/version.properties" />
+		<property name="build.file" value="tle-upgrade-${version.mmr} (${version.display}).zip" />
+		<urlencode property="build.file.url" value="${build.file}" />
+		<propertyregex property="build.file.url" override="true" input="${build.file.url}" regexp="\+" replace="%20" global="true" />
+		<get src="${hudson.artifacturl}product/${build.file.url}" dest="staging/${build.file}" verbose="true" skipexisting="true" username="${hudson.username}" password="${hudson.password}" />
+	</target>
+
+	<target name="deploy" depends="declare,download.upgrade">
+		<servicecontrol url="${server.serviceurl}" password="${server.servicepassword}" command="stop" />
+		<servicecontrol url="${server.serviceurl}" password="${server.servicepassword}" command="deploy" zipfile="staging/${build.file}" />
+		<servicecontrol url="${server.serviceurl}" password="${server.servicepassword}" command="start" />
+		<equellawait url="${server.url}institutions.do" maxwait="${server.waittimeout}" />
+	</target>
+
+	<target name="webtests" depends="declare, webtests.only"/>
+
+	<target name="webtests.only" depends="clean-results, -declare">
+		<jacoco:coverage enabled="${coverage.enabled}" destfile="${coverage.output}/testcoverage.exec" append="true">
+			<testng outputdir="${test.reports}" verbose="3">
+				<xmlfileset file="${test.suite}" />
+				<propertyset refid="testng-propset" />
+				<classpath>
+					<path refid="test.classpath" />
+					<path location="classes" />
+					<path location="${interface.base}/Tests/classes" />
+					<path location="${interface.base}/Tests_JSON/classes" />
+				</classpath>
+				<jvmarg value="${testng.extrajvmargs}" />
+			</testng>
+		</jacoco:coverage>
+		<mkdir dir="${test.reports}/tlejunitreports" />
+		<copy todir="${test.reports}/tlejunitreports">
+			<fileset dir="${test.reports}">
+				<include name="Auto Test*/*.xml" />
+				<exclude name="**/testng-failed.xml" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="coverage.init" depends="init,download.upgrade" if="coverage.enabled">
+		<mkdir dir="staging/plugins" />
+		<mkdir dir="staging/plugins-out" />
+
+		<unzip src="staging/${build.file}" dest="staging/plugins">
+			<patternset includes="plugins/*/*.jar" />
+		</unzip>
+		<for param="filename">
+			<path>
+				<fileset dir="staging/plugins" includes="**/*.jar" />
+			</path>
+			<sequential>
+				<basename property="plugindir.@{filename}" file="@{filename}" suffix=".jar" />
+				<unzip src="@{filename}" dest="staging/plugins-out/${plugindir.@{filename}}">
+					<!-- generated classes -->
+					<patternset>
+						<exclude name="**/ContextWS*.class" />
+						<exclude name="**/EQUELLAWS*.class" />
+					</patternset>
+				</unzip>
+			</sequential>
+		</for>
+		<get src="${hudson.artifacturl}product/coverage/source.zip" dest="staging/source.zip" verbose="true" skipexisting="true" username="${hudson.username}" password="${hudson.password}" />
+		<unzip src="staging/source.zip" dest="staging/javasrc" />
+	</target>
+
+	<target name="coverage.report" if="coverage.enabled" depends="declare">
+		<jacoco:dump address="${coverage.host}" port="${coverage.port}" reset="false" destfile="${coverage.output}/servercoverage.exec" />
+		<jacoco:merge destfile="${coverage.output}/finalcoverage.exec">
+			<fileset dir="${coverage.output}" includes="*.exec" excludes="finalcoverage.exec" />
+		</jacoco:merge>
+		<coveragereport reportDir="${coverage.output}/report" groupings="groupings.json" basedir="staging/plugins-out" coverageHost="${coverage.host}" coveragePort="${coverage.port}" sourcesDir="staging/javasrc" includes="*/plugin-jpf.xml" excludesfile="coverage-exclude.txt" />
+	</target>
+
+	<target name="test" depends="clean,deploy,coverage.init,webtests,coverage.report" />
+
+</project>

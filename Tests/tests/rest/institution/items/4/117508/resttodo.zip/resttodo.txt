@@ -1,0 +1,38 @@
+Exceptions - what output?
+
+bad urls
+Is 0 a possible rating?
+What is the meaning of VIEW_ITEM? You can see metadata/attachments from a search if you have DISCOVER_ITEM.
+
+
+Testing
+-------
+zip attachment
+scorm package
+
+
+
+
+Editing
+-------
+When do bad urls get checked?
+When do md5/thumbnails get generated.
+We probably need a fixup to refresh/md5/thumbnail from filesystem. Already have one?
+Permission checking - EDIT_ITEM,MOVE_ITEM,CHANGE_OWNERSHIP
+Checking UUID validity, creating new uuids for attachments.
+Make sure navigation nodes are checked for attachment linkage.
+Refs to remove the need for client to make new UUIDs.
+Test changing type of attachment but not changing uuid.
+Redmine like stale data checking
+File based attachment field stuff.
+
+Ordering of edits
+-----------------
+Edit metadata
+Update security
+Edit owner
+Update security
+Modify collection
+Update security
+Workflow ops
+

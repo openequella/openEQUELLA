@@ -1,0 +1,16 @@
+<com.tle.core.institution.convert.InstitutionImport>
+  <institution>
+    <id>2016849</id>
+    <name>Login</name>
+    <filestoreId>login</filestoreId>
+    <url>http://boorah/dev/login/</url>
+    <adminPassword>MD5:97a6cd4e26a4f9e0a821f0107819febc</adminPassword>
+    <timeZone></timeZone>
+    <enabled>true</enabled>
+  </institution>
+  <buildVersion>5.0 [Dev r28911]</buildVersion>
+  <flags>
+    <string>NO_AUDITLOGS</string>
+  </flags>
+  <serverURL>http://boorah/dev/login/</serverURL>
+</com.tle.core.institution.convert.InstitutionImport>

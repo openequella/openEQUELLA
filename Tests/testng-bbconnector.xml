@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Auto Test BB Suite" parallel="instances" data-provider-thread-count="2"
+	thread-count="8">
+	<test name="Sync Remote First">
+		<classes>
+			<class name="com.tle.webtests.remotetest.integration.blackboard.init.SyncBlackboardTest" />
+		</classes>
+	</test>
+	<test name="All Remote Tests">
+		<classes>
+			<class name="com.tle.webtests.remotetest.integration.blackboard.BlackboardConnectorTest" />
+		</classes>
+	</test>
+</suite>

@@ -1,0 +1,114 @@
+<com.tle.common.workflow.Workflow>
+  <id>29257</id>
+  <uuid>ad3e29a1-1b92-ad4b-8e91-7725dce327aa</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2009-08-28 09:50:42.267</dateModified>
+  <dateCreated class="sql-timestamp">2009-08-28 09:49:36.17</dateCreated>
+  <name>
+    <id>29258</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>29259</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Decision Point Scripting by Contributor Role</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <movelive>false</movelive>
+  <nodes>
+    <com.tle.common.workflow.node.WorkflowItem>
+      <id>29263</id>
+      <uuid>d5f83189-0c45-63a9-89b8-d81488f7ae5d</uuid>
+      <name>
+        <id>29264</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>29265</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Make an administrator moderate it</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <rejectPoint>true</rejectPoint>
+      <parent class="com.tle.common.workflow.node.DecisionNode">
+        <id>29260</id>
+        <uuid>414491f7-f5a7-8adf-b179-b28397e67521</uuid>
+        <name>
+          <id>29261</id>
+          <strings>
+            <entry>
+              <string>en</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>29262</id>
+                <locale>en</locale>
+                <priority>1</priority>
+                <text>Did an Adminstrator contribute this item?</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </name>
+        <rejectPoint>false</rejectPoint>
+        <parent class="com.tle.common.workflow.node.SerialNode">
+          <id>29266</id>
+          <uuid>4c116356-5f3b-9eaa-2c15-30a9a0bfb5e5</uuid>
+          <name>
+            <id>29267</id>
+            <strings>
+              <entry>
+                <string>en_GB</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>29268</id>
+                  <locale>en_GB</locale>
+                  <priority>2</priority>
+                  <text>Start</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </name>
+          <rejectPoint>false</rejectPoint>
+          <childIndex>0</childIndex>
+        </parent>
+        <childIndex>0</childIndex>
+        <script>var bRet = false; 
+if( user.doesntHaveRole(&apos;ROLE_SYSTEM_ADMINISTRATOR&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+      </parent>
+      <childIndex>0</childIndex>
+      <users/>
+      <groups/>
+      <roles>
+        <string>ROLE_SYSTEM_ADMINISTRATOR</string>
+      </roles>
+      <unanimousacceptance>false</unanimousacceptance>
+      <escalate>false</escalate>
+      <escalationdays>0</escalationdays>
+      <allowEditing>false</allowEditing>
+      <movelive>false</movelive>
+      <moveliveAccept>false</moveliveAccept>
+      <priority>20</priority>
+      <actionDays>0</actionDays>
+      <autoAssigns/>
+    </com.tle.common.workflow.node.WorkflowItem>
+    <com.tle.common.workflow.node.DecisionNode reference="../com.tle.common.workflow.node.WorkflowItem/parent"/>
+    <com.tle.common.workflow.node.SerialNode reference="../com.tle.common.workflow.node.WorkflowItem/parent/parent"/>
+  </nodes>
+</com.tle.common.workflow.Workflow>

@@ -1,0 +1,18 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>47884</id>
+  <institution>
+    <id>47824</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>jar</string>
+  </extensions>
+  <type>application/java-archive</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

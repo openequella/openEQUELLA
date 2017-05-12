@@ -1,0 +1,26 @@
+<project name="Coverage Report" default="report" basedir="." xmlns:jacoco="antlib:org.jacoco.ant">
+	<property file="config/localserver.properties" />
+	<taskdef uri="antlib:org.jacoco.ant" classpath="lib/jacocoant.jar" resource="org/jacoco/ant/antlib.xml" />
+	<property name="coverage.output" location="results/localcoverage" />
+	<path id="taskclasspath">
+		<fileset dir="lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="lib-selenium">
+			<include name="*.jar" />
+		</fileset>
+		<path location="classes" />
+	</path>
+	<taskdef name="coveragereport" classname="com.tle.webtests.framework.ant.PluginReport" classpathref="taskclasspath" />
+
+	<target name="report">
+		<mkdir dir="${coverage.output}" />
+		<coveragereport reportDir="${coverage.output}/report" groupings="config/localcoverage-groups.json" basedir="${plugins.dir}" includes="**/plugin-jpf.xml" />
+	</target>
+
+	<target name="report-and-reset" depends="report,reset" />
+
+	<target name="reset">
+		<jacoco:dump reset="true" dump="false" />
+	</target>
+</project>

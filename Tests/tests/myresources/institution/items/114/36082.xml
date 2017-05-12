@@ -1,0 +1,55 @@
+<com.tle.beans.item.Item>
+  <id>36082</id>
+  <uuid>18c73bbc-0c73-432d-b709-0744b386912e</uuid>
+  <version>1</version>
+  <owner>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</owner>
+  <dateModified class="sql-timestamp">2011-09-20 15:54:13.548</dateModified>
+  <dateCreated class="sql-timestamp">2011-09-20 15:54:13.548</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.45</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>PERSONAL</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>36090</id>
+      <uuid>86b766c1-ba42-424c-8aa9-e09f97680019</uuid>
+      <url>ScotchfingerIcon.png</url>
+      <description>ScotchfingerIcon.png</description>
+      <value1>21698</value1>
+      <value2>false</value2>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="6b356e2e-e6a0-235a-5730-15ad1d8ad630"/>
+  <collaborators/>
+  <referencedUrls/>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>36084</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>36085</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Scotch finger represenation</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>23989</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

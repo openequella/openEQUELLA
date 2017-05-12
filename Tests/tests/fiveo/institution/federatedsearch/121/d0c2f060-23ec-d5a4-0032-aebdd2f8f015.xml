@@ -1,0 +1,59 @@
+<com.tle.beans.entity.FederatedSearch>
+  <id>216128</id>
+  <uuid>d0c2f060-23ec-d5a4-0032-aebdd2f8f015</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2011-04-07 09:24:02.077</dateModified>
+  <dateCreated class="sql-timestamp">2011-04-04 15:44:11.18</dateCreated>
+  <description>
+    <id>216129</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216130</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>This is a MERLOT Remote Repository</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>216131</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216132</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>MERLOT</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>schemaInputTransform</key>
+      <value>MERLOT</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>licenceKey</key>
+      <value>Q61U3KTE5JDREIGDHY6JYIE6LDDSFST760K</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>advanced</key>
+      <value>true</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>xslt</key>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <type>MerlotSearchEngine</type>
+  <timeout>30</timeout>
+  <collectionUuid>b28f1ffe-2008-4f5e-d559-83c8acd79316</collectionUuid>
+</com.tle.beans.entity.FederatedSearch>

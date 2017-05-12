@@ -1,0 +1,67 @@
+<com.tle.beans.item.Item>
+  <id>117039</id>
+  <uuid>6aaea51b-76e9-4c5b-ae75-e362cb59385b</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-03-28 15:50:53.24</dateModified>
+  <dateCreated class="sql-timestamp">2014-03-28 15:50:52.563</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.881</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>DRAFT</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.LinkAttachment>
+      <id>117041</id>
+      <uuid>26ea257e-4af7-4f90-bcc8-963681bcfd9c</uuid>
+      <url>http://www.changed.com/</url>
+      <description>New file</description>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.LinkAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>88896</id>
+      <url>http://www.changed.com/</url>
+      <urlHash>f23e07f9541416dee572165e9a1f1091</urlHash>
+      <success>false</success>
+      <status>0</status>
+      <tries>0</tries>
+      <lastChecked class="sql-timestamp">1970-01-01 11:00:00.0</lastChecked>
+      <lastIndexed class="sql-timestamp">1970-01-01 11:00:00.0</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117042</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-28 15:50:52.563</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>117043</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-28 15:50:53.24</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <totalFileSize>15412</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

@@ -1,0 +1,18 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>29602</id>
+  <institution>
+    <id>29168</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>xlsm</string>
+  </extensions>
+  <type>application/vnd.ms-excel.sheet.macroEnabled.12</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

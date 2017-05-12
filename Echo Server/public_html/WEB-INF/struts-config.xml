@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+
+<struts-config>
+	<!-- ========== Form Bean Definitions =================================== -->
+	<form-beans>
+		<form-bean name="mainForm"
+			type="com.tle.echoserver.MainForm" />
+	</form-beans>
+
+	<!-- ========== Action Mapping Definitions ============================== -->
+	<action-mappings>
+
+		<action path="/index" type="com.tle.echoserver.MainAction"
+			parameter="method" name="mainForm" scope="request">
+			<forward name="main" path="/WEB-INF/jsps/main.jsp" />
+		</action>
+
+	</action-mappings>
+</struts-config>

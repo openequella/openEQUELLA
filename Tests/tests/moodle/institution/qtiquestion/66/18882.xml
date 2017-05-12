@@ -1,0 +1,24 @@
+<com.tle.common.qti.entity.QtiAssessmentItem>
+  <id>18882</id>
+  <uuid>9f6bc436-3362-4230-812a-309d380255b7</uuid>
+  <identifier>jumble-gapMatch</identifier>
+  <title>Jumble: Legend - gapMatch</title>
+  <lang>en</lang>
+  <itemBody>uk.ac.ed.ph.jqtiplus.node.content.ItemBody@5628dfb5(
+    blocks =&gt; java.util.ArrayList[
+        0 =&gt; &lt;gapMatchInteraction&gt;@360124484(xPath=/assessmentItem[@identifier=&quot;jumble-gapMatch&quot;]/itemBody[1]/gapMatchInteraction[1],location=XmlSourceLocationInformation@3bcceb5e(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-f8e13982226c/jumble-gapMatch.xml,lineNumber=81,columnNumber=76))
+        1 =&gt; &lt;p&gt;@175146750(xPath=/assessmentItem[@identifier=&quot;jumble-gapMatch&quot;]/itemBody[1]/p[1],location=XmlSourceLocationInformation@61ae930c(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-f8e13982226c/jumble-gapMatch.xml,lineNumber=91,columnNumber=12))
+    ]
+    id =&gt; null
+    classAttr =&gt; null
+    lang =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    label =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    parent =&gt; &lt;assessmentItem&gt;@205007598(xPath=/assessmentItem[@identifier=&quot;jumble-gapMatch&quot;],location=XmlSourceLocationInformation@3b8a7586(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-f8e13982226c/jumble-gapMatch.xml,lineNumber=8,columnNumber=78))(systemId=_SECURE/_QTI/id-f8e13982226c/jumble-gapMatch.xml)
+    attributes =&gt; uk.ac.ed.ph.jqtiplus.attribute.AttributeList@7f29cef3
+    sourceLocation =&gt; XmlSourceLocationInformation@11d1f4be(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-f8e13982226c/jumble-gapMatch.xml,lineNumber=53,columnNumber=15)
+    rootNode =&gt; &lt;assessmentItem&gt;@205007598(xPath=/assessmentItem[@identifier=&quot;jumble-gapMatch&quot;],location=XmlSourceLocationInformation@3b8a7586(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-f8e13982226c/jumble-gapMatch.xml,lineNumber=8,columnNumber=78))(systemId=_SECURE/_QTI/id-f8e13982226c/jumble-gapMatch.xml)
+    nodeGroups =&gt; uk.ac.ed.ph.jqtiplus.group.NodeGroupList@6f1aef15
+    qtiClassName =&gt; itemBody
+)
+</itemBody>
+  <adaptive>false</adaptive>
+  <timeDependent>false</timeDependent>
+</com.tle.common.qti.entity.QtiAssessmentItem>

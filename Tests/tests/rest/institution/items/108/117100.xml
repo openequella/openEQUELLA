@@ -1,0 +1,56 @@
+<com.tle.beans.item.Item>
+  <id>117100</id>
+  <uuid>abbb7aa0-1ab9-4fe9-8fe9-581a34bc32cc</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-04-10 16:56:43.15</dateModified>
+  <dateCreated class="sql-timestamp">2014-04-10 16:56:43.01</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.051</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>PERSONAL</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>117105</id>
+      <uuid>cec9c87c-9f1e-4103-a3df-5c097f9c72db</uuid>
+      <url>B.txt</url>
+      <description>B.txt</description>
+      <value1>0</value1>
+      <value2>false</value2>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="6b356e2e-e6a0-235a-5730-15ad1d8ad630"/>
+  <collaborators/>
+  <referencedUrls/>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>117102</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>117103</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>new title</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>1</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

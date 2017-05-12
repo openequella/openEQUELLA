@@ -1,0 +1,46 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>217229</id>
+  <institution>
+    <id>217136</id>
+    <uniqueId>0</uniqueId>
+    <quota>0.0</quota>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list"/>
+  <type>equella/attachment-echo</type>
+  <description>Echo presentation</description>
+  <attributes>
+    <entry>
+      <string>viewerConfig-echoVodcastViewer</string>
+      <string>{&quot;attr&quot;:{},&quot;height&quot;:&quot;600&quot;,&quot;openInNewWindow&quot;:true,&quot;thickbox&quot;:false,&quot;width&quot;:&quot;800&quot;}</string>
+    </entry>
+    <entry>
+      <string>fileViewerDisabled</string>
+      <string>true</string>
+    </entry>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&quot;echoCenterViewer&quot;,&quot;echoPlayerViewer&quot;,&quot;echoVodcastViewer&quot;,&quot;echoPodcastViewer&quot;]</string>
+    </entry>
+    <entry>
+      <string>defaultViewerId</string>
+      <string>echoCenterViewer</string>
+    </entry>
+    <entry>
+      <string>viewerConfig-echoPlayerViewer</string>
+      <string>{&quot;attr&quot;:{},&quot;height&quot;:&quot;600&quot;,&quot;openInNewWindow&quot;:true,&quot;thickbox&quot;:false,&quot;width&quot;:&quot;800&quot;}</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/echo.png</string>
+    </entry>
+    <entry>
+      <string>viewerConfig-echoCenterViewer</string>
+      <string>{&quot;attr&quot;:{},&quot;height&quot;:&quot;600&quot;,&quot;openInNewWindow&quot;:true,&quot;thickbox&quot;:false,&quot;width&quot;:&quot;800&quot;}</string>
+    </entry>
+    <entry>
+      <string>viewerConfig-echoPodcastViewer</string>
+      <string>{&quot;attr&quot;:{},&quot;height&quot;:&quot;600&quot;,&quot;openInNewWindow&quot;:true,&quot;thickbox&quot;:false,&quot;width&quot;:&quot;800&quot;}</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

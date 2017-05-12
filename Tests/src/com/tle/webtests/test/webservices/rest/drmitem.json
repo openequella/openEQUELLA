@@ -1,0 +1,45 @@
+{
+  "uuid": "${uuid}",
+  "version": ${version},
+  "metadata" : "<xml><item><name>ItemApiEditTest - DRM Item from JSON</name><description>This is a description</description></item></xml>",
+  "owner" : {
+   "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  },
+  "collection" : {
+    "uuid" : "9a961a09-0c6a-b24f-b05b-eb21a696528b"
+  },
+  "drm": {
+  	"options": {
+		"drmPageUuid": "8a1d54b7-3f82-42e5-b5ad-1895149fe1a3",
+		"hideLicencesFromOwner": false,
+		"showLicenceCount": false,
+		"allowSummary": false,
+		"ownerMustAccept": true,
+		"studentsMustAcceptIfInCompilation": true,
+		"previewAllowed": false,
+		"attributionOfOwnership": false,
+		"enforceAttribution": true,
+		"contentOwners": [
+		  {
+		    "userId": "adfcaf58-241b-4eca-9740-6a26d1c3dd58",
+		    "name": "Auto Test [AutoTest]",
+		    "email": "auto@test.com",
+		    "owner": true
+		  }
+		],
+		"usages": [
+		  "DISPLAY",
+		  "EXECUTE",
+		  "PLAY",
+		  "PRINT"
+		],
+		"termsOfAgreement": "Verifiable use statement",
+		"requireAcceptanceFrom": "* ",
+		"restriction": {
+		  "educationalSector": false,
+		  "maximumUsage": 0
+		},
+		"acceptances": []
+    }
+  }
+}

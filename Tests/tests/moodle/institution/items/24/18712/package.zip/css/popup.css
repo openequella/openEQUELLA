@@ -1,0 +1,107 @@
+html, body
+  {
+    height: 100%;
+  }
+
+body {
+  font-family : Arial, Helvetica, sans-serif;
+  font-size: 0.75em;
+  color: #000000;
+  margin: 0px;
+  padding: 0px;
+  background-color: #FFFFCC;
+  }
+
+#blankheader {
+  background-color: #000066;
+  padding-left: 10px;
+  padding-right: 76px;
+  height: 66px;
+  }
+
+#culturalheader {
+  background-color: #000066;
+  padding-left: 10px;
+  padding-right: 76px;
+  background-image: url(../graphics/culture.jpg);
+  background-repeat: no-repeat; 
+  background-position: right;
+  height: 66px;
+  }
+
+#languageheader {
+  background-color: #000066;
+  padding-left: 10px;
+  padding-right: 76px;
+  background-image: url(../graphics/language.jpg);
+  background-repeat: no-repeat; 
+  background-position: right;
+  height: 66px;
+  }
+
+#hanziheader {
+  background-color: #000066;
+  padding-left: 10px;
+  padding-right: 76px;
+  background-image: url(../graphics/hanzi.jpg);
+  background-repeat: no-repeat; 
+  background-position: right;
+  height: 66px;
+  }
+
+#outer {
+  height: 66px; 
+  overflow: hidden; 
+  position: relative;
+  }
+  
+#outer[id] {
+  display: table; 
+  position: static;
+  }
+
+#middle {
+  position: absolute; 
+  top: 50%;
+  }
+  
+#middle[id] {
+  display: table-cell; 
+  vertical-align: middle; 
+  position: static;
+  }
+
+#inner {
+  position: relative; 
+  top: -50%
+  }
+  
+#note {
+  padding: 10px 10px 0px 10px;
+  }
+  
+#close {
+  margin-top: 50px;
+  padding: 0px 10px 0px 10px;
+  text-align: center;
+  }
+
+#close a img {
+  border: none;
+  }
+
+h1 { 
+  font-size: 1.5em;
+  color: #ffcc00;
+  font-weight: bold
+  }
+
+* html h1 {
+  padding-top:20px;
+  }
+  
+div.object {
+	text-align: center;
+	border: 0px;
+	margin:10px 0px 10px 0px;
+}

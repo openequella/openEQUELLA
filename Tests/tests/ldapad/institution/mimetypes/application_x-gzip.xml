@@ -1,0 +1,19 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>769478</id>
+  <institution>
+    <id>769423</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>gz</string>
+  </extensions>
+  <type>application/x-gzip</type>
+  <description>Archive</description>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/zip.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

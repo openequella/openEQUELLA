@@ -1,0 +1,11 @@
+{
+  "name": "EQUELLA-Integration-Tester",
+  "scripts": {
+    "build": "pulp browserify --to dist/app.js",
+    "watch": "pulp -w browserify --to dist/app.js"
+  },
+  "dependencies": {
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4"
+  }
+}

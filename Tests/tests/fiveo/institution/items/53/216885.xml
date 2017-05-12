@@ -1,0 +1,154 @@
+<com.tle.beans.item.Item>
+  <id>216885</id>
+  <uuid>677a4bbc-defc-4dc1-b68e-4e2473b66a6a</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2011-09-21 09:48:13.249</dateModified>
+  <dateCreated class="sql-timestamp">2011-09-21 09:48:13.252</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.418</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.IMSResourceAttachment>
+      <id>216891</id>
+      <uuid>a159f050-15fc-4a95-a9f5-63a821a0426a</uuid>
+      <url>Biscuit factory complex ratios.zip/index.html</url>
+      <description>index.html</description>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.IMSResourceAttachment>
+    <com.tle.beans.item.attachments.ImsAttachment>
+      <id>216892</id>
+      <uuid>75c119b4-76bb-4567-bae7-2402fd2511b4</uuid>
+      <url>Biscuit factory complex ratios.zip</url>
+      <description>Biscuit factory: complex ratios</description>
+      <value1>172907</value1>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.ImsAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="68a2e654-9b0f-43fe-88da-9feb50569791"/>
+  <collaborators/>
+  <referencedUrls/>
+  <drmSettings>
+    <id>216886</id>
+    <item reference="../.."/>
+    <drmPageUuid>8a1d54b7-3f82-42e5-b5ad-1895149fe1a3</drmPageUuid>
+    <hideLicencesFromOwner>false</hideLicencesFromOwner>
+    <showLicenceCount>false</showLicenceCount>
+    <allowSummary>true</allowSummary>
+    <ownerMustAccept>true</ownerMustAccept>
+    <studentsMustAcceptIfInCompilation>true</studentsMustAcceptIfInCompilation>
+    <previewAllowed>true</previewAllowed>
+    <restrictToSector>false</restrictToSector>
+    <attributionOfOwnership>false</attributionOfOwnership>
+    <enforceAttribution>false</enforceAttribution>
+    <currentUsageCount>0</currentUsageCount>
+    <maximumUsageCount>0</maximumUsageCount>
+    <contentOwners>
+      <com.tle.beans.item.DrmSettings_-Party>
+        <userID>adfcaf58-241b-4eca-9740-6a26d1c3dd58</userID>
+        <name>Auto Test [AutoTest]</name>
+        <email>auto@test.com</email>
+        <owner>true</owner>
+      </com.tle.beans.item.DrmSettings_-Party>
+    </contentOwners>
+    <usages>
+      <string>DISPLAY</string>
+      <string>EXECUTE</string>
+      <string>PLAY</string>
+      <string>PRINT</string>
+    </usages>
+    <termsOfAgreement>You must view this item with your eyes closed</termsOfAgreement>
+    <requireAcceptanceFrom>* </requireAcceptanceFrom>
+  </drmSettings>
+  <moderation>
+    <id>216888</id>
+    <liveApprovalDate class="sql-timestamp">2011-09-21 09:48:13.249</liveApprovalDate>
+    <start class="sql-timestamp">2011-09-21 11:54:16.387</start>
+    <lastAction class="sql-timestamp">2011-09-21 09:48:13.249</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216893</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-21 09:48:13.249</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216894</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-21 09:48:13.249</date>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216895</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-09-21 09:48:13.249</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes>
+    <com.tle.beans.item.attachments.ItemNavigationNode>
+      <id>216897</id>
+      <uuid>5f27304f-84ec-4dd0-a734-d30d5473350e</uuid>
+      <name>Start: Biscuit factory: complex ratios</name>
+      <parent>
+        <id>216899</id>
+        <uuid>36f5d5f1-a8c9-4445-be77-28f64cb92ec4</uuid>
+        <name>Biscuit factory: complex ratios</name>
+        <tabs/>
+        <index>0</index>
+      </parent>
+      <tabs>
+        <com.tle.beans.item.attachments.ItemNavigationTab>
+          <id>216898</id>
+          <name>Auto Created By IMS Viewer</name>
+          <attachment class="com.tle.beans.item.attachments.IMSResourceAttachment" reference="../../../../../attachments/com.tle.beans.item.attachments.IMSResourceAttachment"/>
+        </com.tle.beans.item.attachments.ItemNavigationTab>
+      </tabs>
+      <identifier>O128081I0</identifier>
+      <index>0</index>
+    </com.tle.beans.item.attachments.ItemNavigationNode>
+    <com.tle.beans.item.attachments.ItemNavigationNode reference="../com.tle.beans.item.attachments.ItemNavigationNode/parent"/>
+  </treeNodes>
+  <notifications/>
+  <name>
+    <id>216889</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216890</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>DRM IMS package</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

@@ -1,0 +1,48 @@
+<com.tle.beans.item.cal.request.CourseInfo>
+  <id>63988</id>
+  <uuid>030bf542-2f2d-4494-b20e-7cbcced8c9e0</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2014-11-06 11:42:28.888</dateModified>
+  <dateCreated class="sql-timestamp">2014-11-06 11:42:28.888</dateCreated>
+  <description>
+    <id>63989</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>63990</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>CALIntegrationTest.testAddActivatedPortion()</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>63991</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>63992</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Integration Course</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <students>0</students>
+  <from class="sql-timestamp">2010-11-01 11:00:00.0</from>
+  <until class="sql-timestamp">2020-11-30 11:00:00.0</until>
+  <citation>Harvard</citation>
+  <departmentName></departmentName>
+  <courseType>e</courseType>
+  <code>integ101</code>
+  <versionSelection>INSTITUTION_DEFAULT</versionSelection>
+</com.tle.beans.item.cal.request.CourseInfo>

@@ -1,0 +1,25 @@
+<com.tle.common.qti.entity.QtiAssessmentItem>
+  <id>18880</id>
+  <uuid>79f044f5-7b8d-4f61-82cd-ce6ed6239b73</uuid>
+  <identifier>essay-vacation</identifier>
+  <title>What we did in the vacation</title>
+  <itemBody>uk.ac.ed.ph.jqtiplus.node.content.ItemBody@1ae46c90(
+    blocks =&gt; java.util.ArrayList[
+        0 =&gt; &lt;p&gt;@177434555(xPath=/assessmentItem[@identifier=&quot;essay-vacation&quot;]/itemBody[1]/p[1],location=XmlSourceLocationInformation@558c6369(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-75bd778a3504/essay-vacation.xml,lineNumber=10,columnNumber=6))
+        1 =&gt; &lt;extendedTextInteraction&gt;@1943187039(xPath=/assessmentItem[@identifier=&quot;essay-vacation&quot;]/itemBody[1]/extendedTextInteraction[1],location=XmlSourceLocationInformation@cb61a61(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-75bd778a3504/essay-vacation.xml,lineNumber=11,columnNumber=79))
+        2 =&gt; &lt;p&gt;@125689036(xPath=/assessmentItem[@identifier=&quot;essay-vacation&quot;]/itemBody[1]/p[2],location=XmlSourceLocationInformation@582ad8eb(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-75bd778a3504/essay-vacation.xml,lineNumber=14,columnNumber=9))
+        3 =&gt; &lt;blockquote&gt;@1694980485(xPath=/assessmentItem[@identifier=&quot;essay-vacation&quot;]/itemBody[1]/blockquote[1],location=XmlSourceLocationInformation@45865e94(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-75bd778a3504/essay-vacation.xml,lineNumber=15,columnNumber=18))
+    ]
+    id =&gt; null
+    classAttr =&gt; null
+    lang =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    label =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    parent =&gt; &lt;assessmentItem&gt;@2024499764(xPath=/assessmentItem[@identifier=&quot;essay-vacation&quot;],location=XmlSourceLocationInformation@3dc9b9d0(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-75bd778a3504/essay-vacation.xml,lineNumber=6,columnNumber=105))(systemId=_SECURE/_QTI/id-75bd778a3504/essay-vacation.xml)
+    attributes =&gt; uk.ac.ed.ph.jqtiplus.attribute.AttributeList@6c62661
+    sourceLocation =&gt; XmlSourceLocationInformation@3b01adc0(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-75bd778a3504/essay-vacation.xml,lineNumber=9,columnNumber=12)
+    rootNode =&gt; &lt;assessmentItem&gt;@2024499764(xPath=/assessmentItem[@identifier=&quot;essay-vacation&quot;],location=XmlSourceLocationInformation@3dc9b9d0(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-75bd778a3504/essay-vacation.xml,lineNumber=6,columnNumber=105))(systemId=_SECURE/_QTI/id-75bd778a3504/essay-vacation.xml)
+    nodeGroups =&gt; uk.ac.ed.ph.jqtiplus.group.NodeGroupList@6b363683
+    qtiClassName =&gt; itemBody
+)
+</itemBody>
+  <adaptive>false</adaptive>
+  <timeDependent>false</timeDependent>
+</com.tle.common.qti.entity.QtiAssessmentItem>

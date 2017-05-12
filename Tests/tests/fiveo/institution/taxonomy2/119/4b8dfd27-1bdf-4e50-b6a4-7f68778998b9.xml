@@ -1,0 +1,31 @@
+<com.tle.common.taxonomy.Taxonomy>
+  <id>216095</id>
+  <uuid>4b8dfd27-1bdf-4e50-b6a4-7f68778998b9</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2011-04-06 09:58:53.048</dateModified>
+  <dateCreated class="sql-timestamp">2011-04-06 09:58:38.121</dateCreated>
+  <name>
+    <id>216096</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216097</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Power Search Taxonomy</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>TERM_ALLOW_ADDITION</key>
+      <value>true</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <dataSourcePluginId>internalTaxonomyDataSource</dataSourcePluginId>
+</com.tle.common.taxonomy.Taxonomy>

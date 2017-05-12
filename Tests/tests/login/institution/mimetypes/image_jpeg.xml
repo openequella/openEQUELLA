@@ -1,0 +1,30 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>2016981</id>
+  <institution>
+    <id>2016849</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>jpeg</string>
+    <string>jpg</string>
+    <string>jpe</string>
+    <string>jfif</string>
+    <string>jif</string>
+  </extensions>
+  <type>image/jpeg</type>
+  <description>Image</description>
+  <attributes>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&quot;fancy&quot;,&quot;livNavTreeViewer&quot;]</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/image.gif</string>
+    </entry>
+    <entry>
+      <string>defaultViewerId</string>
+      <string>fancy</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

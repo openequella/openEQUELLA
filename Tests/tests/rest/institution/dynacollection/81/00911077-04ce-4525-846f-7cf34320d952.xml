@@ -1,0 +1,46 @@
+<com.tle.beans.entity.DynaCollection>
+  <id>116658</id>
+  <uuid>00911077-04ce-4525-846f-7cf34320d952</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-03-17 16:42:22.697</dateModified>
+  <dateCreated class="sql-timestamp">2014-03-17 16:38:06.923</dateCreated>
+  <description>
+    <id>116659</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116660</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>A dynamic collection whose definition includes a search for &quot;SearchApiTestClient&quot; is a precondition of the SearchApiTest</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>116661</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116662</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>SearchApiTestClient</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <usageIds>
+    <string>searchUsage</string>
+  </usageIds>
+  <freetextQuery>SearchApiTestClient</freetextQuery>
+  <itemDefs/>
+  <schemas/>
+</com.tle.beans.entity.DynaCollection>

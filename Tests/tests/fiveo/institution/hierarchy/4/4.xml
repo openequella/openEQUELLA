@@ -1,0 +1,29 @@
+<com.tle.beans.hierarchy.HierarchyTopic>
+  <id>216962</id>
+  <uuid>17657024-e88a-ec5c-d5c8-40d1056bfc82</uuid>
+  <listPosition>5</listPosition>
+  <keyResources/>
+  <showResults>true</showResults>
+  <inheritFreetext>false</inheritFreetext>
+  <addIdefs/>
+  <addSchemas/>
+  <inhIdefs/>
+  <inhSchemas/>
+  <name>
+    <id>216963</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216964</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Privilege Test</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <hideSubtopicsWithNoResults>false</hideSubtopicsWithNoResults>
+  <attributes/>
+</com.tle.beans.hierarchy.HierarchyTopic>

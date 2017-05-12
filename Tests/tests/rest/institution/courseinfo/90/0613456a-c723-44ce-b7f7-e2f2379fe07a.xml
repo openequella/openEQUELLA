@@ -1,0 +1,48 @@
+<com.tle.beans.item.cal.request.CourseInfo>
+  <id>116680</id>
+  <uuid>0613456a-c723-44ce-b7f7-e2f2379fe07a</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-03-21 11:10:01.87</dateModified>
+  <dateCreated class="sql-timestamp">2014-03-03 15:35:48.347</dateCreated>
+  <description>
+    <id>116681</id>
+    <strings>
+      <entry>
+        <string>en_GB</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116682</id>
+          <locale>en_GB</locale>
+          <priority>2</priority>
+          <text>This course must persist! Note this test deletes courses whose code begins with &quot;CourseApiTestClient&quot;</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>116683</id>
+    <strings>
+      <entry>
+        <string>en_GB</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116684</id>
+          <locale>en_GB</locale>
+          <priority>2</priority>
+          <text>EQUELLA1001 - Expected by CourseApiTest</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <students>25</students>
+  <from class="sql-timestamp">2014-03-04 11:00:00.0</from>
+  <until class="sql-timestamp">2014-12-13 11:00:00.0</until>
+  <citation>Generic</citation>
+  <departmentName>Simple Department</departmentName>
+  <courseType>i</courseType>
+  <code>EQ-1001</code>
+  <versionSelection>INSTITUTION_DEFAULT</versionSelection>
+</com.tle.beans.item.cal.request.CourseInfo>

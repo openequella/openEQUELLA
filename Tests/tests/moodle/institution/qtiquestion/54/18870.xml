@@ -1,0 +1,23 @@
+<com.tle.common.qti.entity.QtiAssessmentItem>
+  <id>18870</id>
+  <uuid>f7fcccf2-fc81-4546-bac2-e85286c4d6d9</uuid>
+  <identifier>order-mountains</identifier>
+  <title>Scottish Mountains</title>
+  <itemBody>uk.ac.ed.ph.jqtiplus.node.content.ItemBody@32ad87e0(
+    blocks =&gt; java.util.ArrayList[
+        0 =&gt; &lt;orderInteraction&gt;@515087646(xPath=/assessmentItem[@identifier=&quot;order-mountains&quot;]/itemBody[1]/orderInteraction[1],location=XmlSourceLocationInformation@22102c51(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-be3cd3bdd3d4/order-mountains.xml,lineNumber=19,columnNumber=95))
+        1 =&gt; &lt;p&gt;@1405979471(xPath=/assessmentItem[@identifier=&quot;order-mountains&quot;]/itemBody[1]/p[1],location=XmlSourceLocationInformation@5b751a84(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-be3cd3bdd3d4/order-mountains.xml,lineNumber=126,columnNumber=12))
+    ]
+    id =&gt; null
+    classAttr =&gt; null
+    lang =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    label =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    parent =&gt; &lt;assessmentItem&gt;@1696595716(xPath=/assessmentItem[@identifier=&quot;order-mountains&quot;],location=XmlSourceLocationInformation@179f937a(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-be3cd3bdd3d4/order-mountains.xml,lineNumber=5,columnNumber=100))(systemId=_SECURE/_QTI/id-be3cd3bdd3d4/order-mountains.xml)
+    attributes =&gt; uk.ac.ed.ph.jqtiplus.attribute.AttributeList@6d8b3ab3
+    sourceLocation =&gt; XmlSourceLocationInformation@4fbaf5f4(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-be3cd3bdd3d4/order-mountains.xml,lineNumber=18,columnNumber=15)
+    rootNode =&gt; &lt;assessmentItem&gt;@1696595716(xPath=/assessmentItem[@identifier=&quot;order-mountains&quot;],location=XmlSourceLocationInformation@179f937a(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-be3cd3bdd3d4/order-mountains.xml,lineNumber=5,columnNumber=100))(systemId=_SECURE/_QTI/id-be3cd3bdd3d4/order-mountains.xml)
+    nodeGroups =&gt; uk.ac.ed.ph.jqtiplus.group.NodeGroupList@7b698f10
+    qtiClassName =&gt; itemBody
+)
+</itemBody>
+  <adaptive>false</adaptive>
+  <timeDependent>false</timeDependent>
+</com.tle.common.qti.entity.QtiAssessmentItem>

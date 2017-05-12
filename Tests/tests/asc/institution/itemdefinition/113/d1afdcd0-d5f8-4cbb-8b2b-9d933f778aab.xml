@@ -1,0 +1,584 @@
+<com.tle.beans.entity.itemdef.ItemDefinition>
+  <id>116170</id>
+  <uuid>d1afdcd0-d5f8-4cbb-8b2b-9d933f778aab</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2012-03-26 10:05:29.38</dateModified>
+  <dateCreated class="sql-timestamp">2012-03-22 13:40:10.218</dateCreated>
+  <name>
+    <id>116171</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116172</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>redmine6173 ASC in a repeater</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <schema entityclass="com.tle.beans.entity.Schema" uuid="d9aba963-4648-e497-d62b-fc1ddf2d0199"/>
+  <wizardcategory>Basic</wizardcategory>
+  <reviewperiod>-2147483648</reviewperiod>
+  <slow>
+    <id>116173</id>
+    <itemMetadataRules/>
+    <wizard>
+      <pages>
+        <com.dytech.edge.wizard.beans.DefaultWizardPage>
+          <title>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en</locale>
+                  <priority>1</priority>
+                  <text>Data</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </title>
+          <controls>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>true</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Name</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/name</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.EditBox>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>1</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Description</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/description</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <links>false</links>
+              <number>false</number>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+              <allowMultiLang>false</allowMultiLang>
+            </com.dytech.edge.wizard.beans.control.EditBox>
+            <com.dytech.edge.wizard.beans.control.Repeater>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Repeater</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/tree1</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <controls>
+                <com.dytech.edge.wizard.beans.control.EditBox>
+                  <mandatory>false</mandatory>
+                  <reload>false</reload>
+                  <include>true</include>
+                  <size1>0</size1>
+                  <size2>1</size2>
+                  <title>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Field entry (tree1/tree1_sub2)</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </title>
+                  <targetnodes>
+                    <com.dytech.edge.wizard.TargetNode>
+                      <target>/tree1_sub2</target>
+                      <attribute></attribute>
+                    </com.dytech.edge.wizard.TargetNode>
+                  </targetnodes>
+                  <items/>
+                  <links>false</links>
+                  <number>false</number>
+                  <forceUnique>false</forceUnique>
+                  <checkDuplication>false</checkDuplication>
+                  <allowMultiLang>false</allowMultiLang>
+                </com.dytech.edge.wizard.beans.control.EditBox>
+                <com.dytech.edge.wizard.beans.control.CustomControl>
+                  <mandatory>false</mandatory>
+                  <reload>false</reload>
+                  <include>true</include>
+                  <size1>0</size1>
+                  <size2>0</size2>
+                  <customName>Freemarker Override</customName>
+                  <targetnodes/>
+                  <items/>
+                  <classType>advancedscript</classType>
+                  <attributes>
+                    <entry>
+                      <string>StoreJs</string>
+                      <string></string>
+                    </entry>
+                    <entry>
+                      <string>ReadJs</string>
+                      <string></string>
+                    </entry>
+                    <entry>
+                      <string>JsLibs</string>
+                      <list/>
+                    </entry>
+                    <entry>
+                      <string>OnSubmitJs</string>
+                      <string></string>
+                    </entry>
+                    <entry>
+                      <string>MarkUp</string>
+                      <string>&lt;h2&gt;${ctrl.formId}&lt;/h2&gt;
+&lt;div id=&quot;a${ctrl.formId}&quot;&gt;&lt;#if xml.get(&apos;item/tree1/tree1_sub2&apos;)??&gt;${xml.get(&apos;item/tree1/tree1_sub2&apos;)}&lt;/#if&gt;&lt;/div&gt;</string>
+                    </entry>
+                    <entry>
+                      <string>OnLoadJs</string>
+                      <string></string>
+                    </entry>
+                    <entry>
+                      <string>Notes</string>
+                      <string>Freemarker override test</string>
+                    </entry>
+                  </attributes>
+                </com.dytech.edge.wizard.beans.control.CustomControl>
+                <com.dytech.edge.wizard.beans.control.CustomControl>
+                  <mandatory>false</mandatory>
+                  <reload>false</reload>
+                  <include>true</include>
+                  <size1>0</size1>
+                  <size2>0</size2>
+                  <customName>Onload Override</customName>
+                  <targetnodes/>
+                  <items/>
+                  <classType>advancedscript</classType>
+                  <attributes>
+                    <entry>
+                      <string>StoreJs</string>
+                      <string>attributes.set(&apos;submit1&apos;, xml.get(&apos;item/tree1/tree1_sub2&apos;));</string>
+                    </entry>
+                    <entry>
+                      <string>ReadJs</string>
+                      <string>attributes.set(&apos;load1&apos;, xml.get(&apos;item/tree1/tree1_sub2&apos;));</string>
+                    </entry>
+                    <entry>
+                      <string>JsLibs</string>
+                      <list/>
+                    </entry>
+                    <entry>
+                      <string>OnSubmitJs</string>
+                      <string></string>
+                    </entry>
+                    <entry>
+                      <string>MarkUp</string>
+                      <string>&lt;h2&gt;${ctrl.formId}&lt;/h2&gt;
+
+&lt;div&gt;load1&lt;/div&gt;
+&lt;div id=&quot;load1_${ctrl.formId}&quot;&gt;&lt;#if attributes.get(&apos;load1&apos;)??&gt;${attributes.get(&apos;load1&apos;)}&lt;/#if&gt;&lt;/div&gt;
+
+&lt;div&gt;submit1&lt;/div&gt;
+&lt;div id=&quot;submit1_${ctrl.formId}&quot;&gt;&lt;#if attributes.get(&apos;submit1&apos;)??&gt;${attributes.get(&apos;submit1&apos;)}&lt;/#if&gt;&lt;/div&gt;</string>
+                    </entry>
+                    <entry>
+                      <string>OnLoadJs</string>
+                      <string></string>
+                    </entry>
+                    <entry>
+                      <string>Notes</string>
+                      <string></string>
+                    </entry>
+                  </attributes>
+                </com.dytech.edge.wizard.beans.control.CustomControl>
+                <com.dytech.edge.wizard.beans.control.Button>
+                  <mandatory>false</mandatory>
+                  <reload>false</reload>
+                  <include>true</include>
+                  <size1>0</size1>
+                  <size2>0</size2>
+                  <title>
+                    <id>0</id>
+                    <strings>
+                      <entry>
+                        <string>en</string>
+                        <com.tle.beans.entity.LanguageString>
+                          <id>0</id>
+                          <locale>en</locale>
+                          <priority>1</priority>
+                          <text>Vis button</text>
+                          <bundle reference="../../../.."/>
+                        </com.tle.beans.entity.LanguageString>
+                      </entry>
+                    </strings>
+                  </title>
+                  <script>var bRet = false; 
+if( xml.get(&apos;/item/tree1/tree1_sub2&apos;) != &apos;&apos; ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+                  <targetnodes/>
+                  <items/>
+                  <action></action>
+                </com.dytech.edge.wizard.beans.control.Button>
+                <com.dytech.edge.wizard.beans.control.Repeater>
+                  <mandatory>false</mandatory>
+                  <reload>false</reload>
+                  <include>true</include>
+                  <size1>0</size1>
+                  <size2>0</size2>
+                  <targetnodes>
+                    <com.dytech.edge.wizard.TargetNode>
+                      <target>/tree1_sub1</target>
+                      <attribute></attribute>
+                    </com.dytech.edge.wizard.TargetNode>
+                  </targetnodes>
+                  <items/>
+                  <controls>
+                    <com.dytech.edge.wizard.beans.control.EditBox>
+                      <mandatory>false</mandatory>
+                      <reload>false</reload>
+                      <include>true</include>
+                      <size1>0</size1>
+                      <size2>1</size2>
+                      <title>
+                        <id>0</id>
+                        <strings>
+                          <entry>
+                            <string>en</string>
+                            <com.tle.beans.entity.LanguageString>
+                              <id>0</id>
+                              <locale>en</locale>
+                              <priority>1</priority>
+                              <text>Field entry (tree1/tree1_sub1/tree1_sub1_sub1)</text>
+                              <bundle reference="../../../.."/>
+                            </com.tle.beans.entity.LanguageString>
+                          </entry>
+                        </strings>
+                      </title>
+                      <targetnodes>
+                        <com.dytech.edge.wizard.TargetNode>
+                          <target>/tree1_sub1_sub1</target>
+                          <attribute></attribute>
+                        </com.dytech.edge.wizard.TargetNode>
+                      </targetnodes>
+                      <items/>
+                      <links>false</links>
+                      <number>false</number>
+                      <forceUnique>false</forceUnique>
+                      <checkDuplication>false</checkDuplication>
+                      <allowMultiLang>false</allowMultiLang>
+                    </com.dytech.edge.wizard.beans.control.EditBox>
+                    <com.dytech.edge.wizard.beans.control.CustomControl>
+                      <mandatory>false</mandatory>
+                      <reload>false</reload>
+                      <include>true</include>
+                      <size1>0</size1>
+                      <size2>0</size2>
+                      <customName>Freemarker Override</customName>
+                      <targetnodes/>
+                      <items/>
+                      <classType>advancedscript</classType>
+                      <attributes>
+                        <entry>
+                          <string>StoreJs</string>
+                          <string></string>
+                        </entry>
+                        <entry>
+                          <string>ReadJs</string>
+                          <string></string>
+                        </entry>
+                        <entry>
+                          <string>JsLibs</string>
+                          <list/>
+                        </entry>
+                        <entry>
+                          <string>OnSubmitJs</string>
+                          <string></string>
+                        </entry>
+                        <entry>
+                          <string>MarkUp</string>
+                          <string>&lt;h2&gt;${ctrl.formId}&lt;/h2&gt;
+&lt;div id=&quot;b${ctrl.formId}&quot;&gt;&lt;#if xml.get(&apos;item/tree1/tree1_sub1/tree1_sub1_sub1&apos;)??&gt;${xml.get(&apos;item/tree1/tree1_sub1/tree1_sub1_sub1&apos;)}&lt;/#if&gt;&lt;/div&gt;</string>
+                        </entry>
+                        <entry>
+                          <string>OnLoadJs</string>
+                          <string></string>
+                        </entry>
+                        <entry>
+                          <string>Notes</string>
+                          <string></string>
+                        </entry>
+                      </attributes>
+                    </com.dytech.edge.wizard.beans.control.CustomControl>
+                    <com.dytech.edge.wizard.beans.control.CustomControl>
+                      <mandatory>false</mandatory>
+                      <reload>false</reload>
+                      <include>true</include>
+                      <size1>0</size1>
+                      <size2>0</size2>
+                      <customName>Onload Override</customName>
+                      <targetnodes/>
+                      <items/>
+                      <classType>advancedscript</classType>
+                      <attributes>
+                        <entry>
+                          <string>StoreJs</string>
+                          <string>attributes.set(&apos;submit2&apos;, xml.get(&apos;item/tree1/tree1_sub1/tree1_sub1_sub1&apos;));</string>
+                        </entry>
+                        <entry>
+                          <string>ReadJs</string>
+                          <string>attributes.set(&apos;load2&apos;, xml.get(&apos;item/tree1/tree1_sub1/tree1_sub1_sub1&apos;));</string>
+                        </entry>
+                        <entry>
+                          <string>JsLibs</string>
+                          <list/>
+                        </entry>
+                        <entry>
+                          <string>OnSubmitJs</string>
+                          <string></string>
+                        </entry>
+                        <entry>
+                          <string>MarkUp</string>
+                          <string>&lt;h2&gt;${ctrl.formId}&lt;/h2&gt;
+
+&lt;div&gt;load2&lt;/div&gt;
+&lt;div id=&quot;load2_${ctrl.formId}&quot;&gt;&lt;#if attributes.get(&apos;load2&apos;)??&gt;${attributes.get(&apos;load2&apos;)}&lt;/#if&gt;&lt;/div&gt;
+
+&lt;div&gt;submit2&lt;/div&gt;
+&lt;div id=&quot;submit2_${ctrl.formId}&quot;&gt;&lt;#if attributes.get(&apos;load2&apos;)??&gt;${attributes.get(&apos;load2&apos;)}&lt;/#if&gt;&lt;/div&gt;
+
+</string>
+                        </entry>
+                        <entry>
+                          <string>OnLoadJs</string>
+                          <string></string>
+                        </entry>
+                        <entry>
+                          <string>Notes</string>
+                          <string></string>
+                        </entry>
+                      </attributes>
+                    </com.dytech.edge.wizard.beans.control.CustomControl>
+                    <com.dytech.edge.wizard.beans.control.Button>
+                      <mandatory>false</mandatory>
+                      <reload>false</reload>
+                      <include>true</include>
+                      <size1>0</size1>
+                      <size2>0</size2>
+                      <title>
+                        <id>0</id>
+                        <strings>
+                          <entry>
+                            <string>en</string>
+                            <com.tle.beans.entity.LanguageString>
+                              <id>0</id>
+                              <locale>en</locale>
+                              <priority>1</priority>
+                              <text>Vis button 2</text>
+                              <bundle reference="../../../.."/>
+                            </com.tle.beans.entity.LanguageString>
+                          </entry>
+                        </strings>
+                      </title>
+                      <script>var bRet = false; 
+if( xml.get(&apos;/item/tree1/tree1_sub1/tree1_sub1_sub1&apos;) != &apos;&apos; ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+                      <targetnodes/>
+                      <items/>
+                      <action></action>
+                    </com.dytech.edge.wizard.beans.control.Button>
+                  </controls>
+                  <min>0</min>
+                  <max>10</max>
+                </com.dytech.edge.wizard.beans.control.Repeater>
+              </controls>
+              <min>0</min>
+              <max>10</max>
+            </com.dytech.edge.wizard.beans.control.Repeater>
+            <com.dytech.edge.wizard.beans.control.Button>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Reload</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes/>
+              <items/>
+              <action></action>
+            </com.dytech.edge.wizard.beans.control.Button>
+          </controls>
+        </com.dytech.edge.wizard.beans.DefaultWizardPage>
+      </pages>
+      <redraftScript>newxml.set(&quot;Elements/Element_2&quot;,&quot;New Version Script Worked&quot;);</redraftScript>
+      <saveScript>xml.set(&quot;Elements/Element_1&quot;,&quot;Save Script Worked&quot;);</saveScript>
+      <allowNonSequentialNavigation>false</allowNonSequentialNavigation>
+      <showPageTitlesNextPrev>false</showPageTitlesNextPrev>
+    </wizard>
+    <metadataMapping>
+      <imsMapping class="list"/>
+      <htmlMapping class="list"/>
+      <literalMapping class="list"/>
+    </metadataMapping>
+    <itemSummarySections>
+      <configList>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>d7e2e064-0f44-4be8-a227-cc9e6fdfc30f</uuid>
+          <value>basicSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Basic Information</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>179ff268-a356-43e6-8bee-8da8bfc0e37a</uuid>
+          <value>attachmentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Links to resources</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+        <com.tle.beans.entity.itemdef.SummarySectionsConfig>
+          <uuid>7cc52ce0-2499-4f70-a12c-e1dd4f34185d</uuid>
+          <value>commentsSection</value>
+          <bundleTitle>
+            <id>0</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>0</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Add a comment</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </bundleTitle>
+        </com.tle.beans.entity.itemdef.SummarySectionsConfig>
+      </configList>
+      <hideOwner>false</hideOwner>
+      <hideCollaborators>false</hideCollaborators>
+    </itemSummarySections>
+  </slow>
+  <denyDirectContribution>false</denyDirectContribution>
+</com.tle.beans.entity.itemdef.ItemDefinition>

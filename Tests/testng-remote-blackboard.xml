@@ -1,0 +1,17 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Auto Test Suite blackboard" parallel="instances" data-provider-thread-count="4" thread-count="8" configfailurepolicy="continue">
+	<test name="Blackboard Tests">
+		<groups>
+			<dependencies>
+				<group depends-on="syncBlackboard" name="blackboardTest" />
+			</dependencies>
+		</groups>
+		<classes>
+			<class name="com.tle.webtests.remotetest.integration.blackboard.init.SyncBlackboardTest" />
+			<class name="com.tle.webtests.remotetest.integration.blackboard.BlackboardCALTest" />
+			<class name="com.tle.webtests.remotetest.integration.blackboard.BlackboardConnectorTest"/>
+			<class name="com.tle.webtests.remotetest.integration.blackboard.BlackboardContributeTest"/>
+		</classes>
+	</test>
+</suite>

@@ -1,0 +1,23 @@
+<com.tle.common.qti.entity.QtiAssessmentItem>
+  <id>18869</id>
+  <uuid>1bca605f-de3d-4481-ac4b-22b493d77fe0</uuid>
+  <identifier>order-maths</identifier>
+  <title>Order a simple proof</title>
+  <itemBody>uk.ac.ed.ph.jqtiplus.node.content.ItemBody@6e2d6c26(
+    blocks =&gt; java.util.ArrayList[
+        0 =&gt; &lt;orderInteraction&gt;@1746365260(xPath=/assessmentItem[@identifier=&quot;order-maths&quot;]/itemBody[1]/orderInteraction[1],location=XmlSourceLocationInformation@59857ff7(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-e475c3c922f6/order-maths.xml,lineNumber=18,columnNumber=95))
+        1 =&gt; &lt;p&gt;@1268014859(xPath=/assessmentItem[@identifier=&quot;order-maths&quot;]/itemBody[1]/p[1],location=XmlSourceLocationInformation@79ebf1f0(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-e475c3c922f6/order-maths.xml,lineNumber=188,columnNumber=12))
+    ]
+    id =&gt; null
+    classAttr =&gt; null
+    lang =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    label =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    parent =&gt; &lt;assessmentItem&gt;@1901658648(xPath=/assessmentItem[@identifier=&quot;order-maths&quot;],location=XmlSourceLocationInformation@a98afcb(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-e475c3c922f6/order-maths.xml,lineNumber=5,columnNumber=98))(systemId=_SECURE/_QTI/id-e475c3c922f6/order-maths.xml)
+    attributes =&gt; uk.ac.ed.ph.jqtiplus.attribute.AttributeList@2e3d3ddc
+    sourceLocation =&gt; XmlSourceLocationInformation@36a84e3b(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-e475c3c922f6/order-maths.xml,lineNumber=17,columnNumber=15)
+    rootNode =&gt; &lt;assessmentItem&gt;@1901658648(xPath=/assessmentItem[@identifier=&quot;order-maths&quot;],location=XmlSourceLocationInformation@a98afcb(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-e475c3c922f6/order-maths.xml,lineNumber=5,columnNumber=98))(systemId=_SECURE/_QTI/id-e475c3c922f6/order-maths.xml)
+    nodeGroups =&gt; uk.ac.ed.ph.jqtiplus.group.NodeGroupList@63a81f85
+    qtiClassName =&gt; itemBody
+)
+</itemBody>
+  <adaptive>false</adaptive>
+  <timeDependent>false</timeDependent>
+</com.tle.common.qti.entity.QtiAssessmentItem>

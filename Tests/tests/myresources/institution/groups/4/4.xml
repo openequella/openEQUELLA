@@ -1,0 +1,7 @@
+<com.tle.beans.user.TLEGroup>
+  <id>35088</id>
+  <uuid>d6fb18d7-9650-3991-363e-cf463f9cc3f6</uuid>
+  <name>Users with Student Role</name>
+  <description>Users with Student Role</description>
+  <users/>
+</com.tle.beans.user.TLEGroup>

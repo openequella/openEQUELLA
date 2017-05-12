@@ -1,0 +1,28 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>12989</id>
+  <institution>
+    <id>12698</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>mp4</string>
+    <string>m4v</string>
+  </extensions>
+  <type>video/mp4</type>
+  <description>Video</description>
+  <attributes>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&quot;htmlFiveViewer&quot;]</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/video.png</string>
+    </entry>
+    <entry>
+      <string>defaultViewerId</string>
+      <string>htmlFiveViewer</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

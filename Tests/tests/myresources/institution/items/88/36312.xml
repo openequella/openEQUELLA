@@ -1,0 +1,87 @@
+<com.tle.beans.item.Item>
+  <id>36312</id>
+  <uuid>316117f8-3aec-f164-ce91-cd606cfc6e1e</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2003-03-06 17:01:03.0</dateModified>
+  <dateCreated class="sql-timestamp">2003-03-06 16:21:31.0</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.027</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <attachments/>
+  <searchDetails/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="e8f050dd-f6c0-4cec-559f-e54d7ef19836"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>16748</id>
+      <url>http://boorah/dev/vanilla/item/image/ef8a4465-dfcc-da0e-4c15-982ed5e8d246/1/plusmin.gif</url>
+      <urlHash>2579feabd9e8e75656a6f28a8b7c0b9c</urlHash>
+      <success>false</success>
+      <status>404</status>
+      <message>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en-AU&quot;  &gt;
+	&lt;head&gt;
+	&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html;charset=UTF-8&quot;&gt;
+	&lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot; &gt;
+	&lt;base href=&quot;http://boorah/&quot;&gt;
+	 
+	&lt;link rel=&quot;apple-touch-icon&quot; href=&quot;p/r/1.0.643</message>
+      <tries>2</tries>
+      <lastChecked class="sql-timestamp">2014-03-27 23:14:57.797</lastChecked>
+      <lastIndexed class="sql-timestamp">1970-01-01 11:00:00.0</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>36320</id>
+    <start class="sql-timestamp">2011-08-30 12:05:08.248</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history/>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>36322</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>36323</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Plus Or Minus</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>36314</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>36316</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Plus or minus symbol.</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

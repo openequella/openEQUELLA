@@ -1,0 +1,146 @@
+<com.tle.beans.item.Item>
+  <id>217346</id>
+  <uuid>2c5be16d-90ec-46ba-b137-724d595f838b</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2015-05-18 10:49:14.041</dateModified>
+  <dateCreated class="sql-timestamp">2013-12-17 13:59:20.29</dateCreated>
+  <dateForIndex class="sql-timestamp">2015-05-18 10:49:14.041</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>217365</id>
+      <uuid>9b246ac5-1916-4ec7-8209-04e7e252479b</uuid>
+      <url></url>
+      <description>youtube tool</description>
+      <value1>lti</value1>
+      <thumbnail>https://www.edu-apps.org/tools/youtube/icon.png</thumbnail>
+      <data>
+        <entry>
+          <string>SHARED_SECRET</string>
+          <string>secret</string>
+        </entry>
+        <entry>
+          <string>ICON_URL</string>
+          <string>https://www.edu-apps.org/assets/lti_public_resources/youtube_icon.png</string>
+        </entry>
+        <entry>
+          <string>SHARE_EMAIL</string>
+          <boolean>true</boolean>
+        </entry>
+        <entry>
+          <string>CONSUMER_KEY</string>
+          <string>key</string>
+        </entry>
+        <entry>
+          <string>CUSTOM_PARAMS</string>
+          <list/>
+        </entry>
+        <entry>
+          <string>SHARE_NAME</string>
+          <boolean>true</boolean>
+        </entry>
+        <entry>
+          <string>LAUNCH_URL</string>
+          <string>https://www.edu-apps.org/lti_public_resources/?tool_id=youtube</string>
+        </entry>
+        <entry>
+          <string>EXTERNAL_TOOL_PROVIDER_UUID</string>
+          <string>AUTOMATIC_UUID</string>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.CustomAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="3b7146d3-48ee-4e77-9802-baf51631ab7d"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>217353</id>
+    <liveApprovalDate class="sql-timestamp">2013-12-17 13:59:20.28</liveApprovalDate>
+    <start class="sql-timestamp">2013-12-17 14:44:26.98</start>
+    <lastAction class="sql-timestamp">2013-12-17 13:59:20.28</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>217369</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2013-12-17 13:59:20.28</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>217371</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2013-12-17 13:59:20.28</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>217373</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2013-12-17 13:59:20.28</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>217374</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-01-08 11:15:19.267</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>217494</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2015-05-18 10:49:14.041</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>217355</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>217496</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>lti viewer item</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>217495</id>
+    <strings/>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>default</thumb>
+</com.tle.beans.item.Item>

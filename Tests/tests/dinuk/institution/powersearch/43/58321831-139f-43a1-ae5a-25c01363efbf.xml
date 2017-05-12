@@ -1,0 +1,181 @@
+<com.tle.beans.entity.PowerSearch>
+  <id>40220</id>
+  <uuid>58321831-139f-43a1-ae5a-25c01363efbf</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-04-27 11:17:02.801</dateModified>
+  <dateCreated class="sql-timestamp">2012-04-27 11:17:02.801</dateCreated>
+  <name>
+    <id>40221</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>40222</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Pow Search Adv</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <schema entityclass="com.tle.beans.entity.Schema" uuid="31ca3e31-cc0a-4280-9b0d-dba6680f0961"/>
+  <itemdefs class="list">
+    <com.tle.beans.entity.itemdef.ItemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="fc15d7f1-8e2b-4793-b024-61db2cb10886"/>
+  </itemdefs>
+  <wizard>
+    <title>
+      <id>0</id>
+      <strings class="java.util.Collections$SingletonMap">
+        <k class="string">en_US</k>
+        <v class="com.tle.beans.entity.LanguageString">
+          <id>0</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Advanced Search</text>
+          <bundle reference="../../.."/>
+        </v>
+      </strings>
+    </title>
+    <controls>
+      <com.dytech.edge.wizard.beans.control.EditBox>
+        <mandatory>false</mandatory>
+        <reload>false</reload>
+        <include>true</include>
+        <size1>0</size1>
+        <size2>1</size2>
+        <title>
+          <id>0</id>
+          <strings>
+            <entry>
+              <string>en</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>0</id>
+                <locale>en</locale>
+                <priority>1</priority>
+                <text>Pow Name</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </title>
+        <targetnodes>
+          <com.dytech.edge.wizard.TargetNode>
+            <target>/powName</target>
+            <attribute></attribute>
+          </com.dytech.edge.wizard.TargetNode>
+        </targetnodes>
+        <items/>
+        <links>false</links>
+        <number>false</number>
+        <forceUnique>false</forceUnique>
+        <checkDuplication>false</checkDuplication>
+        <allowMultiLang>false</allowMultiLang>
+      </com.dytech.edge.wizard.beans.control.EditBox>
+      <com.dytech.edge.wizard.beans.control.EditBox>
+        <mandatory>false</mandatory>
+        <reload>false</reload>
+        <include>true</include>
+        <size1>0</size1>
+        <size2>1</size2>
+        <title>
+          <id>0</id>
+          <strings>
+            <entry>
+              <string>en</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>0</id>
+                <locale>en</locale>
+                <priority>1</priority>
+                <text>Pow Desc</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </title>
+        <targetnodes>
+          <com.dytech.edge.wizard.TargetNode>
+            <target>/powDesc</target>
+            <attribute></attribute>
+          </com.dytech.edge.wizard.TargetNode>
+        </targetnodes>
+        <items/>
+        <links>false</links>
+        <number>false</number>
+        <forceUnique>false</forceUnique>
+        <checkDuplication>false</checkDuplication>
+        <allowMultiLang>false</allowMultiLang>
+      </com.dytech.edge.wizard.beans.control.EditBox>
+      <com.dytech.edge.wizard.beans.control.EditBox>
+        <mandatory>false</mandatory>
+        <reload>false</reload>
+        <include>true</include>
+        <size1>0</size1>
+        <size2>1</size2>
+        <title>
+          <id>0</id>
+          <strings>
+            <entry>
+              <string>en</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>0</id>
+                <locale>en</locale>
+                <priority>1</priority>
+                <text>Pow Content 1</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </title>
+        <targetnodes>
+          <com.dytech.edge.wizard.TargetNode>
+            <target>/powContent1</target>
+            <attribute></attribute>
+          </com.dytech.edge.wizard.TargetNode>
+        </targetnodes>
+        <items/>
+        <links>false</links>
+        <number>false</number>
+        <forceUnique>false</forceUnique>
+        <checkDuplication>false</checkDuplication>
+        <allowMultiLang>false</allowMultiLang>
+      </com.dytech.edge.wizard.beans.control.EditBox>
+      <com.dytech.edge.wizard.beans.control.EditBox>
+        <mandatory>false</mandatory>
+        <reload>false</reload>
+        <include>true</include>
+        <size1>0</size1>
+        <size2>1</size2>
+        <title>
+          <id>0</id>
+          <strings>
+            <entry>
+              <string>en</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>0</id>
+                <locale>en</locale>
+                <priority>1</priority>
+                <text>Pow Content 2</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </title>
+        <targetnodes>
+          <com.dytech.edge.wizard.TargetNode>
+            <target>/powContent2</target>
+            <attribute></attribute>
+          </com.dytech.edge.wizard.TargetNode>
+        </targetnodes>
+        <items/>
+        <links>false</links>
+        <number>false</number>
+        <forceUnique>false</forceUnique>
+        <checkDuplication>false</checkDuplication>
+        <allowMultiLang>false</allowMultiLang>
+      </com.dytech.edge.wizard.beans.control.EditBox>
+    </controls>
+  </wizard>
+</com.tle.beans.entity.PowerSearch>

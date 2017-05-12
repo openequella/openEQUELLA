@@ -1,0 +1,20 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>2016869</id>
+  <institution>
+    <id>2016849</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>aif</string>
+    <string>aiff</string>
+    <string>aifc</string>
+  </extensions>
+  <type>audio/x-aiff</type>
+  <description>Audio</description>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/sound.gif</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

@@ -1,0 +1,235 @@
+<xml>
+      <item id="bb3f11fb-e079-634a-bb47-1cc3a62f4eea" itemdefid="2869da6f-e43a-586d-2ad9-ff055e32cb33" itemstatus="draft" live="false" myitem="true" version="1">
+        <itemtype>plan</itemtype>
+        <name>Titration</name>
+        <description>Titration</description>
+        <keywords>Titration</keywords>
+        <folder/>
+        <itembody>
+          <thumbnail/>
+          <plan applyDate="false" endDate="2003-07-15T10:31:42" startDate="2003-07-15T10:31:42">
+            <activity applyDate="false" endDate="2003-07-15T10:31:42" startDate="2003-07-15T10:31:42">
+              <html>&lt;html&gt;
+  &lt;head&gt;
+  
+    &lt;style type=&quot;text/css&quot;&gt;
+      &lt;!--
+        body { font-family: Verdana }
+      --&gt;
+    &lt;/style&gt;
+    
+  &lt;title&gt;Start Titration&lt;/title&gt;
+  
+                  
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;table cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; width=&quot;124%&quot;&gt;
+      &lt;tr&gt;
+        &lt;td width=&quot;190&quot;&gt;
+            
+        &lt;/td&gt;
+        &lt;td width=&quot;5&quot;&gt;
+            
+        &lt;/td&gt;
+        &lt;td width=&quot;190&quot;&gt;
+            
+        &lt;/td&gt;
+        &lt;td width=&quot;5&quot;&gt;
+            &lt;embed src=&quot;http://www.google.com.au&quot;&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr valign=&quot;top&quot;&gt;
+        &lt;td colspan=&quot;4&quot;&gt;
+          &lt;table cellspacing=&quot;0&quot; cellpadding=&quot;2&quot; border=&quot;0&quot; width=&quot;390&quot;&gt;
+            &lt;tr bgcolor=&quot;E0D4E9&quot; valign=&quot;top&quot;&gt;
+              &lt;td width=&quot;390&quot;&gt;
+                  &lt;font face=&quot;verdana, geneva, arial&quot; color=&quot;333333&quot; size=&quot;-1&quot;&gt;&lt;b&gt;
+Titration&lt;/b&gt;&lt;/font&gt;
+              &lt;/td&gt;
+            &lt;/tr&gt;
+          &lt;/table&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr bgcolor=&quot;eeeeee&quot; valign=&quot;top&quot;&gt;
+        &lt;td colspan=&quot;4&quot;&gt;
+          &lt;table cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; width=&quot;40%&quot;&gt;
+            &lt;tr valign=&quot;top&quot;&gt;
+              &lt;td&gt;
+                  &lt;font face=&quot;verdana, geneva, arial&quot; size=&quot;-1&quot;&gt;&lt;br style=&quot;font-size: -1; font-family: verdana, geneva, arial&quot;&gt;
+                  A titration is a method of analysis that will allow you to 
+                  determine the precise endpoint of a reaction and therefore 
+                  the precise quantity of reactant in the titration flask. A 
+                  buret is used to deliver the second reactant to the flask 
+                  and an indicator or pH Meter is used to detectthe endpoint 
+                  of the reaction. Refer to the video below&lt;/font&gt;&lt;br&gt;&lt;br&gt;
+              &lt;/td&gt;
+            &lt;/tr&gt;
+          &lt;/table&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td height=&quot;12&quot; colspan=&quot;4&quot;&gt;
+            
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr valign=&quot;top&quot;&gt;
+        &lt;td colspan=&quot;4&quot;&gt;
+          &lt;table cellspacing=&quot;0&quot; cellpadding=&quot;2&quot; border=&quot;0&quot; width=&quot;40%&quot;&gt;
+            &lt;tr bgcolor=&quot;E1D4E9&quot; valign=&quot;top&quot;&gt;
+              &lt;td width=&quot;390&quot;&gt;
+                  &lt;font face=&quot;verdana, geneva, arial&quot; color=&quot;333333&quot; size=&quot;-1&quot;&gt;&lt;b&gt;
+Doing a Titration&lt;/b&gt;&lt;/font&gt;
+              &lt;/td&gt;
+            &lt;/tr&gt;
+          &lt;/table&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr bgcolor=&quot;eeeeee&quot; valign=&quot;top&quot;&gt;
+        &lt;td width=&quot;40%&quot;&gt;
+            &lt;br&gt;
+            &lt;font face=&quot;verdana, geneva, arial&quot; size=&quot;-1&quot;&gt;Begin by preparing 
+            your burette, as described on the &lt;a href=&quot;buret.html&quot;&gt;burette&lt;/a&gt; 
+            page. Your burette should be conditioned and filled with titrant 
+            solution. You should check for air bubbles and leaks, before 
+            proceding with the titration. &lt;/font&gt;
+          &lt;p&gt;
+            
+          &lt;/p&gt;
+        &lt;/td&gt;
+        &lt;td width=&quot;60%&quot;&gt;
+            
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr bgcolor=&quot;eeeeee&quot; valign=&quot;top&quot;&gt;
+        &lt;td colspan=&quot;4&quot;&gt;
+          &lt;table cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; width=&quot;124%&quot;&gt;
+            &lt;tr valign=&quot;top&quot;&gt;
+              &lt;td valign=&quot;top&quot;&gt;
+             		 &lt;EMBED src=&quot;http://tethys:80/item/image/d45fa841-ce8f-02dd-22e5-cd93740f4e47/1/embed.gif&quot; autostart=true loop=false volume=100 hidden=true&gt;
+                  &lt;img src=&quot;http://tethys:80/item/image/bb3f11fb-e079-634a-bb47-1cc3a62f4eea/1/embed.gif&quot; autostart=true loop=false volume=100 hidden=true&gt;
+                  
+                  &amp;#160;&amp;#160;&amp;#160;&lt;img src=&quot;http://tethys:80/item/image/fd88d5d1-6399-3009-783e-690ac064b2ac/1/titration02.gif&quot;&gt;
+
+              &lt;/td&gt;
+              &lt;td align=&quot;left&quot;&gt;
+                  
+              &lt;/td&gt;
+              &lt;td&gt;
+                  
+              &lt;/td&gt;
+            &lt;/tr&gt;
+          &lt;/table&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr bgcolor=&quot;eeeeee&quot; valign=&quot;top&quot;&gt;
+        &lt;td colspan=&quot;4&quot;&gt;
+          &lt;table cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; width=&quot;100%&quot;&gt;
+            &lt;tr valign=&quot;top&quot;&gt;
+              &lt;td&gt;
+                  &lt;font face=&quot;verdana, geneva, arial&quot; size=&quot;-1&quot;&gt;&lt;br style=&quot;font-size: -1; font-family: verdana, geneva, arial&quot;&gt;
+                  Take an initial volume reading and record it in your 
+                  notebook. &lt;/font&gt;
+                &lt;div&gt;
+                    &lt;font face=&quot;verdana, geneva, arial&quot; size=&quot;-1&quot;&gt;Before 
+                    beginning a titration, you should always calculate the &lt;/font&gt;
+
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;font face=&quot;verdana, geneva, arial&quot; size=&quot;-1&quot;&gt;expected 
+                    endpoint volume.&lt;br style=&quot;font-size: -1; font-family: verdana, geneva, arial&quot;&gt;&lt;/font&gt;
+
+                &lt;/div&gt;
+              &lt;/td&gt;
+            &lt;/tr&gt;
+          &lt;/table&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr bgcolor=&quot;eeeeee&quot; valign=&quot;top&quot;&gt;
+        &lt;td colspan=&quot;4&quot;&gt;
+          &lt;table cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; width=&quot;124%&quot;&gt;
+            &lt;tr valign=&quot;top&quot;&gt;
+              &lt;td width=&quot;190&quot;&gt;
+                  &lt;img src=&quot;http://tethys:80/item/image/b5f420ae-5a12-3b2a-c574-52780bf93415/1/titration0.gif&quot;&gt;
+                  
+              &lt;/td&gt;
+              &lt;td width=&quot;10&quot;&gt;
+                  
+              &lt;/td&gt;
+              &lt;td width=&quot;190&quot;&gt;
+                  
+              &lt;/td&gt;
+            &lt;/tr&gt;
+          &lt;/table&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr bgcolor=&quot;eeeeee&quot; valign=&quot;top&quot;&gt;
+        &lt;td colspan=&quot;4&quot;&gt;
+          &lt;table cellspacing=&quot;0&quot; cellpadding=&quot;2&quot; border=&quot;0&quot; width=&quot;390&quot;&gt;
+            &lt;tr valign=&quot;top&quot;&gt;
+              &lt;td&gt;
+                  &lt;font face=&quot;verdana, geneva, arial&quot; size=&quot;-1&quot;&gt;&lt;br style=&quot;font-size: -1; font-family: verdana, geneva, arial&quot;&gt;
+                  Prepare the solution to be analyzed by placing it in a clean 
+                  Erlenmeyer flask or beaker. If your sample is a solid, make 
+                  sure it is completely dissoloved. Put a magnetic stirrer in 
+                  the flask and add indicator.&lt;br style=&quot;font-size: -1; font-family: verdana, geneva, arial&quot;&gt;&lt;/font&gt;
+
+              &lt;/td&gt;
+            &lt;/tr&gt;
+          &lt;/table&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr bgcolor=&quot;eeeeee&quot; valign=&quot;top&quot;&gt;
+        &lt;td colspan=&quot;4&quot;&gt;
+          &lt;table cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; width=&quot;390&quot;&gt;
+            &lt;tr valign=&quot;top&quot;&gt;
+              &lt;td width=&quot;190&quot;&gt;
+                  
+              &lt;/td&gt;
+              &lt;td width=&quot;10&quot;&gt;
+                  
+              &lt;/td&gt;
+              &lt;td width=&quot;190&quot;&gt;
+                  
+              &lt;/td&gt;
+            &lt;/tr&gt;
+          &lt;/table&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr bgcolor=&quot;eeeeee&quot; valign=&quot;top&quot;&gt;
+        &lt;td colspan=&quot;4&quot;&gt;
+          &lt;table cellspacing=&quot;0&quot; cellpadding=&quot;2&quot; border=&quot;0&quot; width=&quot;390&quot;&gt;
+            &lt;tr valign=&quot;top&quot;&gt;
+              &lt;td&gt;
+                  &lt;font face=&quot;verdana, geneva, arial&quot; size=&quot;-1&quot;&gt;&lt;br style=&quot;font-size: -1; font-family: verdana, geneva, arial&quot;&gt;
+                  Use the buret to deliver a stream of titrant to within a 
+                  couple of mL of your expected endpoint. You will see the 
+                  indicator change color when the titrant hits the solution in 
+                  the flask, but the color change disappears upon stirring.&lt;br style=&quot;font-size: -1; font-family: verdana, geneva, arial&quot;&gt;&lt;/font&gt;
+
+              &lt;/td&gt;
+            &lt;/tr&gt;
+          &lt;/table&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/table&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</html>
+              <description/>
+              <keywords/>
+              <name>Start Titration</name>
+              <notes/>
+            </activity>
+          </plan>
+        </itembody>
+        <owner>f0c2fcf7-c1cb-dc3d-5a01-fca1c7a8f392</owner>
+        <datecreated>2003-07-15T10:31:41</datecreated>
+        <datemodified>2003-07-15T10:32:06</datemodified>
+        <moderation>
+          <reviewperiod>1</reviewperiod>
+        </moderation>
+        <lockedby/>
+        <modifier>f0c2fcf7-c1cb-dc3d-5a01-fca1c7a8f392</modifier>
+        <collaborativeowners/>
+      </item>
+    </xml>

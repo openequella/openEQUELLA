@@ -1,0 +1,27 @@
+<com.tle.common.qti.entity.QtiAssessmentItem>
+  <id>18876</id>
+  <uuid>c9fccc7a-90b5-4e2e-b989-fd8f0bf64abb</uuid>
+  <identifier>text_entry-Lycidas</identifier>
+  <title>FIB-Multiple - Lycidas</title>
+  <itemBody>uk.ac.ed.ph.jqtiplus.node.content.ItemBody@5fa0b0cd(
+    blocks =&gt; java.util.ArrayList[
+        0 =&gt; &lt;p&gt;@783782855(xPath=/assessmentItem[@identifier=&quot;text_entry-Lycidas&quot;]/itemBody[1]/p[1],location=XmlSourceLocationInformation@164705c7(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-d565dbe89933/text_entry-Lycidas.xml,lineNumber=30,columnNumber=6))
+        1 =&gt; &lt;blockquote&gt;@281827134(xPath=/assessmentItem[@identifier=&quot;text_entry-Lycidas&quot;]/itemBody[1]/blockquote[1],location=XmlSourceLocationInformation@5773b00f(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-d565dbe89933/text_entry-Lycidas.xml,lineNumber=31,columnNumber=15))
+        2 =&gt; &lt;feedbackBlock&gt;@1814812067(xPath=/assessmentItem[@identifier=&quot;text_entry-Lycidas&quot;]/itemBody[1]/feedbackBlock[1],location=XmlSourceLocationInformation@31d6f7d0(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-d565dbe89933/text_entry-Lycidas.xml,lineNumber=36,columnNumber=86))
+        3 =&gt; &lt;feedbackBlock&gt;@405246528(xPath=/assessmentItem[@identifier=&quot;text_entry-Lycidas&quot;]/itemBody[1]/feedbackBlock[2],location=XmlSourceLocationInformation@4df2b423(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-d565dbe89933/text_entry-Lycidas.xml,lineNumber=39,columnNumber=88))
+        4 =&gt; &lt;feedbackBlock&gt;@2031128015(xPath=/assessmentItem[@identifier=&quot;text_entry-Lycidas&quot;]/itemBody[1]/feedbackBlock[3],location=XmlSourceLocationInformation@2dce4f21(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-d565dbe89933/text_entry-Lycidas.xml,lineNumber=42,columnNumber=86))
+        5 =&gt; &lt;feedbackBlock&gt;@1135417093(xPath=/assessmentItem[@identifier=&quot;text_entry-Lycidas&quot;]/itemBody[1]/feedbackBlock[4],location=XmlSourceLocationInformation@18c26bf9(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-d565dbe89933/text_entry-Lycidas.xml,lineNumber=45,columnNumber=88))
+    ]
+    id =&gt; null
+    classAttr =&gt; null
+    lang =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    label =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    parent =&gt; &lt;assessmentItem&gt;@71218466(xPath=/assessmentItem[@identifier=&quot;text_entry-Lycidas&quot;],location=XmlSourceLocationInformation@30e5cd5b(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-d565dbe89933/text_entry-Lycidas.xml,lineNumber=6,columnNumber=24))(systemId=_SECURE/_QTI/id-d565dbe89933/text_entry-Lycidas.xml)
+    attributes =&gt; uk.ac.ed.ph.jqtiplus.attribute.AttributeList@3f0d2a71
+    sourceLocation =&gt; XmlSourceLocationInformation@795d810d(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-d565dbe89933/text_entry-Lycidas.xml,lineNumber=29,columnNumber=12)
+    rootNode =&gt; &lt;assessmentItem&gt;@71218466(xPath=/assessmentItem[@identifier=&quot;text_entry-Lycidas&quot;],location=XmlSourceLocationInformation@30e5cd5b(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-d565dbe89933/text_entry-Lycidas.xml,lineNumber=6,columnNumber=24))(systemId=_SECURE/_QTI/id-d565dbe89933/text_entry-Lycidas.xml)
+    nodeGroups =&gt; uk.ac.ed.ph.jqtiplus.group.NodeGroupList@69c3baba
+    qtiClassName =&gt; itemBody
+)
+</itemBody>
+  <adaptive>false</adaptive>
+  <timeDependent>false</timeDependent>
+</com.tle.common.qti.entity.QtiAssessmentItem>

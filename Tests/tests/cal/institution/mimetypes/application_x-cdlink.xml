@@ -1,0 +1,18 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>63587</id>
+  <institution>
+    <id>63369</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>vcd</string>
+  </extensions>
+  <type>application/x-cdlink</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

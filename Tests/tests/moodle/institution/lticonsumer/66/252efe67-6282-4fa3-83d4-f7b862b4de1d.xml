@@ -1,0 +1,39 @@
+<com.tle.common.lti.consumers.entity.LtiConsumer>
+  <id>18314</id>
+  <uuid>252efe67-6282-4fa3-83d4-f7b862b4de1d</uuid>
+  <owner>aca3959f-8d0c-4046-b1c3-e9592635c4cc</owner>
+  <dateModified class="sql-timestamp">2014-12-04 11:15:49.71</dateModified>
+  <dateCreated class="sql-timestamp">2014-12-04 11:15:49.71</dateCreated>
+  <description>
+    <id>18315</id>
+    <strings/>
+  </description>
+  <name>
+    <id>18316</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>18317</id>
+          <locale>en</locale>
+          <priority>0</priority>
+          <text>guest</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <consumerKey>guest</consumerKey>
+  <consumerSecret>guest</consumerSecret>
+  <prefix>lti_pre_</prefix>
+  <postfix>_lti_post</postfix>
+  <allowedExpression>*</allowedExpression>
+  <instructorRoles/>
+  <otherRoles/>
+  <customRoles/>
+  <unknownUser>1</unknownUser>
+  <unknownGroups/>
+</com.tle.common.lti.consumers.entity.LtiConsumer>

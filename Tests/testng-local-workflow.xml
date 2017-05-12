@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Auto Test Suite workflow" parallel="instances" data-provider-thread-count="4" thread-count="4" configfailurepolicy="continue">
+	<test name="Workflow Tests">
+		<packages>	
+			<package name="com.tle.webtests.test.workflow" />
+			<package name="com.tle.webtests.test.workflow.assignment" />
+			<package name="com.tle.webtests.test.workflow.movetolive" />
+			<package name="com.tle.webtests.test.workflow.rejection" />
+		</packages>
+	</test>
+</suite>

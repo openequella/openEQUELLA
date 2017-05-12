@@ -1,0 +1,209 @@
+<com.tle.common.workflow.Workflow>
+  <id>29184</id>
+  <uuid>a939bac4-3933-56aa-cf8a-c2cd68f5eea7</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2009-08-28 11:04:50.077</dateModified>
+  <dateCreated class="sql-timestamp">2009-08-28 09:49:46.39</dateCreated>
+  <name>
+    <id>29185</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>29186</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Decision Node Scripting by Item Status</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <movelive>false</movelive>
+  <nodes>
+    <com.tle.common.workflow.node.DecisionNode>
+      <id>29192</id>
+      <uuid>1361b964-39b5-0dd6-f2f3-60a09f22a2dc</uuid>
+      <name>
+        <id>29193</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>29194</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>If the item is in review</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <rejectPoint>true</rejectPoint>
+      <parent class="com.tle.common.workflow.node.SerialNode">
+        <id>29200</id>
+        <uuid>81583b86-7c5d-7f54-bd45-efe5f47eb207</uuid>
+        <name>
+          <id>29201</id>
+          <strings>
+            <entry>
+              <string>en_GB</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>29202</id>
+                <locale>en_GB</locale>
+                <priority>2</priority>
+                <text>Start</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </name>
+        <rejectPoint>false</rejectPoint>
+        <childIndex>0</childIndex>
+      </parent>
+      <childIndex>0</childIndex>
+      <script>var bRet = false; 
+if( status == &apos;review&apos; ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+    </com.tle.common.workflow.node.DecisionNode>
+    <com.tle.common.workflow.node.WorkflowItem>
+      <id>29187</id>
+      <uuid>f6ad94ea-af62-a733-4982-59ae63b10dd1</uuid>
+      <name>
+        <id>29188</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>29189</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>This item is in moderation, please moderate it.</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <rejectPoint>false</rejectPoint>
+      <parent class="com.tle.common.workflow.node.DecisionNode">
+        <id>29203</id>
+        <uuid>1811e9fa-63e5-b48b-a96b-58be8f8cfdf1</uuid>
+        <name>
+          <id>29204</id>
+          <strings>
+            <entry>
+              <string>en</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>29205</id>
+                <locale>en</locale>
+                <priority>1</priority>
+                <text>If the item is in moderation.</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </name>
+        <rejectPoint>false</rejectPoint>
+        <parent class="com.tle.common.workflow.node.SerialNode" reference="../../../com.tle.common.workflow.node.DecisionNode/parent"/>
+        <childIndex>1</childIndex>
+        <script>var bRet = false; 
+if( status == &apos;moderating&apos; ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+      </parent>
+      <childIndex>0</childIndex>
+      <users>
+        <string>0203b997-afa7-fb34-3793-57be9ee04524</string>
+      </users>
+      <groups/>
+      <roles/>
+      <description>
+        <id>29190</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>29191</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>You are seeing this item here because it has been sent for moderation.</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </description>
+      <unanimousacceptance>false</unanimousacceptance>
+      <escalate>false</escalate>
+      <escalationdays>0</escalationdays>
+      <allowEditing>false</allowEditing>
+      <movelive>false</movelive>
+      <moveliveAccept>false</moveliveAccept>
+      <priority>20</priority>
+      <actionDays>0</actionDays>
+      <autoAssigns/>
+    </com.tle.common.workflow.node.WorkflowItem>
+    <com.tle.common.workflow.node.SerialNode reference="../com.tle.common.workflow.node.DecisionNode/parent"/>
+    <com.tle.common.workflow.node.WorkflowItem>
+      <id>29195</id>
+      <uuid>b4e23f1a-fd2c-4807-5ffb-c7e0e253255d</uuid>
+      <name>
+        <id>29196</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>29197</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>This item is in review, review me.</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <rejectPoint>true</rejectPoint>
+      <parent class="com.tle.common.workflow.node.DecisionNode" reference="../../com.tle.common.workflow.node.DecisionNode"/>
+      <childIndex>0</childIndex>
+      <users>
+        <string>d58b8087-7d64-2115-c187-20e5eb890743</string>
+      </users>
+      <groups/>
+      <roles/>
+      <description>
+        <id>29198</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>29199</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>This item is in here because it has been sent for reviewing.</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </description>
+      <unanimousacceptance>false</unanimousacceptance>
+      <escalate>false</escalate>
+      <escalationdays>0</escalationdays>
+      <allowEditing>false</allowEditing>
+      <movelive>false</movelive>
+      <moveliveAccept>false</moveliveAccept>
+      <priority>20</priority>
+      <actionDays>0</actionDays>
+      <autoAssigns/>
+    </com.tle.common.workflow.node.WorkflowItem>
+    <com.tle.common.workflow.node.DecisionNode reference="../com.tle.common.workflow.node.WorkflowItem/parent"/>
+  </nodes>
+</com.tle.common.workflow.Workflow>

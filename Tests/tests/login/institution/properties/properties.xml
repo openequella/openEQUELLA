@@ -1,0 +1,14 @@
+<map>
+  <entry>
+    <string>wrapper.user.enabled</string>
+    <string>true</string>
+  </entry>
+  <entry>
+    <string>cache.enabled</string>
+    <string>false</string>
+  </entry>
+  <entry>
+    <string>cache.schedule.gap</string>
+    <string>0</string>
+  </entry>
+</map>

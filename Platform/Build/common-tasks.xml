@@ -1,0 +1,44 @@
+<project name="common-tasks">
+	<dirname file="${ant.file.common-tasks}" property="common-tasks.dir" />
+	<import file="${common-tasks.dir}/common-properties.xml" />
+
+	<path id="customtasks.classpath">
+		<fileset dir="${TLE Custom Build Tasks.base}/lib">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${TLE Custom Build Tasks.classes}" />
+	</path>
+
+	<target name="define-customtasks">
+		<condition property="threadpool" value="${use.threadpool}" else="true">
+			<isset property="use.threadpool" />
+		</condition>
+		<condition property="threadcount" value="${use.threadcount}" else="0">
+			<isset property="use.threadcount" />
+		</condition>
+		<typedef classname="com.tle.ant.ParallelBuildTask" name="parBuild" classpathref="customtasks.classpath" />
+		<typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties" classpathref="customtasks.classpath" />
+		<typedef classname="com.tle.ant.JPFClasspath" name="jpfClasspath" classpathref="customtasks.classpath" />
+	</target>
+
+	<target name="define-proguard">
+		<taskdef classname="com.tle.ant.ProguardForker" name="proguardForker" classpathref="customtasks.classpath" />
+	</target>
+
+	<macrodef name="eclipseClasspath">
+		<attribute name="pathId" default="eclipse.classpath" />
+		<attribute name="verbose" default="false" />
+		<attribute name="followexports" default="true" />
+		<attribute name="pluginId" default="${plugin.id}" />
+		<sequential>
+			<jpfClasspath cache="${jpf.cache}" verbose="@{verbose}" followexports="@{followexports}" pathid="@{pathId}" pluginid="@{pluginId}">
+				<resources refid="plugin.manifests"/>
+			</jpfClasspath>
+		</sequential>
+	</macrodef>
+
+	<target name="define-eclipseClasspath">
+		<eclipseClasspath />
+	</target>
+</project>
+

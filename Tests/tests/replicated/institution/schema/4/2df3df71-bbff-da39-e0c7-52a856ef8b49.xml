@@ -1,0 +1,46 @@
+<com.tle.beans.entity.Schema>
+  <id>43679</id>
+  <uuid>2df3df71-bbff-da39-e0c7-52a856ef8b49</uuid>
+  <owner>a2720e4c-2fc0-1b97-275e-bf88bab34030</owner>
+  <dateModified class="sql-timestamp">2008-06-12 14:08:12.656</dateModified>
+  <dateCreated class="sql-timestamp">2008-06-12 14:08:12.656</dateCreated>
+  <description>
+    <id>43680</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>43681</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>System schema for storing My Content collection</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>43682</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>43683</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>My Content</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>true</systemType>
+  <disabled>false</disabled>
+  <expTransforms/>
+  <impTransforms/>
+  <itemNamePath>/name</itemNamePath>
+  <itemDescriptionPath>/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;name search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description type=&quot;text&quot;/&gt;&lt;keywords field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;content_type field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

@@ -1,0 +1,15 @@
+<list>
+  <com.tle.beans.activation.ActivateRequest>
+    <id>117104</id>
+    <uuid>a8a64011-ff88-461f-8847-ad4032f3b670</uuid>
+    <type>cal</type>
+    <attachment>1ad866d4-668e-43fd-bbd8-801b9b3a935f</attachment>
+    <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+    <status>1</status>
+    <time class="sql-timestamp">2014-04-04 13:45:04.057</time>
+    <from class="sql-timestamp">2014-04-04 13:45:04.05</from>
+    <until class="sql-timestamp">2014-12-13 17:00:00.0</until>
+    <course entityclass="com.tle.beans.item.cal.request.CourseInfo" uuid="0613456a-c723-44ce-b7f7-e2f2379fe07a"/>
+    <description>apretendedpagefromapretendbook.txt</description>
+  </com.tle.beans.activation.ActivateRequest>
+</list>

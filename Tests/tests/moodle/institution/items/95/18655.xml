@@ -1,0 +1,141 @@
+<com.tle.beans.item.Item>
+  <id>18655</id>
+  <uuid>cdd043c0-f2af-404e-ac11-f42e53004ba6</uuid>
+  <version>1</version>
+  <owner>de6a23b5-4124-46fe-8384-b7df783cac40</owner>
+  <dateModified class="sql-timestamp">2011-10-04 14:44:57.21</dateModified>
+  <dateCreated class="sql-timestamp">2011-10-03 15:10:37.682</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.861</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>18666</id>
+      <uuid>265b48b7-f752-4187-a605-feecd8d876c8</uuid>
+      <url>google&apos;s.png</url>
+      <description>&lt;script&gt;alert(&apos;escape fail&apos;)&lt;/script&gt;</description>
+      <value1>7007</value1>
+      <value2>false</value2>
+      <md5sum>169e859db7f28a01e1b51e1c9e2d6b2b</md5sum>
+      <viewer></viewer>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="9a735fbf-226c-4d99-8f8f-6ec8368d9347"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>18660</id>
+    <liveApprovalDate class="sql-timestamp">2011-10-03 15:10:37.679</liveApprovalDate>
+    <start class="sql-timestamp">2011-10-03 15:20:11.607</start>
+    <lastAction class="sql-timestamp">2011-10-03 15:10:37.679</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18667</id>
+      <user>de6a23b5-4124-46fe-8384-b7df783cac40</user>
+      <date class="sql-timestamp">2011-10-03 15:10:37.679</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18669</id>
+      <user>de6a23b5-4124-46fe-8384-b7df783cac40</user>
+      <date class="sql-timestamp">2011-10-03 15:10:37.679</date>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18670</id>
+      <user>de6a23b5-4124-46fe-8384-b7df783cac40</user>
+      <date class="sql-timestamp">2011-10-03 15:10:37.679</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18672</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-10-03 15:19:06.824</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18673</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-10-03 15:19:56.808</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18675</id>
+      <user>aca3959f-8d0c-4046-b1c3-e9592635c4cc</user>
+      <date class="sql-timestamp">2011-10-03 17:30:54.86</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>18676</id>
+      <user>de6a23b5-4124-46fe-8384-b7df783cac40</user>
+      <date class="sql-timestamp">2011-10-04 14:44:57.21</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>18662</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>18664</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>MoodleSelectionTest - selectHtmlTitle &lt;script&gt;alert(&apos;escape fail&apos;)&lt;/script&gt;</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>18656</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>18657</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>MoodleSelectionTest - selectHtmlTitle &lt;strong&gt;bold&lt;/strong&gt;</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

@@ -1,0 +1,49 @@
+<com.tle.common.externaltools.entity.ExternalTool>
+  <id>216152</id>
+  <uuid>87db84a0-1b23-4f55-887b-a561b8035a8a</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2013-08-15 10:22:17.147</dateModified>
+  <dateCreated class="sql-timestamp">2013-08-15 10:22:17.147</dateCreated>
+  <description>
+    <id>216153</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216154</id>
+          <locale>en</locale>
+          <priority>0</priority>
+          <text>For make benefit glorious LTIAttachment Control Test. We don&apos;t need any function behind the Base (ie Launch) URL. We simply need at least one External Tool setting to exist</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>216155</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216156</id>
+          <locale>en</locale>
+          <priority>0</priority>
+          <text>Token External Tool</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>ICON_URL</key>
+      <value>http://purple-excess.dyndns.ws:8075/~larry/images/hypnotoadfullsize.guf</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <baseURL>http://www.equella.com</baseURL>
+  <customParams/>
+  <shareName>false</shareName>
+  <shareEmail>false</shareEmail>
+</com.tle.common.externaltools.entity.ExternalTool>

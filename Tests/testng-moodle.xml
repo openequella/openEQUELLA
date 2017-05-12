@@ -1,0 +1,32 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Auto Test Moodle Suite" parallel="instances" data-provider-thread-count="4" thread-count="10" configfailurepolicy="continue">
+	<!--  FIXME: this relies on a module.php file that was custom written to download the 
+	latest moodle modules and deploy them.  This is now lost for all time. -->
+	<!-- 
+	<test name="Download Moodle Module">
+		<classes>
+			<class name="com.tle.webtests.remotetest.integration.moodle.DownloadModuleTest" />
+		</classes>
+	</test>
+	 -->
+	<test name="Sync Moodle Module" thread-count="5">
+		<classes>
+			<class name="com.tle.webtests.remotetest.integration.moodle.SyncMoodle" />
+		</classes>
+	</test>
+	<test name="Moodle Tests">
+		<classes>
+			<class name="com.tle.webtests.remotetest.integration.moodle.MoodleTestFactory" />
+		</classes>
+	</test>
+	<test name="Moodle Settings" thread-count="5">
+		<listeners>
+			<listener class-name="com.tle.webtests.framework.moodle.SequentialMoodleInterceptor" />
+		</listeners>
+		<parameter name="class-type" value="com.tle.webtests.remotetest.integration.moodle.AbstractSequentialMoodleTest" />
+		<classes>
+			<class name="com.tle.webtests.remotetest.integration.moodle.MoodleTestFactory" />
+		</classes>
+	</test>
+</suite>

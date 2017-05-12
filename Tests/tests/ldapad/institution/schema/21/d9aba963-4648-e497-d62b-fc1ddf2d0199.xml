@@ -1,0 +1,31 @@
+<com.tle.beans.entity.Schema>
+  <id>769425</id>
+  <uuid>d9aba963-4648-e497-d62b-fc1ddf2d0199</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2012-10-24 11:27:25.231</dateModified>
+  <dateCreated class="sql-timestamp">2011-03-17 15:50:08.671</dateCreated>
+  <name>
+    <id>769426</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>769427</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Basic Schema</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms/>
+  <impTransforms/>
+  <itemNamePath>/item/name</itemNamePath>
+  <itemDescriptionPath>/item/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;name field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;user1 field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;user2 field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;user3 field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;searchedGroup field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;userGroup field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;isMemberOfGroup field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;containingUserGroup field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;userInGroup field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;searchedRole field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;hasRole field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/item&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

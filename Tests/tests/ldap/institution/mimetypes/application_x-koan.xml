@@ -1,0 +1,21 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>772364</id>
+  <institution>
+    <id>772306</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>skp</string>
+    <string>skd</string>
+    <string>skt</string>
+    <string>skm</string>
+  </extensions>
+  <type>application/x-koan</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

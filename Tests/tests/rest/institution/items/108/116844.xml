@@ -1,0 +1,187 @@
+<com.tle.beans.item.Item>
+  <id>116844</id>
+  <uuid>9424a318-0c16-4080-a737-dc141cd46837</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2012-09-18 16:16:52.747</dateModified>
+  <dateCreated class="sql-timestamp">2012-09-18 15:45:04.523</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.18</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>true</moderating>
+  <status>MODERATING</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="4b492e6a-bfa7-48ed-8d6e-71d8763e4e78"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>116856</id>
+    <start class="sql-timestamp">2012-09-18 15:48:49.527</start>
+    <lastAction class="sql-timestamp">2012-09-18 15:48:49.51</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <rejectedMessage>again</rejectedMessage>
+    <rejectedBy>adfcaf58-241b-4eca-9740-6a26d1c3dd58</rejectedBy>
+    <rejectedStep>806c8b72-d53b-49e1-8cf1-60b474d0f0ec</rejectedStep>
+    <statuses>
+      <com.tle.common.workflow.WorkflowNodeStatus>
+        <id>116863</id>
+        <node class="com.tle.common.workflow.node.SerialNode" workflow="117dead8-767d-4eff-ba06-5e1964f2f2db">2dc15e1c-d2bb-46b4-b3ad-5bef43acee2b</node>
+        <status>i</status>
+        <comments/>
+      </com.tle.common.workflow.WorkflowNodeStatus>
+      <com.tle.common.workflow.WorkflowItemStatus>
+        <id>116868</id>
+        <node class="com.tle.common.workflow.node.WorkflowItem" workflow="117dead8-767d-4eff-ba06-5e1964f2f2db">806c8b72-d53b-49e1-8cf1-60b474d0f0ec</node>
+        <status>i</status>
+        <comments/>
+        <dateDue class="sql-timestamp">2012-09-19 15:48:49.51</dateDue>
+        <started class="sql-timestamp">2012-09-18 15:48:49.51</started>
+        <overdue>true</overdue>
+        <assignedTo>49a04e57-561f-45b6-8187-e0b893ac739c</assignedTo>
+        <acceptedUsers/>
+        <cause reference="../../com.tle.common.workflow.WorkflowNodeStatus"/>
+      </com.tle.common.workflow.WorkflowItemStatus>
+    </statuses>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116880</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-09-18 15:45:04.523</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116885</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-09-18 15:45:04.523</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116886</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-09-18 15:45:04.523</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116888</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-09-18 15:45:04.523</date>
+      <step>2dc15e1c-d2bb-46b4-b3ad-5bef43acee2b</step>
+      <stepName>Start</stepName>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116890</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-09-18 15:48:25.53</date>
+      <step>806c8b72-d53b-49e1-8cf1-60b474d0f0ec</step>
+      <stepName>Task1</stepName>
+      <comment>again</comment>
+      <applies>false</applies>
+      <type>rejected</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116892</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-09-18 15:48:25.53</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>REJECTED</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116893</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-09-18 15:48:49.51</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116907</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-09-18 15:48:49.51</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116924</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-09-18 15:48:49.51</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116926</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-09-18 15:48:49.51</date>
+      <step>2dc15e1c-d2bb-46b4-b3ad-5bef43acee2b</step>
+      <stepName>Start</stepName>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116927</id>
+      <user>49a04e57-561f-45b6-8187-e0b893ac739c</user>
+      <date class="sql-timestamp">2012-09-18 15:49:06.207</date>
+      <step>806c8b72-d53b-49e1-8cf1-60b474d0f0ec</step>
+      <stepName>Task1</stepName>
+      <applies>false</applies>
+      <type>assign</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>116929</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2012-09-18 16:16:52.747</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>MODERATING</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>116870</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>116874</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>TaskApiTest - Task assigned to someone else</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>116851</id>
+    <strings/>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

@@ -1,0 +1,59 @@
+<com.tle.beans.entity.FederatedSearch>
+  <id>216133</id>
+  <uuid>057691af-e982-42ea-87c6-91c7e5201e9b</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2011-09-07 13:18:04.411</dateModified>
+  <dateCreated class="sql-timestamp">2011-09-07 13:17:16.572</dateCreated>
+  <description>
+    <id>216134</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216135</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>This is an SRW Remote Repository</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>216136</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216137</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>SRW - RemoteRepoOnly</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>url</key>
+      <value>http://z3950.loc.gov:7090/voyager</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>schemaInputTransform</key>
+      <value>SRW_DC</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>xslt</key>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>schema</key>
+      <value>dc</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <type>SRWSearchEngine</type>
+  <timeout>30</timeout>
+  <collectionUuid>859064fe-8867-4201-bb2e-0ba6b68dd164</collectionUuid>
+</com.tle.beans.entity.FederatedSearch>

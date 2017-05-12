@@ -1,0 +1,231 @@
+{
+  "uuid" : "8d6cf2dd-6166-2e2d-f8bb-129de8b90d3d",
+  "name" : "Controls Schema",
+  "nameStrings" : {
+    "en" : "Controls Schema"
+  },
+  "modifiedDate" : "2014-05-12T15:43:40.535+10:00",
+  "createdDate" : "2014-05-12T15:43:40.519+10:00",
+  "owner" : {
+    "id" : "system"
+  },
+  "security" : {
+    "rules" : [ ]
+  },
+  "namePath" : "/item/name",
+  "descriptionPath" : "/item/description",
+  "definition" : {
+    "xml" : {
+      "item" : {
+        "name" : {
+          "_indexed" : true,
+          "_field" : true,
+          "_type" : "text"
+        },
+        "description" : {
+          "_indexed" : true,
+          "_field" : true,
+          "_type" : "text"
+        },
+        "controls" : {
+          "editbox" : {
+            "_field" : true,
+            "_type" : "text"
+          },
+          "htmleditbox" : {
+            "_indexed" : true,
+            "_field" : true,
+            "_type" : "text"
+          },
+          "checkboxes" : {
+            "_field" : true,
+            "_type" : "text"
+          },
+          "radiogroup" : {
+            "_field" : true,
+            "_type" : "text"
+          },
+          "shufflebox" : {
+            "_field" : true,
+            "_type" : "text"
+          },
+          "listbox" : {
+            "_field" : true,
+            "_type" : "text"
+          },
+          "shufflelist" : {
+            "_field" : true,
+            "_type" : "text"
+          },
+          "file" : {
+            "_type" : "text"
+          },
+          "calendar" : {
+            "nodefault" : {
+              "_field" : true,
+              "_type" : "text"
+            },
+            "range" : {
+              "_field" : true,
+              "_type" : "text"
+            },
+            "today" : {
+              "_type" : "text"
+            },
+            "birthday" : {
+              "_type" : "text"
+            },
+            "reload" : {
+              "_type" : "text"
+            }
+          },
+          "userselector" : {
+            "allusers" : {
+              "_field" : true,
+              "_type" : "text"
+            },
+            "group" : {
+              "_type" : "text"
+            }
+          },
+          "emailselector" : {
+            "multiple" : {
+              "_type" : "text"
+            },
+            "single" : {
+              "_type" : "text"
+            }
+          },
+          "multilanguage" : {
+            "_type" : "text"
+          },
+          "group" : {
+            "_type" : "text"
+          },
+          "taxonomy" : {
+            "auto" : {
+              "_field" : true,
+              "_type" : "text"
+            },
+            "auto2" : {
+              "_field" : true,
+              "_type" : "text"
+            },
+            "popup" : {
+              "_field" : true,
+              "_type" : "text"
+            }
+          },
+          "shufflegroup" : {
+            "editbox" : {
+              "_type" : "text"
+            },
+            "listbox" : {
+              "_type" : "text"
+            }
+          },
+          "repeater" : {
+            "editbox" : {
+              "_type" : "text"
+            },
+            "listbox" : {
+              "_type" : "text"
+            },
+            "subrepeater" : {
+              "editbox" : {
+                "_type" : "text"
+              },
+              "listbox" : {
+                "_type" : "text"
+              }
+            }
+          },
+          "html" : {
+            "htmleditbox" : {
+              "_indexed" : true,
+              "_field" : true,
+              "_type" : "text"
+            },
+            "htmleditboxondemand" : {
+              "_indexed" : true,
+              "_field" : true,
+              "_type" : "text"
+            }
+          }
+        },
+        "visible" : {
+          "calendar" : {
+            "_type" : "text"
+          },
+          "userselector" : {
+            "_type" : "text"
+          },
+          "emailselector" : {
+            "_type" : "text"
+          },
+          "multilanguage" : {
+            "_type" : "text"
+          },
+          "basic" : {
+            "_type" : "text"
+          },
+          "shufflegroup" : {
+            "_type" : "text"
+          },
+          "repeater" : {
+            "_type" : "text"
+          }
+        },
+        "keep" : {
+          "editbox" : {
+            "_type" : "text"
+          },
+          "checkboxes" : {
+            "_type" : "text"
+          }
+        },
+        "lose" : {
+          "editbox" : {
+            "_type" : "text"
+          },
+          "checkboxes" : {
+            "_type" : "text"
+          }
+        },
+        "same" : {
+          "checkboxes" : {
+            "_type" : "text"
+          }
+        },
+        "unique" : {
+          "editbox" : {
+            "warned" : {
+              "_field" : true,
+              "_type" : "text"
+            },
+            "forced" : {
+              "_field" : true,
+              "_type" : "text"
+            }
+          },
+          "shufflelist" : {
+            "warned" : {
+              "_field" : true,
+              "_type" : "text"
+            },
+            "forced" : {
+              "_field" : true,
+              "_type" : "text"
+            }
+          }
+        }
+      }
+    }
+  },
+  "_export" : {
+    "exportVersion" : "1.0"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/schema/8d6cf2dd-6166-2e2d-f8bb-129de8b90d3d"
+  }
+}

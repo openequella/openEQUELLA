@@ -1,0 +1,23 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>2016874</id>
+  <institution>
+    <id>2016849</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>bin</string>
+    <string>dms</string>
+    <string>lha</string>
+    <string>lzh</string>
+    <string>exe</string>
+    <string>class</string>
+    <string>a</string>
+  </extensions>
+  <type>application/octet-stream</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.gif</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

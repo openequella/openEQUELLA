@@ -1,0 +1,9 @@
+<com.tle.beans.user.TLEGroup>
+  <id>116522</id>
+  <uuid>d72eb802-0ea6-4384-907a-341ee60628c0</uuid>
+  <name>AutoGroup1</name>
+  <users>
+    <string>adfcaf58-241b-4eca-9740-6a26d1c3dd58</string>
+    <string>45e552c2-e4e8-4061-a19b-22f4e0a7c608</string>
+  </users>
+</com.tle.beans.user.TLEGroup>

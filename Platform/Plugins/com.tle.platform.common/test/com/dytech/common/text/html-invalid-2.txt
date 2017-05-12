@@ -1,0 +1,5 @@
+<html>
+	<body_start>
+		<find:me/>
+	</body_end>
+</html>

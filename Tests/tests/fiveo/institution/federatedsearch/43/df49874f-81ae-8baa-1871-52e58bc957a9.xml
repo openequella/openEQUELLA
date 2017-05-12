@@ -1,0 +1,59 @@
+<com.tle.beans.entity.FederatedSearch>
+  <id>216108</id>
+  <uuid>df49874f-81ae-8baa-1871-52e58bc957a9</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2011-04-06 11:34:24.704</dateModified>
+  <dateCreated class="sql-timestamp">2011-04-06 10:25:02.188</dateCreated>
+  <description>
+    <id>216109</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216110</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>This is an SRW Remote Repository</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>216111</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216112</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>SRW</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>url</key>
+      <value>http://z3950.loc.gov:7090/voyager</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>schemaInputTransform</key>
+      <value>SRW_DC</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>xslt</key>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>schema</key>
+      <value>dc</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <type>SRWSearchEngine</type>
+  <timeout>30</timeout>
+  <collectionUuid>b28f1ffe-2008-4f5e-d559-83c8acd79316</collectionUuid>
+</com.tle.beans.entity.FederatedSearch>

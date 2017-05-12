@@ -1,0 +1,18 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>3309832</id>
+  <institution>
+    <id>3309713</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>tsv</string>
+  </extensions>
+  <type>text/tab-separated-values</type>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/doc.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

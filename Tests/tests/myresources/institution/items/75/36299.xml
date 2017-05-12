@@ -1,0 +1,136 @@
+<com.tle.beans.item.Item>
+  <id>36299</id>
+  <uuid>5c87d22c-9e6c-4f4b-aa41-d87417b26b89</uuid>
+  <version>1</version>
+  <owner>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</owner>
+  <dateModified class="sql-timestamp">2011-09-28 12:08:36.701</dateModified>
+  <dateCreated class="sql-timestamp">2011-09-28 12:04:22.047</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.166</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>DRAFT</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>36339</id>
+      <uuid>a8b33873-56aa-4599-a43b-ca04ff196de3</uuid>
+      <url>index.jpeg</url>
+      <description>Hal&apos;s red eye</description>
+      <value1>5170</value1>
+      <value2>false</value2>
+      <md5sum>a10f53bf8b5ee4cc54083a7dbbb53348</md5sum>
+      <viewer></viewer>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="ef19a911-0b3c-85ed-efd9-a56e56edcf37"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>36305</id>
+    <start class="sql-timestamp">2011-10-03 11:35:15.545</start>
+    <deletedStatus2>DRAFT</deletedStatus2>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>36342</id>
+      <user>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</user>
+      <date class="sql-timestamp">2011-09-28 12:04:21.926</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>36345</id>
+      <user>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</user>
+      <date class="sql-timestamp">2011-09-28 12:07:09.586</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>DELETED</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>36347</id>
+      <user>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</user>
+      <date class="sql-timestamp">2011-09-28 12:07:33.911</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>36356</id>
+      <user>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</user>
+      <date class="sql-timestamp">2011-09-28 12:08:36.701</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments>
+    <com.tle.beans.item.Comment>
+      <id>36361</id>
+      <uuid>ca29736e-c71d-43d4-a9e9-436bf7ad5593</uuid>
+      <item reference="../../.."/>
+      <rating>0</rating>
+      <comment>And did those feet in ancient times walk upon England&apos;s mountains green and was the holy lamb of god on England&apos;s pastures seen and did the countenance divine shine forth upon these clouded hils and was JERUSALEM builded here among these dark satanic mills?</comment>
+      <owner>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</owner>
+      <dateCreated class="sql-timestamp">2011-09-28 12:05:49.29</dateCreated>
+      <anonymous>false</anonymous>
+    </com.tle.beans.item.Comment>
+    <com.tle.beans.item.Comment>
+      <id>36369</id>
+      <uuid>9b07dd5e-c88c-4139-9dcb-920b90261265</uuid>
+      <item reference="../../.."/>
+      <rating>0</rating>
+      <comment>And did those feet etc etc</comment>
+      <owner>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</owner>
+      <dateCreated class="sql-timestamp">2011-09-28 12:09:04.63</dateCreated>
+      <anonymous>false</anonymous>
+    </com.tle.beans.item.Comment>
+  </comments>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>36307</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>36310</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>The artful dodger</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>36300</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>36301</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>reminds me of something somebody said to someone somewhere once</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+</com.tle.beans.item.Item>

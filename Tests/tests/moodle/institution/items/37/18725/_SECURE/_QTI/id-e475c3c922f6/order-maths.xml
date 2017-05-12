@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+    identifier="order-maths" title="Order a simple proof" adaptive="false" timeDependent="false">
+    <responseDeclaration identifier="RESPONSE" cardinality="ordered" baseType="identifier">
+        <correctResponse>
+            <value>Line1</value>
+            <value>Line2</value>
+            <value>Line3</value>
+            <value>Line4</value>
+        </correctResponse>
+    </responseDeclaration>
+    <outcomeDeclaration identifier="SCORE" cardinality="single" baseType="float"/>
+    <outcomeDeclaration identifier="iSCORE" cardinality="single" baseType="integer"/>
+    <outcomeDeclaration identifier="FEEDBACK" cardinality="single" baseType="identifier"/>
+    <itemBody>
+        <orderInteraction responseIdentifier="RESPONSE" shuffle="true" orientation="vertical">
+            <prompt>Place the lines of the proof that the sum of an arithmetic progression is <math
+                    xmlns="http://www.w3.org/1998/Math/MathML">
+                    <semantics>
+                        <mfrac>
+                            <mrow>
+                                <mi>a</mi>
+                                <mfenced close=")" open="(">
+                                    <mrow>
+                                        <mn>1</mn>
+                                        <mo>-</mo>
+                                        <msup>
+                                            <mi>r</mi>
+                                            <mi>n</mi>
+                                        </msup>
+                                    </mrow>
+                                </mfenced>
+                            </mrow>
+                            <mrow>
+                                <mn>1</mn>
+                                <mo>-</mo>
+                                <mi>r</mi>
+                            </mrow>
+                        </mfrac>
+                        <annotation encoding="SnuggleTeX">\[ \frac{a(1-r^n)}{1-r} \]</annotation>
+                    </semantics>
+                </math> in the correct order:</prompt>
+            <simpleChoice identifier="Line1">
+                <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <semantics>
+                        <mrow>
+                            <msub>
+                                <mi>S</mi>
+                                <mi>n</mi>
+                            </msub>
+                            <mo>=</mo>
+                            <mi>a</mi>
+                            <mo>+</mo>
+                            <mi>a</mi>
+                            <mi>r</mi>
+                            <mo>+</mo>
+                            <mi>a</mi>
+                            <msup>
+                                <mi>r</mi>
+                                <mn>2</mn>
+                            </msup>
+                            <mo>+</mo>
+                            <mo>.</mo>
+                            <mo>.</mo>
+                            <mo>.</mo>
+                            <mo>+</mo>
+                            <mi>a</mi>
+                            <msup>
+                                <mi>r</mi>
+                                <mrow>
+                                    <mi>n</mi>
+                                    <mo>-</mo>
+                                    <mn>1</mn>
+                                </mrow>
+                            </msup>
+                        </mrow>
+                        <annotation encoding="SnuggleTeX">\[ S_n=a+ar+ar^2+...+ar^{n-1}
+                            \]</annotation>
+                    </semantics>
+                </math>
+            </simpleChoice>
+            <simpleChoice identifier="Line2">
+                <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <semantics>
+                        <mrow>
+                            <mi>r</mi>
+                            <msub>
+                                <mi>S</mi>
+                                <mi>n</mi>
+                            </msub>
+                            <mo>=</mo>
+                            <mi>a</mi>
+                            <mi>r</mi>
+                            <mo>+</mo>
+                            <mi>a</mi>
+                            <msup>
+                                <mi>r</mi>
+                                <mn>2</mn>
+                            </msup>
+                            <mo>+</mo>
+                            <mi>a</mi>
+                            <msup>
+                                <mi>r</mi>
+                                <mn>3</mn>
+                            </msup>
+                            <mo>+</mo>
+                            <mo>.</mo>
+                            <mo>.</mo>
+                            <mo>.</mo>
+                            <mo>+</mo>
+                            <mi>a</mi>
+                            <msup>
+                                <mi>r</mi>
+                                <mi>n</mi>
+                            </msup>
+                        </mrow>
+                        <annotation encoding="SnuggleTeX">\[ rS_n=ar+ar^2+ar^3+...+ar^{n}
+                            \]</annotation>
+                    </semantics>
+                </math>
+            </simpleChoice>
+            <simpleChoice identifier="Line3">
+                <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <semantics>
+                        <mrow>
+                            <msub>
+                                <mi>S</mi>
+                                <mi>n</mi>
+                            </msub>
+                            <mfenced close=")" open="(">
+                                <mrow>
+                                    <mn>1</mn>
+                                    <mo>-</mo>
+                                    <mi>r</mi>
+                                </mrow>
+                            </mfenced>
+                            <mo>=</mo>
+                            <mi>a</mi>
+                            <mo>-</mo>
+                            <mi>a</mi>
+                            <msup>
+                                <mi>r</mi>
+                                <mi>n</mi>
+                            </msup>
+                        </mrow>
+                        <annotation encoding="SnuggleTeX">\[ S_n(1-r)=a-ar^{n} \]</annotation>
+                    </semantics>
+                </math>
+            </simpleChoice>
+            <simpleChoice identifier="Line4">
+                <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                    <semantics>
+                        <mrow>
+                            <msub>
+                                <mi>S</mi>
+                                <mi>n</mi>
+                            </msub>
+                            <mo>=</mo>
+                            <mfrac>
+                                <mrow>
+                                    <mi>a</mi>
+                                    <mfenced close=")" open="(">
+                                        <mrow>
+                                            <mn>1</mn>
+                                            <mo>-</mo>
+                                            <msup>
+                                                <mi>r</mi>
+                                                <mi>n</mi>
+                                            </msup>
+                                        </mrow>
+                                    </mfenced>
+                                </mrow>
+                                <mrow>
+                                    <mn>1</mn>
+                                    <mo>-</mo>
+                                    <mi>r</mi>
+                                </mrow>
+                            </mfrac>
+                        </mrow>
+                        <annotation encoding="SnuggleTeX">\[ S_n=\frac{a(1-r^n)}{1-r}
+                            \]</annotation>
+                    </semantics>
+                </math>
+            </simpleChoice>
+        </orderInteraction>
+        <p>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="OK"> Yes, all
+                correct.</feedbackInline>
+            <feedbackInline outcomeIdentifier="FEEDBACK" showHide="show" identifier="No"> No,
+                    <printedVariable identifier="iSCORE"/> correct.</feedbackInline>
+        </p>
+    </itemBody>
+    <responseProcessing>
+        <responseCondition>
+            <responseIf>
+                <match>
+                    <variable identifier="RESPONSE"/>
+                    <correct identifier="RESPONSE"/>
+                </match>
+                <setOutcomeValue identifier="SCORE">
+                    <baseValue baseType="float">4.0</baseValue>
+                </setOutcomeValue>
+                <setOutcomeValue identifier="FEEDBACK">
+                    <baseValue baseType="identifier">OK</baseValue>
+                </setOutcomeValue>
+            </responseIf>
+            <responseElse>
+                <setOutcomeValue identifier="SCORE">
+                    <baseValue baseType="float">0.0</baseValue>
+                </setOutcomeValue>
+                <responseCondition>
+                    <responseIf>
+                        <match>
+                            <index n="1">
+                                <variable identifier="RESPONSE"/>
+                            </index>
+                            <baseValue baseType="identifier">Line1</baseValue>
+                        </match>
+                        <setOutcomeValue identifier="SCORE">
+                            <sum>
+                                <variable identifier="SCORE"/>
+                                <baseValue baseType="float">1.0</baseValue>
+                            </sum>
+                        </setOutcomeValue>
+                    </responseIf>
+                </responseCondition>
+                <responseCondition>
+                    <responseIf>
+                        <match>
+                            <index n="2">
+                                <variable identifier="RESPONSE"/>
+                            </index>
+                            <baseValue baseType="identifier">Line2</baseValue>
+                        </match>
+                        <setOutcomeValue identifier="SCORE">
+                            <sum>
+                                <variable identifier="SCORE"/>
+                                <baseValue baseType="float">1.0</baseValue>
+                            </sum>
+                        </setOutcomeValue>
+                    </responseIf>
+                </responseCondition>
+                <responseCondition>
+                    <responseIf>
+                        <match>
+                            <index n="3">
+                                <variable identifier="RESPONSE"/>
+                            </index>
+                            <baseValue baseType="identifier">Line3</baseValue>
+                        </match>
+                        <setOutcomeValue identifier="SCORE">
+                            <sum>
+                                <variable identifier="SCORE"/>
+                                <baseValue baseType="float">1.0</baseValue>
+                            </sum>
+                        </setOutcomeValue>
+                    </responseIf>
+                </responseCondition>
+                <responseCondition>
+                    <responseIf>
+                        <match>
+                            <index n="4">
+                                <variable identifier="RESPONSE"/>
+                            </index>
+                            <baseValue baseType="identifier">Line4</baseValue>
+                        </match>
+                        <setOutcomeValue identifier="SCORE">
+                            <sum>
+                                <variable identifier="SCORE"/>
+                                <baseValue baseType="float">1.0</baseValue>
+                            </sum>
+                        </setOutcomeValue>
+                    </responseIf>
+                </responseCondition>
+                <setOutcomeValue identifier="FEEDBACK">
+                    <baseValue baseType="identifier">No</baseValue>
+                </setOutcomeValue>
+            </responseElse>
+        </responseCondition>
+        <setOutcomeValue identifier="iSCORE">
+            <round>
+                <variable identifier="SCORE"/>
+            </round>
+        </setOutcomeValue>
+    </responseProcessing>
+</assessmentItem>

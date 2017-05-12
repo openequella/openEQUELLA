@@ -1,0 +1,27 @@
+<com.tle.beans.entity.report.Report>
+  <id>3309767</id>
+  <uuid>f4cb947a-1cf0-47ee-8c96-5864dd222065</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2012-12-28 16:43:49.207</dateModified>
+  <dateCreated class="sql-timestamp">2012-12-28 15:06:12.481</dateCreated>
+  <name>
+    <id>3309768</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>3309769</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Cascading parameters report</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <filename>reportFiles/anothercasadingparamtest.rptdesign</filename>
+  <hideReport>false</hideReport>
+</com.tle.beans.entity.report.Report>

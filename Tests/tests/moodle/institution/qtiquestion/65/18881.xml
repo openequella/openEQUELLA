@@ -1,0 +1,24 @@
+<com.tle.common.qti.entity.QtiAssessmentItem>
+  <id>18881</id>
+  <uuid>eb019769-2020-4b4c-85f4-432aa2e4adcd</uuid>
+  <identifier>hotspot-maximum</identifier>
+  <title>Local Maximum</title>
+  <itemBody>uk.ac.ed.ph.jqtiplus.node.content.ItemBody@34350972(
+    blocks =&gt; java.util.ArrayList[
+        0 =&gt; &lt;selectPointInteraction&gt;@100611621(xPath=/assessmentItem[@identifier=&quot;hotspot-maximum&quot;]/itemBody[1]/selectPointInteraction[1],location=XmlSourceLocationInformation@363bba36(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-992e8bd3c9ac/hotspot-maximum.xml,lineNumber=17,columnNumber=72))
+        1 =&gt; &lt;feedbackBlock&gt;@188631819(xPath=/assessmentItem[@identifier=&quot;hotspot-maximum&quot;]/itemBody[1]/feedbackBlock[1],location=XmlSourceLocationInformation@26b0c4f1(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-992e8bd3c9ac/hotspot-maximum.xml,lineNumber=21,columnNumber=87))
+        2 =&gt; &lt;feedbackBlock&gt;@525450767(xPath=/assessmentItem[@identifier=&quot;hotspot-maximum&quot;]/itemBody[1]/feedbackBlock[2],location=XmlSourceLocationInformation@2f94dad9(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-992e8bd3c9ac/hotspot-maximum.xml,lineNumber=24,columnNumber=89))
+    ]
+    id =&gt; null
+    classAttr =&gt; null
+    lang =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    label =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    parent =&gt; &lt;assessmentItem&gt;@1437332726(xPath=/assessmentItem[@identifier=&quot;hotspot-maximum&quot;],location=XmlSourceLocationInformation@c5f6e6b(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-992e8bd3c9ac/hotspot-maximum.xml,lineNumber=5,columnNumber=92))(systemId=_SECURE/_QTI/id-992e8bd3c9ac/hotspot-maximum.xml)
+    attributes =&gt; uk.ac.ed.ph.jqtiplus.attribute.AttributeList@4d4a3925
+    sourceLocation =&gt; XmlSourceLocationInformation@43edd3c7(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-992e8bd3c9ac/hotspot-maximum.xml,lineNumber=16,columnNumber=12)
+    rootNode =&gt; &lt;assessmentItem&gt;@1437332726(xPath=/assessmentItem[@identifier=&quot;hotspot-maximum&quot;],location=XmlSourceLocationInformation@c5f6e6b(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-992e8bd3c9ac/hotspot-maximum.xml,lineNumber=5,columnNumber=92))(systemId=_SECURE/_QTI/id-992e8bd3c9ac/hotspot-maximum.xml)
+    nodeGroups =&gt; uk.ac.ed.ph.jqtiplus.group.NodeGroupList@32ead0a8
+    qtiClassName =&gt; itemBody
+)
+</itemBody>
+  <adaptive>false</adaptive>
+  <timeDependent>false</timeDependent>
+</com.tle.common.qti.entity.QtiAssessmentItem>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="common" basedir=".">
+	<import file="common-build-plugin.xml" />
+
+	<fileset id="plugin.manifests" dir="${source.base}">
+		<include name="Plugins/*/plugin-jpf.xml"/>
+		<include name="${external.resource}/*.jar"/>
+	</fileset>
+</project>

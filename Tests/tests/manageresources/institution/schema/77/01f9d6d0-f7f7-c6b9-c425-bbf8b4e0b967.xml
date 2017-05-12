@@ -1,0 +1,46 @@
+<com.tle.beans.entity.Schema>
+  <id>202565</id>
+  <uuid>01f9d6d0-f7f7-c6b9-c425-bbf8b4e0b967</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2009-06-02 11:39:59.827</dateModified>
+  <dateCreated class="sql-timestamp">2009-06-02 10:40:54.068</dateCreated>
+  <description>
+    <id>202566</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>202567</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>For wizard control tests only</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>202568</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>202569</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Control Test Schema</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms/>
+  <impTransforms/>
+  <itemNamePath>/item/name</itemNamePath>
+  <itemDescriptionPath>/item/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;name field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;control&gt;&lt;editbox type=&quot;text&quot;/&gt;&lt;listbox type=&quot;text&quot;/&gt;&lt;listbox2 type=&quot;text&quot;/&gt;&lt;checkboxgroup&gt;&lt;value type=&quot;text&quot;/&gt;&lt;/checkboxgroup&gt;&lt;checkboxgroup2&gt;&lt;value type=&quot;text&quot;/&gt;&lt;/checkboxgroup2&gt;&lt;shufflebox&gt;&lt;value type=&quot;text&quot;/&gt;&lt;/shufflebox&gt;&lt;shufflebox2&gt;&lt;value type=&quot;text&quot;/&gt;&lt;/shufflebox2&gt;&lt;/control&gt;&lt;/item&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

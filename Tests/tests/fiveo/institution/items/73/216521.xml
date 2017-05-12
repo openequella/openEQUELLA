@@ -1,0 +1,275 @@
+<com.tle.beans.item.Item>
+  <id>216521</id>
+  <uuid>0a73a51c-7902-4a57-a41f-d5b52f2b9cfd</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2014-03-14 16:06:05.642</dateModified>
+  <dateCreated class="sql-timestamp">2014-03-14 15:05:37.345</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.303</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.LinkAttachment>
+      <id>216540</id>
+      <uuid>6e9e4b80-d854-4759-bd5c-ac77469345f6</uuid>
+      <url>http://www.google.com</url>
+      <description>Restricted url</description>
+      <preview>false</preview>
+      <restricted>true</restricted>
+    </com.tle.beans.item.attachments.LinkAttachment>
+    <com.tle.beans.item.attachments.HtmlAttachment>
+      <id>216542</id>
+      <uuid>05817e7b-df4d-4da1-aeac-f20477b8475e</uuid>
+      <url></url>
+      <description>Restricted web page</description>
+      <value1>44</value1>
+      <value2>false</value2>
+      <preview>false</preview>
+      <restricted>true</restricted>
+    </com.tle.beans.item.attachments.HtmlAttachment>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>216544</id>
+      <uuid>4e6d6c83-bd6e-49f0-82ea-c720a7cc88bd</uuid>
+      <url></url>
+      <description>Restricted book</description>
+      <value1>googlebook</value1>
+      <data>
+        <entry>
+          <string>formats</string>
+          <string>220</string>
+        </entry>
+        <entry>
+          <string>id</string>
+          <string>http://www.google.com/books/feeds/volumes/GxWQnD02RvAC</string>
+        </entry>
+        <entry>
+          <string>published</string>
+          <string>2010-09</string>
+        </entry>
+        <entry>
+          <string>thumbUrl</string>
+          <string>http://bks5.books.google.com/books?id=GxWQnD02RvAC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;edge=curl&amp;imgtk=AFLRE70KiiegWd7R13Bip1hdDRULTkvtXYbzhdpFGBRt3rhNRTaHyi0-A_SQngPc9uTudfmhRPJ88wOgu30H4Q9SVGc9q0zzZ8a-YmQCWJ79_1kZ8caJzNU&amp;source=gbs_gdata</string>
+        </entry>
+        <entry>
+          <string>url</string>
+          <string>http://books.google.com/books?id=GxWQnD02RvAC&amp;ie=ISO-8859-1&amp;source=gbs_gdata</string>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>true</restricted>
+    </com.tle.beans.item.attachments.CustomAttachment>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>216548</id>
+      <uuid>58449e28-c17b-40f7-9a98-a32943169ecc</uuid>
+      <url></url>
+      <description>Restricted youtube</description>
+      <value1>youtube</value1>
+      <data>
+        <entry>
+          <string>duration</string>
+          <long>98</long>
+        </entry>
+        <entry>
+          <string>uploader</string>
+          <string>0MkK0HkgPoaDkQEgvLl8GA</string>
+        </entry>
+        <entry>
+          <string>uploaded</string>
+          <long>1394512737000</long>
+        </entry>
+        <entry>
+          <string>videoId</string>
+          <string>L8_077J5Rvw</string>
+        </entry>
+        <entry>
+          <string>title</string>
+          <string>Tortoises mating.</string>
+        </entry>
+        <entry>
+          <string>thumbUrl</string>
+          <string>http://i1.ytimg.com/vi/L8_077J5Rvw/default.jpg</string>
+        </entry>
+        <entry>
+          <string>playUrl</string>
+          <string>http://www.youtube.com/v/L8_077J5Rvw?version=3&amp;f=videos&amp;c=EQUELLA&amp;app=youtube_gdata</string>
+        </entry>
+        <entry>
+          <string>tags</string>
+          <string></string>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>true</restricted>
+    </com.tle.beans.item.attachments.CustomAttachment>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>216551</id>
+      <uuid>c2824482-9d1d-4202-954b-a4f306b8f338</uuid>
+      <url></url>
+      <description>Restricted iTunesU</description>
+      <value1>itunesu</value1>
+      <data>
+        <entry>
+          <string>trackName</string>
+          <string>ItunesU_Testing_-_iPod_and_iPhone_-_20100805_04.36.08PM</string>
+        </entry>
+        <entry>
+          <string>trackUrl</string>
+          <string>http://deimos.apple.com/WebObjects/Core.woa/Browsev2/tamu.edu.4394017864</string>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>true</restricted>
+    </com.tle.beans.item.attachments.CustomAttachment>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>216553</id>
+      <uuid>9396db10-bc5f-4017-be33-20f76568d10b</uuid>
+      <url></url>
+      <description>Restricted Flickr</description>
+      <value1>flickr</value1>
+      <data>
+        <entry>
+          <string>licencekey</string>
+          <string>0</string>
+        </entry>
+        <entry>
+          <string>mediumUrl</string>
+          <string>http://farm5.staticflickr.com/4008/4283330040_ccf8462cc4.jpg</string>
+        </entry>
+        <entry>
+          <string>licencename</string>
+          <string>All Rights Reserved</string>
+        </entry>
+        <entry>
+          <string>uploader</string>
+          <string>Bahman Farzad</string>
+        </entry>
+        <entry>
+          <string>taken</string>
+          <date>2009-12-05 10:59:03.0 AEDT</date>
+        </entry>
+        <entry>
+          <string>uploaded</string>
+          <date>2009-01-19 02:15:09.0 AEDT</date>
+        </entry>
+        <entry>
+          <string>photoId</string>
+          <string>4283330040</string>
+        </entry>
+        <entry>
+          <string>showUrl</string>
+          <string>http://flickr.com/photos/21644167@N04/4283330040</string>
+        </entry>
+        <entry>
+          <string>imagesize</string>
+          <string>575 x 800</string>
+        </entry>
+        <entry>
+          <string>thumbUrl</string>
+          <string>http://farm5.staticflickr.com/4008/4283330040_ccf8462cc4_t.jpg</string>
+        </entry>
+        <entry>
+          <string>licencecode</string>
+          <string>not-for-display</string>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>true</restricted>
+    </com.tle.beans.item.attachments.CustomAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>11584</id>
+      <url>http://www.google.com</url>
+      <urlHash>ed646a3334ca891fd3467db131372140</urlHash>
+      <success>true</success>
+      <status>200</status>
+      <tries>0</tries>
+      <lastChecked class="sql-timestamp">2015-04-16 23:05:55.879</lastChecked>
+      <lastIndexed class="sql-timestamp">2014-12-03 23:10:25.533</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <moderation>
+    <id>216529</id>
+    <liveApprovalDate class="sql-timestamp">2014-03-14 15:05:37.337</liveApprovalDate>
+    <start class="sql-timestamp">2014-03-14 16:13:25.151</start>
+    <lastAction class="sql-timestamp">2014-03-14 15:05:37.337</lastAction>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216555</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-14 15:05:37.337</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216557</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-14 15:05:37.337</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216559</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2014-03-14 15:05:37.337</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216561</id>
+      <user>5451ab0d-4fee-4e44-b78c-5e86bac81827</user>
+      <date class="sql-timestamp">2014-03-14 15:20:58.732</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216563</id>
+      <user>5451ab0d-4fee-4e44-b78c-5e86bac81827</user>
+      <date class="sql-timestamp">2014-03-14 16:06:05.642</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>216532</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216535</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>RESTRICTED_ATTACHMENTS</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

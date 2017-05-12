@@ -1,0 +1,22 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>2016897</id>
+  <institution>
+    <id>2016849</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>flv</string>
+  </extensions>
+  <type>video/x-flv</type>
+  <description>Flash video</description>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/video.gif</string>
+    </entry>
+    <entry>
+      <string>defaultViewerId</string>
+      <string>flvViewer</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

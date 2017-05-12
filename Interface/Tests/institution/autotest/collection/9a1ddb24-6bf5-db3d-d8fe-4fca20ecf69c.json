@@ -1,0 +1,26 @@
+{
+  "uuid" : "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c",
+  "name" : "Navigation and Attachments",
+  "nameStrings" : {
+    "en" : "Navigation and Attachments"
+  },
+  "modifiedDate" : "2014-05-12T15:43:42.446+10:00",
+  "createdDate" : "2014-05-12T15:43:42.444+10:00",
+  "owner" : {
+    "id" : "system"
+  },
+  "security" : {
+    "rules" : [ ],
+    "metadata" : { },
+    "statuses" : { }
+  },
+  "schema" : {
+    "uuid" : "87e848e3-675b-4ec6-8008-1326a5a45368"
+  },
+  "_export" : {
+    "exportVersion" : "1.0"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/collection/9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c"
+  }
+}

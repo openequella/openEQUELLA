@@ -1,0 +1,19 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>63626</id>
+  <institution>
+    <id>63369</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>gsm</string>
+  </extensions>
+  <type>audio/x-gsm</type>
+  <description>Audio</description>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/sound.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

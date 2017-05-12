@@ -1,0 +1,19 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>2016978</id>
+  <institution>
+    <id>2016849</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>snd</string>
+    <string>au</string>
+  </extensions>
+  <type>audio/basic</type>
+  <description>Audio</description>
+  <attributes>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/sound.gif</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

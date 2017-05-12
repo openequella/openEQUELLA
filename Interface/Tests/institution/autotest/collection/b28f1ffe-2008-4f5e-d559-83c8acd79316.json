@@ -1,0 +1,26 @@
+{
+  "uuid" : "b28f1ffe-2008-4f5e-d559-83c8acd79316",
+  "name" : "Basic Items",
+  "nameStrings" : {
+    "en" : "Basic Items"
+  },
+  "modifiedDate" : "2014-05-12T15:43:42.045+10:00",
+  "createdDate" : "2014-05-12T15:43:42.044+10:00",
+  "owner" : {
+    "id" : "system"
+  },
+  "security" : {
+    "rules" : [ ],
+    "metadata" : { },
+    "statuses" : { }
+  },
+  "schema" : {
+    "uuid" : "d9aba963-4648-e497-d62b-fc1ddf2d0199"
+  },
+  "_export" : {
+    "exportVersion" : "1.0"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/collection/b28f1ffe-2008-4f5e-d559-83c8acd79316"
+  }
+}

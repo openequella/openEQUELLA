@@ -1,0 +1,22 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>2016877</id>
+  <institution>
+    <id>2016849</id>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list">
+    <string>doc</string>
+  </extensions>
+  <type>application/msword</type>
+  <description>MS Word</description>
+  <attributes>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&apos;tohtml&apos;]</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/binary.gif</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

@@ -1,0 +1,24 @@
+<com.tle.common.qti.entity.QtiAssessmentItem>
+  <id>18875</id>
+  <uuid>3f4a3103-b980-4eeb-8c13-c80193f0685b</uuid>
+  <identifier>text_entry-calculus</identifier>
+  <title>FIB-Single - Calculus</title>
+  <itemBody>uk.ac.ed.ph.jqtiplus.node.content.ItemBody@9c920fe(
+    blocks =&gt; java.util.ArrayList[
+        0 =&gt; &lt;p&gt;@1939146934(xPath=/assessmentItem[@identifier=&quot;text_entry-calculus&quot;]/itemBody[1]/p[1],location=XmlSourceLocationInformation@3d6f2002(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-c0bdd9a130c7/text_entry-calculus.xml,lineNumber=19,columnNumber=12))
+        1 =&gt; &lt;div&gt;@1251902160(xPath=/assessmentItem[@identifier=&quot;text_entry-calculus&quot;]/itemBody[1]/div[1],location=XmlSourceLocationInformation@6c9e4bf5(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-c0bdd9a130c7/text_entry-calculus.xml,lineNumber=20,columnNumber=14))
+        2 =&gt; &lt;p&gt;@210565513(xPath=/assessmentItem[@identifier=&quot;text_entry-calculus&quot;]/itemBody[1]/p[2],location=XmlSourceLocationInformation@7b5297ce(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-c0bdd9a130c7/text_entry-calculus.xml,lineNumber=23,columnNumber=12))
+    ]
+    id =&gt; null
+    classAttr =&gt; null
+    lang =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    label =&gt; [Caused Exception java.lang.reflect.InvocationTargetException]    parent =&gt; &lt;assessmentItem&gt;@1802278050(xPath=/assessmentItem[@identifier=&quot;text_entry-calculus&quot;],location=XmlSourceLocationInformation@25924ec7(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-c0bdd9a130c7/text_entry-calculus.xml,lineNumber=6,columnNumber=27))(systemId=_SECURE/_QTI/id-c0bdd9a130c7/text_entry-calculus.xml)
+    attributes =&gt; uk.ac.ed.ph.jqtiplus.attribute.AttributeList@2871fe16
+    sourceLocation =&gt; XmlSourceLocationInformation@53e06b18(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-c0bdd9a130c7/text_entry-calculus.xml,lineNumber=18,columnNumber=15)
+    rootNode =&gt; &lt;assessmentItem&gt;@1802278050(xPath=/assessmentItem[@identifier=&quot;text_entry-calculus&quot;],location=XmlSourceLocationInformation@25924ec7(publicId=null,systemId=file:///C:/git/master/Source/Server/equellaserver/_SECURE/_QTI/id-c0bdd9a130c7/text_entry-calculus.xml,lineNumber=6,columnNumber=27))(systemId=_SECURE/_QTI/id-c0bdd9a130c7/text_entry-calculus.xml)
+    nodeGroups =&gt; uk.ac.ed.ph.jqtiplus.group.NodeGroupList@32971fad
+    qtiClassName =&gt; itemBody
+)
+</itemBody>
+  <adaptive>false</adaptive>
+  <timeDependent>false</timeDependent>
+</com.tle.common.qti.entity.QtiAssessmentItem>

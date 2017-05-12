@@ -1,0 +1,26 @@
+<com.tle.beans.entity.report.Report>
+  <id>1021</id>
+  <uuid>b235f234-fa3c-d730-7e2c-02098b9d1956</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2007-05-09 15:24:11.363</dateModified>
+  <dateCreated class="sql-timestamp">2007-05-09 15:24:11.363</dateCreated>
+  <name>
+    <id>213557</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>213355</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Items with bad URLs</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <filename>bad_urls.rptdesign</filename>
+</com.tle.beans.entity.report.Report>

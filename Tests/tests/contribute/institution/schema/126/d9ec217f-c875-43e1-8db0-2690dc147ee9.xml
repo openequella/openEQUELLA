@@ -1,0 +1,31 @@
+<com.tle.beans.entity.Schema>
+  <id>217147</id>
+  <uuid>d9ec217f-c875-43e1-8db0-2690dc147ee9</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2011-09-22 14:13:13.74</dateModified>
+  <dateCreated class="sql-timestamp">2011-09-21 08:42:27.14</dateCreated>
+  <name>
+    <id>217148</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>217149</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Metadata Mapping Schema</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms/>
+  <impTransforms/>
+  <itemNamePath>/item/name</itemNamePath>
+  <itemDescriptionPath>/item/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;name field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;Simple type=&quot;text&quot;/&gt;&lt;SimpleReplace type=&quot;text&quot;/&gt;&lt;Compound&gt;&lt;version&gt;&lt;langstring type=&quot;text&quot;/&gt;&lt;/version&gt;&lt;/Compound&gt;&lt;CompoundReplace&gt;&lt;version&gt;&lt;langstring type=&quot;text&quot;/&gt;&lt;/version&gt;&lt;/CompoundReplace&gt;&lt;Repeating type=&quot;text&quot;/&gt;&lt;RepeatingReplace type=&quot;text&quot;/&gt;&lt;Attribute&gt;&lt;entry&gt;&lt;langstring type=&quot;text&quot;&gt;&lt;lang attribute=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/langstring&gt;&lt;/entry&gt;&lt;/Attribute&gt;&lt;AttributeReplace&gt;&lt;entry&gt;&lt;langstring type=&quot;text&quot;&gt;&lt;lang attribute=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/langstring&gt;&lt;/entry&gt;&lt;/AttributeReplace&gt;&lt;HTML type=&quot;text&quot;/&gt;&lt;Literal type=&quot;text&quot;/&gt;&lt;/item&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

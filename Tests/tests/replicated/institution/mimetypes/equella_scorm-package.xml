@@ -1,0 +1,21 @@
+<com.tle.beans.mime.MimeEntry>
+  <id>43779</id>
+  <institution>
+    <id>43674</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <extensions class="list"/>
+  <type>equella/scorm-package</type>
+  <description>SCORM Package</description>
+  <attributes>
+    <entry>
+      <string>enabledViewers</string>
+      <string>[&quot;downloadIms&quot;]</string>
+    </entry>
+    <entry>
+      <string>PluginIconPath</string>
+      <string>icons/ims.png</string>
+    </entry>
+  </attributes>
+</com.tle.beans.mime.MimeEntry>

@@ -1,0 +1,13 @@
+<list>
+  <com.tle.beans.TaskHistory>
+    <id>29809</id>
+    <task workflow="46392820-5bce-3d29-b4b3-61131cfe20a4">39730e60-fe34-66ae-0e97-7c2a2fe0e134</task>
+    <entryDate class="sql-timestamp">2010-03-28 14:17:02.68</entryDate>
+    <exitDate class="sql-timestamp">2012-10-11 17:29:23.387</exitDate>
+  </com.tle.beans.TaskHistory>
+  <com.tle.beans.TaskHistory>
+    <id>29810</id>
+    <task workflow="46392820-5bce-3d29-b4b3-61131cfe20a4">39730e60-fe34-66ae-0e97-7c2a2fe0e134</task>
+    <entryDate class="sql-timestamp">2012-10-11 17:30:06.11</entryDate>
+  </com.tle.beans.TaskHistory>
+</list>

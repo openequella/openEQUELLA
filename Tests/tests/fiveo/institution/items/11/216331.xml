@@ -1,0 +1,183 @@
+<com.tle.beans.item.Item>
+  <id>216331</id>
+  <uuid>62f161c8-4367-4481-a561-37771bdddd52</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2011-05-04 15:06:15.839</dateModified>
+  <dateCreated class="sql-timestamp">2011-05-04 15:05:06.803</dateCreated>
+  <dateForIndex class="sql-timestamp">1970-01-01 11:00:00.805</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>216360</id>
+      <uuid>bf9797eb-ab2f-42b0-9d34-d98874a22424</uuid>
+      <url>96260acd-fb99-4fc9-8e3b-5064f103f4a2</url>
+      <description>Music History - The Beatles</description>
+      <value1>resource</value1>
+      <data>
+        <entry>
+          <string>type</string>
+          <string>a</string>
+        </entry>
+        <entry>
+          <string>uuid</string>
+          <string>60faa6a7-cce5-4223-b6a2-8effc3454284</string>
+        </entry>
+        <entry>
+          <string>version</string>
+          <int>1</int>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.CustomAttachment>
+    <com.tle.beans.item.attachments.HtmlAttachment>
+      <id>216363</id>
+      <uuid>200c0109-b33b-4e6e-aaa5-b7d5c3c812a8</uuid>
+      <url></url>
+      <description>Link page</description>
+      <value1>127</value1>
+      <value2>false</value2>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.HtmlAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="6405aaeb-816e-4d26-9c59-9f43215cb5ea"/>
+  <collaborators/>
+  <referencedUrls/>
+  <drmSettings>
+    <id>216335</id>
+    <item reference="../.."/>
+    <drmPageUuid>ef81f1ed-1c38-4cc3-b340-332f479133a3</drmPageUuid>
+    <hideLicencesFromOwner>false</hideLicencesFromOwner>
+    <showLicenceCount>false</showLicenceCount>
+    <allowSummary>false</allowSummary>
+    <ownerMustAccept>true</ownerMustAccept>
+    <studentsMustAcceptIfInCompilation>false</studentsMustAcceptIfInCompilation>
+    <previewAllowed>true</previewAllowed>
+    <restrictToSector>false</restrictToSector>
+    <attributionOfOwnership>false</attributionOfOwnership>
+    <enforceAttribution>false</enforceAttribution>
+    <currentUsageCount>0</currentUsageCount>
+    <maximumUsageCount>0</maximumUsageCount>
+    <contentOwners>
+      <com.tle.beans.item.DrmSettings_-Party>
+        <userID>adfcaf58-241b-4eca-9740-6a26d1c3dd58</userID>
+        <name>Auto Test [AutoTest]</name>
+        <email>auto@test.com</email>
+        <owner>true</owner>
+      </com.tle.beans.item.DrmSettings_-Party>
+    </contentOwners>
+    <usages/>
+    <requireAcceptanceFrom>* </requireAcceptanceFrom>
+  </drmSettings>
+  <moderation>
+    <id>216348</id>
+    <liveApprovalDate class="sql-timestamp">2011-05-04 15:06:15.839</liveApprovalDate>
+    <start class="sql-timestamp">2011-08-30 10:15:09.083</start>
+    <resumeModerating>false</resumeModerating>
+    <unarchiveModerating>false</unarchiveModerating>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216366</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-05-04 15:05:06.276</date>
+      <applies>false</applies>
+      <type>clone</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216368</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-05-04 15:05:06.276</date>
+      <applies>false</applies>
+      <type>changeCollection</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216369</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-05-04 15:06:15.839</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216370</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-05-04 15:06:15.839</date>
+      <applies>false</applies>
+      <type>resetworkflow</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>216371</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2011-05-04 15:06:15.839</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes>
+    <com.tle.beans.item.attachments.ItemNavigationNode>
+      <id>216374</id>
+      <uuid>6e2d6156-40aa-44a9-bd34-27bfb0e61569</uuid>
+      <name>Link page</name>
+      <tabs>
+        <com.tle.beans.item.attachments.ItemNavigationTab>
+          <id>216375</id>
+          <name>Tab 1</name>
+          <attachment class="com.tle.beans.item.attachments.HtmlAttachment" reference="../../../../../attachments/com.tle.beans.item.attachments.HtmlAttachment"/>
+        </com.tle.beans.item.attachments.ItemNavigationTab>
+      </tabs>
+      <index>0</index>
+    </com.tle.beans.item.attachments.ItemNavigationNode>
+    <com.tle.beans.item.attachments.ItemNavigationNode>
+      <id>216372</id>
+      <uuid>e2d04020-d216-4733-a84f-2bfd9c3ce3d3</uuid>
+      <name>Music History - The Beatles</name>
+      <tabs>
+        <com.tle.beans.item.attachments.ItemNavigationTab>
+          <id>216373</id>
+          <name>Tab 1</name>
+          <attachment class="com.tle.beans.item.attachments.CustomAttachment" reference="../../../../../attachments/com.tle.beans.item.attachments.CustomAttachment"/>
+        </com.tle.beans.item.attachments.ItemNavigationTab>
+      </tabs>
+      <index>1</index>
+    </com.tle.beans.item.attachments.ItemNavigationNode>
+  </treeNodes>
+  <notifications/>
+  <name>
+    <id>216351</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>216355</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Summary DRM - Link to DRM Show On Summary and Allowing Composition - Package</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>144</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>initial</thumb>
+</com.tle.beans.item.Item>

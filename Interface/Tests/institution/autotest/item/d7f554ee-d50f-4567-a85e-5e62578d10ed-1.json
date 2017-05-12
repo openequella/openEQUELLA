@@ -1,0 +1,78 @@
+{
+  "uuid" : "d7f554ee-d50f-4567-a85e-5e62578d10ed",
+  "version" : 1,
+  "name" : "TaskApiTest - Task assigned to me",
+  "nameStrings" : {
+    "en_AU" : "TaskApiTest - Task assigned to me"
+  },
+  "metadata" : "<xml><item><name>TaskApiTest - Task assigned to me</name><description/><mod_date/></item></xml>",
+  "status" : "moderating",
+  "createdDate" : "2014-05-12T15:43:47.648+10:00",
+  "modifiedDate" : "2014-05-12T15:43:51.752+10:00",
+  "owner" : {
+    "id" : "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  },
+  "collaborators" : [ ],
+  "collection" : {
+    "uuid" : "4b492e6a-bfa7-48ed-8d6e-71d8763e4e78"
+  },
+  "rating" : -1.0,
+  "attachments" : [ ],
+  "navigation" : {
+    "hideUnreferencedAttachments" : false,
+    "showSplitOption" : false,
+    "nodes" : [ ]
+  },
+  "drm" : { },
+  "_export" : {
+    "exportVersion" : "1.0",
+    "history" : [ {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:47.648+10:00",
+      "type" : "edit",
+      "state" : "draft"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:47.838+10:00",
+      "type" : "statechange",
+      "state" : "moderating"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:47.838+10:00",
+      "step" : "2dc15e1c-d2bb-46b4-b3ad-5bef43acee2b",
+      "stepName" : "Start",
+      "type" : "resetworkflow",
+      "state" : "moderating"
+    }, {
+      "user" : {
+        "id" : "system"
+      },
+      "date" : "2014-05-12T15:43:51.752+10:00",
+      "type" : "edit",
+      "state" : "moderating"
+    } ],
+    "statuses" : [ {
+      "uuid" : "2dc15e1c-d2bb-46b4-b3ad-5bef43acee2b",
+      "status" : "i"
+    }, {
+      "uuid" : "806c8b72-d53b-49e1-8cf1-60b474d0f0ec",
+      "status" : "i",
+      "started" : "2014-05-12T15:43:47.838+10:00",
+      "due" : "2014-05-13T15:43:47.838+10:00",
+      "causeIndex" : 0,
+      "acceptedUsers" : [ ]
+    } ],
+    "moderating" : true,
+    "start" : "2014-05-12T15:43:47.838+10:00",
+    "lastAction" : "2014-05-12T15:43:47.838+10:00"
+  },
+  "links" : {
+    "self" : "http://boorah/dev/autotest/api/item/d7f554ee-d50f-4567-a85e-5e62578d10ed/1"
+  }
+}
