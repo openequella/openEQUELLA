@@ -9,11 +9,11 @@ import java.io.OutputStream;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
 import com.tle.common.Check;
 import com.tle.common.hash.Hash;
 import com.tle.upgrade.UpgradeResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Aaron
@@ -21,7 +21,7 @@ import com.tle.upgrade.UpgradeResult;
 @SuppressWarnings("nls")
 public class HashManagerPassword extends AbstractUpgrader
 {
-	private static final Logger LOGGER = Logger.getLogger(HashManagerPassword.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(HashManagerPassword.class);
 
 	@Override
 	public String getId()

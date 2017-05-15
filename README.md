@@ -10,7 +10,9 @@
 
 ### Building
 
-TODO
+```bash
+sbt upgradeZip
+```
 
 ### Running a dev instance
 

@@ -18,5 +18,9 @@ libraryDependencies ++= Seq(
   "commons-discovery" % "commons-discovery" % "0.2"
 )
 
+//addSbtPlugin("com.typesafe.sbt" % "sbt-proguard" % "0.2.3")
+
+addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.4")
+
 //resolvers += Resolver.url("jb-structure-extractor-0.13", url(s"http://dl.bintray.com/jetbrains/sbt-plugins"))(sbt.Patterns(false,"[organisation]/[module]/scala_2.10/sbt_0.13/[revision]/[type]s/[artifact](-[classifier]).[ext]"))
 //addSbtPlugin("org.jetbrains" % "sbt-structure-extractor-0-13" % "7.0.0-12-ga98ec5e")

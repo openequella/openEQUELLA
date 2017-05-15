@@ -5,6 +5,11 @@ import sbt._
 import sbt.plugins.JvmPlugin
 
 object CommonSettings extends AutoPlugin {
+  object autoImport {
+    lazy val versionProperties = taskKey[File]("Version property file")
+    lazy val upgradeZip = taskKey[File]("Create upgrade zip")
+  }
+
   override def trigger: PluginTrigger = allRequirements
 
   override def requires: Plugins = HeaderPlugin && JvmPlugin
@@ -12,6 +17,7 @@ object CommonSettings extends AutoPlugin {
 
   override def projectSettings = Seq(
     organization := "org.apereo.equella",
+    version := "6.4.r1000",
     javacOptions ++= Seq("-source", "1.8"),
     compileOrder := CompileOrder.JavaThenScala,
     headerLicense := Some(HeaderLicense.ALv2("2015", "Apereo")),

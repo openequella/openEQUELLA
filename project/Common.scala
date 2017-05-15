@@ -4,6 +4,7 @@ import org.jdom2.input.sax.XMLReaders
 import sbt._
 
 object Common {
+
   def toSbtPrj(s: String) = s.replace('.', '_').replace('-', '_')
 
   val saxBuilder = {

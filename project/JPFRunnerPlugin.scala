@@ -1,6 +1,6 @@
 import java.nio.file.Files
 
-import sbt.Keys.target
+import sbt.Keys._
 import sbt.{Def, _}
 import JPFPlugin.autoImport._
 
@@ -21,7 +21,7 @@ object JPFRunnerPlugin extends AutoPlugin {
     lazy val writeDevManifests = taskKey[ManifestsWritten]("Write dev manifests")
     lazy val writeJars = taskKey[ManifestsWritten]("Write JPF jars")
 
-    case class ManifestsWritten(plugins: Iterable[String])
+    case class ManifestsWritten(plugins: Iterable[(File, String)])
 
     def runnerTasks(aggregate: ProjectReference) = {
       val scope = ScopeFilter(inAggregates(aggregate, includeRoot = false))
@@ -38,12 +38,14 @@ object JPFRunnerPlugin extends AutoPlugin {
                 r.code.filterNot(isDirectoryEmpty).map(f => JPFLibrary(f.getName, "code", f.getAbsolutePath + "/", true)) ++
                   r.jars.map(f => JPFLibrary(f.getName, "code", f.getAbsolutePath, true)) ++
                   r.resources.filterNot(isDirectoryEmpty).map(f => JPFLibrary(f.getName, "resources", f.getAbsolutePath + "/", false)))
-              IO.write(manifests / pid / "plugin-jpf.xml", plugXml)
-              pid
+              val outMan = manifests / pid / "plugin-jpf.xml"
+              IO.write(outMan, plugXml)
+              (outMan, pid)
             }
           )
         },
         writeJars := {
+          val compileAll = (fullClasspath in Compile).all(scope).value
           val allRuntimes = jpfRuntime.all(scope).value
           val outBase = target.value / "jpfjars"
           IO.delete(outBase)
@@ -56,12 +58,13 @@ object JPFRunnerPlugin extends AutoPlugin {
                           allResources.headOption.map(_ => JPFLibrary("resources", "resources", "resources/", false)) ++
                           allJars.map(f => JPFLibrary(f._1.getName, "code", f._2, true))
               val (id, manifest) = writeJPF(r.manifest, libs)
+              val outJar = outBase / s"${id}.jar"
               IO.withTemporaryFile("jpf", "xml") { tf =>
                 IO.write(tf, manifest)
                 val allFiles = (tf, "plugin-jpf.xml") +: (allCode ++ allResources ++ allJars)
-                IO.zip(allFiles, outBase / s"${id}.jar")
+                IO.zip(allFiles, outJar)
               }
-              id
+              (outJar, id)
             }
           }
         }
