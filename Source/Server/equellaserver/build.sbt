@@ -79,7 +79,6 @@ libraryDependencies ++= Seq(
   "net.oauth.core" % "oauth" % "20100527",
   "net.oauth.core" % "oauth-provider" % "20100527",
   "net.sf.beanlib" % "beanlib" % "5.0.3beta",
-  "net.sf.beanlib" % "beanlib-hibernate" % "5.0.3beta",
   "net.sf.ezmorph" % "ezmorph" % "1.0.4",
   "net.sf.json-lib" % "json-lib" % "2.4" classifier "jdk15",
   "net.sf.transmorph" % "transmorph" % "3.1.0",
@@ -296,7 +295,7 @@ upgradeZip := {
     IO.zip(Seq.empty, emptyZip)
     val zipFiles = Seq(
       assembly.value -> "equella-server.jar",
-      (assembly in LocalProject("installationUpgrader")).value -> "database-upgrader.jar",
+      (assembly in LocalProject("UpgradeInstallation")).value -> "database-upgrader.jar",
       emptyZip -> "conversion-service.jar",
       (versionProperties in LocalProject("equella")).value -> "version.properties"
     )

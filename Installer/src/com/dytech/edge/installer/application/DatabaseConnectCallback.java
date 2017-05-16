@@ -8,8 +8,6 @@ import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
-import org.postgresql.util.PSQLException;
-
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Constants;
 import com.dytech.edge.installer.DatabaseCommand;
@@ -155,7 +153,7 @@ public class DatabaseConnectCallback implements Callback
 			connection = DriverManager.getConnection(connectionUrl, username, password);
 			DatabaseCommand.ensureUnicodeEncoding(connection, dbtype, database);
 		}
-		catch( PSQLException pain )
+		catch( SQLException pain )
 		{
 			throw new RuntimeException("Attempted connect at connectionURL (" + connectionUrl + "), username ("
 				+ username + "), password(" + password + "), dbtype(" + dbtype + "), database(" + database + ')', pain);

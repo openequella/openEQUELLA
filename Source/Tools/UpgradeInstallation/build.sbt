@@ -13,3 +13,4 @@ excludeDependencies ++= Seq(
 )
 
 mainClass in assembly := Some("com.tle.upgrade.UpgradeMain")
+

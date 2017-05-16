@@ -84,6 +84,12 @@ object JPFScanPlugin extends AutoPlugin {
     }
   }
 
+  lazy val minimumPlugins = Seq("com.tle.platform.swing",
+    "com.tle.platform.equella",
+    "com.tle.webstart.admin",
+    "com.tle.platform.common",
+    "com.tle.platform.equella")
+
   override def trigger = noTrigger
 
   override def derivedProjects(proj: ProjectDefinition[_]): Seq[Project] = {
@@ -91,10 +97,12 @@ object JPFScanPlugin extends AutoPlugin {
     val allManifests = dirs.foldLeft(Seq.empty[File])((m, dir) => ((baseDir / dir) ** "plugin-jpf.xml").get ++ m)
     val manifestMap = allManifests.map(parseJPF).map(p => (p.id, p)).toMap
 
-    val adminPlugins = manifestMap.values.filter(_.adminConsole).map(_.id).toSet
-    val pluginList = (if (buildConfig.hasPath("plugin.whitelist")) buildConfig.getStringList("plugin.whitelist").asScala.toSet else manifestMap.keySet) ++ adminPlugins
+//    val adminPlugins = manifestMap.values.filter(_.adminConsole).map(_.id).toSet
+    val pluginList = (if (buildConfig.hasPath("plugin.whitelist")) buildConfig.getStringList("plugin.whitelist").asScala.toSet else manifestMap.keySet) ++ minimumPlugins
     val (_, projects) = convertAll(manifestMap, Set.empty, Nil, pluginList)
     val allPlugins = Project("allPlugins", baseDir / "Source/Plugins").aggregate(projects.map(Project.projectToRef): _*)
     allPlugins +: projects
   }
+
+
 }
