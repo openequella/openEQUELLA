@@ -1,13 +1,14 @@
 package com.tle.conversion.wmf;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
-
 public class WMFHandleTable
 {
-	private static final Logger LOGGER = Logger.getLogger(WMFHandleTable.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WMFHandleTable.class);
 
 	private Vector<Integer> handleTable;
 	private Hashtable<Integer, MetaRecord> MRecordTable;

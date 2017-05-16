@@ -37,7 +37,6 @@ libraryDependencies ++= Seq(
   "com.microsoft.sqlserver" % "mssql-jdbc" % "6.1.0.jre8",
   "com.miglayout" % "miglayout-swing" % "4.2",
   "com.ning" % "async-http-client" % "1.7.8",
-  "com.oracle" % "ojdbc6" % "11.2.0.3",
   "com.paypal.sdk" % "paypal-base" % "1.0",
   "com.rometools" % "rome" % "1.7.2",
   "com.tle.reporting" % "reporting-common-6.2" % "2",
@@ -290,18 +289,15 @@ runnerTasks(LocalProject("allPlugins"))
 upgradeZip := {
   val log = sLog.value
   val ver = version.value
-  val outZip : File = target.value / s"tle-upgrade-$ver (6.4-Alpha).zip"
-  IO.withTemporaryFile("blah", "blah") { emptyZip =>
-    IO.zip(Seq.empty, emptyZip)
-    val zipFiles = Seq(
-      assembly.value -> "equella-server.jar",
-      (assembly in LocalProject("UpgradeInstallation")).value -> "database-upgrader.jar",
-      emptyZip -> "conversion-service.jar",
-      (versionProperties in LocalProject("equella")).value -> "version.properties"
-    )
-    val pluginJars = writeJars.value.plugins.map(t => (t._1, s"plugins/plugins/${t._2}-$ver.jar"))
-    log.info(s"Creating upgrade zip ${outZip.absolutePath}")
-    IO.zip(zipFiles ++ pluginJars, outZip)
-  }
+  val outZip: File = target.value / s"tle-upgrade-$ver (6.4-Alpha).zip"
+  val zipFiles = Seq(
+    assembly.value -> "equella-server.jar",
+    (assembly in LocalProject("UpgradeInstallation")).value -> "database-upgrader.jar",
+    (assembly in LocalProject("conversion")).value -> "conversion-service.jar",
+    (versionProperties in LocalProject("equella")).value -> "version.properties"
+  )
+  val pluginJars = writeJars.value.plugins.map(t => (t._1, s"plugins/plugins/${t._2}-$ver.jar"))
+  log.info(s"Creating upgrade zip ${outZip.absolutePath}")
+  IO.zip(zipFiles ++ pluginJars, outZip)
   outZip
 }

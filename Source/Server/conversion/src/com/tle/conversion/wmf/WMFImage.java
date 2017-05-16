@@ -4,6 +4,9 @@ package com.tle.conversion.wmf;
 // Black Dirt Software http://www.blackdirt.com/graphics
 // Free for non-commercial use
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -21,11 +24,9 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
-
 public class WMFImage extends Canvas
 {
-	private static final Logger LOGGER = Logger.getLogger(WMFImage.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WMFImage.class);
 
 	/* Text Alignment Options */
 	public static final int TA_NOUPDATECP = 0;
@@ -482,7 +483,7 @@ public class WMFImage extends Canvas
 						}
 						catch( IOException e )
 						{
-							LOGGER.error(e);
+							LOGGER.error("Error", e);
 						}
 
 						x = textBuffer[0]; // italic
@@ -499,7 +500,7 @@ public class WMFImage extends Canvas
 						}
 						catch( IOException e )
 						{
-							LOGGER.error(e);
+							LOGGER.error("Error", e);
 						}
 						tempBuffer = new String(textBuffer);
 
@@ -510,7 +511,7 @@ public class WMFImage extends Canvas
 						}
 						catch( IOException e )
 						{
-							LOGGER.error(e);
+							LOGGER.error("Error", e);
 						}
 						tempBuffer = new String(textBuffer);
 
@@ -904,7 +905,7 @@ public class WMFImage extends Canvas
 					}
 					catch( IOException e )
 					{
-						LOGGER.error(e);
+						LOGGER.error("Error", e);
 					}
 					tempBuffer = new String(textBuffer);
 					LOGGER.debug("  \"" + tempBuffer + "\"");
@@ -965,7 +966,7 @@ public class WMFImage extends Canvas
 					}
 					catch( IOException e )
 					{
-						LOGGER.error(e);
+						LOGGER.error("Error", e);
 					}
 
 					tempBuffer = new String(textBuffer);
@@ -1121,7 +1122,7 @@ public class WMFImage extends Canvas
 		}
 		catch( IOException e )
 		{
-			LOGGER.error(e);
+			LOGGER.error("Error", e);
 		}
 
 		return bounds;
@@ -1176,7 +1177,7 @@ public class WMFImage extends Canvas
 		}
 		catch( IOException e )
 		{
-			LOGGER.error(e);
+			LOGGER.error("Error", e);
 		}
 		return 0;
 
@@ -1194,7 +1195,7 @@ public class WMFImage extends Canvas
 		}
 		catch( IOException e )
 		{
-			LOGGER.error(e);
+			LOGGER.error("Error", e);
 			return 99;
 		}
 
@@ -1212,7 +1213,7 @@ public class WMFImage extends Canvas
 		}
 		catch( IOException e )
 		{
-			LOGGER.error(e);
+			LOGGER.error("Error", e);
 			return 99;
 		}
 
@@ -1236,7 +1237,7 @@ public class WMFImage extends Canvas
 		}
 		catch( IOException e )
 		{
-			LOGGER.error(e);
+			LOGGER.error("Error", e);
 		}
 		return 0;
 

@@ -25,6 +25,10 @@ lazy val adminTool = (project in file("Source/Server/adminTool")).settings(legac
   LocalProject("com_tle_webstart_admin")
 )
 
+lazy val conversion = (project in file("Source/Server/conversion")).settings(legacyPaths).dependsOn(
+  platformCommon
+)
+
 lazy val UpgradeInstallation = (project in file("Source/Tools/UpgradeInstallation")).settings(legacyPaths).dependsOn(
   platformCommon,
   platformEquella
