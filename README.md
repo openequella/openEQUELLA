@@ -11,7 +11,7 @@
 ### Building
 
 ```bash
-sbt upgradeZip
+sbt installerZip
 ```
 
 ### Running a dev instance
@@ -41,17 +41,16 @@ CREATE DATABASE equella OWNER equellauser;
 
 ### Unzip and run installer
 
-Unzip the installer and copy initial build into it:
+Unzip the installer:
 
 ```bash
-unzip product/equella-{VERSION}-installer-{VERSION}.zip -d ~
-cp product/tle-upgrade-{VERSION}.zip ~/equella-{VERSION}-installer-{VERSION}/manager/updates/
+unzip product/equella-installer-{VERSION}.zip -d ~
 ```
 
 Run the GUI installer:
 
 ```bash
-cd ~/equella-{VERSION}-installer-{VERSION}
+cd ~/equella-installer-{VERSION}
 java -jar enterprise-install.jar
 ```
 

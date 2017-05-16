@@ -8,16 +8,19 @@ object CommonSettings extends AutoPlugin {
   object autoImport {
     lazy val versionProperties = taskKey[File]("Version property file")
     lazy val upgradeZip = taskKey[File]("Create upgrade zip")
+    lazy val installerZip = taskKey[File]("Create the installer zip")
+    lazy val majorVersion = settingKey[String]("The major equella version")
   }
 
   override def trigger: PluginTrigger = allRequirements
 
   override def requires: Plugins = HeaderPlugin && JvmPlugin
 
-
+  import autoImport._
   override def projectSettings = Seq(
     organization := "org.apereo.equella",
-    version := "6.4.r1000",
+    majorVersion := "6.4",
+    version := majorVersion.value + ".r1000",
     javacOptions ++= Seq("-source", "1.8"),
     compileOrder := CompileOrder.JavaThenScala,
     headerLicense := Some(HeaderLicense.ALv2("2015", "Apereo")),

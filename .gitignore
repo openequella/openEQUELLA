@@ -39,5 +39,5 @@ spring-scanner-cache.csv
 /Source/Server/web/public_html/version.properties
 .idea
 target/
-project/build-dev.conf
+project/build.conf
 

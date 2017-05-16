@@ -15,18 +15,26 @@ val legacyPaths = Seq(
 
 lazy val equellaserver = (project in file("Source/Server/equellaserver")).settings(legacyPaths).enablePlugins(JPFRunnerPlugin)
 
+lazy val platformCommon = LocalProject("com_tle_platform_common")
+lazy val platformSwing = LocalProject("com_tle_platform_swing")
+lazy val platformEquella = LocalProject("com_tle_platform_equella")
+
 lazy val adminTool = (project in file("Source/Server/adminTool")).settings(legacyPaths).dependsOn(
-  LocalProject("com_tle_platform_swing"),
-  LocalProject("com_tle_platform_equella"),
+  platformSwing,
+  platformEquella,
   LocalProject("com_tle_webstart_admin")
 )
 
-lazy val installationUpgrader = (project in file("Source/Tools/UpgradeInstallation")).settings(legacyPaths).dependsOn(
-  LocalProject("com_tle_platform_common"),
-  LocalProject("com_tle_platform_equella")
+lazy val UpgradeInstallation = (project in file("Source/Tools/UpgradeInstallation")).settings(legacyPaths).dependsOn(
+  platformCommon,
+  platformEquella
 )
 
-lazy val equella = (project in file(".")).enablePlugins(JPFScanPlugin).aggregate(equellaserver, allPlugins, adminTool)
+lazy val UpgradeManager = (project in file("Source/Tools/UpgradeManager")).settings(legacyPaths).dependsOn(platformCommon, platformEquella)
+
+lazy val Installer = (project in file("Installer")).settings(legacyPaths).dependsOn(platformCommon, platformSwing, platformEquella, UpgradeManager)
+
+lazy val equella = (project in file(".")).enablePlugins(JPFScanPlugin).aggregate(equellaserver, allPlugins, adminTool, Installer)
 
 name := "Equella"
 
