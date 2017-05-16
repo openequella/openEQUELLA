@@ -82,7 +82,8 @@
 				signedjar="@{dest}"
 				alias="${tle.signer.alias}"
 				keystore="${tle.signer.certificate}"
-				storepass="${tle.signer.password}" />
+				keypass="${tle.signer.keypass}"
+				storepass="${tle.signer.password}"/>
 		</sequential>
 	</macrodef>
 

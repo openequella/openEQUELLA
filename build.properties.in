@@ -35,10 +35,24 @@ javac.compat.target=1.7
 build.compiler=org.eclipse.jdt.core.JDTCompilerAdapter
 
 #####################################################################################
-# JAR SIGNER
+# JAR SIGNER / KEYSTORE GENERATOR
 
-tle.signer.alias=2015key
-tle.signer.password=dytech010
+#true when we don't provide our keystore and want one automatically generated
+#including if it is true it will be only generated if there is not a keystore
+tle.signer.generateKeystore=true
+
+#parameters to create the self signed keystore
+tle.signer.cn=testinstitution
+tle.signer.ou=testuser
+tle.signer.o=testdomain
+tle.signer.c=US
+
+#These will be used in both cases
+
+tle.signer.alias=keystorealias
+tle.signer.password=keystorepass
+tle.signer.keypass=keypass
+
 tle.signer.certificate=${user.home}/equella.keystore
 
 #####################################################################################

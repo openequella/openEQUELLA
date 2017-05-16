@@ -2,7 +2,6 @@
 	<property name="mm" value="6.4" />
 
 	<target name="generate-build-properties">
-		<delete file="build.properties" />
 
 		<echo file="path.tmp" message="temp.source.base=${basedir}" />
 		<replace file="path.tmp" token="\" value="/" />
@@ -86,6 +85,29 @@
 		<echo message="Version is ${version.mmr} ${version.display} (${version.commit})"/>
 	</target>
 
+
+	<target name="create-new-keystore">
+		<condition property="newKeystore">     
+	    		<or>
+	    			<available file="${tle.signer.certificate}"/> 
+				<isfalse value="${tle.signer.generateKeystore}"/>
+	    		</or>
+		</condition>  
+	</target>
+
+	<target name="genKeystore" depends="create-new-keystore" unless="newKeystore">
+  		<genkey alias="${tle.signer.alias}" verbose="true"
+			storepass="${tle.signer.password}" keypass="${tle.signer.keypass}"
+			validity="365" keystore="${tle.signer.certificate}">
+    			<dname>
+      				<param name="CN" value="${tle.signer.cn}"/>
+      				<param name="OU" value="${tle.signer.ou}"/>
+      				<param name="O" value="${tle.signer.o}"/>
+      				<param name="C" value="${tle.signer.c}"/>
+    			</dname>
+  		</genkey>
+  	</target>
+
 	<target name="init-release-dir" depends="generate-build-properties,generate-version-properties">
 		<tstamp/>
 		<property name="product.dir" location="product" />
@@ -119,7 +141,7 @@
 		</macrodef>
 	</target>
 
-	<target name="make" depends="generate-build-properties,generate-version-properties">
+	<target name="make" depends="generate-build-properties,generate-version-properties,genKeystore">
 		<!-- And now we build the EARs (tle, bcat) -->
 		<subant target="build-everything" buildpath="${source.base}/Source"/>
 
@@ -235,4 +257,6 @@
 	<target name="generate-config">
 		<subant inheritAll="false" target="generate-config" buildpath="Dev/learningedge-config" />
 	</target>
+
+ 	
 </project>
