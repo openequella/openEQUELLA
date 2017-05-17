@@ -265,12 +265,12 @@ assemblyMergeStrategy in assembly := {
   case PathList("javax", "annotation", o@_*) => MergeStrategy.first
   case PathList("org", "w3c", "dom", o@_*) => MergeStrategy.first
   case PathList("javax", "mail", o@_*) => MergeStrategy.first
+  case "META-INF/mailcap" => MergeStrategy.first
+  case "META-INF/mimetypes.default" => MergeStrategy.first
+  case "META-INF/javamail.charset.map" => MergeStrategy.first
   case PathList("javax", "activation", o@_*) => MergeStrategy.first
   case PathList("junit", o@_*) => MergeStrategy.discard
   case PathList("javax", "xml", o@_*) => MergeStrategy.discard
-  case "META-INF/mailcap" => MergeStrategy.discard
-  case "META-INF/mimetypes.default" => MergeStrategy.discard
-  case "META-INF/javamail.charset.map" => MergeStrategy.discard
   case x =>
     val oldStrategy = (assemblyMergeStrategy in assembly).value
     oldStrategy(x)

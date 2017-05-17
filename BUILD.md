@@ -29,6 +29,7 @@ dependency list for the server, produces the upgrade zip
 * `adminTool` - contains the admin console client launcher
 * `UpgradeInstallation` - the installation upgrader which is part of the upgrade zip
 * `UpgradeManager` - the upgrade manager web app
+* `conversion` - the conversion service
 * `allPlugins` - an aggregate project which can be used for building all the JPF plugins
 
 ## IntelliJ

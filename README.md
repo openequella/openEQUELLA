@@ -1,3 +1,5 @@
+![Travis build](https://travis-ci.org/equella/Equella.svg?branch=master)
+
 # EQUELLA
 
 ## Building
