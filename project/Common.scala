@@ -15,5 +15,5 @@ object Common {
   }
 
   private val defaultConfig = ConfigFactory.parseFile(file("project/build-defaults.conf"))
-  val buildConfig = ConfigFactory.parseFile(file("project/build.conf")).withFallback(defaultConfig)
+  val buildConfig = ConfigFactory.parseFile(file("build.conf")).withFallback(defaultConfig)
 }

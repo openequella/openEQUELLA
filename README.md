@@ -29,6 +29,17 @@ It can be done with the Java Control Panel or directly adding the domain in a ne
 ${user.home}/.java/deployment/security/exception.sites 
 
 
+### Including support for Oracle databases
+
+Download the Oracle JDBC driver relevant to your platform: [Oracle](http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html)
+
+Edit the `build.conf` file with a config line that points to the downloaded jar:
+
+```conf
+build.oraclejar = "/home/user/path/to/download/ojdbc6-11.2.0.3.jar"
+```
+
+
 ### Building
 
 ```bash

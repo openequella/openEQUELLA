@@ -5,6 +5,8 @@ libraryDependencies ++= Seq(
   "org.postgresql" % "postgresql" % "9.3-1101-jdbc41"
 )
 
+unmanagedJars in Compile ++= oracleDriverJar.value.toSeq.classpath
+
 mainClass in assembly := Some("com.dytech.edge.installer.application.Launch")
 
 lazy val equellaserver = LocalProject("equellaserver")

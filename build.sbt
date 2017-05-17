@@ -40,13 +40,22 @@ lazy val Installer = (project in file("Installer")).settings(legacyPaths).depend
 
 lazy val equella = (project in file(".")).enablePlugins(JPFScanPlugin).aggregate(equellaserver, allPlugins, adminTool, Installer)
 
+buildConfig in ThisBuild := Common.buildConfig
+
+oracleDriverJar in ThisBuild := {
+  val c = buildConfig.value
+  if (c.hasPath("build.oraclejar")) {
+    Some(file(c.getString("build.oraclejar")))
+  } else None
+}
+
 name := "Equella"
 
 versionProperties := {
   val props = new Properties
   props.putAll(
-    Map("version.mm" -> "6.4",
-        "version.mmr" -> "6.4.r43",
+    Map("version.mm" -> majorVersion.value,
+        "version.mmr" -> version.value,
         "version.display" -> "6.4-Alpha",
         "version.commit" -> "3a75a23").asJava)
   val f = target.value / "version.properties"

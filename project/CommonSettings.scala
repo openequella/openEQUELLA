@@ -1,3 +1,4 @@
+import com.typesafe.config.Config
 import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport._
 import de.heikoseeberger.sbtheader._
 import sbt.Keys._
@@ -10,6 +11,8 @@ object CommonSettings extends AutoPlugin {
     lazy val upgradeZip = taskKey[File]("Create upgrade zip")
     lazy val installerZip = taskKey[File]("Create the installer zip")
     lazy val majorVersion = settingKey[String]("The major equella version")
+    lazy val oracleDriverJar = settingKey[Option[File]]("The oracle driver jar")
+    lazy val buildConfig = settingKey[Config]("The build configuration settings")
   }
 
   override def trigger: PluginTrigger = allRequirements

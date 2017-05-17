@@ -240,6 +240,7 @@ excludeDependencies ++= Seq(
 
 dependencyOverrides += "commons-fileupload" % "commons-fileupload" % "aarons-hacked-1.2.1.2"
 
+unmanagedJars in Compile ++= oracleDriverJar.value.toSeq.classpath
 
 run := {
   writeDevManifests.value
