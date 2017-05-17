@@ -154,7 +154,7 @@ public class Main
 			}
 			LOGGER.info("Executing upgrader");
 			final String[] args = new String[]{config.getJavaBin().getAbsolutePath(), "-Dequella.offline=true",
-					"-Dlog4j.configuration=upgrader-log4j.properties", "-classpath", managerDir.getAbsolutePath(),
+					"-Dlog4j.configuration=file:upgrader-log4j.properties", "-classpath", managerDir.getAbsolutePath(),
 					"-jar", new File(managerDir, "database-upgrader.jar").getAbsolutePath()};
 			LOGGER.info("Executing " + Arrays.asList(args) + " with working dir " + managerDir.getAbsolutePath());
 			ExecResult result = ExecUtils.exec(args, null, managerDir);

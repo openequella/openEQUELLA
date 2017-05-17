@@ -18,6 +18,7 @@ lazy val equellaserver = (project in file("Source/Server/equellaserver")).settin
 lazy val platformCommon = LocalProject("com_tle_platform_common")
 lazy val platformSwing = LocalProject("com_tle_platform_swing")
 lazy val platformEquella = LocalProject("com_tle_platform_equella")
+lazy val log4jCustom = LocalProject("com_tle_log4j")
 
 lazy val adminTool = (project in file("Source/Server/adminTool")).settings(legacyPaths).dependsOn(
   platformSwing,
@@ -31,10 +32,11 @@ lazy val conversion = (project in file("Source/Server/conversion")).settings(leg
 
 lazy val UpgradeInstallation = (project in file("Source/Tools/UpgradeInstallation")).settings(legacyPaths).dependsOn(
   platformCommon,
-  platformEquella
+  platformEquella,
+  log4jCustom
 )
 
-lazy val UpgradeManager = (project in file("Source/Tools/UpgradeManager")).settings(legacyPaths).dependsOn(platformCommon, platformEquella)
+lazy val UpgradeManager = (project in file("Source/Tools/UpgradeManager")).settings(legacyPaths).dependsOn(platformCommon, platformEquella, log4jCustom)
 
 lazy val Installer = (project in file("Installer")).settings(legacyPaths).dependsOn(platformCommon, platformSwing, platformEquella, UpgradeManager)
 
@@ -51,7 +53,7 @@ oracleDriverJar in ThisBuild := {
 
 name := "Equella"
 
-versionProperties := {
+versionProperties in ThisBuild := {
   val props = new Properties
   props.putAll(
     Map("version.mm" -> majorVersion.value,

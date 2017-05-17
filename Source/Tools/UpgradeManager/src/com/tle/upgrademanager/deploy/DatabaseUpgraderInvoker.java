@@ -48,7 +48,7 @@ public final class DatabaseUpgraderInvoker
 			final File managerDir = config.getManagerDir();
 			List<String> args = Lists.newArrayList();
 			args.add(config.getJavaBin().getAbsolutePath());
-			args.add("-Dlog4j.configuration=upgrader-log4j.properties");
+			args.add("-Dlog4j.configuration=file:upgrader-log4j.properties");
 			args.add("-classpath");
 			args.add(managerDir.getAbsolutePath());
 			args.add("-jar");

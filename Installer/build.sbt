@@ -5,11 +5,19 @@ libraryDependencies ++= Seq(
   "org.postgresql" % "postgresql" % "9.3-1101-jdbc41"
 )
 
+excludeDependencies ++= Seq(
+  "log4j" % "log4j",
+  "org.slf4j" % "slf4j-log4j12"
+)
+
 unmanagedJars in Compile ++= oracleDriverJar.value.toSeq.classpath
+
+assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
 
 mainClass in assembly := Some("com.dytech.edge.installer.application.Launch")
 
 lazy val equellaserver = LocalProject("equellaserver")
+lazy val upgradeManager = LocalProject("UpgradeManager")
 
 installerZip := {
   val log = sLog.value
