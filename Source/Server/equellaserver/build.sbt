@@ -159,7 +159,7 @@ libraryDependencies ++= Seq(
   "org.codehaus.xfire" % "xfire-aegis" % "1.2.1",
   "org.dspace" % "cql-java" % "1.0",
   //  "org.dspace.oclc" % "oclc-srw" % "1.0.20080328",
-  "org.dts.spell" % "jmyspell-core" % "1.0.0-beta-2",
+  "org.omegat" % "jmyspell-core" % "1.0.0-beta-2",
   "org.eclipse.birt" % "birt-api" % "3.7.2",
   "org.eclipse.birt.runtime" % "org.eclipse.datatools.connectivity.oda" % "3.3.3.v201110130935",
   "org.eclipse.jetty" % "jetty-util" % "8.1.7.v20120910",
@@ -176,13 +176,11 @@ libraryDependencies ++= Seq(
   "org.jvnet.hudson" % "xstream" % "1.3.1-hudson-8",
   "org.mozilla" % "rhino" % "1.7R4",
   "org.oclc.oai" % "oaicat" % "1.5.57",
-  "org.onemind.jxp" % "jxp" % "1.2.0",
   "org.opensaml" % "xmltooling" % "1.3.1" excludeAll (
     ExclusionRule(organization = "org.slf4j")
     ),
   "org.ow2.asm" % "asm" % "5.0.3",
   "org.postgresql" % "postgresql" % "9.3-1101-jdbc41",
-  "org.rococoa" % "rococoa-core" % "0.5",
   "org.scala-lang.modules" % "scala-xml_2.11" % "1.0.5",
   "org.scannotation" % "scannotation" % "1.0.3",
   "org.slf4j" % "jcl-over-slf4j" % "1.7.5",
@@ -199,7 +197,6 @@ libraryDependencies ++= Seq(
   "org.springframework" % "spring-webmvc" % "2.5.5" excludeAll (
     ExclusionRule(organization = "jasperreports", name = "jasperreports")
     ),
-//  "platform" % "platform" % "1.0",
   "stax" % "stax-api" % "1.0.1",
   "taglibs" % "standard" % "1.1.2",
   "tomcat" % "jsp-api" % "5.5.23",
