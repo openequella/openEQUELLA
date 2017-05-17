@@ -199,7 +199,7 @@ libraryDependencies ++= Seq(
   "org.springframework" % "spring-webmvc" % "2.5.5" excludeAll (
     ExclusionRule(organization = "jasperreports", name = "jasperreports")
     ),
-  "platform" % "platform" % "1.0",
+//  "platform" % "platform" % "1.0",
   "stax" % "stax-api" % "1.0.1",
   "taglibs" % "standard" % "1.1.2",
   "tomcat" % "jsp-api" % "5.5.23",
