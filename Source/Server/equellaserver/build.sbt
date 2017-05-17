@@ -9,9 +9,6 @@ val axis2Version = "1.6.2"
 
 libraryDependencies ++= Seq(
   "axis" % "axis" % "1.4",
-  "blackboard" % "bb-bridge" % "9.1",
-  "blackboard" % "bb-platform" % "9.1.201410.160373",
-  "blackboard" % "bb-taglibs" % "9.1.40071.3",
   "cglib" % "cglib" % "2.2",
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
   "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
