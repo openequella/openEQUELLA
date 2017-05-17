@@ -40,7 +40,8 @@ lazy val UpgradeManager = (project in file("Source/Tools/UpgradeManager")).setti
 
 lazy val Installer = (project in file("Installer")).settings(legacyPaths).dependsOn(platformCommon, platformSwing, platformEquella, UpgradeManager)
 
-lazy val equella = (project in file(".")).enablePlugins(JPFScanPlugin).aggregate(equellaserver, allPlugins, adminTool, Installer)
+lazy val equella = (project in file(".")).enablePlugins(JPFScanPlugin).aggregate(equellaserver, allPlugins, adminTool, Installer,
+  UpgradeManager, conversion, UpgradeInstallation)
 
 buildConfig in ThisBuild := Common.buildConfig
 
