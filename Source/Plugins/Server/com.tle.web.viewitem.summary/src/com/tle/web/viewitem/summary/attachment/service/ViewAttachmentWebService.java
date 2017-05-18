@@ -38,7 +38,7 @@ import com.tle.web.viewurl.AttachmentDetail;
 public interface ViewAttachmentWebService
 {
 	List<AttachmentRowDisplay> createViewsForItem(SectionInfo info, ViewableItem viewableItem, ElementId baseElement,
-		boolean renderSelection, boolean details, boolean thumbnail);
+		boolean renderSelection, boolean details, boolean thumbnail, boolean filtered);
 
 	void filterAttachmentDisplays(SectionInfo info, List<AttachmentRowDisplay> attachmentDisplays);
 

@@ -131,14 +131,14 @@ public class ViewAttachmentWebServiceImpl implements ViewAttachmentWebService
 
 	@Override
 	public List<AttachmentRowDisplay> createViewsForItem(SectionInfo info, ViewableItem viewableItem,
-		ElementId baseElement, boolean renderSelection, boolean details, boolean thumbnail)
+		ElementId baseElement, boolean renderSelection, boolean details, boolean thumbnail, boolean filtered)
 	{
 		final List<AttachmentRowDisplay> attachmentDisplays = new ArrayList<AttachmentRowDisplay>();
 		final IItem item = viewableItem.getItem();
 		final List<ItemNavigationNode> treeNodes = item.getTreeNodes();
 
 		final BuildTreeData btdata = new BuildTreeData();
-		if( !Check.isEmpty(treeNodes) && !thumbnail )
+		if( !Check.isEmpty(treeNodes) && !thumbnail && !filtered)
 		{
 			final ItemNavigationTree tree = new ItemNavigationTree(treeNodes);
 
@@ -148,7 +148,7 @@ public class ViewAttachmentWebServiceImpl implements ViewAttachmentWebService
 
 		// attachments with no tree nodes (only if not manually modified
 		// navigation)
-		if( !item.getNavigationSettings().isManualNavigation() )
+		if( filtered || !item.getNavigationSettings().isManualNavigation() )
 		{
 			List<IAttachment> unreferenced = Lists.newArrayList();
 			List<IAttachment> attachments = item.getAttachments();

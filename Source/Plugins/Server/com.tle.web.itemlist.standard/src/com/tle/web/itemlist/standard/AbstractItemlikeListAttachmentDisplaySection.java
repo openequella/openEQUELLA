@@ -246,7 +246,7 @@ public abstract class AbstractItemlikeListAttachmentDisplaySection<I extends IIt
 		SimpleElementId attId)
 	{
 		final List<AttachmentRowDisplay> attachments = viewAttachmentWebService.createViewsForItem(context,
-			getViewableItem(item), attId, true, false, !structured);
+			getViewableItem(item), attId, true, false, !structured, false);
 		viewAttachmentWebService.filterAttachmentDisplays(context, attachments);
 		return attachments;
 	}

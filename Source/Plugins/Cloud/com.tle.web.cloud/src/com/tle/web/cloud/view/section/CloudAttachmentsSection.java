@@ -84,7 +84,12 @@ public class CloudAttachmentsSection
 	}
 
 	@Override
-	protected AttachmentViewFilter getCustomFilter(SectionInfo info, ViewableItem<CloudItem> vitem)
+	protected boolean isFiltered(ViewableItem<CloudItem> viewableItem) {
+		return false;
+	}
+
+	@Override
+	protected AttachmentViewFilter getCustomFilter(SectionInfo info, ViewableItem<CloudItem> vitem, boolean filtered)
 	{
 		return null;
 	}

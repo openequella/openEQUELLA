@@ -260,7 +260,7 @@ public class LMSExportSection extends AbstractContentSection<LMSExportSection.LM
 
 				final ViewableItem viewableItem = itemInfo.getViewableItem();
 				final List<AttachmentRowDisplay> attachmentRowDisplays = viewAttachmentWebService.createViewsForItem(
-					context, viewableItem, new SimpleElementId("lms-tree-ajax"), false, true, !isShowStructuredView());
+					context, viewableItem, new SimpleElementId("lms-tree-ajax"), false, true, !isShowStructuredView(), false);
 				context.setAttribute("showCopyrightAttachments", true);
 				viewAttachmentWebService.filterAttachmentDisplays(context, attachmentRowDisplays);
 

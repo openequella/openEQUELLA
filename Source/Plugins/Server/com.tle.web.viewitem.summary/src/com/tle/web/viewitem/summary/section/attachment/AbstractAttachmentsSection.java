@@ -171,7 +171,7 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 	protected abstract Label getTitle(SectionInfo info, ViewableItem<I> vitem);
 
 	@Nullable
-	protected abstract AttachmentViewFilter getCustomFilter(SectionInfo info, ViewableItem<I> vitem);
+	protected abstract AttachmentViewFilter getCustomFilter(SectionInfo info, ViewableItem<I> vitem, boolean filtered);
 
 	@Nullable
 	protected abstract String getItemExtensionType();
@@ -190,6 +190,8 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 		selectAllAttachmentButton.setStyleClass("package-select button-expandable");
 	}
 
+	protected abstract boolean isFiltered(ViewableItem<I> viewableItem);
+
 	@Nullable
 	@Override
 	public SectionResult renderHtml(RenderEventContext context)
@@ -202,10 +204,11 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 		boolean renderSelect = selectionService.getCurrentSession(context) != null
 			&& !selectionService.getCurrentSession(context).getStructure().isNoTargets();
 
+		boolean filtered = isFiltered(viewableItem);
 		final List<AttachmentRowDisplay> attachmentDisplays = viewAttachmentWebService.createViewsForItem(context,
-			viewableItem, div, renderSelect, true, !showStructuredView);
+			viewableItem, div, renderSelect, true, !showStructuredView, filtered);
 		viewAttachmentWebService.filterAttachmentDisplays(context, attachmentDisplays,
-			getCustomFilter(context, viewableItem));
+			getCustomFilter(context, viewableItem, filtered));
 		removeEmptyFolder(attachmentDisplays);
 
 		if( attachmentDisplays.isEmpty() )

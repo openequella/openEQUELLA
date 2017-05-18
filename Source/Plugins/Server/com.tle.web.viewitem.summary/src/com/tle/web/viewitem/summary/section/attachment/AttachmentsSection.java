@@ -67,7 +67,6 @@ import com.tle.web.viewurl.ViewItemUrlFactory;
 public class AttachmentsSection extends AbstractAttachmentsSection<Item, AttachmentsSection.Model>
 	implements
 		ViewableChildInterface,
-		AttachmentViewFilter,
 		DisplaySectionConfiguration
 {
 	@PlugKey("attachments.title")
@@ -161,9 +160,37 @@ public class AttachmentsSection extends AbstractAttachmentsSection<Item, Attachm
 	}
 
 	@Override
-	protected AttachmentViewFilter getCustomFilter(SectionInfo info, ViewableItem<Item> vitem)
+	protected AttachmentViewFilter getCustomFilter(SectionInfo info, ViewableItem<Item> vitem, boolean filtered)
 	{
-		return this;
+		return new AttachmentViewFilter() {
+			@Override
+			public boolean shouldBeDisplayed(SectionInfo info, AttachmentView attachmentView)
+			{
+				if( metadataTargets.isEmpty() )
+				{
+					return true;
+				}
+
+				if (!filtered && attachmentView.getAttachment().getAttachmentType() == AttachmentType.IMSRES)
+				{
+					return true;
+				}
+				// Check attachment UUID vs presence in item XML at any associated Xpath
+				String attachmentUuid = attachmentView.getAttachment().getUuid();
+				final PropBagEx xml = attachmentView.getViewableResource().getViewableItem().getItemxml();
+				for( String target : metadataTargets )
+				{
+					for( String val : xml.getNodeList(target) )
+					{
+						if( val.equals(attachmentUuid) )
+						{
+							return true;
+						}
+					}
+				}
+				return false;
+			}
+		};
 	}
 
 	@Override
@@ -186,40 +213,23 @@ public class AttachmentsSection extends AbstractAttachmentsSection<Item, Attachm
 		}
 	}
 
-	@Override
-	public boolean shouldBeDisplayed(SectionInfo info, AttachmentView attachmentView)
+	protected boolean isFiltered(ViewableItem<Item> viewableItem)
 	{
-		if( metadataTargets.isEmpty() )
-		{
-			return true;
-		}
-
-		// Check attachment UUID vs presence in item XML at any associated Xpath
-		String attachmentUuid = attachmentView.getAttachment().getUuid();
-
-		AttachmentType attachmentType = attachmentView.getAttachment().getAttachmentType();
-		// http://jira.pearsoncmg.com/jira/browse/EQ-1753
-		if( attachmentType == AttachmentType.IMSRES )
-		{
-			IItem item = attachmentView.getViewableResource().getViewableItem().getItem();
-			UnmodifiableAttachments attachments = new UnmodifiableAttachments(item);
+		if (!metadataTargets.isEmpty()) {
+			UnmodifiableAttachments attachments = new UnmodifiableAttachments(viewableItem.getItem());
 			ImsAttachment ims = attachments.getIms();
-			if( ims != null )
-			{
-				attachmentUuid = ims.getUuid();
-			}
-		}
-
-		final PropBagEx xml = attachmentView.getViewableResource().getViewableItem().getItemxml();
-		for( String target : metadataTargets )
-		{
-			for( String val : xml.getNodeList(target) )
-			{
-				if( val.equals(attachmentUuid) )
-				{
-					return true;
+			if (ims != null) {
+				PropBagEx xml = viewableItem.getItemxml();
+				String attachmentUuid = ims.getUuid();
+				for (String target : metadataTargets) {
+					for (String val : xml.getNodeList(target)) {
+						if (val.equals(attachmentUuid)) {
+							return false;
+						}
+					}
 				}
 			}
+			return true;
 		}
 		return false;
 	}
