@@ -3,8 +3,8 @@
 <jnlp>
 	<information>
 		<title>EQUELLA: Open File With</title>
-		<vendor>Pearson</vendor>
-		<homepage href="http://www.equella.com/"/>
+		<vendor>Apereo</vendor>
+		<homepage href="https://equella.github.io/"/>
 	</information>
 
 	<security>

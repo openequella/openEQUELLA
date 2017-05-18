@@ -140,7 +140,7 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 
 	private static final String KEY_PROXY_TOOL_PASS = "proxyToolPass";
 
-	private static final String VENDOR_ID = "Pearson";
+	private static final String VENDOR_ID = "Apereo";
 	private static final String PROGRAM_ID = "EQUELLA";
 	private static final String[] REQUIRED_METHODS = new String[]{"Context.WS:emulateUser", "Context.WS:logout",
 			"Context.WS:getMemberships", "Context.WS.getServerVersion", "Context.WS.initialize",

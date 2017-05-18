@@ -1,6 +1,6 @@
 To install the ICE plugin simply upload it into EQUELLA and add the buttons to the editor toolbar.
 Please note the comments on Internet Explorer support under the Limitations section on the ICE project website https://github.com/NYTimes/ice
-Pearson is not responsible for the reliability of the ICE plugin.
+Apereo is not responsible for the reliability of the ICE plugin.
 
 
 ** 1. Upload into EQUELLA **

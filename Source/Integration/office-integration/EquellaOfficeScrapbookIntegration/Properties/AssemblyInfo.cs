@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("EquellaOfficeScrapbookIntegration")]
 [assembly: AssemblyDescription("Addin for Microsoft Office applications to save files directly into EQUELLA")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("EQUELLA Pearson")]
+[assembly: AssemblyCompany("EQUELLA Apereo")]
 [assembly: AssemblyProduct("EquellaOfficeScrapbookIntegration")]
-[assembly: AssemblyCopyright("Copyright © EQUELLA Pearson 2011")]
+[assembly: AssemblyCopyright("Copyright © EQUELLA Apereo 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
