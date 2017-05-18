@@ -31,6 +31,7 @@ public class SystemConfigServiceImpl implements SystemConfigService, ServerMessa
 	private static final String SMTP_SERVER = "smtpserver";
 	private static final String SMTP_USER = "smtpuser";
 	private static final String SMTP_PASSWORD = "smtppassword";
+    private static final String NO_REPLY_SENDER = "noreplysender";
 	private static final String LICENSE = "license";
 	private static final String SERVER_MESSAGE = "servermessage";
 	private static final String SERVER_MESSAGE_ENABLED = "servermessageenabled";
@@ -184,6 +185,23 @@ public class SystemConfigServiceImpl implements SystemConfigService, ServerMessa
 	{
 		systemConfigDao.updateConfig(SMTP_PASSWORD, smtpPassword);
 	}
+
+
+    @Override
+    @Transactional
+    public String getNoReplySender()
+    {
+        return systemConfigDao.getConfig(NO_REPLY_SENDER);
+    }
+
+    @Override
+    @Transactional
+    @SecureOnCallSystem
+    public void setNoReplySender(String sender)
+    {
+        systemConfigDao.updateConfig(NO_REPLY_SENDER, sender);
+    }
+
 
 	private void updateServerMessageIfDirty()
 	{

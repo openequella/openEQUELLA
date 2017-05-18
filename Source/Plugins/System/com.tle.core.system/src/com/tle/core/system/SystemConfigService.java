@@ -35,6 +35,10 @@ public interface SystemConfigService
 
 	void setSmtpPassword(String smtpPassword);
 
+    String getNoReplySender();
+
+    void setNoReplySender(String noReplySender);
+
 	String getServerMessage();
 
 	void setServerMessage(String serverMessage, boolean serverMessageEnabled);

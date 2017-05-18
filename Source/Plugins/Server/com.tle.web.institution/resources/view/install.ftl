@@ -23,6 +23,13 @@
 				help=b.key("institutions.server.emails.smtp.help")>
 				<@textfield  section=s.smtpServer class="detail" />
 			</@setting>
+			<@setting label=b.key("institutions.server.emails.noreplysender")
+                mandatory=true
+                error=m.errors["noreplysender"]
+                labelFor=s.noReplySender
+                help=b.key("institutions.server.emails.noreplysender.help")>
+                <@textfield  section=s.noReplySender class="detail" />
+            </@setting>
 				<@setting label=b.key("institutions.server.emails.smtp.user") 
 				error=m.errors["smtpuser"] 
 				labelFor=s.smtpUser
