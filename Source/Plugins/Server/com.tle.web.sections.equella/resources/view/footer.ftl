@@ -11,7 +11,7 @@
 					<br>
 				</#if>
 
-				<@bundlekey "footer.link.home"/> <#if m.displayLinks><@bundlekey "footer.link.community"/> <@bundlekey "footer.link.support"/> <@bundlekey "footer.link.features" /></#if> <@bundlekey "footer.link.privacy"/>
+				<@bundlekey "footer.link.home"/> <#if m.displayLinks><@bundlekey "footer.link.community"/> </#if>
 
 				<#if m.withinInstitution>
 					<@bundlekey "footer.link.credits"/>
