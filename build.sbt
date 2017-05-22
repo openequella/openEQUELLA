@@ -15,15 +15,11 @@ val legacyPaths = Seq(
 
 lazy val equellaserver = (project in file("Source/Server/equellaserver")).settings(legacyPaths).enablePlugins(JPFRunnerPlugin)
 
-lazy val platformCommon = LocalProject("com_tle_platform_common")
-lazy val platformSwing = LocalProject("com_tle_platform_swing")
-lazy val platformEquella = LocalProject("com_tle_platform_equella")
-lazy val log4jCustom = LocalProject("com_tle_log4j")
-
 lazy val adminTool = (project in file("Source/Server/adminTool")).settings(legacyPaths).dependsOn(
   platformSwing,
   platformEquella,
-  LocalProject("com_tle_webstart_admin")
+  LocalProject("com_tle_webstart_admin"),
+  LocalProject("adminConsoleJar")
 )
 
 lazy val conversion = (project in file("Source/Server/conversion")).settings(legacyPaths).dependsOn(
@@ -40,7 +36,7 @@ lazy val UpgradeManager = (project in file("Source/Tools/UpgradeManager")).setti
 
 lazy val Installer = (project in file("Installer")).settings(legacyPaths).dependsOn(platformCommon, platformSwing, platformEquella, UpgradeManager)
 
-lazy val equella = (project in file(".")).enablePlugins(JPFScanPlugin).aggregate(equellaserver, allPlugins, adminTool, Installer,
+lazy val equella = (project in file(".")).enablePlugins(JPFScanPlugin, JarSignerPlugin).aggregate(equellaserver, allPlugins, adminTool, Installer,
   UpgradeManager, conversion, UpgradeInstallation)
 
 buildConfig in ThisBuild := Common.buildConfig
@@ -65,3 +61,5 @@ versionProperties in ThisBuild := {
   IO.write(props, "version", f)
   f
 }
+
+cancelable in Global := true

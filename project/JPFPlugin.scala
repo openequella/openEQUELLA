@@ -21,7 +21,7 @@ object JPFPlugin extends AutoPlugin {
     managedScalaInstance := false,
     javacOptions ++= Seq("-source", "1.8"),
     jpfCodeDirs := Seq((classDirectory in Compile).value),
-    jpfResourceDirs := Seq(baseDirectory.value / "resources"),
+    jpfResourceDirs := (managedResourceDirectories in Compile).value :+ (baseDirectory.value / "resources"),
     jpfRuntime := JPFRuntime(baseDirectory.value / "plugin-jpf.xml", jpfCodeDirs.value, jpfResourceDirs.value, jpfLibraryJars.value.files),
     jpfLibraryJars := Seq(),
     managedClasspath in Compile ++= jpfLibraryJars.value,

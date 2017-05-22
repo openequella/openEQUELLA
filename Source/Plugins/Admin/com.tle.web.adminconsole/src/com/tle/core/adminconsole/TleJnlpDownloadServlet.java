@@ -93,7 +93,7 @@ public class TleJnlpDownloadServlet extends HttpServlet
 		String token = userService.getGeneratedToken(Constants.APPLET_SECRET_ID, CurrentUser.getUsername());
 
 		String tokenEncoded = Base64.encodeBase64String(token.getBytes("UTF-8")).replace("\r", "").replace("\n", "");
-		resources.addContent(createJar(resourcesService.getUrl("com.tle.webstart.admin", "adminconsole.jar")));
+		resources.addContent(createJar(resourcesService.getUrl("com.tle.web.adminconsole", "adminconsole.jar")));
 		resources.addContent(createProperty(Bootstrap.TOKEN_PARAMETER, tokenEncoded));
 		resources.addContent(createProperty(Bootstrap.ENDPOINT_PARAMETER, instUrl));
 		resources.addContent(createProperty(Bootstrap.LOCALE_PARAMETER, CurrentLocale.getLocale().toString()));

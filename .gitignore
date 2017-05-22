@@ -40,4 +40,5 @@ spring-scanner-cache.csv
 .idea
 target/
 build.conf
+generated.keystore
 

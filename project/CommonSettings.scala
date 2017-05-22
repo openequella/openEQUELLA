@@ -13,6 +13,11 @@ object CommonSettings extends AutoPlugin {
     lazy val majorVersion = settingKey[String]("The major equella version")
     lazy val oracleDriverJar = settingKey[Option[File]]("The oracle driver jar")
     lazy val buildConfig = settingKey[Config]("The build configuration settings")
+
+    lazy val platformCommon = LocalProject("com_tle_platform_common")
+    lazy val platformSwing = LocalProject("com_tle_platform_swing")
+    lazy val platformEquella = LocalProject("com_tle_platform_equella")
+    lazy val log4jCustom = LocalProject("com_tle_log4j")
   }
 
   override def trigger: PluginTrigger = allRequirements

@@ -10,34 +10,41 @@
 * JDK 8
 * `equella-deps.zip` unzipped into your home directory
 
-**NOTE: KEYSTORE**
-A keystore with a certificate is required to sign some of the jars or the build will fail.
-In the build.properties file you can modify the parameters to configure your own keystore:
-    
- * The route to the keystore file, by default the root of the user home folder: `tle.signer.certificate=${user.home}/equella.keystore`
- * Set to false to avoid the self-generation of the keystore:  `tle.signer.generateKeystore=false`
- * The alias: `tle.signer.alias=keystorealias`
- * The keystore pass: `tle.signer.password=keystorepass`
- * The key pass (if any): `tle.signer.keypass=keypass`
 
-There is an option (by default if there is not keystore in the route defined) to self-geneate a keystore file if you don't have one and `tle.signer.generateKeystore` is true.
-You can configure the other parameters too in the case you want to set an specifc password, alias, or parameters for your certificate.
+## Build configuration
+
+Some aspects of the build can be configured by editing the `build.conf` file.
+
+### Keystore
+
+A keystore with a certificate is required to sign some of the jars in order for them to escape the Java sandbox.
+
+By default the build will generate a self signed key which will show security warnings when launching.
+In order to prevent this you will need to have a properly [signed certificate](https://www.digicert.com/code-signing/java-code-signing-guide.htm) and configure the build to use it.
+In the `build.conf` file you can modify the parameters to configure your own keystore:
+
+```conf
+signer {
+  keystore = "/path/to/.keystore"
+  storePassword = "<storepasswd>"
+  keyPassword = "<optional>" # defaults to storePassword
+  alias = "<keyalias>"
+}
+```
 
 **IMPORTANT**: A self registered certificate implies that the jars won't be secured and a security exception will appear when trying to launch the jars.
 To avoid this it is needed to add the domain you want to trust as a security exception in your java configuration.
 It can be done with the Java Control Panel or directly adding the domain in a new line in this file:
 ${user.home}/.java/deployment/security/exception.sites 
 
-
-### Including support for Oracle databases
+### Oracle database support
 
 Download the Oracle JDBC driver relevant to your platform: [Oracle](http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html)
-
-Edit the `build.conf` file with a config line that points to the downloaded jar:
 
 ```conf
 build.oraclejar = "/home/user/path/to/download/ojdbc6-11.2.0.3.jar"
 ```
+
 
 
 ### Building
@@ -76,7 +83,7 @@ CREATE DATABASE equella OWNER equellauser;
 Unzip the installer:
 
 ```bash
-unzip product/equella-installer-{VERSION}.zip -d ~
+unzip Installer/target/equella-installer-{VERSION}.zip -d ~
 ```
 
 Run the GUI installer:
