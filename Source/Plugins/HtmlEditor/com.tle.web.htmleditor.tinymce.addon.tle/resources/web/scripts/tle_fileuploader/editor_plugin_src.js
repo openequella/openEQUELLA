@@ -34,9 +34,9 @@
 		{
 			return {
 				longname : 'File Uploader plugin',
-				author : 'Pearson',
-				authorurl : 'http://www.equella.com',
-				infourl : 'http://www.equella.com',
+				author : 'Apereo',
+				authorurl : 'https://equella.github.io/',
+				infourl : 'https://equella.github.io/',
 				version : "6.1"
 			};
 		}

@@ -1,7 +1,7 @@
 {
 "id": "bacon_example",
 "name": "Bacon Example Plugin",
-"author": "Pearson",
+"author": "Apereo",
 "buttons": [
 		{
 			"id":"bacon_example_receivebacon", 

@@ -2,7 +2,7 @@
 <installer>
 	<product>
 		<name>EQUELLA</name>
-		<company>Pearson</company>
+		<company>Apereo</company>
 	</product>
 	<image uri="/images/equella.jpg"/>
 	<pages>
@@ -20,8 +20,8 @@
 					<description>Please ensure you have reviewed the EQUELLA Installation and Administration Guide available from</description>
 				</control>
 				<control class="link">
-					<title>https://neoconnect.pearson.com/groups/equella?view=documents</title>
-					<href>https://neoconnect.pearson.com/groups/equella?view=documents/</href>
+					<title>https://equella.github.io/</title>
+					<href>https://equella.github.io/</href>
 				</control>
 			</controls>
 			<buttons>

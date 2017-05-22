@@ -10,7 +10,7 @@
    </description>
 
    <copyright>
-      Copyright Pearson EQUELLA
+      Copyright Apereo EQUELLA
    </copyright>
 
    <license url="">
@@ -18,7 +18,7 @@
    </license>
 
    <url>
-      <update label="EQUELLA Tools" url="http://dev-builds.equella.com/eclipse/"/>
+      <update label="EQUELLA Tools" url="https://equella.github.io/"/>
    </url>
 
    <plugin

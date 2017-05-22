@@ -285,7 +285,7 @@ public class MetsExporter extends AbstractPrototypeSection<MetsExporterModel> im
 					techInfo.getContent().add(techWrap);
 
 					final XmlData xmlData = new XmlData();
-					xmlData.setSchema(null, "http://mets.equella.com");
+					xmlData.setSchema(null, "http://www.loc.gov/standards/mets/mets.xsd");
 					xmlData.getContent().add(new PreformedXML(xml));
 					techWrap.getContent().add(xmlData);
 

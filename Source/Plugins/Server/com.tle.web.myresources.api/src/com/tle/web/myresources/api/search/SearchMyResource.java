@@ -108,7 +108,7 @@ public class SearchMyResource
 		@ApiParam(value="Reverse the order of the search results", allowableValues = "true,false", defaultValue = "false", required = false) 
 		@QueryParam("reverse") 
 			String reverse,
-		@ApiParam(value="The where-clause in the same format as the old SOAP one. See http://code.pearson.com/equella/soap-api/searchitems-soapservice50", 
+		@ApiParam(value="The where-clause in the same format as the old SOAP one. See https://equella.github.io/",
 					required = false) @QueryParam("where") 
 			String where, 
 		@ApiParam(value="How much information to return for the results", required = false, 

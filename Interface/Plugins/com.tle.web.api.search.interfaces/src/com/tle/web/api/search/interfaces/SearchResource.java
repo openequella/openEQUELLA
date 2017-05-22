@@ -38,7 +38,7 @@ public interface SearchResource
 		@ApiParam(value="List of collections", required = false)
 		@QueryParam("collections")
 			CsvList collections,
-		@ApiParam(value="The where-clause in the same format as the old SOAP one. See http://code.pearson.com/equella/soap-api/searchitems-soapservice50",
+		@ApiParam(value="The where-clause in the same format as the old SOAP one. See https://equella.github.io/",
 					required = false)
 		@QueryParam("where")
 			String where,
