@@ -9,7 +9,7 @@
 		<import plugin-id="com.tle.web.entities" />
 		<import plugin-id="com.tle.web.settings" />
 		<import plugin-id="com.tle.core.userscripts" />
-		<import plugin-id="org.mozilla:rhino" />
+		<import plugin-id="org.mozilla.rhino" />
 		<import plugin-id="commons-lang:commons-lang" />
 	</requires>
 	<runtime>

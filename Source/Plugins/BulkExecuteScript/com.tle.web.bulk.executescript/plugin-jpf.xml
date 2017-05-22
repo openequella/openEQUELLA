@@ -12,7 +12,7 @@
 		<import plugin-id="com.tle.web.wizard" />
 		<import plugin-id="com.tle.core.schema" />
 		<import plugin-id="com.tle.core.item.operations" />
-				<import plugin-id="org.mozilla:rhino" />
+		<import plugin-id="org.mozilla.rhino" />
 		<import plugin-id="com.tle.core.userscripts" />
 	</requires>
 

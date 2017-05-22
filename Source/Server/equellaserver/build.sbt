@@ -34,7 +34,6 @@ libraryDependencies ++= Seq(
   "com.miglayout" % "miglayout-swing" % "4.2",
   "com.ning" % "async-http-client" % "1.7.8",
   "com.rometools" % "rome" % "1.7.2",
-  "com.tle.reporting" % "reporting-common-6.2" % "2",
   "com.wordnik" % "swagger-annotations" % "1.3.12",
   "com.wordnik" % "swagger-core_2.11" % "1.3.12" excludeAll (
     ExclusionRule(organization = "org.slf4j", name = "slf4j-log4j12")
@@ -160,8 +159,6 @@ libraryDependencies ++= Seq(
   "org.dspace" % "cql-java" % "1.0",
   //  "org.dspace.oclc" % "oclc-srw" % "1.0.20080328",
   "org.omegat" % "jmyspell-core" % "1.0.0-beta-2",
-  "org.eclipse.birt" % "birt-api" % "3.7.2",
-  "org.eclipse.birt.runtime" % "org.eclipse.datatools.connectivity.oda" % "3.3.3.v201110130935",
   "org.eclipse.jetty" % "jetty-util" % "8.1.7.v20120910",
   "org.freemarker" % "freemarker" % "2.3.18",
   "org.guice-recipes" % "guice-recipes-core" % "3.0",
@@ -174,7 +171,6 @@ libraryDependencies ++= Seq(
   "org.json4s" % "json4s-jackson_2.11" % "3.2.11",
   "org.jsoup" % "jsoup" % "1.6.1",
   "org.jvnet.hudson" % "xstream" % "1.3.1-hudson-8",
-  "org.mozilla" % "rhino" % "1.7R4",
   "org.oclc.oai" % "oaicat" % "1.5.57",
   "org.opensaml" % "xmltooling" % "1.3.1" excludeAll (
     ExclusionRule(organization = "org.slf4j")
@@ -226,6 +222,7 @@ excludeDependencies ++= Seq(
   "commons-beanutils" % "commons-beanutils", // we currently use "commons-beanutils-equella"
   "velocity" % "velocity",
   "rhino" % "js",
+  "org.mozilla" % "rhino",
   "bouncycastle" % "bcprov-jdk15",
   "org.bouncycastle" % "bcprov-jdk15"
 )

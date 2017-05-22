@@ -7,7 +7,7 @@
 		<import plugin-id="com.tle.common.beans" />
 		<import plugin-id="com.tle.common.item" />
 		<import plugin-id="com.tle.common.usermanagement" />
-		<import plugin-id="org.mozilla:rhino" />
+		<import plugin-id="org.mozilla.rhino" />
 		<import plugin-id="com.tle.core.guice" />
 	</requires>
 
