@@ -36,8 +36,9 @@ lazy val UpgradeManager = (project in file("Source/Tools/UpgradeManager")).setti
 
 lazy val Installer = (project in file("Installer")).settings(legacyPaths).dependsOn(platformCommon, platformSwing, platformEquella, UpgradeManager)
 
-lazy val equella = (project in file(".")).enablePlugins(JPFScanPlugin, JarSignerPlugin).aggregate(equellaserver, allPlugins, adminTool, Installer,
-  UpgradeManager, conversion, UpgradeInstallation)
+lazy val equella = (project in file(".")).enablePlugins(JPFScanPlugin, JarSignerPlugin)
+  .aggregate(equellaserver, allPlugins, adminTool, Installer,
+  UpgradeManager, conversion, UpgradeInstallation, learningedge_config)
 
 buildConfig in ThisBuild := Common.buildConfig
 

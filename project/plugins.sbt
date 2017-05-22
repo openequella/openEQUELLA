@@ -15,10 +15,14 @@ libraryDependencies ++= Seq(
   "org.apache.axis2" % "axis2-codegen" % "1.6.2",
   "org.apache.axis2" % "axis2-xmlbeans" % "1.6.2",
   "commons-logging" % "commons-logging" % "1.0.4",
-  "commons-discovery" % "commons-discovery" % "0.2"
+  "commons-discovery" % "commons-discovery" % "0.2",
+  "commons-configuration" % "commons-configuration" % "1.10",
+  "commons-beanutils" % "commons-beanutils" % "1.9.3",
+  "commons-codec" % "commons-codec" % "1.10"
 )
 
 //addSbtPlugin("com.typesafe.sbt" % "sbt-proguard" % "0.2.3")
+
 
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.4")
 

@@ -89,7 +89,8 @@ object JPFScanPlugin extends AutoPlugin {
     "com.tle.webstart.admin",
     "com.tle.platform.common",
     "com.tle.platform.equella",
-    "com.tle.log4j")
+    "com.tle.log4j",
+    "com.tle.web.adminconsole")
 
   override def trigger = noTrigger
 
