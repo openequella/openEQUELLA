@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<classpath>
-  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER" />
-  <classpathentry kind="con" path="org.eclipse.tptp.platform.instrumentation.ui.ContainerInitializer/Build to Manage Libraries" />
-  <classpathentry kind="output" path="classes" />
-  <classpathentry kind="con" path="com.tle.jpfclasspath.CONTAINER" />
-</classpath>
-

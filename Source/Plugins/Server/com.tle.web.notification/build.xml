@@ -1,3 +1,0 @@
-<project name="com.tle.web.notification" basedir="." default="compile">
-	<import file="../../build/plugins-common-build.xml" />
-</project>

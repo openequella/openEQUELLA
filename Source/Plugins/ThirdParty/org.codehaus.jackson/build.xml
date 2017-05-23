@@ -1,3 +1,0 @@
-<project name="org.codehaus.jackson" basedir="." default="compile">
-	<import file="../../build/plugins-common-build.xml" />
-</project>

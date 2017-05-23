@@ -1,3 +1,0 @@
-<project basedir="." default="compile" name="com.tle.common.security">
-	<import file="../../build/plugins-common-build.xml"/>
-</project>

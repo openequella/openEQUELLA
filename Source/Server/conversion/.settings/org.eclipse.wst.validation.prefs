@@ -1,6 +1,0 @@
-#Fri Sep 01 11:38:35 EST 2006
-DELEGATES_PREFERENCE=delegateValidatorList
-USER_BUILD_PREFERENCE=enabledBuildValidatorListorg.eclipse.jst.jsf.validation.internal.JSPSemanticsValidator;org.eclipse.jst.jsp.core.internal.validation.JSPDirectiveValidator;org.eclipse.wst.dtd.core.internal.validation.eclipse.Validator;org.eclipse.wst.xml.core.internal.validation.eclipse.Validator;org.eclipse.jst.jsp.core.internal.validation.JSPJavaValidator;com.genuitec.eclipse.javascript.validation.JavaScriptValidator;org.eclipse.jst.jsp.core.internal.validation.JSPELValidator;org.eclipse.wst.html.internal.validation.HTMLValidator;
-USER_MANUAL_PREFERENCE=enabledManualValidatorListorg.eclipse.jst.jsf.validation.internal.JSPSemanticsValidator;org.eclipse.jst.jsp.core.internal.validation.JSPDirectiveValidator;org.eclipse.wst.dtd.core.internal.validation.eclipse.Validator;org.eclipse.wst.xml.core.internal.validation.eclipse.Validator;org.eclipse.jst.jsp.core.internal.validation.JSPJavaValidator;com.genuitec.eclipse.javascript.validation.JavaScriptValidator;org.eclipse.jst.jsp.core.internal.validation.JSPELValidator;org.eclipse.wst.html.internal.validation.HTMLValidator;
-USER_PREFERENCE=overrideGlobalPreferencesfalse
-eclipse.preferences.version=1

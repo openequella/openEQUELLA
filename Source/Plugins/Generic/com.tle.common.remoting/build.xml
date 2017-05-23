@@ -1,3 +1,0 @@
-<project basedir="." default="compile" name="com.tle.common.remoting">
-	<import file="../../build/plugins-common-build.xml"/>
-</project>
