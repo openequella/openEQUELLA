@@ -2,11 +2,9 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-license-report" % "1.2.0")
 
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "2.0.0")
 
-libraryDependencies += "org.jdom" % "jdom2" % "2.0.6"
-
-libraryDependencies += "com.typesafe" % "config" % "1.3.1"
-
 libraryDependencies ++= Seq(
+  "org.jdom" % "jdom2" % "2.0.6",
+  "com.typesafe" % "config" % "1.3.1",
   "org.apache.axis2" % "axis2-kernel" % "1.6.2",
   "org.apache.axis2" % "axis2-java2wsdl" % "1.6.2",
   "org.apache.axis2" % "axis2-adb" % "1.6.2",
@@ -18,13 +16,10 @@ libraryDependencies ++= Seq(
   "commons-discovery" % "commons-discovery" % "0.2",
   "commons-configuration" % "commons-configuration" % "1.10",
   "commons-beanutils" % "commons-beanutils" % "1.9.3",
-  "commons-codec" % "commons-codec" % "1.10"
+  "commons-codec" % "commons-codec" % "1.10",
+  "org.slf4j" % "slf4j-nop" % "1.7.21"
 )
-
-//addSbtPlugin("com.typesafe.sbt" % "sbt-proguard" % "0.2.3")
-
 
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.4")
 
-//resolvers += Resolver.url("jb-structure-extractor-0.13", url(s"http://dl.bintray.com/jetbrains/sbt-plugins"))(sbt.Patterns(false,"[organisation]/[module]/scala_2.10/sbt_0.13/[revision]/[type]s/[artifact](-[classifier]).[ext]"))
-//addSbtPlugin("org.jetbrains" % "sbt-structure-extractor-0-13" % "7.0.0-12-ga98ec5e")
+addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.9.3")

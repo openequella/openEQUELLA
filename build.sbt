@@ -36,7 +36,7 @@ lazy val UpgradeManager = (project in file("Source/Tools/UpgradeManager")).setti
 
 lazy val Installer = (project in file("Installer")).settings(legacyPaths).dependsOn(platformCommon, platformSwing, platformEquella, UpgradeManager)
 
-lazy val equella = (project in file(".")).enablePlugins(JPFScanPlugin, JarSignerPlugin)
+lazy val equella = (project in file(".")).enablePlugins(JPFScanPlugin, JarSignerPlugin, GitVersioning)
   .aggregate(equellaserver, allPlugins, adminTool, Installer,
   UpgradeManager, conversion, UpgradeInstallation, learningedge_config)
 
@@ -51,13 +51,24 @@ oracleDriverJar in ThisBuild := {
 
 name := "Equella"
 
+git.useGitDescribe := true
+
+val TagRegex = """(.*)-(.*)-(\d*)-(.*)""".r
+git.gitTagToVersionNumber := {
+  case TagRegex(m, t, v, sha) => Some(EquellaVersion(m, t, v.toInt, sha).fullVersion)
+  case _ => None
+}
+
+equellaVersion in ThisBuild := EquellaVersion(version.value)
+
 versionProperties in ThisBuild := {
+  val eqVersion = equellaVersion.value
   val props = new Properties
   props.putAll(
-    Map("version.mm" -> majorVersion.value,
-        "version.mmr" -> version.value,
-        "version.display" -> "6.4-Alpha",
-        "version.commit" -> "3a75a23").asJava)
+    Map("version.mm" -> eqVersion.majorMinor,
+        "version.mmr" -> eqVersion.fullVersion,
+        "version.display" -> s"${eqVersion.majorMinor}-${eqVersion.releaseType}",
+        "version.commit" -> eqVersion.sha).asJava)
   val f = target.value / "version.properties"
   IO.write(props, "version", f)
   f

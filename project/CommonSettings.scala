@@ -10,7 +10,7 @@ object CommonSettings extends AutoPlugin {
     lazy val versionProperties = taskKey[File]("Version property file")
     lazy val upgradeZip = taskKey[File]("Create upgrade zip")
     lazy val installerZip = taskKey[File]("Create the installer zip")
-    lazy val majorVersion = settingKey[String]("The major equella version")
+    lazy val equellaVersion = settingKey[EquellaVersion]("The major equella version")
     lazy val oracleDriverJar = settingKey[Option[File]]("The oracle driver jar")
     lazy val buildConfig = settingKey[Config]("The build configuration settings")
     lazy val prepareDevConfig = taskKey[Unit]("Prepare the dev learningedge-config folder")
@@ -28,8 +28,6 @@ object CommonSettings extends AutoPlugin {
   import autoImport._
   override def projectSettings = Seq(
     organization := "org.apereo.equella",
-    majorVersion := "6.4",
-    version := majorVersion.value + ".r1000",
     javacOptions ++= Seq("-source", "1.8"),
     compileOrder := CompileOrder.JavaThenScala,
     headerLicense := Some(HeaderLicense.ALv2("2015", "Apereo")),
