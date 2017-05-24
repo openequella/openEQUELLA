@@ -11,7 +11,13 @@ lazy val adminConsoleJar = (project in file("jarsrc")).settings(
     xstreamDep
   ),
   excludeDependencies += "commons-logging" % "commons-logging",
-  assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
+  assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false),
+  assemblyMergeStrategy in assembly := {
+    case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first
+    case x =>
+      val oldStrategy = (assemblyMergeStrategy in assembly).value
+      oldStrategy(x)
+  }
 ).dependsOn(platformCommon, platformSwing, platformEquella, LocalProject("com_tle_webstart_admin"))
 
 resourceGenerators in Compile += Def.task {
@@ -20,3 +26,4 @@ resourceGenerators in Compile += Def.task {
   (jarSigner.value).apply(jarFile, outJar)
   Seq(outJar)
 }.taskValue
+

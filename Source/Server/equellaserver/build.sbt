@@ -200,8 +200,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "ch.qos.logback"),
     ExclusionRule(organization = "net.sf.saxon")
   ),
-  "xml-resolver" % "xml-resolver" % "1.2",
-  "xpp3" % "xpp3_min" % "1.1.4c"
+  "xml-resolver" % "xml-resolver" % "1.2"
 )
 
 excludeDependencies ++= Seq(
@@ -247,19 +246,20 @@ mainClass in assembly := Some("com.tle.core.equella.runner.EQUELLAServer")
 
 assemblyMergeStrategy in assembly := {
   case "META-INF/axiom.xml" => MergeStrategy.first
-  case PathList("javax", "wsdl", o@_*) => MergeStrategy.last
-  case PathList("com", "ibm", "wsdl", o@_*) => MergeStrategy.first
-  case PathList("org", "apache", "regexp", o@_*) => MergeStrategy.first
-  case PathList("javax", "servlet", "jsp", o@_*) => MergeStrategy.first
-  case PathList("javax", "annotation", o@_*) => MergeStrategy.first
-  case PathList("org", "w3c", "dom", o@_*) => MergeStrategy.first
-  case PathList("javax", "mail", o@_*) => MergeStrategy.first
+  case PathList("javax", "wsdl", _*) => MergeStrategy.last
+  case PathList("com", "ibm", "wsdl", _*) => MergeStrategy.first
+  case PathList("org", "apache", "regexp", _*) => MergeStrategy.first
+  case PathList("javax", "servlet", "jsp", _*) => MergeStrategy.first
+  case PathList("javax", "annotation", _*) => MergeStrategy.first
+  case PathList("org", "w3c", "dom", _*) => MergeStrategy.first
+  case PathList("javax", "mail", _*) => MergeStrategy.first
   case "META-INF/mailcap" => MergeStrategy.first
   case "META-INF/mimetypes.default" => MergeStrategy.first
   case "META-INF/javamail.charset.map" => MergeStrategy.first
-  case PathList("javax", "activation", o@_*) => MergeStrategy.first
-  case PathList("junit", o@_*) => MergeStrategy.discard
-  case PathList("javax", "xml", o@_*) => MergeStrategy.discard
+  case PathList("javax", "activation", _*) => MergeStrategy.first
+  case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first
+  case PathList("junit", _*) => MergeStrategy.discard
+  case PathList("javax", "xml", _*) => MergeStrategy.discard
   case x =>
     val oldStrategy = (assemblyMergeStrategy in assembly).value
     oldStrategy(x)

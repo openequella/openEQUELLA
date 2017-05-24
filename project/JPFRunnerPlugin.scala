@@ -51,7 +51,7 @@ object JPFRunnerPlugin extends AutoPlugin {
           IO.delete(outBase)
           ManifestsWritten {
             allRuntimes.map { r =>
-              val allCode = r.code.flatMap(f => (f ***).pair(rebase(f, "classes/"), false))
+              val allCode = r.code.flatMap(f => (f ** "*.class").pair(rebase(f, "classes/"), false))
               val allResources = r.resources.flatMap(f => (f ***).pair(rebase(f, "resources/"), false))
               val allJars = r.jars.flatMap(f => flatRebase("lib/").apply(f).map((f, _)))
               val libs = allCode.headOption.map(_ => JPFLibrary("code", "code", "classes/", true)) ++

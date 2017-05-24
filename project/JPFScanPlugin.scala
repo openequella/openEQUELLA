@@ -11,8 +11,6 @@ import scala.annotation.tailrec
 import Common._
 
 object JPFScanPlugin extends AutoPlugin {
-  val dirs = Seq("Source/Plugins", "Platform/Plugins", "Interface/Plugins")
-
   val serverRef = LocalProject("equellaserver")
   val adminRef = LocalProject("adminTool")
 
@@ -96,7 +94,9 @@ object JPFScanPlugin extends AutoPlugin {
 
   override def derivedProjects(proj: ProjectDefinition[_]): Seq[Project] = {
     val baseDir = proj.base
-    val allManifests = dirs.foldLeft(Seq.empty[File])((m, dir) => ((baseDir / dir) ** "plugin-jpf.xml").get ++ m)
+    val allManifests = (baseDir / "Source/Plugins" * "*" * "*" / "plugin-jpf.xml").get ++
+      (baseDir / "Platform/Plugins" * "*" / "plugin-jpf.xml").get ++
+      (baseDir / "Interface/Plugins" * "*" / "plugin-jpf.xml").get
     val manifestMap = allManifests.map(parseJPF).map(p => (p.id, p)).toMap
 
 //    val adminPlugins = manifestMap.values.filter(_.adminConsole).map(_.id).toSet
