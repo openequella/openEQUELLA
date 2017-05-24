@@ -3,7 +3,7 @@ libraryDependencies ++= Seq(
   "org.slf4j" % "jcl-over-slf4j" % "1.7.5",
   "org.slf4j" % "slf4j-log4j12" % "1.7.5",
   "log4j" % "log4j" % "1.2.17",
-  "org.jvnet.hudson" % "xstream" % "1.3.1-hudson-8",
+  xstreamDep,
   "commons-configuration" % "commons-configuration" % "1.9",
   "commons-io" % "commons-io" % "2.4",
   "commons-lang" % "commons-lang" % "2.6"

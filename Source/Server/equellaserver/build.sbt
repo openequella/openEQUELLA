@@ -71,7 +71,6 @@ libraryDependencies ++= Seq(
   "log4j" % "log4j" % "1.2.17",
   "net.oauth.core" % "oauth" % "20100527",
   "net.oauth.core" % "oauth-provider" % "20100527",
-  "net.sf.beanlib" % "beanlib" % "5.0.3beta",
   "net.sf.ezmorph" % "ezmorph" % "1.0.4",
   "net.sf.json-lib" % "json-lib" % "2.4" classifier "jdk15",
   "net.sf.transmorph" % "transmorph" % "3.1.0",
@@ -170,7 +169,7 @@ libraryDependencies ++= Seq(
   "org.jboss.resteasy" % "jaxrs-api" % "3.0.10.Final",
   "org.json4s" % "json4s-jackson_2.11" % "3.2.11",
   "org.jsoup" % "jsoup" % "1.6.1",
-  "org.jvnet.hudson" % "xstream" % "1.3.1-hudson-8",
+  xstreamDep,
   "org.oclc.oai" % "oaicat" % "1.5.57",
   "org.opensaml" % "xmltooling" % "1.3.1" excludeAll (
     ExclusionRule(organization = "org.slf4j")

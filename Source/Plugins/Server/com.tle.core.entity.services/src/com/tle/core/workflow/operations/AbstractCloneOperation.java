@@ -7,10 +7,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 
 import javax.inject.Inject;
-
-import net.sf.beanlib.hibernate3.Hibernate3BeanReplicator;
 
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.item.DrmSettings;
@@ -43,7 +42,6 @@ public abstract class AbstractCloneOperation extends TaskOperation
 	public static final String PRE_CLONE_EXTENSION = "preClone";
 	public static final String POST_CLONE_EXTENSION = "postClone";
 
-	@Inject
 	private InitialiserService initialiserService;
 	@Inject
 	private StagingService stagingService;
@@ -53,6 +51,7 @@ public abstract class AbstractCloneOperation extends TaskOperation
 
 	protected final boolean copyAttachments;
 	protected String transform;
+	private Function<CloningHelper, CloningHelper> cloner;
 
 	protected AbstractCloneOperation(boolean copyAttachments)
 	{
@@ -150,12 +149,7 @@ public abstract class AbstractCloneOperation extends TaskOperation
 		if( forCloning != null )
 		{
 			extractCloneData(origItem, forCloning);
-			Set<Class<?>> clazzes = new HashSet<Class<?>>();
-			clazzes.add(Attachment.class);
-			clazzes.add(ItemNavigationNode.class);
-			clazzes.add(ItemNavigationTab.class);
-			Hibernate3BeanReplicator replicator = new Hibernate3BeanReplicator(clazzes, null, null);
-			forCloning = replicator.copy(forCloning);
+			forCloning = cloner.apply(forCloning);
 			initialiserService.initialiseClones(forCloning);
 			pushCloneData(item, forCloning);
 		}
@@ -277,5 +271,11 @@ public abstract class AbstractCloneOperation extends TaskOperation
 		fileProcessorTracker = new PluginTracker<CloneFileProcessingExtension>(pluginService,
 			"com.tle.core.entity.services", "cloneFileProcessor", "id");
 		fileProcessorTracker.setBeanKey("bean");
+	}
+
+	@Inject
+	public void setInitialiserService(InitialiserService initialiserService) {
+		this.initialiserService = initialiserService;
+		this.cloner = initialiserService.createCloner(getClass().getClassLoader());
 	}
 }

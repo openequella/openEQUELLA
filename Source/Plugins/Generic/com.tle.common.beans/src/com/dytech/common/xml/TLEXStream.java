@@ -12,6 +12,7 @@ import java.io.Writer;
 import com.dytech.devlib.PropBagEx;
 import com.thoughtworks.xstream.MarshallingStrategy;
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.ConverterLookup;
 import com.thoughtworks.xstream.core.DefaultConverterLookup;
 import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
@@ -81,7 +82,7 @@ public class TLEXStream extends XStream
 
 	private Object fromXML(HierarchicalStreamReader hreader, Object object, final Class clazz)
 	{
-		Mapper mapper = super.getClassMapper();
+		Mapper mapper = super.getMapper();
 		mapper = new MapperWrapper(mapper)
 		{
 			@Override
@@ -120,7 +121,7 @@ public class TLEXStream extends XStream
 
 	private void toXML(HierarchicalStreamWriter hwriter, Object object, final String rootNodeName)
 	{
-		Mapper mapper = super.getClassMapper();
+		Mapper mapper = super.getMapper();
 		mapper = new MapperWrapper(mapper)
 		{
 			@Override
@@ -134,9 +135,9 @@ public class TLEXStream extends XStream
 
 	}
 
-	private DefaultConverterLookup getDefaultConverterLookup()
+	private ConverterLookup getDefaultConverterLookup()
 	{
-		return (DefaultConverterLookup) getConverterLookup();
+		return getConverterLookup();
 	}
 
 	@Override

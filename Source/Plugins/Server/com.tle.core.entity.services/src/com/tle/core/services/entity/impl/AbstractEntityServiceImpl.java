@@ -128,7 +128,6 @@ public abstract class AbstractEntityServiceImpl<B extends EntityEditingBean, T e
 	protected TLEAclManager aclManager;
 	@Inject
 	protected AuditLogService auditLogService;
-	@Inject
 	protected InitialiserService initialiserService;
 	@Inject
 	protected InstitutionImportService institutionService;
@@ -1247,6 +1246,7 @@ public abstract class AbstractEntityServiceImpl<B extends EntityEditingBean, T e
 		// do nothing by default
 	}
 
+	@Inject
 	public void setInitialiserService(InitialiserService initialiserService)
 	{
 		this.initialiserService = initialiserService;

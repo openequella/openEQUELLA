@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import net.sf.beanlib.hibernate3.Hibernate3BeanReplicator;
-
+import com.tle.core.services.InitialiserService;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -113,6 +113,7 @@ public class WorkflowServiceImpl extends AbstractEntityServiceImpl<EntityEditing
 	private EventService eventService;
 
 	private final WorkflowDao workflowDao;
+	private Function<Workflow, Workflow> cloner;
 
 	@Inject
 	public WorkflowServiceImpl(WorkflowDao workflowDao)
@@ -617,11 +618,7 @@ public class WorkflowServiceImpl extends AbstractEntityServiceImpl<EntityEditing
 	protected Workflow getForClone(long id)
 	{
 		Workflow workflow = get(id);
-		Set<Class<?>> clazzes = new HashSet<Class<?>>();
-		clazzes.add(WorkflowNode.class);
-		clazzes.add(LanguageBundle.class);
-		Hibernate3BeanReplicator replicator = new Hibernate3BeanReplicator(clazzes, null, null);
-		Workflow cloned = replicator.copy(workflow);
+		Workflow cloned = cloner.apply(workflow);
 		initialiserService.initialiseClones(cloned);
 		return cloned;
 	}
@@ -759,5 +756,11 @@ public class WorkflowServiceImpl extends AbstractEntityServiceImpl<EntityEditing
 	public int getItemCountForWorkflow(String uuid)
 	{
 		return workflowDao.getItemCountForWorkflow(uuid);
+	}
+
+	@Override
+	public void setInitialiserService(InitialiserService initialiserService) {
+		super.setInitialiserService(initialiserService);
+		this.cloner = initialiserService.createCloner(getClass().getClassLoader());
 	}
 }

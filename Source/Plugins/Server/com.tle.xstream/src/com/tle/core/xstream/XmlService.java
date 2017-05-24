@@ -5,8 +5,10 @@ package com.tle.core.xstream;
 
 import java.io.Reader;
 import java.io.Writer;
+import java.util.function.Function;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 /**
  * @author Nicholas Read

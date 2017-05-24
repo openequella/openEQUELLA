@@ -8,7 +8,7 @@ lazy val adminConsoleJar = (project in file("jarsrc")).settings(
     "org.springframework" % "spring-aop" % "2.5.5",
     "com.fifesoft" % "rsyntaxtextarea" % "1.5.2",
     "com.miglayout" % "miglayout-swing" % "4.2",
-    "org.jvnet.hudson" % "xstream" % "1.3.1-hudson-8"
+    xstreamDep
   ),
   excludeDependencies += "commons-logging" % "commons-logging",
   assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)

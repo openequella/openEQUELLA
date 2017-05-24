@@ -6,8 +6,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import net.sf.beanlib.hibernate3.Hibernate3BeanReplicator;
-
 import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -22,8 +20,6 @@ import com.tle.core.dao.TaskHistoryDao;
 import com.tle.core.dao.WorkflowDao;
 import com.tle.core.filesystem.SubTemporaryFile;
 import com.tle.core.guice.Bind;
-import com.tle.core.initialiser.BaseEntityTransformer;
-import com.tle.core.initialiser.WorkflowNodeTransformer;
 import com.tle.core.institution.XmlHelper;
 import com.tle.core.institution.convert.ItemConverter.ItemConverterInfo;
 import com.tle.core.institution.convert.ItemConverter.ItemExtrasConverter;
@@ -126,10 +122,6 @@ public class TaskHistoryConverter implements ItemExtrasConverter
 
 		if( !taskHistories.isEmpty() )
 		{
-			Hibernate3BeanReplicator hibernateInitialiser = new Hibernate3BeanReplicator();
-			hibernateInitialiser.initCustomTransformerFactory(new BaseEntityTransformer(),
-				new WorkflowNodeTransformer());
-			taskHistories = hibernateInitialiser.copy(taskHistories);
 			xmlHelper.writeXmlFile(extrasFolder, TASKHISTORY_XML, taskHistories, getXStream());
 		}
 	}

@@ -41,7 +41,7 @@ public abstract class OAIAbstractConverter implements Converter
 
 	public Object convert(String name, UnmarshallingContext context)
 	{
-		return context.convertAnother(context, xstream.getClassMapper().realClass(name));
+		return context.convertAnother(context, xstream.getMapper().realClass(name));
 	}
 
 	protected void addAttribute(HierarchicalStreamWriter writer, String name, String value)

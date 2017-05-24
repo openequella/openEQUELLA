@@ -14,12 +14,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.function.Function;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.hibernate.converter.*;
+import com.thoughtworks.xstream.hibernate.mapper.HibernateMapper;
+import com.thoughtworks.xstream.mapper.MapperWrapper;
+import com.tle.core.xstream.impl.XmlServiceImpl;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.beans.BeanUtils;
@@ -468,5 +475,24 @@ public class InitialiserServiceImpl extends AbstractHibernateDao implements Init
 		{
 			((IdCloneable) object).setId(0);
 		}
+	}
+
+	@Override
+	public <T> Function<T, T> createCloner(ClassLoader classLoader)
+	{
+		final XStream xstream = new XStream() {
+			@Override
+			protected MapperWrapper wrapMapper(MapperWrapper next) {
+				return new HibernateMapper(next);
+			}
+		};
+		xstream.setClassLoader(classLoader);
+		xstream.autodetectAnnotations(true);
+		xstream.registerConverter(new HibernateProxyConverter());
+		xstream.registerConverter(new HibernatePersistentCollectionConverter(xstream.getMapper()));
+		xstream.registerConverter(new HibernatePersistentMapConverter(xstream.getMapper()));
+		xstream.registerConverter(new HibernatePersistentSortedMapConverter(xstream.getMapper()));
+		xstream.registerConverter(new HibernatePersistentSortedSetConverter(xstream.getMapper()));
+		return t -> (T) xstream.fromXML(xstream.toXML(t));
 	}
 }

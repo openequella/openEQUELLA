@@ -20,6 +20,13 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentCollectionConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentMapConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernateProxyConverter;
+import com.thoughtworks.xstream.hibernate.mapper.HibernateMapper;
+import com.thoughtworks.xstream.mapper.Mapper;
+import com.thoughtworks.xstream.mapper.MapperWrapper;
+import com.tle.core.xstream.impl.XmlServiceImpl;
 import org.ccil.cowan.tagsoup.AttributesImpl;
 import org.ccil.cowan.tagsoup.Parser;
 import org.xml.sax.InputSource;
@@ -53,8 +60,6 @@ import com.tle.core.filesystem.SubItemFile;
 import com.tle.core.filesystem.SubTemporaryFile;
 import com.tle.core.filesystem.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
-import com.tle.core.initialiser.BaseEntityTransformer;
-import com.tle.core.initialiser.WorkflowNodeTransformer;
 import com.tle.core.institution.convert.WorkflowNodeConverter.WorkflowNodeSupplier;
 import com.tle.core.institution.migration.PostReadMigrator;
 import com.tle.core.plugins.PluginService;
@@ -68,8 +73,6 @@ import com.tle.core.user.CurrentInstitution;
 import com.tle.core.util.DefaultMessageCallback;
 import com.tle.core.util.FindHrefHandler;
 import com.tle.core.util.HrefCallback;
-
-import net.sf.beanlib.hibernate3.Hibernate3BeanReplicator;
 
 @SuppressWarnings("nls")
 @Bind
@@ -483,11 +486,7 @@ public class ItemConverter extends AbstractConverter<ItemConverter.ItemConverter
 				{
 					try
 					{
-						final Hibernate3BeanReplicator replicator = new Hibernate3BeanReplicator();
-						replicator.initCustomTransformerFactory(new BaseEntityTransformer(),
-							new WorkflowNodeTransformer());
 						Item item = itemDao.findByItemId(id);
-						item = replicator.copy(item);
 						final long itemId = item.getId();
 						final ItemFile itemFile = new ItemFile(item);
 
@@ -540,9 +539,17 @@ public class ItemConverter extends AbstractConverter<ItemConverter.ItemConverter
 	{
 		if( xstream == null )
 		{
-			xstream = xmlHelper.createXStream();
+			xstream = new XmlServiceImpl.ExtXStream(getClass().getClassLoader()) {
+				@Override
+				protected MapperWrapper wrapMapper(MapperWrapper next) {
+					return new HibernateMapper(next);
+				}
+			};
 			xstream.registerConverter(new WorkflowNodeConverter());
 			xstream.registerConverter(new BaseEntityXmlConverter(registry));
+			xstream.registerConverter(new HibernateProxyConverter());
+			xstream.registerConverter(new HibernatePersistentCollectionConverter(xstream.getMapper()));
+			xstream.registerConverter(new HibernatePersistentMapConverter(xstream.getMapper()));
 		}
 		return xstream;
 	}

@@ -6,14 +6,17 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import net.sf.beanlib.hibernate3.Hibernate3BeanReplicator;
-
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentCollectionConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentMapConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernateProxyConverter;
+import com.thoughtworks.xstream.hibernate.mapper.HibernateMapper;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.thoughtworks.xstream.mapper.MapperWrapper;
 import com.tle.beans.Institution;
 import com.tle.common.NameValue;
 import com.tle.common.oauth.beans.OAuthClient;
@@ -24,9 +27,12 @@ import com.tle.core.filesystem.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.AbstractConverter;
 import com.tle.core.institution.convert.ConverterParams;
+import com.tle.core.institution.convert.WorkflowNodeConverter;
 import com.tle.core.oauth.dao.OAuthTokenDao;
 import com.tle.core.oauth.service.OAuthService;
+import com.tle.core.services.entity.BaseEntityXmlConverter;
 import com.tle.core.util.DefaultMessageCallback;
+import com.tle.core.xstream.impl.XmlServiceImpl;
 import com.tle.web.i18n.BundleNameValue;
 
 /**
@@ -76,13 +82,11 @@ public class OAuthTokenConverter extends AbstractConverter<OAuthToken>
 
 		final SubTemporaryFile exportFolder = new SubTemporaryFile(staging, OAUTHTOKENS);
 		xmlHelper.writeExportFormatXmlFile(exportFolder, true);
-		final Hibernate3BeanReplicator replicator = new Hibernate3BeanReplicator();
 		for( OAuthToken token : tokens )
 		{
-			final OAuthToken clonedToken = replicator.copy(token);
 			final long id = token.getId();
 			final BucketFile bucketFolder = new BucketFile(exportFolder, id);
-			xmlHelper.writeXmlFile(bucketFolder, id + ".xml", clonedToken, getXStream());
+			xmlHelper.writeXmlFile(bucketFolder, id + ".xml", token, getXStream());
 
 			message.incrementCurrent();
 		}
@@ -127,15 +131,21 @@ public class OAuthTokenConverter extends AbstractConverter<OAuthToken>
 		}
 	}
 
-	private XStream getXStream()
+	private synchronized XStream getXStream()
 	{
 		if( xstream == null )
 		{
-			xstream = xmlHelper.createXStream();
+			xstream = new XmlServiceImpl.ExtXStream(getClass().getClassLoader()) {
+				@Override
+				protected MapperWrapper wrapMapper(MapperWrapper next) {
+					return new HibernateMapper(next);
+				}
+			};
+			xstream.registerConverter(new HibernateProxyConverter());
+			xstream.registerConverter(new HibernatePersistentCollectionConverter(xstream.getMapper()));
 			xstream.alias("com.tle.core.oauth.beans.OAuthToken", OAuthToken.class);
 			xstream.alias("com.tle.core.oauth.beans.OAuthClient", OAuthClient.class);
 			xstream.registerConverter(new ClientXStreamConverter());
-			return xstream;
 		}
 		return xstream;
 	}
