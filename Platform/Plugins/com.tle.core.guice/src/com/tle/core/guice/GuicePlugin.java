@@ -275,6 +275,7 @@ public class GuicePlugin extends Plugin implements RegistryChangeListener
 				}
 
 				modules.add(new ScannerModule(privatePluginService, classLoader, localClassPath, getBeanCheckers()));
+				modules.add(new Jsr250Module());
 				injector = Guice.createInjector(new ExternalProviders(getDependents(), modules));
 				long end = System.currentTimeMillis();
 				LOGGER.info("Guice module for " + pluginId + " took:" + (end - start));
