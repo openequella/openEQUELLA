@@ -4,12 +4,11 @@ import java.io.Serializable;
 import java.util.logging.Logger;
 
 import com.tle.common.Check;
-import com.tle.web.filemanager.applet.FileManager;
 
 public class FileInfo implements Serializable
 {
 	private static final long serialVersionUID = -1L;
-	private static final Logger LOGGER = Logger.getLogger(FileManager.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(FileInfo.class.getName());
 
 	private String name;
 	private String path;

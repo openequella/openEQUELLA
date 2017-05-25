@@ -57,7 +57,6 @@ libraryDependencies ++= Seq(
   "dom4j" % "dom4j" % "1.6.1",
   "edu.asu.itunesu" % "itunesu-api-java" % "1.7",
   "edu.harvard.hul" % "mets" % "1.0",
-  "flamingo" % "flamingo" % "1.0",
   "extendedset" % "extendedset" % "2.2",
   "javax.inject" % "javax.inject" % "1",
   "javax.mail" % "mail" % "1.4.3",
