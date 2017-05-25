@@ -1,13 +1,17 @@
 package com.tle.web.filemanager.applet.backend;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.jvnet.flamingo.bcb.BreadcrumbBarCallBack;
-import org.jvnet.flamingo.bcb.BreadcrumbItem;
 
 import com.tle.web.filemanager.applet.gui.SystemIconCache;
 import com.tle.web.filemanager.common.FileInfo;
+
+import org.pushingpixels.flamingo.api.bcb.BreadcrumbBarCallBack;
+import org.pushingpixels.flamingo.api.bcb.BreadcrumbBarException;
+import org.pushingpixels.flamingo.api.bcb.BreadcrumbItem;
+import org.pushingpixels.flamingo.api.common.StringValuePair;
 
 /**
  * @author Nicholas Read
@@ -21,22 +25,21 @@ public class BreadCrumbAdapter extends BreadcrumbBarCallBack<FileInfo>
 		this.backend = backend;
 	}
 
-	@Override
-	public List<KeyValuePair<FileInfo>> getPathChoices(BreadcrumbItem<FileInfo>[] paths)
-	{
+	public List<StringValuePair<FileInfo>> getPathChoices(List<BreadcrumbItem<FileInfo>> paths)
+			throws BreadcrumbBarException {
 		String folderPath = ""; //$NON-NLS-1$
 		if( paths != null )
 		{
-			folderPath = paths[paths.length - 1].getValue().getFullPath();
+			folderPath = paths.get(paths.size() - 1).getData().getFullPath();
 		}
 
-		List<KeyValuePair<FileInfo>> results = new LinkedList<KeyValuePair<FileInfo>>();
+		ArrayList<StringValuePair<FileInfo>> results = new ArrayList<>();
 		for( FileInfo child : backend.listFiles(folderPath) )
 		{
 			if( child.isDirectory() )
 			{
-				KeyValuePair<FileInfo> kvp = new KeyValuePair<FileInfo>(child.getName(), child);
-				kvp.setIcon(SystemIconCache.getIcon(child, false));
+				StringValuePair<FileInfo> kvp = new StringValuePair<>(child.getName(), child);
+//				kvp.setIcon(SystemIconCache.getIcon(child, false));
 				results.add(kvp);
 			}
 		}
