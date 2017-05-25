@@ -159,8 +159,6 @@ libraryDependencies ++= Seq(
   "org.omegat" % "jmyspell-core" % "1.0.0-beta-2",
   "org.eclipse.jetty" % "jetty-util" % "8.1.7.v20120910",
   "org.freemarker" % "freemarker" % "2.3.18",
-  "org.guice-recipes" % "guice-recipes-core" % "3.0",
-  "org.guice-recipes" % "guice-recipes-spring" % "3.0",
   "org.hurl" % "hurl" % "1.1",
   "org.javassist" % "javassist" % "3.18.2-GA",
   "org.jboss.resteasy" % "resteasy-jackson-provider" % "3.0.10.Final",

@@ -6,8 +6,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.guicerecipes.support.internal.Errors;
-
 import com.google.inject.Binding;
 import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
@@ -16,6 +14,7 @@ import com.google.inject.MembersInjector;
 import com.google.inject.Provider;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.Assisted;
+import com.google.inject.internal.Errors;
 import com.google.inject.spi.DefaultBindingTargetVisitor;
 import com.google.inject.spi.Dependency;
 import com.google.inject.spi.HasDependencies;

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.guicerecipes.jsr250.Jsr250Module;
 import org.java.plugin.Plugin;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
@@ -276,7 +275,6 @@ public class GuicePlugin extends Plugin implements RegistryChangeListener
 				}
 
 				modules.add(new ScannerModule(privatePluginService, classLoader, localClassPath, getBeanCheckers()));
-				modules.add(new Jsr250Module());
 				injector = Guice.createInjector(new ExternalProviders(getDependents(), modules));
 				long end = System.currentTimeMillis();
 				LOGGER.info("Guice module for " + pluginId + " took:" + (end - start));
