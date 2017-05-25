@@ -29,7 +29,7 @@ libraryDependencies ++= Seq(
   "com.google.inject.extensions" % "guice-assistedinject" % "3.0",
   "com.google.inject.extensions" % "guice-spring" % "3.0",
   "com.ibm.icu" % "icu4j" % "4.6.1.1",
-  "com.kaltura" % "kalturaClient" % "3.2.1",
+  /** "com.kaltura" % "kalturaClient" % "3.2.1", */
   "com.microsoft.sqlserver" % "mssql-jdbc" % "6.1.0.jre8",
   "com.miglayout" % "miglayout-swing" % "4.2",
   "com.ning" % "async-http-client" % "1.7.8",
