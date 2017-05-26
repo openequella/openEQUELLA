@@ -18,7 +18,6 @@ import com.tle.common.Check;
 import com.tle.core.guice.Bind;
 import com.tle.core.progress.ProgressCallback;
 import com.tle.core.services.user.UserSessionService;
-import com.tle.web.upload.ProgressListenerImpl;
 
 @Bind
 @Singleton
@@ -53,14 +52,7 @@ public class ProgressServlet extends HttpServlet
 		try
 		{
 			final Object listenerOrCallback = sessionService.getAttribute(key);
-			if( listenerOrCallback instanceof ProgressListenerImpl )
-			{
-				callback = ((ProgressListenerImpl) listenerOrCallback).getProgressCallback();
-			}
-			else
-			{
-				callback = (ProgressCallback) listenerOrCallback;
-			}
+			callback = (ProgressCallback) listenerOrCallback;
 
 			// FIXME: we need to do something about this! The progress bar can
 			// request the callback before it's been added to session,

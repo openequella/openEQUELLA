@@ -3,11 +3,13 @@ package com.tle.tomcat.service.impl;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Manager;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.session.FileStore;
 import org.apache.catalina.session.JDBCStore;
 import org.apache.catalina.session.PersistentManager;
@@ -33,6 +35,8 @@ import com.tle.core.zookeeper.ZookeeperService;
 import com.tle.tomcat.events.TomcatRestartListener;
 import com.tle.tomcat.service.TomcatService;
 import com.tle.web.dispatcher.RequestDispatchFilter;
+
+import javax.servlet.MultipartConfigElement;
 
 @Bind(TomcatService.class)
 @Singleton
@@ -119,6 +123,10 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
 			context.addFilterMap(dispatchMap("RequestDispatchFilter", "REQUEST"));
 			context.addFilterMap(dispatchMap("ForwardDispatchFilter", "FORWARD"));
 			context.addFilterMap(dispatchMap("ErrorDispatchFilter", "ERROR"));
+
+			StandardWrapper defaultServlet = (StandardWrapper)context.findChild("default");
+			defaultServlet.setMultipartConfigElement(new MultipartConfigElement("", 1000000000L, 1000000000L,
+					1000000000));
 
 			ErrorPage notFound = new ErrorPage();
 			notFound.setErrorCode(404);

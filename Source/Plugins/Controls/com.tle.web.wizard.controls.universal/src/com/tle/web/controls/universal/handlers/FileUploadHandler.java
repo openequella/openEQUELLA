@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+import javax.servlet.http.Part;
 
 import org.apache.log4j.Logger;
 
@@ -299,7 +300,7 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 		submitValuesFunction.setBlockFurtherSubmission(false);
 
 		fileDrop.setUploadId(context, uploadId);
-		fileDrop.setAjaxMethod(context, ajax.getAjaxFunction("processUpload"));
+		fileDrop.setAjaxMethod(context, ajax.getAjaxFunction("processUploadDND"));
 		fileDrop.setMaxFiles(context, -1);
 		fileDrop.setProgressAreaId(context, null);
 		final ScriptVariable uploadIdVar = new ScriptVariable("uploadId");
@@ -321,7 +322,7 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 			fileDrop.setAllowedMimetypes(context, fileSettings.getMimeTypes());
 		}
 
-		final BookmarkAndModify uploadUrl = new BookmarkAndModify(context, ajax.getModifier("processUpload", uploadId,
+		final BookmarkAndModify uploadUrl = new BookmarkAndModify(context, ajax.getModifier("processUploadOld", uploadId,
 			null));
 		final JSCallable errorCallback = ajax.getAjaxFunction("sizeErrorCallback");
 		fileUpload.setErrorCallback(context, errorCallback);
@@ -724,7 +725,7 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 	 * Note: it only waits for the placeholder file to arrive, not to completely
 	 * upload. Basically this method ensures processUpload doesn't complete
 	 * before the file is there to display.
-	 * 
+	 *
 	 * @param info
 	 * @param newFileUuid
 	 */
@@ -1001,79 +1002,64 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 	}
 
 	@AjaxMethod
-	public SectionRenderable processUpload(SectionInfo info, @Nullable String uploadId, @Nullable String filename)
+	public SectionRenderable processUploadDND(SectionInfo info, @Nullable String uploadId, @Nullable String filename)
+	{
+		return processUpload(info, uploadId, filename, fileDrop.getMultipartFile(info));
+	}
+
+	@AjaxMethod
+	public SectionRenderable processUploadOld(SectionInfo info, @Nullable String uploadId, @Nullable String filename)
+	{
+		return processUpload(info, uploadId, filename, fileUpload.getMultipartFile(info));
+	}
+
+	public SectionRenderable processUpload(SectionInfo info, @Nullable String uploadId, @Nullable String filename, Part upload)
 	{
 		boolean success = true;
 		final UploadState uploadState = getUploadState(info);
-		UploadedFile borkedFile = uploadState.getUploadForUuid(uploadId);
-		// check if sizeErrorCallback has found error with the file
-		if( borkedFile != null && borkedFile.isErrored() )
-		{
-			// uploadState.removeUpload(uploadId);
-			success = false;
-			return new SimpleSectionResult(success);
-		}
 
 		final String uniqueFilename = uniqueName(info,
 			filename == null || filename.equals("null") ? fileUpload.getFilename(info) : filename);
-		final String uploadsId = uploadId != null ? uploadId : CurrentUser.getSessionID();
-		final Map<String, Upload> userUploads = uploadService.getUserUploads(uploadsId);
 
-		// There should only be one upload for each uploadId
-		if( userUploads.values().size() > 1 && filename == null )
-		{
-			StringBuilder warning = new StringBuilder("Multiple uploads detected for ");
-			warning.append(uploadId);
-			warning.append(" : ");
-			warning.append(uniqueFilename);
-			LOGGER.warn(warning.toString());
-		}
-		for( Upload upload : userUploads.values() )
-		{
-			final UploadedFile uploadedFile = new UploadedFile(uploadId);
-			uploadedFile.setFileUploadUuid(upload.getUuid());
-			uploadedFile.setIntendedFilepath(uniqueFilename);
-			uploadState.addUpload(uploadedFile);
-			if( fileSettings.isRestrictByMime() && !isCorrectMimetype(uploadedFile) )
-			{
-				String actualPath = UPLOADS_FOLDER + '/' + uploadedFile.getIntendedFilepath();
-				uploadedFile.setFilepath(actualPath);
-				uploadService.removeUpload(uploadsId, upload.getUuid());
-				uploadedFile.setProblemKey(KEY_INCORRECT_MIMETYPE);
-				success = false;
-				uploadService.killUpload(uploadsId, upload.getUuid());
-
-			}
-			else
-			{
-				try( InputStream in = upload )
-				{
-					writeStreamToDisk(dialogState.getRepository(), uploadedFile, in);
-					validateUpload(info, uploadedFile);
-				}
-				catch( StreamKilledException k )
-				{
-					success = false;
-					// whatever
-				}
-				catch( BannedFileException b )
-				{
-					success = false;
-					uploadedFile.setProblemKey(KEY_ERROR_BANNED);
-				}
-				catch( Exception e )
-				{
-					success = false;
-					SectionUtils.throwRuntime(e);
-				}
-				finally
-				{
-					uploadedFile.setFinished(true);
-					uploadedFile.setFileUploadUuid(null);
-					uploadService.removeUpload(uploadsId, upload.getUuid());
-				}
-			}
-		}
+        final UploadedFile uploadedFile = new UploadedFile(uploadId);
+        uploadedFile.setFileUploadUuid(uploadId);
+        uploadedFile.setIntendedFilepath(uniqueFilename);
+        uploadState.addUpload(uploadedFile);
+        if( fileSettings.isRestrictByMime() && !isCorrectMimetype(uploadedFile) )
+        {
+            String actualPath = UPLOADS_FOLDER + '/' + uploadedFile.getIntendedFilepath();
+            uploadedFile.setFilepath(actualPath);
+            uploadedFile.setProblemKey(KEY_INCORRECT_MIMETYPE);
+            success = false;
+        }
+        else
+        {
+            try( InputStream in = upload.getInputStream() )
+            {
+                writeStreamToDisk(dialogState.getRepository(), uploadedFile, in);
+                validateUpload(info, uploadedFile);
+            }
+            catch( StreamKilledException k )
+            {
+                success = false;
+                // whatever
+            }
+            catch( BannedFileException b )
+            {
+                success = false;
+                uploadedFile.setProblemKey(KEY_ERROR_BANNED);
+            }
+            catch( Exception e )
+            {
+                success = false;
+                SectionUtils.throwRuntime(e);
+            }
+            finally
+            {
+                uploadedFile.setFinished(true);
+                uploadedFile.setFileUploadUuid(null);
+            }
+        }
 		return new SimpleSectionResult(success);
 	}
 
@@ -1240,7 +1226,7 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 
 	/**
 	 * Scrapbook selections ONLY
-	 * 
+	 *
 	 * @param info
 	 * @param selections
 	 */
@@ -1337,7 +1323,7 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 	/**
 	 * This will return null in the cases that there are no options available
 	 * (or the page type doesn't support any options anyway)
-	 * 
+	 *
 	 * @param page
 	 * @return
 	 */
@@ -1366,7 +1352,7 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 	// FIXME: use extension point
 	/**
 	 * This will NEVER return null.
-	 * 
+	 *
 	 * @param page
 	 * @return
 	 */

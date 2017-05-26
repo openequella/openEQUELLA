@@ -3,11 +3,11 @@ package com.tle.web.sections.standard;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
+import javax.servlet.http.Part;
 
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
@@ -15,6 +15,7 @@ import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.js.JSAssignable;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.standard.model.HtmlFileUploadState;
+import org.apache.tomcat.util.http.fileupload.FileUploadBase;
 
 public class FileUpload extends AbstractDisablerComponent<HtmlFileUploadState>
 {
@@ -31,7 +32,7 @@ public class FileUpload extends AbstractDisablerComponent<HtmlFileUploadState>
 
 	public long getFileSize(SectionInfo info)
 	{
-		MultipartFile file = getMultipartFile(info);
+		Part file = getMultipartFile(info);
 		if( file != null )
 		{
 			return file.getSize();
@@ -41,7 +42,7 @@ public class FileUpload extends AbstractDisablerComponent<HtmlFileUploadState>
 
 	public InputStream getInputStream(SectionInfo info)
 	{
-		MultipartFile file = getMultipartFile(info);
+		Part file = getMultipartFile(info);
 		if( file != null )
 		{
 			try
@@ -58,7 +59,7 @@ public class FileUpload extends AbstractDisablerComponent<HtmlFileUploadState>
 
 	public String getMimeType(SectionInfo info)
 	{
-		MultipartFile file = getMultipartFile(info);
+		Part file = getMultipartFile(info);
 		if( file != null )
 		{
 			return file.getContentType();
@@ -68,33 +69,44 @@ public class FileUpload extends AbstractDisablerComponent<HtmlFileUploadState>
 
 	public String getFullFilename(SectionInfo info)
 	{
-		MultipartFile file = getMultipartFile(info);
+		Part file = getMultipartFile(info);
 		if( file != null )
 		{
-			return file.getOriginalFilename();
+			return file.getSubmittedFileName();
 		}
 		return null;
 	}
 
 	public String getFilename(SectionInfo info)
 	{
-		MultipartFile file = getMultipartFile(info);
+		Part file = getMultipartFile(info);
 		if( file != null )
 		{
-			return new File(file.getOriginalFilename()).getName();
+			return new File(file.getSubmittedFileName()).getName();
 		}
 		return null;
 	}
 
-	private MultipartFile getMultipartFile(SectionInfo info)
+	public static boolean isMultipartRequest(HttpServletRequest request)
+	{
+		String contentType = request.getContentType();
+		return contentType != null && contentType.toLowerCase(Locale.ENGLISH).startsWith("multipart/");
+	}
+
+	public Part getMultipartFile(SectionInfo info)
 	{
 		HttpServletRequest request = info.getRequest();
-		if( request instanceof MultipartHttpServletRequest )
+		if (!isMultipartRequest(request))
 		{
-			MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
-			return multiRequest.getFile(getSectionId());
+			return null;
 		}
-		return null;
+		try {
+			return request.getPart(getSectionId());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ServletException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

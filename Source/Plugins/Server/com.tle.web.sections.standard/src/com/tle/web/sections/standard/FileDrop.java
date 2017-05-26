@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
+import javax.servlet.http.Part;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -16,6 +15,8 @@ import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.js.JSAssignable;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.standard.model.HtmlFileDropState;
+
+import static com.tle.web.sections.standard.FileUpload.isMultipartRequest;
 
 /**
  * @author Dongsheng Cai
@@ -109,20 +110,24 @@ public class FileDrop extends AbstractEventOnlyComponent<HtmlFileDropState>
 	}
 
 	@Nullable
-	private MultipartFile getMultipartFile(SectionInfo info)
-	{
+	public Part getMultipartFile(SectionInfo info) {
 		HttpServletRequest request = info.getRequest();
-		if( request instanceof MultipartHttpServletRequest )
+		if (!isMultipartRequest(request))
 		{
-			MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
-			return multiRequest.getFile("files[]");
+			return null;
 		}
-		return null;
+		try {
+			return request.getPart("files[]");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ServletException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public long getFileSize(SectionInfo info)
 	{
-		MultipartFile file = getMultipartFile(info);
+		Part file = getMultipartFile(info);
 		if( file != null )
 		{
 			return file.getSize();
@@ -133,7 +138,7 @@ public class FileDrop extends AbstractEventOnlyComponent<HtmlFileDropState>
 	@Nullable
 	public InputStream getInputStream(SectionInfo info)
 	{
-		MultipartFile file = getMultipartFile(info);
+		Part file = getMultipartFile(info);
 		if( file != null )
 		{
 			try

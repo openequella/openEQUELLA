@@ -16,7 +16,6 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.FileInfo;
@@ -542,11 +541,6 @@ public class WebRepository implements LERepository
 	public Schema getSchema()
 	{
 		return state.getSchema();
-	}
-
-	public MultipartHttpServletRequest getMultiPartRequestHandler(HttpServletRequest request)
-	{
-		return (MultipartHttpServletRequest) request;
 	}
 
 	public ItemPack getItemPack()

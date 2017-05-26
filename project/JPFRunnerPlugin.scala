@@ -13,7 +13,7 @@ import scala.collection.JavaConversions._
 
 object JPFRunnerPlugin extends AutoPlugin {
 
-  case class JPFLibrary(id: String, libType: String, path: String, export: Boolean)
+  case class JPFLibrary(id: String, libType: String, path: String, export: Option[String])
 
   override def trigger: PluginTrigger = noTrigger
 
@@ -35,9 +35,9 @@ object JPFRunnerPlugin extends AutoPlugin {
           ManifestsWritten(
             allRuntimes.map { r =>
               val (pid, plugXml) = writeJPF(r.manifest,
-                r.code.filterNot(isDirectoryEmpty).map(f => JPFLibrary(f.getName, "code", f.getAbsolutePath + "/", true)) ++
-                  r.jars.map(f => JPFLibrary(f.getName, "code", f.getAbsolutePath, true)) ++
-                  r.resources.filterNot(isDirectoryEmpty).map(f => JPFLibrary(f.getName, "resources", f.getAbsolutePath + "/", false)))
+                r.code.filterNot(isDirectoryEmpty).map(f => JPFLibrary(f.getName, "code", f.getAbsolutePath + "/", Some("*.class"))) ++
+                  r.jars.map(f => JPFLibrary(f.getName, "code", f.getAbsolutePath, Some("*"))) ++
+                  r.resources.filterNot(isDirectoryEmpty).map(f => JPFLibrary(f.getName, "resources", f.getAbsolutePath + "/", None)))
               val outMan = manifests / pid / "plugin-jpf.xml"
               IO.write(outMan, plugXml)
               (outMan, pid)
@@ -54,9 +54,9 @@ object JPFRunnerPlugin extends AutoPlugin {
               val allCode = r.code.flatMap(f => (f ** "*.class").pair(rebase(f, "classes/"), false))
               val allResources = r.resources.flatMap(f => (f ***).pair(rebase(f, "resources/"), false))
               val allJars = r.jars.flatMap(f => flatRebase("lib/").apply(f).map((f, _)))
-              val libs = allCode.headOption.map(_ => JPFLibrary("code", "code", "classes/", true)) ++
-                          allResources.headOption.map(_ => JPFLibrary("resources", "resources", "resources/", false)) ++
-                          allJars.map(f => JPFLibrary(f._1.getName, "code", f._2, true))
+              val libs = allCode.headOption.map(_ => JPFLibrary("code", "code", "classes/", Some("*"))) ++
+                          allResources.headOption.map(_ => JPFLibrary("resources", "resources", "resources/", None)) ++
+                          allJars.map(f => JPFLibrary(f._1.getName, "code", f._2, Some("*")))
               val (id, manifest) = writeJPF(r.manifest, libs)
               val outJar = outBase / s"${id}.jar"
               IO.withTemporaryFile("jpf", "xml") { tf =>
@@ -100,7 +100,7 @@ object JPFRunnerPlugin extends AutoPlugin {
       rt.removeContent()
       jars.foreach { f =>
         val lib = new Element("library")
-        if (f.export) lib.addContent(new Element("export").setAttribute("prefix", "*"))
+        f.export.foreach(p => lib.addContent(new Element("export").setAttribute("prefix", p)))
         lib.setAttribute("id", f.id)
         lib.setAttribute("type", f.libType)
         lib.setAttribute("path", f.path)

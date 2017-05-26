@@ -50,7 +50,6 @@ libraryDependencies ++= Seq(
   "commons-configuration" % "commons-configuration" % "1.9",
   "commons-daemon" % "commons-daemon" % "1.0.15",
   "commons-discovery" % "commons-discovery" % "0.5",
-  "commons-fileupload" % "commons-fileupload" % "aarons-hacked-1.2.1.2",
   "commons-httpclient" % "commons-httpclient" % "3.1",
   "commons-io" % "commons-io" % "2.4",
   "commons-lang" % "commons-lang" % "2.6",
@@ -186,9 +185,9 @@ libraryDependencies ++= Seq(
   "org.springframework" % "spring-jdbc" % "2.5.5",
   "org.springframework" % "spring-tx" % "2.5.5",
   "org.springframework" % "spring-web" % "2.5.5",
-  "org.springframework" % "spring-webmvc" % "2.5.5" excludeAll (
-    ExclusionRule(organization = "jasperreports", name = "jasperreports")
-    ),
+//  "org.springframework" % "spring-webmvc" % "2.5.5" excludeAll (
+//    ExclusionRule(organization = "jasperreports", name = "jasperreports")
+//    ),
   "stax" % "stax-api" % "1.0.1",
   "taglibs" % "standard" % "1.1.2",
   "tomcat" % "jsp-api" % "5.5.23",
@@ -220,8 +219,6 @@ excludeDependencies ++= Seq(
   "bouncycastle" % "bcprov-jdk15",
   "org.bouncycastle" % "bcprov-jdk15"
 )
-
-dependencyOverrides += "commons-fileupload" % "commons-fileupload" % "aarons-hacked-1.2.1.2"
 
 unmanagedJars in Compile ++= oracleDriverJar.value.toSeq.classpath
 
