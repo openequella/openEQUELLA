@@ -66,7 +66,7 @@ versionProperties in ThisBuild := {
   val props = new Properties
   props.putAll(
     Map("version.mm" -> eqVersion.majorMinor,
-        "version.mmr" -> eqVersion.fullVersion,
+        "version.mmr" -> s"${eqVersion.majorMinor}.r${eqVersion.commits}",
         "version.display" -> s"${eqVersion.majorMinor}-${eqVersion.releaseType}",
         "version.commit" -> eqVersion.sha).asJava)
   val f = target.value / "version.properties"

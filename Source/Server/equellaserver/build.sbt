@@ -239,6 +239,7 @@ run := {
 
 mainClass in assembly := Some("com.tle.core.equella.runner.EQUELLAServer")
 
+fullClasspath in assembly := (fullClasspath in Compile).value
 
 assemblyMergeStrategy in assembly := {
   case "META-INF/axiom.xml" => MergeStrategy.first
@@ -273,15 +274,16 @@ runnerTasks(LocalProject("allPlugins"))
 
 upgradeZip := {
   val log = sLog.value
-  val ver = version.value
-  val outZip: File = target.value / s"tle-upgrade-$ver (6.4-Alpha).zip"
+  val ver = equellaVersion.value
+  val outZip: File = target.value / s"tle-upgrade-${ver.majorMinor}.r${ver.commits} (${ver.majorMinor}-${ver.releaseType}).zip"
+  val plugVer = ver.fullVersion
   val zipFiles = Seq(
     assembly.value -> "equella-server.jar",
     (assembly in LocalProject("UpgradeInstallation")).value -> "database-upgrader.jar",
     (assembly in LocalProject("conversion")).value -> "conversion-service.jar",
     (versionProperties in LocalProject("equella")).value -> "version.properties"
   )
-  val pluginJars = writeJars.value.plugins.map(t => (t._1, s"plugins/plugins/${t._2}-$ver.jar"))
+  val pluginJars = writeJars.value.plugins.map(t => (t._1, s"plugins/plugins/${t._2}-$plugVer.jar"))
   log.info(s"Creating upgrade zip ${outZip.absolutePath}")
   IO.zip(zipFiles ++ pluginJars, outZip)
   outZip
