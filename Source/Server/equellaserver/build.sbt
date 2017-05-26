@@ -44,7 +44,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "javax.ws.rs", name = "jsr311-api")
   ),
   "com.zaxxer" % "HikariCP" % "2.6.1",
-  "commons-beanutils" % "commons-beanutils-equella" % "1.8.2.1",
+  "commons-beanutils" % "commons-beanutils" % "1.9.3",
   "commons-codec" % "commons-codec" % "1.7",
   "commons-collections" % "commons-collections" % "3.2.1",
   "commons-configuration" % "commons-configuration" % "1.9",
@@ -214,7 +214,6 @@ excludeDependencies ++= Seq(
   "javassist" % "javassist",
   "org.sonatype.sisu.inject" % "cglib",
   "commons-logging" % "commons-logging",
-  "commons-beanutils" % "commons-beanutils", // we currently use "commons-beanutils-equella"
   "velocity" % "velocity",
   "rhino" % "js",
   "org.mozilla" % "rhino",
