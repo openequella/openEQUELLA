@@ -176,7 +176,11 @@ public class EmailServiceImpl implements EmailService
 		String smtpUser = systemConfigService.getSmtpUser();
 		String smtpPassword = systemConfigService.getSmtpPassword();
 		mailSettings.setServer(smtp);
-		mailSettings.setSender("donotreply@equella.com");
+		if (systemConfigService.getNoReplySender()!=null){
+		    mailSettings.setSender(systemConfigService.getNoReplySender());
+		}else{
+            mailSettings.setSender("noReply@noreply.com");
+        }
 		if( !Check.isEmpty(smtpUser) )
 		{
 			mailSettings.setUsername(smtpUser);

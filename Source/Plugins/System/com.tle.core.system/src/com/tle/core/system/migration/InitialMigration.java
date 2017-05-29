@@ -92,6 +92,7 @@ public class InitialMigration extends AbstractHibernateSchemaMigration
 			copyProperty(session, "admin.password");
 			copyProperty(session, "admin.emails");
 			copyProperty(session, "smtpserver");
+            copyProperty(session, "noreplysender");
 			// Delete system config from old table
 			session.createQuery("DELETE FROM ConfigurationProperty WHERE key.institutionId = 0").executeUpdate();
 		}
@@ -103,6 +104,7 @@ public class InitialMigration extends AbstractHibernateSchemaMigration
 			createConfig(session, "smtpserver", installSettings.getSmtpServer());
 			createConfig(session, "smtpuser", installSettings.getSmtpUser());
 			createConfig(session, "smtppassword", installSettings.getSmtpPassword());
+            createConfig(session, "noreplysender", installSettings.getNoReplySender());
 
 		}
 		createConfig(session, "unique.id", "1");

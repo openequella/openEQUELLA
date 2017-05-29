@@ -45,6 +45,8 @@ public class InstallSection extends AbstractPrototypeSection<InstallSection.Mode
 	private static Label LABEL_PASSWORDCONFIRM;
 	@PlugKey("install.emailsblank")
 	private static Label LABEL_EMAILSBLANK;
+    @PlugKey("install.noreplayemailsblank")
+    private static Label LABEL_NOREPLYEMAILSBLANK;
 	@PlugKey("install.smtpblank")
 	private static Label LABEL_SMTPBLANK;
 	@PlugKey("install.invalidemail")
@@ -60,6 +62,8 @@ public class InstallSection extends AbstractPrototypeSection<InstallSection.Mode
 	private TextField smtpUser;
 	@Component(stateful = false)
 	private TextField smtpPassword;
+    @Component(stateful = false)
+    private TextField noReplySender;
 	@Component(stateful = false)
 	private TextField smtpPasswordConfirm;
 	@Component(stateful = false)
@@ -152,10 +156,15 @@ public class InstallSection extends AbstractPrototypeSection<InstallSection.Mode
 			model.addError("smtppass", LABEL_SMTPUSERPASSWORD);
 		}
 
+        String mailNoReplySender = noReplySender.getValue(info);
+        if( Check.isEmpty(mailNoReplySender) )
+        {
+            model.addError("noreplysender", LABEL_NOREPLYEMAILSBLANK);
+        }
 		if( model.getErrors().isEmpty() )
 		{
 			InstallSettings installSettings = new InstallSettings(Hash.hashPassword(passwordText),
-				emailsText, smtpText, mailUsername, mailPassword);
+				emailsText, smtpText, mailUsername, mailPassword, mailNoReplySender);
 			migrationService.setInstallSettings(installSettings);
 			migrationService.executeMigrationsForSchemas(Collections.singleton(-1L));
 		}
@@ -214,6 +223,11 @@ public class InstallSection extends AbstractPrototypeSection<InstallSection.Mode
 	{
 		return smtpPassword;
 	}
+
+    public TextField getNoReplySender()
+    {
+        return noReplySender;
+    }
 
 	public TextField getSmtpPasswordConfirm()
 	{

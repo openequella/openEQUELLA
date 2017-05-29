@@ -35,8 +35,10 @@ import com.tle.web.sections.standard.annotations.Component;
 @SuppressWarnings("nls")
 public class EmailsTab extends AbstractPrototypeSection<EmailsTab.EmailsModel> implements HtmlRenderer
 {
-	@PlugKey("install.emailsblank")
+	@PlugKey("install.noreplyemailsblank")
 	private static Label LABEL_EMAILSBLANK;
+    @PlugKey("install.emailsblank")
+    private static Label LABEL_NOREPLYEMAILSBLANK;
 	@PlugKey("install.smtpblank")
 	private static Label LABEL_SMTPBLANK;
 	@PlugKey("install.invalidemail")
@@ -59,6 +61,8 @@ public class EmailsTab extends AbstractPrototypeSection<EmailsTab.EmailsModel> i
 
 	@Component
 	private TextField emails;
+    @Component
+    private TextField noReplySender;
 	@Component
 	private TextField smtpServer;
 	@Component
@@ -94,6 +98,7 @@ public class EmailsTab extends AbstractPrototypeSection<EmailsTab.EmailsModel> i
 		String smtpText = smtpServer.getValue(context);
 		String smtpUserText = smtpUser.getValue(context);
 		String smtpPasswordText = smtpPassword.getValue(context);
+        String emailsNoReplySender = noReplySender.getValue(context);
 
 		if( Check.isEmpty(emailsText) )
 		{
@@ -107,10 +112,15 @@ public class EmailsTab extends AbstractPrototypeSection<EmailsTab.EmailsModel> i
 				model.addError("emails", LABEL_INVALIDEMAIL);
 			}
 		}
-		if( Check.isEmpty(smtpText) )
+		if( Check.isEmpty(emailsNoReplySender) )
 		{
-			model.addError("smtp", LABEL_SMTPBLANK);
+			model.addError("noreplysender", LABEL_NOREPLYEMAILSBLANK);
 		}
+
+        if( Check.isEmpty(smtpText) )
+        {
+            model.addError("smtp", LABEL_SMTPBLANK);
+        }
 
 		if( (!Check.isEmpty(smtpUserText) && Check.isEmpty(smtpPasswordText))
 			|| (Check.isEmpty(smtpUserText) && !Check.isEmpty(smtpPasswordText)) )
@@ -125,6 +135,7 @@ public class EmailsTab extends AbstractPrototypeSection<EmailsTab.EmailsModel> i
 			systemConfigService.setSmtpServer(smtpServer.getValue(context));
 			systemConfigService.setSmtpUser(smtpUser.getValue(context));
 			systemConfigService.setSmtpPassword(smtpPassword.getValue(context));
+            systemConfigService.setNoReplySender(noReplySender.getValue(context));
 		}
 		else
 		{
@@ -144,6 +155,7 @@ public class EmailsTab extends AbstractPrototypeSection<EmailsTab.EmailsModel> i
 		smtpServer.setValue(context, systemConfigService.getSmtpServer());
 		smtpUser.setValue(context, systemConfigService.getSmtpUser());
 		smtpPassword.setValue(context, systemConfigService.getSmtpPassword());
+        noReplySender.setValue(context, systemConfigService.getNoReplySender());
 		confirmPassword.setValue(context, systemConfigService.getSmtpPassword());
 		return viewFactory.createResult("tab/emails.ftl", context);
 	}
@@ -178,6 +190,11 @@ public class EmailsTab extends AbstractPrototypeSection<EmailsTab.EmailsModel> i
 	{
 		return smtpPassword;
 	}
+
+    public TextField getNoReplySender()
+    {
+        return noReplySender;
+    }
 
 	public TextField getConfirmPassword()
 	{
