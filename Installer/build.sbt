@@ -20,7 +20,7 @@ lazy val equellaserver = LocalProject("equellaserver")
 lazy val upgradeManager = LocalProject("UpgradeManager")
 
 installerZip := {
-  val log = sLog.value
+  val log = streams.value.log
   val ver = equellaVersion.value
   val dirname = s"equella-installer-${ver.majorMinor}"
   val outZip = target.value / s"$dirname.zip"

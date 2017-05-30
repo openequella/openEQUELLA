@@ -38,7 +38,7 @@ prepareDevConfig := {
   imc.setProperty("imageMagick.path", imPath)
   imc.save(baseDir / "plugins/com.tle.core.imagemagick/config.properties")
 
-  val log = sLog.value
+  val log = streams.value.log
   log.info(s"Dev configuration with admin url of '$adminurl'")
   log.info(s"ImageMagick binary dir set to '$imPath'")
   log.info(s"Please edit database configuration file at '${(baseDir / "hibernate.properties").absolutePath}'")
