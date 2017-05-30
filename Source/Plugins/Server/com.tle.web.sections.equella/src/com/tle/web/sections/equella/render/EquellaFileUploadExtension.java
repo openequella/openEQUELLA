@@ -14,17 +14,18 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.jquery.Jq;
+import com.tle.web.sections.js.generic.AppendedElementId;
 import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.expression.ObjectExpression;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
-import com.tle.web.sections.render.CssInclude;
-import com.tle.web.sections.render.SectionRenderable;
+import com.tle.web.sections.render.*;
 import com.tle.web.sections.standard.RendererFactory;
 import com.tle.web.sections.standard.RendererFactoryExtension;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlFileUploadState;
 import com.tle.web.sections.standard.renderers.FileRenderer;
+import org.opensaml.xml.signature.P;
 
 /**
  * plugin defines the stateClassName as HtmlFileUploadState
@@ -41,7 +42,7 @@ public class EquellaFileUploadExtension implements RendererFactoryExtension
 		.make();
 	private static final IncludeFile JS = new IncludeFile(RESOURCES.url("scripts/render/jquery.fileinput.js"));
 
-	private static final ExternallyDefinedFunction INIT = new ExternallyDefinedFunction("customFileInput", JS);
+	private static final ExternallyDefinedFunction INIT = new ExternallyDefinedFunction("setupUpload", JS);
 
 	private static final String BROWSE_KEY = RESOURCES.key("equellafileupload.browse");
 	private static final String CHANGE_KEY = RESOURCES.key("equellafileupload.change");
@@ -54,17 +55,51 @@ public class EquellaFileUploadExtension implements RendererFactoryExtension
 		return new FancyFileRenderer((HtmlFileUploadState) state); // NOSONAR
 	}
 
-	protected static class FancyFileRenderer extends FileRenderer
+	public static class FancyFileRenderer extends TagRenderer
 	{
+		private final HtmlFileUploadState uploadState;
+		private boolean renderFile = true;
+		private boolean renderBar = true;
+		private int size;
+
+
 		protected FancyFileRenderer(HtmlFileUploadState state)
 		{
-			super(state);
+			super("div", new TagState(new AppendedElementId(state, "div")));
+			addClass("customfile");
+			this.uploadState = state;
 		}
 
+
+		public void setParts(boolean bar, boolean file)
+		{
+			renderBar = bar;
+			renderFile = file;
+		}
+
+		public void setSize(int size) {
+			this.size = size;
+		}
 		@Override
 		protected void prepareFirstAttributes(SectionWriter writer, Map<String, String> attrs) throws IOException
 		{
 			super.prepareFirstAttributes(writer, attrs);
+		}
+
+		@Override
+		protected void writeMiddle(SectionWriter writer) throws IOException {
+			super.writeMiddle(writer);
+			writer.writeTag("button", "class", "customfile-button focus "+EquellaButtonExtension.CLASS_BUTTON);
+			writer.writeText(CurrentLocale.get(BROWSE_KEY));
+			writer.endTag("button");
+			writer.writeTag("span", "class", "customfile-feedback");
+			writer.writeText(CurrentLocale.get(NONE_SELECTED_KEY));
+			writer.endTag("span");
+			TagState tagState = new TagState(uploadState);
+			tagState.addTagProcessor(new ExtraAttributes("type", "file", "tabIndex", "-1", "name", uploadState.getElementId(writer)));
+			TagRenderer fileTag = new TagRenderer("input", tagState);
+			fileTag.addClass("customfile-input");
+			writer.render(fileTag);
 		}
 
 		@Override
@@ -76,24 +111,18 @@ public class EquellaFileUploadExtension implements RendererFactoryExtension
 			{
 				info.preRender(CSS);
 				ObjectExpression oe = new ObjectExpression();
-				oe.put("browseText", CurrentLocale.get(BROWSE_KEY));
-				oe.put("changeText", CurrentLocale.get(CHANGE_KEY));
-				oe.put("noneSelectedText", CurrentLocale.get(NONE_SELECTED_KEY));
-				oe.put("extraButtonClasses", EquellaButtonExtension.CLASS_BUTTON);
-
 				Bookmark ajaxUploadUrl = uploadState.getAjaxUploadUrl();
+				oe.put("ajaxUploadForm", info.getHelper().getFormExpression());
 				if( ajaxUploadUrl != null )
 				{
 					oe.put("ajaxUploadUrl", ajaxUploadUrl.getHref());
-					oe.put("ajaxUploadForm", Jq.$(info.getHelper().getFormExpression()));
-					oe.put("ajaxBeforeUpload", uploadState.getAjaxBeforeUpload());
-					oe.put("ajaxAfterUpload", uploadState.getAjaxAfterUpload());
-					oe.put("uploadId", uploadState.getUploadId());
-					oe.put("maxFilesize", uploadState.getMaxFilesize());
-					oe.put("errorCallback", uploadState.getErrorCallback());
+					oe.put("validateFile", uploadState.getValidateFile());
 				}
-
-				info.addReadyStatements(Js.statement(Jq.methodCall(this, INIT, oe)));
+				else
+				{
+					info.getForm().setEncoding("multipart/form-data");
+				}
+				info.addReadyStatements(Js.call_s(INIT, this, oe));
 			}
 		}
 	}

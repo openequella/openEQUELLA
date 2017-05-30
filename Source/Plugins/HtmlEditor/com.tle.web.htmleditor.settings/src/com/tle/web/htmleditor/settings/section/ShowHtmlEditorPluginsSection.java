@@ -46,8 +46,6 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.TableState.TableHeaderRow;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
-import com.tle.web.upload.UploadService;
-import com.tle.web.upload.UploadService.Upload;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
@@ -86,8 +84,6 @@ public class ShowHtmlEditorPluginsSection
 	private HtmlEditorPluginService htmleditorPluginService;
 	@Inject
 	private TLEAclManager aclService;
-	@Inject
-	private UploadService uploadService;
 
 	@ViewFactory
 	private FreemarkerFactory viewFactory;
@@ -105,7 +101,6 @@ public class ShowHtmlEditorPluginsSection
 		final String uploadId = UUID.randomUUID().toString();
 		final BookmarkAndModify ajaxUploadUrl = new BookmarkAndModify(context, ajax.getModifier("uploadPlugin",
 			uploadId));
-		uploadPluginFile.setUploadId(context, uploadId);
 		uploadPluginFile.setAjaxUploadUrl(context, ajaxUploadUrl);
 		uploadPluginFile.setAjaxAfterUpload(context, Js.function(Js.call_s(updateFunction, uploadId)));
 
@@ -128,14 +123,9 @@ public class ShowHtmlEditorPluginsSection
 	{
 		String errorMessage = null;
 		final String uploadsId = uploadId != null ? uploadId : CurrentUser.getSessionID();
-		final Map<String, Upload> userUploads = uploadService.getUserUploads(uploadsId);
-		try
-		{
-			// There should only be one.......
-			for( Entry<String, Upload> upload : userUploads.entrySet() )
-			{
-				htmleditorPluginService.uploadPlugin(upload.getValue());
-			}
+
+		try {
+			htmleditorPluginService.uploadPlugin(uploadPluginFile.getInputStream(info));
 		}
 		catch( Exception ipe )
 		{
@@ -145,13 +135,6 @@ public class ShowHtmlEditorPluginsSection
 			if( cause != null )
 			{
 				errorMessage += ": " + cause.getMessage();
-			}
-		}
-		finally
-		{
-			for( Entry<String, Upload> upload : userUploads.entrySet() )
-			{
-				uploadService.removeUpload(uploadsId, upload.getKey());
 			}
 		}
 		UPLOADS.put(uploadId, new UploadResult(errorMessage));

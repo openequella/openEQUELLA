@@ -5,16 +5,12 @@ import com.tle.web.sections.js.JSAssignable;
 import com.tle.web.sections.js.JSCallable;
 
 /**
- * @author Aaron
+ * @author Aaron, Doolse
  */
 public class HtmlFileUploadState extends HtmlComponentState
 {
 	private Bookmark ajaxUploadUrl;
-	private JSAssignable ajaxBeforeUpload;
-	private JSAssignable ajaxAfterUpload;
-	private JSCallable errorCallback;
-	private String uploadId;
-	private int maxFilesize;
+	private JSAssignable validateFile;
 
 	public Bookmark getAjaxUploadUrl()
 	{
@@ -26,53 +22,14 @@ public class HtmlFileUploadState extends HtmlComponentState
 		this.ajaxUploadUrl = ajaxUploadUrl;
 	}
 
-	public JSAssignable getAjaxBeforeUpload()
+	public JSAssignable getValidateFile()
 	{
-		return ajaxBeforeUpload;
+		return validateFile;
 	}
 
-	public void setAjaxBeforeUpload(JSAssignable ajaxBeforeUpload)
+	public void setValidateFile(JSAssignable validateFile)
 	{
-		this.ajaxBeforeUpload = ajaxBeforeUpload;
+		this.validateFile = validateFile;
 	}
 
-	public JSAssignable getAjaxAfterUpload()
-	{
-		return ajaxAfterUpload;
-	}
-
-	public void setAjaxAfterUpload(JSAssignable ajaxAfterUpload)
-	{
-		this.ajaxAfterUpload = ajaxAfterUpload;
-	}
-
-	public String getUploadId()
-	{
-		return uploadId;
-	}
-
-	public void setUploadId(String uploadId)
-	{
-		this.uploadId = uploadId;
-	}
-
-	public int getMaxFilesize()
-	{
-		return maxFilesize;
-	}
-
-	public void setMaxFilesize(int maxFilesize)
-	{
-		this.maxFilesize = maxFilesize;
-	}
-
-	public JSCallable getErrorCallback()
-	{
-		return errorCallback;
-	}
-
-	public void setErrorCallback(JSCallable errorCallback)
-	{
-		this.errorCallback = errorCallback;
-	}
 }

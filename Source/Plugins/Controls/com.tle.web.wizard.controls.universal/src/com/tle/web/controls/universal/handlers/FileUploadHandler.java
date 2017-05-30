@@ -1,5 +1,6 @@
 package com.tle.web.controls.universal.handlers;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -16,6 +17,12 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.servlet.http.Part;
 
+import com.tle.web.sections.ajax.AjaxEffects;
+import com.tle.web.sections.ajax.handler.UpdateDomFunction;
+import com.tle.web.sections.events.PreRenderContext;
+import com.tle.web.sections.js.JSExpression;
+import com.tle.web.sections.js.generic.function.*;
+import com.tle.web.upload.StreamKilledException;
 import org.apache.log4j.Logger;
 
 import com.dytech.edge.common.FileInfo;
@@ -97,10 +104,6 @@ import com.tle.web.sections.js.JSCallAndReference;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.expression.ScriptVariable;
-import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
-import com.tle.web.sections.js.generic.function.IncludeFile;
-import com.tle.web.sections.js.generic.function.PassThroughFunction;
-import com.tle.web.sections.js.generic.function.ReloadFunction;
 import com.tle.web.sections.render.CombinedRenderer;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
@@ -128,9 +131,6 @@ import com.tle.web.selection.SelectedResourceDetails;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.filter.SelectionFilter;
-import com.tle.web.upload.UploadService;
-import com.tle.web.upload.UploadService.StreamKilledException;
-import com.tle.web.upload.UploadService.Upload;
 import com.tle.web.viewurl.AttachmentDetail;
 import com.tle.web.viewurl.ViewItemService;
 import com.tle.web.viewurl.ViewableResource;
@@ -154,6 +154,7 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 	private static final IncludeFile INCLUDE = new IncludeFile(resources.url("scripts/file/fileuploadhandler.js"));
 	private static final JSCallAndReference FILE_UPLOAD_HANDLER_CLASS = new ExternallyDefinedFunction(
 		"FileUploadHandler", INCLUDE);
+	private static final ExternallyDefinedFunction VALIDATE_FUNC = new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "validateFile", 5);
 
 	private static final ExternallyDefinedFunction DONE_UPLOAD = new ExternallyDefinedFunction(
 		FILE_UPLOAD_HANDLER_CLASS, "dndUploadFinishedCallback", 0, JQueryProgression.PRERENDER);
@@ -171,8 +172,6 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 	private FileSystemService fileSystemService;
 	@Inject
 	private MimeTypeService mimeService;
-	@Inject
-	private UploadService uploadService;
 	@Inject
 	private SelectionService selectionService;
 	@Inject
@@ -260,6 +259,7 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 	private JSCallAndReference resultsCallback;
 
 	private String stateKey;
+	private UpdateDomFunction updateProgressArea;
 
 	@Override
 	public SectionRenderable render(RenderContext context, DialogRenderOptions renderOptions)
@@ -292,6 +292,7 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 		final FileUploadModel model = getModel(context);
 
 		UploadState uploadState = getUploadState(context);
+		uploadState.processErrors();
 		List<UploadedFile> uploads = uploadState.getOrderedFiles();
 		model.setCanScrapbook(/* !settings.isNoScrapbook()&& */myContentService.isMyContentContributionAllowed());
 
@@ -315,30 +316,25 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 		if( fileSettings.isRestrictFileSize() )
 		{
 			fileDrop.setMaxFilesize(context, fileSettings.getMaxFileSize());
-			fileUpload.setMaxFilesize(context, fileSettings.getMaxFileSize());
 		}
 		if( fileSettings.isRestrictByMime() )
 		{
 			fileDrop.setAllowedMimetypes(context, fileSettings.getMimeTypes());
 		}
 
-		final BookmarkAndModify uploadUrl = new BookmarkAndModify(context, ajax.getModifier("processUploadOld", uploadId,
-			null));
-		final JSCallable errorCallback = ajax.getAjaxFunction("sizeErrorCallback");
-		fileUpload.setErrorCallback(context, errorCallback);
-		fileUpload.setUploadId(context, uploadId);
-		fileUpload.setAjaxUploadUrl(context, uploadUrl);
-		fileUpload.setAjaxAfterUpload(context, Js.function(Js.call_s(submitValuesFunction, uploadId)));
+		final BookmarkAndModify uploadUrl = new BookmarkAndModify(context, ajax.getModifier("processUploadOld"));
 
+		final JSAssignable errorCallback = PartiallyApply.partial(events.getSubmitValuesFunction("illegalFile"), 2);
+		final JSAssignable doneCallback = PartiallyApply.partial(events.getSubmitValuesFunction("finishedUpload"), 0);
+
+		JSAssignable startedUpload = PartiallyApply.partial(updateProgressArea, 2);
+		fileUpload.setAjaxUploadUrl(context, uploadUrl);
+		fileUpload.setValidateFile(context, Js.functionValue(Js.call(VALIDATE_FUNC, fileSettings.getMaxFileSize(),
+				fileSettings.getMimeTypes(), errorCallback, startedUpload, doneCallback)));
+
+		model.setProblemLabel(uploadState.getErrorLabel());
 		final List<UploadDisplay> uploadDisplays = new ArrayList<UploadDisplay>();
-		int uploadsSize = 0;
-		for( UploadedFile upload : uploads )
-		{
-			if( !upload.isErrored() )
-			{
-				uploadsSize++;
-			}
-		}
+		int uploadsSize = uploads.size();
 		boolean canContinue = uploadsSize > 0;
 		boolean canEdit = uploadsSize == 1;
 		UnmodifiableAttachments umodAtt = new UnmodifiableAttachments(dialogState.getRepository().getItem());
@@ -377,73 +373,36 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 			final UploadDisplay updis = new UploadDisplay();
 			final HtmlLinkState remove = new HtmlLinkState();
 
-			if( !upload.isErrored() )
+			updis.setRemove(new UnselectLinkRenderer(remove, uploadFinished ? LABEL_REMOVE_UPLOAD
+				: LABEL_CANCEL_UPLOAD));
+			// The description will be already populated in the case of
+			// import scrapbook content
+			updis.setFilename(Check.isEmpty(upload.getDescription()) ? upload.getFilename() : upload
+				.getDescription());
+
+			final HtmlComponentState progressDivState = new HtmlComponentState();
+			final DivRenderer progressDiv = new DivRenderer(progressDivState);
+			final String progressBarId = "u" + upload.getUuid();
+			progressDivState.setId(progressBarId);
+
+			if( !uploadFinished )
 			{
-				updis.setRemove(new UnselectLinkRenderer(remove, uploadFinished ? LABEL_REMOVE_UPLOAD
-					: LABEL_CANCEL_UPLOAD));
-				// The description will be already populated in the case of
-				// import scrapbook content
-				updis.setFilename(Check.isEmpty(upload.getDescription()) ? upload.getFilename() : upload
-					.getDescription());
-
-				final HtmlComponentState progressDivState = new HtmlComponentState();
-				final DivRenderer progressDiv = new DivRenderer(progressDivState);
-				final String progressBarId = "u" + upload.getUuid();
-				progressDivState.setId(progressBarId);
-
-				if( !uploadFinished )
-				{
-					canContinue = false;
-
-					final ScriptVariable uploadsInProgress = new ScriptVariable("uploadsInProgress");
-					final JSAssignable finCallback = Js.function(
-						Js.iff(Js.not(uploadsInProgress), Js.call_s(new ReloadFunction())), uploadsInProgress);
-
-					progressDivState.addReadyStatements(
-						Js.call_s(ProgressRenderer.WEBKIT_PROGRESS_FRAME, JQueryCore.getJQueryCoreUrl()),
-						Js.call_s(ProgressRenderer.SHOW_PROGRESS_FUNCTION_NOSTYLE,
-							resources.instUrl("progress/?id=" + upload.getFileUploadUuid()),
-							Jq.$(Type.ID, progressBarId), finCallback));
-
-					progressDiv.addClass("progressbar");
-					remove.setClickHandler(events.getNamedHandler("removeUpload", upload.getUuid()));
-				}
-				else
-				{
-					DivRenderer inner = new DivRenderer("");
-					inner.addClass("progress-bar-inner");
-					inner.addClass("complete");
-					progressDiv.setNestedRenderable(inner);
-
-					remove.setClickHandler(events.getNamedHandler("removeUpload", upload.getUuid()));
-				}
-
-				updis.setProgressDiv(progressDiv);
-				uploadDisplays.add(updis);
+				canContinue = false;
+				progressDiv.addClass("progressbar");
+				remove.setClickHandler(events.getNamedHandler("removeUpload", upload.getUuid()));
 			}
 			else
 			{
-				// if there was a problem in the file ahead of rendering, remove
-				// the file from
-				// the upload list but preserve the problem message as a warning
-				// in the model.
-				// Second TextLabel parameter is intended to append the
-				// offending filename to
-				// the rendered message. In using the underlying MessageFormat
-				// object, any extra
-				// values are inserted into the original result string according
-				// to their placeholder
-				// position (in the form {0} {1} etc).
-				model.setProblemLabel(new KeyLabel(upload.getProblemKey(), new TextLabel(upload.getFilename())));
-				canContinue = false;
-				removeUpload(context, upload.getUuid());
-				// user must have added files successfully already, let them
-				// continue
-				if( uploadsSize > 0 )
-				{
-					canContinue = true;
-				}
+				DivRenderer inner = new DivRenderer("");
+				inner.addClass("progress-bar-inner");
+				inner.addClass("complete");
+				progressDiv.setNestedRenderable(inner);
+
+				remove.setClickHandler(events.getNamedHandler("removeUpload", upload.getUuid()));
 			}
+
+			updis.setProgressDiv(progressDiv);
+			uploadDisplays.add(updis);
 		}
 
 		// all downloads finished, multiple files -> add the files and close
@@ -721,6 +680,19 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 		return files.get(0);
 	}
 
+	@EventHandlerMethod
+	public void finishedUpload(SectionInfo info)
+	{
+
+	}
+
+	@EventHandlerMethod
+	public void uploadingNow(SectionInfo info, String uploadId, String filename)
+	{
+		UploadState uploadState = getUploadState(info);
+		uploadState.initialiseUpload(uploadId, uniqueName(info, filename));
+	}
+
 	/**
 	 * Note: it only waits for the placeholder file to arrive, not to completely
 	 * upload. Basically this method ensures processUpload doesn't complete
@@ -733,6 +705,7 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 	public void checkUpload(SectionInfo info, String uploadId)
 	{
 		UploadState uploadState = getUploadState(info);
+		uploadState.clearErrorUnless(uploadId);
 		long timedout = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30);
 		int loops = 0;
 		while( !uploadState.isAvailable(uploadId) && System.currentTimeMillis() < timedout )
@@ -757,14 +730,21 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 		}
 	}
 
-	@AjaxMethod
-	public void sizeErrorCallback(SectionInfo info, String uuid)
+	@EventHandlerMethod
+	public void illegalFile(SectionInfo info, String filename, String reason)
 	{
-		// hacky as all hell
 		final UploadState uploadState = getUploadState(info);
-		final UploadedFile uploadedFile = new UploadedFile(uuid);
+		final UploadedFile uploadedFile = new UploadedFile(UUID.randomUUID().toString());
+		uploadedFile.setIntendedFilepath(filename);
 		uploadState.addUpload(uploadedFile);
-		uploadedFile.setProblemKey(LABEL_ERROR_MAXFILESIZE);
+		if ("size".equals(reason))
+		{
+			uploadedFile.setProblemKey(LABEL_ERROR_MAXFILESIZE);
+		}
+		else
+		{
+			uploadedFile.setProblemKey(KEY_INCORRECT_MIMETYPE);
+		}
 	}
 
 	public UploadState getUploadState(SectionInfo info)
@@ -972,6 +952,8 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 		filesFromScrapbookLink.setClickHandler(events.getNamedHandler("startSelection"));
 
 		resultsCallback = new PassThroughFunction("r" + id, events.getSubmitValuesFunction("selectionsMade"));
+		updateProgressArea = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("uploadingNow"),
+				ajax.getEffectFunction(AjaxGenerator.EffectType.REPLACE_IN_PLACE),"uploads");
 	}
 
 	/**
@@ -985,10 +967,7 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 		UploadedFile uploadedFile = uploadState.getUploadForUuid(uuid);
 		if( uploadedFile != null )
 		{
-			if( uploadedFile.getFileUploadUuid() != null )
-			{
-				uploadService.killUpload(uuid, uploadedFile.getFileUploadUuid());
-			}
+			uploadedFile.setCancelled(true);
 			fileSystemService.removeFile(getStagingFile(), uploadedFile.getFilepath());
 			// if the filename is null it hasn't even been uploaded to staging
 			// eg. the file was over a max file size restriction. don't even try
@@ -1008,9 +987,9 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 	}
 
 	@AjaxMethod
-	public SectionRenderable processUploadOld(SectionInfo info, @Nullable String uploadId, @Nullable String filename)
+	public SectionRenderable processUploadOld(SectionInfo info)
 	{
-		return processUpload(info, uploadId, filename, fileUpload.getMultipartFile(info));
+		return processUpload(info, info.getRequest().getHeader("X_UUID"), fileUpload.getFilename(info), fileUpload.getMultipartFile(info));
 	}
 
 	public SectionRenderable processUpload(SectionInfo info, @Nullable String uploadId, @Nullable String filename, Part upload)
@@ -1018,13 +997,8 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 		boolean success = true;
 		final UploadState uploadState = getUploadState(info);
 
-		final String uniqueFilename = uniqueName(info,
-			filename == null || filename.equals("null") ? fileUpload.getFilename(info) : filename);
-
-        final UploadedFile uploadedFile = new UploadedFile(uploadId);
-        uploadedFile.setFileUploadUuid(uploadId);
-        uploadedFile.setIntendedFilepath(uniqueFilename);
-        uploadState.addUpload(uploadedFile);
+		final String uniqueFilename = uniqueName(info, filename);
+        final UploadedFile uploadedFile = uploadState.initialiseUpload(uploadId, uniqueFilename);
         if( fileSettings.isRestrictByMime() && !isCorrectMimetype(uploadedFile) )
         {
             String actualPath = UPLOADS_FOLDER + '/' + uploadedFile.getIntendedFilepath();
@@ -1034,7 +1008,7 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
         }
         else
         {
-            try( InputStream in = upload.getInputStream() )
+            try( InputStream in = new CancellableStream(uploadedFile, upload.getInputStream()) )
             {
                 writeStreamToDisk(dialogState.getRepository(), uploadedFile, in);
                 validateUpload(info, uploadedFile);
@@ -1061,6 +1035,35 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
             }
         }
 		return new SimpleSectionResult(success);
+	}
+
+	private static class CancellableStream extends FilterInputStream {
+
+		private final UploadedFile upload;
+
+		public CancellableStream(UploadedFile upload, InputStream in) {
+			super(in);
+			this.upload = upload;
+		}
+
+		public void checkCancelled() throws IOException {
+			if (upload.isCancelled())
+			{
+				throw new StreamKilledException();
+			}
+		}
+
+		@Override
+		public int read() throws IOException {
+			checkCancelled();
+			return super.read();
+		}
+
+		@Override
+		public int read(byte[] b, int off, int len) throws IOException {
+			checkCancelled();
+			return super.read(b, off, len);
+		}
 	}
 
 	private String uniqueName(SectionInfo info, String filename)
@@ -1399,6 +1402,8 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 			.synchronizedMap(new HashMap<String, UploadedFile>());
 		private final List<UploadedFile> orderedFiles = Lists.newArrayList();
 		private final Set<String> erroredFiles = Sets.newHashSet();
+		private Label errorLabel = null;
+		private String errorUuid = null;
 
 		@Nullable
 		public synchronized UploadedFile getUploadForUuid(String file)
@@ -1433,6 +1438,58 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 		public synchronized List<UploadedFile> getOrderedFiles()
 		{
 			return Lists.newArrayList(orderedFiles);
+		}
+
+		public synchronized void processErrors()
+		{
+			List<String> erroredUuids = new ArrayList<>();
+			UploadedFile firstError = null;
+			for (UploadedFile file : uploadMap.values())
+			{
+				if (file.isErrored())
+				{
+					if (firstError == null)
+					{
+						firstError = file;
+					}
+					erroredUuids.add(file.getUuid());
+				}
+			}
+			for (String uuid : erroredUuids)
+			{
+				removeUpload(uuid);
+			}
+			if (firstError != null)
+			{
+				errorLabel = new KeyLabel(firstError.getProblemKey(), new TextLabel(firstError.getFilename()));
+				errorUuid = firstError.getUuid();
+			}
+		}
+
+		public Label getErrorLabel()
+		{
+			return errorLabel;
+		}
+
+		public synchronized void clearErrorUnless(String uploadId)
+		{
+			if (!uploadId.equals(errorUuid))
+			{
+				errorUuid = null;
+				errorLabel = null;
+			}
+		}
+
+		public synchronized UploadedFile initialiseUpload(String uploadId, String filename)
+		{
+			UploadedFile uploadedFile = uploadMap.get(uploadId);
+			if (uploadedFile == null)
+			{
+				uploadedFile = new UploadedFile(uploadId);
+				uploadedFile.setIntendedFilepath(filename);
+				addUpload(uploadedFile);
+			}
+			return uploadedFile;
 		}
 	}
 

@@ -41,6 +41,7 @@ public class UploadedFile implements Serializable, UniversalAttachment
 	private String extractedPath;
 	// Will be null if not a package or if unknown
 	private List<String> packageTypes;
+	private boolean cancelled;
 
 	public UploadedFile(String uuid)
 	{
@@ -256,5 +257,15 @@ public class UploadedFile implements Serializable, UniversalAttachment
 	public void setPackageTypes(List<String> packageTypes)
 	{
 		this.packageTypes = packageTypes;
+	}
+
+	public void setCancelled(boolean cancelled)
+	{
+		this.cancelled = cancelled;
+	}
+
+	public boolean isCancelled()
+	{
+		return cancelled;
 	}
 }

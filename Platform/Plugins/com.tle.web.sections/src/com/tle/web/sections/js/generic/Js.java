@@ -1,6 +1,8 @@
 package com.tle.web.sections.js.generic;
 
 import com.tle.annotation.NonNullByDefault;
+import com.tle.web.sections.events.PreRenderContext;
+import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.js.JSHandler;
 import com.tle.web.sections.js.JSAssignable;
 import com.tle.web.sections.js.JSCallAndReference;
@@ -168,5 +170,24 @@ public final class Js
 	public static AssignStatement assign(JSExpression set, Object value)
 	{
 		return new AssignStatement(set, value);
+	}
+
+	public static JSAssignable functionValue(JSExpression call) {
+		return new JSAssignable() {
+			@Override
+			public void preRender(PreRenderContext info) {
+				call.preRender(info);
+			}
+
+			@Override
+			public int getNumberOfParams(RenderContext context) {
+				return -1;
+			}
+
+			@Override
+			public String getExpression(RenderContext info) {
+				return call.getExpression(info);
+			}
+		};
 	}
 }

@@ -14,32 +14,32 @@
 	<div id="contribute-dnd-progress" class="filedrop-progress-container">
 		<div class="clear"></div>
 	</div>	
-	<div id="uploads">
-	<#if m.uploads?size gt 0>
-		<br>
-		
-		<#list m.uploads as upload>
-			<div class="file-upload">
-				<span class="file-name"><strong>${upload.filename?html}</strong></span>
-				
-				<span class="file-upload-progress">
-					<@render section=upload.progressDiv class="progress-bar" />
-					
-					<@render upload.remove />
-				</span>
-			</div>
-			<#if upload.problemLabel??>
-				<p class="ctrlinvalidmessage">${upload.problemLabel}</p>
-			</#if>
-		</#list>
-		<br>
-	</#if>
-	</div>
-	
-	<#-- need to find a way to focus this without it screwing up the styling -->
-	<@file section=s.fileUpload renderBar=false class="focus" />
+	<@div id="uploads">
+        <#if m.uploads?size gt 0>
+            <br>
 
-	<@filedrop section=s.fileDrop id="filedndarea"> </@filedrop>
+            <#list m.uploads as upload>
+                <div class="file-upload">
+                    <span class="file-name"><strong>${upload.filename?html}</strong></span>
+
+                    <span class="file-upload-progress">
+                        <@render section=upload.progressDiv class="progress-bar" />
+
+                        <@render upload.remove />
+                    </span>
+                </div>
+                <#if upload.problemLabel??>
+                    <p class="ctrlinvalidmessage">${upload.problemLabel}</p>
+                </#if>
+            </#list>
+            <br>
+        </#if>
+
+        <#-- need to find a way to focus this without it screwing up the styling -->
+        <@file section=s.fileUpload renderBar=false class="focus" />
+
+        <@filedrop section=s.fileDrop id="filedndarea"> </@filedrop>
+	</@div>
 
 	<#if m.canScrapbook>
 		<div class="addlink">

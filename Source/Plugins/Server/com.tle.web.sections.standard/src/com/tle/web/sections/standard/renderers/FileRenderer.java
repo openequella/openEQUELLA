@@ -72,14 +72,6 @@ public class FileRenderer extends AbstractInputRenderer implements JSDisableable
 		{
 			attrs.put("size", Integer.toString(size));
 		}
-		if( uploadState != null )
-		{
-			final String uploadId = uploadState.getUploadId();
-			if( uploadId != null )
-			{
-				attrs.put("data-uploadId", uploadId);
-			}
-		}
 	}
 
 	private void renderBar(SectionWriter writer) throws IOException
