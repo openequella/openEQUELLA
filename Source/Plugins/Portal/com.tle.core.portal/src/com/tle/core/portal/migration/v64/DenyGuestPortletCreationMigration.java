@@ -38,8 +38,6 @@ import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.SecurityConstants.Recipient;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.impl.HibernateMigrationHelper;
-import com.tle.core.institution.migration.v64.NewPagesACLsMigration.FakeAccessExpression;
-import com.tle.core.institution.migration.v64.NewPagesACLsMigration.FakeAccessExpressionExpressionP;
 import com.tle.core.migration.AbstractHibernateDataMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
@@ -67,14 +65,14 @@ public class DenyGuestPortletCreationMigration extends AbstractHibernateDataMigr
 	{
 		return new MigrationInfo(KEY_PREFIX + "migration.denyguestportletcreation.title");
 	}
-	
+
 	private void createAccessExpressionP(Session session, FakeAccessExpression expr)
 	{
 		FakeAccessExpressionExpressionP ae = new FakeAccessExpressionExpressionP();
 		ae.accessExpressionId = expr.id;
 		ae.element = expr.expression.trim();
 		session.save(ae);
-		
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -85,8 +83,8 @@ public class DenyGuestPortletCreationMigration extends AbstractHibernateDataMigr
 		LOGGER.debug("Running com.tle.core.portal.migration.v64.DenyGuestPortletCreationMigration");
 		FakeAccessExpression expr = null;
 
-		final List<FakeAccessEntry> qr = session.createQuery(
-			"FROM AccessEntry where privilege = 'CREATE_PORTLET' and targetObject = '*'").list();
+		final List<FakeAccessEntry> qr = session
+			.createQuery("FROM AccessEntry where privilege = 'CREATE_PORTLET' and targetObject = '*'").list();
 		LOGGER.debug("Found " + qr.size() + " potential CREATE_PORTLET privs to convert");
 		for( FakeAccessEntry entry : qr )
 		{
@@ -138,7 +136,8 @@ public class DenyGuestPortletCreationMigration extends AbstractHibernateDataMigr
 	@Override
 	protected Class<?>[] getDomainClasses()
 	{
-		return new Class<?>[]{FakeInstitution.class, FakeAccessEntry.class, FakeAccessExpression.class, FakeAccessExpressionExpressionP.class};
+		return new Class<?>[]{FakeInstitution.class, FakeAccessEntry.class, FakeAccessExpression.class,
+				FakeAccessExpressionExpressionP.class};
 	}
 
 	@Entity(name = "Institution")
@@ -195,7 +194,7 @@ public class DenyGuestPortletCreationMigration extends AbstractHibernateDataMigr
 		@Column(length = 1024)
 		String expression;
 	}
-	
+
 	@AccessType("field")
 	@Entity(name = "AccessExpressionExpression_P")
 	public static class FakeAccessExpressionExpressionP implements Serializable

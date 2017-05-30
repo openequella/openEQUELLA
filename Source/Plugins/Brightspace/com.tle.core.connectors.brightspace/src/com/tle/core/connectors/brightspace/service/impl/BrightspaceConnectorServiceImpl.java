@@ -448,17 +448,22 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
 	private void appendFindUsages(BrightspaceUserContext userContext, List<ConnectorContent> usages,
 		Connector connector, String uuid, int version, boolean archived)
 	{
-		final BrightspaceUsageResults results = sendBrightspaceData(connector,
-			CUSTOM_API + "/linkinfo/" + uuid + "/" + version + "/?limit=1000", BrightspaceUsageResults.class, null,
-			userContext, Method.GET);
+		final StringBuilder url = new StringBuilder(CUSTOM_API + "/linkinfo/" + uuid + "/" + version + "/?limit=1000");
+		if( archived )
+		{
+			url.append("&showInactive=true");
+		}
+
+		final BrightspaceUsageResults results = sendBrightspaceData(connector, url.toString(),
+			BrightspaceUsageResults.class, null, userContext, Method.GET);
 
 		final BrightspaceEquellaLink[] objects = results.getObjects();
 		for( BrightspaceEquellaLink link : objects )
 		{
-			if( link.getVisible() || archived )
-			{
-				usages.add(convertUsage(link));
-			}
+			//if( link.getVisible() || archived )
+			//{
+			usages.add(convertUsage(link));
+			//}
 		}
 	}
 
@@ -488,15 +493,19 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
 		{
 			qs.append("&parentmoduleid=").append(folderId);
 		}
+		if (archived)
+		{
+			qs.append("&showInactive=true");
+		}
 		final BrightspaceUsageResults results = sendBrightspaceData(connector, CUSTOM_API + "/links/" + qs.toString(),
 			BrightspaceUsageResults.class, null, userContext, Method.GET);
 		final BrightspaceEquellaLink[] objects = results.getObjects();
 		for( BrightspaceEquellaLink link : objects )
 		{
-			if( link.getVisible() || archived )
-			{
+			//if( link.getVisible() || archived )
+			//{
 				usages.add(convertUsage(link));
-			}
+			//}
 		}
 		return new SimpleSearchResults<ConnectorContent>(usages, usages.size(), offset, results.getResultSetCount());
 	}

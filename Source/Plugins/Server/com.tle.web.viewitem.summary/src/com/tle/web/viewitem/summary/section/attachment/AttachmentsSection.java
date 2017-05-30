@@ -32,7 +32,6 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
-import com.tle.beans.item.IItem;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.ImsAttachment;
@@ -162,7 +161,8 @@ public class AttachmentsSection extends AbstractAttachmentsSection<Item, Attachm
 	@Override
 	protected AttachmentViewFilter getCustomFilter(SectionInfo info, ViewableItem<Item> vitem, boolean filtered)
 	{
-		return new AttachmentViewFilter() {
+		return new AttachmentViewFilter()
+		{
 			@Override
 			public boolean shouldBeDisplayed(SectionInfo info, AttachmentView attachmentView)
 			{
@@ -171,7 +171,7 @@ public class AttachmentsSection extends AbstractAttachmentsSection<Item, Attachm
 					return true;
 				}
 
-				if (!filtered && attachmentView.getAttachment().getAttachmentType() == AttachmentType.IMSRES)
+				if( !filtered && attachmentView.getAttachment().getAttachmentType() == AttachmentType.IMSRES )
 				{
 					return true;
 				}
@@ -213,17 +213,23 @@ public class AttachmentsSection extends AbstractAttachmentsSection<Item, Attachm
 		}
 	}
 
+	@Override
 	protected boolean isFiltered(ViewableItem<Item> viewableItem)
 	{
-		if (!metadataTargets.isEmpty()) {
+		if( !metadataTargets.isEmpty() )
+		{
 			UnmodifiableAttachments attachments = new UnmodifiableAttachments(viewableItem.getItem());
 			ImsAttachment ims = attachments.getIms();
-			if (ims != null) {
+			if( ims != null )
+			{
 				PropBagEx xml = viewableItem.getItemxml();
 				String attachmentUuid = ims.getUuid();
-				for (String target : metadataTargets) {
-					for (String val : xml.getNodeList(target)) {
-						if (val.equals(attachmentUuid)) {
+				for( String target : metadataTargets )
+				{
+					for( String val : xml.getNodeList(target) )
+					{
+						if( val.equals(attachmentUuid) )
+						{
 							return false;
 						}
 					}
