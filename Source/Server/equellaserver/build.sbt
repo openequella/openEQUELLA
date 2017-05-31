@@ -270,7 +270,7 @@ collectJars := {
 runnerTasks(LocalProject("allPlugins"))
 
 upgradeZip := {
-  val log = sLog.value
+  val log = streams.value.log
   val ver = equellaVersion.value
   val outZip: File = target.value / s"tle-upgrade-${ver.majorMinor}.r${ver.commits} (${ver.majorMinor}-${ver.releaseType}).zip"
   val plugVer = ver.fullVersion
