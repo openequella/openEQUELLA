@@ -6,7 +6,6 @@
 		<import plugin-id="com.tle.common.scripting" />
 		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.ims" />
-		<import plugin-id="com.tle.mets" />
 		<import plugin-id="com.tle.mycontent" />
 		<import plugin-id="com.tle.web.htmleditor" />
 		<import plugin-id="com.tle.web.ims" />
@@ -85,11 +84,6 @@
 	<extension plugin-id="com.tle.ims" point-id="imsAttachmentExporter" id="mypagesImsAttachmentExporter">
 		<parameter id="id" value="mypagesImsAttachmentExporter" />
 		<parameter id="class" value="bean:com.tle.mypages.ims.MyPagesIMSExporter" />
-	</extension>
-
-	<extension plugin-id="com.tle.mets" point-id="exporterimporter" id="mypagesmetsexporter">
-		<parameter id="id" value="mypagesmetsexporter" />
-		<parameter id="bean" value="bean:com.tle.mypages.mets.MyPagesMetsAttachmentImporterExporter" />
 	</extension>
 
 	<extension plugin-id="com.tle.web.api.item.equella.serializer" point-id="attachmentSerializer" id="htmlAttachmentSerializer">
