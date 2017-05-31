@@ -22,6 +22,8 @@ import com.tle.web.sections.ajax.handler.UpdateDomFunction;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.js.JSExpression;
 import com.tle.web.sections.js.generic.function.*;
+import com.tle.web.sections.standard.*;
+import com.tle.web.sections.standard.model.*;
 import com.tle.web.upload.StreamKilledException;
 import org.apache.log4j.Logger;
 
@@ -110,17 +112,7 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.SimpleSectionResult;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.result.util.KeyLabel;
-import com.tle.web.sections.standard.Button;
-import com.tle.web.sections.standard.FileDrop;
-import com.tle.web.sections.standard.FileUpload;
-import com.tle.web.sections.standard.Link;
-import com.tle.web.sections.standard.Table;
 import com.tle.web.sections.standard.annotations.Component;
-import com.tle.web.sections.standard.model.DynamicHtmlListModel;
-import com.tle.web.sections.standard.model.HtmlComponentState;
-import com.tle.web.sections.standard.model.HtmlLinkState;
-import com.tle.web.sections.standard.model.Option;
-import com.tle.web.sections.standard.model.TableState;
 import com.tle.web.sections.standard.model.TableState.TableCell;
 import com.tle.web.sections.standard.renderers.DivRenderer;
 import com.tle.web.sections.standard.renderers.ImageRenderer;
@@ -296,31 +288,6 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 		List<UploadedFile> uploads = uploadState.getOrderedFiles();
 		model.setCanScrapbook(/* !settings.isNoScrapbook()&& */myContentService.isMyContentContributionAllowed());
 
-		final String uploadId = UUID.randomUUID().toString();
-		final SubmitValuesFunction submitValuesFunction = events.getSubmitValuesFunction("checkUpload");
-		submitValuesFunction.setBlockFurtherSubmission(false);
-
-		fileDrop.setUploadId(context, uploadId);
-		fileDrop.setAjaxMethod(context, ajax.getAjaxFunction("processUploadDND"));
-		fileDrop.setMaxFiles(context, -1);
-		fileDrop.setProgressAreaId(context, null);
-		final ScriptVariable uploadIdVar = new ScriptVariable("uploadId");
-
-		final JSAssignable ajaxAfterUpload = Js.function(Js.call_s(CHECK_UPLOAD,
-			Js.function(Js.call_s(submitValuesFunction, uploadIdVar), uploadIdVar), uploadIdVar), uploadIdVar);
-		fileDrop.setAjaxAfterUpload(context, ajaxAfterUpload);
-		fileDrop.setUploadFinishedCallback(context, DONE_UPLOAD);
-		fileDrop.setBanned(context, configService.getProperties(new QuotaSettings()).getBannedExtensions());
-		fileDrop.setMimetypeErrorMessage(context, CurrentLocale.get(KEY_INCORRECT_MIMETYPE_DND));
-		fileDrop.setMaxFilesizeErrorMessage(context, CurrentLocale.get(KEY_MAX_FILESIZE));
-		if( fileSettings.isRestrictFileSize() )
-		{
-			fileDrop.setMaxFilesize(context, fileSettings.getMaxFileSize());
-		}
-		if( fileSettings.isRestrictByMime() )
-		{
-			fileDrop.setAllowedMimetypes(context, fileSettings.getMimeTypes());
-		}
 
 		final BookmarkAndModify uploadUrl = new BookmarkAndModify(context, ajax.getModifier("processUploadOld"));
 
@@ -328,9 +295,13 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 		final JSAssignable doneCallback = PartiallyApply.partial(events.getSubmitValuesFunction("finishedUpload"), 0);
 
 		JSAssignable startedUpload = PartiallyApply.partial(updateProgressArea, 2);
+		JSAssignable validateFile = Js.functionValue(Js.call(VALIDATE_FUNC, fileSettings.getMaxFileSize(),
+				fileSettings.getMimeTypes(), errorCallback, startedUpload, doneCallback));
+
 		fileUpload.setAjaxUploadUrl(context, uploadUrl);
-		fileUpload.setValidateFile(context, Js.functionValue(Js.call(VALIDATE_FUNC, fileSettings.getMaxFileSize(),
-				fileSettings.getMimeTypes(), errorCallback, startedUpload, doneCallback)));
+		fileUpload.setValidateFile(context, validateFile);
+		fileDrop.setAjaxUploadUrl(context, new BookmarkAndModify(context, ajax.getModifier("processUploadDND")));
+		fileDrop.setValidateFile(context, validateFile);
 
 		model.setProblemLabel(uploadState.getErrorLabel());
 		final List<UploadDisplay> uploadDisplays = new ArrayList<UploadDisplay>();
@@ -389,7 +360,6 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 			{
 				canContinue = false;
 				progressDiv.addClass("progressbar");
-				remove.setClickHandler(events.getNamedHandler("removeUpload", upload.getUuid()));
 			}
 			else
 			{
@@ -398,8 +368,8 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 				inner.addClass("complete");
 				progressDiv.setNestedRenderable(inner);
 
-				remove.setClickHandler(events.getNamedHandler("removeUpload", upload.getUuid()));
 			}
+			remove.setClickHandler(events.getNamedHandler("removeUpload", upload.getUuid()));
 
 			updis.setProgressDiv(progressDiv);
 			uploadDisplays.add(updis);
@@ -693,43 +663,6 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 		uploadState.initialiseUpload(uploadId, uniqueName(info, filename));
 	}
 
-	/**
-	 * Note: it only waits for the placeholder file to arrive, not to completely
-	 * upload. Basically this method ensures processUpload doesn't complete
-	 * before the file is there to display.
-	 *
-	 * @param info
-	 * @param newFileUuid
-	 */
-	@EventHandlerMethod
-	public void checkUpload(SectionInfo info, String uploadId)
-	{
-		UploadState uploadState = getUploadState(info);
-		uploadState.clearErrorUnless(uploadId);
-		long timedout = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30);
-		int loops = 0;
-		while( !uploadState.isAvailable(uploadId) && System.currentTimeMillis() < timedout )
-		{
-			loops++;
-			try
-			{
-				Thread.sleep(250);
-			}
-			catch( InterruptedException e )
-			{
-				return;
-			}
-		}
-		if( LOGGER.isDebugEnabled() )
-		{
-			LOGGER.debug("checkUpload looped " + loops + " times");
-		}
-		if( System.currentTimeMillis() >= timedout )
-		{
-			LOGGER.warn("Waiting for upload timed out");
-		}
-	}
-
 	@EventHandlerMethod
 	public void illegalFile(SectionInfo info, String filename, String reason)
 	{
@@ -981,19 +914,22 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 	}
 
 	@AjaxMethod
-	public SectionRenderable processUploadDND(SectionInfo info, @Nullable String uploadId, @Nullable String filename)
+	public SectionRenderable processUploadDND(SectionInfo info)
 	{
-		return processUpload(info, uploadId, filename, fileDrop.getMultipartFile(info));
+		return processUpload(info, fileDrop);
 	}
 
 	@AjaxMethod
 	public SectionRenderable processUploadOld(SectionInfo info)
 	{
-		return processUpload(info, info.getRequest().getHeader("X_UUID"), fileUpload.getFilename(info), fileUpload.getMultipartFile(info));
+		return processUpload(info, fileUpload);
 	}
 
-	public SectionRenderable processUpload(SectionInfo info, @Nullable String uploadId, @Nullable String filename, Part upload)
+	public <S extends HtmlFileUploadState> SectionRenderable processUpload(SectionInfo info, AbstractFileUpload<S> uploader)
 	{
+		Part upload = uploader.getMultipartFile(info);
+		String filename = upload.getName();
+		String uploadId = info.getRequest().getHeader("X_UUID");
 		boolean success = true;
 		final UploadState uploadState = getUploadState(info);
 

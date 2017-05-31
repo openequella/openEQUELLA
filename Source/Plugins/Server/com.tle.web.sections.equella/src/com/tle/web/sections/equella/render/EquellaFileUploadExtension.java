@@ -112,7 +112,6 @@ public class EquellaFileUploadExtension implements RendererFactoryExtension
 				info.preRender(CSS);
 				ObjectExpression oe = new ObjectExpression();
 				Bookmark ajaxUploadUrl = uploadState.getAjaxUploadUrl();
-				oe.put("ajaxUploadForm", info.getHelper().getFormExpression());
 				if( ajaxUploadUrl != null )
 				{
 					oe.put("ajaxUploadUrl", ajaxUploadUrl.getHref());

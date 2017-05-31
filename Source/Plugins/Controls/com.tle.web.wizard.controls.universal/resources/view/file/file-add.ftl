@@ -38,7 +38,7 @@
         <#-- need to find a way to focus this without it screwing up the styling -->
         <@file section=s.fileUpload renderBar=false class="focus" />
 
-        <@filedrop section=s.fileDrop id="filedndarea"> </@filedrop>
+        <@filedrop section=s.fileDrop> </@filedrop>
 	</@div>
 
 	<#if m.canScrapbook>

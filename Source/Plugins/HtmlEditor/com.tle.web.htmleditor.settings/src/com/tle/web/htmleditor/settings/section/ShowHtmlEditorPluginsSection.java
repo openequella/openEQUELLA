@@ -102,7 +102,7 @@ public class ShowHtmlEditorPluginsSection
 		final BookmarkAndModify ajaxUploadUrl = new BookmarkAndModify(context, ajax.getModifier("uploadPlugin",
 			uploadId));
 		uploadPluginFile.setAjaxUploadUrl(context, ajaxUploadUrl);
-		uploadPluginFile.setAjaxAfterUpload(context, Js.function(Js.call_s(updateFunction, uploadId)));
+		uploadPluginFile.setAjaxAfterUpload(context, Js.call_s(updateFunction, uploadId));
 
 		final ShowHtmlEditorPluginsModel model = getModel(context);
 		model.setCanAdd(!aclService.filterNonGrantedPrivileges(HtmlEditorPluginConstants.PRIV_CREATE_HTMLEDITOR_PLUGIN)

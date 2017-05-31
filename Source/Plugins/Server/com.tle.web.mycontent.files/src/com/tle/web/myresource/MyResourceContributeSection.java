@@ -42,6 +42,7 @@ import com.tle.web.i18n.BundleNameValue;
 import com.tle.web.inplaceeditor.service.InPlaceEditorWebService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
+import com.tle.web.sections.BookmarkModifier;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
@@ -57,6 +58,7 @@ import com.tle.web.sections.equella.annotation.PlugURL;
 import com.tle.web.sections.equella.receipt.ReceiptService;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
+import com.tle.web.sections.events.js.BookmarkAndModify;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.events.js.JSHandler;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
@@ -68,6 +70,7 @@ import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
+import com.tle.web.sections.js.generic.function.PartiallyApply;
 import com.tle.web.sections.js.generic.function.RuntimeFunction;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.Label;
@@ -96,6 +99,7 @@ import com.tle.web.template.section.event.BlueBarRenderable;
 import com.tle.web.viewable.impl.ViewableItemFactory;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceService;
+import org.joda.time.Partial;
 
 @SuppressWarnings("nls")
 @Bind
@@ -216,22 +220,17 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 	private static final IncludeFile INCLUDE = new IncludeFile(URL_HELPER.url("scripts/scrapbook.js"));
 	private static final JSCallAndReference SCRAPBOOK_CLASS = new ExternallyDefinedFunction("Scrapbook", INCLUDE);
 
-	private static final ExternallyDefinedFunction DONE_UPLOAD = new ExternallyDefinedFunction(SCRAPBOOK_CLASS,
-		"dndUploadFinishedCallback", 0);
+	private static final ExternallyDefinedFunction VALIDATE_FILE = new ExternallyDefinedFunction(SCRAPBOOK_CLASS,
+		"validateFile", 0);
 
 	@Override
 	public SectionResult renderHtml(RenderEventContext context)
 	{
 		final MyResourceModel model = getModel(context);
 
-		fileDrop.setAjaxMethod(context, ajax.getAjaxFunction("dndUpload"));
-		fileDrop.setMaxFiles(context, -1);
-		final List<String> hiddenIds = Arrays.asList("dndOptionsList", "dndTagForm", "dndHelpTxt");
-		fileDrop.setFallbackHiddenIds(context, hiddenIds);
-		fileDrop.setProgressAreaId(context, "scrapbook-upload-progress");
-		fileDrop.setUploadFinishedCallback(context, DONE_UPLOAD);
-		Collection<String> banned = configService.getProperties(new QuotaSettings()).getBannedExtensions();
-		fileDrop.setBanned(context, banned);
+		fileDrop.setAjaxUploadUrl(context, new BookmarkAndModify(context, ajax.getModifier("dndUpload")));
+		fileDrop.setValidateFile(context, Js.functionValue(Js.call(VALIDATE_FILE,
+				PartiallyApply.partial(ajax.getAjaxFunction("contributeDND"), 3))));
 
 		if( model.isEditing() )
 		{
@@ -399,16 +398,7 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 
 		ops.add(myContentService.getEditOperation(fields, filename, stream, null, !newItem, !newItem));
 		ops.add(workflowFactory.save());
-		try
-		{
-			itemService.operation(itemId, ops.toArray(new WorkflowOperation[ops.size()]));
-
-		}
-		catch( Exception e )
-		{
-			throw new AjaxException(e);
-		}
-
+		itemService.operation(itemId, ops.toArray(new WorkflowOperation[ops.size()]));
 	}
 
 	private boolean isArchiveFile(String filename)
@@ -421,11 +411,9 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 		return false;
 	}
 
-	/**
-	 * @throws IOException
-	 */
+
 	@AjaxMethod
-	public boolean dndUpload(SectionInfo info, String uploadId, String filename) throws IOException
+	public boolean contributeDND(SectionInfo info, String stagingId, String filename) throws Exception
 	{
 		FileDropAction action = archiveOptionsDropDown.getSelectedValue(info);
 		final SectionInfo theInfo = info;
@@ -434,7 +422,8 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 		{
 			fn = filename.toLowerCase();
 		}
-		InputStream stream = fileDrop.getInputStream(info);
+		StagingFile stagingSrc = new StagingFile(stagingId);
+		InputStream stream = fileSystemService.read(stagingSrc, "file");
 
 		if( isArchiveFile(fn) )
 		{
@@ -477,11 +466,20 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 		}
 		if( (!action.isCommitArchive() && isArchiveFile(fn)) || !isArchiveFile(fn) )
 		{
-
 			this.processStream(info, stream, filename);
 		}
-
+		fileSystemService.removeFile(stagingSrc);
 		return true;
+	}
+
+	/**
+	 * @throws IOException
+	 */
+	@AjaxMethod
+	public String dndUpload(SectionInfo info) throws IOException {
+		final StagingFile staging = stagingService.createStagingArea();
+		fileSystemService.write(staging, "file", fileDrop.getInputStream(info), false);
+		return staging.getUuid();
 	}
 
 	@EventHandlerMethod

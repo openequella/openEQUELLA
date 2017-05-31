@@ -25,6 +25,8 @@
 	<div id="scrapbook-upload-progress" class="filedrop-progress-container">
 		<div class="clear"></div>
 	</div>
+	<div id="dndfiles">
+	</div>
 	<div id="dndOptionsList">
 		<div class="control ctrlbody">
 			<label for="${s.archiveOptionsDropDown}">
@@ -33,7 +35,7 @@
 			<@render s.archiveOptionsDropDown />
 		</div>
 	</div>
-	<@filedrop section=s.fileDrop id="filedndarea"> </@filedrop>
+	<@filedrop section=s.fileDrop/>
 </#if>
 
 <h3>${m.singleTitle}</h3>
