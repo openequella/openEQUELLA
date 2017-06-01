@@ -1,34 +1,17 @@
-/**
- * Script objects of a more advanced nature. The currently available objects
- * are:
- * <table>
- * <thead>
- * <tr>
- * <td>Variable Name</td>
- * <td>Interface</td>
- * </tr>
- * </thead> <tbody>
- * <tr>
- * <td>drm</td>
- * <td>DrmScriptObject</td>
- * </tr>
- * <tr>
- * <td>images</td>
- * <td>ImagesScriptObject</td>
- * </tr>
- * <tr>
- * <td>mime</td>
- * <td>MimeScriptObject</td>
- * </tr>
- * <tr>
- * <td>nav</td>
- * <td>NavigationScriptObject</td>
- * </tr>
- * <tr>
- * <td>lang</td>
- * <td>RegionalScriptObject</td>
- * </tr>
- * </tbody>
- * </table>
+/*
+ * Copyright 2017 Apereo
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 package com.tle.web.scripting.advanced.objects;

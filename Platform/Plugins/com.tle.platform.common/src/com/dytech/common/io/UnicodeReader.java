@@ -1,9 +1,19 @@
 /*
- * Original pseudocode : Thomas Weidenfeller Implementation tweaked: Aki
- * Nieminen http://www.unicode.org/unicode/faq/utf_bom.html BOMs: 00 00 FE FF =
- * UTF-32, big-endian FF FE 00 00 = UTF-32, little-endian FE FF = UTF-16,
- * big-endian FF FE = UTF-16, little-endian EF BB BF = UTF-8
+ * Copyright 2017 Apereo
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 package com.dytech.common.io;
 
 import java.io.IOException;

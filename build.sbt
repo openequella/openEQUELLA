@@ -1,4 +1,7 @@
 import java.util.Properties
+
+import com.typesafe.sbt.license.LicenseReport
+
 import scala.collection.JavaConverters._
 
 lazy val learningedge_config = project in file("Dev/learningedge-config")
@@ -73,5 +76,15 @@ versionProperties in ThisBuild := {
   IO.write(props, "version", f)
   f
 }
+
+updateLicenses := {
+  val serverReport = (updateLicenses in equellaserver).value
+  val plugsinReports = updateLicenses.all(ScopeFilter(inAggregates(allPlugins))).value
+  val allLicenses = (plugsinReports.flatMap(_.licenses) ++ serverReport.licenses)
+    .groupBy(_.module).values.map(_.head).filterNot(_.module.organization == "org.apereo.equella")
+  LicenseReport(allLicenses.toSeq, serverReport.orig)
+}
+
+aggregate in dumpLicenseReport := false
 
 cancelable in Global := true

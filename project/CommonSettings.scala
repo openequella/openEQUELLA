@@ -31,7 +31,7 @@ object CommonSettings extends AutoPlugin {
     organization := "org.apereo.equella",
     javacOptions ++= Seq("-source", "1.8"),
     compileOrder := CompileOrder.JavaThenScala,
-    headerLicense := Some(HeaderLicense.ALv2("2015", "Apereo")),
+    headerLicense := Some(HeaderLicense.ALv2("2017", "Apereo")),
     resolvers ++= Seq(
       "Local EQUELLA deps" at IO.toURI(file(Path.userHome.absolutePath) / "/equella-deps").toString,
       "EBI Nexus" at "http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/",
