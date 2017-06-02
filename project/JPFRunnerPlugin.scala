@@ -35,9 +35,9 @@ object JPFRunnerPlugin extends AutoPlugin {
           ManifestsWritten(
             allRuntimes.map { r =>
               val (pid, plugXml) = writeJPF(r.manifest,
-                r.code.filterNot(isDirectoryEmpty).map(f => JPFLibrary(f.getName, "code", f.getAbsolutePath + "/", Some("*.class"))) ++
-                  r.jars.map(f => JPFLibrary(f.getName, "code", f.getAbsolutePath, Some("*"))) ++
-                  r.resources.filterNot(isDirectoryEmpty).map(f => JPFLibrary(f.getName, "resources", f.getAbsolutePath + "/", None)))
+                r.code.filterNot(isDirectoryEmpty).map(f => JPFLibrary(f.getName, "code", f.toURI.toString, Some("*.class"))) ++
+                  r.jars.map(f => JPFLibrary(f.getName, "code", f.toURI.toString, Some("*"))) ++
+                  r.resources.filterNot(isDirectoryEmpty).map(f => JPFLibrary(f.getName, "resources", f.toURI.toString, None)))
               val outMan = manifests / pid / "plugin-jpf.xml"
               IO.write(outMan, plugXml)
               (outMan, pid)

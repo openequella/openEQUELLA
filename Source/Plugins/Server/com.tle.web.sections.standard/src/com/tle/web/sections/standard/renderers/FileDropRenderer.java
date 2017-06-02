@@ -81,7 +81,7 @@ public class FileDropRenderer extends TagRenderer
 	protected void writeEnd(SectionWriter writer) throws IOException {
 		super.writeEnd(writer);
 
-		writer.writeTag("input", "class", "filedrop-file", "type", "file", "id",
+		writer.writeTag("input", "style", "display: none;", "type", "file", "id",
 				getElementId(writer)+"_file", "multiple", "true", "tabIndex", "-1");
 	}
 
