@@ -48,7 +48,7 @@ public class CoreServicesModule extends MandatoryConfigModule
 			bindInt("taskService.maxConcurrentTasks", 26);
 
 			bindBoolean("can.access.internet");
-
+			
 			bindProp("messaging.bindAddress");
 			bindInt("messaging.bindPort", 8999);
 
@@ -60,6 +60,7 @@ public class CoreServicesModule extends MandatoryConfigModule
 			{
 				bind(TaskService.class).to(ClusteredTaskServiceImpl.class).in(Singleton.class);
 			}
+			bindProp("external.tool.contact.email", "EXTERNAL_TOOL_CONTACT_EMAIL_NOT_CONFIGURED");
 		}
 	}
 
