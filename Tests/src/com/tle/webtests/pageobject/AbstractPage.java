@@ -11,15 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.NotFoundException;
-import org.openqa.selenium.SearchContext;
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -217,28 +209,40 @@ public abstract class AbstractPage<T extends PageObject> implements PageObject, 
 
 	public WaitingPageObject<T> acceptAlert()
 	{
-		return ExpectWaiter.waiter(ExpectedConditions2.acceptAlert(), this);
+		if (context.getTestConfig().isAlertSupported())
+		{
+			return ExpectWaiter.waiter(ExpectedConditions2.acceptAlert(), this);
+		}
+		else return this;
 	}
 
 	protected void acceptConfirmation(String alertText)
 	{
-		Alert alert = getWaiter().until(ExpectedConditions.alertIsPresent());
-		String text = alert.getText();
-		alert.accept();
-		if( !alertText.equals(text) )
+		if (context.getTestConfig().isAlertSupported())
 		{
-			throw new Error("Alert text is wrong, expecting '" + alertText + "' but was '" + text + "'.");
+			Alert alert = getWaiter().until(ExpectedConditions.alertIsPresent());
+			String text = alert.getText();
+			alert.accept();
+			if (!alertText.equals(text)) {
+				throw new Error("Alert text is wrong, expecting '" + alertText + "' but was '" + text + "'.");
+			}
 		}
 	}
 
 	protected void acceptConfirmation()
 	{
-		getWaiter().until(ExpectedConditions.alertIsPresent()).accept();
+		if (context.getTestConfig().isAlertSupported())
+		{
+			getWaiter().until(ExpectedConditions.alertIsPresent()).accept();
+		}
 	}
 
 	protected void cancelConfirmation()
 	{
-		getWaiter().until(ExpectedConditions.alertIsPresent()).dismiss();
+		if (context.getTestConfig().isAlertSupported())
+		{
+			getWaiter().until(ExpectedConditions.alertIsPresent()).dismiss();
+		}
 	}
 
 	public static String getPathFromUrl(URL file)

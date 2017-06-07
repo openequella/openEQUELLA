@@ -26,10 +26,10 @@ public class SearchFiltersTest extends AbstractCleanupAutoTest
 	{
 		//@formatter:off
 		return new Object[][]{
-			{"AFTER", "2011-03-16", null, "SearchFilters - Basic Item"},
-			{"BEFORE", "2011-03-11", null, "SearchSettings - Image 2 - PNG"},
-			{"BETWEEN", "2011-03-11", "2011-03-13", "SearchSettings - Image 4 - GIF"},
-			{"ON", "2011-03-14", null, "SearchSettings - Image 5 - TIFF"}
+			{"AFTER", "2011-03-16 00:00:00", null, "SearchFilters - Basic Item"},
+			{"BEFORE", "2011-03-11 00:00:00", null, "SearchSettings - Image 2 - PNG"},
+			{"BETWEEN", "2011-03-11 00:00:00", "2011-03-13 00:00:00", "SearchSettings - Image 4 - GIF"},
+			{"ON", "2011-03-15 12:34:38", null, "SearchSettings - Image 5 - TIFF"}
 		};
 		//@formatter:on
 	}
@@ -58,7 +58,7 @@ public class SearchFiltersTest extends AbstractCleanupAutoTest
 	@Test(dataProvider = "datefilters", dependsOnMethods = {"testFilterByOwner"})
 	public void testFilterByDateModified(String range, String date1, String date2, String result) throws ParseException
 	{
-		DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd");
+		DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		// 'Conceptual' date!
 		final TimeZone UTC = TimeZone.getTimeZone("Etc/UTC");
 		dfm.setTimeZone(UTC);

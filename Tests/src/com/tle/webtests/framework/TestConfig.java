@@ -20,12 +20,13 @@ public class TestConfig
 {
 	private static final String INSTITUTION_PROPS = "institution.properties";
 	private static final Config config = ConfigFactory.load();
+	private static File baseFolder = null;
+
 
 	private final Class<?> clazz;
-	private final File testFolder;
-	private final File baseFolder;
-	private Properties localServer;
+	private final boolean alertSupported;
 	private final boolean noInstitution;
+	private final File testFolder;
 
 	public TestConfig(Class<?> clazz)
 	{
@@ -34,17 +35,16 @@ public class TestConfig
 
 	public TestConfig(Class<?> clazz, boolean noInstitution)
 	{
-		URL configPathUrl = getClass().getResource("/application.conf.example");
-		this.baseFolder = Paths.get(URI.create(configPathUrl.toString())).getParent().getParent().toFile();
 		this.clazz = clazz;
 		this.noInstitution = noInstitution;
-		if( !noInstitution )
+		alertSupported = Boolean.parseBoolean(getProperty("webdriver.alerts", "true"));
+		if (!noInstitution)
 		{
 			this.testFolder = findInstitutionFolder();
 		}
 		else
 		{
-			this.testFolder = baseFolder;
+			this.testFolder = getBaseFolder();
 		}
 	}
 
@@ -65,7 +65,7 @@ public class TestConfig
 
 	private File findInstitutionFolder(String name)
 	{
-		return new File(baseFolder, "tests/" + name);
+		return new File(getBaseFolder(), "tests/" + name);
 	}
 
 	public String getInstitutionName()
@@ -141,7 +141,7 @@ public class TestConfig
 
 	public boolean isSsl()
 	{
-		return isSsl(testFolder);
+		return isSsl(getTestFolder());
 	}
 
 	public boolean isSsl(File testFolder)
@@ -244,7 +244,7 @@ public class TestConfig
 
 	public File getScreenshotFolder()
 	{
-		return new File(baseFolder, "target/results/screenshots");
+		return new File(getBaseFolder(), "target/results/screenshots");
 	}
 
 	public File getTestFolder()
@@ -340,6 +340,28 @@ public class TestConfig
 	public String getInstitutionUrl(String instName, boolean https)
 	{
 		return getServerUrl(https) + instName + '/';
+	}
+
+	public boolean isAlertSupported()
+	{
+		return alertSupported;
+	}
+
+	public static File getBaseFolder()
+	{
+		if (baseFolder == null)
+		{
+			if (config.hasPath("test.base"))
+			{
+				baseFolder = new File(config.getString("test.base"));
+			}
+			else
+			{
+				URL configPathUrl = TestConfig.class.getResource("/application.conf.example");
+				baseFolder = Paths.get(URI.create(configPathUrl.toString())).getParent().getParent().toFile();
+			}
+		}
+		return baseFolder;
 	}
 
 	//

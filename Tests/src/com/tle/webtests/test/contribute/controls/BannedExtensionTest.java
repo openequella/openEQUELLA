@@ -29,8 +29,8 @@ public class BannedExtensionTest extends AbstractCleanupAutoTest
 		wizard.editbox(1, fullName);
 		UniversalControl control = wizard.universalControl(2);
 		FileUniversalControlType fileControl = control.addResource(new FileUniversalControlType(control));
-		assertEquals(fileControl.uploadError(Attachments.get(FILE_NAME)).getErrorMessage(), FILE_NAME
-			+ ": File upload cancelled. File extension has been banned");
+		fileControl.uploadError(Attachments.get(FILE_NAME), FILE_NAME
+			+ ": File upload cancelled.  File extension has been banned");
 		fileControl.close();
 		SummaryPage summary = wizard.save().publish();
 

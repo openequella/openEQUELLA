@@ -32,16 +32,17 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 	@FindBy(id = "{wizid}_dialog_fuh_fileUpload")
 	@DontCache
 	private WebElement fileUpload;
-	@FindBy(id = "{wizid}_dialog_fuh_filesFromScrapbookLink")
-	private WebElement addScrap;
 	@FindBy(xpath = "id('{wizid}_dialog')//div[contains(@class,'fileHandler')]")
 	private WebElement mainDiv;
-	@FindBy(xpath = "id('{wizid}_dialog')//p[@class = 'ctrlinvalidmessage']")
-	private WebElement errorMsg;
 	@FindBy(id = "uploads")
 	private WebElement uploadsDiv;
 	@FindBy(id = "{wizid}_dialog")
 	private WebElement dialog;
+
+	private WebElement getAddScrap()
+	{
+		return driver.findElement(By.id(getWizid()+"_dialog_fuh_filesFromScrapbookLink"));
+	}
 
 	public FileUniversalControlType(UniversalControl universalControl)
 	{
@@ -132,20 +133,17 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 		waitForElement(uploadRow, new ByChained(By.className("progress-bar"), By.className("complete")));
 	}
 
-	public FileUniversalControlType uploadError(URL file)
+	public FileUniversalControlType uploadError(URL file, String errorMessage)
 	{
+		ExpectedCondition<?> errorExpectation = getErrorExpectation(errorMessage);
 		fileUpload.sendKeys(getPathFromUrl(file));
-		return ExpectWaiter.waiter(getErrorExpectation(), this).get();
+		return ExpectWaiter.waiter(errorExpectation, this).get();
 	}
 
-	private ExpectedCondition<?> getErrorExpectation()
+	private ExpectedCondition<?> getErrorExpectation(String msg)
 	{
-		// If the error is already there... wait for it to be refreshed
-		if( isPresent(errorMsg) )
-		{
-			return ExpectedConditions2.updateOfElement(errorMsg);
-		}
-		return ExpectedConditions.visibilityOf(errorMsg);
+		String xpath = "id('"+getWizid()+"_dialog')//p[@class = 'ctrlinvalidmessage' and text() = "+quoteXPath(msg)+"]";
+		return ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath));
 	}
 
 	public ZipAttachmentEditPage uploadZip(URL fileUrl)
@@ -210,7 +208,7 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 
 	public FileAttachmentEditPage importFromScrapbook(String description)
 	{
-		addScrap.click();
+		getAddScrap().click();
 
 		SelectionSession selectionSession = ExpectWaiter.waiter(
 			ExpectedConditions2.frameToBeAvailableAndSwitchToIt(dialog, By.xpath("./div/iframe")),
@@ -256,11 +254,6 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 	public ZipAttachmentEditPage uploadZip(File file)
 	{
 		return uploadZip(file.getAbsolutePath());
-	}
-
-	public String getErrorMessage()
-	{
-		return errorMsg.getText();
 	}
 
 }

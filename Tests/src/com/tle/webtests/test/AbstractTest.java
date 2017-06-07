@@ -45,7 +45,6 @@ public abstract class AbstractTest
 	protected PageContext context;
 	protected TestConfig testConfig;
 	private PreparingDriverPool driverPool;
-	private static AtomicBoolean listenerAdded = new AtomicBoolean(false);
 
 	private final ListMultimap<String, PrefixedName> nameMap = ArrayListMultimap.create();
 
@@ -124,8 +123,10 @@ public abstract class AbstractTest
 	public void setupDriverPool(ITestContext testContext) throws IOException
 	{
 		ISuite suite = testContext.getSuite();
-		if( listenerAdded.compareAndSet(false, true) )
+
+		if( suite.getAttribute("ScreenListenerAdded") == null )
 		{
+			suite.setAttribute("ScreenListenerAdded", true);
 			suite.addListener(new ScreenshotListener());
 		}
 		suite.setAttribute(KEY_DRIVERPOOL, new StandardDriverPool(testConfig));

@@ -26,8 +26,13 @@ public abstract class AbstractWizardTab<T extends AbstractWizardTab<T>> extends 
 
 	public ConfirmationDialog save()
 	{
+		return saveWith(new ConfirmationDialog(context));
+	}
+
+	public <T extends PageObject> T saveWith(WaitingPageObject<T> next)
+	{
 		clickCommand("Save");
-		return new ConfirmationDialog(context).get();
+		return next.get();
 	}
 
 	public SummaryPage saveNoConfirm()
@@ -38,21 +43,18 @@ public abstract class AbstractWizardTab<T extends AbstractWizardTab<T>> extends 
 
 	protected void clickCommand(String command)
 	{
+		String xpath;
 		if( command.equals("Save") )
 		{
-			WebElement findElement = driver.findElement(
-				By.xpath("//input[contains(@class, 'action-button') and normalize-space(@value)=" + quoteXPath(command)
-					+ "]"));
-			// http://code.google.com/p/selenium/issues/detail?id=4175
-			JavascriptExecutor js = ((JavascriptExecutor) driver);
-			js.executeScript("arguments[0].scrollIntoView(false)", findElement);
-			findElement.click();
+			xpath = "//input[contains(@class, 'action-button') and normalize-space(@value)=" + quoteXPath(command) + "]";
 		}
 		else
 		{
-			driver.findElement(
-				By.xpath("//div[@id='wizard-actions']/a[normalize-space(text())=" + quoteXPath(command) + "]")).click();
+			xpath = "//div[@id='wizard-actions']/a[normalize-space(text())=" + quoteXPath(command) + "]";
 		}
+		WebElement elem = driver.findElement(By.xpath(xpath));
+		scrollToElement(elem);
+		elem.click();
 	}
 
 	public <T extends PageObject> T cancel(WaitingPageObject<T> targetPage)

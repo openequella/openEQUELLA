@@ -44,7 +44,7 @@ public class SelectionCheckoutPage extends AbstractPage<SelectionCheckoutPage>
 	public <T extends PageObject> T cancelSelection(WaitingPageObject<T> returnTo)
 	{
 		cancelButton.click();
-		waiter.until(ExpectedConditions2.acceptAlert());
+		acceptConfirmation();
 		driver.switchTo().defaultContent();
 		return returnTo.get();
 	}

@@ -13,6 +13,7 @@ import com.tle.webtests.pageobject.cal.CALSummaryPage;
 import com.tle.webtests.pageobject.cal.CALWizardPage;
 import com.tle.webtests.pageobject.viewitem.AdminTabPage;
 
+@Test(sequential = true)
 public class CALBookRulesTest extends AbstractActivationsTest
 {
 	private final static String COURSE = "A Simple Course";

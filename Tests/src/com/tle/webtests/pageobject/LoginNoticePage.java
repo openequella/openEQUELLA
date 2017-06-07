@@ -2,6 +2,8 @@ package com.tle.webtests.pageobject;
 
 import com.tle.webtests.framework.PageContext;
 
+import static org.testng.Assert.assertEquals;
+
 public class LoginNoticePage extends AbstractPage<LoginNoticePage>
 {
 
@@ -13,23 +15,22 @@ public class LoginNoticePage extends AbstractPage<LoginNoticePage>
 	@Override
 	public void checkLoaded() throws Error
 	{
-		driver.switchTo().alert();
-	}
-
-	public String getNoticeText()
-	{
-		return driver.switchTo().alert().getText();
+		if (context.getTestConfig().isAlertSupported())
+		{
+			driver.switchTo().alert();
+		}
 	}
 
 	public HomePage acceptNotice()
 	{
-		driver.switchTo().alert().accept();
 		return new HomePage(context).get();
 	}
 
-	public LoginPage cancelNotice()
+	public void assertNotice(String loginNotice)
 	{
-		driver.switchTo().alert().dismiss();
-		return new LoginPage(context).get();
+		if (context.getTestConfig().isAlertSupported())
+		{
+			assertEquals(driver.switchTo().alert().getText(), loginNotice);
+		}
 	}
 }

@@ -35,6 +35,7 @@ public class StandardDriverPool
 	private final String chromeBinary;
 	private final boolean chrome;
 	private final String gridUrl;
+	private final boolean headless;
 	private Proxy proxy;
 	private static ChromeDriverService service;
 
@@ -44,6 +45,7 @@ public class StandardDriverPool
 		this.chromeBinary = config.getChromeBinary();
 		this.firefoxBinary = config.getFirefoxBinary();
 		this.gridUrl = config.getGridUrl();
+		this.headless = Boolean.parseBoolean(config.getProperty("webdriver.chrome.headless", "false"));
 		String proxyHost = config.getProperty("proxy.host");
 		if( proxyHost != null )
 		{
@@ -126,13 +128,14 @@ public class StandardDriverPool
 					{
 						options.setBinary(chromeBinary);
 					}
-					options.addArguments("--test-type");
-					options.addArguments("--disable-gpu");
-					options.addArguments("--disable-software-rasterizer");
-					options.addArguments("--disable-3d-apis");
-					options.addArguments("--disable-accelerated-compositing");
-					options.addArguments("--disable-accelerated-layers");
-					options.addArguments("--disable-accelerated-video");
+					options.addArguments("test-type");
+					options.addArguments("disable-gpu");
+					options.addArguments("proxy-server=localhost:8888");
+					if (headless)
+					{
+						options.addArguments("headless");
+					}
+					options.addArguments("window-size=1200,800");
 
 					Map<String, Object> prefs = Maps.newHashMap();
 					prefs.put("intl.accept_languages", "en-US");

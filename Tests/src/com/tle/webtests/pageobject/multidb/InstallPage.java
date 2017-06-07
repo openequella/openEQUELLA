@@ -7,6 +7,9 @@ import org.openqa.selenium.support.FindBy;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.institution.DatabasesPage;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import java.util.function.Function;
 
 public class InstallPage extends AbstractPage<InstallPage>
 {
@@ -14,6 +17,8 @@ public class InstallPage extends AbstractPage<InstallPage>
 	private WebElement emailsField;
 	@FindBy(id = "isi_smtpServer")
 	private WebElement smtpField;
+	@FindBy(id = "isi_noReplySender")
+	private WebElement noReplyField;
 	@FindBy(id = "isi_password")
 	private WebElement passwordField;
 	@FindBy(id = "isi_passwordConfirm")
@@ -46,16 +51,16 @@ public class InstallPage extends AbstractPage<InstallPage>
 		smtpField.sendKeys(smtp);
 	}
 
+	public void setNoReply(String email)
+	{
+		noReplyField.clear();
+		noReplyField.sendKeys(email);
+	}
+
 	public void setPassword(String password)
 	{
 		passwordField.clear();
 		passwordField.sendKeys(password);
-	}
-
-	public void setLicenseKey(String licenceKey)
-	{
-		licenceField.clear();
-		licenceField.sendKeys(licenceKey);
 	}
 
 	public DatabasesPage install()
@@ -69,15 +74,14 @@ public class InstallPage extends AbstractPage<InstallPage>
 		return isPresent(By.xpath("id('isi_password')/../p[contains(@class, 'ctrlinvalid')]"));
 	}
 
-	public boolean isLicenseError()
-	{
-		return isPresent(By.xpath("id('isi_licenceField')/../p[contains(@class, 'ctrlinvalid')]"));
-	}
-
 	public boolean isEmailsError()
 	{
 		return isPresent(By.xpath("id('isi_emails')/../p[contains(@class, 'ctrlinvalid')]"));
+	}
 
+	public boolean isNoReplyError()
+	{
+		return isPresent(By.xpath("id('isi_noReplySender')/../p[contains(@class, 'ctrlinvalid')]"));
 	}
 
 	public boolean isStmpError()
@@ -86,9 +90,10 @@ public class InstallPage extends AbstractPage<InstallPage>
 
 	}
 
-	public InstallPage installInvalid()
+	public InstallPage installInvalid(Function<InstallPage, Boolean> waitTill)
 	{
 		installButton.click();
+		getWaiter().until(wd -> waitTill);
 		return get();
 	}
 

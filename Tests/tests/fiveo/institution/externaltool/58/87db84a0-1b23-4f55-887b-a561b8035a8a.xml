@@ -35,10 +35,10 @@
     </strings>
   </name>
   <attributes>
-    <com.tle.beans.entity.BaseEntity_-Attribute>
-      <key>ICON_URL</key>
-      <value>http://purple-excess.dyndns.ws:8075/~larry/images/hypnotoadfullsize.guf</value>
-    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <!--<com.tle.beans.entity.BaseEntity_-Attribute>-->
+      <!--<key>ICON_URL</key>-->
+      <!--<value>http://purple-excess.dyndns.ws:8075/~larry/images/hypnotoadfullsize.guf</value>-->
+    <!--</com.tle.beans.entity.BaseEntity_-Attribute>-->
   </attributes>
   <systemType>false</systemType>
   <disabled>false</disabled>

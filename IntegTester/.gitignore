@@ -1,2 +1,5 @@
 .idea
 target/
+npm-debug.log
+
+

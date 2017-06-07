@@ -28,9 +28,9 @@ public class IncorrectMimetypeTest extends AbstractCleanupAutoTest
 		wizard.editbox(1, fullName);
 		UniversalControl control = wizard.universalControl(2);
 		FileUniversalControlType fileControl = control.addResource(new FileUniversalControlType(control));
-		assertEquals(fileControl.uploadError(Attachments.get(INCORRECT_FILE_NAME)).getErrorMessage(),
-			"This control is restricted to certain file types. \"" + INCORRECT_FILE_NAME
-				+ "\" is not allowed to be uploaded.");
+		String errMsg = "This control is restricted to certain file types. \"" + INCORRECT_FILE_NAME
+				+ "\" is not allowed to be uploaded.";
+		fileControl.uploadError(Attachments.get(INCORRECT_FILE_NAME), errMsg);
 		fileControl.close();
 		SummaryPage summary = wizard.save().publish();
 

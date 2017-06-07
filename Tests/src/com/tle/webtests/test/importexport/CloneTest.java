@@ -64,7 +64,7 @@ public class CloneTest extends AbstractInstTest
 		List<Object[]> instDirs = new ArrayList<Object[]>();
 		for( File instDir : institutions )
 		{
-			if( new File(instDir, INSTITUTION_FILE).exists() )
+			if( new File(instDir, INSTITUTION_FOLDER).exists() )
 			{
 				instDirs.add(new Object[]{instDir});
 			}

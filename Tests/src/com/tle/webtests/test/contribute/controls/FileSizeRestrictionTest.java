@@ -28,8 +28,7 @@ public class FileSizeRestrictionTest extends AbstractCleanupAutoTest
 		wizard.editbox(1, fullName);
 		UniversalControl control = wizard.universalControl(2);
 		FileUniversalControlType fileControl = control.addResource(new FileUniversalControlType(control));
-		assertEquals(fileControl.uploadError(Attachments.get(FILE_TOO_BIG)).getErrorMessage(),
-			"This file cannot be uploaded because it is larger than the maximum file size allowed.");
+		fileControl.uploadError(Attachments.get(FILE_TOO_BIG), "This file cannot be uploaded because it is larger than the maximum file size allowed.");
 		fileControl.close();
 		SummaryPage summary = wizard.save().publish();
 

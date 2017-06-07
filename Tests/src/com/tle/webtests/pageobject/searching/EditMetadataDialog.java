@@ -192,7 +192,7 @@ public class EditMetadataDialog extends AbstractPage<EditMetadataDialog>
 	{
 		WaitingPageObject<EditMetadataDialog> ajaxUpdate = ajaxUpdate(ajaxDiv);
 		modificationTable.findElement(By.xpath("tbody/tr[" + index + "]/td[3]/a[2]")).click();
-		waiter.until(ExpectedConditions.alertIsPresent()).accept();
+		acceptAlert();
 		return ajaxUpdate.get();
 	}
 

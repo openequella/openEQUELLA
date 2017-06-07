@@ -85,7 +85,7 @@ public class MyResourcesPage extends AbstractQueryableSearchPage<MyResourcesPage
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return mainElem;
+		return driver.findElement(By.xpath("//h2[text() = " + quoteXPath("My resources")+"]"));
 	}
 
 	@Override

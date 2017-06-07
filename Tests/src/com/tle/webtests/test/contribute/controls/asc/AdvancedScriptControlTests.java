@@ -897,7 +897,7 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest
 
 		getAscInput(By.id("alltype")).sendKeys("EXIF");
 		clickAscButton("Get all for type", wizard);
-		assertEquals(getAscMessage().getText(), "122, Artist: Adam Croser");
+		assertEquals(getAscMessage().getText(), "124, Artist: Adam Croser");
 
 		getAscInput(By.id("firstkey")).sendKeys("LensID");
 		clickAscButton("Get first for key", wizard);

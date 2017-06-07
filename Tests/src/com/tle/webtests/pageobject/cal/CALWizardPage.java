@@ -95,8 +95,7 @@ public class CALWizardPage
 
 	public CALViolationPage saveWithViolation()
 	{
-		wizardPage.saveNoConfirm();
-		return new CALViolationPage(wizardPage.getContext()).get();
+		return wizardPage.saveWith(new CALViolationPage(wizardPage.getContext()));
 	}
 
 	public void uploadSectionFile(int section, URL file)

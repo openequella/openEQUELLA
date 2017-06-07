@@ -1,0 +1,20 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Failures" parallel="instances" data-provider-thread-count="4" thread-count="4" configfailurepolicy="continue">
+    <suite-files>
+       <suite-file path="./testng-institution-sync.xml"/>
+    </suite-files>
+    <test name="Failing tests">
+        <packages>
+            <package name="com.tle.webtests.test.contribute.controls" />
+            <package name="com.tle.webtests.test.contribute.controls.attachments" />
+        </packages>
+        <!--<classes>-->
+            <!--<class name="com.tle.webtests.test.contribute.controls.attachments.FileAttachmentControlTest" />-->
+            <!--<class name="com.tle.webtests.test.contribute.controls.attachments.AttachmentControlTest" />-->
+            <!--&lt;!&ndash;<class name="com.tle.webtests.test.contribute.controls.PackageAndNavigationTest" />&ndash;&gt;-->
+            <!--&lt;!&ndash;<class name="com.tle.webtests.test.searching.SearchSettingsTest" />&ndash;&gt;-->
+            <!--&lt;!&ndash;<class name="com.tle.webtests.test.contribute.controls.TaxonomyControlsTest" />&ndash;&gt;-->
+            <!--&lt;!&ndash;<class name="com.tle.webtests.test.viewing.ItemSummaryTest" />&ndash;&gt;-->
+        <!--</classes>-->
+    </test>
+</suite>

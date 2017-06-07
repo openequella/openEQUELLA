@@ -20,7 +20,6 @@ import com.tle.webtests.test.AbstractTest;
 public class DbTest extends AbstractTest
 {
 	private static final String DEFAULT_SCHEMA = "Default schema";
-	private final String licenseKey;
 
 	private String hostname;
 	private String username;
@@ -34,7 +33,6 @@ public class DbTest extends AbstractTest
 		username = testConfig.getProperty("multidb.dbuser");
 		password = testConfig.getProperty("multidb.dbpass");
 		prefix = testConfig.getProperty("multidb.dbprefix");
-		licenseKey = Resources.toString(getClass().getResource("dev_license.txt"), Charsets.US_ASCII);
 	}
 
 	@Override
@@ -43,43 +41,11 @@ public class DbTest extends AbstractTest
 		return false;
 	}
 
-	@Test
-	public void installFirstTime()
-	{
-		String emails = "noreply@equella.com;test@equella.com";
-		InstallPage installPage = new InstallPage(context).load();
-		installPage.setPassword("");
-		installPage.setPasswordConfirm("");
-		installPage.setLicenseKey("");
-		installPage.setEmails("");
-		installPage.setSmtpServer("");
-		installPage = installPage.installInvalid();
-		Assert.assertTrue(installPage.isPasswordError());
-		Assert.assertTrue(installPage.isEmailsError());
-		Assert.assertTrue(installPage.isStmpError());
-		Assert.assertTrue(installPage.isLicenseError());
-		installPage.setPassword("tle010");
-		installPage.setPasswordConfirm("tle010");
-		installPage.setLicenseKey("broken");
-		installPage.setEmails("invalidemail");
-		installPage.setSmtpServer("localhost");
-		installPage = installPage.installInvalid();
-		assertFalse(installPage.isPasswordError());
-		assertTrue(installPage.isLicenseError());
-		assertTrue(installPage.isEmailsError());
-		installPage.setPassword("tle010");
-		installPage.setLicenseKey(licenseKey);
-		installPage.setEmails(emails);
-		installPage.setSmtpServer("mail.google.com");
-		DatabasesPage dbPage = installPage.install();
-		assertTrue(dbPage.containsDatabase(DEFAULT_SCHEMA));
-		new AutoTestSetupPage(context).load().clearData();
-	}
 
-	@Test(dependsOnMethods = "installFirstTime")
+	@Test
 	public void addNewSchema()
 	{
-		DatabasesPage dbPage = new DatabasesPage(context, "tle010").load();
+		DatabasesPage dbPage = new DatabasesPage(context, testConfig.getAdminPassword()).load();
 		DatabaseEditDialog newDb = dbPage.addSchema();
 		String hostDbPart = hostname + "/" + prefix + "2";
 		newDb.setJdbcUrl("jdbc:postgresql://" + hostDbPart);

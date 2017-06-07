@@ -1,4 +1,4 @@
-package com.tle.webtests.test.viewing;
+package com.tle.webtests.failalways;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;

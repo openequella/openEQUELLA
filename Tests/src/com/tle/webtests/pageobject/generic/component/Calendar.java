@@ -32,7 +32,8 @@ public class Calendar extends AbstractPage<Calendar>
 			fmt = "MM/dd/yyyy";
 		}
 		final SimpleDateFormat sdf = new SimpleDateFormat(fmt);
-		sdf.setTimeZone(TimeZone.getTimeZone("Etc/UTC"));
+		// Dates will be in the local timezone, not UTC
+		sdf.setTimeZone(TimeZone.getDefault());
 		return sdf;
 	}
 
@@ -175,19 +176,11 @@ public class Calendar extends AbstractPage<Calendar>
 			{
 				return false;
 			}
-			if( hiddenDate.equals(date) )
-			{
-				// Hidden matched, make sure displayed date is ok
-				try
-				{
-					Date disp = createFormatter().parse(getTextValue());
-					return disp.equals(date);
-				}
-				catch( ParseException e )
-				{
-					throw Throwables.propagate(e);
-				}
-			}
+			// Hidden matched, make sure displayed date is ok
+			SimpleDateFormat formatter = createFormatter();
+			String disp = formatter.format(date);
+			String dateText = formatter.format(hiddenDate);
+			return disp.equals(dateText);
 		}
 		return false;
 	}

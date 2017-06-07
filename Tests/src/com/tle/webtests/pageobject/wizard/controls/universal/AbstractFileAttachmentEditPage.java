@@ -1,5 +1,6 @@
 package com.tle.webtests.pageobject.wizard.controls.universal;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -11,8 +12,6 @@ public abstract class AbstractFileAttachmentEditPage<T extends AbstractFileAttac
 {
 	@FindBy(id = "{wizid}_dialog_fuh_{typeId}_previewCheckBox")
 	private WebElement previewCheckBox;
-	@FindBy(id = "{wizid}_dialog_fuh_{typeId}_displayName")
-	private WebElement nameField;
 	@FindBy(id = "{wizid}_dialog_fuh_{typeId}_st")
 	private WebElement thumbnailCheckbox;
 
@@ -32,7 +31,7 @@ public abstract class AbstractFileAttachmentEditPage<T extends AbstractFileAttac
 	@Override
 	protected WebElement getNameField()
 	{
-		return nameField;
+		return driver.findElement(By.id(getWizid()+"_dialog_fuh_"+getTypeId()+"_displayName"));
 	}
 
 	public T setPreview(boolean preview)

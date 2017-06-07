@@ -4,8 +4,9 @@
 	<suite-files>
 		<suite-file path="./testng-institution-sync.xml"/>
 		<suite-file path="./testng-local-searching.xml"/>
-		<!--<suite-file path="./testng-local-contribution.xml"/>-->
-		<!--<suite-file path="./testng-local-viewing.xml"/>-->
-		<!--<suite-file path="./testng-local-workflow.xml"/>-->
+		<suite-file path="./testng-local-contribution.xml"/>
+		<suite-file path="./testng-local-viewing.xml"/>
+		<suite-file path="./testng-local-workflow.xml"/>
+		<suite-file path="./testng-local-cal.xml"/>
 	</suite-files>
 </suite>

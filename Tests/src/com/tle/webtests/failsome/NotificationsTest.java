@@ -1,4 +1,4 @@
-package com.tle.webtests.test.workflow;
+package com.tle.webtests.failsome;
 
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;

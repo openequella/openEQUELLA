@@ -311,19 +311,20 @@ public class FileAttachmentControlTest extends AbstractCleanupAutoTest
 		return wizard;
 	}
 
-	@Override
-	protected void cleanupAfterClass() throws Exception
-	{
-		logon("AutoTest", "automated");
-		ItemAdminPage filterListPage = new ItemAdminPage(context).load();
-		ItemListPage filterResults = filterListPage.all().exactQuery("page.html");
-		if( filterResults.isResultsAvailable() )
-		{
-			filterListPage.bulk().deleteAll();
-			filterListPage.get().search("page.html");
-			filterListPage.bulk().purgeAll();
-		}
-		super.cleanupAfterClass();
-	}
+	// Unsafe to delete all "page.html", matches other items
+//	@Override
+//	protected void cleanupAfterClass() throws Exception
+//	{
+//		logon("AutoTest", "automated");
+//		ItemAdminPage filterListPage = new ItemAdminPage(context).load();
+//		ItemListPage filterResults = filterListPage.all().exactQuery("page.html");
+//		if( filterResults.isResultsAvailable() )
+//		{
+//			filterListPage.bulk().deleteAll();
+//			filterListPage.get().search("page.html");
+//			filterListPage.bulk().purgeAll();
+//		}
+//		super.cleanupAfterClass();
+//	}
 
 }

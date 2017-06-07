@@ -90,7 +90,7 @@ public class LoginSettingsTest extends AbstractSessionTest
 
 		// Login and check notice
 		LoginNoticePage lnp = lp.loginWithNotice(USER, "automated");
-		assertEquals(lnp.getNoticeText(), LOGIN_NOTICE);
+		lnp.assertNotice(LOGIN_NOTICE);
 		lnp.acceptNotice();
 
 		logout();

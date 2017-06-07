@@ -73,7 +73,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest
 
 	private void testBadPackageUpload(FileUniversalControlType file, String filename, String expectedError)
 	{
-		Assert.assertEquals(file.uploadError(Attachments.get(filename)).getErrorMessage(),
+		file.uploadError(Attachments.get(filename),
 			MessageFormat.format("{0}{1}", expectedError, filename));
 	}
 

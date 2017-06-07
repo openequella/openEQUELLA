@@ -95,43 +95,5 @@ public class ItemSummaryTest extends AbstractCleanupTest
 		assertFalse(pv.hasTitle());
 	}
 
-	@Test
-	public void testReorderAttachments()
-	{
-		final String urlOne = "http://urlOne.com";
-		final String urlTwo = "http://urlTwo.com";
-		final String urlThree = "http://urlThree.com";
-		List<String> urls = Arrays.asList(urlOne, urlTwo, urlThree);
 
-		logon(AUTOTEST_LOGON, AUTOTEST_PASSWD);
-
-		WizardPageTab wiz = new ContributePage(context).load().openWizard(COLLECTION3);
-		String itemName = context.getFullName("reorder item");
-		wiz.editbox(1, itemName);
-
-		for( String u : urls )
-		{
-			UniversalControl universal = wiz.universalControl(3);
-			UrlUniversalControlType url = universal.addResource(new UrlUniversalControlType(universal));
-			universal = url.addUrl(u, u);
-
-		}
-
-		AttachmentsPage attachments = wiz.save().publish().attachments();
-		assertEquals(attachments.attachmentOrder(), urls);
-		attachments.startReorder();
-		attachments.reorder(urlThree, true);
-		attachments.reorder(urlThree, true);
-		attachments.reorder(urlOne, false);
-		attachments.finishReorder();
-
-		logout();
-		logon(AUTOTEST_LOGON, AUTOTEST_PASSWD);
-		attachments = SearchPage.searchAndView(context, itemName).attachments();
-
-		urls.set(0, urlThree);
-		urls.set(2, urlOne);
-		assertEquals(attachments.attachmentOrder(), urls);
-
-	}
 }

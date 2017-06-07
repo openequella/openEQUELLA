@@ -1,4 +1,4 @@
-package com.tle.webtests.test.cal;
+package com.tle.webtests.failalways;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import com.tle.webtests.test.cal.AbstractCALTest;
 import org.testng.annotations.Test;
 
 import com.tle.webtests.pageobject.DynamicUrlPage;
