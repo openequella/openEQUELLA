@@ -13,7 +13,7 @@
 <#if m.message??>
 	<div class="licenseMessage">${m.message}</div>
 </#if>
-<p>${b.gkey("institutions.license.contact", ['<a href="mailto:support@equella.com">support@equella.com</a>'])}</p>
+<p>${b.gkey("institutions.license.contact", ['<p>Your preferred support organization.</p>'])}</p>
 <h3>${b.gkey("institutions.license.details")}</h3>
 
 <@settingContainer false>

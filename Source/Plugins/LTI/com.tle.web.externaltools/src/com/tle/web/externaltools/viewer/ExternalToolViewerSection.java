@@ -17,7 +17,6 @@
 package com.tle.web.externaltools.viewer;
 
 import static com.tle.common.externaltools.constants.ExternalToolConstants.BASIC_LTI_LAUNCH_REQUEST;
-import static com.tle.common.externaltools.constants.ExternalToolConstants.EQUELLA_CONTACT_EMAIL;
 import static com.tle.common.externaltools.constants.ExternalToolConstants.EQUELLA_PRODUCT_CODE;
 import static com.tle.common.externaltools.constants.ExternalToolConstants.INSTRUCTOR_ROLE_URN;
 import static com.tle.common.externaltools.constants.ExternalToolConstants.LAUNCHER_ROLES;
@@ -45,12 +44,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import com.dytech.edge.common.valuebean.UserBean;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.inject.name.Named;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
@@ -96,6 +98,12 @@ import com.tle.web.viewurl.ViewableResource;
 @Bind
 public class ExternalToolViewerSection extends AbstractViewerSection<ExternalToolViewerSection.ToolModel>
 {
+	private static final Logger LOGGER = Logger.getLogger(ExternalToolViewerSection.class);
+
+	@Inject
+	@Named("external.tool.contact.email")
+	private String externalToolContactEmail = "";
+
 	@Inject
 	private ExternalToolsService toolService;
 	@Inject
@@ -381,10 +389,11 @@ public class ExternalToolViewerSection extends AbstractViewerSection<ExternalToo
 
 	private void addDefaultLtiParameters(Map<String, String> formParams)
 	{
+		LOGGER.debug("Using the optional-config external.tool.contact.email of ["+externalToolContactEmail+"]");
 		formParams.put(LTI_MESSAGE_TYPE, BASIC_LTI_LAUNCH_REQUEST);
 		formParams.put(LTI_VERSION, LTI_VERSION_1_VALUE);
 		formParams.put(TOOL_CONSUMER_INFO_PRODUCT_FAMILY_CODE, EQUELLA_PRODUCT_CODE);
-		formParams.put(TOOL_CONSUMER_INSTANCE_CONSUMER_CONTACT_EMAIL, EQUELLA_CONTACT_EMAIL);
+		formParams.put(TOOL_CONSUMER_INSTANCE_CONSUMER_CONTACT_EMAIL, externalToolContactEmail);
 		formParams.put(TOOL_CONSUMER_INFO_VERSION, ApplicationVersion.get().getDisplay());
 		formParams.put(ExternalToolConstants.CONTEXT_TYPE, ExternalToolConstants.CONTEXT_TYPE_EQUELLA_ITEM);
 		// EQUELLA (no longer) implements the LTI viewer as an iframe, so best

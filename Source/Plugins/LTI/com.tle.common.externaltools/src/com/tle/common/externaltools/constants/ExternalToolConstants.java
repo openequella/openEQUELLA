@@ -55,8 +55,7 @@ public final class ExternalToolConstants
 
 	// LTI launch parameter standard constant values for EQUELLA branding
 	public static final String EQUELLA_PRODUCT_CODE = "equella";
-	public static final String EQUELLA_CONTACT_EMAIL = "support@equella.com";
-
+	
 	/**
 	 * The value for "roles" parameter, recommended to be a comma-separated list
 	 * of URN values for roles, in this case a single URN.
