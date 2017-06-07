@@ -23,13 +23,7 @@ import java.util.Vector;
 import com.dytech.common.text.ResolverException;
 import com.dytech.common.text.Substitution;
 import com.dytech.devlib.PropBagEx;
-import com.dytech.installer.commands.CCopy;
-import com.dytech.installer.commands.CDelete;
-import com.dytech.installer.commands.CExecute;
-import com.dytech.installer.commands.CMove;
-import com.dytech.installer.commands.CResolver;
-import com.dytech.installer.commands.CZipExtract;
-import com.dytech.installer.commands.Command;
+import com.dytech.installer.commands.*;
 
 public class Interpreter implements TaskListener
 {
@@ -225,6 +219,10 @@ public class Interpreter implements TaskListener
 			{
 				command = createExecute(bag);
 			}
+			else if( cclass.equals("mkexec") )
+			{
+				command = createMkExec(bag);
+			}
 			else if( cclass.equals("foreign") )
 			{
 				command = createForeign(bag);
@@ -241,6 +239,12 @@ public class Interpreter implements TaskListener
 		}
 
 		return command;
+	}
+
+	protected CMkExec createMkExec(PropBagEx bag) throws InstallerException
+	{
+		String file = getURI(bag, "file");
+		return new CMkExec(file);
 	}
 
 	protected CMove createMove(PropBagEx bag) throws InstallerException

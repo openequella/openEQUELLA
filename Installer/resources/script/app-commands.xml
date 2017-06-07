@@ -210,4 +210,16 @@
 	<command class="foreign">
 		<class name="com.dytech.edge.installer.application.SuccessfulInstall"/>
 	</command>
+
+	<command class="mkexec" platform="linux linux64 solaris-sparc solaris-x86 solaris64 mac">
+		<file uri="${install.path}/manager/jsvc" />
+	</command>
+
+	<command class="mkexec" platform="linux linux64 solaris-sparc solaris-x86 solaris64 mac">
+		<file uri="${install.path}/manager/equellaserver" />
+	</command>
+
+	<command class="mkexec" platform="linux linux64 solaris-sparc solaris-x86 solaris64 mac">
+		<file uri="${install.path}/manager/manager" />
+	</command>
 </commands>
