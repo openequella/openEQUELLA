@@ -61,7 +61,7 @@ public class InstallSection extends AbstractPrototypeSection<InstallSection.Mode
 	private static Label LABEL_PASSWORDCONFIRM;
 	@PlugKey("install.emailsblank")
 	private static Label LABEL_EMAILSBLANK;
-    @PlugKey("install.noreplayemailsblank")
+    @PlugKey("install.noreplyemailsblank")
     private static Label LABEL_NOREPLYEMAILSBLANK;
 	@PlugKey("install.smtpblank")
 	private static Label LABEL_SMTPBLANK;
