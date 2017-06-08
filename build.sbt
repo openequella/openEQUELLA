@@ -16,6 +16,7 @@ lazy val installOptions = settingKey[InstallOptions]("EQUELLA installer options"
 lazy val installerZip = settingKey[Option[File]]("The installer zip")
 lazy val buildConfig = settingKey[Config]("The build config options")
 
+
 lazy val common = Seq(
   resolvers += "Local EQUELLA deps" at IO.toURI(file(Path.userHome.absolutePath) / "/equella-deps").toString
 )
@@ -55,12 +56,13 @@ lazy val selenium_tests = (project in file("Tests")).settings(common).settings(
     "org.slf4j" % "slf4j-simple" % "1.7.5"
   ),
   unmanagedBase in Compile := baseDirectory.value / "lib/adminjars",
-  unmanagedClasspath in Test += baseDirectory.value / "config",
+  unmanagedClasspath in Test += baseDirectory.value / buildConfig.value.getString("tests.configdir"),
   testNGSettings,
   testNGOutputDirectory := (target.value / "testng").absolutePath,
   testNGSuites := {
     val tc = buildConfig.value.getConfig("tests")
-    tc.getStringList("suitenames").map(n => s"Tests/$n")
+    sys.props.put("test.base", baseDirectory.value.absolutePath)
+    tc.getStringList("suitenames").map(n => (baseDirectory.value / n).absolutePath)
   }
 ).dependsOn(platform)
 

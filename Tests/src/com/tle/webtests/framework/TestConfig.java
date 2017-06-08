@@ -37,7 +37,7 @@ public class TestConfig
 	{
 		this.clazz = clazz;
 		this.noInstitution = noInstitution;
-		alertSupported = Boolean.parseBoolean(getProperty("webdriver.alerts", "true"));
+		alertSupported = Boolean.parseBoolean(getProperty("webdriver.alerts", "false"));
 		if (!noInstitution)
 		{
 			this.testFolder = findInstitutionFolder();
@@ -357,8 +357,7 @@ public class TestConfig
 			}
 			else
 			{
-				URL configPathUrl = TestConfig.class.getResource("/application.conf.example");
-				baseFolder = Paths.get(URI.create(configPathUrl.toString())).getParent().getParent().toFile();
+				baseFolder = new File(".");
 			}
 		}
 		return baseFolder;

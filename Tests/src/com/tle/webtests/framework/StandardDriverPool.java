@@ -130,7 +130,6 @@ public class StandardDriverPool
 					}
 					options.addArguments("test-type");
 					options.addArguments("disable-gpu");
-					options.addArguments("proxy-server=localhost:8888");
 					if (headless)
 					{
 						options.addArguments("headless");
