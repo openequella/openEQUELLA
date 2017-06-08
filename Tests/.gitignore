@@ -1,2 +1,2 @@
-config/application.conf
+application.conf
 config/localcoverage-groups.json

@@ -36,15 +36,15 @@ public class InstallTest extends AbstractTest {
         Assert.assertTrue(installPage.isEmailsError());
         Assert.assertTrue(installPage.isStmpError());
         Assert.assertTrue(installPage.isNoReplyError());
-        installPage.setPassword("tle010");
-        installPage.setPasswordConfirm("tle010");
+        installPage.setPassword(testConfig.getAdminPassword());
+        installPage.setPasswordConfirm(testConfig.getAdminPassword());
         installPage.setEmails("invalidemail");
         installPage.setSmtpServer("localhost");
         installPage.setNoReply("noreply@noreply.com");
         installPage = installPage.installInvalid(ip -> !ip.isPasswordError());
         assertFalse(installPage.isPasswordError());
         assertTrue(installPage.isEmailsError());
-        installPage.setPassword("tle010");
+        installPage.setPassword(testConfig.getAdminPassword());
         installPage.setEmails(emails);
         installPage.setSmtpServer("mail.google.com");
         DatabasesPage dbPage = installPage.install();

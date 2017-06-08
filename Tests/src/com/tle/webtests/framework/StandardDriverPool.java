@@ -130,6 +130,7 @@ public class StandardDriverPool
 					}
 					options.addArguments("test-type");
 					options.addArguments("disable-gpu");
+					options.addArguments("no-sandbox");
 					if (headless)
 					{
 						options.addArguments("headless");
