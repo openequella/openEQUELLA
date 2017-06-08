@@ -4,12 +4,16 @@ jdk:
   - oraclejdk8
 services:
   - postgresql
+addons:
+  chrome: stable
 install:
   - wget https://s3.amazonaws.com/doolse-subba/equella-deps.zip
   - wget https://s3.amazonaws.com/doolse-subba/equella-installer-6.4.zip
   - unzip equella-deps.zip -d $HOME
+  - wget https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
+  - unzip chromedriver_linux64.zip
 before_script:
   - psql -c "CREATE USER equellatests WITH PASSWORD 'password';" -U postgres
   - psql -c 'CREATE DATABASE equellatests WITH OWNER = equellatests;' -U postgres
 script:
-  - sbt -Dinstall.zip=$TRAVIS_BUILD_DIR/equella-installer-6.4.zip installEquella
+  - sbt -Dwebdriver.chrome.driver=$TRAVIS_BUILD_DIR/chromedriver -Dinstall.zip=$TRAVIS_BUILD_DIR/equella-installer-6.4.zip installEquella
