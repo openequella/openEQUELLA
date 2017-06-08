@@ -18,5 +18,8 @@ install:
 before_script:
   - psql -c "CREATE USER equellatests WITH PASSWORD 'password';" -U postgres
   - psql -c 'CREATE DATABASE equellatests WITH OWNER = equellatests;' -U postgres
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
 script:
-  - sbt -Dwebdriver.chrome.driver=$TRAVIS_BUILD_DIR/chromedriver -Dinstall.zip=$TRAVIS_BUILD_DIR/equella-installer-6.4.zip installEquella startEquella test
+  - sbt -Dtests.configdir=travisconfig -Dwebdriver.chrome.driver=$TRAVIS_BUILD_DIR/chromedriver -Dinstall.zip=$TRAVIS_BUILD_DIR/equella-installer-6.4.zip installEquella startEquella test
