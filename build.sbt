@@ -70,7 +70,7 @@ val IntegTester = project in file("IntegTester")
 
 buildConfig in ThisBuild := {
   val defaultConfig = ConfigFactory.parseFile(file("project/build-defaults.conf"))
-  ConfigFactory.parseFile(file("build.conf")).withFallback(defaultConfig)
+  ConfigFactory.load(ConfigFactory.parseFile(file("build.conf")).withFallback(defaultConfig))
 }
 
 installDir := target.value / "equella-install"
