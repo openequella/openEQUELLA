@@ -1,25 +1,39 @@
 dist: trusty
 language: scala
 jdk:
-  - oraclejdk8
+- oraclejdk8
 services:
-  - postgresql
+- postgresql
 addons:
   chrome: stable
 cache:
   directories:
-    - $HOME/.ivy2
+  - "$HOME/.ivy2"
 install:
-  - wget https://s3.amazonaws.com/doolse-subba/equella-deps.zip
-  - wget https://s3.amazonaws.com/doolse-subba/equella-installer-6.4.zip
-  - unzip equella-deps.zip -d $HOME
-  - wget https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
-  - unzip chromedriver_linux64.zip
+- wget https://s3.amazonaws.com/doolse-subba/equella-deps.zip
+- wget https://s3.amazonaws.com/doolse-subba/equella-installer-6.4.zip
+- unzip equella-deps.zip -d $HOME
+- wget https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
+- unzip chromedriver_linux64.zip
 before_script:
-  - psql -c "CREATE USER equellatests WITH PASSWORD 'password';" -U postgres
-  - psql -c 'CREATE DATABASE equellatests WITH OWNER = equellatests;' -U postgres
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
+- psql -c "CREATE USER equellatests WITH PASSWORD 'password';" -U postgres
+- psql -c 'CREATE DATABASE equellatests WITH OWNER = equellatests;' -U postgres
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+- sleep 3
 script:
-  - sbt -Dtests.configdir=travisconfig -Dwebdriver.chrome.driver=$TRAVIS_BUILD_DIR/chromedriver -Dinstall.zip=$TRAVIS_BUILD_DIR/equella-installer-6.4.zip installEquella startEquella test
+- sbt -Dtests.configdir=travisconfig -Dwebdriver.chrome.driver=$TRAVIS_BUILD_DIR/chromedriver
+  -Dinstall.zip=$TRAVIS_BUILD_DIR/equella-installer-6.4.zip installEquella startEquella
+  test
+deploy:
+  provider: s3
+  access_key_id: AKIAICLTJGUUA3IQOI2A
+  secret_access_key:
+    secure: X9fJatEtZ2PiW3Rd0WHX24LnQt7oR2ZgQc05bcJqzVZyCgl3p9nrzaDHS63JiToIXSfSNmOss733mMQEE4r8VPV+50aAxaCEFhFVNXx4vjr9WzQJO+tm7r6MFeke8RvIxwyHaVQEz83rKCJ3XHeXEtssDyMEKpTRViB9xh9A7JnzbZFOR8nzneqXw38XImKMKLfKvcgflUPoywHe3eiukep2+Uav7cdVHLEY7Yj+qt4xXBpensnnRVppG9EfIKD1YO1/+Ja7S4F7whbxkC/9fRc0ifptxziuio119em5XIVs8m+jIo3NaoSaqEtSRy4LTb/QymfIt0m7hvbG1qU+NZYA2EMH05SM1ABnj0Hv5+DmAUeO0IlubhxBs/eKn6IJ1QULn5lGPlIK2jeQZvAHBnCdTQJZlMdLcdedUJyBHKEAWsRMc9/7DvSfxhD3cutx+89PZk+hRzW5SU47fi/mirtKawZCSjxXonWL3HrYkbt2EGwIZfr6gUAX8exjs806WB/hBVSJyWjeYyclw9qd6p/CYlWWdvZA6XBm9A4BYG0ku2uuPgs7Gvc3JAQyIUWQh4PPFh6Pu52wd9awDPVCmukQtOlMmF7xk9p6bGg0oZqZwjw4Kv2enfBLaDQh7o/18lpYH3+Zw0wxvLJ39u+rnpmpRBX4jLKRSi5bwzWT7tc=
+  bucket: doolse-subba
+  skip_cleanup: true
+  local_dir: Tests/target
+  upload-dir: autotests-latest
+  acl: public_read
+  on:
+    repo: equella/equella-autotests
