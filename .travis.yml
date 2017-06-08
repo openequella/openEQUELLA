@@ -11,7 +11,7 @@ install:
   - wget https://s3.amazonaws.com/doolse-subba/equella-installer-6.4.zip
   - unzip equella-deps.zip -d $HOME
 before_script:
-  - psql -c 'CREATE USER equellatests WITH PASSWORD password;' -U postgres
+  - psql -c "CREATE USER equellatests WITH PASSWORD 'password';" -U postgres
   - psql -c 'CREATE DATABASE equellatests WITH OWNER = equellatests;' -U postgres
 script:
   - sbt -Dinstall.zip=$TRAVIS_BUILD_DIR/equella-installer-6.4.zip installEquella
