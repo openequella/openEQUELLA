@@ -6,6 +6,10 @@ services:
 - postgresql
 addons:
   chrome: stable
+  apt:
+    packages:
+    - libav-tools
+    - imagemagick
 cache:
   directories:
   - "$HOME/.ivy2"

@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="Auto Test Suite sync" data-provider-thread-count="2">
+<suite name="Auto Test Suite sync" data-provider-thread-count="1">
 	<test name="Sync First">
 		<classes>
 			<class name="com.tle.webtests.test.SyncTest" />

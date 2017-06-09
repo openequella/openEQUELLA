@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="Auto Test Suite contribution" parallel="instances" data-provider-thread-count="4" thread-count="4" configfailurepolicy="continue">
+<suite name="Auto Test Suite contribution" parallel="instances" data-provider-thread-count="1" thread-count="1" configfailurepolicy="continue">
 	<test name="Contribution Tests">
 		<packages>
 			<package name="com.tle.webtests.test.contribute" />

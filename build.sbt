@@ -36,7 +36,6 @@ lazy val platform = (project in file("Platform/Plugins/com.tle.platform.common")
 )
 
 lazy val selenium_tests = (project in file("Tests")).settings(common).settings(
-  javaSource in Test := baseDirectory.value / "src",
   libraryDependencies ++= Seq(
     "org.seleniumhq.selenium" % "selenium-java" % "3.4.0",
     "org.testng" % "testng" % "6.11",
