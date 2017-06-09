@@ -59,6 +59,7 @@ lazy val selenium_tests = (project in file("Tests")).settings(common).settings(
   unmanagedClasspath in Test += baseDirectory.value / buildConfig.value.getString("tests.configdir"),
   testNGSettings,
   testNGOutputDirectory := (target.value / "testng").absolutePath,
+  testNGParameters ++= Seq("-log", buildConfig.value.getInt("tests.verbose").toString),
   testNGSuites := {
     val tc = buildConfig.value.getConfig("tests")
     sys.props.put("test.base", baseDirectory.value.absolutePath)
