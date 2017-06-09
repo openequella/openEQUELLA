@@ -26,9 +26,9 @@ before_script:
 - sh -e /etc/init.d/xvfb start
 - sleep 3
 script:
-- sbt -Dtests.configdir=travisconfig -Dwebdriver.chrome.driver=$TRAVIS_BUILD_DIR/chromedriver
-  -Dinstall.zip=$TRAVIS_BUILD_DIR/equella-installer-6.4.zip installEquella startEquella
-  test
+- sbt IntegTester/assembly
+- java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
+- sbt -Dtests.configdir=travisconfig -Dwebdriver.chrome.driver=$TRAVIS_BUILD_DIR/chromedriver -Dinstall.zip=$TRAVIS_BUILD_DIR/equella-installer-6.4.zip installEquella startEquella test
 deploy:
   provider: s3
   access_key_id: AKIAICLTJGUUA3IQOI2A

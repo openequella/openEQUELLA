@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.tle.webtests.framework.*;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
@@ -27,11 +28,6 @@ import org.testng.annotations.BeforeSuite;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import com.tle.webtests.framework.Name;
-import com.tle.webtests.framework.PageContext;
-import com.tle.webtests.framework.ScreenshotListener;
-import com.tle.webtests.framework.StandardDriverPool;
-import com.tle.webtests.framework.TestConfig;
 import com.tle.webtests.pageobject.ClassPrefixedName;
 import com.tle.webtests.pageobject.PageObject;
 import com.tle.webtests.pageobject.PrefixedName;
@@ -44,7 +40,6 @@ public abstract class AbstractTest
 	protected static final String KEY_SETUPLISTENEREADDED = "SetupListenerAdded";
 	protected PageContext context;
 	protected TestConfig testConfig;
-	private PreparingDriverPool driverPool;
 
 	private final ListMultimap<String, PrefixedName> nameMap = ArrayListMultimap.create();
 
@@ -97,8 +92,7 @@ public abstract class AbstractTest
 	}
 
 	@BeforeClass(alwaysRun = true)
-	public void setupContext(ITestContext testContext)
-	{
+	public void setupContext(ITestContext testContext) throws IOException {
 		File rootFolder = testConfig.getTestFolder();
 		String contextUrl;
 
@@ -110,13 +104,14 @@ public abstract class AbstractTest
 		{
 			contextUrl = testConfig.getAdminUrl();
 		}
-		driverPool = new PreparingDriverPool(this, getDriverPool(testContext.getSuite()));
-		context = new PageContext(driverPool, testConfig, contextUrl);
+		WebDriver driver = new StandardDriverFactory(testConfig).getDriver(getClass());
+		context = new PageContext(driver, testConfig, contextUrl);
 		if (!testConfig.isNoInstitution()) {
 			context.setIntegUrl(testConfig.getIntegrationUrl(rootFolder.getName()));
 		}
 		context.setNamePrefix(getNamePrefix());
 		customisePageContext();
+		prepareBrowserSession();
 	}
 
 	@BeforeSuite
@@ -129,18 +124,6 @@ public abstract class AbstractTest
 			suite.setAttribute("ScreenListenerAdded", true);
 			suite.addListener(new ScreenshotListener());
 		}
-		suite.setAttribute(KEY_DRIVERPOOL, new StandardDriverPool(testConfig));
-	}
-
-	@AfterSuite(alwaysRun = true)
-	public void closeDriverPool(ITestContext testContext)
-	{
-		ISuite suite = testContext.getSuite();
-		StandardDriverPool driverPool = getDriverPool(suite);
-		if( driverPool != null )
-		{
-			driverPool.shutdown();
-		}
 	}
 
 	public String prefix()
@@ -152,11 +135,6 @@ public abstract class AbstractTest
 	{
 		String contextUrl = testConfig.getInstitutionUrl(shortName);
 		return new PageContext(this.context, contextUrl);
-	}
-
-	public StandardDriverPool getDriverPool(ISuite suite)
-	{
-		return (StandardDriverPool) suite.getAttribute(KEY_DRIVERPOOL);
 	}
 
 	protected boolean isInstitutional()
@@ -229,42 +207,21 @@ public abstract class AbstractTest
 		currentDriver.manage().deleteAllCookies();
 	}
 
-	@AfterMethod(alwaysRun = true)
-	public void releaseDriver()
-	{
-		if( context == null )
-		{
-			return;
-		}
-		WebDriver currentDriver = context.getCurrentDriver();
-		if( currentDriver != null )
-		{
-			try
-			{
-				switchToDefaultWindow(currentDriver);
-			}
-			catch( Exception e )
-			{
-				System.out.println(e);
-			}
-			finally
-			{
-				context.releaseDriver(currentDriver);
-			}
-		}
-	}
 
 	@AfterClass(alwaysRun = true)
 	public void finishedClass(ITestContext testContext) throws Exception
 	{
-		if( context == null )
-		{
-			return;
+		try {
+			if (context == null) {
+				return;
+			}
+			String delValue = testConfig.getProperty("test.deleteitems");
+			if (alwaysCleanup() || delValue == null || Boolean.parseBoolean(delValue)) {
+				cleanupAfterClass();
+			}
 		}
-		String delValue = testConfig.getProperty("test.deleteitems");
-		if( alwaysCleanup() || delValue == null || Boolean.parseBoolean(delValue) )
-		{
-			cleanupAfterClass();
+		finally {
+			context.getDriver().quit();
 		}
 
 		// If we leave the browsers open on grid they will timeout if they are
@@ -379,7 +336,6 @@ public abstract class AbstractTest
 
 	public void invalidateSession()
 	{
-		driverPool.invalidateSession();
 	}
 
 	// It's a sad day when this is the only way

@@ -49,7 +49,7 @@ public class SyncToLocalServer
 		FirefoxDriver driver = getDriver();
 		try
 		{
-			PageContext context = new PageContext(new FixedDriver(driver), testConfig, testConfig.getAdminUrl());
+			PageContext context = new PageContext(driver, testConfig, testConfig.getAdminUrl());
 			String instutionUrl = testConfig.getInstitutionUrl(inst.getShortName(), inst.isHttps());
 			InstitutionListTab listTab = new InstitutionListTab(context, testConfig.getAdminPassword());
 			ImportTab importTab = new ImportTab(context);
@@ -84,7 +84,7 @@ public class SyncToLocalServer
 		FirefoxDriver driver = getDriver();
 		try
 		{
-			PageContext context = new PageContext(new FixedDriver(driver), testConfig, testConfig.getAdminUrl());
+			PageContext context = new PageContext(driver, testConfig, testConfig.getAdminUrl());
 			InstitutionListTab listTab = new InstitutionListTab(context, testConfig.getAdminPassword()).load();
 			String instutionUrl = testConfig.getInstitutionUrl(inst.getShortName(), inst.isHttps());
 			ExportPage exportPage = listTab.export(instutionUrl);

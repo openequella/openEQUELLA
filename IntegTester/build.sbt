@@ -8,6 +8,8 @@ val http4sVersion = "0.17.0-M3"
 
 val circeVersion = "0.8.0"
 
+excludeDependencies ++= Seq("org.typelevel" % "scala-library")
+
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
   "io.circe" %% "circe-generic",

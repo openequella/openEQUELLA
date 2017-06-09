@@ -9,7 +9,7 @@ import com.google.common.base.Preconditions;
 
 public class PageContext
 {
-	private ThreadLocal<WebDriver> driverCheckout = new ThreadLocal<WebDriver>();
+	private WebDriver driver;
 	private final String baseUrl;
 	private String integUrl;
 	private String namePrefix;
@@ -17,19 +17,18 @@ public class PageContext
 	private String prefix = "";
 	private final Map<Object, Object> attr = Maps.newHashMap();
 	private final TestConfig testConfig;
-	private final WebDriverPool driverPool;
 
-	public PageContext(WebDriverPool driverPool, TestConfig testConfig, String baseUrl)
+	public PageContext(WebDriver driver, TestConfig testConfig, String baseUrl)
 	{
 		Preconditions.checkNotNull(baseUrl);
 		this.testConfig = testConfig;
 		this.baseUrl = baseUrl;
-		this.driverPool = driverPool;
+		this.driver = driver;
 	}
 
 	public PageContext(PageContext existing, String baseUrl)
 	{
-		this.driverPool = existing.driverPool;
+		this.driver = existing.driver;
 		this.testConfig = existing.testConfig;
 		attr.putAll(existing.attr);
 		this.integUrl = existing.integUrl;
@@ -37,17 +36,10 @@ public class PageContext
 		this.subPrefix = existing.subPrefix;
 		this.prefix = existing.prefix;
 		this.baseUrl = baseUrl;
-		this.driverCheckout = existing.driverCheckout;
 	}
 
 	public WebDriver getDriver()
 	{
-		WebDriver driver = driverCheckout.get();
-		if( driver == null )
-		{
-			driver = driverPool.getDriver();
-			driverCheckout.set(driver);
-		}
 		return driver;
 	}
 
@@ -125,17 +117,7 @@ public class PageContext
 
 	public WebDriver getCurrentDriver()
 	{
-		return driverCheckout.get();
+		return driver;
 	}
 
-	public void releaseDriver(WebDriver driver)
-	{
-		WebDriver currentDriver = driverCheckout.get();
-		if( currentDriver != driver )
-		{
-			throw new RuntimeException("Trying to release a different driver");
-		}
-		driverCheckout.remove();
-		driverPool.releaseDriver(currentDriver);
-	}
 }
