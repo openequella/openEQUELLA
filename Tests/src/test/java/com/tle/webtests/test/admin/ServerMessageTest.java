@@ -3,6 +3,7 @@ package com.tle.webtests.test.admin;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import com.tle.webtests.pageobject.institution.ServerAdminLogonPage;
 import org.testng.annotations.Test;
 
 import com.tle.webtests.framework.PageContext;
@@ -22,7 +23,7 @@ public class ServerMessageTest extends AbstractSessionTest
 	public void testServerMessage()
 	{
 		PageContext adminContext = new PageContext(this.context, testConfig.getAdminUrl());
-		InstitutionListTab listTab = new InstitutionListTab(adminContext, testConfig.getAdminPassword()).load();
+		InstitutionListTab listTab = new ServerAdminLogonPage(context).load().logon(testConfig.getAdminPassword(), new InstitutionListTab(adminContext));
 		ServerSettingsTab settingsTab = listTab.serverSettingsTab();
 		settingsTab.setServerMessage(SERVER_MESSAGE);
 

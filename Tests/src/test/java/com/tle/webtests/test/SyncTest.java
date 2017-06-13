@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import com.tle.webtests.pageobject.institution.*;
 import org.testng.ITestContext;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -15,10 +16,6 @@ import org.testng.annotations.Test;
 import com.google.common.collect.Sets;
 import com.tle.common.Check;
 import com.tle.webtests.pageobject.UndeterminedPage;
-import com.tle.webtests.pageobject.institution.ImportTab;
-import com.tle.webtests.pageobject.institution.InstitutionListTab;
-import com.tle.webtests.pageobject.institution.InstitutionTabInterface;
-import com.tle.webtests.pageobject.institution.StatusPage;
 
 public class SyncTest extends AbstractTest
 {
@@ -30,7 +27,7 @@ public class SyncTest extends AbstractTest
 		return false;
 	}
 
-	@DataProvider(name = "institutes", parallel = true)
+	@DataProvider(name = "institutes")
 	public Object[][] listInstitutes(ITestContext context) throws Exception
 	{
 		Set<String> includedInsts = null;
@@ -62,13 +59,21 @@ public class SyncTest extends AbstractTest
 		return instDirs.toArray(new Object[instDirs.size()][]);
 	}
 
+	@Override
+	protected void prepareBrowserSession() {
+		UndeterminedPage<InstitutionTabInterface> choice = new UndeterminedPage<InstitutionTabInterface>(context,
+				new InstitutionListTab(context), new ImportTab(context));
+		new ServerAdminLogonPage(context).load().logon(testConfig.getAdminPassword(), choice);
+	}
+
 	@Test(dataProvider = "institutes")
 	public void syncInstitution(File instFolder) throws Exception
 	{
 		String shortName = instFolder.getName();
+
 		String instutionUrl = testConfig.getInstitutionUrl(shortName);
 
-		InstitutionListTab listTab = new InstitutionListTab(context, testConfig.getAdminPassword());
+		InstitutionListTab listTab = new InstitutionListTab(context);
 		ImportTab importTab = new ImportTab(context);
 		UndeterminedPage<InstitutionTabInterface> choice = new UndeterminedPage<InstitutionTabInterface>(context,
 			listTab, importTab);

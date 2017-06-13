@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.tle.webtests.pageobject.institution.ServerAdminLogonPage;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -23,8 +24,7 @@ public class CloneTest extends AbstractInstTest
 		String newInstutionUrl = context.getBaseUrl() + shortName + "clone/";
 		String newShortName = instFolder.getName() + "clone";
 
-		InstitutionListTab listTab = new InstitutionListTab(context, testConfig.getAdminPassword()).load();
-
+		InstitutionListTab listTab = new ServerAdminLogonPage(context).load().logon(testConfig.getAdminPassword(), new InstitutionListTab(context));
 		if( listTab.institutionExists(newInstutionUrl) )
 		{
 			StatusPage<InstitutionListTab> statusPage = listTab.delete(newInstutionUrl);
@@ -47,7 +47,7 @@ public class CloneTest extends AbstractInstTest
 		String origShortName = instFolder.getName();
 		String instutionUrl = context.getBaseUrl() + origShortName + "clone/";
 
-		InstitutionListTab listTab = new InstitutionListTab(context, testConfig.getAdminPassword()).load();
+		InstitutionListTab listTab = new ServerAdminLogonPage(context).load().logon(testConfig.getAdminPassword(), new InstitutionListTab(context));
 		if( listTab.institutionExists(instutionUrl) )
 		{
 			StatusPage<InstitutionListTab> statusPage = listTab.delete(instutionUrl);

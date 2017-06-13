@@ -18,6 +18,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import com.tle.webtests.pageobject.institution.*;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxBinary;
@@ -29,11 +30,6 @@ import com.tle.webtests.framework.TestConfig;
 import com.tle.webtests.framework.WebDriverPool;
 import com.tle.webtests.framework.setup.InstitutionModel.InstitutionData;
 import com.tle.webtests.pageobject.UndeterminedPage;
-import com.tle.webtests.pageobject.institution.ExportPage;
-import com.tle.webtests.pageobject.institution.ImportTab;
-import com.tle.webtests.pageobject.institution.InstitutionListTab;
-import com.tle.webtests.pageobject.institution.InstitutionTabInterface;
-import com.tle.webtests.pageobject.institution.StatusPage;
 
 public class SyncToLocalServer
 {
@@ -51,7 +47,7 @@ public class SyncToLocalServer
 		{
 			PageContext context = new PageContext(driver, testConfig, testConfig.getAdminUrl());
 			String instutionUrl = testConfig.getInstitutionUrl(inst.getShortName(), inst.isHttps());
-			InstitutionListTab listTab = new InstitutionListTab(context, testConfig.getAdminPassword());
+			InstitutionListTab listTab =new ServerAdminLogonPage(context).get().logon(testConfig.getAdminPassword(), new InstitutionListTab(context));
 			ImportTab importTab = new ImportTab(context);
 			UndeterminedPage<InstitutionTabInterface> choice = new UndeterminedPage<InstitutionTabInterface>(context,
 				listTab, importTab);
@@ -85,7 +81,7 @@ public class SyncToLocalServer
 		try
 		{
 			PageContext context = new PageContext(driver, testConfig, testConfig.getAdminUrl());
-			InstitutionListTab listTab = new InstitutionListTab(context, testConfig.getAdminPassword()).load();
+			InstitutionListTab listTab = new ServerAdminLogonPage(context).load().logon(testConfig.getAdminPassword(), new InstitutionListTab(context));
 			String instutionUrl = testConfig.getInstitutionUrl(inst.getShortName(), inst.isHttps());
 			ExportPage exportPage = listTab.export(instutionUrl);
 			exportPage.removeAuditLogs();

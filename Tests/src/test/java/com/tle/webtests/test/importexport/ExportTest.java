@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.tle.webtests.pageobject.institution.ServerAdminLogonPage;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -21,7 +22,7 @@ public class ExportTest extends AbstractInstTest
 		String shortName = instFolder.getName();
 		String instutionUrl = context.getBaseUrl() + shortName + '/';
 
-		InstitutionListTab listTab = new InstitutionListTab(context, testConfig.getAdminPassword()).load();
+		InstitutionListTab listTab = new ServerAdminLogonPage(context).load().logon(testConfig.getAdminPassword(), new InstitutionListTab(context));
 		if( listTab.institutionExists(instutionUrl) )
 		{
 			ExportPage export = listTab.export(instutionUrl);

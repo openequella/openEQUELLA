@@ -8,10 +8,9 @@ import com.tle.webtests.pageobject.WaitingPageObject;
 
 public class InstitutionListTab extends InstitutionTab<InstitutionListTab>
 {
-	public InstitutionListTab(PageContext context, String password)
+	public InstitutionListTab(PageContext context)
 	{
 		super(context, "Institutions", "Institutions");
-		setPassword(password);
 	}
 
 	public boolean institutionExists(String instutionUrl)

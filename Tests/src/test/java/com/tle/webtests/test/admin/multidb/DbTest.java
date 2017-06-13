@@ -5,15 +5,12 @@ import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
 
+import com.tle.webtests.pageobject.institution.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import com.tle.webtests.pageobject.institution.DatabaseEditDialog;
-import com.tle.webtests.pageobject.institution.DatabaseRow;
-import com.tle.webtests.pageobject.institution.DatabasesPage;
-import com.tle.webtests.pageobject.institution.MigrationProgressDialog;
 import com.tle.webtests.pageobject.multidb.InstallPage;
 import com.tle.webtests.test.AbstractTest;
 
@@ -36,6 +33,13 @@ public class DbTest extends AbstractTest
 	}
 
 	@Override
+	protected void prepareBrowserSession()
+	{
+		new ServerAdminLogonPage(context).load().logon(testConfig.getAdminPassword(), new InstitutionListTab(context));
+	}
+
+
+	@Override
 	protected boolean isInstitutional()
 	{
 		return false;
@@ -45,7 +49,8 @@ public class DbTest extends AbstractTest
 	@Test
 	public void addNewSchema()
 	{
-		DatabasesPage dbPage = new DatabasesPage(context, testConfig.getAdminPassword()).load();
+
+		DatabasesPage dbPage = new DatabasesPage(context).load();
 		DatabaseEditDialog newDb = dbPage.addSchema();
 		String hostDbPart = hostname + "/" + prefix + "2";
 		newDb.setJdbcUrl("jdbc:postgresql://" + hostDbPart);
@@ -63,7 +68,7 @@ public class DbTest extends AbstractTest
 	@Test(dependsOnMethods = "addNewSchema")
 	public void migrateMultipleAndProgress()
 	{
-		DatabasesPage dbPage = new DatabasesPage(context, "tle010").load();
+		DatabasesPage dbPage = new DatabasesPage(context).load();
 		DatabaseEditDialog newDb = dbPage.addSchema();
 		String hostDbPart = hostname + "/" + prefix + "3";
 		newDb.setJdbcUrl("jdbc:postgresql://" + hostDbPart);

@@ -12,12 +12,6 @@ public abstract class InstitutionTab<T extends InstitutionTab<T>> extends Abstra
 	implements
 		InstitutionTabInterface
 {
-	private String password;
-
-	@FindBy(id = "islm_password")
-	private WebElement passwordField;
-	@FindBy(id = "islm_loginButton")
-	private WebElement loginButton;
 
 	private final String tabName;
 
@@ -25,24 +19,6 @@ public abstract class InstitutionTab<T extends InstitutionTab<T>> extends Abstra
 	{
 		super(context, By.xpath("//h2[normalize-space(text())=" + quoteXPath(title) + "]"));
 		this.tabName = tabName;
-	}
-
-	@Override
-	public void checkLoaded()
-	{
-		try
-		{
-			passwordField.getAttribute("value");
-		}
-		catch( NotFoundException nfe )
-		{
-			super.checkLoaded();
-			return;
-		}
-		passwordField.clear();
-		passwordField.sendKeys(password);
-		loginButton.click();
-		throw new NotFoundException("Showing password");
 	}
 
 	public ImportTab importTab()
@@ -67,8 +43,4 @@ public abstract class InstitutionTab<T extends InstitutionTab<T>> extends Abstra
 		return tabName;
 	}
 
-	public void setPassword(String password)
-	{
-		this.password = password;
-	}
 }

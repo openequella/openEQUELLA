@@ -11,7 +11,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.Properties;
@@ -23,7 +25,6 @@ public class TestConfig
 	private static File baseFolder = null;
 
 
-	private final Class<?> clazz;
 	private final boolean alertSupported;
 	private final boolean noInstitution;
 	private final File testFolder;
@@ -35,17 +36,15 @@ public class TestConfig
 
 	public TestConfig(Class<?> clazz, boolean noInstitution)
 	{
-		this.clazz = clazz;
+		this(noInstitution ? getBaseFolder() : findInstitutionFolder(clazz), noInstitution);
+	}
+
+	public TestConfig(File testFolder, boolean noInstitution)
+	{
 		this.noInstitution = noInstitution;
 		alertSupported = Boolean.parseBoolean(getProperty("webdriver.alerts", "false"));
-		if (!noInstitution)
-		{
-			this.testFolder = findInstitutionFolder();
-		}
-		else
-		{
-			this.testFolder = getBaseFolder();
-		}
+		this.testFolder = testFolder;
+
 	}
 
 	public boolean isNoInstitution() {
@@ -57,18 +56,18 @@ public class TestConfig
 	 * 
 	 * @return
 	 */
-	private File findInstitutionFolder()
+	private static File findInstitutionFolder(Class<?> clazz)
 	{
-		String folderName = getInstitutionName();
+		String folderName = findInstitutionName(clazz);
 		return findInstitutionFolder(folderName);
 	}
 
-	private File findInstitutionFolder(String name)
+	private static File findInstitutionFolder(String name)
 	{
 		return new File(getBaseFolder(), "tests/" + name);
 	}
 
-	public String getInstitutionName()
+	public static String findInstitutionName(Class<?> clazz)
 	{
 		String inst;
 		TestInstitution annotation = clazz.getAnnotation(TestInstitution.class);
@@ -357,7 +356,16 @@ public class TestConfig
 			}
 			else
 			{
-				baseFolder = new File(".");
+				try {
+					File theFolder = Paths.get(TestConfig.class.getResource("TestConfig.class").toURI()).toFile();
+					while (!theFolder.getName().equals("Tests"))
+					{
+						theFolder = theFolder.getParentFile();
+					}
+					baseFolder = theFolder;
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return baseFolder;
@@ -373,4 +381,9 @@ public class TestConfig
 	//	{
 	//		return getServerUrl(https) + shortName + '/';
 	//	}
+
+	public static Config getConfigProps()
+	{
+		return config;
+	}
 }

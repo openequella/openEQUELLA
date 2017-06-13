@@ -1,21 +1,11 @@
 import com.typesafe.config.{Config, ConfigFactory}
-import de.johoop.testngplugin.TestNGPlugin.testNGSuites
 import scala.collection.JavaConversions._
 
-name := "tests"
+name := "equella-autotests"
 
 version := "1.0"
 
 scalaVersion := "2.12.2"
-
-lazy val installDir = settingKey[File]("Dir to install EQUELLA into")
-lazy val installEquella = taskKey[File]("Install EQUELLA locally")
-lazy val startEquella = taskKey[Unit]("Start the EQUELLA service")
-lazy val stopEquella = taskKey[Unit]("Stop the EQUELLA service")
-lazy val installOptions = settingKey[InstallOptions]("EQUELLA installer options")
-lazy val installerZip = settingKey[Option[File]]("The installer zip")
-lazy val buildConfig = settingKey[Config]("The build config options")
-
 
 lazy val common = Seq(
   resolvers += "Local EQUELLA deps" at IO.toURI(file(Path.userHome.absolutePath) / "/equella-deps").toString
@@ -35,36 +25,7 @@ lazy val platform = (project in file("Platform/Plugins/com.tle.platform.common")
   )
 )
 
-lazy val selenium_tests = (project in file("Tests")).settings(common).settings(
-  libraryDependencies ++= Seq(
-    "org.seleniumhq.selenium" % "selenium-java" % "3.4.0",
-    "org.testng" % "testng" % "6.11",
-    "org.easytesting" % "fest-util" % "1.2.5",
-    "org.easytesting" % "fest-swing-testng" % "1.2.1",
-    "org.codehaus.jackson" % "jackson-core-asl" % "1.9.13",
-    "org.codehaus.jackson" % "jackson-mapper-asl" % "1.9.13",
-    "org.dspace.oclc" % "oclc-srw" % "1.0.20080328",
-    "org.apache.cxf" % "cxf-bundle" % "2.7.6",
-    "axis" % "axis" % "1.4",
-    "com.jcraft" % "jsch" % "0.1.54",
-    "jpf" % "jpf-tools" % "1.0.5",
-    "org.jacoco" % "org.jacoco.report" % "0.7.9",
-    "org.dspace" % "oclc-harvester2" % "0.1.12",
-    "org.jvnet.hudson" % "xstream" % "1.3.1-hudson-8",
-    "com.typesafe" % "config" % "1.3.1",
-    "org.slf4j" % "slf4j-simple" % "1.7.5"
-  ),
-  unmanagedBase in Compile := baseDirectory.value / "lib/adminjars",
-  unmanagedClasspath in Test += baseDirectory.value / buildConfig.value.getString("tests.configdir"),
-  testNGSettings,
-  testNGOutputDirectory := (target.value / "testng").absolutePath,
-  testNGParameters ++= Seq("-log", buildConfig.value.getInt("tests.verbose").toString),
-  testNGSuites := {
-    val tc = buildConfig.value.getConfig("tests")
-    sys.props.put("test.base", baseDirectory.value.absolutePath)
-    tc.getStringList("suitenames").map(n => (baseDirectory.value / n).absolutePath)
-  }
-).dependsOn(platform)
+lazy val selenium_tests = (project in file("Tests")).settings(common).dependsOn(platform)
 
 val IntegTester = project in file("IntegTester")
 

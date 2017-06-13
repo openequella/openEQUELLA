@@ -17,13 +17,7 @@ public class DatabasesPage extends InstitutionTab<DatabasesPage>
 
 	public DatabasesPage(PageContext context)
 	{
-		this(context, null);
-	}
-
-	public DatabasesPage(PageContext context, String password)
-	{
 		super(context, "Databases", "Databases");
-		setPassword(password);
 	}
 
 	@Override
@@ -65,5 +59,6 @@ public class DatabasesPage extends InstitutionTab<DatabasesPage>
 		acceptConfirmation();
 		get();
 	}
+
 
 }

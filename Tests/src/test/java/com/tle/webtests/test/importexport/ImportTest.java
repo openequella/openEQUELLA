@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.tle.webtests.pageobject.institution.ServerAdminLogonPage;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -15,6 +16,12 @@ import com.tle.webtests.pageobject.institution.StatusPage;
 
 public class ImportTest extends AbstractInstTest
 {
+
+	@Override
+	protected void prepareBrowserSession() {
+		InstitutionListTab listTab = new ServerAdminLogonPage(context).load().logon(testConfig.getAdminPassword(), new InstitutionListTab(context));
+	}
+
 	@Test(dataProvider = "toImport")
 	public void importInstitutions(File instFolder, String fileName)
 	{
@@ -24,7 +31,7 @@ public class ImportTest extends AbstractInstTest
 		InstitutionListTab listTab = null;
 		try
 		{
-			listTab = new InstitutionListTab(context, testConfig.getAdminPassword()).load();
+			listTab = new InstitutionListTab(context).load();
 			if( listTab.institutionExists(instutionUrl) )
 			{
 				StatusPage<InstitutionListTab> statusPage = listTab.delete(instutionUrl);
@@ -55,7 +62,7 @@ public class ImportTest extends AbstractInstTest
 		String instutionUrl = context.getBaseUrl() + shortName + '/';
 		InstitutionListTab listTab = null;
 
-		listTab = new InstitutionListTab(context, testConfig.getAdminPassword()).load();
+		listTab = new InstitutionListTab(context).load();
 		if( listTab.institutionExists(instutionUrl) )
 		{
 			StatusPage<InstitutionListTab> statusPage = listTab.delete(instutionUrl);
