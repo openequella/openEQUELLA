@@ -62,7 +62,6 @@ libraryDependencies ++= Seq(
   "javax.servlet" % "jstl" % "1.1.2",
   "javax.xml" % "jaxrpc" % "1.1",
   "jdom" % "jdom" % "1.0",
-  "jnlp" % "jnlp" % "1.0",
   "joda-time" % "joda-time" % "2.2",
   "jpf" % "jpf" % "1.0.7",
   "jpf" % "jpf-tools" % "1.0.5",

@@ -8,10 +8,11 @@ libraryDependencies ++= Seq(
   "jpf" % "jpf" % "1.0.7",
   "com.fifesoft" % "rsyntaxtextarea" % "1.5.2",
   "com.miglayout" % "miglayout-swing" % "4.2",
-  "jnlp" % "jnlp" % "1.0",
   "org.springframework" % "spring-web" % "2.5.5",
   "org.springframework" % "spring-aop" % "2.5.5"
 )
+
+unmanagedJars in Compile += file(sys.props("java.home")) / "lib/javaws.jar"
 
 fork in run := true
 
