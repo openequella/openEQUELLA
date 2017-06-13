@@ -19,6 +19,7 @@ install:
 - unzip equella-deps.zip -d $HOME
 - wget https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
 - unzip chromedriver_linux64.zip
+- curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
 before_script:
 - psql -c "CREATE USER equellatests WITH PASSWORD 'password';" -U postgres
 - psql -c 'CREATE DATABASE equellatests WITH OWNER = equellatests;' -U postgres
@@ -28,16 +29,15 @@ before_script:
 script:
 - sbt IntegTester/assembly
 - java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
-- sbt -Dtests.configdir=travisconfig -Dwebdriver.chrome.driver=$TRAVIS_BUILD_DIR/chromedriver -Dinstall.zip=$TRAVIS_BUILD_DIR/equella-installer-6.4.zip installEquella startEquella test
-deploy:
-  provider: s3
-  access_key_id: AKIAICLTJGUUA3IQOI2A
-  secret_access_key:
-    secure: X9fJatEtZ2PiW3Rd0WHX24LnQt7oR2ZgQc05bcJqzVZyCgl3p9nrzaDHS63JiToIXSfSNmOss733mMQEE4r8VPV+50aAxaCEFhFVNXx4vjr9WzQJO+tm7r6MFeke8RvIxwyHaVQEz83rKCJ3XHeXEtssDyMEKpTRViB9xh9A7JnzbZFOR8nzneqXw38XImKMKLfKvcgflUPoywHe3eiukep2+Uav7cdVHLEY7Yj+qt4xXBpensnnRVppG9EfIKD1YO1/+Ja7S4F7whbxkC/9fRc0ifptxziuio119em5XIVs8m+jIo3NaoSaqEtSRy4LTb/QymfIt0m7hvbG1qU+NZYA2EMH05SM1ABnj0Hv5+DmAUeO0IlubhxBs/eKn6IJ1QULn5lGPlIK2jeQZvAHBnCdTQJZlMdLcdedUJyBHKEAWsRMc9/7DvSfxhD3cutx+89PZk+hRzW5SU47fi/mirtKawZCSjxXonWL3HrYkbt2EGwIZfr6gUAX8exjs806WB/hBVSJyWjeYyclw9qd6p/CYlWWdvZA6XBm9A4BYG0ku2uuPgs7Gvc3JAQyIUWQh4PPFh6Pu52wd9awDPVCmukQtOlMmF7xk9p6bGg0oZqZwjw4Kv2enfBLaDQh7o/18lpYH3+Zw0wxvLJ39u+rnpmpRBX4jLKRSi5bwzWT7tc=
-  bucket: doolse-subba
-  skip_cleanup: true
-  local_dir: Tests/target
-  upload-dir: autotests-latest
-  acl: public_read
-  on:
-    repo: equella/equella-autotests
+- sbt -Dtests.configdir=travisconfig -Dwebdriver.chrome.driver=$TRAVIS_BUILD_DIR/chromedriver
+  -Dinstall.zip=$TRAVIS_BUILD_DIR/equella-installer-6.4.zip installEquella startEquella
+  test
+after_failure:
+- artifacts upload Tests/target
+after_success:
+- artifacts upload Tests/target
+env:
+  global:
+    secure: aM8ZC7XcBDMnoncEwDtFsef4c0xq/qNdUdZ5FC2qxiCSaXjxKv5I/04/VTQxKVMTDHc3RkCFR+kUqeeC9rTP6ztXz/2ivWrLNDzW1B+SNWVffnMgOyqtodv0fGFeVbOUiokQKPBCL795DH8q/+qwgpi7coNa4q2+Mg3vrXjR+jPlvroBTYojr3idbcXdkhQRSfLzB0OsLEPo9cLlb8hpn+eC4NxHkDBkMJdnYsY5O3364fj9oRM6Fx4TVyAZycZApY40Fo8BM9GQkJUD/jX1FWGPjWO+Uexhi0iLWhdpLiZXnctcFr+ydCF1N5uQSNHBkwEQQJDvZnx+RQD/fAZ+Z8V4jJqz26SEKtYDVq5Dd2Z3BW/V+JkhYS7YVA/39jqoZGYpnZCu3ZC5q1Gvi8/xO/cCvD5cV0ncN2tQSMyKUazeQlyal7SYRA/k5zc7Zs+8uNUcspntSuAZ4ERFaLoOzrDhRMbmoNn166i8F++reDQv975Vw5TLbF0vNIpDIZmyf+A5HEfgx40oK7IbXM7LIgGsQkrhlPHQ1zByIcuPllaPrDtFCUBsZA57604xgrpohdXLuiSqNjzXmzVkpS2j4xqKgi/au+ore49LjWFgVMJWd6q2Xq+mU9EDJl/BTxthooLLu4Bf4s3XaqPFxMuEj2/A634Fq5mY7sYNqcc24XM=
+    - ARTIFACTS_KEY="AKIAICLTJGUUA3IQOI2A"
+    - ARTIFACTS_BUCKET="doolse-subba"
