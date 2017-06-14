@@ -29,9 +29,9 @@ before_script:
 script:
 - sbt IntegTester/assembly
 - java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
-- sbt -Dtests.configdir=travisconfig -Dtests.parallel=false -Dwebdriver.chrome.driver=$TRAVIS_BUILD_DIR/chromedriver
-  -Dinstall.zip=$TRAVIS_BUILD_DIR/equella-installer-6.4.zip installEquella startEquella
-  test
+- sbt -Dinstall.zip=$TRAVIS_BUILD_DIR/equella-installer-6.4.zip installEquella startEquella
+- sleep 10
+- sbt -Dtests.configdir=travisconfig -Dtests.parallel=false -Dwebdriver.chrome.driver=$TRAVIS_BUILD_DIR/chromedriver test
 after_failure:
 - artifacts upload
 after_success:
