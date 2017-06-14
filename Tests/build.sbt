@@ -27,22 +27,4 @@ testOptions in Test := Seq(
   Tests.Setup( () => setupForTests.value )
 )
 
-//  testNGSettings,
-//  testNGOutputDirectory := (target.value / "testng").absolutePath,
-//  testNGParameters ++= Seq("-log", buildConfig.value.getInt("tests.verbose").toString),
-//  testNGSuites := {
-//    val tc = buildConfig.value.getConfig("tests")
-//    sys.props.put("test.base", baseDirectory.value.absolutePath)
-//    tc.getStringList("suitenames").map(n => (baseDirectory.value / n).absolutePath)
-//  }
-
-
-setupForTests := {
-  val cp = (fullClasspath in Test).value
-  val res = Fork.java(ForkOptions(runJVMOptions = Seq("-cp", Path.makeString(cp.files))),
-    Seq("equellatests.SetupForTests"))
-  if (res != 0)
-  {
-    sys.error("Failed to setup for tests")
-  }
-}
+setupForTests := (runMain in Test).toTask(" equellatests.SetupForTests").value

@@ -23,7 +23,7 @@ object SetupForTests extends App {
 
   def insts: Seq[File] = {
     val testFolders = new File(testConfig.getTestFolder, "tests").list().toSeq
-    Option(testConfig.getProperty("synctest.included"))
+    Option(testConfig.getProperty("tests.insts"))
       .map(i => testFolders.filter(i.split(",").toSet))
       .getOrElse(testFolders)
       .map(n => new File(testConfig.getTestFolder, s"tests/$n"))
