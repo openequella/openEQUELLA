@@ -27,4 +27,6 @@ testOptions in Test := Seq(
   Tests.Setup( () => setupForTests.value )
 )
 
+parallelExecution in Test := buildConfig.value.getBoolean("tests.parallel")
+
 setupForTests := (runMain in Test).toTask(" equellatests.SetupForTests").value
