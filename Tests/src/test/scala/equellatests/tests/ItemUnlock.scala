@@ -6,6 +6,7 @@ import com.tle.webtests.pageobject.viewitem.SummaryPage
 import com.tle.webtests.pageobject.wizard.controls.UniversalControl
 import com.tle.webtests.pageobject.wizard.controls.universal.{GenericAttachmentEditPage, YouTubeUniversalControlType}
 import com.tle.webtests.pageobject.wizard.{ContributePage, WizardPageTab}
+import equellatests.ShotProperties
 import equellatests.domain.TestLogon
 import org.scalacheck._
 import org.scalacheck.Gen._
@@ -14,7 +15,7 @@ import org.testng.Assert.{assertEquals, assertTrue}
 import equellatests.TestChecker._
 import equellatests.instgen.fiveo._
 
-object ItemUnlock extends Properties("Contribute") {
+object ItemUnlock extends ShotProperties("Contribute") {
 
   val RENAMED_NAME = "A Video"
   val DISPLAY_NAME = "Original Displayname"

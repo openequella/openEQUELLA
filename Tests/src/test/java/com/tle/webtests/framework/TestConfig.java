@@ -243,7 +243,7 @@ public class TestConfig
 
 	public File getScreenshotFolder()
 	{
-		return new File(getBaseFolder(), "target/results/screenshots");
+		return new File(getBaseFolder(), "target/test-reports/screenshots");
 	}
 
 	public File getTestFolder()
