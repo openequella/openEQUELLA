@@ -33,12 +33,13 @@ script:
   -Dinstall.zip=$TRAVIS_BUILD_DIR/equella-installer-6.4.zip installEquella startEquella
   test
 after_failure:
-- artifacts upload Tests/target/test-reports
+- artifacts upload
 after_success:
-- artifacts upload Tests/target/test-reports
+- artifacts upload
 env:
   global:
     - secure: aM8ZC7XcBDMnoncEwDtFsef4c0xq/qNdUdZ5FC2qxiCSaXjxKv5I/04/VTQxKVMTDHc3RkCFR+kUqeeC9rTP6ztXz/2ivWrLNDzW1B+SNWVffnMgOyqtodv0fGFeVbOUiokQKPBCL795DH8q/+qwgpi7coNa4q2+Mg3vrXjR+jPlvroBTYojr3idbcXdkhQRSfLzB0OsLEPo9cLlb8hpn+eC4NxHkDBkMJdnYsY5O3364fj9oRM6Fx4TVyAZycZApY40Fo8BM9GQkJUD/jX1FWGPjWO+Uexhi0iLWhdpLiZXnctcFr+ydCF1N5uQSNHBkwEQQJDvZnx+RQD/fAZ+Z8V4jJqz26SEKtYDVq5Dd2Z3BW/V+JkhYS7YVA/39jqoZGYpnZCu3ZC5q1Gvi8/xO/cCvD5cV0ncN2tQSMyKUazeQlyal7SYRA/k5zc7Zs+8uNUcspntSuAZ4ERFaLoOzrDhRMbmoNn166i8F++reDQv975Vw5TLbF0vNIpDIZmyf+A5HEfgx40oK7IbXM7LIgGsQkrhlPHQ1zByIcuPllaPrDtFCUBsZA57604xgrpohdXLuiSqNjzXmzVkpS2j4xqKgi/au+ore49LjWFgVMJWd6q2Xq+mU9EDJl/BTxthooLLu4Bf4s3XaqPFxMuEj2/A634Fq5mY7sYNqcc24XM=
     - ARTIFACTS_KEY="AKIAICLTJGUUA3IQOI2A"
     - ARTIFACTS_BUCKET="doolse-subba"
     - ARTIFACTS_TARGET_PATHS="artifacts/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER"
+    - ARTIFACTS_PATHS="Tests/target/test-reports/:target/equella-install/logs/"
