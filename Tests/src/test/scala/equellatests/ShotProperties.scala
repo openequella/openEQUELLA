@@ -9,7 +9,7 @@ import org.scalacheck.{Prop, Properties, Test}
 
 import scala.util.{Success, Try}
 
-class ShotProperties(name: String) extends Properties(name) {
+abstract class ShotProperties(name: String) extends Properties(name) {
 
   def withLogon[A](logon: TestLogon)(f: PageContext => Prop): Prop = {
     val testConfig = new TestConfig(logon.inst.baseFolder, false)
