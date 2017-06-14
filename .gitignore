@@ -1,4 +1,3 @@
-
 # Created by https://www.gitignore.io/api/vim,svn,sbt,java,macos,linux,scala,emacs,python,eclipse,windows,intellij+iml
 
 ### Eclipse ###
@@ -387,8 +386,8 @@ build.conf
 generated.keystore
 
 # Custom Includes
-!Source/**/*.zip
-!Interface/**/*.zip
-!Source/**/lib
-!Installer/**/*.so
 !Installer/**/*.jar
+!Installer/**/*.so
+!Interface/**/*.zip
+!Source/**/*.zip
+!Source/**/lib
