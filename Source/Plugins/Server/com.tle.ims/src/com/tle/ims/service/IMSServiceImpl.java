@@ -55,7 +55,6 @@ import com.tle.core.util.ims.beans.IMSManifest;
 public class IMSServiceImpl implements IMSService
 {
 	private static final Logger LOGGER = Logger.getLogger(FileSystemServiceImpl.class);
-	private static TLEXStream xstream = new TLEXStream();
 
 	@Inject
 	private FileSystemService fileSystemService;
@@ -126,6 +125,11 @@ public class IMSServiceImpl implements IMSService
 		return fileSystemService.getExternalFile(handle, path);
 	}
 
+	private TLEXStream getXstream()
+	{
+		return TLEXStream.instance();
+	}
+
 	@Override
 	public IMSManifest getImsManifest(FileHandle handle, String packageExtractedFolder, boolean logNotFound)
 	{
@@ -135,7 +139,7 @@ public class IMSServiceImpl implements IMSService
 		{
 			try( FileInputStream finp = new FileInputStream(newManifest) )
 			{
-				return (IMSManifest) xstream.fromXML(new UnicodeReader(finp, "UTF-8"), IMSManifest.class);
+				return (IMSManifest) getXstream().fromXML(new UnicodeReader(finp, "UTF-8"), IMSManifest.class);
 			}
 			catch( FileNotFoundException e )
 			{
@@ -159,7 +163,7 @@ public class IMSServiceImpl implements IMSService
 	@Override
 	public IMSManifest getImsManifest(InputStream in)
 	{
-		return (IMSManifest) xstream.fromXML(new UnicodeReader(in, "UTF-8"), IMSManifest.class);
+		return (IMSManifest) getXstream().fromXML(new UnicodeReader(in, "UTF-8"), IMSManifest.class);
 	}
 
 	@Override

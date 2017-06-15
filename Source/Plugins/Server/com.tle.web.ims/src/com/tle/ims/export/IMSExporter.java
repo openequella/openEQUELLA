@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.naming.TimeLimitExceededException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
@@ -123,7 +124,11 @@ public class IMSExporter extends AbstractPrototypeSection<IMSExporterModel> impl
 	private PluginTracker<IMSAttachmentExporter> attachmentExporters;
 
 	private JSBookmarkModifier exportFunc;
-	private static TLEXStream xstream = new TLEXStream();
+
+	private TLEXStream getXstream()
+	{
+		return TLEXStream.instance();
+	}
 
 	@Override
 	public void registered(String id, SectionTree tree)
@@ -298,7 +303,7 @@ public class IMSExporter extends AbstractPrototypeSection<IMSExporterModel> impl
 				manifestExporter.exportManifest(item, stagingFile, man);
 			}
 
-			manbag = xstream.toPropBag(man, "manifest");
+			manbag = getXstream().toPropBag(man, "manifest");
 		}
 
 		if( metaxml != null )

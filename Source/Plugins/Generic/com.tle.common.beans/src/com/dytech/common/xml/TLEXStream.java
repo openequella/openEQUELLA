@@ -43,11 +43,21 @@ public class TLEXStream extends XStream
 {
 	private XppDriver xppDriver;
 	private MarshallingStrategy marshallingStrategy;
+	private static TLEXStream instance;
 
-	public TLEXStream()
+	private TLEXStream()
 	{
 		xppDriver = new XppDriver();
 		registerConverter(new XMLDataConverter());
+	}
+
+	public static synchronized TLEXStream instance()
+	{
+		if (instance == null)
+		{
+			instance = new TLEXStream();
+		}
+		return instance;
 	}
 
 	protected HierarchicalStreamDriver getDefaultDriver()

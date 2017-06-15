@@ -32,14 +32,13 @@ import com.tle.core.guice.Bind;
 @Singleton
 public class CurriculaHelper extends AbstractHelper
 {
-	private static TLEXStream xstream = new TLEXStream();
 
 	@Override
 	public void load(PropBagEx item, Item bean)
 	{
 		if( bean.getCurricula() != null )
 		{
-			item.append(Constants.XML_ROOT, xstream.toPropBag(bean.getCurricula(), "curricula"));
+			item.append(Constants.XML_ROOT, TLEXStream.instance().toPropBag(bean.getCurricula(), "curricula"));
 		}
 	}
 
@@ -51,7 +50,7 @@ public class CurriculaHelper extends AbstractHelper
 		{
 			if( curric.nodeExists("curriculum/@uuid") )
 			{
-				item.setCurricula((Curricula) xstream.fromXML(curric, Curricula.class));
+				item.setCurricula((Curricula) TLEXStream.instance().fromXML(curric, Curricula.class));
 			}
 		}
 		handled.add("curricula");

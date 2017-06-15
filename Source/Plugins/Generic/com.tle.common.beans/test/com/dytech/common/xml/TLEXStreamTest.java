@@ -16,7 +16,7 @@ public class TLEXStreamTest extends TestCase
 	{
 		if( xstream == null )
 		{
-			xstream = new TLEXStream();
+			xstream = TLEXStream.instance();
 		}
 	}
 

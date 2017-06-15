@@ -29,7 +29,6 @@ import com.tle.common.search.searchset.SearchSet;
 public class ManualListVirtualiserConfigPanel extends DynamicChoicePanel<SearchSet>
 {
 	private JShuffleList<String> list;
-	private static TLEXStream xstream = new TLEXStream();
 
 	public ManualListVirtualiserConfigPanel()
 	{
@@ -48,14 +47,14 @@ public class ManualListVirtualiserConfigPanel extends DynamicChoicePanel<SearchS
 		String v = searchSet.getAttribute(getId());
 		if( !Check.isEmpty(v) )
 		{
-			list.addItems((List<String>) xstream.fromXML(v));
+			list.addItems((List<String>) TLEXStream.instance().fromXML(v));
 		}
 	}
 
 	@Override
 	public void save(SearchSet searchSet)
 	{
-		searchSet.setAttribute(getId(), xstream.toXML(new ArrayList<String>(list.getItems())));
+		searchSet.setAttribute(getId(), TLEXStream.instance().toXML(new ArrayList<String>(list.getItems())));
 	}
 
 	@Override

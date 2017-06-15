@@ -38,7 +38,6 @@ import com.tle.common.property.annotation.PropertyBag;
 public class CacheSettings implements ConfigurationProperties
 {
 	private static final long serialVersionUID = 1;
-	private static TLEXStream xstream = new TLEXStream();
 
 	@Property(key = "cache.enabled")
 	private boolean enabled;
@@ -61,12 +60,12 @@ public class CacheSettings implements ConfigurationProperties
 		{
 			return null;
 		}
-		return (Node) xstream.fromXML(groups, Node.class);
+		return (Node) TLEXStream.instance().fromXML(groups, Node.class);
 	}
 
 	public void setGroups(Node groups)
 	{
-		this.groups = xstream.toPropBag(groups, "groups"); //$NON-NLS-1$
+		this.groups = TLEXStream.instance().toPropBag(groups, "groups"); //$NON-NLS-1$
 	}
 
 	public static class Node implements XMLData

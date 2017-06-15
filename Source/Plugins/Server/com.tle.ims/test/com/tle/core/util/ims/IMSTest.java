@@ -31,7 +31,7 @@ public class IMSTest extends TestCase
 
 	public void setUp(String file)
 	{
-		TLEXStream xstream = new TLEXStream();
+		TLEXStream xstream = TLEXStream.instance();
 		xstream.registerConverter(new XMLDataConverter());
 		manifest = (IMSManifest) xstream.fromXML(new InputStreamReader(getClass().getResourceAsStream(file)),
 			IMSManifest.class);
