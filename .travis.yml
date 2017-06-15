@@ -1,6 +1,9 @@
 dist: trusty
 sudo: required
 language: scala
+cache:
+  directories:
+  - "$HOME/.ivy2"
 jdk:
   - oraclejdk8
 before_install:
