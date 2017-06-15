@@ -1,11 +1,10 @@
 package equellatests
 
-import com.tle.webtests.framework.{PageContext, ScreenshotListener, TestConfig}
+import com.tle.webtests.framework.{PageContext, ScreenshotTaker, TestConfig}
 import com.tle.webtests.pageobject.LoginPage
 import equellatests.TestChecker.withBrowserDriver
 import equellatests.domain.TestLogon
-import org.scalacheck.Test.TestCallback
-import org.scalacheck.{Prop, Properties, Test}
+import org.scalacheck.{Prop, Properties}
 
 import scala.util.{Success, Try}
 
@@ -18,7 +17,7 @@ abstract class ShotProperties(name: String) extends Properties(name) {
 
       def quitDriver(shot: Boolean) = {
         if (shot)
-          Try(ScreenshotListener.takeScreenshot(driver, context.getTestConfig.getScreenshotFolder, name, context.getTestConfig.isChromeDriverSet))
+          Try(ScreenshotTaker.takeScreenshot(driver, context.getTestConfig.getScreenshotFolder, name, context.getTestConfig.isChromeDriverSet))
         Try(driver.quit())
       }
       Try {

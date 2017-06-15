@@ -7,6 +7,8 @@ version := "1.0"
 
 scalaVersion := "2.12.2"
 
+libraryDependencies += "org.jacoco" % "org.jacoco.agent" % "0.7.9" classifier "runtime"
+
 lazy val common = Seq(
   resolvers += "Local EQUELLA deps" at IO.toURI(file(Path.userHome.absolutePath) / "/equella-deps").toString
 )
@@ -25,7 +27,10 @@ lazy val platform = (project in file("Platform/Plugins/com.tle.platform.common")
   )
 )
 
-lazy val selenium_tests = (project in file("Tests")).settings(common).dependsOn(platform)
+
+lazy val Tests = (project in file("Tests")).settings(common).dependsOn(platform)
+
+lazy val OldTests = (project in file("OldTests")).settings(common).dependsOn(platform, Tests)
 
 val IntegTester = project in file("IntegTester")
 
@@ -34,17 +39,30 @@ buildConfig in ThisBuild := {
   ConfigFactory.load(ConfigFactory.parseFile(file("build.conf")).withFallback(defaultConfig))
 }
 
-installDir := target.value / "equella-install"
+installDir := baseDirectory.value / "equella-install"
 
 installOptions := {
+  val jacocoJar = update.value.select(module = moduleFilter("org.jacoco", "org.jacoco.agent"),
+   artifact = artifactFilter(classifier = "runtime")).head
   val ic = buildConfig.value.getConfig("install")
   InstallOptions(target.value / "equella-installer-6.4",
     installDir.value, file(sys.props("java.home")),
-    url = ic.getString("url"), hostname = ic.getString("hostname"), port = ic.getInt("port"))
+    url = ic.getString("url"), hostname = ic.getString("hostname"), port = ic.getInt("port"),
+    jacoco = Some(JacocoAgent(jacocoJar, target.value / "jacoco.exec")))
 }
 
 installerZip := {
   if (buildConfig.value.hasPath("install.zip")) Some(file(buildConfig.value.getString("install.zip"))) else None
+}
+
+coverageReport := {
+  val io = installOptions.value
+  val allClasses = target.value / "all_classes"
+  (io.installDir / "plugins" ** "*.jar").get.foreach { jar =>
+    IO.unzip(jar, allClasses, filter = "classes/*")
+  }
+  CoverageReporter.createReport(io.jacoco.map(_.outFile).get, allClasses,
+    "Coverage", target.value / "coverage-report", target.value)
 }
 
 installEquella := {
@@ -66,10 +84,12 @@ installEquella := {
 }
 
 def serviceCommand(opts: InstallOptions, cmd: String): Unit = {
-  val serverScript = opts.baseDir / "manager/equellaserver"
+  val serverScript = opts.installDir / "manager/equellaserver"
   List(serverScript.absolutePath, cmd).!
 }
 
 startEquella := serviceCommand(installOptions.value, "start")
 
 stopEquella := serviceCommand(installOptions.value, "stop")
+
+aggregate in test := false

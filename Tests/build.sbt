@@ -1,8 +1,7 @@
 libraryDependencies ++= Seq(
   "org.seleniumhq.selenium" % "selenium-java" % "3.4.0",
-  "org.testng" % "testng" % "6.11",
   "org.easytesting" % "fest-util" % "1.2.5",
-  "org.easytesting" % "fest-swing-testng" % "1.2.1",
+  "org.easytesting" % "fest-swing" % "1.2.1",
   "org.codehaus.jackson" % "jackson-core-asl" % "1.9.13",
   "org.codehaus.jackson" % "jackson-mapper-asl" % "1.9.13",
   "org.dspace.oclc" % "oclc-srw" % "1.0.20080328",

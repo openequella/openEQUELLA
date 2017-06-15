@@ -1,16 +1,14 @@
 package equellatests.tests
 
-import org.scalacheck._
-import Gen._
-import Arbitrary._
-import Prop._
 import com.tle.webtests.framework.PageContext
-import com.tle.webtests.pageobject.searching.{ItemListPage, SearchPage}
-import com.tle.webtests.pageobject.wizard.{ContributePage, WizardPageTab}
-import equellatests.{RandomWord, ShotProperties, TestChecker}
+import com.tle.webtests.pageobject.searching.SearchPage
+import com.tle.webtests.pageobject.wizard.ContributePage
 import equellatests.domain._
 import equellatests.instgen.workflow._
-import org.testng.Assert.assertTrue
+import equellatests.{RandomWord, ShotProperties}
+import org.scalacheck.Arbitrary._
+import org.scalacheck.Prop._
+import org.scalacheck._
 
 object SearchQueryProperties extends ShotProperties("Search Query Properties") {
 

@@ -2,8 +2,12 @@ import sbt._
 
 import scala.xml.XML
 
-case class InstallOptions(baseInstall: File, baseDir: File, jvmHome: File, url: String, hostname: String,
-                          port: Int) {
+case class JacocoAgent(jar: File, outFile: File) {
+  def opts = s"-javaagent:${jar.absolutePath}=destfile=${outFile.absolutePath}"
+}
+
+case class InstallOptions(baseInstall: File, installDir: File, jvmHome: File, url: String, hostname: String,
+                          port: Int, jacoco: Option[JacocoAgent]) {
   def writeXML(xmlFile: File) = {
     val optXml = <commands>
       <installer>
@@ -19,7 +23,7 @@ case class InstallOptions(baseInstall: File, baseDir: File, jvmHome: File, url: 
         <local>{baseInstall.absolutePath}</local>
         <platform>linux64</platform>
       </installer>
-      <install.path>{baseDir.absolutePath}</install.path>
+      <install.path>{installDir.absolutePath}</install.path>
       <java>
         <jdk>{jvmHome.absolutePath}</jdk>
       </java>
@@ -38,7 +42,7 @@ case class InstallOptions(baseInstall: File, baseDir: File, jvmHome: File, url: 
         <host>{hostname}</host>
         <port>{port}</port>
         <context>/</context>
-        <javaopts>-Dequella.dev=true -Dequella.autotest=true</javaopts>
+        <javaopts>-Dequella.dev=true -Dequella.autotest=true {jacoco.map(_.opts).getOrElse("")}</javaopts>
       </webserver>
       <service>
         <port>3000</port>
@@ -61,7 +65,7 @@ case class InstallOptions(baseInstall: File, baseDir: File, jvmHome: File, url: 
         <initialise>true</initialise>
       </datastore>
       <tomcat>
-        <path>{(baseDir / "tomcat").absolutePath}</path>
+        <path>{(installDir / "tomcat").absolutePath}</path>
       </tomcat>
       <admin.password>admin</admin.password>
     </commands>

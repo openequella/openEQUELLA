@@ -31,7 +31,7 @@ script:
 - java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
 - sbt -Dinstall.zip=$TRAVIS_BUILD_DIR/equella-installer-6.4.zip installEquella startEquella
 - sleep 90
-- sbt -Dtests.configdir=travisconfig -Dtests.parallel=false -Dwebdriver.chrome.driver=$TRAVIS_BUILD_DIR/chromedriver test
+- sbt -Dtests.configdir=travisconfig -Dtests.parallel=false -Dwebdriver.chrome.driver=$TRAVIS_BUILD_DIR/chromedriver Tests/test
 after_failure:
 - artifacts upload
 after_success:
@@ -42,4 +42,4 @@ env:
     - ARTIFACTS_KEY="AKIAICLTJGUUA3IQOI2A"
     - ARTIFACTS_BUCKET="doolse-subba"
     - ARTIFACTS_TARGET_PATHS="artifacts/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER"
-    - ARTIFACTS_PATHS="Tests/target/test-reports/:target/equella-install/logs/"
+    - ARTIFACTS_PATHS="Tests/target/test-reports/:equella-install/logs/:target/coverage-report/"

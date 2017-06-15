@@ -11,7 +11,6 @@ import equellatests.domain.TestLogon
 import org.scalacheck._
 import org.scalacheck.Gen._
 import org.scalacheck.Prop._
-import org.testng.Assert.{assertEquals, assertTrue}
 import equellatests.TestChecker._
 import equellatests.instgen.fiveo._
 
@@ -30,15 +29,15 @@ object ItemUnlock extends ShotProperties("Contribute") {
       val youtube = control.addDefaultResource(new YouTubeUniversalControlType(control))
       youtube.search("maths", "The Khan Academy").selectVideo(1).setDisplayName(DISPLAY_NAME).save
       var item = wizard.save.publish
-      assertTrue(item.attachments.attachmentExists(DISPLAY_NAME))
+      assert(item.attachments.attachmentExists(DISPLAY_NAME))
 
       item.adminTab.edit
       // navigate away without saving, then view the item
       SearchPage.searchAndView(context, itemName)
-      assertTrue(item.isItemLocked)
+      assert(item.isItemLocked)
       // unlock the item
       item.adminTab.unlockItem
-      assertTrue(!item.isItemLocked)
+      assert(!item.isItemLocked)
 
       item.adminTab.edit
 
@@ -46,13 +45,13 @@ object ItemUnlock extends ShotProperties("Contribute") {
       control.editResource[GenericAttachmentEditPage, YouTubeUniversalControlType](new YouTubeUniversalControlType(control), DISPLAY_NAME).setDisplayName(RENAMED_NAME).save
 
       SearchPage.searchAndView(context, itemName)
-      assertTrue(item.attachments.attachmentExists(DISPLAY_NAME))
+      assert(item.attachments.attachmentExists(DISPLAY_NAME))
 
       // resume the item
       item.adminTab.resumeItem
       item = wizard.saveNoConfirm
-      assertEquals(item.attachments.attachmentCount, 1)
-      assertTrue(item.attachments.attachmentExists(RENAMED_NAME))
+      assert(item.attachments.attachmentCount == 1)
+      assert(item.attachments.attachmentExists(RENAMED_NAME))
       true
     }
   }

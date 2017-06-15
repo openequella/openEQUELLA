@@ -4,11 +4,9 @@ import java.io.File
 
 import com.tle.webtests.pageobject.UndeterminedPage
 import com.tle.webtests.pageobject.institution._
-import org.testng.Assert.{assertFalse, assertTrue}
 import GlobalConfig._
 import com.tle.webtests.framework.PageContext
 import com.tle.webtests.pageobject.multidb.InstallPage
-import org.testng.Assert
 
 object SetupForTests extends App {
 
@@ -41,26 +39,27 @@ object SetupForTests extends App {
       installPage.setSmtpServer("")
       installPage.setNoReply("")
       installPage = installPage.installInvalid(scalaFunctionToJavaFunction(_.isPasswordError))
-      Assert.assertTrue(installPage.isPasswordError)
-      Assert.assertTrue(installPage.isEmailsError)
-      Assert.assertTrue(installPage.isStmpError)
-      Assert.assertTrue(installPage.isNoReplyError)
+      assert(installPage.isPasswordError)
+      assert(installPage.isEmailsError)
+      assert(installPage.isStmpError)
+      assert(installPage.isNoReplyError)
       installPage.setPassword(testConfig.getAdminPassword)
       installPage.setPasswordConfirm(testConfig.getAdminPassword)
       installPage.setEmails("@@")
       installPage.setSmtpServer("localhost")
       installPage.setNoReply("noreply@noreply.com")
       installPage = installPage.installInvalid(scalaFunctionToJavaFunction(!_.isPasswordError))
-      assertFalse(installPage.isPasswordError)
-      assertTrue(installPage.isEmailsError)
+      assert(!installPage.isPasswordError)
+      assert(installPage.isEmailsError)
       installPage.setPassword(testConfig.getAdminPassword)
       installPage.setEmails(emails)
       installPage.setSmtpServer("mail.google.com")
       val dbPage = installPage.install
-      assertTrue(dbPage.containsDatabase(DEFAULT_SCHEMA))
+      assert(dbPage.containsDatabase(DEFAULT_SCHEMA))
       val dbRow = dbPage.getDatabaseRow(DEFAULT_SCHEMA)
       dbRow.initialise()
       dbRow.waitForMigrate()
+      driver.quit()
     }
   }
 
@@ -78,13 +77,13 @@ object SetupForTests extends App {
         if (currentTab eq listTab) {
           if (listTab.institutionExists(instutionUrl)) {
             val statusPage = listTab.delete(instutionUrl, choice)
-            assertTrue(statusPage.waitForFinish)
+            assert(statusPage.waitForFinish)
             currentTab = statusPage.back
           }
           if (currentTab ne importTab) importTab = listTab.importTab
         }
 
-        assertTrue(importTab.importInstitution(instutionUrl, shortName,
+        assert(importTab.importInstitution(instutionUrl, shortName,
           new File(instFolder, INSTITUTION_FILE).toPath).waitForFinish)
       }
   }
