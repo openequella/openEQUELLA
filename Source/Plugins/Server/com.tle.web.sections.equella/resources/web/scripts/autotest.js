@@ -3,6 +3,11 @@ var g_bSubmitting;
 var g_updatingControls;
 var g_filteringTable;
 var g_updates;
+
+window.confirm = function(msg) {
+    return true;
+}
+
 $(function()
 {
 	$("HTML").ajaxStart(function()
