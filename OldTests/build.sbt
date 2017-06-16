@@ -5,8 +5,6 @@ libraryDependencies ++= Seq(
   "org.easytesting" % "fest-swing-testng" % "1.2.1" % Test
 )
 
-unmanagedClasspath in Test += (baseDirectory in LocalProject("Tests")).value / buildConfig.value.getString("tests.configdir")
-
 testNGSettings
 
 testNGOutputDirectory := (target.value / "testng").absolutePath

@@ -19,8 +19,6 @@ libraryDependencies ++= Seq(
 
 unmanagedBase in Compile := baseDirectory.value / "lib/adminjars"
 
-unmanagedClasspath in Test += baseDirectory.value / buildConfig.value.getString("tests.configdir")
-
 testOptions in Test := Seq(
   Tests.Argument(TestFrameworks.ScalaCheck, "-s", "1"),
   Tests.Setup( () => setupForTests.value )

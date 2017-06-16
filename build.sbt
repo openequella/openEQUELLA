@@ -27,16 +27,18 @@ lazy val platform = (project in file("Platform/Plugins/com.tle.platform.common")
   )
 )
 
+lazy val config = (project in file("config")).settings(resourceDirectory in Compile := baseDirectory.value / "resources")
 
-lazy val Tests = (project in file("Tests")).settings(common).dependsOn(platform)
+lazy val Tests = (project in file("Tests")).settings(common).dependsOn(platform, config)
 
-lazy val OldTests = (project in file("OldTests")).settings(common).dependsOn(platform, Tests)
+lazy val OldTests = (project in file("OldTests")).settings(common).dependsOn(platform, Tests, config)
 
 val IntegTester = project in file("IntegTester")
 
 buildConfig in ThisBuild := {
   val defaultConfig = ConfigFactory.parseFile(file("project/build-defaults.conf"))
-  ConfigFactory.load(ConfigFactory.parseFile(file("build.conf")).withFallback(defaultConfig))
+  val configFile = sys.props.get("config.file").getOrElse("config/resources/application.conf")
+  ConfigFactory.load(ConfigFactory.parseFile(file(configFile)).withFallback(defaultConfig))
 }
 
 installDir := baseDirectory.value / "equella-install"
