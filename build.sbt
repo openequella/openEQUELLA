@@ -9,6 +9,8 @@ scalaVersion := "2.12.2"
 
 libraryDependencies += "org.jacoco" % "org.jacoco.agent" % "0.7.9" classifier "runtime"
 
+lazy val installerDir = "equella-installer-6.4"
+
 lazy val common = Seq(
   resolvers += "Local EQUELLA deps" at IO.toURI(file(Path.userHome.absolutePath) / "/equella-deps").toString
 )
@@ -47,7 +49,7 @@ installOptions := {
   val jacocoJar = update.value.select(module = moduleFilter("org.jacoco", "org.jacoco.agent"),
    artifact = artifactFilter(classifier = "runtime")).head
   val ic = buildConfig.value.getConfig("install")
-  InstallOptions(target.value / "equella-installer-6.4",
+  InstallOptions(target.value / installerDir,
     installDir.value, file(sys.props("java.home")),
     url = ic.getString("url"), hostname = ic.getString("hostname"), port = ic.getInt("port"),
     jacoco = Some(JacocoAgent(jacocoJar, target.value / "jacoco.exec")))
@@ -72,6 +74,7 @@ installEquella := {
   val zipFile = installerZip.value
   val installSettings = target.value / "installsettings.xml"
   zipFile.fold(sys.error("Must have install.zip set")) { z =>
+    IO.delete(target.value / installerDir)
     IO.unzip(z, target.value)
     val baseInstaller = opts.baseInstall
     val installerJar = baseInstaller / "enterprise-install.jar"
