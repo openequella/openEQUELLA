@@ -6,6 +6,7 @@ services:
 - postgresql
 addons:
   chrome: stable
+  firefox: "54.0"
   apt:
     packages:
     - libav-tools
@@ -18,7 +19,9 @@ install:
 - wget https://s3.amazonaws.com/doolse-subba/equella-installer-6.4.zip
 - unzip equella-deps.zip -d $HOME
 - wget https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
+- wget https://github.com/mozilla/geckodriver/releases/download/v0.17.0/geckodriver-v0.17.0-linux64.tar.gz
 - unzip chromedriver_linux64.zip
+- tar zxvf geckodriver-v0.17.0-linux64.tar.gz
 - curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
 before_script:
 - psql -c "CREATE USER equellatests WITH PASSWORD 'password';" -U postgres
@@ -29,7 +32,7 @@ before_script:
 script:
 - sbt IntegTester/assembly
 - java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
-- sbt -Dconfig.file=travis.conf installEquella startEquella Tests/test
+- sbt -Dwebdriver.gecko.driver=$TRAVIS_BUILD_DIR/geckodriver  -Dconfig.file=travis.conf installEquella startEquella Tests/test
 - sbt -Dconfig.file=travis.conf OldTests/test stopEquella coverageReport
 after_script:
 - artifacts upload --target-paths artifacts/$TRAVIS_BUILD_NUMBER/logs/ equella-install/logs/
