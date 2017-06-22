@@ -15,7 +15,13 @@ cache:
   directories:
   - "$HOME/.ivy2"
 before_install:
-  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1400x1024x16"
+- "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1400x1024x16"
+- wget https://raw.githubusercontent.com/creationix/nvm/v0.31.0/nvm.sh -O ~/.nvm/nvm.sh
+- source ~/.nvm/nvm.sh
+- nvm install 8.1.2
+- npm install -g purescript
+- npm install -g bower
+- npm install -g pulp
 install:
 - wget https://s3.amazonaws.com/doolse-subba/equella-deps.zip
 - wget https://s3.amazonaws.com/doolse-subba/equella-installer-6.4.zip
@@ -30,7 +36,8 @@ before_script:
 - psql -c 'CREATE DATABASE equellatests WITH OWNER = equellatests;' -U postgres
 - export DISPLAY=:99.0
 script:
-- sbt IntegTester/assembly
+- cd IntegTester/ps ; npm run build
+- cd $TRAVIS_BUILD_DIR ; sbt IntegTester/assembly
 - java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
 - sbt -Dwebdriver.gecko.driver=$TRAVIS_BUILD_DIR/geckodriver -Dwebdriver.firefox.logfile=/dev/null -Dconfig.file=travis.conf installEquella startEquella Tests/test
 - sbt -Dwebdriver.gecko.driver=$TRAVIS_BUILD_DIR/geckodriver -Dwebdriver.firefox.logfile=/dev/null -Dconfig.file=travis.conf OldTests/test stopEquella coverageReport
