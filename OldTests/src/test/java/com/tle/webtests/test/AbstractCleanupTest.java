@@ -61,7 +61,8 @@ public class AbstractCleanupTest extends AbstractSessionTest
 			}
 			else
 			{
-				throw new Error("Need to login to cleanup:" + getClass());
+
+				new Error("Need to login to cleanup:" + getClass()).printStackTrace();
 			}
 		}
 	}
