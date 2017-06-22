@@ -14,6 +14,8 @@ addons:
 cache:
   directories:
   - "$HOME/.ivy2"
+  - IntegTester/ps/bower_components
+  - IntegTester/ps/node_modules
 before_install:
 - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1400x1024x16"
 - wget https://raw.githubusercontent.com/creationix/nvm/v0.31.0/nvm.sh -O ~/.nvm/nvm.sh
