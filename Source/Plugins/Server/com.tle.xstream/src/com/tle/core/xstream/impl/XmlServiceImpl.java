@@ -115,6 +115,7 @@ public final class XmlServiceImpl implements XmlService
 			super(null, new XppDriver(), loader != null ? loader : new ClassLoaderReference(new CompositeClassLoader()));
 			autodetectAnnotations(true);
 			registerConverter(new OldSingletonMapConverter(getMapper(), getReflectionProvider()));
+			registerConverter(new OldSqlTimestampConverter());
 		}
 
 		@Override

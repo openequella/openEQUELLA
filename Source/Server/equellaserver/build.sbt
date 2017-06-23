@@ -216,7 +216,11 @@ excludeDependencies ++= Seq(
   "rhino" % "js",
   "org.mozilla" % "rhino",
   "bouncycastle" % "bcprov-jdk15",
-  "org.bouncycastle" % "bcprov-jdk15"
+  "org.bouncycastle" % "bcprov-jdk15",
+  "org.codehaus.jackson" % "jackson-core-asl",
+  "org.codehaus.jackson" % "jackson-jaxrs",
+  "org.codehaus.jackson" % "jackson-mapper-asl",
+  "org.codehaus.jackson" % "jackson-xc"
 )
 
 unmanagedJars in Compile ++= oracleDriverJar.value.toSeq.classpath
