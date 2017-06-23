@@ -45,42 +45,35 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Api(value = "/lti/consumer", description = "lti-consumer")
 public interface LtiConsumerResource extends BaseEntityResource<LtiConsumerBean, BaseEntitySecurityBean>
 {
-	@Override
 	@GET
 	@Path("/acl")
 	@ApiOperation(value = "List global LTI consumer acls")
 	public BaseEntitySecurityBean getAcls(@Context UriInfo uriInfo);
 
-	@Override
 	@PUT
 	@Path("/acl")
 	@ApiOperation(value = "Edit global LTI consumer acls")
 	public Response editAcls(@Context UriInfo uriInfo, BaseEntitySecurityBean security);
 
-	@Override
 	@GET
 	@ApiOperation(value = "List all LTI consumers")
 	public SearchBean<LtiConsumerBean> list(@Context UriInfo uriInfo);
 
-	@Override
 	@GET
 	@Path("/{uuid}")
 	@ApiOperation(value = "Get an LTI consumer")
 	public LtiConsumerBean get(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@Override
 	@DELETE
 	@Path("/{uuid}")
 	@ApiOperation("Delete an LTI consumer")
 	public Response delete(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@Override
 	@POST
 	@ApiOperation("Create a new LTI consumer")
 	public Response create(@Context UriInfo uriInfo, @ApiParam LtiConsumerBean bean,
 		@ApiParam(required = false) @QueryParam("file") String stagingUuid);
 
-	@Override
 	@PUT
 	@Path("/{uuid}")
 	@ApiOperation(value = "Edit an LTI consumer")
@@ -89,19 +82,16 @@ public interface LtiConsumerResource extends BaseEntityResource<LtiConsumerBean,
 		@ApiParam(required = false) @QueryParam("lock") String lockId,
 		@ApiParam(required = false) @QueryParam("keeplocked") boolean keepLocked);
 
-	@Override
 	@GET
 	@Path("/{uuid}/lock")
 	@ApiOperation("Read the lock for an LTI consumer")
 	public Response getLock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@Override
 	@POST
 	@Path("/{uuid}/lock")
 	@ApiOperation("Lock an LTI consumer")
 	public Response lock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@Override
 	@DELETE
 	@Path("/{uuid}/lock")
 	@ApiOperation("Unlock an LTI consumer")

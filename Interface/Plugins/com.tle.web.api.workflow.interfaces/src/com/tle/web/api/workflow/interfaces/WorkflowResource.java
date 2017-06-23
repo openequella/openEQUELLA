@@ -41,41 +41,34 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Api(value = "/workflow", description = "workflow")
 public interface WorkflowResource extends BaseEntityResource<WorkflowBean, BaseEntitySecurityBean>
 {
-	@Override
 	@GET
 	@Path("/acl")
 	@ApiOperation(value = "List global workflow acls")
 	public BaseEntitySecurityBean getAcls(@Context UriInfo uriInfo);
 
-	@Override
 	@PUT
 	@Path("/acl")
 	@ApiOperation(value = "Edit global workflow acls")
 	public Response editAcls(@Context UriInfo uriInfo, BaseEntitySecurityBean security);
 
-	@Override
 	@GET
 	@ApiOperation("List all workflows")
 	public SearchBean<WorkflowBean> list(@Context UriInfo uriInfo);
 
-	@Override
 	@GET
 	@Path("/{uuid}")
 	@ApiOperation("Get a workflow")
 	public WorkflowBean get(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@Override
 	@DELETE
 	@Path("/{uuid}")
 	@ApiOperation("Delete a workflow")
 	public Response delete(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@Override
 	@POST
 	@ApiOperation("Create a new workflow")
 	public Response create(@Context UriInfo uriInfo, @ApiParam WorkflowBean bean, @QueryParam("file") String stagingUuid);
 
-	@Override
 	@PUT
 	@Path("/{uuid}")
 	@ApiOperation("Edit a workflow")
@@ -84,19 +77,16 @@ public interface WorkflowResource extends BaseEntityResource<WorkflowBean, BaseE
 		@ApiParam(required = false) @QueryParam("lock") String lockId,
 		@ApiParam(required = false) @QueryParam("keeplocked") boolean keepLocked);
 
-	@Override
 	@GET
 	@Path("/{uuid}/lock")
 	@ApiOperation("Read the lock for a workflow")
 	public Response getLock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@Override
 	@POST
 	@Path("/{uuid}/lock")
 	@ApiOperation("Lock a workflow")
 	public Response lock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@Override
 	@DELETE
 	@Path("/{uuid}/lock")
 	@ApiOperation("Unlock a workflow")

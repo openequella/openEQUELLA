@@ -171,7 +171,6 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 		aclDao.clear();
 	}
 
-	@Override
 	@Transactional
 	public SearchBean<B> list(UriInfo uriInfo)
 	{
@@ -199,13 +198,11 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 		return bean;
 	}
 
-	@Override
 	public SB getAcls(UriInfo uriInfo)
 	{
 		return serializeAcls();
 	}
 
-	@Override
 	public Response editAcls(UriInfo uriInfo, SB security)
 	{
 		updateAcls(security, getSecurityPriority());
@@ -219,7 +216,6 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	 * @param uuid
 	 * @return
 	 */
-	@Override
 	public Response getLock(UriInfo uriInfo, String uuid)
 	{
 		final BE entity = getEntityService().getByUuid(uuid);
@@ -242,7 +238,6 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	 * @param uuid
 	 * @return
 	 */
-	@Override
 	public Response lock(UriInfo uriInfo, String uuid)
 	{
 		try
@@ -267,7 +262,6 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	 * @param uuid
 	 * @return
 	 */
-	@Override
 	public Response unlock(UriInfo uriInfo, String uuid)
 	{
 		try
@@ -322,7 +316,6 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	 * @return
 	 */
 	@Transactional
-	@Override
 	public B get(UriInfo uriInfo, String uuid)
 	{
 		final AbstractEntityService<?, BE> entityService = getEntityService();
@@ -344,7 +337,6 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	 * @param uuid
 	 * @return
 	 */
-	@Override
 	public Response delete(UriInfo uriInfo, String uuid)
 	{
 		final AbstractEntityService<?, BE> entityService = getEntityService();
@@ -364,7 +356,6 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	 * @param stagingUuid
 	 * @return
 	 */
-	@Override
 	public Response create(UriInfo uriInfo, B bean, String stagingUuid)
 	{
 		validate(bean.getUuid(), bean, true);
@@ -373,7 +364,6 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 		return Response.created(getGetUri(uuid)).build();
 	}
 
-	@Override
 	public Response edit(UriInfo uriInfo, String uuid, B bean, String stagingUuid, String lockId, boolean keepLocked)
 	{
 		validate(uuid, bean, false);

@@ -41,42 +41,35 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Api(value = "/oauth", description = "oauth")
 public interface OAuthResource extends BaseEntityResource<OAuthClientBean, BaseEntitySecurityBean>
 {
-	@Override
 	@GET
 	@Path("/acl")
 	@ApiOperation(value = "List global oauth client acls")
 	public BaseEntitySecurityBean getAcls(@Context UriInfo uriInfo);
 
-	@Override
 	@PUT
 	@Path("/acl")
 	@ApiOperation(value = "Edit global oauth client acls")
 	public Response editAcls(@Context UriInfo uriInfo, BaseEntitySecurityBean security);
 
-	@Override
 	@GET
 	@ApiOperation(value = "List all oauth clients")
 	public SearchBean<OAuthClientBean> list(@Context UriInfo uriInfo);
 
-	@Override
 	@GET
 	@Path("/{uuid}")
 	@ApiOperation(value = "Get an oauth client")
 	public OAuthClientBean get(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@Override
 	@DELETE
 	@Path("/{uuid}")
 	@ApiOperation("Delete an oauth client")
 	public Response delete(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@Override
 	@POST
 	@ApiOperation("Create a new oauth client")
 	public Response create(@Context UriInfo uriInfo, @ApiParam OAuthClientBean bean,
 		@ApiParam(required = false) @QueryParam("file") String stagingUuid);
 
-	@Override
 	@PUT
 	@Path("/{uuid}")
 	@ApiOperation(value = "Edit an oauth client")
@@ -85,19 +78,16 @@ public interface OAuthResource extends BaseEntityResource<OAuthClientBean, BaseE
 		@ApiParam(required = false) @QueryParam("lock") String lockId,
 		@ApiParam(required = false) @QueryParam("keeplocked") boolean keepLocked);
 
-	@Override
 	@GET
 	@Path("/{uuid}/lock")
 	@ApiOperation("Read the lock for an oauth client")
 	public Response getLock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@Override
 	@POST
 	@Path("/{uuid}/lock")
 	@ApiOperation("Lock an oauth client")
 	public Response lock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
-	@Override
 	@DELETE
 	@Path("/{uuid}/lock")
 	@ApiOperation("Unlock an oauth client")
