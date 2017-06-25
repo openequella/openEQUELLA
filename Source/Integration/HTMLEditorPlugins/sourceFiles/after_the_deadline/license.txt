@@ -1,1 +1,0 @@
-The contents of the plugin folder are direct from the After the Deadline website (http://open.afterthedeadline.com/) and is covered under the GPL 2.0 license, and so in turn the contents of this zip package are also covered under GPL 2.0 (see gpl-2.0.txt file included in this package)

@@ -1,1 +1,0 @@
-Python 2.x is required to run these scripts.
