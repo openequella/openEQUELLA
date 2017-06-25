@@ -70,7 +70,6 @@ import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.annotation.PlugKey;
-import com.tle.web.sections.equella.annotation.PlugURL;
 import com.tle.web.sections.equella.receipt.ReceiptService;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
@@ -138,8 +137,7 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 	private static final PluginResourceHelper URL_HELPER = ResourcesService
 		.getResourceHelper(MyResourceContributeSection.class);
 
-	@PlugURL("downloads/EquellaOfficeIntegrationInstaller.msi")
-	private static String DOWNLOAD_OFFICE_INTEG_URL;
+	private static String DOWNLOAD_OFFICE_INTEG_URL="https://equella.github.io/";
 
 	@PlugKey("dnd.upload")
 	private static String STRING_UPLOAD;
@@ -168,6 +166,8 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 	private static Label LABEL_REPLACE_FILE;
 	@PlugKey("label.downloads")
 	private static Label LABEL_DOWNLOADS;
+    @PlugKey("label.information")
+    private static Label LABEL_INFORMATION;
 
 	@Inject
 	private ConfigurationService configService;
@@ -683,7 +683,8 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 		final HtmlLinkState downloadOfficeIntegrationLink = new HtmlLinkState();
 		downloadOfficeIntegrationLink.setBookmark(new SimpleBookmark(DOWNLOAD_OFFICE_INTEG_URL));
 		downloadOfficeIntegrationLink.setLabel(LABEL_DOWNLOAD_OFFICE_INTEGRATION);
-		event.addTab(new BlueBarRenderable("downloads", LABEL_DOWNLOADS, viewFactory.createResultWithModel(
+		downloadOfficeIntegrationLink.setTarget("_blank");
+		event.addTab(new BlueBarRenderable("downloads", LABEL_INFORMATION, viewFactory.createResultWithModel(
 			"downloads.ftl", downloadOfficeIntegrationLink), 50));
 	}
 
