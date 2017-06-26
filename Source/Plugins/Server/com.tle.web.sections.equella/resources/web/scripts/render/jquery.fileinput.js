@@ -10,6 +10,10 @@ function setupUpload(elemId, options) {
     $browse.bind('click', doFileClick);
     $feedback.bind('click', doFileClick);
     $file.bind('change', function(e) {
+        if (options.onchange)
+        {
+            options.onchange();
+        }
         var files = e.target.files || e.dataTransfer.files;
         for (var i = 0, f; f = files[i]; i++) {
             var xhr = null;

@@ -153,10 +153,8 @@ public class RootLanguageSection extends OneColumnLayout<OneColumnLayout.OneColu
 		importLocaleLink.setClickHandler(events.getNamedHandler("importLocale"));
 		importLocaleLink.setStyleClass("add");
 
-		// The NullExpression() parameter while utterly superfluous, is
-		// nonetheless expected by the AbstractCallable. So, ....
 		fileUploader.addEventStatements(JSHandler.EVENT_CHANGE,
-			jscall(new FunctionCallExpression(importLocaleLink.createDisableFunction(), new NullExpression())));
+			jscall(new FunctionCallExpression(importLocaleLink.createDisableFunction(), false)));
 		addContribLangLink.setClickHandler(addLanguageDialog.getOpenFunction(), "", "");
 		addContribLangLink.setStyleClass("add");
 		addLanguageDialog.setOkCallback(new ReloadFunction());

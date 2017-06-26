@@ -29,10 +29,12 @@ import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.PreRenderContext;
+import com.tle.web.sections.events.js.JSHandler;
 import com.tle.web.sections.jquery.Jq;
 import com.tle.web.sections.js.generic.AppendedElementId;
 import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.expression.ObjectExpression;
+import com.tle.web.sections.js.generic.function.AnonymousFunction;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.render.*;
@@ -127,6 +129,10 @@ public class EquellaFileUploadExtension implements RendererFactoryExtension
 			{
 				info.preRender(CSS);
 				ObjectExpression oe = new ObjectExpression();
+				JSHandler onChange = uploadState.getHandler(JSHandler.EVENT_CHANGE);
+				if (onChange != null) {
+					oe.put("onchange", new AnonymousFunction(onChange));
+				}
 				Bookmark ajaxUploadUrl = uploadState.getAjaxUploadUrl();
 				if( ajaxUploadUrl != null )
 				{
