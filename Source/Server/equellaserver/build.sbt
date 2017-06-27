@@ -197,6 +197,8 @@ libraryDependencies ++= Seq(
   "xml-resolver" % "xml-resolver" % "1.2"
 )
 
+dependencyOverrides += "javax.mail" % "mail" % "1.4.3"
+
 excludeDependencies ++= Seq(
   "com.google.guava" % "guava-jdk5",
   "asm" % "asm",
