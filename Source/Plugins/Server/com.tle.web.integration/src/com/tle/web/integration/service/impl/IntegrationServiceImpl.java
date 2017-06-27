@@ -343,6 +343,8 @@ public class IntegrationServiceImpl extends AbstractSectionFilter implements Int
 	public void standardForward(SectionInfo info, String forward, IntegrationSessionData data,
 		IntegrationActionInfo action, SingleSignonForm form)
 	{
+		checkIntegrationAllowed();
+
 		SelectionSession session = new SelectionSession(
 			new TreeLookupSelectionCallback(IntegrationService.KEY_INTEGRATION_CALLBACK));
 		session.setSelectMultiple(false);

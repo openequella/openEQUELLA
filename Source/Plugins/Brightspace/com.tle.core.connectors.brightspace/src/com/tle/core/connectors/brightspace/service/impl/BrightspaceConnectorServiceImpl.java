@@ -123,8 +123,8 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
 	private static final int TOPIC_TYPE_LINK = 3;
 
 	private static final String API_ROOT = "/d2l/api";
-	//"https://private-eac75-equellad2lquicklinks.apiary-mock.com/d2l/api/customization/equellalinks/1.0";
-	private static final String CUSTOM_API = API_ROOT + "/customization/equellalinks/1.0";
+	//"https://private-eac75-equellad2lquicklinks.apiary-mock.com/d2l/api/customization/equellalinks/1.1";
+	private static final String CUSTOM_API = API_ROOT + "/customization/equellalinks/1.1";
 
 	private static final String UUID_REGEX = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 	private static final Pattern UUID_VERSION_REGEX = Pattern.compile(
@@ -451,7 +451,7 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
 		final StringBuilder url = new StringBuilder(CUSTOM_API + "/linkinfo/" + uuid + "/" + version + "/?limit=1000");
 		if( archived )
 		{
-			url.append("&showInactive=true");
+			url.append("&showInactive=" + archived);
 		}
 
 		final BrightspaceUsageResults results = sendBrightspaceData(connector, url.toString(),
@@ -493,9 +493,9 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
 		{
 			qs.append("&parentmoduleid=").append(folderId);
 		}
-		if (archived)
+		if( archived )
 		{
-			qs.append("&showInactive=true");
+			qs.append("&showInactive=" + archived);
 		}
 		final BrightspaceUsageResults results = sendBrightspaceData(connector, CUSTOM_API + "/links/" + qs.toString(),
 			BrightspaceUsageResults.class, null, userContext, Method.GET);
@@ -504,7 +504,7 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
 		{
 			//if( link.getVisible() || archived )
 			//{
-				usages.add(convertUsage(link));
+			usages.add(convertUsage(link));
 			//}
 		}
 		return new SimpleSearchResults<ConnectorContent>(usages, usages.size(), offset, results.getResultSetCount());
@@ -562,6 +562,9 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
 				}
 			}
 		}
+		usage.setAttribute("contentAvailable", getKey("finduses.label.visible"),
+			CurrentLocale.get(getKey("finduses.value.visible." + (link.getVisible() ? "yes" : "no"))));
+
 		return usage;
 	}
 

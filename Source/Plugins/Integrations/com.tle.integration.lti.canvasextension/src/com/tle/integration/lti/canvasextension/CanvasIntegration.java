@@ -84,9 +84,15 @@ public class CanvasIntegration extends AbstractIntegrationService<CanvasSessionD
 {
 	private static final String CUSTOM_CANVAS_COURSE_ID = "custom_canvas_course_id";
 	private static final String CUSTOM_CANVAS_API_DOMAIN = "custom_canvas_api_domain";
-	private static final String CUSTOM_COURSE_ID = "custom_course_id";
 	private static final String LIS_COURSE_OFFERING_SOURCEDID = "lis_course_offering_sourcedid";
 	private static final String CONTENT_ITEM_SELECTION_REQUEST = "ContentItemSelectionRequest";
+
+	// These two are only supplied to us if configured in the Canvas LTI tool setup.  E.g.:
+	// Custom Fields:
+	//course_id=$Canvas.course.sisSourceId
+	//course_code=$com.instructure.contextLabel
+	private static final String CUSTOM_COURSE_ID = "custom_course_id";
+	private static final String CUSTOM_COURSE_CODE = "custom_course_code";
 
 	static
 	{
@@ -177,6 +183,7 @@ public class CanvasIntegration extends AbstractIntegrationService<CanvasSessionD
 				data.setCourseId(courseId);
 				data.setContextTitle(ltiData.getContextTitle());
 
+				courseCodes.add(ltiData.getCustom(CUSTOM_COURSE_CODE));
 				courseCodes.add(ltiData.getCustom(CUSTOM_COURSE_ID));
 				courseCodes.add(ltiData.getCustom(LIS_COURSE_OFFERING_SOURCEDID));
 				courseCodes.add(ltiData.getContextLabel());

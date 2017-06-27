@@ -21,6 +21,7 @@
       <lticm:property name="selection_width">1024</lticm:property>
       <blti:custom>
         <lticm:property name="course_id">$Canvas.course.sisSourceId</lticm:property>
+        <lticm:property name="course_code">$com.instructure.contextLabel</lticm:property>
       </blti:custom>
       
       <lticm:options name="resource_selection">
@@ -41,7 +42,8 @@
         <lticm:property name="enabled">true</lticm:property>
       </lticm:options>
       
-      <lticm:options name="editor_button"> <lticm:property name="canvas_icon_class">icon-lti</lticm:property>
+      <lticm:options name="editor_button"> 
+      	<lticm:property name="canvas_icon_class">icon-lti</lticm:property>
         <lticm:property name="icon_url">${m.instUrl}images/equella.gif</lticm:property>
         <lticm:property name="message_type">ContentItemSelectionRequest</lticm:property>
         <lticm:property name="text">${b.key('tool.editor.buttontext')}</lticm:property>
