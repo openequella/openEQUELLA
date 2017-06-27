@@ -165,7 +165,6 @@ libraryDependencies ++= Seq(
   "org.json4s" % "json4s-jackson_2.11" % "3.2.11",
   "org.jsoup" % "jsoup" % "1.6.1",
   xstreamDep,
-  "org.oclc.oai" % "oaicat" % "1.5.57",
   "org.opensaml" % "xmltooling" % "1.3.1" excludeAll (
     ExclusionRule(organization = "org.slf4j")
     ),
