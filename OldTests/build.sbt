@@ -2,7 +2,8 @@ import scala.collection.JavaConversions._
 
 libraryDependencies ++= Seq(
   "org.testng" % "testng" % "6.11" % Test,
-  "org.easytesting" % "fest-swing-testng" % "1.2.1" % Test
+  "org.easytesting" % "fest-swing-testng" % "1.2.1" % Test,
+  "log4j" % "log4j" % "1.2.17" % Test
 )
 
 testNGSettings

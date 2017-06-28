@@ -83,13 +83,13 @@ public class BlackboardCALTest extends AbstractBlackboardTest
 		Assert.assertEquals(activations.getStatus(0), "Active");
 	}
 
-	private Date[] getNowRange()
+	private java.util.Calendar[] getNowRange()
 	{
 		Calendar cal = Calendar.getInstance();
 		cal.roll(Calendar.YEAR, false);
-		Date dateStart = cal.getTime();
-		cal.roll(Calendar.YEAR, 2);
-		return new Date[]{dateStart, cal.getTime()};
+		Calendar endYear = (Calendar) cal.clone();
+		endYear.roll(Calendar.YEAR, 2);
+		return new java.util.Calendar[]{cal, endYear};
 	}
 
 	@Override

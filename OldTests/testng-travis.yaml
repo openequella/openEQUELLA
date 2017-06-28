@@ -74,7 +74,7 @@ tests:
       - com.tle.webtests.test.viewing.ItemSummaryTest
       - com.tle.webtests.test.viewing.MimeTypesTest
       #- com.tle.webtests.test.viewing.ModerationHistoryPreviewVal
-      #- com.tle.webtests.test.viewing.ModerationRejectedComments
+      #- com.tle.webtests.rewrite.ModerationRejectedComments
       - com.tle.webtests.test.viewing.SearchResultTemplateTest
       - com.tle.webtests.test.viewing.ServeSSITest
       #- com.tle.webtests.test.viewing.ShowHideOwnerCollaborator

@@ -29,7 +29,7 @@ public class CourseDefaultsTest extends AbstractSessionTest
 		CourseDefaultsPage cdp = sp.courseDefaultsSettings();
 
 		// Midnight UTC dates, which are 'conceptual'
-		Date[] nowAndTheFuture = getNowRange();
+		java.util.Calendar[] nowAndTheFuture = getNowRange();
 		cdp.setStartDate(nowAndTheFuture[0]);
 		cdp.setEndDate(nowAndTheFuture[1]);
 		cdp.save();
@@ -46,7 +46,7 @@ public class CourseDefaultsTest extends AbstractSessionTest
 		assertTrue(ed.dateEquals(nowAndTheFuture[1]), "Reflected end date is incorrect");
 	}
 
-	protected Date[] getNowRange()
+	protected java.util.Calendar[] getNowRange()
 	{
 		return com.tle.webtests.pageobject.generic.component.Calendar.getDateRange(TimeZone.getTimeZone("Etc/UTC"),
 			false, false);

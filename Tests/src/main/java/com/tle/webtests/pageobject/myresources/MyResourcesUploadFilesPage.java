@@ -86,8 +86,7 @@ public class MyResourcesUploadFilesPage extends AbstractPage<MyResourcesUploadFi
 	{
 		try
 		{
-			String xpath = "//div[@id='filedndarea']";
-			driver.findElement(By.xpath(xpath));
+			driver.findElement(By.cssSelector(".dndicon"));
 		}
 		catch( NotFoundException ex )
 		{

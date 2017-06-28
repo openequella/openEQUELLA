@@ -23,22 +23,29 @@ public class ExpectedConditions2
 {
 	private static final By XPATH_FIRSTELEM = By.xpath("*[1]");
 
-	public static ExpectedCondition<WebElement> updateOfElementLocated(WebElement element, final SearchContext context,
-		final By locator)
+	public static WebElement unwrappedElement(WebElement element)
 	{
-		final WebElement realElement;
 		if( element instanceof RefreshableElement )
 		{
-			realElement = ((RefreshableElement) element).findNonWrapped();
+			return ((RefreshableElement) element).findNonWrapped();
 		}
 		else if( element instanceof WrapsElement )
 		{
-			realElement = ((WrapsElement) element).getWrappedElement();
+			return ((WrapsElement) element).getWrappedElement();
 		}
-		else
-		{
-			realElement = element;
-		}
+		return element;
+	}
+
+	public static ExpectedCondition<Boolean> updateOfElement(WebElement elem)
+	{
+		WebElement element = unwrappedElement(elem);
+		return ExpectedConditions.stalenessOf(element);
+	}
+
+	public static ExpectedCondition<WebElement> updateOfElementLocated(WebElement element, final SearchContext context,
+		final By locator)
+	{
+		final WebElement realElement = unwrappedElement(element);
 		return new ExpectedCondition<WebElement>()
 		{
 			private boolean checkingStale = true;
@@ -364,47 +371,6 @@ public class ExpectedConditions2
 
 	}
 
-	public static ExpectedCondition<WebElement> updateOfElement(final WebElement element)
-	{
-		final WebElement realElement;
-		if( element instanceof RefreshableElement )
-		{
-			realElement = ((RefreshableElement) element).findNonWrapped();
-		}
-		else
-		{
-			throw new Error("Will only work on wrapped elements");
-		}
-		return new ExpectedCondition<WebElement>()
-		{
-			private boolean checkingStale = true;
-
-			@Override
-			public WebElement apply(WebDriver driver)
-			{
-				if( checkingStale )
-				{
-					try
-					{
-						realElement.isDisplayed();
-						return null;
-					}
-					catch( StaleElementReferenceException se )
-					{
-						checkingStale = false;
-					}
-				}
-				return elementIfVisible(element);
-			}
-
-			@Override
-			public String toString()
-			{
-				return "updateOfElement " + element;
-			}
-		};
-	}
-
 	public static ExpectedCondition<List<WebElement>> numberOfElementLocated(final SearchContext context, final By by,
 		final int count)
 	{
@@ -619,7 +585,7 @@ public class ExpectedConditions2
 		WebElement firstChild = AbstractPage.elementIfPresent(ajaxElem, XPATH_FIRSTELEM);
 		if( firstChild != null )
 		{
-			return ExpectedConditions2.updateOfElement(firstChild);
+			return updateOfElementLocated(firstChild, ajaxElem, XPATH_FIRSTELEM);
 		}
 		return ExpectedConditions2.visibilityOfElementLocated(ajaxElem, XPATH_FIRSTELEM);
 	}

@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.Properties;
+import java.util.TimeZone;
 
 public class TestConfig
 {
@@ -27,6 +28,7 @@ public class TestConfig
 	private final boolean alertSupported;
 	private final boolean noInstitution;
 	private final File testFolder;
+	private TimeZone _browserTimeZone;
 
 	public TestConfig(Class<?> clazz)
 	{
@@ -384,5 +386,22 @@ public class TestConfig
 	public static Config getConfigProps()
 	{
 		return config;
+	}
+
+	public TimeZone getBrowserTimeZone()
+	{
+		if (_browserTimeZone == null)
+		{
+			String btz = getProperty("tests.browsertimezone");
+			if (btz == null)
+			{
+				_browserTimeZone = TimeZone.getDefault();
+			}
+			else
+			{
+				_browserTimeZone = TimeZone.getTimeZone(btz);
+			}
+		}
+		return _browserTimeZone;
 	}
 }

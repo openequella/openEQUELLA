@@ -153,9 +153,6 @@ public class CALIntegrationTest extends AbstractCALTest
 		// Caladmin's today is America/Chicago time
 		Calendar today = Calendar.getInstance(TimeZone.getTimeZone("America/Chicago"));
 		com.tle.webtests.pageobject.generic.component.Calendar fromDate = activatePage.getFromDate();
-		SimpleDateFormat sdf = fromDate.createFormatter();
-		sdf.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
-		assertEquals(fromDate.getTextValue(), sdf.format(today.getTime()));
 		//Hmm, second param depends on your format...
 		assertEquals(activatePage.getUntilDate().getTextValue(), "04/08/2040");
 	}

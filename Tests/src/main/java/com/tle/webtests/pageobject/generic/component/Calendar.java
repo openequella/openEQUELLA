@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import com.tle.webtests.framework.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
@@ -22,22 +23,6 @@ public class Calendar extends AbstractPage<Calendar>
 {
 	private final String baseId;
 
-
-	public SimpleDateFormat createFormatter()
-	{
-		//If you are running on Firefox or whatever, you may have a different date format...
-		String fmt = getContext().getTestConfig().getProperty("controls.dateformat");
-		if( fmt == null )
-		{
-			fmt = "MM/dd/yyyy";
-		}
-		final SimpleDateFormat sdf = new SimpleDateFormat(fmt);
-		// Dates will be in the local timezone, not UTC
-		sdf.setTimeZone(TimeZone.getDefault());
-		return sdf;
-	}
-
-	
 	private WebElement getField() 
 	{
 		return driver.findElement(By.id(baseId+"vis"));
@@ -106,7 +91,7 @@ public class Calendar extends AbstractPage<Calendar>
 	 * @param future
 	 * @return
 	 */
-	public static Date[] getDateRange(TimeZone zone, boolean reverse, boolean future)
+	public static java.util.Calendar[] getDateRange(TimeZone zone, boolean reverse, boolean future)
 	{
 		java.util.Calendar fromDate = java.util.Calendar.getInstance(zone);
 		fromDate.set(java.util.Calendar.HOUR_OF_DAY, 0);
@@ -118,8 +103,8 @@ public class Calendar extends AbstractPage<Calendar>
 		fromDate.add(java.util.Calendar.DAY_OF_YEAR, offset);
 		untilDate.add(java.util.Calendar.DAY_OF_YEAR, offset + 2);
 		if( reverse )
-			return new Date[]{untilDate.getTime(), fromDate.getTime()};
-		return new Date[]{fromDate.getTime(), untilDate.getTime()};
+			return new java.util.Calendar[]{untilDate, fromDate};
+		return new java.util.Calendar[]{fromDate, untilDate};
 	}
 
 	public String getTextValue()
@@ -156,7 +141,7 @@ public class Calendar extends AbstractPage<Calendar>
 	 * @param date
 	 * @return
 	 */
-	public boolean dateEquals(Date date)
+	public boolean dateEquals(java.util.Calendar date)
 	{
 		if( date == null && !isVisible() )
 		{
@@ -176,13 +161,22 @@ public class Calendar extends AbstractPage<Calendar>
 			{
 				return false;
 			}
-			// Hidden matched, make sure displayed date is ok
-			SimpleDateFormat formatter = createFormatter();
-			String disp = formatter.format(date);
-			String dateText = formatter.format(hiddenDate);
-			return disp.equals(dateText);
+
+			java.util.Calendar c = java.util.Calendar.getInstance(context.getTestConfig().getBrowserTimeZone());
+			c.setTime(hiddenDate);
+			fieldMatches("Year", java.util.Calendar.YEAR, c, date);
+			fieldMatches("Month", java.util.Calendar.MONTH, c, date);
+			fieldMatches("Day", java.util.Calendar.DAY_OF_MONTH, c, date);
+			return true;
 		}
 		return false;
+	}
+
+	private void fieldMatches(String fieldName, int field, java.util.Calendar c1, java.util.Calendar c2)
+	{
+		int c1v= c1.get(field);
+		int c2v = c2.get(field);
+		Assert.assertEquals(c1v, c2v, "Field "+fieldName+" didn't match");
 	}
 
 	public boolean isDisabled()

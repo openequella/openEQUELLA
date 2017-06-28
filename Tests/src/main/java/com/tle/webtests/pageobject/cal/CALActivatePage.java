@@ -56,16 +56,16 @@ public class CALActivatePage<T extends AbstractPage<T>> extends AbstractPage<CAL
 		return from.get();
 	}
 
-	public void setDates(Date[] range)
+	public void setDates(java.util.Calendar[] range)
 	{
 		fromDate.setDate(range[0], this);
 		untilDate.setDate(range[1], this);
 	}
 
-	public void setDatesHidden(Date[] range)
+	public void setDatesHidden(java.util.Calendar[] range)
 	{
-		fromDate.setDateHidden(range[0]);
-		untilDate.setDateHidden(range[1]);
+		fromDate.setDateHidden(range[0].getTime());
+		untilDate.setDateHidden(range[1].getTime());
 	}
 
 	public CALActivatePage<T> activateFailure()

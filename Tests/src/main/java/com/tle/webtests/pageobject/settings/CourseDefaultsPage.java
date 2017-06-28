@@ -57,12 +57,12 @@ public class CourseDefaultsPage extends AbstractPage<CourseDefaultsPage>
 		}
 	}
 
-	public void setStartDate(Date date)
+	public void setStartDate(java.util.Calendar date)
 	{
 		getStartDate(context).setDate(date, this);
 	}
 
-	public void setEndDate(Date date)
+	public void setEndDate(java.util.Calendar date)
 	{
 		getEndDate(context).setDate(date, this);
 	}

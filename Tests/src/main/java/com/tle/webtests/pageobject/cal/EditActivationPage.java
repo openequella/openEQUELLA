@@ -36,14 +36,14 @@ public class EditActivationPage extends AbstractPage<EditActivationPage>
 		return !selectCourseButton.isEnabled() && fromDate.isDisabled();
 	}
 
-	public ActivationsSummaryPage editActiveActivation(Date until)
+	public ActivationsSummaryPage editActiveActivation(java.util.Calendar until)
 	{
 		setUntil(until);
 		saveButton.click();
 		return returnTo.get();
 	}
 
-	public ActivationsSummaryPage editPendingActivation(String course, Date[] range)
+	public ActivationsSummaryPage editPendingActivation(String course, java.util.Calendar[] range)
 	{
 		selectCourseButton.click();
 		SelectCourseDialog scd = new SelectCourseDialog(context, "ea_selectCourseDialog").get();
@@ -54,18 +54,18 @@ public class EditActivationPage extends AbstractPage<EditActivationPage>
 		return returnTo.get();
 	}
 
-	public void setDateRange(Date[] range)
+	public void setDateRange(java.util.Calendar[] range)
 	{
 		setFrom(range[0]);
 		setUntil(range[1]);
 	}
 
-	public void setUntil(Date until)
+	public void setUntil(java.util.Calendar until)
 	{
 		untilDate.setDate(until, this);
 	}
 
-	public void setFrom(Date from)
+	public void setFrom(java.util.Calendar from)
 	{
 		fromDate.setDate(from, this);
 	}

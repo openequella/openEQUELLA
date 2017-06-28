@@ -1,4 +1,4 @@
-package com.tle.webtests.test.acl;
+package com.tle.webtests.ldaptests;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;

@@ -91,12 +91,13 @@ public abstract class AbstractShowEntitiesPage<THIS extends AbstractShowEntities
 		WebElement row = getEntityRow(name.toString());
 		WebElement element = row.findElement(getActionXPath("Delete"));
 		element.click();
-		Alert alert = waiter.until(ExpectedConditions.alertIsPresent());
-		if( alertText != null )
-		{
-			Assert.assertEquals(alert.getText(), alertText);
+		if (context.getTestConfig().isAlertSupported()) {
+			Alert alert = waiter.until(ExpectedConditions.alertIsPresent());
+			if (alertText != null) {
+				Assert.assertEquals(alert.getText(), alertText);
+			}
+			alert.dismiss();
 		}
-		alert.dismiss();
 	}
 
 	public THIS deleteEntity(PrefixedName name, String alertText)
@@ -109,12 +110,13 @@ public abstract class AbstractShowEntitiesPage<THIS extends AbstractShowEntities
 		WebElement element = row.findElement(getActionXPath("Delete"));
 		WaitingPageObject<THIS> deleteWaiter = removalWaiter(row);
 		element.click();
-		Alert alert = waiter.until(ExpectedConditions.alertIsPresent());
-		if( alertText != null )
-		{
-			Assert.assertEquals(alert.getText(), alertText);
+		if (context.getTestConfig().isAlertSupported()) {
+			Alert alert = waiter.until(ExpectedConditions.alertIsPresent());
+			if (alertText != null) {
+				Assert.assertEquals(alert.getText(), alertText);
+			}
+			alert.accept();
 		}
-		alert.accept();
 		return deleteWaiter.get();
 	}
 

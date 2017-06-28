@@ -89,12 +89,12 @@ public class MoodleCALTest extends AbstractMoodleSectionTest
 		return COURSE_NAME;
 	}
 
-	protected Date[] getNowRange()
+	protected java.util.Calendar[] getNowRange()
 	{
 		return getNowRange(TimeZone.getTimeZone("America/Chicago"));
 	}
 
-	protected Date[] getNowRange(TimeZone zone)
+	protected java.util.Calendar[] getNowRange(TimeZone zone)
 	{
 		return com.tle.webtests.pageobject.generic.component.Calendar.getDateRange(zone, false, false);
 	}

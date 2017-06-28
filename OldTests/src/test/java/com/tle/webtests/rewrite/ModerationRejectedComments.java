@@ -1,4 +1,4 @@
-package com.tle.webtests.test.viewing;
+package com.tle.webtests.rewrite;
 
 
 import org.testng.Assert;

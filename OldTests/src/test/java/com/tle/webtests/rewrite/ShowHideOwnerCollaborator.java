@@ -1,5 +1,5 @@
 // This class will focus on Showing and Hiding Owners and Collaborators
-package com.tle.webtests.test.viewing;
+package com.tle.webtests.rewrite;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;

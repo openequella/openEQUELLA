@@ -1,4 +1,4 @@
-package com.tle.webtests.test.myresources.favourites;
+package com.tle.webtests.rewrite;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;

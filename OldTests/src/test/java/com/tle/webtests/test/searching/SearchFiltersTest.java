@@ -26,10 +26,10 @@ public class SearchFiltersTest extends AbstractCleanupAutoTest
 	{
 		//@formatter:off
 		return new Object[][]{
-			{"AFTER", "2011-03-16 00:00:00", null, "SearchFilters - Basic Item"},
-			{"BEFORE", "2011-03-11 00:00:00", null, "SearchSettings - Image 2 - PNG"},
-			{"BETWEEN", "2011-03-11 00:00:00", "2011-03-13 00:00:00", "SearchSettings - Image 4 - GIF"},
-			{"ON", "2011-03-15 12:34:38", null, "SearchSettings - Image 5 - TIFF"}
+			{"AFTER", "2011-03-16 00:00:00", "SearchFilters - Basic Item"},
+			{"BEFORE", "2011-03-10 17:19:55", "SearchSettings - Image 2 - PNG"},
+			{"BETWEEN", "2011-03-12 17:20:29", "SearchSettings - Image 4 - GIF"},
+			{"ON", "2011-03-15 12:34:38", "SearchSettings - Image 5 - TIFF"}
 		};
 		//@formatter:on
 	}
@@ -56,24 +56,34 @@ public class SearchFiltersTest extends AbstractCleanupAutoTest
 	}
 
 	@Test(dataProvider = "datefilters", dependsOnMethods = {"testFilterByOwner"})
-	public void testFilterByDateModified(String range, String date1, String date2, String result) throws ParseException
+	public void testFilterByDateModified(String range, String date1, String result) throws ParseException
 	{
 		DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		// 'Conceptual' date!
-		final TimeZone UTC = TimeZone.getTimeZone("Etc/UTC");
+		final TimeZone UTC = TimeZone.getDefault();
 		dfm.setTimeZone(UTC);
 
-		Calendar cal1 = Calendar.getInstance(UTC);
+		// 'Conceptual' date!
+		final TimeZone LTZ = TimeZone.getTimeZone("America/Chicago");
+		Calendar cal1 = Calendar.getInstance(LTZ);
 		Date d1 = dfm.parse(date1);
 		cal1.setTime(d1);
 
-		Calendar cal2 = null;
-		Date d2 = null;
-		if( date2 != null )
+		if (!range.equals("ON"))
 		{
-			cal2 = Calendar.getInstance(UTC);
-			d2 = dfm.parse(date2);
-			cal2.setTime(d2);
+			if (!range.equals("BEFORE"))
+			{
+				cal1.add(Calendar.DAY_OF_MONTH, -1);
+			}
+			else
+			{
+				cal1.add(Calendar.DAY_OF_MONTH, 1);
+			}
+		}
+		Calendar cal2 = null;
+		if( range.equals("BETWEEN"))
+		{
+			cal2 = (Calendar) cal1.clone();
+			cal2.add(Calendar.DAY_OF_MONTH, 2);
 		}
 
 		SearchPage sp = new SearchPage(context).load();
@@ -85,8 +95,8 @@ public class SearchFiltersTest extends AbstractCleanupAutoTest
 
 		// make sure the presented date in the picker hasn't changed
 		FilterByDateSectionPage dateFilter = sp.getDateFilter();
-		assertTrue(dateFilter.getStartDate().dateEquals(d1), "Reflected start date does not match");
-		assertTrue(dateFilter.getEndDate().dateEquals(d2), "Reflected end date does not match");
+		assertTrue(dateFilter.getStartDate().dateEquals(cal1), "Reflected start date does not match");
+		assertTrue(dateFilter.getEndDate().dateEquals(cal2), "Reflected end date does not match");
 
 	}
 }

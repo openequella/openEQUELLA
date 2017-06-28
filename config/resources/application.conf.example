@@ -1,0 +1,29 @@
+server.url = "http://hostname:8080/"
+server.password = autotestpassword
+
+//echoserver.url = "http://localhost:8083/echo"
+//testinteg.url = "http://localhost:8083/index.html"
+//tests.insts = null //"fiveo"
+//
+webdriver {
+  chrome {
+//    driver = ${HOME}"/bin/chromedriver"
+//    headless = true
+  }
+}
+
+tests {
+  install = false
+//  suitenames = ["testng.xml"]
+}
+
+//install {
+//  zip = ${HOME}"/equella/Equella/Installer/target/equella-installer-6.4.zip"
+//  hostname = "boorah"
+//  url = "http://boorah:8080/"
+//}
+//
+//proxy {
+////  host = "localhost"
+////  port = 8888
+//}

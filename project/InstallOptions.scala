@@ -42,7 +42,7 @@ case class InstallOptions(baseInstall: File, installDir: File, jvmHome: File, ur
         <host>{hostname}</host>
         <port>{port}</port>
         <context>/</context>
-        <javaopts>-Dequella.dev=true -Dequella.autotest=true {jacoco.map(_.opts).getOrElse("")}</javaopts>
+        <javaopts>-Xss2m -Dequella.dev=true -Dequella.autotest=true {jacoco.map(_.opts).getOrElse("")}</javaopts>
       </webserver>
       <service>
         <port>3000</port>

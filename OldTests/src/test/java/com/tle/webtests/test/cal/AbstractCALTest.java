@@ -139,12 +139,12 @@ public class AbstractCALTest extends AbstractCleanupTest
 	 * 
 	 * @return
 	 */
-	protected Date[] getNowRange()
+	protected java.util.Calendar[] getNowRange()
 	{
 		return getNowRange(TimeZone.getTimeZone("America/Chicago"));
 	}
 
-	protected Date[] getNowRange(TimeZone zone)
+	protected java.util.Calendar[] getNowRange(TimeZone zone)
 	{
 		return com.tle.webtests.pageobject.generic.component.Calendar.getDateRange(zone, false, false);
 	}
@@ -154,17 +154,17 @@ public class AbstractCALTest extends AbstractCleanupTest
 	 * 
 	 * @return
 	 */
-	protected Date[] getFutureRange()
+	protected java.util.Calendar[] getFutureRange()
 	{
 		return getFutureRange(TimeZone.getTimeZone("America/Chicago"));
 	}
 
-	protected Date[] getFutureRange(TimeZone zone)
+	protected java.util.Calendar[] getFutureRange(TimeZone zone)
 	{
 		return com.tle.webtests.pageobject.generic.component.Calendar.getDateRange(zone, false, true);
 	}
 
-	protected Date[] getInvalidRange()
+	protected java.util.Calendar[] getInvalidRange()
 	{
 		return com.tle.webtests.pageobject.generic.component.Calendar.getDateRange(TimeZone.getTimeZone("Etc/UTC"),
 			true, false);

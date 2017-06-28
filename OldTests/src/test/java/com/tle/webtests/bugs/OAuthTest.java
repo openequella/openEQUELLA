@@ -1,9 +1,13 @@
-package com.tle.webtests.test.webservices.rest;
+package com.tle.webtests.bugs;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+import com.tle.webtests.test.webservices.rest.AbstractRestApiTest;
+import com.tle.webtests.test.webservices.rest.ApiAssertions;
+import com.tle.webtests.test.webservices.rest.OAuthClient;
+import com.tle.webtests.test.webservices.rest.OAuthUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;

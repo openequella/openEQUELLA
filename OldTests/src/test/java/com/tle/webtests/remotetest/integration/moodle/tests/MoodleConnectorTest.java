@@ -634,12 +634,12 @@ public class MoodleConnectorTest extends AbstractParallelMoodleTest
 		}
 	}
 
-	private Date[] getNowRange()
+	private java.util.Calendar[] getNowRange()
 	{
 		return getNowRange(TimeZone.getTimeZone("America/Chicago"));
 	}
 
-	private Date[] getNowRange(TimeZone zone)
+	private java.util.Calendar[] getNowRange(TimeZone zone)
 	{
 		return com.tle.webtests.pageobject.generic.component.Calendar.getDateRange(zone, false, false);
 	}

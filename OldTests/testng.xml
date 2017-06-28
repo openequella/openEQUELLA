@@ -1,12 +1,14 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="EQUELLA testing" parallel="instances" data-provider-thread-count="1" thread-count="1" configfailurepolicy="continue">
+<suite name="EQUELLA testing" parallel="instances" data-provider-thread-count="4" thread-count="4" configfailurepolicy="continue">
 	<suite-files>
-		<suite-file path="./testng-institution-sync.xml"/>
 		<suite-file path="./testng-local-searching.xml"/>
 		<suite-file path="./testng-local-contribution.xml"/>
 		<suite-file path="./testng-local-viewing.xml"/>
 		<suite-file path="./testng-local-workflow.xml"/>
 		<suite-file path="./testng-local-cal.xml"/>
+		<suite-file path="./testng-local-admin.xml"/>
+		<suite-file path="./testng-local-misc.xml"/>
+		<suite-file path="./testng-local-services.xml"/>
 	</suite-files>
 </suite>
