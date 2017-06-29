@@ -28,6 +28,12 @@ In order to run the tests you first need the test institutions which you can ins
 sbt setupForTests
 ```
 
+**NOTE**
+
+If you use a pre-existing install of Equella, it's important to note the autotests will
+delete and re-create a set of institutions, one of which is the standard default institution 'vanilla'.
+**Don't ever run the tests on a production system!**
+
 
 ## Running all tests
 
@@ -59,7 +65,6 @@ sbt installEquella
 
 By default it will install with an admin url of `http://localhost:8080`.
 
-It will be installed inside the `equella-install` folder. You can run the services scripts inside the `manager`
-folder or you can run the `startEquella` and `stopEquella` sbt tasks.
+It will be installed inside the `equella-install` folder. You can run the services scripts
+inside the `manager` folder or you can run the `startEquella` and `stopEquella` sbt tasks.
 
-If you use a pre-existing install of Equella, it's important to note the auto tests require several filestore folders to be reserved (one of which is 'vanilla').

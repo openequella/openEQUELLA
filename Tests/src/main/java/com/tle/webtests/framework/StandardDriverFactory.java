@@ -30,7 +30,7 @@ public class StandardDriverFactory {
     private final String gridUrl;
     private final boolean headless;
     private Proxy proxy;
-    private static ChromeDriverService _chromeService = ChromeDriverService.createDefaultService();
+    private static ChromeDriverService _chromeService;
 
     public StandardDriverFactory(TestConfig config) {
         this.chrome = config.isChromeDriverSet();
@@ -49,8 +49,8 @@ public class StandardDriverFactory {
     }
 
     private static synchronized ChromeDriverService getChromeService() throws IOException {
-        if (!_chromeService.isRunning())
-        {
+        if (_chromeService == null) {
+            _chromeService = ChromeDriverService.createDefaultService();
             _chromeService.start();
         }
         return _chromeService;
