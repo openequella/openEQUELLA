@@ -356,13 +356,6 @@ public final class PrivilegeTree
 		item.registerPrivilege("FIND_USES_ITEM");
 		item.registerPrivilege("EXPORT_TO_LMS_ITEM");
 
-		// Payment TODO: plugin
-		item.registerPrivilege("SET_TIERS_FOR_ITEM");
-		item.registerPrivilege("VIEW_TIERS_FOR_ITEM");
-		item.registerPrivilege("VIEW_SALES_FOR_ITEM");
-
-		item.registerPrivilege("VIEW_PURCHASE_DETAILS_FOR_ITEM");
-
 		mapping.put(Node.ITEM, item);
 
 		// Schemas
