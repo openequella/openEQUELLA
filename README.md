@@ -3,8 +3,8 @@
 Install SBT and one of the drivers for Chrome or Firefox -
 [chromedriver](https://sites.google.com/a/chromium.org/chromedriver/) or [geckodriver](https://github.com/mozilla/geckodriver/releases).
 
-Copy the `config/application.conf.example` to `config/application.conf` and
-configure the `server.url` to point to your local EQUELLA, for example:
+Copy the `config/resources/application.conf.example` to `config/resources/application.conf` and
+configure the `server.url` to point to your local EQUELLA server admin pages, for example:
 
 ```conf
 server.url = "http://localhost:8080/"
@@ -62,3 +62,4 @@ By default it will install with an admin url of `http://localhost:8080`.
 It will be installed inside the `equella-install` folder. You can run the services scripts inside the `manager`
 folder or you can run the `startEquella` and `stopEquella` sbt tasks.
 
+If you use a pre-existing install of Equella, it's important to note the auto tests require several filestore folders to be reserved (one of which is 'vanilla').
