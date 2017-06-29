@@ -13,7 +13,30 @@ server.password = systempassword
 
 For Chrome you must also edit `webdriver.chrome.driver` to point to the `chromedriver` binary.
 
-## Setting for tests
+
+## Compiling and running the support server
+
+Some of the tests require supplementary services which are contained in a Scala/Purescript project.
+In order to build and run this service you need the node package manager installed (npm).
+
+Install purescript and bower:
+```bash
+npm install -g purescript
+npm install -g bower
+```
+
+Compile and run the support server:
+```bash
+cd IntegTester/ps
+npm install
+bower install
+npm run build
+cd ../../
+sbt IntegTester/assembly
+java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
+```
+
+## Setting up for tests
 
 The EQUELLA you are testing must be start with the following properties set:
 ```
