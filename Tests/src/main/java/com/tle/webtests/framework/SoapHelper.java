@@ -43,6 +43,12 @@ public class SoapHelper
 		policy.setReceiveTimeout(600000);
 		policy.setAllowChunking(false);
 		HTTPConduit conduit = (HTTPConduit) client.getConduit();
+		TestConfig testConfig = context.getTestConfig();
+		String proxyHost = testConfig.getProperty("proxy.host");
+		if (proxyHost != null) {
+			policy.setProxyServer(proxyHost);
+			policy.setProxyServerPort(testConfig.getIntProperty("proxy.port", 8888));
+		}
 		conduit.setClient(policy);
 		if( previousSession != null )
 		{

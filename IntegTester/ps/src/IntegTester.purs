@@ -53,6 +53,7 @@ type State = {
   , attachmentUuidUrls :: Boolean
   , makeReturn :: Boolean
   , itemXml :: String
+  , powerXml :: String
   , clickUrl :: Maybe String
 }
 
@@ -104,23 +105,10 @@ controls = [
 , {label: "Generate ?attachment.uuid=abcd URLs:", control:checkBox "attachmentUuidUrls" (lens _.attachmentUuidUrls _{attachmentUuidUrls = _})}
 , {label: "Generate Return URL:", control:checkBox "makeReturn" (lens _.makeReturn _{makeReturn = _})}
 , {label: "Initial item XML:", control:textArea "itemXml" (lens _.itemXml _{itemXml = _})}
+, {label: "Initial powersearch XML:", control:textArea "powerXml" (lens _.powerXml _{powerXml = _})}
 , {label: "", control: \{change:(DispatchEff d)} -> input [ _type "submit", onClick $ d \_ s -> s{clickUrl=Just $ createUrl s}  ] []}
 ]
 
--- <div class="formrow">
--- 			<label> Initial item XML: </label>
--- 			<n:textarea property="itemXml" styleClass="itemXml" />
--- 			<n:notEmpty property="itemXml">
--- 				<n:define id="ix" property="itemXml" />
--- 			</n:notEmpty>
--- 		</div>
--- 		<div class="formrow">
--- 			<label> Initial powersearch XML: </label>
--- 			<n:textarea property="powerXml" styleClass="itemXml" />
--- 			<n:notEmpty property="powerXml">
--- 				<n:define id="px" property="powerXml" />
--- 			</n:notEmpty>
--- 		</div>
 -- 		<div class="formrow">
 -- 			<label> Structure XML: </label>
 -- 			<n:textarea property="structure" styleClass="itemXml" />
@@ -135,7 +123,7 @@ initialState = {method:"lms",action:"searchResources", options:"", url:"", usern
   , itemonly: false, packageonly: false, attachmentonly: false
   , selectMultiple: false, useDownloadPrivilege: false, forcePost: false
   , cancelDisabled: false, attachmentUuidUrls: false, makeReturn: false
-  , clickUrl : Nothing, itemXml : ""
+  , clickUrl : Nothing, itemXml : "", powerXml : ""
 }
 
 data Actions = Update (State -> State)
@@ -194,7 +182,8 @@ integ postVals = createFactory (createComponent initialState render (effEval eva
               a [ href url ] [ text url ]
             , div' [ input [ _type "submit", value "POST to this URL"] [] ]
             ]
-        hiddenVals = (\t -> input [ _type "hidden", name (fst t), value (snd t)] []) <$> [Tuple "itemXml" s.itemXml]
+        hiddenInput (Tuple n v) = input [ _type "hidden", name n, value v] []
+        hiddenVals = hiddenInput <$> [Tuple "itemXml" s.itemXml, Tuple "powerXml" s.powerXml]
         writeControl {label, control} = div [ className "formrow" ] [
           label' [ text label ]
         , control {state:s, change: cmap Update d}
