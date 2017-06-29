@@ -161,7 +161,7 @@ public interface ItemService extends RemoteItemService
 	 * @param purge
 	 * @param waitForIndex
 	 */
-	void delete(ItemId itemId, boolean purge, boolean waitForIndex);
+	void delete(ItemId itemId, boolean purge, boolean waitForIndex, boolean purgeIfDeleted);
 
 	Item getForEdit(ItemKey itemId);
 

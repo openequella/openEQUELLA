@@ -1126,12 +1126,12 @@ public class ItemServiceImpl
 
 	@Override
 	@Transactional
-	public void delete(ItemId itemId, boolean purge, boolean waitForIndex)
+	public void delete(ItemId itemId, boolean purge, boolean waitForIndex, boolean purgeIfDeleted)
 	{
 		Item item = dao.getExistingItem(itemId);
 		if( item.getStatus() == ItemStatus.DELETED )
 		{
-			if( !purge )
+			if( !purge && !purgeIfDeleted)
 			{
 				return;
 			}

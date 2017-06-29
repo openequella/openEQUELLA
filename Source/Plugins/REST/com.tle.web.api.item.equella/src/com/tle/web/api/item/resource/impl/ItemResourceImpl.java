@@ -406,7 +406,7 @@ public class ItemResourceImpl implements EquellaItemResource
 	{
 		boolean ensureOnIndexList = Boolean.parseBoolean(waitForIndex);
 
-		itemService.delete(new ItemId(uuid, version), purge, ensureOnIndexList);
+		itemService.delete(new ItemId(uuid, version), purge, ensureOnIndexList, false);
 		return Response.status(Status.NO_CONTENT).build();
 	}
 

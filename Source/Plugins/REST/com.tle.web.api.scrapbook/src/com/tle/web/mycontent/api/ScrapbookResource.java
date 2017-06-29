@@ -208,7 +208,7 @@ public class ScrapbookResource
 	public Response delete(@ApiParam(value = "Scrapbook item uuid") @PathParam("uuid") String uuid)
 	{
 		ItemId itemId = new ItemId(uuid, 1);
-		itemService.delete(itemId, true, false);
+		itemService.delete(itemId, true, false, false);
 		return Response.noContent().build();
 	}
 
