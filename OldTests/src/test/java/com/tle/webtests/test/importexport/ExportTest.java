@@ -16,13 +16,20 @@ import com.tle.webtests.pageobject.institution.StatusPage;
 
 public class ExportTest extends AbstractInstTest
 {
+
+	@Override
+	protected void prepareBrowserSession()
+	{
+		new ServerAdminLogonPage(context).load().logon(testConfig.getAdminPassword(), new InstitutionListTab(context));
+	}
+
 	@Test(dataProvider = "toExport")
 	public void exportInstitution(File instFolder)
 	{
 		String shortName = instFolder.getName();
 		String instutionUrl = context.getBaseUrl() + shortName + '/';
 
-		InstitutionListTab listTab = new ServerAdminLogonPage(context).load().logon(testConfig.getAdminPassword(), new InstitutionListTab(context));
+		InstitutionListTab listTab = new InstitutionListTab(context).load();
 		if( listTab.institutionExists(instutionUrl) )
 		{
 			ExportPage export = listTab.export(instutionUrl);
@@ -39,7 +46,7 @@ public class ExportTest extends AbstractInstTest
 		List<Object[]> instDirs = new ArrayList<Object[]>();
 		for( File instDir : institutions )
 		{
-			if( new File(instDir, INSTITUTION_FILE).exists() )
+			if( new File(instDir, INSTITUTION_FOLDER).exists() )
 			{
 				instDirs.add(new Object[]{instDir});
 			}

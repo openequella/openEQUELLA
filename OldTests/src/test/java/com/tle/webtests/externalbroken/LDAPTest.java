@@ -1,4 +1,4 @@
-package com.tle.webtests.ldaptests;
+package com.tle.webtests.externalbroken;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;

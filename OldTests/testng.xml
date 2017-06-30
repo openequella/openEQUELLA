@@ -10,5 +10,7 @@
 		<suite-file path="./testng-local-admin.xml"/>
 		<suite-file path="./testng-local-misc.xml"/>
 		<suite-file path="./testng-local-services.xml"/>
+		<suite-file path="./testng-remote-misc.xml"/>
+		<suite-file path="./testng-remote-remoterepo.xml"/>
 	</suite-files>
 </suite>

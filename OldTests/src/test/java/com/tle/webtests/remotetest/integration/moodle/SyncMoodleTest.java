@@ -24,7 +24,7 @@ public class SyncMoodleTest extends AbstractMoodleTest
 	{
 		MoodleLoginPage loginPage = new MoodleLoginPage(context).load();
 		MoodleEquellaSettingsPage settings;
-		loginPage.logon("admin", "admin");
+		loginPage.logon("admin", getAdminPassword());
 		MoodleModAdminPage moodleModAdminPage = new MoodleModAdminPage(context).load();
 		if( moodleModAdminPage.moduleExists("EQUELLA Resource") )
 		{
@@ -57,7 +57,7 @@ public class SyncMoodleTest extends AbstractMoodleTest
 		MoodleLoginPage loginPage = new MoodleLoginPage(context).load();
 		MoodleIndexPage mip = new MoodleIndexPage(context);
 		MoodleUpgradeDatabasePage dbPage = new MoodleUpgradeDatabasePage(context);
-		UndeterminedPage<PageObject> up = loginPage.logonToUndetermined("admin", "admin", mip, dbPage);
+		UndeterminedPage<PageObject> up = loginPage.logonToUndetermined("admin", getAdminPassword() , mip, dbPage);
 		PageObject unknown = up.get();
 
 		if( unknown == dbPage )

@@ -1,4 +1,4 @@
-package com.tle.webtests.remotetest.contribute.controls.attachments;
+package com.tle.webtests.externalbroken;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;

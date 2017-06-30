@@ -27,29 +27,13 @@ public class ImportTest extends AbstractInstTest
 	{
 		String shortName = instFolder.getName();
 		String instutionUrl = context.getBaseUrl() + shortName + '/';
-		ImportTab importTab;
-		InstitutionListTab listTab = null;
-		try
+		InstitutionListTab listTab = new InstitutionListTab(context).load();
+		ImportTab importTab = listTab.importTab();
+		if( listTab.institutionExists(instutionUrl) )
 		{
-			listTab = new InstitutionListTab(context).load();
-			if( listTab.institutionExists(instutionUrl) )
-			{
-				StatusPage<InstitutionListTab> statusPage = listTab.delete(instutionUrl);
-				assertTrue(statusPage.waitForFinish());
-				statusPage.back();
-			}
-			importTab = listTab.importTab();
-		}
-		catch( Error e )
-		{
-			if( listTab == null )
-			{
-				importTab = new ImportTab(context).load();
-			}
-			else
-			{
-				throw e;
-			}
+			StatusPage<InstitutionListTab> statusPage = listTab.delete(instutionUrl);
+			assertTrue(statusPage.waitForFinish());
+			statusPage.back();
 		}
 		assertTrue(importTab.importInstitution(instutionUrl, shortName, new File(instFolder, fileName), 360)
 			.waitForFinish());

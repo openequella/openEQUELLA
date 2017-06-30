@@ -1,4 +1,4 @@
-package com.tle.webtests.test.replicated;
+package com.tle.webtests.externalbroken;
 
 import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;

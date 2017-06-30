@@ -16,6 +16,11 @@ import com.tle.webtests.pageobject.institution.StatusPage;
 
 public class CloneTest extends AbstractInstTest
 {
+	@Override
+	protected void prepareBrowserSession() {
+		new ServerAdminLogonPage(context).load().logon(testConfig.getAdminPassword(), new InstitutionListTab(context));
+	}
+
 	@Test(dataProvider = "toClone")
 	public void cloneInstitution(File instFolder)
 	{
@@ -24,14 +29,13 @@ public class CloneTest extends AbstractInstTest
 		String newInstutionUrl = context.getBaseUrl() + shortName + "clone/";
 		String newShortName = instFolder.getName() + "clone";
 
-		InstitutionListTab listTab = new ServerAdminLogonPage(context).load().logon(testConfig.getAdminPassword(), new InstitutionListTab(context));
+		InstitutionListTab listTab = new InstitutionListTab(context).load();
 		if( listTab.institutionExists(newInstutionUrl) )
 		{
 			StatusPage<InstitutionListTab> statusPage = listTab.delete(newInstutionUrl);
 			assertTrue(statusPage.waitForFinish(), statusPage.getErrorText());
-			statusPage.back();
+			listTab = statusPage.back();
 		}
-
 		if( listTab.institutionExists(instutionUrl) )
 		{
 			ClonePage clone = listTab.clone(instutionUrl);
@@ -47,14 +51,13 @@ public class CloneTest extends AbstractInstTest
 		String origShortName = instFolder.getName();
 		String instutionUrl = context.getBaseUrl() + origShortName + "clone/";
 
-		InstitutionListTab listTab = new ServerAdminLogonPage(context).load().logon(testConfig.getAdminPassword(), new InstitutionListTab(context));
+		InstitutionListTab listTab = new InstitutionListTab(context).load();
 		if( listTab.institutionExists(instutionUrl) )
 		{
 			StatusPage<InstitutionListTab> statusPage = listTab.delete(instutionUrl);
 			assertTrue(statusPage.waitForFinish());
 			statusPage.back();
 		}
-		listTab.importTab();
 	}
 
 	@DataProvider(parallel = false)

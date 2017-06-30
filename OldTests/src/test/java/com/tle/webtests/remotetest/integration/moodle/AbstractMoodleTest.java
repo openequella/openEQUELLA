@@ -17,9 +17,10 @@ public abstract class AbstractMoodleTest extends AbstractCleanupTest
 	public void setMoodleUrl(String moodleUrl)
 	{
 		this.moodleUrl = moodleUrl;
-		Matcher matcher = versionPattern.matcher(moodleUrl);
-		matcher.matches();
-		this.moodleVersion = Integer.parseInt(matcher.group(1));
+//		Matcher matcher = versionPattern.matcher(moodleUrl);
+//		matcher.matches();
+		this.moodleVersion = 30;
+//		Integer.parseInt(matcher.group(1));
 	}
 
 	@Override
@@ -57,6 +58,11 @@ public abstract class AbstractMoodleTest extends AbstractCleanupTest
 	public int getMoodleVersion()
 	{
 		return moodleVersion;
+	}
+
+	public String getAdminPassword()
+	{
+		return context.getTestConfig().getProperty("moodle.adminpassword");
 	}
 
 }

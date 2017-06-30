@@ -15,7 +15,6 @@ import com.tle.webtests.pageobject.AbstractPage;
 
 public abstract class MoodleBasePage<T extends MoodleBasePage<T>> extends AbstractPage<T>
 {
-	private static Pattern versionPattern = Pattern.compile(".*/moodle(\\d\\d)/");
 	protected int moodleVersion;
 
 	public int getMoodleVersion()
@@ -36,9 +35,7 @@ public abstract class MoodleBasePage<T extends MoodleBasePage<T>> extends Abstra
 	public MoodleBasePage(PageContext context, SearchContext relativeTo, By loadedBy, WebDriverWait waiter)
 	{
 		super(context, relativeTo, loadedBy, waiter);
-		Matcher matcher = versionPattern.matcher(context.getIntegUrl());
-		matcher.matches();
-		this.moodleVersion = Integer.parseInt(matcher.group(1));
+		this.moodleVersion = context.getAttribute("moodle_version");
 	}
 
 	public MoodleBasePage(PageContext context, By loadedBy, int timeOut)
