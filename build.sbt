@@ -22,7 +22,7 @@ lazy val platform = (project in file("Platform/Plugins/com.tle.platform.common")
     "org.apache.commons" % "commons-compress" % "1.1",
     "jpf" % "jpf" % "1.0.7",
     "com.google.guava" % "guava" % "18.0",
-    "commons-beanutils" % "commons-beanutils-equella" % "1.8.2.1",
+    "commons-beanutils" % "commons-beanutils" % "1.9.3",
     "org.slf4j" % "slf4j-api" % "1.7.5",
     "commons-codec" % "commons-codec" % "1.7",
     "junit" % "junit" % "4.12" % Test

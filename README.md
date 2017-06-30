@@ -19,10 +19,9 @@ For Chrome you must also edit `webdriver.chrome.driver` to point to the `chromed
 Some of the tests require supplementary services which are contained in a Scala/Purescript project.
 In order to build and run this service you need the node package manager installed (npm).
 
-Install purescript and bower:
+Install purescript, bower and pulp:
 ```bash
-npm install -g purescript
-npm install -g bower
+npm install -g purescript bower pulp
 ```
 
 Compile and run the support server:
