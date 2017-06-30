@@ -775,6 +775,7 @@ public class WorkflowServiceImpl extends AbstractEntityServiceImpl<EntityEditing
 	}
 
 	@Override
+	@Inject
 	public void setInitialiserService(InitialiserService initialiserService) {
 		super.setInitialiserService(initialiserService);
 		this.cloner = initialiserService.createCloner(getClass().getClassLoader());
