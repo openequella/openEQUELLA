@@ -21,10 +21,10 @@ import java.util.List;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.DynaCollection;
 import com.tle.common.dynacollection.RemoteDynaCollectionService;
+import com.tle.core.entity.EntityEditingBean;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.freetext.queries.FreeTextBooleanQuery;
 import com.tle.core.search.VirtualisableAndValue;
-import com.tle.core.services.entity.AbstractEntityService;
-import com.tle.core.services.entity.EntityEditingBean;
 
 public interface DynaCollectionService
 	extends

@@ -24,8 +24,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import net.sf.json.JSONArray;
-
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
@@ -36,10 +34,10 @@ import com.tle.beans.item.attachments.HtmlAttachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.Check;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.item.ItemService;
 import com.tle.mycontent.web.selection.MyContentSelectable;
 import com.tle.mycontent.web.selection.MyContentSelectionSettings;
 import com.tle.mypages.MyPagesConstants;
@@ -76,6 +74,8 @@ import com.tle.web.selection.SelectionSession;
 import com.tle.web.template.Decorations;
 import com.tle.web.wizard.WizardState;
 import com.tle.web.wizard.impl.WebRepository;
+
+import net.sf.json.JSONArray;
 
 /**
  * @author Aaron
@@ -146,43 +146,43 @@ public class MyPagesHandler extends AbstractAttachmentHandler<MyPagesHandler.MyP
 			return renderSelection(context, renderOptions);
 		}
 
-			boolean allowSave = true;
-			boolean editing = dialogState.isEditing(context);
-			boolean showOthers = !editing && !dialogState.isReplacing(context);
+		boolean allowSave = true;
+		boolean editing = dialogState.isEditing(context);
+		boolean showOthers = !editing && !dialogState.isReplacing(context);
 
-			if( !showOthers )
+		if( !showOthers )
+		{
+			pages.setDisabled(context, true);
+		}
+		else
+		{
+			boolean add = true;
+			final int pageAttachmentCount = getPageAttachments(context).size();
+			if( isMultipleAllowed(context) )
 			{
-				pages.setDisabled(context, true);
+				allowSave = pageAttachmentCount > 0;
 			}
 			else
 			{
-				boolean add = true;
-				final int pageAttachmentCount = getPageAttachments(context).size();
-				if( isMultipleAllowed(context) )
+				allowSave = pageAttachmentCount == 1;
+				add = pageAttachmentCount == 0;
+				if( pageAttachmentCount > 1 )
 				{
-					allowSave = pageAttachmentCount > 0;
+					model.setWarnLabel(LABEL_WARN_TOO_MANY_PAGES);
 				}
-				else
-				{
-					allowSave = pageAttachmentCount == 1;
-					add = pageAttachmentCount == 0;
-					if( pageAttachmentCount > 1 )
-					{
-						model.setWarnLabel(LABEL_WARN_TOO_MANY_PAGES);
-					}
-				}
-				pages.setDisallowAdd(context, !add);
-				if( add )
-				{
-					pages.setScrapbookCommand(context, scrapbook);
-				}
-
 			}
-			renderOptions.setShowSave(allowSave);
-			renderOptions.setShowAddReplace(allowSave && !editing);
+			pages.setDisallowAdd(context, !add);
+			if( add )
+			{
+				pages.setScrapbookCommand(context, scrapbook);
+			}
 
-			model.setMyPages(renderSection(context, root));
-			return viewFactory.createResult("mypagesedit.ftl", this);
+		}
+		renderOptions.setShowSave(allowSave);
+		renderOptions.setShowAddReplace(allowSave && !editing);
+
+		model.setMyPages(renderSection(context, root));
+		return viewFactory.createResult("mypagesedit.ftl", this);
 
 	}
 
@@ -314,8 +314,8 @@ public class MyPagesHandler extends AbstractAttachmentHandler<MyPagesHandler.MyP
 
 	private List<HtmlAttachment> getPageAttachments(SectionInfo info)
 	{
-		return filterPages(mypagesService.getNonDeletedPageAttachments(info, dialogState.getRepository().getWizid(),
-			null));
+		return filterPages(
+			mypagesService.getNonDeletedPageAttachments(info, dialogState.getRepository().getWizid(), null));
 	}
 
 	@Override

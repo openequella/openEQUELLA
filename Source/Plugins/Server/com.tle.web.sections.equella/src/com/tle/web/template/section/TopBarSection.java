@@ -22,13 +22,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.dytech.edge.web.WebConstants;
-import com.tle.beans.system.AutoLogin;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.settings.standard.AutoLogin;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.plugins.PluginTracker;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
+import com.tle.core.settings.service.ConfigurationService;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.web.DebugSettings;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -63,7 +63,7 @@ public class TopBarSection extends AbstractPrototypeSection<TopBarSection.TopBar
 	private static Label EDIT_USER_LABEL;
 
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private ConfigurationService configService;
 	@Inject
@@ -87,7 +87,7 @@ public class TopBarSection extends AbstractPrototypeSection<TopBarSection.TopBar
 		}
 
 		final TopBarModel model = getModel(context);
-		model.setBadgeLink(urlService.institutionalise(WebConstants.DEFAULT_HOME_PAGE));
+		model.setBadgeLink(institutionService.institutionalise(WebConstants.DEFAULT_HOME_PAGE));
 
 		Label title = decorations.getBannerTitle();
 		if( title == null )
@@ -106,8 +106,8 @@ public class TopBarSection extends AbstractPrototypeSection<TopBarSection.TopBar
 
 		if( !CurrentUser.isGuest() )
 		{
-			SimpleBookmark logon = new SimpleBookmark(CurrentInstitution.get() == null
-				? "institutions.do?method=logout" : "logon.do?logout=true");
+			SimpleBookmark logon = new SimpleBookmark(
+				CurrentInstitution.get() == null ? "institutions.do?method=logout" : "logon.do?logout=true");
 			logoutLink.setBookmark(context, logon);
 			logoutLink.setLabel(context, new IconLabel(Icon.OFF, LOGOUT_LABEL));
 		}

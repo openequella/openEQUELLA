@@ -16,7 +16,7 @@
 
 package com.tle.web.search.settings;
 
-import com.tle.beans.system.SearchSettings;
+import com.tle.common.settings.standard.SearchSettings;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 

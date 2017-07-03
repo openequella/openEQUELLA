@@ -27,15 +27,18 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.catalina.connector.ClientAbortException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.resteasy.spi.UnhandledException;
+import org.jboss.resteasy.spi.WriterException;
 
 import com.dytech.edge.common.LockedException;
 import com.dytech.edge.exceptions.InUseException;
-import com.dytech.edge.exceptions.InvalidDataException;
 import com.dytech.edge.exceptions.WebException;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tle.beans.item.ItemEditingException;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.exceptions.AccessDeniedException;
 
 @Provider
@@ -51,6 +54,7 @@ public class RestEasyExceptionMapper implements ExceptionMapper<Throwable>
 	public Response toResponse(Throwable t)
 	{
 		final WebApplicationException webAppException = mapException(t);
+
 		Response response = webAppException.getResponse();
 		final int status = response.getStatus();
 		if( status >= 500 )
@@ -70,6 +74,7 @@ public class RestEasyExceptionMapper implements ExceptionMapper<Throwable>
 	public static WebApplicationException mapException(Throwable t)
 	{
 		final WebApplicationException webAppException;
+
 		if( t instanceof WebApplicationException )
 		{
 			webAppException = (WebApplicationException) t;
@@ -91,9 +96,39 @@ public class RestEasyExceptionMapper implements ExceptionMapper<Throwable>
 		{
 			webAppException = new WebApplicationException(t, Status.CONFLICT);
 		}
-		else if( t instanceof NotFoundException || t instanceof com.dytech.edge.exceptions.NotFoundException )
+		else if( t instanceof NotFoundException || t instanceof com.tle.common.beans.exception.NotFoundException )
 		{
 			webAppException = new WebApplicationException(t, Status.NOT_FOUND);
+		}
+		else if( t instanceof InvalidDataException || t instanceof InUseException )
+		{
+			webAppException = new WebApplicationException(t, Status.BAD_REQUEST);
+		}
+		else if( t instanceof UnhandledException )
+		{
+			Throwable c = t.getCause();
+			if( c instanceof ClientAbortException )
+			{
+				return new WebApplicationException(t, Status.BAD_REQUEST);
+			}
+			if( c instanceof WriterException )
+			{
+				if( c.getCause() instanceof ClientAbortException )
+				{
+					return new WebApplicationException(t, Status.BAD_REQUEST);
+				}
+			}
+
+			webAppException = new WebApplicationException(t, Status.INTERNAL_SERVER_ERROR);
+		}
+		else if( t instanceof java.lang.RuntimeException )
+		{
+			Throwable c = t.getCause();
+			if( c instanceof java.io.IOException || c instanceof java.io.EOFException )
+			{
+				return new WebApplicationException(t, Status.BAD_REQUEST);
+			}
+			webAppException = new WebApplicationException(t, Status.INTERNAL_SERVER_ERROR);
 		}
 		else
 		{

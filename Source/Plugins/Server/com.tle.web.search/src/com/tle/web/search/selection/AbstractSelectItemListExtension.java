@@ -24,9 +24,9 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.ItemId;
-import com.tle.beans.system.QuickContributeAndVersionSettings;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.services.item.ItemResolver;
+import com.tle.common.settings.standard.QuickContributeAndVersionSettings;
+import com.tle.core.item.service.ItemResolver;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.integration.service.IntegrationService;
 import com.tle.web.itemlist.item.ItemlikeListEntry;
 import com.tle.web.itemlist.item.ItemlikeListEntryExtension;
@@ -64,7 +64,8 @@ import com.tle.web.viewable.ViewableItem;
 @NonNullByDefault
 public abstract class AbstractSelectItemListExtension<I extends IItem<?>, LE extends ItemlikeListEntry<I>>
 	extends
-		AbstractPrototypeSection<Object> implements ItemlikeListEntryExtension<I, LE>, ItemSelectorEventListener
+		AbstractPrototypeSection<Object>
+	implements ItemlikeListEntryExtension<I, LE>, ItemSelectorEventListener
 {
 	private static final PluginResourceHelper resources = ResourcesService
 		.getResourceHelper(AbstractSelectItemListExtension.class);
@@ -147,8 +148,8 @@ public abstract class AbstractSelectItemListExtension<I extends IItem<?>, LE ext
 					hls.setClickHandler(new OverrideHandler(session.isSelectMultiple() ? removeCall : removeCallOne,
 						itemId, extensionType));
 
-					entry.addRatingAction(new ButtonRenderer(hls).showAs(ButtonType.MINUS).addClass(
-						"button-expandable unselect"));
+					entry.addRatingAction(
+						new ButtonRenderer(hls).showAs(ButtonType.MINUS).addClass("button-expandable unselect"));
 					entry.setSelected(true);
 				}
 				else
@@ -159,10 +160,10 @@ public abstract class AbstractSelectItemListExtension<I extends IItem<?>, LE ext
 					{
 						entry.setSelectable(true);
 						final HtmlLinkState hls = new HtmlLinkState(entry.getSelectLabel());
-						hls.setClickHandler(Js.handler(SELECT_ITEM, Jq.$(hls), selectItemFunction, itemId,
-							extensionType));
-						entry.addRatingAction(new ButtonRenderer(hls).showAs(ButtonType.PLUS).addClass(
-							"button-expandable"));
+						hls.setClickHandler(
+							Js.handler(SELECT_ITEM, Jq.$(hls), selectItemFunction, itemId, extensionType));
+						entry.addRatingAction(
+							new ButtonRenderer(hls).showAs(ButtonType.PLUS).addClass("button-expandable"));
 					}
 				}
 			}
@@ -172,8 +173,8 @@ public abstract class AbstractSelectItemListExtension<I extends IItem<?>, LE ext
 	private boolean selectButtonDisable(SectionInfo info, SelectionSession session)
 	{
 		final boolean inIntegrationSession = integrationService.isInIntegrationSession(info);
-		final boolean disableSelectionButton = configurationService.getProperties(
-			new QuickContributeAndVersionSettings()).isButtonDisable();
+		final boolean disableSelectionButton = configurationService
+			.getProperties(new QuickContributeAndVersionSettings()).isButtonDisable();
 
 		if( inIntegrationSession )
 		{

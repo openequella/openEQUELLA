@@ -19,7 +19,7 @@ package com.tle.web.wizard;
 import java.io.Serializable;
 
 import com.dytech.devlib.PropBagEx;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemPack;

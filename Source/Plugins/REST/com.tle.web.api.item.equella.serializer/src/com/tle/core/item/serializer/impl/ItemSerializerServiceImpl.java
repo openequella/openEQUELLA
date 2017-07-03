@@ -16,6 +16,7 @@
 
 package com.tle.core.item.serializer.impl;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -25,18 +26,30 @@ import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.core.UriInfo;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.ImmutableSetMultimap.Builder;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.tle.beans.item.HistoryEvent;
+import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemId;
+import com.tle.beans.item.ItemLock;
+import com.tle.beans.item.ModerationStatus;
 import com.tle.common.Check;
-import com.tle.core.dao.ItemDao;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.workflow.WorkflowItemStatus;
+import com.tle.common.workflow.WorkflowMessage;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.service.LanguageService;
+import com.tle.core.item.dao.ItemDao;
 import com.tle.core.item.security.SimpleItemSecurity;
+import com.tle.core.item.serializer.ItemHistorySerializer;
 import com.tle.core.item.serializer.ItemSerializerItemBean;
 import com.tle.core.item.serializer.ItemSerializerProvider;
 import com.tle.core.item.serializer.ItemSerializerService;
@@ -45,12 +58,22 @@ import com.tle.core.item.serializer.ItemSerializerWhere;
 import com.tle.core.item.serializer.ItemSerializerXml;
 import com.tle.core.item.serializer.XMLStreamer;
 import com.tle.core.item.serializer.where.ItemIdsWhereClause;
+import com.tle.core.item.service.ItemHistoryService;
+import com.tle.core.item.service.ItemLockingService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.services.language.LanguageService;
-import com.tle.core.user.CurrentUser;
+import com.tle.core.workflow.dao.WorkflowDao;
+import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
+import com.tle.web.api.item.interfaces.ItemLockResource;
+import com.tle.web.api.item.interfaces.beans.HistoryEventBean;
+import com.tle.web.api.item.interfaces.beans.ItemExportBean;
+import com.tle.web.api.item.interfaces.beans.ItemLockBean;
+import com.tle.web.api.item.interfaces.beans.ItemNodeStatusExportBean;
+import com.tle.web.api.item.interfaces.beans.ItemNodeStatusMessageBean;
+import com.tle.web.api.item.interfaces.beans.ItemNodeStatusMessageBean.MessageType;
+import com.tle.web.remoting.rest.service.UrlLinkService;
 
 @Bind(ItemSerializerService.class)
 @Singleton
@@ -60,12 +83,21 @@ public class ItemSerializerServiceImpl implements ItemSerializerService
 	@Inject
 	private ItemService itemService;
 	@Inject
+	private ItemLockingService lockingService;
+	@Inject
+	private UrlLinkService urlLinkService;
+	@Inject
+	private ItemHistoryService itemHistoryService;
+	@Inject
+	private ItemHistorySerializer itemHistorySerializer;
+	@Inject
 	private ItemDao itemDao;
 	@Inject
 	private LanguageService languageService;
 	@Inject
 	private TLEAclManager aclManager;
-
+	@Inject
+	private WorkflowDao workflowDao;
 	@Inject
 	private PluginTracker<ItemSerializerProvider> providerTracker;
 
@@ -78,46 +110,195 @@ public class ItemSerializerServiceImpl implements ItemSerializerService
 			return EMPTY_ITEM_SERIALIZER_XML;
 		}
 
-		ItemSerializerState state = createState(new ItemIdsWhereClause(itemIds), categories, privileges, false);
+		ItemSerializerState state = createState(new ItemIdsWhereClause(itemIds), categories, privileges, false, false);
 		return new SimpleItemSerializerXml(state);
 	}
 
 	@Override
 	public ItemSerializerItemBean createItemBeanSerializer(ItemSerializerWhere where, Collection<String> categories,
-		String... privileges)
+		boolean export, String... privileges)
 	{
-		return new SimpleItemSerializerItemBean(createState(where, categories, privileges, false));
+		return new SimpleItemSerializerItemBean(createState(where, categories, privileges, false, export));
 	}
 
 	@Override
 	public ItemSerializerItemBean createItemBeanSerializer(Collection<Long> itemIds, Collection<String> categories,
-		boolean ignorePriv)
+		boolean ignorePriv, boolean export)
 	{
 		if( Check.isEmpty(itemIds) )
 		{
 			return EMPTY_ITEM_SERIALIZER_ITEM_BEAN;
 		}
 
-		return new SimpleItemSerializerItemBean(createState(new ItemIdsWhereClause(itemIds), categories, null,
-			ignorePriv));
+		return new SimpleItemSerializerItemBean(
+			createState(new ItemIdsWhereClause(itemIds), categories, null, ignorePriv, export));
 	}
 
 	@Override
 	public ItemSerializerItemBean createItemBeanSerializer(Collection<Long> itemIds, Collection<String> categories,
-		String... privileges)
+		boolean export, String... privileges)
 	{
 		if( Check.isEmpty(itemIds) )
 		{
 			return EMPTY_ITEM_SERIALIZER_ITEM_BEAN;
 		}
 
-		return new SimpleItemSerializerItemBean(createState(new ItemIdsWhereClause(itemIds), categories, privileges,
-			false));
+		return new SimpleItemSerializerItemBean(
+			createState(new ItemIdsWhereClause(itemIds), categories, privileges, false, export));
+	}
+
+	@Override
+	public ItemExportBean getExportDetails(EquellaItemBean equellaBean)
+	{
+		ItemExportBean exportBean = new ItemExportBean();
+
+		Item item = itemService.get(new ItemId(equellaBean.getUuid(), equellaBean.getVersion()));
+		exportBean.setModerating(item.isModerating());
+
+		ModerationStatus moderationStatus = item.getModeration();
+
+		if( moderationStatus != null )
+		{
+			exportBean.setReviewDate(moderationStatus.getReviewDate());
+			exportBean.setLastAction(moderationStatus.getLastAction());
+			exportBean.setStart(moderationStatus.getStart());
+			exportBean.setLiveApprovalDate(moderationStatus.getLiveApprovalDate());
+			if( moderationStatus.getResumeStatus() != null )
+			{
+				exportBean.setResumeStatus(moderationStatus.getResumeStatus().toString());
+			}
+			if( moderationStatus.getDeletedStatus() != null )
+			{
+				exportBean.setDeletedStatus(moderationStatus.getDeletedStatus().toString());
+			}
+			exportBean.setRejectedMessage(moderationStatus.getRejectedMessage());
+			exportBean.setRejectedBy(moderationStatus.getRejectedBy());
+			exportBean.setRejectedStep(moderationStatus.getRejectedStep());
+			exportBean.setUnarchiveModerating(moderationStatus.isUnarchiveModerating());
+			exportBean.setDeletedModerating(moderationStatus.isDeletedModerating());
+			exportBean.setNeedsReset(moderationStatus.isNeedsReset());
+		}
+		List<WorkflowItemStatus> itemStatuses = workflowDao.findWorkflowItemStatusesForItem(item);
+		if( itemStatuses.size() > 0 )
+		{
+			List<ItemNodeStatusExportBean> statuses = Lists.newArrayList();
+			for( Object collectionObj : itemStatuses )
+			{
+				WorkflowItemStatus itemStatus = (WorkflowItemStatus) collectionObj;
+
+				ItemNodeStatusExportBean inseb = new ItemNodeStatusExportBean();
+				inseb.setAcceptedUsers(itemStatus.getAcceptedUsers());
+				inseb.setAssignedTo(itemStatus.getAssignedTo());
+				if( itemStatus.getCause() != null )
+				{
+					long currentItemStatusCause = itemStatus.getCause().getId();
+					// go through the itemStatuses List, and whichever - if any
+					// - is the object identified by this ID, we preserve its
+					// index as the value we place in this bean
+					for( int indx = 0; indx < itemStatuses.size(); ++indx )
+					{
+						if( itemStatuses.get(indx).getId() == currentItemStatusCause )
+						{
+							inseb.setCauseIndex(indx);
+							break; // from inner for loop
+						}
+					}
+				}
+
+				if( !Check.isEmpty(itemStatus.getComments()) )
+				{
+					List<ItemNodeStatusMessageBean> insmbs = Lists.newArrayList();
+					for( WorkflowMessage wrkflwMsg : itemStatus.getComments() )
+					{
+						UserBean ub = new UserBean(wrkflwMsg.getUser());
+						MessageType msgType = null;
+						switch( wrkflwMsg.getType() )
+						{
+							case 'a':
+								msgType = MessageType.accept;
+								break;
+							case 'c':
+								msgType = MessageType.comment;
+								break;
+							case 'r':
+								msgType = MessageType.reject;
+								break;
+							case 's':
+								msgType = MessageType.submit;
+								break;
+							default:
+								// won't worry about throwing an exception:
+								// leave value as null / blank
+								break;
+						}
+						ItemNodeStatusMessageBean insmb = new ItemNodeStatusMessageBean(msgType, ub,
+							wrkflwMsg.getMessage(), wrkflwMsg.getDate());
+						insmbs.add(insmb);
+					}
+					inseb.setComments(insmbs);
+				}
+				inseb.setDue(itemStatus.getDateDue());
+				inseb.setStarted(itemStatus.getStarted());
+				inseb.setStatus(Character.toString(itemStatus.getStatus()));
+				if( itemStatus.getNode() != null ) // surely not
+				{
+					inseb.setUuid(itemStatus.getNode().getUuid());
+				}
+				statuses.add(inseb);
+			}
+			exportBean.setStatuses(statuses);
+		}
+		return exportBean;
+	}
+
+	@Override
+	public List<HistoryEventBean> getHistory(String uuid, int version)
+	{
+		List<HistoryEvent> history = itemHistoryService.getHistory(new ItemId(uuid, version));
+		List<HistoryEventBean> historyBeans = Lists.newArrayList();
+		if( history != null )
+		{
+			for( HistoryEvent historyEvent : history )
+			{
+				HistoryEventBean bean = itemHistorySerializer.serialize(historyEvent);
+				historyBeans.add(bean);
+			}
+		}
+		return historyBeans;
+	}
+
+	/**
+	 * Similar operation in the ItemLockResource
+	 * 
+	 * @see com.tle.web.api.item.interfaces.ItemLockResource#get(UriInfo,
+	 *      String, int)
+	 * @param uuid
+	 * @param version
+	 * @return
+	 */
+	@Override
+	public ItemLockBean getItemLock(EquellaItemBean equellaBean)
+	{
+		Item item = itemService.get(new ItemId(equellaBean.getUuid(), equellaBean.getVersion()));
+		final ItemLock lock = lockingService.get(item);
+		if( lock == null )
+		{
+			return null;
+		}
+		final URI loc = urlLinkService.getMethodUriBuilder(ItemLockResource.class, "get").build(item.getUuid(),
+			item.getVersion());
+		final ItemLockBean lockBean = new ItemLockBean();
+		final Map<String, String> linkMap = Maps.newHashMap();
+		linkMap.put("self", loc.toString());
+		lockBean.setOwner(new UserBean(lock.getUserID()));
+		lockBean.setUuid(lock.getUserSession());
+		lockBean.set("links", linkMap);
+		return lockBean;
 	}
 
 	@Transactional
 	protected ItemSerializerState createState(ItemSerializerWhere where, Collection<String> categories,
-		String[] privileges, boolean ignorePriv)
+		String[] privileges, boolean ignorePriv, boolean export)
 	{
 		Set<String> setCats;
 		if( categories instanceof Set )
@@ -128,7 +309,7 @@ public class ItemSerializerServiceImpl implements ItemSerializerService
 		{
 			setCats = Sets.newHashSet(categories);
 		}
-		ItemSerializerState state = new ItemSerializerState(setCats);
+		ItemSerializerState state = new ItemSerializerState(setCats, export);
 		if( ignorePriv )
 		{
 			state.setIgnorePrivileges(true);

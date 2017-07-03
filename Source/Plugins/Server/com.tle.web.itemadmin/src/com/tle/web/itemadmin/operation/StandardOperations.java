@@ -24,19 +24,19 @@ import java.util.Map;
 
 import com.tle.beans.item.ItemPack;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.standard.operations.DeleteOperation;
+import com.tle.core.item.standard.operations.PurgeOperation;
+import com.tle.core.item.standard.operations.ReactivateOperation;
+import com.tle.core.item.standard.operations.RestoreDeletedOperation;
+import com.tle.core.item.standard.operations.ResumeOperation;
+import com.tle.core.item.standard.operations.workflow.ArchiveOperation;
+import com.tle.core.item.standard.operations.workflow.RedraftOperation;
+import com.tle.core.item.standard.operations.workflow.ResetOperation;
+import com.tle.core.item.standard.operations.workflow.ReviewOperation;
+import com.tle.core.item.standard.operations.workflow.SubmitOperation;
+import com.tle.core.item.standard.operations.workflow.SuspendOperation;
 import com.tle.core.plugins.BeanLocator;
 import com.tle.core.plugins.SerializedBeanLocator;
-import com.tle.core.workflow.operations.DeleteOperation;
-import com.tle.core.workflow.operations.PurgeOperation;
-import com.tle.core.workflow.operations.ReactivateOperation;
-import com.tle.core.workflow.operations.ResetOperation;
-import com.tle.core.workflow.operations.RestoreDeletedOperation;
-import com.tle.core.workflow.operations.ResumeOperation;
-import com.tle.core.workflow.operations.ReviewOperation;
-import com.tle.core.workflow.operations.SuspendOperation;
-import com.tle.core.workflow.operations.tasks.ArchiveOperation;
-import com.tle.core.workflow.operations.tasks.RedraftOperation;
-import com.tle.core.workflow.operations.tasks.SubmitOperation;
 import com.tle.web.bulk.operation.BulkOperationExtension;
 import com.tle.web.bulk.operation.SimpleOperationExecutor;
 import com.tle.web.sections.SectionInfo;
@@ -90,8 +90,8 @@ public class StandardOperations extends AbstractPrototypeSection<Object> impleme
 		for( StandardOperation op : opList )
 		{
 			final String operationId = op.getOperationId();
-			opsList.add(new KeyOption<OperationInfo>(KEY_NAME + operationId, operationId, new OperationInfo(this,
-				operationId)));
+			opsList.add(new KeyOption<OperationInfo>(KEY_NAME + operationId, operationId,
+				new OperationInfo(this, operationId)));
 		}
 	}
 
@@ -128,6 +128,12 @@ public class StandardOperations extends AbstractPrototypeSection<Object> impleme
 	public void register(SectionTree tree, String parentId)
 	{
 		tree.registerInnerSection(this, parentId);
+	}
+
+	@Override
+	public boolean validateOptions(SectionInfo info, String operationId)
+	{
+		return true;
 	}
 
 	@Override

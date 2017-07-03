@@ -8,6 +8,15 @@ function showNewResults(imageUrl, oldDiv, newContents, onSuccess)
 		}
 		$(document).trigger('equella_ajaxeffectfinished');
 		$(document).trigger('equella_searchresults');
+		
+		if ($("#divsearch-status").html() == 'Available') {
+			$("#divaction-buttons").css("display","block");
+			$("#actionbuttons").css("display","block");
+		} else {
+			$("#divaction-buttons").css("display","none");
+			$("#actionbuttons").css("display","none");
+		}
+		
 	};
 	if (newContents)
 	{

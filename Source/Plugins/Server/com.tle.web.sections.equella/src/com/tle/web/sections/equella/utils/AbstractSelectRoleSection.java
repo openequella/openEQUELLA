@@ -21,10 +21,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.RoleBean;
 import com.google.common.base.Strings;
 import com.tle.common.Check;
 import com.tle.common.Format;
+import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.core.services.user.UserService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;

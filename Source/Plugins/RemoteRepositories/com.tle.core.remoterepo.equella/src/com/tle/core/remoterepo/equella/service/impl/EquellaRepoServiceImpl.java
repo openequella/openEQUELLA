@@ -49,23 +49,23 @@ import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.tle.beans.search.TLESettings;
+import com.tle.common.beans.UploadCallbackInputStream;
+import com.tle.common.beans.progress.PercentageProgressCallback;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.util.TokenGenerator;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.guice.Bind;
 import com.tle.core.harvester.soap.SoapHarvesterService;
 import com.tle.core.institution.RunAsInstitution;
-import com.tle.core.progress.PercentageProgressCallback;
 import com.tle.core.remoterepo.equella.service.EquellaRepoService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.StagingService;
 import com.tle.core.services.TaskService;
 import com.tle.core.services.impl.BeanClusteredTask;
 import com.tle.core.services.impl.SingleShotTask;
 import com.tle.core.services.impl.Task;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
-import com.tle.core.util.UploadCallbackInputStream;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.util.archive.ArchiveType;
 
 /**
@@ -80,8 +80,8 @@ public class EquellaRepoServiceImpl implements EquellaRepoService
 
 	private static final String HARVESTER_ENDPOINT = "services/SoapHarvesterService";
 	// This is not ideal...
-	private static final Set<String> FILE_BASED_ATTACHMENT_TYPES = new HashSet<String>(Arrays.asList(new String[]{
-			"local", "zip", "imsres", "html"}));
+	private static final Set<String> FILE_BASED_ATTACHMENT_TYPES = new HashSet<String>(
+		Arrays.asList(new String[]{"local", "zip", "imsres", "html"}));
 
 	private final Cache<String, AttachmentDownloadSessionImpl> sessions = CacheBuilder.newBuilder().softValues()
 		.expireAfterAccess(30, TimeUnit.MINUTES).build();
@@ -115,12 +115,13 @@ public class EquellaRepoServiceImpl implements EquellaRepoService
 				session.setCallback(callback);
 				sessions.put(session.getId(), session);
 
-				final String username = (settings.isUseLoggedInUser() ? CurrentUser.getUsername() : settings
-					.getUsername());
+				final String username = (settings.isUseLoggedInUser() ? CurrentUser.getUsername()
+					: settings.getUsername());
 				taskService.getGlobalTask(
-					new BeanClusteredTask(key, EquellaRepoService.class, "createDownloadTask", CurrentUser
-						.getUserState(), username, uuid, version, settings.getInstitutionUrl(), settings
-						.getSharedSecretId(), settings.getSharedSecretValue(), key), TimeUnit.MINUTES.toMillis(1));
+					new BeanClusteredTask(key, EquellaRepoService.class, "createDownloadTask",
+						CurrentUser.getUserState(), username, uuid, version, settings.getInstitutionUrl(),
+						settings.getSharedSecretId(), settings.getSharedSecretValue(), key),
+					TimeUnit.MINUTES.toMillis(1));
 				return key;
 			}
 
@@ -179,8 +180,8 @@ public class EquellaRepoServiceImpl implements EquellaRepoService
 		try
 		{
 			final String username = (settings.isUseLoggedInUser() ? CurrentUser.getUsername() : settings.getUsername());
-			final SoapHarvesterService client = getNewClient(settings.getInstitutionUrl(),
-				settings.getSharedSecretId(), settings.getSharedSecretValue(), username);
+			final SoapHarvesterService client = getNewClient(settings.getInstitutionUrl(), settings.getSharedSecretId(),
+				settings.getSharedSecretValue(), username);
 			final PropBagEx xml = new PropBagEx(client.getItemXml(uuid, version));
 			client.logout();
 			if( stripFileBasedAttachments )
@@ -213,8 +214,8 @@ public class EquellaRepoServiceImpl implements EquellaRepoService
 			Bus bus = new ExtensionManagerBus(null, null, Bus.class.getClassLoader());
 			factory.setBus(bus);
 			factory.setServiceClass(SoapHarvesterService.class);
-			factory.setServiceName(new QName("http://soap.harvester.core.tle.com", SoapHarvesterService.class
-				.getSimpleName()));
+			factory.setServiceName(
+				new QName("http://soap.harvester.core.tle.com", SoapHarvesterService.class.getSimpleName()));
 			factory.setAddress(endpointUrl.toString());
 			factory.setDataBinding(new AegisDatabinding());
 			List<AbstractServiceConfiguration> configs = factory.getServiceFactory().getServiceConfigurations();
@@ -236,8 +237,8 @@ public class EquellaRepoServiceImpl implements EquellaRepoService
 		catch( Exception x )
 		{
 			LOGGER.error("Error connecting to remote EQUELLA server", x);
-			throw new RuntimeException(CurrentLocale.get("com.tle.core.remoterepo.equella.error.communication",
-				x.getMessage()));
+			throw new RuntimeException(
+				CurrentLocale.get("com.tle.core.remoterepo.equella.error.communication", x.getMessage()));
 		}
 	}
 
@@ -252,8 +253,8 @@ public class EquellaRepoServiceImpl implements EquellaRepoService
 		private final UserState userState;
 		private final String key;
 
-		public DownloadTask(UserState userState, String username, String uuid, int version, String url,
-			String sharedId, String sharedValue, String key)
+		public DownloadTask(UserState userState, String username, String uuid, int version, String url, String sharedId,
+			String sharedValue, String key)
 		{
 			this.username = username;
 			this.uuid = uuid;

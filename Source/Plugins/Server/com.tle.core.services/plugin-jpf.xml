@@ -1,6 +1,7 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.core.services" version="1">
 	<requires>
+		<import plugin-id="com.tagsoup.core" />
 		<import plugin-id="com.tle.common.beans" exported="true" />
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.common.security" />
@@ -8,12 +9,18 @@
 		<import plugin-id="com.tle.core.application" />
 		<import plugin-id="com.tle.core.config" />
 		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.events" exported="true" />
 		<import plugin-id="com.tle.core.zookeeper" />
 		<import plugin-id="com.tle.web.core.equella" />
 		<import plugin-id="commons-beanutils:commons-beanutils" />
 		<import plugin-id="org.apache.httpcomponents:httpclient" />
 		<import plugin-id="org.apache.httpcomponents:httpcore" />
 		<import plugin-id="org.hurl:hurl" />
+		<import plugin-id="com.tle.common.institution" />
+		<import plugin-id="com.tle.xstream" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.cluster" />
+		<import plugin-id="com.tle.core.hibernate.equella" />
 	</requires>
 
 	<runtime>
@@ -21,19 +28,6 @@
 			<export prefix="*" />
 		</library>
 	</runtime>
-
-	<extension-point id="eventExecutor">
-		<parameter-def id="bean" type="string" multiplicity="one" />
-	</extension-point>
-
-	<extension-point id="applicationEventListener">
-		<parameter-def id="listener" type="string" multiplicity="none-or-one" />
-		<parameter-def id="listenerClass" type="string" multiplicity="one-or-more" />
-	</extension-point>
-
-	<extension-point id="clusterMessageHandler">
-		<parameter-def id="bean" type="string" multiplicity="one" />
-	</extension-point>
 	
 	<extension-point id="coreTasks">
 		<parameter-def id="id" type="string" multiplicity="one" />
@@ -45,21 +39,7 @@
 		<parameter id="class" value="com.tle.core.services.guice.CoreServicesModule" />
 	</extension>
 	
-	<extension plugin-id="com.tle.core.application" point-id="onStartup" id="registerMessaging">
-		<parameter id="bean" value="bean:com.tle.core.services.ClusterMessagingService" />
-		<parameter id="type" value="initial" />
-		<parameter id="order" value="200" />
-	</extension>
-
-	<extension plugin-id="com.tle.core.guice" point-id="beanChecker" id="eventListenerBeanChecker">
-		<parameter id="class" value="com.tle.core.services.guice.EventListenerBeanChecker" />
-	</extension>
-
-	<extension plugin-id="com.tle.core.services" point-id="clusterMessageHandler" id="eventMessageHandler">
-		<parameter id="bean" value="bean:com.tle.core.services.EventService" />
-	</extension>
-
-	<extension plugin-id="com.tle.core.services" point-id="clusterMessageHandler" id="taskMessageHandler">
+	<extension plugin-id="com.tle.core.cluster" point-id="clusterMessageHandler" id="taskMessageHandler">
 		<parameter id="bean" value="bean:com.tle.core.services.TaskService" />
 	</extension>
 </plugin>

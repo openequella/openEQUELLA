@@ -21,17 +21,17 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.user.TLEUser;
 import com.tle.common.Check;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.user.TLEUserService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.ModifiableUserState;
-import com.tle.core.user.UserState;
+import com.tle.core.usermanagement.standard.service.TLEUserService;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.ModifiableUserState;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;

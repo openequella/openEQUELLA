@@ -24,10 +24,10 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import com.tle.annotation.NonNullByDefault;
-import com.tle.beans.system.ShortcutUrls;
 import com.tle.common.Check;
+import com.tle.common.settings.standard.ShortcutUrls;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;
@@ -129,8 +129,8 @@ public class AddShortcutUrlDialog extends AbstractOkayableDialog<AddShortcutUrlD
 			String existingUrlForShortcut = configShortcutUrls.getShortcuts().get(newShortcut);
 			if( existingUrlForShortcut != null )
 			{
-				model.addError(SHORTCUT_ERROR, new KeyLabel(ERROR_OVERWRITE_EXISTING_SHORTCUT, newShortcut,
-					existingUrlForShortcut));
+				model.addError(SHORTCUT_ERROR,
+					new KeyLabel(ERROR_OVERWRITE_EXISTING_SHORTCUT, newShortcut, existingUrlForShortcut));
 			}
 			else
 			{
@@ -154,8 +154,8 @@ public class AddShortcutUrlDialog extends AbstractOkayableDialog<AddShortcutUrlD
 					}
 					if( urlExists )
 					{
-						model.addError(URL_ERROR, new KeyLabel(ERROR_DUPLICATE_EXISTING_URL, newUrl,
-							existingShortcutForUrl));
+						model.addError(URL_ERROR,
+							new KeyLabel(ERROR_DUPLICATE_EXISTING_URL, newUrl, existingShortcutForUrl));
 					}
 					else
 					{

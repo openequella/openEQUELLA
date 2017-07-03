@@ -23,11 +23,11 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemNotificationId;
 import com.tle.common.search.DefaultSearch;
-import com.tle.core.notification.indexer.NotificationResult;
-import com.tle.core.services.item.FreeTextService;
+import com.tle.core.freetext.service.FreeTextService;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.core.notification.standard.indexer.NotificationResult;
 import com.tle.core.services.item.FreetextSearchResults;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.workflow.operations.WorkflowFactory;
 import com.tle.web.bulk.section.AbstractBulkResultsDialog;
 import com.tle.web.bulk.section.AbstractBulkSelectionSection;
 import com.tle.web.search.base.AbstractFreetextResultsSection;
@@ -85,7 +85,7 @@ public class NotificationSelectionSection extends AbstractBulkSelectionSection<I
 	private Button clearSelectedButton;
 
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 	@Inject
 	private ItemService itemService;
 	@Inject
@@ -114,10 +114,8 @@ public class NotificationSelectionSection extends AbstractBulkSelectionSection<I
 	{
 		if( selectionCount > 0 )
 		{
-			clearSelectedButton.setClickHandler(
-				context,
-				events.getNamedHandler("clearSelected").addValidator(
-					new Confirm(new PluralKeyLabel(LABEL_CONFIRM, selectionCount))));
+			clearSelectedButton.setClickHandler(context, events.getNamedHandler("clearSelected")
+				.addValidator(new Confirm(new PluralKeyLabel(LABEL_CONFIRM, selectionCount))));
 		}
 		else
 		{

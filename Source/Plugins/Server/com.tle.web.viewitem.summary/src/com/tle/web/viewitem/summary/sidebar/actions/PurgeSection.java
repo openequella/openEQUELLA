@@ -22,8 +22,8 @@ import com.dytech.edge.web.WebConstants;
 import com.tle.beans.item.ItemStatus;
 import com.tle.beans.workflow.WorkflowStatus;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
-import com.tle.core.workflow.operations.WorkflowFactory;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
@@ -44,9 +44,9 @@ public class PurgeSection extends GenericMinorActionSection
 	@Inject
 	private SelectionService selectionService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 
 	@Override
 	protected Label getLinkLabel()
@@ -74,7 +74,7 @@ public class PurgeSection extends GenericMinorActionSection
 
 		if( selectionService.getCurrentSession(info) == null )
 		{
-			info.forwardToUrl(urlService.institutionalise(WebConstants.DEFAULT_HOME_PAGE));
+			info.forwardToUrl(institutionService.institutionalise(WebConstants.DEFAULT_HOME_PAGE));
 		}
 		else
 		{

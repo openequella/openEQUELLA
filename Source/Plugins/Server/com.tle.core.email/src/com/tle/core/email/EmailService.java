@@ -22,7 +22,7 @@ import java.util.concurrent.Future;
 
 import javax.mail.internet.AddressException;
 
-import com.tle.beans.system.MailSettings;
+import com.tle.common.settings.standard.MailSettings;
 
 public interface EmailService
 {
@@ -42,7 +42,7 @@ public interface EmailService
 	Future<EmailResult<String>> sendEmail(String subject, List<String> emailAddresses, String message);
 
 	Future<EmailResult<String>> sendEmail(String subject, List<String> emailAddresses, String message,
-		MailSettings settings);
+		MailSettings settings, boolean enc);
 
 	Future<EmailResult<String>> sendSystemEmail(String subject, String message);
 

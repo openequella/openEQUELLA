@@ -21,9 +21,9 @@ import java.util.List;
 import javax.inject.Singleton;
 
 import com.tle.beans.entity.report.Report;
-import com.tle.core.dao.impl.AbstractEntityDaoImpl;
+import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.guice.Bind;
-import com.tle.core.user.CurrentInstitution;
+import com.tle.common.institution.CurrentInstitution;
 
 @Bind(ReportingDao.class)
 @Singleton

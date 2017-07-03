@@ -19,7 +19,7 @@ package com.tle.common.recipientselector;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.expressions.ConvertToInfix;
-import com.tle.common.util.UserBeanUtils;
+import com.tle.common.usermanagement.util.UserBeanUtils;
 import com.tle.core.remoting.RemoteUserService;
 
 /**

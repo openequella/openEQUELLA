@@ -2,7 +2,6 @@
 <plugin id="com.tle.web.api.taxonomy" version="1">
 	<requires>
 		<import plugin-id="com.tle.common.taxonomy" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.taxonomy" />
 		<import plugin-id="com.tle.web.api.search" />

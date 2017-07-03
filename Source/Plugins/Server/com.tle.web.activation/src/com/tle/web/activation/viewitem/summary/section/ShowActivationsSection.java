@@ -31,7 +31,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang.time.FastDateFormat;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.tle.beans.activation.ActivateRequest;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.item.attachments.Attachment;
@@ -41,6 +40,7 @@ import com.tle.common.Check;
 import com.tle.common.Format;
 import com.tle.common.Utils;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.activation.service.ActivationService;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;

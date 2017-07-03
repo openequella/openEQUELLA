@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.dytech.edge.common.Constants;
 import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.i18n.CurrentLocale;
@@ -84,7 +83,7 @@ public abstract class AbstractFreemarkerFactory
 	{
 		environment.setLocale(CurrentLocale.getLocale());
 		environment.setTimeZone(CurrentTimeZone.get());
-		environment.setURLEscapingCharset(Constants.UTF8);
+		environment.setURLEscapingCharset("UTF-8");
 	}
 
 	protected void finishedRender(Writer writer, FreemarkerSectionResult result, Environment environment)

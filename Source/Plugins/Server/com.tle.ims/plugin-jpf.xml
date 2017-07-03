@@ -10,6 +10,7 @@
 		<import plugin-id="com.tle.common.collection" />
 		<import plugin-id="com.tle.common.entity" />
 		<import plugin-id="log4j:log4j" />
+		<import plugin-id="com.tle.xstream" exported="true" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

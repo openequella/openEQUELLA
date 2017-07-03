@@ -2,7 +2,6 @@
 <plugin id="com.tle.web.manualdatafixes" version="1">
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.security" />
 		<import plugin-id="com.tle.core.settings" />
@@ -13,6 +12,11 @@
 		<import plugin-id="com.tle.core.workflow.thumbnail" />
 		<import plugin-id="com.tle.web.scorm" />
 		<import plugin-id="com.tle.core.workflow.video" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.core.item.standard" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.institution" />
+		<import plugin-id="com.tle.core.filesystem" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

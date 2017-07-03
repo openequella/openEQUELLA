@@ -21,18 +21,19 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import com.tle.beans.Institution;
+import com.tle.common.filesystem.handle.ExportFile;
 import com.tle.common.i18n.CurrentTimeZone;
 import com.tle.common.util.Dates;
 import com.tle.common.util.LocalDate;
-import com.tle.core.filesystem.ExportFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.institution.convert.InstitutionInfo;
-import com.tle.core.progress.ListProgressCallback;
+import com.tle.core.institution.convert.service.InstitutionImportService;
+import com.tle.core.institution.convert.service.InstitutionImportService.ConvertType;
+import com.tle.common.beans.progress.ListProgressCallback;
 import com.tle.core.services.ApplicationVersion;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.InstitutionImportService;
-import com.tle.core.services.InstitutionImportService.ConvertType;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.institution.section.ProgressSection.ProgressRunnable;
@@ -72,6 +73,8 @@ public class ExportSection extends AbstractEditSection<ExportSection.ExportModel
 	private FileSystemService fileSystemService;
 	@Inject
 	private ContentStreamWriter contentStreamWriter;
+	@Inject
+	private InstitutionService institutionService;
 	@Inject
 	private InstitutionImportService instImportService;
 
@@ -154,7 +157,7 @@ public class ExportSection extends AbstractEditSection<ExportSection.ExportModel
 
 		if( instId != 0 && !getModel(context).isNavigateAway() )
 		{
-			Institution i = instImportService.getInstitution(instId);
+			Institution i = institutionService.getInstitution(instId);
 			if( i.isEnabled() )
 			{
 				model.setWarning(LABEL_NOTDISABLED);
@@ -200,7 +203,7 @@ public class ExportSection extends AbstractEditSection<ExportSection.ExportModel
 	public void doAction(final SectionInfo info)
 	{
 		final ExportModel model = getModel(info);
-		final Institution i = instImportService.getInstitution(model.getId());
+		final Institution i = institutionService.getInstitution(model.getId());
 		final Set<String> flags = getFlags(info);
 		final InstitutionInfo instImp = instImportService.getInstitutionInfo(i);
 		instImp.setFlags(flags);
@@ -211,8 +214,8 @@ public class ExportSection extends AbstractEditSection<ExportSection.ExportModel
 				public void run(ListProgressCallback cb)
 				{
 					String stagingId = instImportService.exportInstitution(i, cb, flags);
-					cb.setForwardUrl(new BookmarkAndModify(info, events.getNamedModifier("download", stagingId))
-						.getHref());
+					cb.setForwardUrl(
+						new BookmarkAndModify(info, events.getNamedModifier("download", stagingId)).getHref());
 				}
 
 				@Override

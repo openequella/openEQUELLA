@@ -20,8 +20,8 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
+import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
 
 @XmlRootElement

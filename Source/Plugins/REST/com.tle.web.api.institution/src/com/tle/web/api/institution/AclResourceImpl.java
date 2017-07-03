@@ -81,7 +81,7 @@ public class AclResourceImpl implements AclResource
 		for( AccessEntry ae : allAcls )
 		{
 			TargetListEntryBean tBean = new TargetListEntryBean();
-			boolean granted = Character.toLowerCase(ae.isGrantRevoke()) == 'G';
+			boolean granted = Character.toUpperCase(ae.isGrantRevoke()) == 'G';
 			tBean.setGranted(granted);
 			tBean.setOverride(ae.getExpression().isDynamic());
 			tBean.setPrivilege(ae.getPrivilege());

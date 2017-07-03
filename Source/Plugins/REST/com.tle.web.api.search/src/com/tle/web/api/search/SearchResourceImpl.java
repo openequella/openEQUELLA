@@ -27,9 +27,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
-import com.dytech.edge.exceptions.NotFoundException;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -42,6 +39,9 @@ import com.tle.beans.item.ItemIdKey;
 import com.tle.beans.item.ItemStatus;
 import com.tle.common.Check;
 import com.tle.common.Utils;
+import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.CurrentTimeZone;
 import com.tle.common.interfaces.CsvList;
@@ -56,6 +56,7 @@ import com.tle.common.util.TleDate;
 import com.tle.common.util.UtcDate;
 import com.tle.core.dynacollection.DynaCollectionService;
 import com.tle.core.freetext.queries.FreeTextBooleanQuery;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.serializer.ItemSerializerItemBean;
 import com.tle.core.item.serializer.ItemSerializerService;
@@ -63,13 +64,13 @@ import com.tle.core.powersearch.PowerSearchService;
 import com.tle.core.remoting.MatrixResults;
 import com.tle.core.remoting.MatrixResults.MatrixEntry;
 import com.tle.core.search.VirtualisableAndValue;
-import com.tle.core.services.item.FreeTextService;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.item.ItemLinkService;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
 import com.tle.web.api.item.interfaces.beans.ItemBean;
 import com.tle.web.api.search.interfaces.beans.FacetBean;
 import com.tle.web.api.search.interfaces.beans.FacetSearchBean;
+import com.tle.web.remoting.rest.service.RestImportExportHelper;
 
 /**
  * @author Aaron & Dustin
@@ -149,7 +150,13 @@ public class SearchResourceImpl implements EquellaSearchResource
 			}
 		});
 
-		final ItemSerializerItemBean serializer = itemSerializerService.createItemBeanSerializer(ids, infos);
+		// Implied 'all' if export=true 
+		if( RestImportExportHelper.isExport(uriInfo) && !infos.contains(ItemSerializerService.CATEGORY_ALL) )
+		{
+			infos.add(ItemSerializerService.CATEGORY_ALL);
+		}
+
+		final ItemSerializerItemBean serializer = itemSerializerService.createItemBeanSerializer(ids, infos, false);
 		for( ItemIdKey itemId : itemIds )
 		{
 			EquellaItemBean itemBean = new EquellaItemBean();

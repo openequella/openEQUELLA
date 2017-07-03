@@ -27,14 +27,15 @@ import javax.inject.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.tle.common.Check;
+import com.tle.common.beans.UploadCallbackInputStream;
+import com.tle.common.beans.progress.PercentageProgressCallback;
+import com.tle.common.filesystem.handle.ImportFile;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.filesystem.ImportFile;
+import com.tle.common.usermanagement.user.AuthenticatedThread;
 import com.tle.core.migration.MigrationService;
-import com.tle.core.progress.PercentageProgressCallback;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.services.UrlService;
-import com.tle.core.user.AuthenticatedThread;
-import com.tle.core.util.UploadCallbackInputStream;
 import com.tle.core.util.archive.ArchiveType;
 import com.tle.web.core.servlet.ProgressServlet;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -95,6 +96,8 @@ public class ImportTab extends AbstractInstitutionTab<ImportTab.ImportTabModel>
 		@Bookmarked
 		private String stagingId;
 		private Map<String, String> errors = new HashMap<String, String>();
+		@Bookmarked
+		private boolean uploaded;
 
 		public String getStagingId()
 		{
@@ -114,6 +117,16 @@ public class ImportTab extends AbstractInstitutionTab<ImportTab.ImportTabModel>
 		public Map<String, String> getErrors()
 		{
 			return errors;
+		}
+
+		public boolean isUploaded()
+		{
+			return uploaded;
+		}
+
+		public void setUploaded(boolean uploaded)
+		{
+			this.uploaded = uploaded;
 		}
 	}
 
@@ -150,8 +163,8 @@ public class ImportTab extends AbstractInstitutionTab<ImportTab.ImportTabModel>
 		callback.setTotalSize(length);
 		progressServlet.addCallback(stagingUuid, callback);
 
-		final UploadCallbackInputStream inpStream = new UploadCallbackInputStream(fileSystemService.read(stagingFile,
-			ARCHIVE_FILE), callback);
+		final UploadCallbackInputStream inpStream = new UploadCallbackInputStream(
+			fileSystemService.read(stagingFile, ARCHIVE_FILE), callback);
 
 		new AuthenticatedThread()
 		{
@@ -196,6 +209,12 @@ public class ImportTab extends AbstractInstitutionTab<ImportTab.ImportTabModel>
 	public void uploadedFile(SectionInfo info) throws IOException
 	{
 		final String filename = fileUpload.getFilename(info);
+		ImportTabModel model = getModel(info);
+		if( Check.isEmpty(filename) )
+		{
+			model.setUploaded(true);
+			return;
+		}
 
 		// Add a uuid to the import to avoid conflicts if uploading an
 		// institution with the same filename at the same time. See issue #3888
@@ -217,21 +236,31 @@ public class ImportTab extends AbstractInstitutionTab<ImportTab.ImportTabModel>
 		{
 			return viewFactory.createResult("tab/nodatabases.ftl", this);
 		}
-		SectionResult result = SectionUtils.renderSectionResult(context, importSection);
-		if( result != null )
-		{
-			return result;
-		}
 
 		ImportTabModel model = getModel(context);
+		if( model.isUploaded() && Check.isEmpty(fileUpload.getFilename(context)) )
+		{
+			model.getErrors().put("file", CurrentLocale.get("institutions.import.empty.file"));
+		}
+
+		if( Check.isEmpty(model.getErrors()) )
+		{
+			SectionResult result = SectionUtils.renderSectionResult(context, importSection);
+			if( result != null )
+			{
+				return result;
+			}
+		}
+
 		String stagingId = model.getStagingId();
 		if( stagingId != null )
 		{
 			context.getBody().addReadyStatements(
-				Js.call_s(ProgressRenderer.WEBKIT_PROGRESS_FRAME, JQueryCore.getJQueryCoreUrl()),
-				Js.call_s(ProgressRenderer.SHOW_PROGRESS_FUNCTION, urlService.getAdminUrl() + "progress/?id="
-					+ stagingId));
+				Js.call_s(ProgressRenderer.WEBKIT_PROGRESS_FRAME, JQueryCore.getJQueryCoreUrl()), Js.call_s(
+					ProgressRenderer.SHOW_PROGRESS_FUNCTION, urlService.getAdminUrl() + "progress/?id=" + stagingId));
 		}
+
+		model.setUploaded(false);
 
 		return viewFactory.createResult("tab/uploadimport.ftl", context);
 	}

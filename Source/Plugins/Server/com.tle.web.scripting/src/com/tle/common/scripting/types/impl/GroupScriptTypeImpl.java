@@ -16,9 +16,9 @@
 
 package com.tle.common.scripting.types.impl;
 
-import com.dytech.edge.common.valuebean.DefaultGroupBean;
-import com.dytech.edge.common.valuebean.GroupBean;
 import com.tle.common.scripting.types.GroupScriptType;
+import com.tle.common.usermanagement.user.valuebean.DefaultGroupBean;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
 
 /**
  * @author aholland

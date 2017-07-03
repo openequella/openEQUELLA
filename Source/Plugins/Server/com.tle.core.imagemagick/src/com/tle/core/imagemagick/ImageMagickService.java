@@ -20,7 +20,7 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 
 public interface ImageMagickService
 {

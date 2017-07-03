@@ -25,11 +25,11 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.PathUtils;
-import com.tle.core.filesystem.ConversionFile;
+import com.tle.common.filesystem.handle.ConversionFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.imagemagick.ImageMagickService;
 import com.tle.core.imagemagick.ThumbnailOptions;

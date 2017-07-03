@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import com.tle.common.htmleditor.beans.HtmlEditorPlugin;
-import com.tle.core.services.entity.AbstractEntityService;
+import com.tle.core.entity.service.AbstractEntityService;
 
 /**
  * @author aholland

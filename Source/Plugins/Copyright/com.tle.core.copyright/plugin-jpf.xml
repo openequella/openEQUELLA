@@ -3,9 +3,14 @@
 	<requires>
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.freetext" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.core.activation" />
-		<import plugin-id="com.tle.xstream" />
+		<import plugin-id="com.tle.core.xml" exported="true" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.core.xslt" exported="true" />
+		<import plugin-id="com.tle.core.usermanagement" />
+		<import plugin-id="com.tle.core.filesystem" />
+		<import plugin-id="com.tle.core.hibernate.equella" />
+		<import plugin-id="com.tle.core.services" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

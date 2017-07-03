@@ -16,27 +16,14 @@
 
 package com.tle.core.echo.service;
 
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.core.echo.entity.EchoServer;
-import com.tle.core.services.entity.AbstractEntityService;
-import com.tle.core.services.entity.EntityEditingBean;
+import com.tle.core.entity.EntityEditingBean;
+import com.tle.core.entity.service.AbstractEntityService;
 
 public interface EchoService extends AbstractEntityService<EntityEditingBean, EchoServer>
 {
-	@Override
-	boolean canEdit(BaseEntityLabel echoServer);
-
-	@Override
-	boolean canEdit(EchoServer echoServer);
-
-	@Override
-	boolean canDelete(BaseEntityLabel echoServer);
-
-	@Override
-	boolean canDelete(EchoServer echoServer);
-
 	EchoServer getForEdit(String uuid);
 
 	String addEchoServer(EchoServer es) throws InvalidDataException;

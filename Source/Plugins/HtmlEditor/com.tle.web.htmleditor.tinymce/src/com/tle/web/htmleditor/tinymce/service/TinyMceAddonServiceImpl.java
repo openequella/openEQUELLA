@@ -48,9 +48,9 @@ import com.tle.common.htmleditor.beans.HtmlEditorPlugin;
 import com.tle.common.scripting.service.ScriptingService;
 import com.tle.core.guice.Bind;
 import com.tle.core.htmleditor.service.HtmlEditorPluginService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.jackson.mapper.LenientMapperExtension;
-import com.tle.core.services.UrlService;
 import com.tle.web.freemarker.BasicFreemarkerFactory;
 import com.tle.web.freemarker.FreemarkerSectionResult;
 import com.tle.web.htmleditor.HtmlEditorButtonDefinition;
@@ -80,7 +80,7 @@ public class TinyMceAddonServiceImpl implements TinyMceAddonService
 	@Inject
 	private HtmlEditorPluginService htmlEditorPluginService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private BasicFreemarkerFactory custFactory;
 	@Inject
@@ -95,8 +95,8 @@ public class TinyMceAddonServiceImpl implements TinyMceAddonService
 	public List<TinyMceAddOn> getAddons()
 	{
 		final List<HtmlEditorPlugin> plugins = htmlEditorPluginService.enumerateForType("tinymce");
-		final List<TinyMceAddOn> addons = Lists.newArrayList(Lists.transform(plugins,
-			new Function<HtmlEditorPlugin, TinyMceAddOn>()
+		final List<TinyMceAddOn> addons = Lists
+			.newArrayList(Lists.transform(plugins, new Function<HtmlEditorPlugin, TinyMceAddOn>()
 			{
 				@Override
 				public TinyMceAddOn apply(HtmlEditorPlugin plugin)
@@ -128,17 +128,17 @@ public class TinyMceAddonServiceImpl implements TinyMceAddonService
 			this.jsonMapper = objectMapperService.createObjectMapper(LenientMapperExtension.NAME);
 
 			// uses PublicFileServlet
-			this.resourcesUrl = urlService.institutionalise(PathUtils.urlPath("public", plugin.getUuid(), "/"));
+			this.resourcesUrl = institutionService.institutionalise(PathUtils.urlPath("public", plugin.getUuid(), "/"));
 			// uses HtmlPluginServlet
-			this.baseUrl = urlService.institutionalise(PathUtils.urlPath("htmlplugin", Long.toString(plugin.getId()),
-				"plugin") + "/");
+			this.baseUrl = institutionService
+				.institutionalise(PathUtils.urlPath("htmlplugin", Long.toString(plugin.getId()), "plugin") + "/");
 			this.clientJs = plugin.getClientJs();
 			this.serverJs = plugin.getServerJs();
 
 			final String buttonString = plugin.getButtons();
 			if( Check.isEmpty(buttonString) )
 			{
-				this.buttons = Collections.unmodifiableList(Lists.<HtmlEditorButtonDefinition> newArrayList());
+				this.buttons = Collections.unmodifiableList(Lists.<HtmlEditorButtonDefinition>newArrayList());
 			}
 			else
 			{
@@ -268,8 +268,8 @@ public class TinyMceAddonServiceImpl implements TinyMceAddonService
 		@Override
 		public SectionResult execute(SectionInfo info, String action, String sessionId, String pageId,
 			String tinyMceBaseUrl, boolean restrictedCollectons, Set<String> collectionUuids,
-			boolean restrictedDynacolls, Set<String> dynaCollUuids, boolean restrictedSearches,
-			Set<String> searchUuids, boolean restrictedContributables, Set<String> contributableUuids)
+			boolean restrictedDynacolls, Set<String> dynaCollUuids, boolean restrictedSearches, Set<String> searchUuids,
+			boolean restrictedContributables, Set<String> contributableUuids)
 		{
 			// Nothing. Further enhancement: code execution
 			return null;
@@ -316,7 +316,8 @@ public class TinyMceAddonServiceImpl implements TinyMceAddonService
 			return new JsonObjectExpression(cf);
 		}
 
-		private void evalObject(ObjectNode source, ObjectNode target, RenderContext context, ScriptContext scriptContext)
+		private void evalObject(ObjectNode source, ObjectNode target, RenderContext context,
+			ScriptContext scriptContext)
 		{
 			final Iterator<Entry<String, JsonNode>> it = source.fields();
 			while( it.hasNext() )

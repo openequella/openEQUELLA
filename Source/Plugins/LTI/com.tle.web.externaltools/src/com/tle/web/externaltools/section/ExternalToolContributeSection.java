@@ -23,9 +23,9 @@ import javax.inject.Inject;
 
 import com.tle.common.externaltools.constants.ExternalToolConstants;
 import com.tle.common.externaltools.entity.ExternalTool;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.externaltools.service.ExternalToolsService;
 import com.tle.core.service.session.ExternalToolEditingBean;
-import com.tle.core.services.entity.AbstractEntityService;
 import com.tle.web.entities.section.AbstractEntityContributeSection;
 import com.tle.web.entities.section.EntityEditor;
 import com.tle.web.externaltools.section.ExternalToolContributeSection.ExternalToolContributeModel;
@@ -104,4 +104,3 @@ public class ExternalToolContributeSection
 		// Empty
 	}
 }
-

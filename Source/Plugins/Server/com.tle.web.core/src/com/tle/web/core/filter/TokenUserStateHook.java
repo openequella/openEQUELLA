@@ -27,7 +27,7 @@ import com.dytech.edge.web.WebConstants;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;
-import com.tle.core.user.UserState;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.exceptions.TokenException;
 import com.tle.web.core.filter.UserStateResult.Result;
 

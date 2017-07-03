@@ -15,6 +15,10 @@
 			</ul>
 		</@render>
 		<@render s.executeButton />
+		<#-- TODO: make more generic -->
+		<#if s.moderateSelectedButton?? >
+			<@render s.moderateSelectedButton />
+		</#if>
 		<hr>
 	</@render>
 </@a.div>

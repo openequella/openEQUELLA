@@ -23,17 +23,17 @@ import javax.inject.Singleton;
 
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemPack;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.util.Dates;
 import com.tle.common.util.UtcDate;
+import com.tle.core.activecache.RemoteCachingService;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.helper.ItemHelper;
+import com.tle.core.item.helper.ItemHelper.ItemHelperSettings;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.remoting.ToolsService;
-import com.tle.core.services.RemoteCachingService;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.util.ItemHelper;
-import com.tle.core.util.ItemHelper.ItemHelperSettings;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
 
 @Bind
 @Singleton
@@ -46,7 +46,7 @@ public class ToolsServiceImpl extends AbstractSoapService implements ToolsServic
 	@Inject
 	private ItemHelper itemHelper;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 
 	@Override
 	public String[] getCacheList(String ssid, String lastUpdate)

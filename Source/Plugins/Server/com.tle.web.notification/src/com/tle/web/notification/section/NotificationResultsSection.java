@@ -20,7 +20,7 @@ import java.util.List;
 
 import com.google.inject.Inject;
 import com.tle.common.search.DefaultSearch;
-import com.tle.core.notification.indexer.NotificationSearch;
+import com.tle.core.notification.standard.indexer.NotificationSearch;
 import com.tle.web.bulk.section.AbstractBulkSelectionSection;
 import com.tle.web.notification.NotificationItemListEntry;
 import com.tle.web.search.base.AbstractFreetextResultsSection;

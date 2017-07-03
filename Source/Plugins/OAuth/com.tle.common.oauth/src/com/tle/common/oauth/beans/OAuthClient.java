@@ -22,6 +22,7 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Lob;
 
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
@@ -44,7 +45,7 @@ public final class OAuthClient extends BaseEntity
 	@Column(nullable = false, length = 100)
 	private String clientId;
 
-	@Column(nullable = false, length = 100)
+	@Lob
 	private String clientSecret;
 
 	@Index(name = "oauthRedirectURLIndex")

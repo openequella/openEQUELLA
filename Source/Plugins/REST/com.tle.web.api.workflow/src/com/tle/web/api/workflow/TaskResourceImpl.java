@@ -46,12 +46,12 @@ import com.tle.common.workflow.TaskFilterCount;
 import com.tle.common.workflow.WorkflowItemStatus;
 import com.tle.common.workflow.api.TaskFilterCountBean;
 import com.tle.common.workflow.node.WorkflowItem;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.entity.WorkflowService;
-import com.tle.core.services.item.FreeTextService;
 import com.tle.core.services.item.FreetextSearchResults;
 import com.tle.core.services.item.TaskResult;
 import com.tle.core.workflow.freetext.TasksIndexer;
+import com.tle.core.workflow.service.WorkflowService;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.item.ItemLinkService;
@@ -90,8 +90,8 @@ public class TaskResourceImpl implements EquellaTaskResource
 		"taskme", "assignedothers", "taskothers", "assignednone", "tasknoone", "mustmoderate", "taskmust");
 
 	@Override
-	public Response tasksSearch(UriInfo uriInfo, String filtering, String q, int start, int length,
-		CsvList collections, String order, String reverse)
+	public Response tasksSearch(UriInfo uriInfo, String filtering, String q, int start, int length, CsvList collections,
+		String order, String reverse)
 	{
 		final SearchBean<TaskStatusBean> result = new SearchBean<TaskStatusBean>();
 		final List<TaskStatusBean> resultsToReturn = Lists.newArrayList();
@@ -160,8 +160,8 @@ public class TaskResourceImpl implements EquellaTaskResource
 				taskStatusBean.setStartDate(status.getStarted());
 				Map<String, String> links = Maps.newHashMap();
 				// TODO: this is sub-ottstimal
-				links.put(REL_WEB_MODERATE, RootTaskListSection.createModerateBookmark(sectionsController, itemTaskId)
-					.getHref());
+				links.put(REL_WEB_MODERATE,
+					RootTaskListSection.createModerateBookmark(sectionsController, itemTaskId).getHref());
 				taskStatusBean.set("links", links);
 				resultsToReturn.add(taskStatusBean);
 			}

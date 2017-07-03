@@ -25,17 +25,16 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.UriInfo;
 
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
 import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.common.Check;
+import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.SecurityConstants;
 import com.tle.core.activation.service.CourseInfoService;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.entity.AbstractEntityService;
 import com.tle.web.api.activation.CourseBean;
 import com.tle.web.api.activation.CourseBeanSerializer;
 import com.tle.web.api.activation.CourseResource;
@@ -107,10 +106,15 @@ public class CourseResourceImpl extends AbstractBaseEntityResource<CourseInfo, B
 		if( courseCode != null )
 		{
 			final CourseInfo courseSameCode = courseService.getByCode(courseCode);
-			if( courseSameCode != null && !uuid.equals(courseSameCode.getUuid()) )
+			if( isNew )
 			{
-				throw new InvalidDataException(new ValidationError("code", CurrentLocale.get(
-					"com.tle.web.api.activation.course.edit.validation.codeinuse", courseCode)));
+				throw new InvalidDataException(new ValidationError("code",
+					CurrentLocale.get("com.tle.web.api.activation.course.edit.validation.codeinuse", courseCode)));
+			}
+			else if( courseSameCode != null && !uuid.equals(courseSameCode.getUuid()) )
+			{
+				throw new InvalidDataException(new ValidationError("code",
+					CurrentLocale.get("com.tle.web.api.activation.course.edit.validation.codeinuse", courseCode)));
 			}
 		}
 	}
@@ -122,7 +126,7 @@ public class CourseResourceImpl extends AbstractBaseEntityResource<CourseInfo, B
 	}
 
 	@Override
-	protected AbstractEntityService<?, CourseInfo> getEntityService()
+	protected CourseInfoService getEntityService()
 	{
 		return courseService;
 	}

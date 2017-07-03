@@ -30,12 +30,12 @@ import org.apache.log4j.Logger;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.common.Check;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.filesystem.StagingFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;

@@ -22,9 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.dytech.edge.common.valuebean.GroupBean;
-import com.dytech.edge.common.valuebean.RoleBean;
-import com.dytech.edge.common.valuebean.UserBean;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
@@ -35,9 +32,12 @@ import com.tle.common.scripting.types.UserScriptType;
 import com.tle.common.scripting.types.impl.GroupScriptTypeImpl;
 import com.tle.common.scripting.types.impl.RoleScriptTypeImpl;
 import com.tle.common.scripting.types.impl.UserScriptTypeImpl;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
+import com.tle.common.usermanagement.user.valuebean.RoleBean;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.services.user.UserService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
 
 public class UserScriptWrapper extends AbstractScriptWrapper implements UserScriptObject
 {
@@ -215,8 +215,8 @@ public class UserScriptWrapper extends AbstractScriptWrapper implements UserScri
 	@Override
 	public List<RoleScriptType> searchRoles(String query)
 	{
-		return Lists.newArrayList(Lists.transform(userService.searchRoles(query),
-			new Function<RoleBean, RoleScriptType>()
+		return Lists
+			.newArrayList(Lists.transform(userService.searchRoles(query), new Function<RoleBean, RoleScriptType>()
 			{
 				@Override
 				public RoleScriptType apply(RoleBean role)

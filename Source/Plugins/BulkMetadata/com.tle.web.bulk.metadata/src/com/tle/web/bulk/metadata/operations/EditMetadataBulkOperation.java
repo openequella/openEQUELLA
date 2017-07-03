@@ -27,11 +27,11 @@ import com.dytech.devlib.PropBagEx.PropBagThoroughIterator;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.beans.item.ItemPack;
+import com.tle.core.item.operations.AbstractWorkflowOperation;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.core.item.standard.operations.EditMetadataOperation;
 import com.tle.core.security.impl.SecureOnCall;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
-import com.tle.core.workflow.operations.EditMetadataOperation;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.web.bulk.metadata.model.Modification.ModificationKeys;
 
 @SecureOnCall(priv = "EDIT_ITEM")
@@ -41,7 +41,7 @@ public class EditMetadataBulkOperation extends AbstractWorkflowOperation
 	private final List<Map<ModificationKeys, String>> modifications;
 	private final List<List<String>> nodes;
 	@Inject
-	private WorkflowFactory editMetadataFactory;
+	private ItemOperationFactory editMetadataFactory;
 
 	@AssistedInject
 	public EditMetadataBulkOperation(@Assisted("nodes") List<List<String>> nodes,

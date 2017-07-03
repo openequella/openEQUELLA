@@ -34,16 +34,16 @@ import com.tle.beans.item.Bookmark;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.common.Check;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.events.UserDeletedEvent;
 import com.tle.core.events.UserEditEvent;
 import com.tle.core.events.UserIdChangedEvent;
 import com.tle.core.events.listeners.UserChangeListener;
 import com.tle.core.favourites.dao.BookmarkDao;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.workflow.operations.WorkflowFactory;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.common.usermanagement.user.CurrentUser;
 
 @SuppressWarnings("nls")
 @Bind(BookmarkService.class)
@@ -55,7 +55,7 @@ public class BookmarkServiceImpl implements BookmarkService, UserChangeListener
 	@Inject
 	private ItemService itemService;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 
 	@Override
 	public Bookmark getByItem(ItemKey itemId)

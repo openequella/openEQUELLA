@@ -4,6 +4,7 @@
 		<import plugin-id="com.tle.common.beans" />
 		<import plugin-id="com.tle.common.item" />
 		<import plugin-id="com.tle.common.usermanagement" />
+		<import plugin-id="com.tle.common.filesystem" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

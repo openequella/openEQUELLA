@@ -59,6 +59,8 @@ public interface BulkOperationExtension
 
 	boolean showPreviousButton(SectionInfo info, String opererationId);
 
+	boolean validateOptions(SectionInfo info, String operationId);
+
 	public static class OperationInfo
 	{
 		private final BulkOperationExtension op;

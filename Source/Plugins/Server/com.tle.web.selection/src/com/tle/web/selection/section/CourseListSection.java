@@ -32,7 +32,7 @@ import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.ImsAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.Check;
-import com.tle.core.services.item.ItemResolver;
+import com.tle.core.item.service.ItemResolver;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.resources.ResourcesService;

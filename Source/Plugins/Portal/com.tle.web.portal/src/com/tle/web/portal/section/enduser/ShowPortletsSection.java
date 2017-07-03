@@ -21,7 +21,7 @@ import javax.inject.Inject;
 import com.tle.common.portal.entity.Portlet;
 import com.tle.common.portal.entity.PortletPreference;
 import com.tle.core.portal.service.PortletService;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.portal.service.PortletWebService;

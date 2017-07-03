@@ -16,6 +16,9 @@
 					<#if item.icon??>
 						<@render item.icon/>
 					</#if>
+					<#if item.assignedIcon??>
+						<@render item.assignedIcon/>
+					</#if>
 					<#if item.thumbnail??>
 						<div class="thumbnailinlist">
 							<@render item.thumbnail />

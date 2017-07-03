@@ -1,11 +1,12 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.web.portal" version="1">
 	<requires>
-		<import plugin-id="com.tle.core.guice" />
-		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.common.portal" exported="true" />
 		<import plugin-id="com.tle.common.recipientselector" />
+		<import plugin-id="com.tle.core.events" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.core.portal" exported="true" />
 		<import plugin-id="com.tle.web.recipientselector" />
 		<import plugin-id="com.tle.web.search" />
@@ -72,7 +73,7 @@
 		<parameter id="root" value="bean:portalAdminTree" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.services" point-id="applicationEventListener" id="listeners">
+	<extension plugin-id="com.tle.core.events" point-id="applicationEventListener" id="listeners">
 		<parameter id="listener" value="bean:com.tle.web.portal.service.PortletWebService" />
 		<parameter id="listenerClass" value="com.tle.core.events.listeners.UserSessionLogoutListener" />
 		<parameter id="listenerClass" value="com.tle.web.portal.events.PortletsUpdatedEventListener" />

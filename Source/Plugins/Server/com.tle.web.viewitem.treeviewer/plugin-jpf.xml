@@ -3,9 +3,9 @@
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.common.licences" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.mimetypes" />
+		<import plugin-id="com.tle.core.item" />
 		<import plugin-id="com.tle.core.url" />
 		<import plugin-id="com.tle.web.core" />
 		<import plugin-id="com.tle.web.integration" />
@@ -14,6 +14,10 @@
 		<import plugin-id="com.tle.web.viewitem" />
 		<import plugin-id="com.tle.web.viewurl" />
 		<import plugin-id="net.sf.json-lib:json-lib" />
+		<import plugin-id="com.tle.core.item.standard" />
+		<import plugin-id="com.tle.core.filesystem" />
+		<import plugin-id="com.tle.ims" />
+		<import plugin-id="com.tle.core.institution" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">
@@ -53,7 +57,7 @@
 		<parameter id="file" value="lang/i18n.properties" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="itemHelpers" id="navNodeHelper">
+	<extension plugin-id="com.tle.core.item" point-id="itemHelpers" id="navNodeHelper">
 		<parameter id="bean" value="bean:com.tle.core.item.navigation.NavigationNodeHelper" />
 		<parameter id="display" value="true" />
 		<parameter id="import" value="true" />

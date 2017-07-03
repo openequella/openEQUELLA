@@ -32,14 +32,14 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dytech.edge.exceptions.NotFoundException;
 import com.tle.annotation.NonNullByDefault;
+import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.qti.entity.QtiAssessmentItem;
 import com.tle.core.dao.helpers.ScrollableResultsIterator;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
 import com.tle.core.qti.dao.QtiAssessmentItemDao;
-import com.tle.core.user.CurrentInstitution;
 
 /**
  * @author aholland
@@ -72,8 +72,8 @@ public class QtiAssessmentItemDaoImpl extends GenericInstitionalDaoImpl<QtiAsses
 	@Override
 	public Iterator<QtiAssessmentItem> getIterator()
 	{
-		final ScrollableResults cinnamonScroll = (ScrollableResults) getHibernateTemplate().execute(
-			new HibernateCallback()
+		final ScrollableResults cinnamonScroll = (ScrollableResults) getHibernateTemplate()
+			.execute(new HibernateCallback()
 			{
 				@Override
 				public Object doInHibernate(Session session) throws HibernateException, SQLException

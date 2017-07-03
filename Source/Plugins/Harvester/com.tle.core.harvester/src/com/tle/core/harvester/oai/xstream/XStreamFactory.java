@@ -27,7 +27,7 @@ import com.tle.core.harvester.oai.data.Request;
 import com.tle.core.harvester.oai.data.Response;
 import com.tle.core.harvester.oai.data.ResumptionToken;
 import com.tle.core.harvester.oai.data.Set;
-import com.tle.core.xstream.impl.XmlServiceImpl.ExtXStream;
+import com.tle.core.xml.service.impl.XmlServiceImpl.ExtXStream;
 
 /**
  *

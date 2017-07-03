@@ -27,8 +27,6 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import net.sf.json.JSONObject;
-
 import com.dytech.common.text.NumberStringComparator;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -44,11 +42,13 @@ import com.tle.core.copyright.Holding;
 import com.tle.core.copyright.Portion;
 import com.tle.core.copyright.Section;
 import com.tle.core.copyright.service.CopyrightService;
+import com.tle.core.i18n.BundleCache;
 import com.tle.core.security.TLEAclManager;
+import com.tle.web.activation.ActivationResultsExtension;
+import com.tle.web.copyright.section.ViewByRequestSection.ViewRequestUrl;
 import com.tle.web.copyright.service.CopyrightWebService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.integration.extension.StructuredIntegrationSessionExtension;
 import com.tle.web.integration.service.IntegrationService;
 import com.tle.web.sections.SectionInfo;
@@ -77,11 +77,12 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.ImageRenderer;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
 import com.tle.web.sections.standard.renderers.LinkTagRenderer;
-import com.tle.web.selection.SelectAttachmentHandler;
+import com.tle.web.selection.SelectedResource;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.event.AttachmentSelectorEvent;
 import com.tle.web.selection.event.AttachmentSelectorEventListener;
+import com.tle.web.selection.section.CourseListSection;
 import com.tle.web.viewable.NewDefaultViewableItem;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.impl.ViewableItemFactory;
@@ -94,6 +95,8 @@ import com.tle.web.viewurl.ViewItemUrl;
 import com.tle.web.viewurl.ViewItemUrlFactory;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceService;
+
+import net.sf.json.JSONObject;
 
 @NonNullByDefault
 public abstract class AbstractCopyrightSummarySection<H extends Holding, P extends Portion, S extends Section>
@@ -143,6 +146,8 @@ public abstract class AbstractCopyrightSummarySection<H extends Holding, P exten
 	private ViewItemUrlFactory urlFactory;
 	@Inject
 	private TLEAclManager aclService;
+	@Inject
+	private ActivationResultsExtension resultsExtension;
 
 	private CopyrightService<H, P, S> copyrightService;
 	private CopyrightWebService<H> copyrightWebService;
@@ -324,6 +329,9 @@ public abstract class AbstractCopyrightSummarySection<H extends Holding, P exten
 				{
 					viewableLink = viewItemService.getViewableLink(context, viewableResource, null);
 					TextLabel textLabel = getAttachmentDisplayName(attachment);
+					// JS EQ-2396 begin
+					// attachment.setDescription(textLabel.getText());
+					// JS EQ-2396 end
 					sectionDisplay.setIcon(viewableResource.createStandardThumbnailRenderer(textLabel));
 					viewableLink.setLabel(textLabel);
 				}
@@ -369,9 +377,8 @@ public abstract class AbstractCopyrightSummarySection<H extends Holding, P exten
 					}
 					sectionDisplay.setActivateButton(activateOneButton);
 
-					if( (session == null || session.isSelectMultiple())
-						&& (portion.getSections().size() > 1 || (holdingIsThis && portion.getHolding().getPortions()
-							.size() > 1)) )
+					if( (session == null || session.isSelectMultiple()) && (portion.getSections().size() > 1
+						|| (holdingIsThis && portion.getHolding().getPortions().size() > 1)) )
 					{
 						sectionDisplay.setCheckBox(selections.getBooleanState(context, jsonAttachId));
 						holdingDisplay.setHasCheckboxes(true);
@@ -381,22 +388,21 @@ public abstract class AbstractCopyrightSummarySection<H extends Holding, P exten
 
 				if( session != null && (status != ActivateRequest.TYPE_INACTIVE || !integrating) )
 				{
-					String courseCode = session.getStructure().getAttribute(
-						StructuredIntegrationSessionExtension.KEY_COURSE_CODE);
+					String courseCode = session.getStructure()
+						.getAttribute(StructuredIntegrationSessionExtension.KEY_COURSE_CODE);
 					if( courseCode == null && integrating )
 					{
 						courseCode = integrationService.getIntegrationInterface(context).getCourseInfoCode();
 					}
-					boolean canAdd = !integrating
-						|| activationService.attachmentIsSelectableForCourse(copyrightService.getActivationType(),
-							attachUuid, courseCode);
+					boolean canAdd = !integrating || activationService
+						.attachmentIsSelectableForCourse(copyrightService.getActivationType(), attachUuid, courseCode);
 					if( canAdd )
 					{
 						HtmlComponentState addState = new HtmlComponentState();
-						addState.setClickHandler(events.getNamedHandler("addAttachment", portionItem.getItemId(),
-							attachUuid));
-						sectionDisplay.setAddButton(new ButtonRenderer(addState).showAs(ButtonType.PLUS)
-							.addClass("add"));
+						addState.setClickHandler(
+							events.getNamedHandler("addAlreadyActivated", portionItem.getItemId(), attachUuid));
+						sectionDisplay
+							.setAddButton(new ButtonRenderer(addState).showAs(ButtonType.PLUS).addClass("add"));
 						holdingDisplay.setHaveAdd(true);
 					}
 				}
@@ -408,19 +414,58 @@ public abstract class AbstractCopyrightSummarySection<H extends Holding, P exten
 
 	}
 
+	//Dirty hack, mostly copy and pasted from AbstractActivateSection
 	@EventHandlerMethod
-	public void addAttachment(SectionInfo info, ItemId itemId, String attachUuid)
+	public void addAlreadyActivated(SectionInfo info, ItemId itemId, String attachmentId)
 	{
-		ViewableItem viewableItem = viewableItemFactory.createNewViewableItem(itemId);
-		SelectAttachmentHandler handler = selectionService.getSelectAttachmentHandler(info, viewableItem, attachUuid);
-		if( handler != null )
+		final SelectionSession session = selectionService.getCurrentSession(info);
+		if( session != null )
 		{
-			Map<String, Attachment> attachMap = copyrightWebService.getAttachmentMap(info,
-				(Item) viewableItem.getItem());
-			handler
-				.handleAttachmentSelection(info, viewableItem.getItem().getItemId(), attachMap.get(attachUuid), null);
-		}
+			final CourseListSection cls = info.lookupSection(CourseListSection.class);
 
+			final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(info);
+			final Item item = itemInfo.getItem();
+
+			final String courseCode = getCourseCode(info, session, integrationService.isInIntegrationSession(info));
+			final List<ActivateRequest> requests = activationService
+				.getAllCurrentAndPendingActivations(getCopyrightServiceImpl().getActivationType(), attachmentId);
+
+			//FIXME: we need some logic to pull out the best activate request in the case there is > 1
+			final ActivateRequest activateRequest = requests.stream()
+				.filter(r -> r.getCourse().getCode().equals(courseCode)).findFirst().get();
+			final Attachment attachment = copyrightWebService.getAttachmentMap(info, item)
+				.get(activateRequest.getAttachment());
+
+			if( cls != null && cls.isApplicable(info) )
+			{
+				for( String folder : cls.getSelectedFolders(info) )
+				{
+					addResource(info, new SelectedResource(item.getItemId(), attachment,
+						selectionService.findTargetFolder(info, folder), null), activateRequest);
+				}
+			}
+			else
+			{
+				addResource(info, new SelectedResource(item.getItemId(), attachment, null, null), activateRequest);
+			}
+		}
+	}
+
+	private void addResource(SectionInfo info, SelectedResource resource, ActivateRequest activateRequest)
+	{
+		resource.addExtender(new ViewRequestUrl(activateRequest.getUuid()));
+		resultsExtension.addRequest(resource, activateRequest);
+		selectionService.addSelectedResource(info, resource, true);
+	}
+
+	private String getCourseCode(SectionInfo info, SelectionSession session, boolean integrating)
+	{
+		String courseCode = session.getStructure().getAttribute("courseCode");
+		if( courseCode == null && integrating )
+		{
+			courseCode = integrationService.getIntegrationInterface(info).getCourseInfoCode();
+		}
+		return courseCode;
 	}
 
 	protected abstract void processAvailablePages(Holding holding, HoldingDisplay holdingDisplay);

@@ -25,14 +25,14 @@ import java.util.regex.Pattern;
 
 import javax.inject.Singleton;
 
-import com.dytech.edge.exceptions.InvalidDataException;
-import com.dytech.edge.exceptions.NotFoundException;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.tle.common.Pair;
 import com.tle.common.Utils;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.taxonomy.SelectionRestriction;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.common.taxonomy.TaxonomyConstants;

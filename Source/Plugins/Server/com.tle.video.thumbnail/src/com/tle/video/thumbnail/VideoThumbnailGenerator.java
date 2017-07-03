@@ -23,7 +23,7 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.imagemagick.ImageMagickService;
 import com.tle.core.imagemagick.ThumbnailOptions;
@@ -49,8 +49,8 @@ public class VideoThumbnailGenerator implements ThumbnailGenerator
 		if( libav.isLibavInstalled() )
 		{
 			final StagingFile stagingFile = new StagingFile(UUID.randomUUID().toString());
-			final File temp = fileSystemService.getExternalFile(stagingFile, src.getName()
-				+ FileSystemService.THUMBNAIL_EXTENSION);
+			final File temp = fileSystemService.getExternalFile(stagingFile,
+				src.getName() + FileSystemService.THUMBNAIL_EXTENSION);
 			try
 			{
 				fileSystemService.mkdir(stagingFile, null);
@@ -70,8 +70,8 @@ public class VideoThumbnailGenerator implements ThumbnailGenerator
 		if( libav.isLibavInstalled() )
 		{
 			final StagingFile stagingFile = new StagingFile(UUID.randomUUID().toString());
-			final File temp = fileSystemService.getExternalFile(stagingFile, srcFile.getName()
-				+ FileSystemService.THUMBNAIL_EXTENSION);
+			final File temp = fileSystemService.getExternalFile(stagingFile,
+				srcFile.getName() + FileSystemService.THUMBNAIL_EXTENSION);
 			try
 			{
 				fileSystemService.mkdir(stagingFile, null);

@@ -27,13 +27,12 @@ import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.ZipAttachment;
 import com.tle.core.guice.Bind;
-import com.tle.core.institution.convert.ItemConverter;
-import com.tle.core.institution.convert.ItemConverter.ItemConverterInfo;
-import com.tle.core.institution.migration.PostReadMigrator;
+import com.tle.core.institution.convert.PostReadMigrator;
+import com.tle.core.item.convert.ItemConverter.ItemConverterInfo;
 
 @Bind
 @Singleton
-public class MigrateZipFilesImport implements PostReadMigrator<ItemConverter.ItemConverterInfo>
+public class MigrateZipFilesImport implements PostReadMigrator<ItemConverterInfo>
 {
 
 	@SuppressWarnings("nls")

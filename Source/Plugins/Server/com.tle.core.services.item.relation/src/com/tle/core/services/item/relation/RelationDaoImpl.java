@@ -27,10 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.Relation;
-import com.tle.core.dao.ItemDaoExtension;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
-import com.tle.core.user.CurrentInstitution;
+import com.tle.core.item.dao.ItemDaoExtension;
 
 @Bind(RelationDao.class)
 @Singleton

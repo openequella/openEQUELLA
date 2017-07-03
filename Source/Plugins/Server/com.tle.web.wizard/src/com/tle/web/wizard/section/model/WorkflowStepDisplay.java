@@ -16,9 +16,9 @@
 
 package com.tle.web.wizard.section.model;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.workflow.WorkflowStep;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.services.user.UserService;
 import com.tle.web.sections.render.SectionRenderable;
 

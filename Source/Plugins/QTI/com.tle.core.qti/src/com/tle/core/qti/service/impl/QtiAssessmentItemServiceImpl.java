@@ -24,6 +24,16 @@ import javax.xml.XMLConstants;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.annotation.NonNullByDefault;
+import com.tle.annotation.Nullable;
+import com.tle.beans.Institution;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.qti.entity.QtiAssessmentItem;
+import com.tle.core.guice.Bind;
+import com.tle.core.qti.dao.QtiAssessmentItemDao;
+import com.tle.core.qti.service.QtiAssessmentItemService;
+
 import uk.ac.ed.ph.jqtiplus.attribute.value.StringAttribute;
 import uk.ac.ed.ph.jqtiplus.internal.util.DumpMode;
 import uk.ac.ed.ph.jqtiplus.internal.util.ObjectDumper;
@@ -31,16 +41,6 @@ import uk.ac.ed.ph.jqtiplus.node.content.ItemBody;
 import uk.ac.ed.ph.jqtiplus.node.item.AssessmentItem;
 import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentItem;
 import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
-
-import com.dytech.edge.exceptions.InvalidDataException;
-import com.tle.annotation.NonNullByDefault;
-import com.tle.annotation.Nullable;
-import com.tle.beans.Institution;
-import com.tle.common.qti.entity.QtiAssessmentItem;
-import com.tle.core.guice.Bind;
-import com.tle.core.qti.dao.QtiAssessmentItemDao;
-import com.tle.core.qti.service.QtiAssessmentItemService;
-import com.tle.core.user.CurrentInstitution;
 
 /**
  * @author Aaron

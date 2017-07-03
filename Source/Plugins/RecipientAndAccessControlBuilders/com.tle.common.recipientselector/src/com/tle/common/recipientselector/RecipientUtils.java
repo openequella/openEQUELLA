@@ -23,9 +23,9 @@ import static com.tle.common.security.SecurityConstants.Recipient.IP_ADDRESS;
 import static com.tle.common.security.SecurityConstants.Recipient.ROLE;
 import static com.tle.common.security.SecurityConstants.Recipient.USER;
 
-import com.dytech.edge.common.valuebean.GroupBean;
-import com.dytech.edge.common.valuebean.RoleBean;
-import com.dytech.edge.common.valuebean.UserBean;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
+import com.tle.common.usermanagement.user.valuebean.RoleBean;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 
 public final class RecipientUtils
 {

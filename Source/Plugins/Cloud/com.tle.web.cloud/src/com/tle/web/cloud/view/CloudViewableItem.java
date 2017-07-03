@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.Set;
 
 import com.dytech.devlib.PropBagEx;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemPack;

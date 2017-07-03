@@ -56,42 +56,68 @@ public interface EquellaItemResource extends ItemResource
 
 	static final String ALL_ALLOWABLE_INFOS = "basic,metadata,attachment,detail,navigation,drm,all";
 
+	// @formatter:off
 	@PUT
 	@Path("/quick/{filename}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Quick contribute a new item")
-	Response newItemQuick(@ApiParam(value = "Filename", defaultValue = "") @PathParam("filename") String filename,
-		InputStream binaryData, @Context UriInfo info);
+	Response newItemQuick(
+		@Context 
+			UriInfo info,
+		@ApiParam(value = "Filename", defaultValue = "") 
+		@PathParam("filename") 
+			String filename,
+		InputStream binaryData);
 
 	@GET
 	@Path("/{uuid}/{version}/comment/{commentuuid}")
 	@ApiOperation(value = "Retrieve a single comment for an item by ID.")
 	CommentBean getOneComment(
-		// @formatter:off
-		@ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
-		@ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,
-		@ApiParam(required = true) @PathParam("commentuuid") String commentUuid
-		); // @formatter:on
+		@Context 
+			UriInfo info,
+		@ApiParam(APIDOC_ITEMUUID) 
+		@PathParam("uuid") 
+			String uuid,
+		@ApiParam(APIDOC_ITEMVERSION) 
+		@PathParam("version") 
+			int version,
+		@ApiParam(required = true) 
+		@PathParam("commentuuid") 
+			String commentUuid
+		); 
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/{uuid}/{version}/comment")
 	@ApiOperation(value = "Add a comment")
 	Response postComments(
-		// @formatter:off
-		@ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
-		@ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,
-		@ApiParam(value = "A comment in json format") CommentBean commentBean
-		); // @formatter:on
+		@Context 
+			UriInfo info,
+		@ApiParam(APIDOC_ITEMUUID) 
+		@PathParam("uuid") 
+			String uuid,
+		@ApiParam(APIDOC_ITEMVERSION)
+		@PathParam("version")
+			int version,
+		@ApiParam(value = "A comment in json format") 
+			CommentBean commentBean
+		);
 
 	@DELETE
 	@Path("/{uuid}/{version}/comment")
 	@ApiOperation(value = "Delete a comment")
 	Response deleteComment(
-		// @formatter:off
-		@ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
-		@ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,
-		@ApiParam(APIDOC_ITEMVERSION) @QueryParam("commentuuid") String commentUuid
-		);// @formatter:on
+		@Context 
+			UriInfo info,
+		@ApiParam(APIDOC_ITEMUUID) 
+		@PathParam("uuid") 
+			String uuid,
+		@ApiParam(APIDOC_ITEMVERSION) 
+		@PathParam("version") 
+			int version,
+		@ApiParam(APIDOC_ITEMVERSION) 
+		@QueryParam("commentuuid") 
+			String commentUuid
+		);
 }

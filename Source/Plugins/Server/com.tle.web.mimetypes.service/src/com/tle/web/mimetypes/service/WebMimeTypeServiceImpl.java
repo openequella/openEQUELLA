@@ -27,9 +27,9 @@ import com.tle.annotation.Nullable;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.URLUtils;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeConstants;
 import com.tle.core.mimetypes.MimeTypeService;
-import com.tle.core.services.UrlService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionInfo;
@@ -50,7 +50,7 @@ public class WebMimeTypeServiceImpl implements WebMimeTypeService
 	@Inject
 	private MimeTypeService mimeTypeService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService instituionService;
 
 	@Nullable
 	@Override
@@ -106,7 +106,7 @@ public class WebMimeTypeServiceImpl implements WebMimeTypeService
 			icon = attributes.get(MimeTypeConstants.KEY_ICON_WEBAPPRELATIVE);
 			if( icon != null )
 			{
-				return URLUtils.newURL(urlService.institutionalise(icon));
+				return URLUtils.newURL(instituionService.institutionalise(icon));
 			}
 			icon = attributes.get(MimeTypeConstants.KEY_ICON_PLUGINICON);
 		}
@@ -114,7 +114,7 @@ public class WebMimeTypeServiceImpl implements WebMimeTypeService
 		{
 			icon = DEFAULT_ICON;
 		}
-		return URLUtils.newURL(urlService.institutionalise(URL_HELPER.url(icon)));
+		return URLUtils.newURL(instituionService.institutionalise(URL_HELPER.url(icon)));
 	}
 
 	@Override

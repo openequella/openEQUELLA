@@ -24,7 +24,7 @@ import javax.inject.Inject;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.item.ItemId;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemService;
+import com.tle.core.item.service.ItemService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;

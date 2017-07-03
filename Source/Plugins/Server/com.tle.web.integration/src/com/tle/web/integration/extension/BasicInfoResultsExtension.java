@@ -21,7 +21,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.Item;
@@ -31,6 +30,7 @@ import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
 import com.tle.common.Format;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;
 import com.tle.web.integration.IntegrationSessionExtension;
@@ -76,7 +76,8 @@ public class BasicInfoResultsExtension implements IntegrationSessionExtension
 	// copy
 	// and paste this here. Long term solution is pass in an ObjectNode into
 	// processResultForSingle
-	public void processSingle(SectionInfo info, ObjectNode link, String prefix, IItem<?> item, SelectedResource resource)
+	public void processSingle(SectionInfo info, ObjectNode link, String prefix, IItem<?> item,
+		SelectedResource resource)
 	{
 		Bookmark bm = viewableItemResolver.createThumbnailAttachmentLink(item, resource.isLatest(),
 			resource.getAttachmentUuid(), resource.getKey().getExtensionType());

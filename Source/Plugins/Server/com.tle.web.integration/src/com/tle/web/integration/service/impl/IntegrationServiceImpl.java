@@ -42,12 +42,12 @@ import com.tle.common.Utils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.activation.service.CourseInfoService;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.integration.IntegrationLoggingService;
 import com.tle.core.integration.IntegrationSelection;
+import com.tle.core.item.service.ItemResolver;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.item.ItemResolver;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.integration.Integration;
@@ -98,7 +98,7 @@ public class IntegrationServiceImpl extends AbstractSectionFilter implements Int
 	@Inject
 	private CourseInfoService courseInfoService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private SectionsController sectionsController;
 	@Inject
@@ -302,7 +302,7 @@ public class IntegrationServiceImpl extends AbstractSectionFilter implements Int
 	/**
 	 * Returns the code of the first matching CourseInfo against courseCodes then courseId.
 	 * Returns the first non-empty courseCode or courseId if none of those matched.
-	 * 
+	 *
 	 * @param courseId
 	 * @param courseCodes
 	 * @return
@@ -363,7 +363,7 @@ public class IntegrationServiceImpl extends AbstractSectionFilter implements Int
 		SectionInfo forwardInfo;
 		if( Check.isEmpty(selectable) || session == null )
 		{
-			final URL iUrl = urlService.getInstitutionUrl();
+			final URL iUrl = institutionService.getInstitutionUrl();
 			URL forwardUrl;
 			try
 			{

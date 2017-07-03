@@ -25,7 +25,6 @@ import com.tle.core.events.EventExecutor;
 import com.tle.core.events.listeners.ApplicationListener;
 import com.tle.core.guice.PluginTrackerModule;
 import com.tle.core.services.TaskService;
-import com.tle.core.services.impl.ClusterMessageHandler;
 import com.tle.core.services.impl.ClusteredTaskServiceImpl;
 import com.tle.core.services.impl.LocalTaskServiceImpl;
 
@@ -48,9 +47,6 @@ public class CoreServicesModule extends MandatoryConfigModule
 			bindInt("taskService.maxConcurrentTasks", 26);
 
 			bindBoolean("can.access.internet");
-			
-			bindProp("messaging.bindAddress");
-			bindInt("messaging.bindPort", 8999);
 
 			if( Check.isEmpty(getProperty("zookeeper.instances")) )
 			{
@@ -60,7 +56,6 @@ public class CoreServicesModule extends MandatoryConfigModule
 			{
 				bind(TaskService.class).to(ClusteredTaskServiceImpl.class).in(Singleton.class);
 			}
-			bindProp("external.tool.contact.email", "EXTERNAL_TOOL_CONTACT_EMAIL_NOT_CONFIGURED");
 		}
 	}
 
@@ -71,7 +66,6 @@ public class CoreServicesModule extends MandatoryConfigModule
 		{
 			bindTracker(ApplicationListener.class, "applicationEventListener", null);
 			bindTracker(EventExecutor.class, "eventExecutor", "bean");
-			bindTracker(ClusterMessageHandler.class, "clusterMessageHandler", "bean");
 			bindTracker(Object.class, "coreTasks", null).setIdParam("id");
 		}
 	}

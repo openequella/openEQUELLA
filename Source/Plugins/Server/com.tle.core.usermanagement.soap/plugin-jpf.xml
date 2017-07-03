@@ -2,9 +2,11 @@
 <plugin id="com.tle.core.usermanagement.soap" version="1">
 	<requires>
 		<import plugin-id="com.tle.web.remoting.soap" />
+		<import plugin-id="com.tle.common.usermanagement" />
 		<import plugin-id="com.tle.core.usermanagement.standard" />
 		<import plugin-id="com.tle.core.guice" />
-		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.soap" />
+		<import plugin-id="com.tle.core.services" />
 	</requires>
 
 	<runtime>

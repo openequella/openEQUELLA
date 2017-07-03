@@ -30,9 +30,9 @@ import com.tle.annotation.Nullable;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.Schema.SchemaNode;
 import com.tle.common.security.PrivilegeTree.Node;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.guice.Bind;
-import com.tle.core.schema.SchemaService;
-import com.tle.core.services.entity.AbstractEntityService;
+import com.tle.core.schema.service.SchemaService;
 import com.tle.web.api.baseentity.serializer.AbstractEquellaBaseEntitySerializer;
 import com.tle.web.api.schema.beans.EquellaSchemaBean;
 import com.tle.web.api.schema.impl.SchemaEditorImpl.SchemaEditorFactory;
@@ -127,7 +127,7 @@ public class SchemaBeanSerializer extends AbstractEquellaBaseEntitySerializer<Sc
 			}
 			nodeBean.addAll(buildNodeBeanTree(nodeBean, node.getChildNodes()));
 			String nodeName = node.getName();
-			if( node.isAttribute() )
+			if( node.isAttribute() && nodeName.charAt(0) != '@' )
 			{
 				nodeName = "@" + nodeName;
 			}

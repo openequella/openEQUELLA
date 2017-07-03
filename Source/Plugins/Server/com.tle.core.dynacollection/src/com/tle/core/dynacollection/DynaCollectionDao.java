@@ -22,7 +22,7 @@ import java.util.List;
 import com.tle.beans.entity.DynaCollection;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
-import com.tle.core.dao.AbstractEntityDao;
+import com.tle.core.entity.dao.AbstractEntityDao;
 
 public interface DynaCollectionDao extends AbstractEntityDao<DynaCollection>
 {

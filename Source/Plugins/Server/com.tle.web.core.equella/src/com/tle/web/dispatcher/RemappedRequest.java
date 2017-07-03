@@ -30,10 +30,12 @@ public final class RemappedRequest extends HttpServletRequestWrapper
 	private String servletPath;
 	private String pathInfo;
 	private String requestURI;
+	private final HttpServletRequest wrapped;
 
 	private RemappedRequest(HttpServletRequest request, String context, String servletPath, String pathInfo)
 	{
 		super(request);
+		this.wrapped = request;
 		this.contextPath = context;
 		this.servletPath = servletPath;
 		this.pathInfo = pathInfo;
@@ -90,6 +92,11 @@ public final class RemappedRequest extends HttpServletRequestWrapper
 			setupURI();
 		}
 		super.setAttribute(name, o);
+	}
+
+	public HttpServletRequest getWrapped()
+	{
+		return wrapped;
 	}
 
 	public static HttpServletRequest wrap(HttpServletRequest request, String context, String servletPath,

@@ -40,7 +40,7 @@ public abstract class AbstractTreeNodeEditor extends JPanel
 
 	protected abstract LazyTreeNode getUpdatedNode();
 
-	protected abstract void save();
+	protected abstract void save() throws Exception;
 
 	protected abstract void validation() throws EditorException;
 
@@ -50,7 +50,7 @@ public abstract class AbstractTreeNodeEditor extends JPanel
 		GlassSwingWorker<?> worker = new GlassSwingWorker<Object>()
 		{
 			@Override
-			public Object construct() throws EditorException
+			public Object construct() throws EditorException, Exception
 			{
 				validation();
 				save();

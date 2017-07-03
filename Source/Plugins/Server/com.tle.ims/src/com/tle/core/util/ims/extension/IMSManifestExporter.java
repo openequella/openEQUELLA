@@ -16,7 +16,7 @@
 
 package com.tle.core.util.ims.extension;
 
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.core.util.ims.beans.IMSManifest;
 

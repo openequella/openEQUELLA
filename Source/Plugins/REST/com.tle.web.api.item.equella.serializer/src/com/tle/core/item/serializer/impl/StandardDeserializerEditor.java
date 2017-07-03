@@ -67,6 +67,7 @@ public class StandardDeserializerEditor implements ItemDeserializerEditor
 		{
 			editor.editDates(itemBean.getCreatedDate(), itemBean.getModifiedDate());
 			editor.editItemStatus(itemBean.getStatus());
+			editor.processExportDetails(itemBean);
 		}
 
 		String metadata = itemBean.getMetadata();

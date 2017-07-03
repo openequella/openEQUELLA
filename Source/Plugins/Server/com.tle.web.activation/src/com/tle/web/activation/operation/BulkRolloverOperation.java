@@ -37,16 +37,16 @@ import com.tle.core.activation.workflow.OperationFactory;
 import com.tle.core.activation.workflow.RolloverOperation;
 import com.tle.core.guice.Bind;
 import com.tle.core.guice.BindFactory;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.i18n.BundleNameValue;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.plugins.BeanLocator;
 import com.tle.core.plugins.FactoryMethodLocator;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.web.bulk.operation.BulkOperationExecutor;
 import com.tle.web.bulk.operation.BulkOperationExtension;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleCache;
-import com.tle.web.i18n.BundleNameValue;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.annotations.EventFactory;
@@ -129,7 +129,7 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object> impl
 		@Inject
 		private OperationFactory operationFactory;
 		@Inject
-		private WorkflowFactory workflowFactory;
+		private ItemOperationFactory workflowFactory;
 
 		@Inject
 		public RolloverActivationExecutor(@Assisted long courseId, @Assisted("from") Date from,
@@ -245,10 +245,16 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object> impl
 	}
 
 	@Override
-	public boolean areOptionsFinished(SectionInfo info, String operationId)
+	public boolean validateOptions(SectionInfo info, String operationId)
 	{
 		return (rolloverActivationDates.isChecked(info))
 			|| (fromDate.getDate(info) != null && toDate.getDate(info) != null);
+	}
+
+	@Override
+	public boolean areOptionsFinished(SectionInfo info, String operationId)
+	{
+		return validateOptions(info, operationId);
 	}
 
 	@Override

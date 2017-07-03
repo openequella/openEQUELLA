@@ -19,6 +19,7 @@
 		<import plugin-id="com.tle.web.viewitem.sharing" />
 		<import plugin-id="com.tle.web.viewitem" />
 		<import plugin-id="com.tle.web.mimetypes.service" />
+		<import plugin-id="com.tle.common.settings.standard" />
 	</requires>
 	
 	<runtime>

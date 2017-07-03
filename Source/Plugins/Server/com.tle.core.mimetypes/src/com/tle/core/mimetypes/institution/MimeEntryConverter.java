@@ -27,13 +27,13 @@ import javax.inject.Singleton;
 import com.tle.beans.Institution;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.Check;
-import com.tle.core.filesystem.SubTemporaryFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.AbstractMigratableConverter;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.mimetypes.dao.MimeEntryDao;
-import com.tle.core.services.InitialiserService;
+import com.tle.core.hibernate.equella.service.InitialiserService;
 
 @Bind
 @Singleton

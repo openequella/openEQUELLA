@@ -26,8 +26,8 @@ import org.apache.log4j.Logger;
 
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.search.MappedSearchIndexValues;
-import com.tle.core.services.item.FreeTextService;
 import com.tle.core.services.item.FreetextResult;
 import com.tle.core.services.item.FreetextSearchResults;
 import com.tle.core.services.user.UserSessionService;

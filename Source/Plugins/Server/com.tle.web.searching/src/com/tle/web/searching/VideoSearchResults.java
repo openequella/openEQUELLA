@@ -19,10 +19,10 @@ package com.tle.web.searching;
 import javax.inject.Inject;
 
 import com.dytech.edge.queries.FreeTextQuery;
-import com.tle.beans.system.SearchSettings;
 import com.tle.common.search.DefaultSearch;
+import com.tle.common.settings.standard.SearchSettings;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.itemlist.item.AbstractItemList;
 import com.tle.web.itemlist.item.StandardItemListEntry;
 import com.tle.web.resources.PluginResourceHelper;
@@ -34,9 +34,7 @@ import com.tle.web.sections.generic.AbstractPrototypeSection;
 
 @SuppressWarnings("nls")
 @Bind
-public class VideoSearchResults extends AbstractPrototypeSection<SearchResultsModel>
-	implements
-		StandardSearchResultType
+public class VideoSearchResults extends AbstractPrototypeSection<SearchResultsModel> implements StandardSearchResultType
 {
 	private static PluginResourceHelper helper = ResourcesService.getResourceHelper(VideoSearchResults.class);
 

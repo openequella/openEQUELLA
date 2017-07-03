@@ -33,10 +33,10 @@ import com.tle.beans.item.attachments.Attachments;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.beans.workflow.WorkflowStatus;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.workflow.operations.StatusOperation;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.core.item.standard.operations.workflow.StatusOperation;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewurl.ItemSectionInfo;
 
@@ -46,11 +46,10 @@ public class DefaultItemFileInfo implements ItemSectionInfo
 	private ViewableItem<Item> viewableItem;
 	private boolean updated;
 	private Attachments attachments;
-	@Inject
-	private WorkflowFactory workflowFactory;
-
 	private boolean purged;
 
+	@Inject
+	private ItemOperationFactory workflowFactory;
 	@Inject
 	private ItemService itemService;
 

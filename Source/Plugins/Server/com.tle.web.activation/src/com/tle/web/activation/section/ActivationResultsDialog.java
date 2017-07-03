@@ -31,7 +31,7 @@ import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.activation.service.ActivationService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemService;
+import com.tle.core.item.service.ItemService;
 import com.tle.web.activation.operation.BulkDeactivateOperation;
 import com.tle.web.activation.operation.BulkDeleteOperation;
 import com.tle.web.activation.operation.BulkRolloverOperation;

@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.dytech.common.xml.XMLDataMappings;
-import com.dytech.common.xml.mapping.DataMapping;
-import com.dytech.common.xml.mapping.ListMapping;
 import com.tle.common.Utils;
+import com.tle.core.xstream.XMLDataMappings;
+import com.tle.core.xstream.mapping.DataMapping;
+import com.tle.core.xstream.mapping.ListMapping;
 
 public class IMSManifest extends IMSChild
 {
@@ -178,10 +178,10 @@ public class IMSManifest extends IMSChild
 		{
 			mappings = new XMLDataMappings(super.getMappings());
 			mappings.addNodeMapping(new ListMapping("subManifests", "manifest", ArrayList.class, IMSManifest.class));
-			mappings.addNodeMapping(new ListMapping("resources", "resources/resource", ArrayList.class,
-				IMSResource.class));
-			mappings.addNodeMapping(new ListMapping("organisations", "organizations/organization", ArrayList.class,
-				IMSOrganisation.class));
+			mappings
+				.addNodeMapping(new ListMapping("resources", "resources/resource", ArrayList.class, IMSResource.class));
+			mappings.addNodeMapping(
+				new ListMapping("organisations", "organizations/organization", ArrayList.class, IMSOrganisation.class));
 			mappings.addNodeMapping(new DataMapping("metadata", "metadata", IMSMetadata.class));
 		}
 		return mappings;

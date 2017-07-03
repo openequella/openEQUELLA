@@ -25,6 +25,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.AccessType;
@@ -39,7 +40,7 @@ public class LtiConsumer extends BaseEntity
 	@Index(name = "consumerKey")
 	@Column(length = 255, nullable = false)
 	private String consumerKey;
-	@Column(length = 255, nullable = false)
+	@Lob
 	private String consumerSecret;
 
 	@Column(length = 50)

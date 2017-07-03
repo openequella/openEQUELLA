@@ -23,8 +23,8 @@ import javax.inject.Inject;
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.Check;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.fedsearch.FederatedSearchService;
-import com.tle.core.services.entity.ItemDefinitionService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
@@ -155,8 +155,8 @@ public class Cancel extends WizardCommand
 
 		if( singleCol )
 		{
-			List<FederatedSearch> fedSearches = federatedSearchService.getForCollectionUuid(contributableCollections
-				.get(0).getUuid());
+			List<FederatedSearch> fedSearches = federatedSearchService
+				.getForCollectionUuid(contributableCollections.get(0).getUuid());
 			boolean isFedSearch = false;
 			if( !Check.isEmpty(fedSearches) )
 			{

@@ -20,7 +20,7 @@ import java.util.List;
 
 import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.common.oauth.beans.OAuthToken;
-import com.tle.core.services.entity.AbstractEntityService;
+import com.tle.core.entity.service.AbstractEntityService;
 
 /**
  * @author aholland
@@ -51,6 +51,4 @@ public interface OAuthService extends AbstractEntityService<OAuthClientEditingBe
 	 * @return
 	 */
 	OAuthClient getByClientIdOnly(String clientId);
-
-	OAuthClient saveWithEditingBean(OAuthClientEditingBean clientEditingBean, String lockId, boolean keepLocked);
 }

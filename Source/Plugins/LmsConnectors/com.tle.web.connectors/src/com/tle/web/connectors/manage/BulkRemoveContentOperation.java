@@ -25,9 +25,9 @@ import javax.inject.Singleton;
 import com.tle.beans.item.ItemPack;
 import com.tle.core.connectors.service.ConnectorOperationFactory;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.plugins.BeanLocator;
 import com.tle.core.plugins.ClassBeanLocator;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.web.bulk.operation.BulkOperationExecutor;
 import com.tle.web.bulk.operation.BulkOperationExtension;
 import com.tle.web.sections.SectionInfo;
@@ -113,6 +113,12 @@ public class BulkRemoveContentOperation implements BulkOperationExtension
 	public Label getStatusTitleLabel(SectionInfo info, String operationId)
 	{
 		return new KeyLabel(KEY_STATUS, new KeyLabel(KEY_NAME + ".title")); //$NON-NLS-1$
+	}
+
+	@Override
+	public boolean validateOptions(SectionInfo info, String operationId)
+	{
+		return true;
 	}
 
 	@Override

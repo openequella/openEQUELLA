@@ -26,11 +26,7 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import net.sf.json.JSONObject;
-
 import com.dytech.edge.common.Constants;
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.activation.ActivateRequest;
@@ -41,6 +37,8 @@ import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.common.EntityPack;
 import com.tle.common.NameValue;
+import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.CurrentTimeZone;
 import com.tle.common.i18n.LangUtils;
@@ -52,7 +50,7 @@ import com.tle.core.activation.service.ActivationService;
 import com.tle.core.activation.service.CourseInfoService;
 import com.tle.core.copyright.Holding;
 import com.tle.core.copyright.exception.CopyrightViolationException;
-import com.tle.core.dao.ItemDao;
+import com.tle.core.item.dao.ItemDao;
 import com.tle.core.security.TLEAclManager;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.activation.ActivationResultsExtension;
@@ -95,6 +93,8 @@ import com.tle.web.viewitem.section.ParentViewItemSectionUtils;
 import com.tle.web.viewitem.summary.content.AbstractContentSection;
 import com.tle.web.viewitem.summary.section.ItemSummaryContentSection;
 import com.tle.web.viewurl.ItemSectionInfo;
+
+import net.sf.json.JSONObject;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
@@ -406,17 +406,15 @@ public abstract class AbstractActivateSection extends AbstractContentSection<Abs
 				{
 					for( ActivateRequest activateRequest : entry.getValue() )
 					{
-						Attachment attachment = copyrightWebService.getAttachmentMap(info, item).get(
-							activateRequest.getAttachment());
+						Attachment attachment = copyrightWebService.getAttachmentMap(info, item)
+							.get(activateRequest.getAttachment());
 
 						if( cls != null && cls.isApplicable(info) )
 						{
 							for( String folder : cls.getSelectedFolders(info) )
 							{
-								addResource(
-									info,
-									new SelectedResource(item.getItemId(), attachment, selectionService
-										.findTargetFolder(info, folder), null), activateRequest);
+								addResource(info, new SelectedResource(item.getItemId(), attachment,
+									selectionService.findTargetFolder(info, folder), null), activateRequest);
 							}
 						}
 						else

@@ -39,8 +39,8 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.ValidationError;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.dytech.gui.Changeable;
 import com.dytech.gui.ComponentHelper;
 import com.dytech.gui.JStatusBar;

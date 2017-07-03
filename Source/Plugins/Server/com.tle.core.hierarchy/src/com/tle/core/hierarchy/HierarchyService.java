@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.thoughtworks.xstream.XStream;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.hierarchy.HierarchyTopic;
 import com.tle.beans.hierarchy.HierarchyTopicDynamicKeyResources;
@@ -81,4 +82,9 @@ public interface HierarchyService extends RemoteHierarchyService
 
 	Collection<String> getTopicIdsWithKeyResource(Item item);
 
+	/**
+	 * Used only for ExportTask.  Do not use.
+	 * @return
+	 */
+	XStream getXStream();
 }

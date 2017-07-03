@@ -1,0 +1,26 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.filesystem.staging" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.filesystem.staging" exported="true" />
+		<import plugin-id="com.tle.core.filesystem" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.hibernate" />
+		<import plugin-id="com.tle.core.hibernate.equella" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.common.filesystem" />
+	</requires>
+	
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="objects">
+		<parameter id="class" value="com.tle.beans.Staging" />
+	</extension>
+</plugin>

@@ -5,6 +5,7 @@
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.common.remoterepo" />
 		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.scripting" />
 		<import plugin-id="com.tle.core.htmleditor" />
 		<import plugin-id="com.tle.core.jackson" />
 		<import plugin-id="com.tle.core.settings" />
@@ -15,6 +16,9 @@
 		<import plugin-id="com.tle.web.selection" />
 		<import plugin-id="com.tle.web.spellcheck" />
 		<import plugin-id="net.sf.json-lib:json-lib" />
+		<import plugin-id="com.tle.common.scripting" />
+		<import plugin-id="com.tle.common.collection" />
+		<import plugin-id="com.tle.common.powersearch" />
 	</requires>
 
 	<runtime>

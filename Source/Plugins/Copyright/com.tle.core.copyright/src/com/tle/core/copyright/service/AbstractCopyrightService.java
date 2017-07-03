@@ -50,6 +50,7 @@ import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.Check;
 import com.tle.common.i18n.LangUtils;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.activation.ActivateRequestDao;
 import com.tle.core.activation.service.ActivationImplementation;
 import com.tle.core.copyright.Holding;
@@ -59,12 +60,11 @@ import com.tle.core.copyright.dao.CopyrightDao;
 import com.tle.core.copyright.exception.CopyrightViolationException;
 import com.tle.core.filesystem.EntityFile;
 import com.tle.core.filesystem.SubEntityFile;
-import com.tle.core.services.XsltService;
-import com.tle.core.services.item.ItemService;
+import com.tle.core.item.helper.ItemHelper;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.services.user.UserSessionService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.util.ItemHelper;
-import com.tle.core.xstream.XmlService;
+import com.tle.core.xml.service.XmlService;
+import com.tle.core.xslt.service.XsltService;
 
 @SuppressWarnings("nls")
 public abstract class AbstractCopyrightService<H extends Holding, P extends Portion, S extends Section>
@@ -184,7 +184,8 @@ public abstract class AbstractCopyrightService<H extends Holding, P extends Port
 		{
 			// This is fine as an non-i18n. It's an error for the programmers
 			// really.
-			throw new IllegalStateException("This portion has no holding " + item.getItemId().toString());
+			//throw new IllegalStateException("This portion has no holding " + item.getItemId().toString());
+			return status;
 		}
 
 		final ItemDefinition holdingCollection = holding.getItem().getItemDefinition();
@@ -321,8 +322,8 @@ public abstract class AbstractCopyrightService<H extends Holding, P extends Port
 				}
 				if( holding == null )
 				{
-					throw new IllegalStateException("There is no Copyright holding for this item: "
-						+ item.getItemId().toString());
+					throw new IllegalStateException(
+						"There is no Copyright holding for this item: " + item.getItemId().toString());
 				}
 				PropBagEx xml = getUnifiedXml(item);
 				try

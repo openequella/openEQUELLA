@@ -16,9 +16,9 @@
 
 package com.tle.beans;
 
-import java.util.Objects;
-
 import com.tle.common.Pair;
+
+import java.util.Objects;
 
 /**
  * @author Nicholas Read

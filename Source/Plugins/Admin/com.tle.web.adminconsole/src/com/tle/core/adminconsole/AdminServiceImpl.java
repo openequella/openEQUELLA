@@ -41,18 +41,18 @@ import com.google.common.io.ByteStreams;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.Item;
 import com.tle.common.adminconsole.RemoteAdminService;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.searching.Search;
 import com.tle.common.searching.SearchResults;
 import com.tle.common.searching.SimpleSearchResults;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.core.entity.service.BaseEntityService;
+import com.tle.core.filesystem.staging.service.StagingService;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.StagingService;
-import com.tle.core.services.entity.BaseEntityService;
-import com.tle.core.services.item.FreeTextService;
 
 /**
  * @author Nicholas Read

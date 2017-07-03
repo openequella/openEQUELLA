@@ -15,6 +15,7 @@
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="net.sf.json-lib:json-lib" />
+		<import plugin-id="com.tle.core.item" />
 	</requires>
 
 	<runtime>

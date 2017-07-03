@@ -58,16 +58,16 @@ import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
 import com.tle.common.interfaces.BaseEntityReference;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.guice.Bind;
 import com.tle.core.hierarchy.HierarchyService;
 import com.tle.core.item.security.ItemSecurityConstants;
 import com.tle.core.item.serializer.ItemSerializerItemBean;
 import com.tle.core.item.serializer.ItemSerializerService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.powersearch.PowerSearchService;
-import com.tle.core.schema.SchemaService;
+import com.tle.core.schema.service.SchemaService;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.core.services.item.ItemService;
 import com.tle.web.api.hierarchy.beans.HierarchyEditBean;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.item.ItemLinkService;
@@ -165,8 +165,8 @@ public class EditHierarchyResource
 		{
 			List<HierarchyTopic> childTopics = hierarchyService.getChildTopics(hierarchyTopic);
 
-			Collection<HierarchyTopic> allowedTopics = aclManager.filterNonGrantedObjects(
-				Collections.singleton(EDIT_PRIV), childTopics);
+			Collection<HierarchyTopic> allowedTopics = aclManager
+				.filterNonGrantedObjects(Collections.singleton(EDIT_PRIV), childTopics);
 
 			HierarchyEditBean bean = beanFromHierarchyTopic(hierarchyTopic, true, allowedTopics);
 			return Response.ok(bean).build();
@@ -224,7 +224,7 @@ public class EditHierarchyResource
 	@Path("/{uuid}")
 	@ApiOperation(value = "edit a HierarchyTopic")
 	public Response editHierarchy(
-			// @formatter:off
+		// @formatter:off
 			@ApiParam(value = "target hierarchy uuid", required = true)
 				@PathParam("uuid")
 				String uuid,
@@ -252,7 +252,7 @@ public class EditHierarchyResource
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Move a hierarchy relative to parent")
 	public Response moveTopic(
-			// @formatter:off
+		// @formatter:off
 			@ApiParam(value = "id of hierarchy being moved")
 				@PathParam("uuid")
 				String childUuid,
@@ -456,11 +456,11 @@ public class EditHierarchyResource
 		// Long description
 		hierarchyTopic.setLongDescription(LangUtils.createTextTempLangugageBundle(bean.getLongDescription(), locale));
 		// Sub topic headings
-		hierarchyTopic.setSubtopicsSectionName(LangUtils.createTextTempLangugageBundle(bean.getSubTopicsSectionName(),
-			locale));
+		hierarchyTopic
+			.setSubtopicsSectionName(LangUtils.createTextTempLangugageBundle(bean.getSubTopicsSectionName(), locale));
 		// Results heading
-		hierarchyTopic.setResultsSectionName(LangUtils.createTextTempLangugageBundle(bean.getResultsSectionName(),
-			locale));
+		hierarchyTopic
+			.setResultsSectionName(LangUtils.createTextTempLangugageBundle(bean.getResultsSectionName(), locale));
 		// Hide empty subtopics (true/false)
 		hierarchyTopic.setHideSubtopicsWithNoResults(bean.isHideSubtopicsWithNoResults());
 		// Advanced search
@@ -523,8 +523,9 @@ public class EditHierarchyResource
 	private List<ItemBean> itemBeansFromItems(List<Item> toFilt, boolean applyPriv)
 	{
 		List<ItemBean> itemBeans = null;
-		Collection<Item> postFilt = applyPriv ? aclManager.filterNonGrantedObjects(
-			Collections.singleton(ItemSecurityConstants.DISCOVER_ITEM), toFilt) : toFilt;
+		Collection<Item> postFilt = applyPriv
+			? aclManager.filterNonGrantedObjects(Collections.singleton(ItemSecurityConstants.DISCOVER_ITEM), toFilt)
+			: toFilt;
 
 		if( !Check.isEmpty(postFilt) )
 		{
@@ -587,8 +588,8 @@ public class EditHierarchyResource
 			itemDefScripts = new ArrayList<ItemDefinitionScript>();
 			for( ItemDefinitionScriptBean itemDefinitionScriptBean : beanItemDefs )
 			{
-				ItemDefinition itemDefinition = itemDefinitionService.getByUuid(itemDefinitionScriptBean
-					.getCollection().getUuid());
+				ItemDefinition itemDefinition = itemDefinitionService
+					.getByUuid(itemDefinitionScriptBean.getCollection().getUuid());
 				ItemDefinitionScript script = new ItemDefinitionScript(itemDefinition,
 					itemDefinitionScriptBean.getScript());
 				itemDefScripts.add(script);
@@ -647,7 +648,8 @@ public class EditHierarchyResource
 		}
 		if( !Check.isEmpty(allInheritableItemDefnScripts) )
 		{
-			List<ItemDefinitionScriptBean> eligibleItemDefinitionScripts = beansFromObjectsItemDefinitionScript(allInheritableItemDefnScripts);
+			List<ItemDefinitionScriptBean> eligibleItemDefinitionScripts = beansFromObjectsItemDefinitionScript(
+				allInheritableItemDefnScripts);
 			bean.setEligibleCollectionScripts(eligibleItemDefinitionScripts);
 		}
 	}

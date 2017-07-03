@@ -28,17 +28,12 @@ import java.util.Map.Entry;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.hibernate.Hibernate;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dytech.edge.common.ValidationException;
-import com.dytech.edge.exceptions.NotFoundException;
 import com.google.common.cache.CacheLoader;
 import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
@@ -47,6 +42,11 @@ import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.Check;
+import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.beans.exception.ValidationError;
+import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.TextExtracterExtension;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionCache;
@@ -57,9 +57,11 @@ import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.plugins.PluginTracker.ExtensionParamComparator;
 import com.tle.core.security.impl.RequiresPrivilege;
-import com.tle.core.services.EventService;
-import com.tle.core.user.CurrentInstitution;
+import com.tle.core.events.services.EventService;
 import com.tle.exceptions.AccessDeniedException;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 @Bind(MimeTypeService.class)
 @Singleton
@@ -291,12 +293,14 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
 		MimeEntry existing = getEntryForMimeType(mimeEntry.getType());
 		if( existing != null && existing.getId() != mimeEntry.getId() )
 		{
-			throw new ValidationException("mimetype.exists"); //$NON-NLS-1$	
+			throw new InvalidDataException(
+				new ValidationError("type", CurrentLocale.get("com.tle.core.mimetypes.error.mimetype.exists")));
 		}
 
 		if( Check.isEmpty(mimeEntry.getType()) )
 		{
-			throw new ValidationException("mimetype.empty"); //$NON-NLS-1$
+			throw new InvalidDataException(
+				new ValidationError("type", CurrentLocale.get("com.tle.core.mimetypes.error.mimetype.empty")));
 		}
 
 		Collection<String> extensions = mimeEntry.getExtensions();
@@ -306,7 +310,8 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
 			int sz = entries.size();
 			if( sz > 1 || (sz == 1 && entries.get(0).getId() != mimeEntry.getId()) )
 			{
-				throw new ValidationException("extensions.alreadyinuse"); //$NON-NLS-1$
+				throw new InvalidDataException(new ValidationError("extensions",
+					CurrentLocale.get("com.tle.core.mimetypes.error.extensions.alreadyinuse")));
 			}
 		}
 	}
@@ -478,8 +483,8 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
 	@Inject
 	public void setPluginService(PluginService pluginService)
 	{
-		textExtracterTracker = new PluginTracker<TextExtracterExtension>(pluginService,
-			"com.tle.core.mimetypes", "textExtracter", "id", new ExtensionParamComparator()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		textExtracterTracker = new PluginTracker<TextExtracterExtension>(pluginService, "com.tle.core.mimetypes", //$NON-NLS-1$
+			"textExtracter", "id", new ExtensionParamComparator()); //$NON-NLS-1$ //$NON-NLS-2$
 		textExtracterTracker.setBeanKey("class"); //$NON-NLS-1$
 
 		attachmentResources = new PluginTracker<RegisterMimeTypeExtension<Attachment>>(pluginService,

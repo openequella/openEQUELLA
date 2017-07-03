@@ -30,8 +30,8 @@ import com.tle.beans.item.Bookmark;
 import com.tle.common.util.Dates;
 import com.tle.common.util.UtcDate;
 import com.tle.core.favourites.dao.BookmarkDao;
+import com.tle.core.freetext.indexer.AbstractIndexingExtension;
 import com.tle.core.guice.Bind;
-import com.tle.freetext.AbstractIndexingExtension;
 import com.tle.freetext.IndexedItem;
 
 @Bind

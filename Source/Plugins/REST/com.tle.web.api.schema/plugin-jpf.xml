@@ -3,8 +3,9 @@
 	<requires>
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.schema" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.core.item.standard" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.cal" />
 		<import plugin-id="com.tle.cla" />
 		<import plugin-id="com.tle.core.usermanagement.standard" />
@@ -16,6 +17,7 @@
 		<import plugin-id="com.tle.web.api.baseentity.serializer" />
 		<import plugin-id="com.tle.web.api.baseentity" />
 		<import plugin-id="com.tle.web.api.schema.interfaces" />
+		<import plugin-id="com.tle.core.freetext" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

@@ -18,6 +18,7 @@ package com.tle.web.sections.jquery.libraries;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
+import com.tle.web.DebugSettings;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.render.PreRenderable;
 
@@ -29,8 +30,8 @@ public class JQueryMouse implements JavascriptModule
 	/**
 	 * Includes ui.widget
 	 */
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.mouse.js",
-		JQueryUIWidget.PRERENDER);
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
+		DebugSettings.isDebuggingMode() ? "jquery.ui.mouse.js" : "jquery.ui.mouse.min.js", JQueryUIWidget.PRERENDER);
 
 	@Override
 	public String getDisplayName()

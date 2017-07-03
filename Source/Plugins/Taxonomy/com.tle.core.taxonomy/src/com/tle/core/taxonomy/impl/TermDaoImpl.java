@@ -27,12 +27,13 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.transform.BasicTransformerAdapter;
 import org.hibernate.transform.ResultTransformer;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.ValidationError;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.Check;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.common.taxonomy.TaxonomyConstants;
@@ -487,10 +488,14 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao
 		checkTermValue(newValue, taxonomy, term.getParent());
 
 		term.setValue(newValue);
-		save(term);
-
-		invalidateFullValues(term);
-		updateFullValues(taxonomy);
+		try
+		{
+			save(term);	
+			invalidateFullValues(term);
+			updateFullValues(taxonomy);
+		}catch(DataIntegrityViolationException e2){
+			throw new DataIntegrityViolationException("SIBLING_CHECK");			
+		}
 	}
 
 	@Override

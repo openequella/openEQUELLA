@@ -19,7 +19,6 @@ package com.tle.core.migration;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
-import com.tle.beans.Institution;
 import com.tle.beans.ReferencedURL;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.LanguageBundle;
@@ -40,7 +39,6 @@ import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.ItemNavigationNode;
 import com.tle.beans.item.attachments.ItemNavigationTab;
 import com.tle.beans.item.attachments.NavigationSettings;
-import com.tle.beans.item.curricula.Curricula;
 import com.tle.beans.security.SharePass;
 import com.tle.common.workflow.Workflow;
 import com.tle.common.workflow.WorkflowMessage;
@@ -56,7 +54,6 @@ public class ClassDependencies
 	{
 		final Set<Class<?>> deps = Sets.newHashSet();
 		deps.add(Item.class);
-		deps.add(Institution.class);
 		deps.add(Attachment.class);
 		deps.add(LanguageBundle.class);
 		deps.add(LanguageString.class);
@@ -71,7 +68,6 @@ public class ClassDependencies
 		deps.add(DrmAcceptance.class);
 		deps.add(ItemNavigationNode.class);
 		deps.add(ItemNavigationTab.class);
-		deps.add(Curricula.class);
 		deps.add(NavigationSettings.class);
 		deps.add(ItemXml.class);
 		deps.addAll(collection());
@@ -113,7 +109,6 @@ public class ClassDependencies
 		final Set<Class<?>> deps = Sets.newHashSet();
 		deps.add(BaseEntity.class);
 		deps.add(BaseEntity.Attribute.class);
-		deps.add(Institution.class);
 		deps.add(LanguageBundle.class);
 		deps.add(LanguageString.class);
 		return deps;

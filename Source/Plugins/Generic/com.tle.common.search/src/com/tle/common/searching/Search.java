@@ -25,8 +25,9 @@ import com.tle.beans.item.ItemSelect;
 
 public interface Search
 {
-	String INDEX_TASK = "task"; //$NON-NLS-1$
-	String INDEX_ITEM = "item"; //$NON-NLS-1$
+	String INDEX_TASK = "task";
+	String INDEX_ITEM = "item";
+	String INDEX_SCRIPT_TASK = "scripttask";
 
 	public enum SortType
 	{

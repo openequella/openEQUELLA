@@ -17,10 +17,10 @@
 package com.tle.web.remoterepo.merlot.filter;
 
 import com.tle.common.NameValue;
+import com.tle.core.i18n.BundleNameValue;
 import com.tle.core.remoterepo.merlot.service.MerlotSearchParams.KeywordUse;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleNameValue;
 import com.tle.web.remoterepo.merlot.MerlotRemoteRepoSearchEvent;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourceHelper;

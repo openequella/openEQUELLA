@@ -23,9 +23,9 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.dytech.gui.filter.FilterModel;
 import com.tle.common.Format;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.remoting.RemoteUserService;
 
 /**

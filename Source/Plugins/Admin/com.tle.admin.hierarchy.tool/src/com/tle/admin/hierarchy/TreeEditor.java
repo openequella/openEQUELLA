@@ -26,7 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import com.dytech.devlib.PropBagEx;
-import com.dytech.edge.common.valuebean.ValidationError;
+import com.tle.common.beans.exception.ValidationError;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;

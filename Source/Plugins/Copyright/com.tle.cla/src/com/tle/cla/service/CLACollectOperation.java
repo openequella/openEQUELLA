@@ -21,7 +21,7 @@ import javax.inject.Inject;
 import com.dytech.devlib.PropBagEx;
 import com.tle.beans.item.Item;
 import com.tle.core.guice.Bind;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
+import com.tle.core.item.operations.AbstractWorkflowOperation;
 
 @Bind
 public class CLACollectOperation extends AbstractWorkflowOperation

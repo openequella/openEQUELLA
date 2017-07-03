@@ -20,19 +20,23 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.log4j.Logger;
+
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.core.filesystem.ItemFile;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
+import com.tle.core.item.operations.AbstractWorkflowOperation;
 import com.tle.core.workflow.thumbnail.service.ThumbnailService;
 import com.tle.core.workflow.video.VideoService;
 
 @SuppressWarnings("nls")
 public class GenerateThumbnailOperation extends AbstractWorkflowOperation
 {
+	private static final Logger LOGGER = Logger.getLogger(GenerateThumbnailOperation.class);
+
 	@Inject
 	private ThumbnailService thumbnailService;
 	@Inject
@@ -57,9 +61,9 @@ public class GenerateThumbnailOperation extends AbstractWorkflowOperation
 			if( !"suppress".equals(attachment.getThumbnail()) )
 			{
 				String filename = attachment.getUrl();
-				final ItemFile itemFile = new ItemFile(item);
-				attachment.setThumbnail(thumbnailService.submitThumbnailRequest(item.getItemId(), itemFile, filename,
-					forceUpdate, false));
+				final ItemFile itemFile = itemFileService.getItemFile(item);
+				attachment.setThumbnail(
+					thumbnailService.submitThumbnailRequest(item.getItemId(), itemFile, filename, forceUpdate, false));
 
 				if( videoService.canConvertVideo(filename) )
 				{

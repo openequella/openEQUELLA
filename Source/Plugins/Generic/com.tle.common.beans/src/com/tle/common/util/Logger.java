@@ -25,6 +25,10 @@ public interface Logger
 {
 	boolean isDebugEnabled();
 
+	boolean isTraceEnabled();
+
+	void trace(String msg);
+
 	void debug(String msg);
 
 	void debug(String msg, Throwable t);

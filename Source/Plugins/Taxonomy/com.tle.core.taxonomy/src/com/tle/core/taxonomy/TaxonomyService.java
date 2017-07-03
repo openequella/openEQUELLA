@@ -19,14 +19,14 @@ package com.tle.core.taxonomy;
 import java.util.List;
 import java.util.Map;
 
-import com.dytech.edge.exceptions.IllegalOperationException;
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.Pair;
+import com.tle.common.beans.exception.IllegalOperationException;
 import com.tle.common.taxonomy.RemoteTaxonomyService;
 import com.tle.common.taxonomy.SelectionRestriction;
 import com.tle.common.taxonomy.Taxonomy;
-import com.tle.core.services.entity.AbstractEntityService;
-import com.tle.core.services.entity.EntityEditingBean;
+import com.tle.core.entity.EntityEditingBean;
+import com.tle.core.entity.service.AbstractEntityService;
 
 public interface TaxonomyService extends AbstractEntityService<EntityEditingBean, Taxonomy>, RemoteTaxonomyService
 {
@@ -38,6 +38,7 @@ public interface TaxonomyService extends AbstractEntityService<EntityEditingBean
 	 * @return
 	 */
 	TermResult getTerm(String taxonomyUuid, String fullTermPath);
+
 	/**
 	 * @param parentFullTermPath use null or empty string to retrieve root
 	 *            terms.

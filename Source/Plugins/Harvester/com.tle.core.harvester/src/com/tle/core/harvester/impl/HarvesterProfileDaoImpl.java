@@ -25,7 +25,7 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 import com.tle.common.harvester.HarvesterProfile;
-import com.tle.core.dao.impl.AbstractEntityDaoImpl;
+import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.harvester.HarvesterProfileDao;
 

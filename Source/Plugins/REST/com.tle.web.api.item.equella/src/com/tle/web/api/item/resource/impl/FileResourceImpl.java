@@ -44,20 +44,22 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
+import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
 import com.tle.common.PathUtils;
 import com.tle.common.URLUtils;
-import com.tle.common.util.FileEntry;
+import com.tle.common.filesystem.FileEntry;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.filesystem.ItemFile;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.security.ItemSecurityConstants;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.StagingService;
-import com.tle.core.services.item.ItemService;
 import com.tle.exceptions.PrivilegeRequiredException;
 import com.tle.web.api.item.ItemLinkService;
 import com.tle.web.api.item.interfaces.FileResource;
@@ -74,9 +76,6 @@ import com.tle.web.api.item.interfaces.beans.RootFolderBean;
 @Singleton
 public class FileResourceImpl implements FileResource
 {
-	// private static final String APIDOC_UNZIPTO =
-	// "If a zip file is uploaded, unzip it to this location";
-
 	private static final List<String> PRIVS_COPY_ITEM_FILES = ImmutableList.of(ItemSecurityConstants.EDIT_ITEM,
 		ItemSecurityConstants.NEWVERSION_ITEM, ItemSecurityConstants.CLONE_ITEM, ItemSecurityConstants.REDRAFT_ITEM);
 
@@ -84,6 +83,8 @@ public class FileResourceImpl implements FileResource
 	private MimeTypeService mimeService;
 	@Inject
 	private ItemService itemService;
+	@Inject
+	private ItemFileService itemFileService;
 	@Inject
 	private TLEAclManager aclService;
 	@Inject
@@ -247,17 +248,18 @@ public class FileResourceImpl implements FileResource
 
 		if( Check.isEmpty(itemUuid) || itemVersion == 0 )
 		{
-			throw new WebApplicationException(new IllegalArgumentException(
-				"uuid and version must be supplied to the copy endpoint"), Status.BAD_REQUEST);
+			throw new WebApplicationException(
+				new IllegalArgumentException("uuid and version must be supplied to the copy endpoint"),
+				Status.BAD_REQUEST);
 		}
 
-		if( aclService.filterNonGrantedPrivileges(itemService.get(new ItemId(itemUuid, itemVersion)),
-			PRIVS_COPY_ITEM_FILES).isEmpty() )
+		final Item item = itemService.get(new ItemId(itemUuid, itemVersion));
+		if( aclService.filterNonGrantedPrivileges(item, PRIVS_COPY_ITEM_FILES).isEmpty() )
 		{
 			throw new PrivilegeRequiredException(PRIVS_COPY_ITEM_FILES);
 		}
 
-		final ItemFile itemFile = new ItemFile(itemUuid, itemVersion);
+		final ItemFile itemFile = itemFileService.getItemFile(item);
 		if( !fileSystemService.fileExists(itemFile) )
 		{
 			throw new WebApplicationException(Status.NOT_FOUND);
@@ -334,8 +336,8 @@ public class FileResourceImpl implements FileResource
 	public Response createOrRenameFolderPut(String stagingUuid, String parentFolder, String foldername,
 		GenericFileBean fileOrFolder) throws IOException
 	{
-		final String newFoldername = (fileOrFolder != null && !Check.isEmpty(fileOrFolder.getFilename()) ? fileOrFolder
-			.getFilename() : foldername);
+		final String newFoldername = (fileOrFolder != null && !Check.isEmpty(fileOrFolder.getFilename())
+			? fileOrFolder.getFilename() : foldername);
 
 		return createOrRenameFolder(stagingUuid, parentFolder, foldername, newFoldername);
 	}
@@ -478,8 +480,9 @@ public class FileResourceImpl implements FileResource
 		String contentType, InputStream binaryData)
 	{
 		final StagingFile stagingFile = getStagingFile(stagingUuid);
+
 		boolean creating = !fileSystemService.fileExists(stagingFile, filepath);
-		try (InputStream bd = binaryData)
+		try( InputStream bd = binaryData )
 		{
 			final FileInfo fileInfo = fileSystemService.write(stagingFile, filepath, bd, append);
 			final FileBean fileBean = new FileBean();
@@ -496,8 +499,8 @@ public class FileResourceImpl implements FileResource
 
 			// Returns both the file dir entity and the location of the content
 			// so that you can know both locations
-			ResponseBuilder resp = Response.status(creating ? Status.CREATED : Status.OK).entity(
-				itemLinkService.addLinks(stagingFile, fileBean, filepath));
+			ResponseBuilder resp = Response.status(creating ? Status.CREATED : Status.OK)
+				.entity(itemLinkService.addLinks(stagingFile, fileBean, filepath));
 			if( creating )
 			{
 				resp.location(itemLinkService.getFileContentURI(stagingFile, URLUtils.urlEncode(filepath, false)));

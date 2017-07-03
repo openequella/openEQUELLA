@@ -6,7 +6,6 @@
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.core.activation" />
 		<import plugin-id="com.tle.core.freetext" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.web.activation" exported="true" />
 		<import plugin-id="com.tle.web.integration" />
 		<import plugin-id="com.tle.web.viewitem" />
@@ -20,6 +19,9 @@
 		<import plugin-id="net.sf.json-lib:json-lib" />
 		<import plugin-id="com.tle.web.itemlist" />
 		<import plugin-id="org.jsoup:jsoup" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.core.filesystem" />
+		<import plugin-id="com.tle.core.security" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

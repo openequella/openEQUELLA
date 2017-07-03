@@ -47,17 +47,17 @@ import com.tle.common.URLUtils;
 import com.tle.common.hierarchy.VirtualTopicUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.guice.Bind;
 import com.tle.core.hierarchy.HierarchyService;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.powersearch.PowerSearchService;
-import com.tle.core.schema.SchemaService;
+import com.tle.core.schema.service.SchemaService;
 import com.tle.core.search.VirtualisableAndValue;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.user.CurrentInstitution;
 import com.tle.web.hierarchy.TopicUtils;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.BundleLabel;
 
@@ -156,11 +156,11 @@ public class HierarchySoapService implements HierarchySoapInterface
 
 		List<HierarchyTopic> childTopics = hierarchyService.getChildTopics(ht);
 
-		Collection<HierarchyTopic> allowedTopics = aclManager.filterNonGrantedObjects(
-			Collections.singleton("VIEW_HIERARCHY_TOPIC"), childTopics);
+		Collection<HierarchyTopic> allowedTopics = aclManager
+			.filterNonGrantedObjects(Collections.singleton("VIEW_HIERARCHY_TOPIC"), childTopics);
 
-		final List<VirtualisableAndValue<HierarchyTopic>> topicValues = hierarchyService.expandVirtualisedTopics(
-			(List<HierarchyTopic>) allowedTopics, null, null);
+		final List<VirtualisableAndValue<HierarchyTopic>> topicValues = hierarchyService
+			.expandVirtualisedTopics((List<HierarchyTopic>) allowedTopics, null, null);
 
 		PropBagEx xml = new PropBagEx();
 		xml.setNodeName("topics");
@@ -603,8 +603,8 @@ public class HierarchySoapService implements HierarchySoapInterface
 
 		for( PropBagEx keyresourceXml : keyResourceIter )
 		{
-			itemIds.add(new ItemId(keyresourceXml.getNode(ATTR_UUID), Integer.parseInt(keyresourceXml
-				.getNode(ATTR_VERSION))));
+			itemIds.add(
+				new ItemId(keyresourceXml.getNode(ATTR_UUID), Integer.parseInt(keyresourceXml.getNode(ATTR_VERSION))));
 		}
 		// Add key items to dynamic topic
 		if( isDynamicTopic )

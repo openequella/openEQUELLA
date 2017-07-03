@@ -8,6 +8,7 @@
 		<import plugin-id="commons-logging:commons-logging" />
 		<import plugin-id="com.tle.common.beans" />
 		<import plugin-id="com.tle.core.filesystem" />
+		<import plugin-id="com.tle.common.filesystem" />
 	</requires>
 
 	<runtime>

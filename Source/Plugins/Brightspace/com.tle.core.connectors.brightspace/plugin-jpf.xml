@@ -5,7 +5,7 @@
 		<import plugin-id="com.tle.core.connectors" exported="true" />
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.core.settings" />
-		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.web.viewurl" />
 		<import plugin-id="com.tle.common.search" />
 		<import plugin-id="com.tle.web.selection" />
@@ -14,6 +14,7 @@
 		<import plugin-id="com.tle.common.item" />
 		<import plugin-id="com.tle.core.usermanagement" />
 		<import plugin-id="com.tle.core.config" />
+		<import plugin-id="com.tle.core.item" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="classes">

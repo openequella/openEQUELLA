@@ -26,8 +26,8 @@ import org.hibernate.Query;
 import com.tle.beans.entity.DynaCollection;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
-import com.tle.core.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.dynacollection.DynaCollectionDao;
+import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.guice.Bind;
 
 @Bind(DynaCollectionDao.class)

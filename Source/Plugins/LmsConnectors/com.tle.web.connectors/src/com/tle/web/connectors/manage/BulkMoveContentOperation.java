@@ -36,15 +36,15 @@ import com.tle.common.connectors.ConnectorCourse;
 import com.tle.common.connectors.ConnectorFolder;
 import com.tle.common.connectors.ConnectorTerminology;
 import com.tle.common.connectors.entity.Connector;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.ConnectorOperationFactory;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.guice.Bind;
 import com.tle.core.guice.BindFactory;
+import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.plugins.BeanLocator;
 import com.tle.core.plugins.FactoryMethodLocator;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.web.bulk.operation.BulkOperationExecutor;
 import com.tle.web.bulk.operation.BulkOperationExtension;
 import com.tle.web.connectors.export.BaseLMSExportModel;
@@ -177,8 +177,8 @@ public class BulkMoveContentOperation
 		folderTree.setLazyLoad(true);
 		folderTree.setAllowMultipleOpenBranches(true);
 
-		showArchived.addReadyStatements(CallAndReferenceFunction.get(
-			Js.function(Js.call_s(FUNCTION_DO_FILTER, Jq.$(folderTree), Jq.$(filterBox), true)), showArchived));
+		showArchived.addReadyStatements(CallAndReferenceFunction
+			.get(Js.function(Js.call_s(FUNCTION_DO_FILTER, Jq.$(folderTree), Jq.$(filterBox), true)), showArchived));
 
 		showArchived.addClickStatements(new OverrideHandler(events.getSubmitValuesFunction(("loadTree")), false));
 	}
@@ -186,9 +186,9 @@ public class BulkMoveContentOperation
 	@Override
 	public void treeFinished(String id, SectionTree tree)
 	{
-		folderTree.addReadyStatements(Js.call_s(FUNCTION_CLICKABLE_LINES, Jq.$(folderTree), ajax
-			.getAjaxUpdateDomFunction(tree, null, null, ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), dialog
-				.getFooterId().getElementId(null))));
+		folderTree.addReadyStatements(
+			Js.call_s(FUNCTION_CLICKABLE_LINES, Jq.$(folderTree), ajax.getAjaxUpdateDomFunction(tree, null, null,
+				ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), dialog.getFooterId().getElementId(null))));
 		super.treeFinished(id, tree);
 	}
 
@@ -292,9 +292,15 @@ public class BulkMoveContentOperation
 	}
 
 	@Override
-	public boolean areOptionsFinished(SectionInfo info, String operationId)
+	public boolean validateOptions(SectionInfo info, String operationId)
 	{
 		return !folderSelections.getCheckedSet(info).isEmpty();
+	}
+
+	@Override
+	public boolean areOptionsFinished(SectionInfo info, String operationId)
+	{
+		return validateOptions(info, operationId);
 	}
 
 	@Override
@@ -425,8 +431,8 @@ public class BulkMoveContentOperation
 		@Override
 		public String getId()
 		{
-			return (connectorFolder instanceof ConnectorCourse ? connectorFolder.getId() : connectorFolder.getCourse()
-				.getId() + "$" + connectorFolder.getId());
+			return (connectorFolder instanceof ConnectorCourse ? connectorFolder.getId()
+				: connectorFolder.getCourse().getId() + "$" + connectorFolder.getId());
 		}
 
 		@Override

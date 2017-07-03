@@ -17,34 +17,19 @@
 package com.tle.web.viewitem.summary.section.attachment;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.exceptions.AttachmentNotFoundException;
-import com.google.common.collect.Maps;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
-import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
-import com.tle.beans.item.ItemIdKey;
 import com.tle.beans.item.ItemKey;
-import com.tle.beans.item.attachments.Attachment;
-import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.ImsAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
-import com.tle.beans.item.attachments.ZipAttachment;
 import com.tle.common.Check;
-import com.tle.common.security.SecurityConstants;
-import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.resources.PluginResourceHelper;
@@ -53,9 +38,6 @@ import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
-import com.tle.web.sections.ajax.AjaxGenerator;
-import com.tle.web.sections.ajax.handler.AjaxFactory;
-import com.tle.web.sections.ajax.handler.AjaxMethod;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -107,12 +89,12 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 		.getResourceHelper(AbstractAttachmentsSection.class);
 	private static final IncludeFile INCLUDE = new IncludeFile(resources.url("scripts/attachments/attachments.js"),
 		JQuerySortable.PRERENDER);
-	private static final JSCallAndReference ATTACHMENTS_CLASS = new ExternallyDefinedFunction("Attachments", INCLUDE);
+	//TODO: move reorder code into new JS file, then make this private
+	protected static final JSCallAndReference ATTACHMENTS_CLASS = new ExternallyDefinedFunction("Attachments", INCLUDE);
 	private static final JSCallable SELECT_PACKAGE_FUNCTION = new ExternallyDefinedFunction(ATTACHMENTS_CLASS,
 		"selectPackage", 3);
 	private static final JSCallable SELECT_ALL_ATTACHMENTS_FUN = new ExternallyDefinedFunction(ATTACHMENTS_CLASS,
 		"setupSelectAllButton", 5);
-	private static final JSCallable SETUP_REORDER = new ExternallyDefinedFunction(ATTACHMENTS_CLASS, "setupReorder", 6);
 
 	protected boolean showFull = true;
 	protected boolean showFullNewWindow = false;
@@ -121,13 +103,7 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 	@Inject
 	private ViewAttachmentWebService viewAttachmentWebService;
 	@Inject
-	private SelectionService selectionService;
-	@Inject
-	private ItemService itemService;
-	@Inject
-	private TLEAclManager tleACLManager;
-	@Inject
-	private WorkflowFactory workflowFactory;
+	protected SelectionService selectionService;
 
 	@PlugKey("summary.content.attachments.modal.warning")
 	public static Label MODAL_CLOSE_WARNING_LABEL;
@@ -137,7 +113,7 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 	public static Label MODAL_CANCEL_LABEL;
 
 	@Component
-	private Div div;
+	protected Div div;
 	@PlugKey("summary.content.attachments.attachment.button.selectattachment.all")
 	@Component
 	private Button selectAllAttachmentButton;
@@ -150,16 +126,11 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 	@PlugKey("summary.content.attachments.link.fullscreen.newwindow")
 	@Component
 	private Link fullScreenLinkNewWindow;
-	@PlugKey("summary.content.attachments.link.reorder")
-	@Component
-	private Link reorderAttachments;
 
 	@EventFactory
 	private EventGenerator events;
 	@ViewFactory
 	protected FreemarkerFactory viewFactory;
-	@AjaxFactory
-	private AjaxGenerator ajax;
 
 	protected abstract boolean showFullscreen(SectionInfo info, I item, List<AttachmentRowDisplay> rows);
 
@@ -177,6 +148,12 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 	protected abstract String getItemExtensionType();
 
 	protected abstract String getAttchmentControlId();
+
+	protected void customRender(RenderEventContext context, AttachmentsModel model, ViewableItem<I> viewableItem,
+		List<AttachmentRowDisplay> attachmentDisplays)
+	{
+		//No-op by default
+	}
 
 	@Override
 	public void registered(String id, SectionTree tree)
@@ -224,18 +201,15 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 		if( selectFunction != null )
 		{
 			div.getState(context).addClass("selectable");
-			div.addReadyStatements(
-				context,
-				viewAttachmentWebService.setupSelectButtonsFunction(selectFunction,
-					new ItemId(itemId.getUuid(), itemId.getVersion()), itemExtensionType, ".attachments-browse"));
+			div.addReadyStatements(context, viewAttachmentWebService.setupSelectButtonsFunction(selectFunction,
+				new ItemId(itemId.getUuid(), itemId.getVersion()), itemExtensionType, ".attachments-browse"));
 		}
 
 		final JSCallable selectPackageFunction = getSelectPackageFunction(context, viewableItem);
 		if( selectPackageFunction != null && renderSelect )
 		{
-			selectPackageButton.setClickHandler(context,
-				new OverrideHandler(SELECT_PACKAGE_FUNCTION, Jq.$(selectPackageButton), selectPackageFunction, itemId,
-					getAttchmentControlId()));
+			selectPackageButton.setClickHandler(context, new OverrideHandler(SELECT_PACKAGE_FUNCTION,
+				Jq.$(selectPackageButton), selectPackageFunction, itemId, getAttchmentControlId()));
 		}
 		else
 		{
@@ -247,9 +221,9 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 		{
 			model.setShowSelectAllButton(true);
 			List<String> allAttachmentUuids = getAllAttachmentUuids(attachmentDisplays);
-			selectAllAttachmentButton
-				.setClickHandler(context, new OverrideHandler(SELECT_ALL_ATTACHMENTS_FUN, selectAllAttachmentsFunction,
-					allAttachmentUuids, itemId, itemExtensionType, div.getElementId(context)));
+			selectAllAttachmentButton.setClickHandler(context,
+				new OverrideHandler(SELECT_ALL_ATTACHMENTS_FUN, selectAllAttachmentsFunction, allAttachmentUuids,
+					itemId, itemExtensionType, div.getElementId(context)));
 		}
 		else
 		{
@@ -272,22 +246,8 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 			fullScreenLinkNewWindow.setBookmark(context, fullscreenBookmark);
 			fullScreenLinkNewWindow.getState(context).setTarget("_blank");
 		}
-		if( !tleACLManager.filterNonGrantedPrivileges(item, Collections.singleton(SecurityConstants.EDIT_ITEM))
-			.isEmpty()
-			&& selectionService.getCurrentSession(context) == null
-			&& attachmentStructureReorderable(attachmentDisplays, item) )
-		{
-			reorderAttachments.setClickHandler(
-				context,
-				new OverrideHandler(SETUP_REORDER, div.getElementId(context), ajax
-					.getAjaxFunction("attachmentsReordered"), MODAL_CLOSE_WARNING_LABEL.getText(), MODAL_SAVE_LABEL
-					.getText(), MODAL_CANCEL_LABEL.getText(), isShowStructuredView()));
-			reorderAttachments.setLabel(context, new IconLabel(Icon.MOVE, reorderAttachments.getLabel(context), false));
-		}
-		else
-		{
-			reorderAttachments.setDisplayed(context, false);
-		}
+
+		customRender(context, model, viewableItem, attachmentDisplays);
 
 		model.setSectionTitle(getTitle(context, viewableItem));
 		return viewFactory.createResult("viewitem/attachments/attachments.ftl", context);
@@ -316,40 +276,6 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 				}
 			}
 		}
-	}
-
-	private boolean attachmentStructureReorderable(List<AttachmentRowDisplay> attachmentDisplays, I iitem)
-	{
-		return attachmentDisplays.size() > 1 && isFlatHierachy(attachmentDisplays)
-			&& (iitem.getTreeNodes() == null || iitem.getTreeNodes().isEmpty()) && !containsHiddenZip(iitem);
-	}
-
-	private boolean containsHiddenZip(I item)
-	{
-		for( IAttachment att : item.getAttachments() )
-		{
-			if( att.getAttachmentType() == AttachmentType.ZIP )
-			{
-				ZipAttachment zip = (ZipAttachment) att;
-				if( !zip.isAttachZip() )
-				{
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private boolean isFlatHierachy(List<AttachmentRowDisplay> attachmentDisplays)
-	{
-		for( AttachmentRowDisplay row : attachmentDisplays )
-		{
-			if( row.getLevel() > 0 )
-			{
-				return false;
-			}
-		}
-		return true;
 	}
 
 	private List<String> getAllAttachmentUuids(List<AttachmentRowDisplay> rows)
@@ -388,50 +314,6 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 		}
 	}
 
-	@AjaxMethod
-	public void attachmentsReordered(SectionInfo info, List<String> newOrder)
-	{
-		Item item = (Item) getViewableItem(info).getItem();
-		List<Attachment> attachments = item.getAttachments();
-		Map<String, Attachment> attachmentMap = UnmodifiableAttachments.convertToMapUuid(item);
-		Map<Integer, Attachment> movedItems = Maps.newHashMap();
-
-		for( int x = 0; x < newOrder.size(); x++ )
-		{
-			Attachment currAttach = attachments.get(x);
-			String reorderdedUuid = newOrder.get(x);
-			// sanity check
-			if( attachmentMap.get(reorderdedUuid) == null )
-			{
-				throw new AttachmentNotFoundException(item.getItemId(), " with uuid: " + reorderdedUuid);
-			}
-
-			if( !newOrder.contains(currAttach.getUuid()) )
-			{
-				newOrder.add(x, "nothing");// move elements up
-				continue;
-			}
-			if( !currAttach.getUuid().equals(reorderdedUuid) )
-			{
-				movedItems.put(x, attachmentMap.get(reorderdedUuid));
-			}
-		}
-
-		if( !movedItems.isEmpty() )
-		{
-			for( Entry<Integer, Attachment> entries : movedItems.entrySet() )
-			{
-				attachments.set(entries.getKey(), entries.getValue());
-			}
-			ItemIdKey itemKey = new ItemIdKey(item);
-			itemService.operation(
-				itemKey,
-				new WorkflowOperation[]{workflowFactory.editMetadata(itemService.getItemPack(itemKey)),
-						workflowFactory.saveNoSaveScript(true)});
-		}
-
-	}
-
 	@EventHandlerMethod
 	public void selectAllAttachments(SectionInfo info, List<String> uuids, ItemId itemId, String extensionType)
 	{
@@ -442,8 +324,8 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 			if( !selectionService.getCurrentSession(info).containsResource(key, false) )
 			{
 				final IAttachment attachment = vitem.getAttachmentByUuid(uuid);
-				final SelectAttachmentHandler selectAttachmentHandler = selectionService.getSelectAttachmentHandler(
-					info, vitem, null);
+				final SelectAttachmentHandler selectAttachmentHandler = selectionService
+					.getSelectAttachmentHandler(info, vitem, null);
 				if( selectAttachmentHandler != null )
 				{
 					selectAttachmentHandler.handleAttachmentSelection(info, itemId, attachment, extensionType);
@@ -508,7 +390,8 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 	private boolean showSelectAllButton(SectionInfo info, List<AttachmentRowDisplay> rows)
 	{
 		SelectionSession currentSession = selectionService.getCurrentSession(info);
-		if( currentSession == null || !currentSession.isSelectMultiple() || currentSession.getStructure().isNoTargets() )
+		if( currentSession == null || !currentSession.isSelectMultiple()
+			|| currentSession.getStructure().isNoTargets() )
 		{
 			return false;
 		}
@@ -563,11 +446,6 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 	public Div getDiv()
 	{
 		return div;
-	}
-
-	public Link getReorderAttachments()
-	{
-		return reorderAttachments;
 	}
 
 	@Override

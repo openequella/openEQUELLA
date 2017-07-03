@@ -9,18 +9,18 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
 
-import junit.framework.TestCase;
-
 import org.xmlpull.v1.XmlPullParserException;
 
-import com.dytech.common.xml.TLEXStream;
-import com.dytech.common.xml.XMLCompare;
-import com.dytech.common.xml.XMLDataConverter;
 import com.dytech.devlib.PropBagEx;
 import com.tle.core.util.ims.IMSUtilities.ManifestResolver;
 import com.tle.core.util.ims.beans.IMSItem;
 import com.tle.core.util.ims.beans.IMSManifest;
 import com.tle.core.util.ims.beans.IMSOrganisation;
+import com.tle.core.xstream.TLEXStream;
+import com.tle.core.xstream.XMLCompare;
+import com.tle.core.xstream.XMLDataConverter;
+
+import junit.framework.TestCase;
 
 /**
  * 
@@ -55,20 +55,20 @@ public class IMSTest extends TestCase
 
 	public void testGetTitleFromManifest() throws XmlPullParserException, IOException, Exception
 	{
-		String title = IMSUtilities.getTitleFromManifest(new InputStreamReader(getClass().getResourceAsStream(
-			"imsmanifest.xml")));
+		String title = IMSUtilities
+			.getTitleFromManifest(new InputStreamReader(getClass().getResourceAsStream("imsmanifest.xml")));
 		assertEquals("Alien life form", title);
 
-		title = IMSUtilities.getTitleFromManifest(new InputStreamReader(getClass().getResourceAsStream(
-			"basicchinese.xml")));
+		title = IMSUtilities
+			.getTitleFromManifest(new InputStreamReader(getClass().getResourceAsStream("basicchinese.xml")));
 		assertEquals("Basic Chinese", title);
 
-		title = IMSUtilities.getTitleFromManifest(new InputStreamReader(getClass().getResourceAsStream(
-			"scorm13-ieee.xml")));
+		title = IMSUtilities
+			.getTitleFromManifest(new InputStreamReader(getClass().getResourceAsStream("scorm13-ieee.xml")));
 		assertEquals("Glide: take a flight [no spoken instructions]", title);
 
-		title = IMSUtilities.getTitleFromManifest(new InputStreamReader(getClass().getResourceAsStream(
-			"metadata_in_org.xml")));
+		title = IMSUtilities
+			.getTitleFromManifest(new InputStreamReader(getClass().getResourceAsStream("metadata_in_org.xml")));
 		assertEquals("Another Alien life form", title);
 	}
 

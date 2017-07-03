@@ -24,46 +24,24 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import uk.ac.ed.ph.jqtiplus.node.QtiNode;
-import uk.ac.ed.ph.jqtiplus.node.item.AssessmentItem;
-import uk.ac.ed.ph.jqtiplus.node.test.AssessmentItemRef;
-import uk.ac.ed.ph.jqtiplus.node.test.AssessmentSection;
-import uk.ac.ed.ph.jqtiplus.node.test.TestFeedback;
-import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentItem;
-import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
-import uk.ac.ed.ph.jqtiplus.running.ItemSessionController;
-import uk.ac.ed.ph.jqtiplus.running.TestSessionController;
-import uk.ac.ed.ph.jqtiplus.state.ItemSessionState;
-import uk.ac.ed.ph.jqtiplus.state.TestPartSessionState;
-import uk.ac.ed.ph.jqtiplus.state.TestPlan;
-import uk.ac.ed.ph.jqtiplus.state.TestPlanNode;
-import uk.ac.ed.ph.jqtiplus.state.TestPlanNode.TestNodeType;
-import uk.ac.ed.ph.jqtiplus.state.TestPlanNodeKey;
-import uk.ac.ed.ph.jqtiplus.state.TestProcessingMap;
-import uk.ac.ed.ph.jqtiplus.state.TestSessionState;
-import uk.ac.ed.ph.jqtiplus.types.Identifier;
-import uk.ac.ed.ph.jqtiplus.types.ResponseData;
-import uk.ac.ed.ph.jqtiplus.types.StringResponseData;
-import uk.ac.ed.ph.jqtiplus.value.Value;
-
-import com.dytech.edge.exceptions.NotFoundException;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.common.Pair;
 import com.tle.common.PathUtils;
+import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.BundleCache;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.qti.QtiConstants;
 import com.tle.core.qti.beans.QtiTestDetails;
 import com.tle.core.services.FileSystemService;
 import com.tle.exceptions.AccessDeniedException;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.lti.LtiData;
 import com.tle.web.qti.service.QtiWebService;
 import com.tle.web.qti.viewer.QtiPlayViewerSection.QTIPlayViewerModel;
@@ -115,6 +93,28 @@ import com.tle.web.viewitem.viewer.AbstractViewerSection;
 import com.tle.web.viewurl.ViewItemResource;
 import com.tle.web.viewurl.ViewItemUrlFactory;
 import com.tle.web.viewurl.ViewableResource;
+
+import uk.ac.ed.ph.jqtiplus.node.QtiNode;
+import uk.ac.ed.ph.jqtiplus.node.item.AssessmentItem;
+import uk.ac.ed.ph.jqtiplus.node.test.AssessmentItemRef;
+import uk.ac.ed.ph.jqtiplus.node.test.AssessmentSection;
+import uk.ac.ed.ph.jqtiplus.node.test.TestFeedback;
+import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentItem;
+import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
+import uk.ac.ed.ph.jqtiplus.running.ItemSessionController;
+import uk.ac.ed.ph.jqtiplus.running.TestSessionController;
+import uk.ac.ed.ph.jqtiplus.state.ItemSessionState;
+import uk.ac.ed.ph.jqtiplus.state.TestPartSessionState;
+import uk.ac.ed.ph.jqtiplus.state.TestPlan;
+import uk.ac.ed.ph.jqtiplus.state.TestPlanNode;
+import uk.ac.ed.ph.jqtiplus.state.TestPlanNode.TestNodeType;
+import uk.ac.ed.ph.jqtiplus.state.TestPlanNodeKey;
+import uk.ac.ed.ph.jqtiplus.state.TestProcessingMap;
+import uk.ac.ed.ph.jqtiplus.state.TestSessionState;
+import uk.ac.ed.ph.jqtiplus.types.Identifier;
+import uk.ac.ed.ph.jqtiplus.types.ResponseData;
+import uk.ac.ed.ph.jqtiplus.types.StringResponseData;
+import uk.ac.ed.ph.jqtiplus.value.Value;
 
 @NonNullByDefault
 @Bind
@@ -230,8 +230,8 @@ public class QtiPlayViewerSection extends AbstractViewerSection<QTIPlayViewerMod
 		if( currentTestPartKey != null )
 		{
 			final TestPlanNode testPart = testPlan.getNode(currentTestPartKey);
-			final TestPartSessionState testPartSessionState = testSessionState.getTestPartSessionStates().get(
-				testPart.getKey());
+			final TestPartSessionState testPartSessionState = testSessionState.getTestPartSessionStates()
+				.get(testPart.getKey());
 
 			if( testPartSessionState.isEntered() || testPartSessionState.isEnded() )
 			{
@@ -332,8 +332,8 @@ public class QtiPlayViewerSection extends AbstractViewerSection<QTIPlayViewerMod
 			sectionsOrRoots = Lists.newArrayList(testPartNode);
 		}
 
-		final String testRootPath = PathUtils.getParentFolderFromFilepath(resolvedAssessmentTest.getTestLookup()
-			.getSystemId().toString());
+		final String testRootPath = PathUtils
+			.getParentFolderFromFilepath(resolvedAssessmentTest.getTestLookup().getSystemId().toString());
 		final Map<URI, ResolvedAssessmentItem> resolvedAssessmentItemBySystemIdMap = resolvedAssessmentTest
 			.getResolvedAssessmentItemBySystemIdMap();
 		final TestPlanNodeKey currentQuestionKey = testSessionState.getCurrentItemKey();
@@ -372,8 +372,8 @@ public class QtiPlayViewerSection extends AbstractViewerSection<QTIPlayViewerMod
 				// this is a path relative to the test XML
 				final String relPath = uri.toString();
 				final String fullItemPath = PathUtils.filePath(testRootPath, relPath);
-				final ResolvedAssessmentItem resolvedAssessmentItem = resolvedAssessmentItemBySystemIdMap.get(URI
-					.create(fullItemPath));
+				final ResolvedAssessmentItem resolvedAssessmentItem = resolvedAssessmentItemBySystemIdMap
+					.get(URI.create(fullItemPath));
 				final AssessmentItem assessmentItem = resolvedAssessmentItem.getItemLookup().extractIfSuccessful();
 				final TestPlanNodeKey questionKey = questionNode.getKey();
 
@@ -476,8 +476,8 @@ public class QtiPlayViewerSection extends AbstractViewerSection<QTIPlayViewerMod
 		nextButton.setClickHandler(new OverrideHandler(questionSelectFunction, "", 1));
 
 		startButton.setClickHandler(events.getNamedHandler("onStartTest"));
-		submitButton.setClickHandler(events.getNamedHandler("onSubmitTest").addValidator(
-			new Confirm(LABEL_CONFIRM_SUBMIT)));
+		submitButton
+			.setClickHandler(events.getNamedHandler("onSubmitTest").addValidator(new Confirm(LABEL_CONFIRM_SUBMIT)));
 		viewResultButton.setClickHandler(events.getNamedHandler("onViewResult"));
 	}
 
@@ -534,8 +534,8 @@ public class QtiPlayViewerSection extends AbstractViewerSection<QTIPlayViewerMod
 		// TODO: this is sub-optimal. You can use Path.isParent(Path p2) or
 		// similar, but Paths uses the default file system, which may not be
 		// appropriate...
-		if( !finalPath.toUpperCase().startsWith(
-			PathUtils.filePath(FileSystemService.SECURE_FOLDER, QtiConstants.QTI_FOLDER_NAME)) )
+		if( !finalPath.toUpperCase()
+			.startsWith(PathUtils.filePath(FileSystemService.SECURE_FOLDER, QtiConstants.QTI_FOLDER_NAME)) )
 		{
 			throw new AccessDeniedException(CurrentLocale.get(KEY_ERROR_OUTSIDE_PACKAGE));
 		}

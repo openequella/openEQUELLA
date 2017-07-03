@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,9 +35,9 @@ import javax.inject.Singleton;
 
 import org.apache.log4j.Logger;
 
-import com.google.common.io.Files;
+import com.dytech.common.io.FileUtils;
 import com.tle.common.Pair;
-import com.tle.core.filesystem.FileSystemHelper;
+import com.tle.common.filesystem.FileSystemHelper;
 import com.tle.core.guice.Bind;
 import com.tle.core.imagemagick.ImageMagickService;
 import com.tle.web.sections.SectionsRuntimeException;
@@ -77,7 +78,7 @@ public class ImageTiler
 			catch( Exception ex )
 			{
 				firstException = (firstException == null ? ex : firstException);
-				FileSystemHelper.delete(getFirstTileDirectory(destFolder), null);
+				FileUtils.delete(getFirstTileDirectory(destFolder).toPath());
 
 				final StringWriter sw = new StringWriter();
 				ex.printStackTrace(new PrintWriter(sw));
@@ -97,7 +98,7 @@ public class ImageTiler
 		{
 			try
 			{
-				return new String(FileSystemHelper.retrieveFile(errorFile));
+				return new String(Files.readAllBytes(errorFile.toPath()));
 			}
 			catch( IOException io )
 			{
@@ -145,7 +146,7 @@ public class ImageTiler
 			return false;
 		}
 
-		FileSystemHelper.delete(destFolder, null);
+		FileUtils.delete(destFolder.toPath());
 		boolean madeDirs = destFolder.mkdirs();
 		if( !madeDirs && !destFolder.exists() )
 		{
@@ -225,7 +226,7 @@ public class ImageTiler
 			props.store(writer, null);
 		}
 
-		FileSystemHelper.delete(getFirstTileDirectory(destFolder), null);
+		FileUtils.delete(getFirstTileDirectory(destFolder).toPath());
 	}
 
 	private File getTilePropertiesFile(File tilesFolder)
@@ -252,8 +253,7 @@ public class ImageTiler
 		return props;
 	}
 
-	private void createTiles(final File src, final int zoomLevel, final int row, final File basePath)
-		throws IOException
+	private void createTiles(final File src, final int zoomLevel, final int row, final File basePath) throws IOException
 	{
 		File result = new File(basePath, zoomLevel + "_" + row + "_%d.jpg");
 		imageMagickService.crop(src, result, "256", "0", "+repage");
@@ -286,6 +286,6 @@ public class ImageTiler
 		{
 			throw new IOException("Could not create directory " + dest.getParentFile().getAbsolutePath());
 		}
-		Files.copy(src, dest);
+		FileUtils.copy(src.toPath(), dest.toPath());
 	}
 }

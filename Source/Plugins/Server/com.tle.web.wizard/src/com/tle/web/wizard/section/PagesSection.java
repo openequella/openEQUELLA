@@ -27,10 +27,10 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.entity.itemdef.Wizard;
 import com.tle.beans.item.Item;
 import com.tle.common.Check;
-import com.tle.core.util.ItemHelper;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.wizard.LERepository;
 import com.tle.core.wizard.controls.HTMLControl;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -177,28 +177,33 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel> impleme
 		{
 			throw new Error("No pages in wizard");
 		}
+
+		for( WebWizardPage page : pages )
+		{
+			boolean doLoad = load;
+			try
+			{
+				if( !page.isLoaded() )
+				{
+					page.setReloadFunction(reloadFunction);
+					page.createPage();
+					doLoad = true;
+				}
+				if( doLoad )
+				{
+					page.loadFromDocument(info);
+					page.saveDefaults();
+				}
+				page.ensureTreeAdded(info, params);
+			}
+			catch( Exception e )
+			{
+				throw new RuntimeException(e);
+			}
+		}
+
 		WebWizardPage page = pages.get(pageNum);
-		boolean doLoad = load;
-		try
-		{
-			if( !page.isLoaded() )
-			{
-				page.setReloadFunction(reloadFunction);
-				page.createPage();
-				doLoad = true;
-			}
-			if( doLoad )
-			{
-				page.loadFromDocument(info);
-				page.saveDefaults();
-			}
-			page.ensureTreeAdded(info, params);
-			return page;
-		}
-		catch( Exception e )
-		{
-			throw new RuntimeException(e);
-		}
+		return page;
 	}
 
 	protected List<WebWizardPage> getPages(WizardState state)
@@ -226,8 +231,8 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel> impleme
 		{
 			if( control.isViewable() && control.getMessage() != null && (control.isMandatory() || control.isInvalid()) )
 			{
-				errorList.add(new KeyLabel(KEY_RECEIPT_CAUSE, new TextLabel(control.getTitle()), new BundleLabel(
-					control.getMessage(), bundleCache)));
+				errorList.add(new KeyLabel(KEY_RECEIPT_CAUSE, new TextLabel(control.getTitle()),
+					new BundleLabel(control.getMessage(), bundleCache)));
 			}
 		}
 		model.setErrors(errorList);

@@ -34,15 +34,15 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.entity.Schema;
-import com.tle.core.events.ItemOperationEvent;
-import com.tle.core.events.ItemReindexEvent;
+import com.tle.core.entity.service.AbstractEntityService;
+import com.tle.core.freetext.event.ItemReindexEvent;
+import com.tle.core.freetext.reindex.SchemaFilter;
 import com.tle.core.guice.BindFactory;
+import com.tle.core.item.event.ItemOperationEvent;
+import com.tle.core.item.operations.BaseFilter;
+import com.tle.core.item.standard.FilterFactory;
 import com.tle.core.plugins.FactoryMethodLocator;
-import com.tle.core.schema.SchemaService;
-import com.tle.core.services.entity.AbstractEntityService;
-import com.tle.core.workflow.filters.BaseFilter;
-import com.tle.core.workflow.filters.FilterFactory;
-import com.tle.freetext.reindexing.SchemaFilter;
+import com.tle.core.schema.service.SchemaService;
 import com.tle.web.api.baseentity.serializer.AbstractBaseEntityEditor;
 import com.tle.web.api.schema.SchemaEditor;
 import com.tle.web.api.schema.interfaces.beans.SchemaBean;
@@ -81,9 +81,8 @@ public class SchemaEditorImpl extends AbstractBaseEntityEditor<Schema, SchemaBea
 		super.copyCustomFields(bean);
 
 		final Schema schema = entity;
-		if( editing
-			&& (!Objects.equal(schema.getItemNamePath(), bean.getNamePath()) || !Objects.equal(
-				schema.getItemDescriptionPath(), bean.getDescriptionPath())) )
+		if( editing && (!Objects.equal(schema.getItemNamePath(), bean.getNamePath())
+			|| !Objects.equal(schema.getItemDescriptionPath(), bean.getDescriptionPath())) )
 		{
 			refreshSchemaItems = true;
 		}
@@ -154,8 +153,8 @@ public class SchemaEditorImpl extends AbstractBaseEntityEditor<Schema, SchemaBea
 		// Refresh item name and description if either of the XPaths has changed
 		if( editing && refreshSchemaItems )
 		{
-			publishEventAfterCommit(new ItemOperationEvent(new FactoryMethodLocator<BaseFilter>(FilterFactory.class,
-				"refreshSchemaItems", entity.getId())));
+			publishEventAfterCommit(new ItemOperationEvent(
+				new FactoryMethodLocator<BaseFilter>(FilterFactory.class, "refreshSchemaItems", entity.getId())));
 			return;
 		}
 
@@ -346,7 +345,7 @@ public class SchemaEditorImpl extends AbstractBaseEntityEditor<Schema, SchemaBea
 			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("lockId") @Nullable String lockId,
 			@Assisted("editing") boolean editing, @Assisted("importing") boolean importing);
 
-		SchemaEditorImpl createNewEditor(@Assisted Schema schema,
-			@Assisted("stagingUuid") @Nullable String stagingUuid, @Assisted("importing") boolean importing);
+		SchemaEditorImpl createNewEditor(@Assisted Schema schema, @Assisted("stagingUuid") @Nullable String stagingUuid,
+			@Assisted("importing") boolean importing);
 	}
 }

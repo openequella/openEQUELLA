@@ -35,6 +35,7 @@ import com.tle.common.Pair;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.workflow.node.DecisionNode;
 import com.tle.common.workflow.node.ParallelNode;
+import com.tle.common.workflow.node.ScriptNode;
 import com.tle.common.workflow.node.SerialNode;
 import com.tle.common.workflow.node.WorkflowItem;
 import com.tle.common.workflow.node.WorkflowNode;
@@ -47,6 +48,7 @@ public class WorkflowCellRenderer implements ListCellRenderer, TreeCellRenderer
 	private static final String PARALLEL_ICON = "/icons/parallel.gif";
 	private static final String SERIAL_ICON = "/icons/serial.gif";
 	private static final String ITEM_ICON = "/icons/workflowitem.gif";
+	private static final String SCRIPT_ICON = "/icons/script.gif";
 
 	private DefaultTreeCellRenderer treer;
 	private DefaultListCellRenderer listr;
@@ -61,6 +63,7 @@ public class WorkflowCellRenderer implements ListCellRenderer, TreeCellRenderer
 		add(ParallelNode.class, "parallel", PARALLEL_ICON);
 		add(SerialNode.class, "serial", SERIAL_ICON);
 		add(WorkflowItem.class, "workflow", ITEM_ICON);
+		add(ScriptNode.class, "script", SCRIPT_ICON);
 		defaultString = CurrentLocale.get("com.tle.admin.workflow.tree.workflowcellrenderer.unnamed");
 	}
 

@@ -21,9 +21,9 @@ import java.io.InputStream;
 
 import javax.inject.Singleton;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.dytech.edge.common.Constants;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.core.guice.Bind;
 
@@ -34,7 +34,7 @@ import com.tle.core.guice.Bind;
 @Singleton
 public class PlainTextExtracter extends AbstractTextExtracterExtension
 {
-	private static final Logger LOGGER = Logger.getLogger(MsExcelExtracter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MsExcelExtracter.class);
 
 	@Override
 	public boolean isSupportedByDefault(MimeEntry mimeEntry)
@@ -57,7 +57,7 @@ public class PlainTextExtracter extends AbstractTextExtracterExtension
 			}
 			done += amount;
 		}
-		String s = new String(filebytes, 0, done, Constants.UTF8);
+		String s = new String(filebytes, 0, done, "UTF-8");
 		outputText.append(s);
 		if( LOGGER.isDebugEnabled() )
 		{

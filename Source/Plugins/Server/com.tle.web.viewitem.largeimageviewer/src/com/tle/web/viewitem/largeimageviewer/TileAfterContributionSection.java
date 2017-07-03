@@ -21,9 +21,9 @@ import java.util.Map;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.standard.operations.DuringSaveOperation;
 import com.tle.core.plugins.ClassBeanLocator;
-import com.tle.core.workflow.operations.DuringSaveOperation;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.annotations.DirectEvent;
@@ -43,8 +43,7 @@ public class TileAfterContributionSection extends WizardSection<Object>
 
 	public static enum Mode
 	{
-		AUTO_TILE_AFTER_CONTRIBUTION, PROMPT_ONLY_WHEN_VIEWING, @Deprecated
-		PROMPT_AFTER_CONTRIBUTION
+		AUTO_TILE_AFTER_CONTRIBUTION, PROMPT_ONLY_WHEN_VIEWING, @Deprecated PROMPT_AFTER_CONTRIBUTION
 	}
 
 	@Inject(optional = true)
@@ -56,8 +55,6 @@ public class TileAfterContributionSection extends WizardSection<Object>
 	{
 		return null;
 	}
-
-
 
 	@DirectEvent
 	public void ensureTilingOperation(SectionInfo info) throws Exception

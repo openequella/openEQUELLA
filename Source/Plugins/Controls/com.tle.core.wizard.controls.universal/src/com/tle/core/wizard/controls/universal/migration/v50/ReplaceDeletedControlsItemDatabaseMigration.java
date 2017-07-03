@@ -52,12 +52,12 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemXml;
 import com.tle.common.Check;
-import com.tle.common.util.XmlDocument;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.impl.HibernateMigrationHelper;
 import com.tle.core.migration.AbstractHibernateDataMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
+import com.tle.core.xml.XmlDocument;
 
 /**
  * @author Aaron
@@ -139,9 +139,9 @@ public class ReplaceDeletedControlsItemDatabaseMigration extends AbstractHiberna
 				final String handler = ReplaceDeletedControlsItemXmlMigration.getHandler(classname, attachment.value1);
 				if( handler == null )
 				{
-					throw new RuntimeException("Unhandled attachment type " + attachment.getClass().getName()
-						+ "(attachment value - " + (attachment.value1 != null ? attachment.value1 : "unspecified")
-						+ ')');
+					throw new RuntimeException(
+						"Unhandled attachment type " + attachment.getClass().getName() + "(attachment value - "
+							+ (attachment.value1 != null ? attachment.value1 : "unspecified") + ')');
 				}
 
 				if( !Check.isEmpty(handler) )
@@ -166,8 +166,8 @@ public class ReplaceDeletedControlsItemDatabaseMigration extends AbstractHiberna
 					// ALL nodes with
 					// [@uuid=UUID and @version=version] and add the attachment
 					// UUID underneath them
-					for( Node node : xml.nodeList("//*[@uuid='" + itemId.getUuid() + "' and @version='"
-						+ itemId.getVersion() + "']") )
+					for( Node node : xml
+						.nodeList("//*[@uuid='" + itemId.getUuid() + "' and @version='" + itemId.getVersion() + "']") )
 					{
 						// Don't modify attachment nodes! (actually, these
 						// probably don't exist in ItemXml anyway)

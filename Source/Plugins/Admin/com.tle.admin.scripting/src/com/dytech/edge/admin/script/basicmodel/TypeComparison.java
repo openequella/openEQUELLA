@@ -22,7 +22,7 @@ import com.dytech.edge.admin.script.ifmodel.Equals;
 import com.dytech.edge.admin.script.ifmodel.IfModel;
 import com.tle.admin.Driver;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.common.util.UserBeanUtils;
+import com.tle.common.usermanagement.util.UserBeanUtils;
 import com.tle.core.remoting.RemoteUserService;
 
 public class TypeComparison implements Comparison

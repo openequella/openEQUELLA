@@ -24,8 +24,8 @@ import org.eclipse.birt.report.engine.api.IHTMLActionHandler;
 
 import com.tle.beans.entity.report.Report;
 import com.tle.common.reporting.RemoteReportingService;
-import com.tle.core.services.entity.AbstractEntityService;
-import com.tle.core.services.entity.EntityEditingBean;
+import com.tle.core.entity.EntityEditingBean;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.web.sections.SectionInfo;
 
 /**

@@ -18,13 +18,13 @@ package com.tle.core.taxonomy;
 
 import java.util.List;
 
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.beans.Institution;
 import com.tle.common.Pair;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.common.taxonomy.SelectionRestriction;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.common.taxonomy.terms.RemoteTermService;
-import com.tle.core.filesystem.SubTemporaryFile;
 import com.tle.core.institution.convert.ConverterParams;
 
 public interface TermService extends RemoteTermService

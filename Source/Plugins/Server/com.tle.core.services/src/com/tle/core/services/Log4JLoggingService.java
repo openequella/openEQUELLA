@@ -174,6 +174,18 @@ public class Log4JLoggingService implements LoggingService
 		}
 
 		@Override
+		public boolean isTraceEnabled()
+		{
+			return l.isTraceEnabled();
+		}
+
+		@Override
+		public void trace(String msg)
+		{
+			l.trace(msg);
+		}
+
+		@Override
 		public void error(String msg)
 		{
 			l.error(msg);

@@ -23,10 +23,10 @@ import java.util.Map.Entry;
 import javax.inject.Inject;
 
 import com.google.common.collect.Lists;
-import com.tle.beans.system.ShortcutUrls;
 import com.tle.common.Pair;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.user.CurrentInstitution;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.settings.standard.ShortcutUrls;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.annotations.EventFactory;
@@ -157,8 +157,8 @@ public class RootShortcutUrlsSettingsSection extends OneColumnLayout<ShortcutUrl
 		}
 
 		@Override
-		protected void transform(SectionInfo info, SelectionsTableSelection selection,
-			Pair<String, String> shortcutUrl, List<SectionRenderable> actions, int index)
+		protected void transform(SectionInfo info, SelectionsTableSelection selection, Pair<String, String> shortcutUrl,
+			List<SectionRenderable> actions, int index)
 		{
 			String shortcut = shortcutUrl.getFirst();
 			String url = shortcutUrl.getSecond();
@@ -168,8 +168,8 @@ public class RootShortcutUrlsSettingsSection extends OneColumnLayout<ShortcutUrl
 			urlCell.addClass("middle");
 			selection.getCells().add(urlCell);
 
-			actions.add(makeRemoveAction(DELETE_LABEL,
-				new OverrideHandler(deleteFunc, shortcut).addValidator(CONFIRM_DELETE)));
+			actions.add(
+				makeRemoveAction(DELETE_LABEL, new OverrideHandler(deleteFunc, shortcut).addValidator(CONFIRM_DELETE)));
 		}
 	}
 

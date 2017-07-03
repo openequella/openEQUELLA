@@ -25,13 +25,13 @@ import javax.inject.Singleton;
 
 import org.apache.log4j.Logger;
 
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.Pair;
 import com.tle.common.PathUtils;
+import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.core.filesystem.ItemFile;
-import com.tle.core.filesystem.StagingFile;
 import com.tle.core.filesystem.SubItemFile;
-import com.tle.core.filesystem.SubTemporaryFile;
 import com.tle.core.guice.Bind;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;

@@ -19,7 +19,7 @@ package com.tle.web.remoterepo.section;
 import javax.inject.Inject;
 
 import com.tle.beans.entity.FederatedSearch;
-import com.tle.web.i18n.BundleCache;
+import com.tle.core.i18n.BundleCache;
 import com.tle.web.navigation.BreadcrumbService;
 import com.tle.web.remoterepo.RemoteRepoSection;
 import com.tle.web.remoterepo.service.RemoteRepoWebService;

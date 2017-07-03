@@ -28,7 +28,7 @@ import org.apache.catalina.ssi.SSIExternalResolver;
 import org.apache.log4j.Logger;
 
 import com.google.common.io.ByteStreams;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.services.FileSystemService;
 
 /**

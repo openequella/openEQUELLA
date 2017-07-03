@@ -96,7 +96,20 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 		throws ServletException, IOException
 	{
 		userSessionService.preventSessionUse();
-		super.service(httpServletRequest, httpServletResponse);
+		try
+		{
+			super.service(httpServletRequest, httpServletResponse);
+		}
+		catch( Exception e )
+		{
+			if( e instanceof org.jboss.resteasy.spi.UnhandledException
+				&& e.getCause() instanceof org.apache.catalina.connector.ClientAbortException )
+			{
+				// do nothing
+				return;
+			}
+			throw e;
+		}
 	}
 
 	@Override
@@ -107,8 +120,8 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 
 		Dispatcher dispatcher = getDispatcher();
 		Registry registry = dispatcher.getRegistry();
-		RestEasyApplication application = (RestEasyApplication) dispatcher.getDefaultContextObjects().get(
-			Application.class);
+		RestEasyApplication application = (RestEasyApplication) dispatcher.getDefaultContextObjects()
+			.get(Application.class);
 		ConfigFactory.setConfig(eqSwaggerConfig);
 		ClassReaders.setReader(new DefaultJaxrsApiReader());
 		ScannerFactory.setScanner(new DefaultJaxrsScanner());

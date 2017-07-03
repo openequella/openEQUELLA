@@ -18,8 +18,8 @@ package com.tle.web.search.sort;
 
 import javax.inject.Inject;
 
-import com.tle.beans.system.SearchSettings;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.common.settings.standard.SearchSettings;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.search.event.FreetextSearchEvent;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;

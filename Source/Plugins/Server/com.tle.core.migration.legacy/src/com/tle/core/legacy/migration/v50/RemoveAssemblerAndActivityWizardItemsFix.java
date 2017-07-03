@@ -31,13 +31,13 @@ import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Constants;
 import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
-import com.tle.core.filesystem.FileSystemHelper;
-import com.tle.core.filesystem.SubTemporaryFile;
+import com.tle.common.filesystem.FileSystemHelper;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.convert.AbstractItemXmlMigrator;
 import com.tle.core.institution.convert.ConverterParams;
-import com.tle.core.institution.migration.AbstractItemXmlMigrator;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.xstream.XmlService;
+import com.tle.core.xml.service.XmlService;
 
 @Bind
 @Singleton

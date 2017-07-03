@@ -18,7 +18,7 @@ package com.tle.core.dao;
 
 import java.util.List;
 
-import com.tle.beans.tree.TreeNodeInterface;
+import com.tle.common.institution.TreeNodeInterface;
 import com.tle.core.hibernate.dao.GenericDao;
 
 /**

@@ -16,8 +16,6 @@
 
 package com.tle.freetext;
 
-import it.uniroma3.mat.extendedset.wrappers.LongSet;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,15 +40,11 @@ import com.tle.beans.Institution;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemPack;
 import com.tle.beans.item.ItemSelect;
-import com.tle.beans.system.SearchSettings;
 import com.tle.common.Pair;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.searching.Search;
 import com.tle.common.searching.SearchResults;
-import com.tle.core.dao.ItemDao;
-import com.tle.core.events.InstitutionEvent;
-import com.tle.core.events.InstitutionEvent.InstitutionEventType;
-import com.tle.core.events.listeners.InstitutionListener;
+import com.tle.common.settings.standard.SearchSettings;
 import com.tle.core.guice.Bind;
 import com.tle.core.healthcheck.listeners.ServiceCheckRequestListener;
 import com.tle.core.healthcheck.listeners.ServiceCheckResponseListener.CheckServiceResponseEvent;
@@ -58,18 +52,25 @@ import com.tle.core.healthcheck.listeners.bean.ServiceStatus;
 import com.tle.core.healthcheck.listeners.bean.ServiceStatus.ServiceName;
 import com.tle.core.healthcheck.listeners.bean.ServiceStatus.Status;
 import com.tle.core.institution.RunAsInstitution;
+import com.tle.core.institution.events.InstitutionEvent;
+import com.tle.core.institution.events.InstitutionEvent.InstitutionEventType;
+import com.tle.core.institution.events.listeners.InstitutionListener;
+import com.tle.core.item.dao.ItemDao;
+import com.tle.core.item.helper.ItemHelper;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.remoting.MatrixResults;
-import com.tle.core.services.EventService;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.events.services.EventService;
+import com.tle.core.freetext.index.ItemIndex;
+import com.tle.core.freetext.index.AbstractIndexEngine.IndexBuilder;
+import com.tle.core.freetext.indexer.IndexingExtension;
 import com.tle.core.services.item.FreetextResult;
-import com.tle.core.services.item.ItemService;
 import com.tle.core.services.user.UserPreferenceService;
-import com.tle.core.util.ItemHelper;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.core.zookeeper.ZookeeperService;
-import com.tle.freetext.index.AbstractIndexEngine.IndexBuilder;
-import com.tle.freetext.index.ItemIndex;
+
+import it.uniroma3.mat.extendedset.wrappers.LongSet;
 
 /**
  * @author jmaginnis
@@ -356,8 +357,8 @@ public class FreetextIndexImpl implements FreetextIndex, InstitutionListener, Se
 							ItemPack itemPack = new ItemPack();
 							itemPack.setItem(item);
 							itemPack.setXml(itemxml);
-							inditem.setItemXml(itemHelper.convertToXml(itemPack,
-								new ItemHelper.ItemHelperSettings(true)));
+							inditem
+								.setItemXml(itemHelper.convertToXml(itemPack, new ItemHelper.ItemHelperSettings(true)));
 							return null;
 						}
 					});
@@ -464,8 +465,8 @@ public class FreetextIndexImpl implements FreetextIndex, InstitutionListener, Se
 				currentIndex.checkHealth();
 			}
 			status.setServiceStatus(Status.GOOD);
-			status.setMoreInfo(CurrentLocale.get("com.tle.core.freetext.servicecheck.moreinfo", getIndexPath()
-				.getAbsolutePath()));
+			status.setMoreInfo(
+				CurrentLocale.get("com.tle.core.freetext.servicecheck.moreinfo", getIndexPath().getAbsolutePath()));
 
 		}
 
@@ -474,7 +475,7 @@ public class FreetextIndexImpl implements FreetextIndex, InstitutionListener, Se
 			status.setServiceStatus(Status.BAD);
 			status.setMoreInfo(e.getMessage());
 		}
-		eventService.publishApplicationEvent(new CheckServiceResponseEvent(request.getRequetserNodeId(), zkService
-			.getNodeId(), status));
+		eventService.publishApplicationEvent(
+			new CheckServiceResponseEvent(request.getRequetserNodeId(), zkService.getNodeId(), status));
 	}
 }

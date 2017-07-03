@@ -22,7 +22,7 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
-import com.tle.core.services.item.ItemResolver;
+import com.tle.core.item.service.ItemResolver;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;

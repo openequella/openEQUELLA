@@ -24,6 +24,11 @@
 		<import plugin-id="com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider" />
 		<import plugin-id="org.scala-lang:scala-library" exported="true" />
 		<import plugin-id="com.tle.common.interfaces.equella" />
+		<import plugin-id="org.apache.tomcat:tomcat-catalina" />
+		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="com.tle.core.institution" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.core.usermanagement" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

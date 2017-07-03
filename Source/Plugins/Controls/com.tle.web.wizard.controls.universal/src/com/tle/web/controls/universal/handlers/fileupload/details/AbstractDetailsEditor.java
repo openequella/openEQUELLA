@@ -24,7 +24,7 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.common.Check;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.services.FileSystemService;
 import com.tle.web.controls.universal.UniversalControlState;
 import com.tle.web.controls.universal.handlers.FileUploadHandler;

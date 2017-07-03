@@ -1,7 +1,7 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.web.scorm" version="1">
 	<requires>
-		<import plugin-id="com.tle.core.entity.services" />
+		
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.migration" />
 		<import plugin-id="com.tle.core.mimetypes" />
@@ -15,6 +15,11 @@
 		<import plugin-id="com.tle.web.viewitem" />
 		<import plugin-id="com.tle.web.viewitem.treeviewer" />
 		<import plugin-id="commons-io:commons-io" />
+		<import plugin-id="com.tle.core.filesystem" />
+		<import plugin-id="com.tle.ims" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.core.institution.convert" />
+		<import plugin-id="com.tle.core.xml" />
 	</requires>
 
 	<runtime>
@@ -48,12 +53,12 @@
 		<parameter id="class" value="bean:com.tle.web.scorm.ScormChildResource" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="addScormMime">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="addScormMime">
 		<parameter id="id" value="com.tle.web.scorm.migration.AddScormMimeTypeXmlMigration" />
 		<parameter id="bean" value="bean:com.tle.web.scorm.migration.AddScormMimeTypeXmlMigration" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="itemxmlmigration" id="convertIMSToScormXml">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="itemxmlmigration" id="convertIMSToScormXml">
 		<parameter id="id" value="com.tle.web.scorm.migration.ConvertIMSToScormXmlMigration" />
 		<parameter id="bean" value="bean:com.tle.web.scorm.migration.ConvertIMSToScormXmlMigration" />
 	</extension>

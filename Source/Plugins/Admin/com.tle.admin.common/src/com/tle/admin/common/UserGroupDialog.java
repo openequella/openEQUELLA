@@ -37,15 +37,15 @@ import javax.swing.JTextField;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.dytech.edge.common.valuebean.GroupBean;
-import com.dytech.edge.common.valuebean.UserBean;
 import com.dytech.gui.TableLayout;
 import com.tle.admin.Driver;
 import com.tle.common.Format;
 import com.tle.common.NameValue;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.common.util.UserBeanUtils;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
+import com.tle.common.usermanagement.util.UserBeanUtils;
 import com.tle.core.remoting.RemoteUserService;
 
 public class UserGroupDialog extends JDialog implements ActionListener

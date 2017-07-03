@@ -200,6 +200,7 @@ public class BrightspaceUserContext implements Serializable
 		long adjustedTimestampSeconds = getAdjustedTimestampInSeconds();
 		String signature = formatSignature(path, httpMethod, adjustedTimestampSeconds);
 		String queryString = buildAuthenticatedUriQueryString(signature, adjustedTimestampSeconds);
+
 		if( !Strings.isNullOrEmpty(query) )
 		{
 			queryString += "&" + query;

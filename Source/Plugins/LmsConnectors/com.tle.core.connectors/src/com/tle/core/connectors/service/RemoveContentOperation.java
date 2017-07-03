@@ -23,7 +23,7 @@ import com.tle.common.connectors.entity.Connector;
 import com.tle.common.connectors.service.ConnectorItemKey;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.connectors.exception.LmsUserNotFoundException;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.exceptions.AccessDeniedException;
 
 public class RemoveContentOperation extends AbstractContentOperation

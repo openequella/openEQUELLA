@@ -16,10 +16,10 @@
 
 package com.tle.core.services.item.relation;
 
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.standard.operations.DuringSaveOperation;
 import com.tle.core.plugins.FactoryMethodLocator;
 import com.tle.core.services.item.relation.RelationOperation.RelationOperationFactory;
-import com.tle.core.workflow.operations.DuringSaveOperation;
-import com.tle.core.workflow.operations.WorkflowOperation;
 
 /**
  * @author jmaginnis

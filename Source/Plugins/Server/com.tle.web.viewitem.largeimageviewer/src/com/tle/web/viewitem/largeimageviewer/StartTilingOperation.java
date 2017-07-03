@@ -32,16 +32,16 @@ import com.tle.beans.mime.MimeEntry;
 import com.tle.common.Pair;
 import com.tle.core.filesystem.ItemFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.operations.ItemOperationParams;
+import com.tle.core.item.standard.operations.AbstractStandardWorkflowOperation;
 import com.tle.core.mimetypes.MimeTypeConstants;
 import com.tle.core.mimetypes.MimeTypeService;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
-import com.tle.core.workflow.operations.WorkflowParams;
 
 /**
  * @author Aaron
  */
 @Bind
-public class StartTilingOperation extends AbstractWorkflowOperation
+public class StartTilingOperation extends AbstractStandardWorkflowOperation
 {
 	@Inject
 	private LargeImageViewer largeImageViewer;
@@ -51,7 +51,7 @@ public class StartTilingOperation extends AbstractWorkflowOperation
 	@Override
 	public boolean execute()
 	{
-		params.addAfterCommitHook(WorkflowParams.COMMIT_HOOK_PRIORITY_LOW, new Runnable()
+		params.addAfterCommitHook(ItemOperationParams.COMMIT_HOOK_PRIORITY_LOW, new Runnable()
 		{
 			@Override
 			public void run()
@@ -64,10 +64,10 @@ public class StartTilingOperation extends AbstractWorkflowOperation
 					final FileAttachment fa = (FileAttachment) it.next();
 					if( isViewerEnabledForAttachment(fa) )
 					{
-						final ItemFile itemFile = new ItemFile(item.getItemId());
+						final ItemFile itemFile = itemFileService.getItemFile(item);
 						final File originalImage = fileSystemService.getExternalFile(itemFile, fa.getFilename());
-						final File destFolder = fileSystemService.getExternalFile(
-							largeImageViewer.getTileBaseHandle(itemFile, fa.getUrl()), null);
+						final File destFolder = fileSystemService
+							.getExternalFile(largeImageViewer.getTileBaseHandle(itemFile, fa.getUrl()), null);
 						images.add(new Pair<File, File>(originalImage, destFolder));
 					}
 				}
@@ -86,8 +86,8 @@ public class StartTilingOperation extends AbstractWorkflowOperation
 		final MimeEntry entry = mimeTypeService.getEntryForFilename(fa.getFilename());
 		if( entry != null )
 		{
-			final List<String> enabledList = new ArrayList<String>(mimeTypeService.getListFromAttribute(entry,
-				MimeTypeConstants.KEY_ENABLED_VIEWERS, String.class));
+			final List<String> enabledList = new ArrayList<String>(
+				mimeTypeService.getListFromAttribute(entry, MimeTypeConstants.KEY_ENABLED_VIEWERS, String.class));
 			return enabledList.contains(LargeImageViewerConstants.VIEWER_ID);
 		}
 		return false;

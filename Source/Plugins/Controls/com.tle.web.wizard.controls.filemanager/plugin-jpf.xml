@@ -10,6 +10,7 @@
 		<import plugin-id="com.tle.web.filemanager.applet" />
 		<import plugin-id="com.tle.web.viewurl" />
 		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.institution" />
 	</requires>
 
 	<runtime>

@@ -4,7 +4,6 @@
 		<import plugin-id="com.tle.common.beans" />
 		<import plugin-id="com.tle.common.externaltools" />
 		<import plugin-id="com.tle.common.i18n" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.migration" />
 		<import plugin-id="com.tle.web.sections" />
@@ -21,6 +20,9 @@
 		<import plugin-id="com.google.http-client:google-http-client" />
 		<import plugin-id="com.tle.core.usermanagement.standard" />
 		<import plugin-id="com.tle.core.lti.consumers" />
+		<import plugin-id="com.tle.core.encryption" />
+		<import plugin-id="com.tle.core.institution.convert" />
+		<import plugin-id="com.tle.core.xml" />
 	</requires>
 
 	<runtime>
@@ -62,7 +64,7 @@
 		<parameter id="date" value="2013-11-01" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="addLtiMimeTypeXmlMigration">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="addLtiMimeTypeXmlMigration">
 		<parameter id="id" value="com.tle.web.lti.migration.AddLtiMimeTypeXmlMigration" />
 		<parameter id="bean" value="bean:com.tle.web.lti.migration.AddLtiMimeTypeXmlMigration" />
 	</extension>
@@ -80,6 +82,6 @@
 	</extension>
 	
 	<extension plugin-id="com.tle.web.sections.equella" point-id="htmlStyleClass" id="ltiStyleClass">
-		<parameter id="class" value="bean:com.tle.web.lti.LtiStyleClass"/>
+		<parameter id="class" value="bean:com.tle.web.lti.LtiStyleClass" />
 	</extension>
 </plugin>

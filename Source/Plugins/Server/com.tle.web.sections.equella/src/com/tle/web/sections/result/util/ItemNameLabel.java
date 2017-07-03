@@ -17,7 +17,7 @@
 package com.tle.web.sections.result.util;
 
 import com.tle.beans.item.IItem;
-import com.tle.web.i18n.BundleCache;
+import com.tle.core.i18n.BundleCache;
 
 public class ItemNameLabel extends BundleLabel
 {

@@ -41,6 +41,7 @@ import com.tle.common.gui.models.GenericListModel;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.workflow.node.DecisionNode;
 import com.tle.common.workflow.node.ParallelNode;
+import com.tle.common.workflow.node.ScriptNode;
 import com.tle.common.workflow.node.SerialNode;
 import com.tle.common.workflow.node.WorkflowItem;
 import com.tle.common.workflow.node.WorkflowNode;
@@ -75,6 +76,7 @@ public class StepDialog implements ActionListener, ListSelectionListener, MouseL
 		model.add(ParallelNode.class);
 		model.add(SerialNode.class);
 		model.add(WorkflowItem.class);
+		model.add(ScriptNode.class);
 	}
 
 	private void setup()

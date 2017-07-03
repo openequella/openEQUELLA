@@ -5,15 +5,20 @@
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.hibernate" />
+		<import plugin-id="com.tle.core.item" />
 		<import plugin-id="com.tle.core.migration" />
 		<import plugin-id="com.tle.core.freetext" />
-		<import plugin-id="com.tle.core.workflow" />
-		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.core.services.item.relation" />
 		<import plugin-id="com.tle.core.activation" />
 		<import plugin-id="com.tle.core.hibernate.equella" />
+		<import plugin-id="com.tle.core.institution.convert" />
 		<import plugin-id="com.tle.web.api.item.equella.serializer" />
 		<import plugin-id="com.tle.web.core.equella" />
+		<import plugin-id="com.tle.core.item.standard" />
+		<import plugin-id="com.tle.core.security.convert" />
+		<import plugin-id="com.tle.core.xml" />
+		<import plugin-id="com.tle.core.activation.convert" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">
@@ -31,7 +36,7 @@
 		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.workflow" id="calPostSave" point-id="operation">
+	<extension plugin-id="com.tle.core.item" id="calPostSave" point-id="operation">
 		<parameter id="type" value="postSave" />
 		<parameter id="class" value="bean:com.tle.cal.service.CALCollectOperation" />
 	</extension>
@@ -45,36 +50,36 @@
 		<parameter id="bean" value="bean:com.tle.cal.service.CALMetadataCollection" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="calPageMigrate">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="calPageMigrate">
 		<parameter id="id" value="com.tle.cal.migration.CalPageMigration" />
 		<parameter id="bean" value="bean:com.tle.cal.migration.CalPageMigration" />
 		<parameter id="date" value="1970-01-08" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="calHierarchyMigrate">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="calHierarchyMigrate">
 		<parameter id="id" value="com.tle.cal.migration.CalHierarchyMigrator" />
 		<parameter id="bean" value="bean:com.tle.cal.migration.CalHierarchyMigrator" />
 		<parameter id="date" value="1970-01-09" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="itemxmlmigration" id="calXmlConvert">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="itemxmlmigration" id="calXmlConvert">
 		<parameter id="id" value="com.tle.cal.migration.CalItemXmlConvert" />
 		<parameter id="bean" value="bean:com.tle.cal.migration.CalItemXmlConvert" />
 		<parameter id="date" value="1970-01-06" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="itemDaoExtension" id="calItemDao">
+	<extension plugin-id="com.tle.core.item" point-id="itemDaoExtension" id="calItemDao">
 		<parameter id="class" value="bean:com.tle.cal.dao.CALDao" />
 		<parameter id="order" value="100" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="converter" id="calConverter">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="calConverter">
 		<parameter id="id" value="cal_converter" />
 		<parameter id="class" value="bean:com.tle.cal.service.CALConverter" />
 		<parameter id="order" value="820" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="postreadmigration" id="calPrivMigrator">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="postreadmigration" id="calPrivMigrator">
 		<parameter id="id" value="com.tle.cal.migration.CalPrivMigrator" />
 		<parameter id="bean" value="bean:com.tle.cal.migration.CalPrivMigrator" />
 		<parameter id="forconverter" value="acls" />
@@ -124,7 +129,7 @@
 		<parameter id="class" value="bean:com.tle.cal.service.CALService" />
 	</extension>
 	
-	<extension plugin-id="com.tle.core.entity.services" point-id="itemHelpers" id="calHelper">
+	<extension plugin-id="com.tle.core.item" point-id="itemHelpers" id="calHelper">
 		<parameter id="bean" value="bean:com.tle.cal.helper.CALHelper" />
 		<parameter id="display" value="true" />
 		<parameter id="import" value="false" />

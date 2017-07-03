@@ -7,6 +7,8 @@
 		<import plugin-id="org.apache.cxf" />
 		<import plugin-id="com.tle.common.remoterepo.equella" exported="true" />
 		<import plugin-id="com.tle.core.harvester" />
+		<import plugin-id="com.tle.core.filesystem" />
+		<import plugin-id="com.tle.core.filesystem.staging" />
 	</requires>
 
 	<runtime>

@@ -23,10 +23,10 @@ import javax.inject.Inject;
 
 import com.tle.beans.entity.BaseEntity;
 import com.tle.common.Check;
-import com.tle.core.services.entity.AbstractEntityService;
+import com.tle.core.entity.service.AbstractEntityService;
+import com.tle.core.i18n.BundleCache;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
@@ -75,7 +75,8 @@ import com.tle.web.sections.standard.renderers.LinkRenderer;
 @SuppressWarnings("nls")
 public abstract class AbstractShowEntitiesSection<E extends BaseEntity, M extends AbstractShowEntitiesSection.AbstractShowEntitiesModel>
 	extends
-		AbstractPrototypeSection<M> implements HtmlRenderer
+		AbstractPrototypeSection<M>
+	implements HtmlRenderer
 {
 	public static final String ENABLED = "enabled";
 	public static final String DISABLED = "disabled";
@@ -425,7 +426,8 @@ public abstract class AbstractShowEntitiesSection<E extends BaseEntity, M extend
 
 	protected SectionRenderable createCloneLink(SectionInfo info, E ent)
 	{
-		final LinkRenderer link = new LinkRenderer(new HtmlLinkState(new OverrideHandler(cloneFunction, ent.getUuid())));
+		final LinkRenderer link = new LinkRenderer(
+			new HtmlLinkState(new OverrideHandler(cloneFunction, ent.getUuid())));
 		link.setLabel(getCloneLabel(info, ent));
 		return link;
 	}
@@ -435,8 +437,8 @@ public abstract class AbstractShowEntitiesSection<E extends BaseEntity, M extend
 		final LinkRenderer link;
 		if( isInUse(info, ent) )
 		{
-			link = new LinkRenderer(new HtmlLinkState(new OverrideHandler(
-				Js.alert_s(getInUseLabel(info, ent).getText()))));
+			link = new LinkRenderer(
+				new HtmlLinkState(new OverrideHandler(Js.alert_s(getInUseLabel(info, ent).getText()))));
 			link.setLabel(getDeleteLabel(info, ent));
 		}
 		else

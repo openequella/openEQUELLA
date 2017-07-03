@@ -20,7 +20,7 @@ import javax.inject.Inject;
 
 import com.google.inject.assistedinject.Assisted;
 import com.tle.core.guice.BindFactory;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
+import com.tle.core.item.operations.AbstractWorkflowOperation;
 import com.tle.mypages.service.MyPagesService;
 import com.tle.web.wizard.WizardState;
 

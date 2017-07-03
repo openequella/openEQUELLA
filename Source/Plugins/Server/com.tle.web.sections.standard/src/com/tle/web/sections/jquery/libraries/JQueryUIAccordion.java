@@ -18,6 +18,7 @@ package com.tle.web.sections.jquery.libraries;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
+import com.tle.web.DebugSettings;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.jquery.libraries.effects.JQueryUIEffects;
 import com.tle.web.sections.render.PreRenderable;
@@ -30,7 +31,8 @@ public class JQueryUIAccordion implements JavascriptModule
 	/**
 	 * Includes jquery.ui.accordion.js
 	 */
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.accordion.js",
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
+		DebugSettings.isDebuggingMode() ? "jquery.ui.accordion.js" : "jquery.ui.accordion.min.js",
 		JQueryUICore.PRERENDER, JQueryUIWidget.PRERENDER, JQueryUIEffects.PRERENDER_ALL);
 
 	@Override

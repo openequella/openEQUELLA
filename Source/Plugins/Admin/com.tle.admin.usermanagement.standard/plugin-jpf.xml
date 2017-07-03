@@ -13,6 +13,7 @@
 		<import plugin-id="com.tle.common.recipientselector" />
 		<import plugin-id="com.tle.common.usermanagement" />
 		<import plugin-id="com.tle.common.usermanagement.standard" exported="true" />
+		<import plugin-id="com.tle.common.encryption" />
 	</requires>
 
 	<runtime>

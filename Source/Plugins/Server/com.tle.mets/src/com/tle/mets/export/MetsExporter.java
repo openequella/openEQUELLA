@@ -35,9 +35,9 @@ import com.tle.common.PathUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
-import com.tle.core.services.UrlService;
 import com.tle.mets.MetsConstants;
 import com.tle.mets.MetsIDElementInfo;
 import com.tle.mets.export.MetsExporter.MetsExporterModel;
@@ -102,7 +102,7 @@ public class MetsExporter extends AbstractPrototypeSection<MetsExporterModel> im
 	private static Label LINK_LABEL;
 
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private AttachmentResourceService attachmentResourceService;
 	@Inject
@@ -141,10 +141,8 @@ public class MetsExporter extends AbstractPrototypeSection<MetsExporterModel> im
 
 		exportFunc = events.getNamedModifier("doExport");
 
-		attachments.addEventStatements(
-			JSHandler.EVENT_CHANGE,
-			new StatementHandler(ajax.getAjaxUpdateDomFunction(tree, this, null,
-				ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), "metsExport")));
+		attachments.addEventStatements(JSHandler.EVENT_CHANGE, new StatementHandler(ajax.getAjaxUpdateDomFunction(tree,
+			this, null, ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), "metsExport")));
 	}
 
 	@EventHandlerMethod
@@ -348,8 +346,9 @@ public class MetsExporter extends AbstractPrototypeSection<MetsExporterModel> im
 		boolean full) throws Exception
 	{
 		final List<Pair<File, String>> files = new ArrayList<Pair<File, String>>();
-		final List<MetsIDElementInfo<? extends MetsIDElement>> converted = (full ? convertFullAttachment(info,
-			itemInfo, attachment) : convertRecordOnlyAttachment(info, itemInfo, attachment));
+		final List<MetsIDElementInfo<? extends MetsIDElement>> converted = (full
+			? convertFullAttachment(info, itemInfo, attachment)
+			: convertRecordOnlyAttachment(info, itemInfo, attachment));
 		if( converted != null )
 		{
 			for( MetsIDElementInfo<? extends MetsIDElement> con : converted )
@@ -379,7 +378,7 @@ public class MetsExporter extends AbstractPrototypeSection<MetsExporterModel> im
 		final ViewableResource resource = attachmentResourceService.getViewableResource(info,
 			itemInfo.getViewableItem(), attachment);
 		final ViewItemUrl viewerUrl = resource.createDefaultViewerUrl();
-		final String url = urlService.institutionalise(viewerUrl.getHref());
+		final String url = institutionService.institutionalise(viewerUrl.getHref());
 
 		final FLocat location = new FLocat();
 		location.setID("link:" + attachment.getUuid());

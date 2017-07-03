@@ -17,6 +17,12 @@
 package com.tle.core.item.serializer;
 
 import java.util.Collection;
+import java.util.List;
+
+import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
+import com.tle.web.api.item.interfaces.beans.HistoryEventBean;
+import com.tle.web.api.item.interfaces.beans.ItemExportBean;
+import com.tle.web.api.item.interfaces.beans.ItemLockBean;
 
 @SuppressWarnings("nls")
 public interface ItemSerializerService
@@ -35,7 +41,8 @@ public interface ItemSerializerService
 	 *            be passed in here.
 	 * @return
 	 */
-	ItemSerializerXml createXmlSerializer(Collection<Long> itemIds, Collection<String> categories, String... privileges);
+	ItemSerializerXml createXmlSerializer(Collection<Long> itemIds, Collection<String> categories,
+		String... privileges);
 
 	/**
 	 * @param itemIds
@@ -46,10 +53,10 @@ public interface ItemSerializerService
 	 * @return
 	 */
 	ItemSerializerItemBean createItemBeanSerializer(Collection<Long> itemIds, Collection<String> categories,
-		String... privileges);
+		boolean export, String... privileges);
 
 	ItemSerializerItemBean createItemBeanSerializer(Collection<Long> itemIds, Collection<String> categories,
-		boolean ignorePriv);
+		boolean ignorePriv, boolean export);
 
 	/**
 	 * @param where
@@ -60,5 +67,18 @@ public interface ItemSerializerService
 	 * @return
 	 */
 	ItemSerializerItemBean createItemBeanSerializer(ItemSerializerWhere where, Collection<String> categories,
-		String... privileges);
+		boolean export, String... privileges);
+
+	/**
+	 * The presence of the optional 'export' flag in query parameters draws
+	 * forth tailored detail.
+	 * 
+	 * @param equellaBean the bean identifying source Item
+	 * @return ItemExportBean
+	 */
+	ItemExportBean getExportDetails(EquellaItemBean equellaBean);
+
+	ItemLockBean getItemLock(EquellaItemBean equellaBean);
+
+	List<HistoryEventBean> getHistory(String uuid, int version);
 }

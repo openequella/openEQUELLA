@@ -24,8 +24,8 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.ValidationError;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.google.common.collect.Maps;
 import com.tle.beans.ReferencedURL;
 import com.tle.beans.entity.LanguageBundle;

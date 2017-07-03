@@ -44,20 +44,20 @@ import com.tle.common.searching.Search;
 import com.tle.common.searching.SearchResults;
 import com.tle.common.util.Dates;
 import com.tle.common.util.UtcDate;
+import com.tle.core.collection.service.ItemDefinitionService;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
 import com.tle.core.harvester.HarvesterProfileService;
 import com.tle.core.harvester.LearningEdge;
 import com.tle.core.harvester.old.TLEItem;
-import com.tle.core.schema.SchemaService;
-import com.tle.core.services.InitialiserService;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.core.services.item.FreeTextService;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.util.ItemHelper;
-import com.tle.core.util.ItemHelper.ItemHelperSettings;
-import com.tle.core.workflow.operations.AbstractEditMetadataOperation;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
+import com.tle.core.hibernate.equella.service.InitialiserService;
+import com.tle.core.item.helper.ItemHelper;
+import com.tle.core.item.helper.ItemHelper.ItemHelperSettings;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.core.item.standard.operations.AbstractEditMetadataOperation;
+import com.tle.core.schema.service.SchemaService;
 import com.tle.web.viewurl.ViewItemUrlFactory;
 
 @Bind(LearningEdge.class)
@@ -84,7 +84,7 @@ public class LearningEdgeImpl implements LearningEdge
 	@Inject
 	private ViewItemUrlFactory urlFactory;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 
 	@Override
 	@Transactional
@@ -259,8 +259,8 @@ public class LearningEdgeImpl implements LearningEdge
 			}
 			catch( ParseException ex )
 			{
-				LOGGER.error(CurrentLocale.get("com.tle.core.harvester.learning.badformat",
-					"/xml/item/olddatemodified", created));
+				LOGGER.error(CurrentLocale.get("com.tle.core.harvester.learning.badformat", "/xml/item/olddatemodified",
+					created));
 				throw ex;
 			}
 
@@ -320,9 +320,9 @@ public class LearningEdgeImpl implements LearningEdge
 		{
 			ops.add(workflowFactory.submit());
 		}
-		ops.add(workflowFactory.saveWithOperations(unlock,
-			(List<WorkflowOperation>) pack.getAttribute("preSaveOperations"),
-			(List<WorkflowOperation>) pack.getAttribute("postSaveOperations")));
+		ops.add(
+			workflowFactory.saveWithOperations(unlock, (List<WorkflowOperation>) pack.getAttribute("preSaveOperations"),
+				(List<WorkflowOperation>) pack.getAttribute("postSaveOperations")));
 
 		ItemPack<Item> ret = itemService.operation(key, ops.toArray(new WorkflowOperation[ops.size()]));
 		ret.getItem().setNewItem(false);

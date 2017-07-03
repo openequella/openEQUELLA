@@ -28,11 +28,11 @@ import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
 import com.tle.common.Pair;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.QuickUploadService;
-import com.tle.core.services.item.ItemResolver;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.item.service.ItemResolver;
+import com.tle.core.quickupload.service.QuickUploadService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
@@ -98,8 +98,8 @@ public class QuickUploadSection extends AbstractPrototypeSection<QuickUploadMode
 			final ItemDefinition collection = quickUploadService.getOneClickItemDef();
 			if( collection != null )
 			{
-				getModel(context).setCollectionName(
-					new BundleLabel(collection.getName(), collection.getUuid(), bundleCache));
+				getModel(context)
+					.setCollectionName(new BundleLabel(collection.getName(), collection.getUuid(), bundleCache));
 			}
 
 			return viewFactory.createResult("quickupload.ftl", context);
@@ -124,10 +124,10 @@ public class QuickUploadSection extends AbstractPrototypeSection<QuickUploadMode
 		{
 			try
 			{
-				Pair<ItemId, Attachment> attInfo = quickUploadService.createOrSelectExisting(
-					fileUploader.getInputStream(info), filename);
-				ViewableItem<?> vitem = viewableItemResolver.createViewableItem(
-					itemResolver.getItem(attInfo.getFirst(), null), null);
+				Pair<ItemId, Attachment> attInfo = quickUploadService
+					.createOrSelectExisting(fileUploader.getInputStream(info), filename);
+				ViewableItem<?> vitem = viewableItemResolver
+					.createViewableItem(itemResolver.getItem(attInfo.getFirst(), null), null);
 				SelectAttachmentHandler selectAttachmentHandler = selectionService.getSelectAttachmentHandler(info,
 					vitem, null);
 

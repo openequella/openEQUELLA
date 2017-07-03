@@ -34,10 +34,10 @@ import com.tle.common.portal.entity.impl.PortletRecentContrib;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.searching.Search.SortType;
 import com.tle.common.searching.SearchResults;
+import com.tle.core.collection.service.ItemDefinitionService;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.core.services.item.FreeTextService;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 
 /**
  * @author aholland
@@ -67,8 +67,8 @@ public class PortletStandardWebServiceImpl implements PortletStandardWebService
 			final Collection<ItemDefinition> collections = portlet.getCollections();
 			if( !Check.isEmpty(collections) )
 			{
-				search.setCollectionUuids(collectionService.convertToUuids(collectionService
-					.filterSearchable(collections)));
+				search.setCollectionUuids(
+					collectionService.convertToUuids(collectionService.filterSearchable(collections)));
 			}
 			search.setQuery(portlet.getQuery());
 			search.setOwner(portlet.getUserId());

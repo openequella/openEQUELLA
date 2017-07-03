@@ -27,7 +27,6 @@ import javax.inject.Singleton;
 import com.dytech.devlib.PropBagEx;
 import com.google.common.base.Throwables;
 import com.google.inject.Provider;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
@@ -36,8 +35,9 @@ import com.tle.beans.item.ItemTaskId;
 import com.tle.beans.item.ViewableItemType;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.workflow.WorkflowStatus;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.viewable.NewDefaultViewableItem;
 import com.tle.web.viewable.NewViewableItemState;
@@ -53,7 +53,7 @@ public class ViewableItemFactory
 	private Provider<NewDefaultViewableItem> viewableItemProvider;
 
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	public NewDefaultViewableItem createNewViewableItem(ItemKey itemId)
 	{
@@ -94,7 +94,7 @@ public class ViewableItemFactory
 
 	public String getItemdirForPreview(String previewId)
 	{
-		String path = urlService.getInstitutionUrl().getPath();
+		String path = institutionService.getInstitutionUrl().getPath();
 		return path + PREVIEW_CONTEXT + new ItemId(previewId, 1).toString() + '/';
 	}
 
@@ -202,7 +202,7 @@ public class ViewableItemFactory
 		@Override
 		public Bookmark createStableResourceUrl(String path)
 		{
-			return new FilestoreBookmark(urlService, stagingId, path);
+			return new FilestoreBookmark(institutionService, stagingId, path);
 		}
 
 		@Override

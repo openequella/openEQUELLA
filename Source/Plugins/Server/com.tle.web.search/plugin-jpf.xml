@@ -5,7 +5,7 @@
 		<import plugin-id="com.tle.common.dynacollection" />
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.core.dynacollection" />
-		<import plugin-id="com.tle.core.email" />
+		<import plugin-id="com.tle.core.email" exported="true" />
 		<import plugin-id="com.tle.core.favourites" exported="true" />
 		<import plugin-id="com.tle.core.fedsearch" />
 		<import plugin-id="com.tle.core.guice" />
@@ -23,6 +23,11 @@
 		<import plugin-id="com.tle.web.viewitem" />
 		<import plugin-id="com.tle.web.viewurl" exported="true" />
 		<import plugin-id="commons-codec:commons-codec" />
+		<import plugin-id="com.tle.core.url" />
+		<import plugin-id="com.tle.core.item" exported="true" />
+		<import plugin-id="com.tle.core.collection" exported="true" />
+		<import plugin-id="com.tle.core.i18n" />
+		<import plugin-id="com.tle.common.settings.standard" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">
@@ -77,4 +82,5 @@
 		<parameter id="bean" value="bean:com.tle.web.search.itemlist.ThumbnailDisplay" />
 		<parameter id="applies" value="standard" />
 	</extension>
+	
 </plugin>

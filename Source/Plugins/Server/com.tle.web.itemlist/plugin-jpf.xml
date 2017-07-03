@@ -4,13 +4,14 @@
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.common.item" />
 		<import plugin-id="com.tle.core.guice" />
-		<import plugin-id="com.tle.core.entity.services" />
+		
 		<import plugin-id="com.tle.core.freetext" />
 		<import plugin-id="com.tle.web.sections" />
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.web.htmleditor" exported="true" />
 		<import plugin-id="com.tle.web.viewurl" />
 		<import plugin-id="log4j:log4j" />
+		<import plugin-id="com.tle.core.item" />
 	</requires>
 
 	<runtime>

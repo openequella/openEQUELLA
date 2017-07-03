@@ -20,20 +20,18 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.inject.Singleton;
-import com.tle.beans.system.AutoLogin;
 import com.tle.common.Check;
+import com.tle.common.settings.standard.AutoLogin;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
+import com.tle.common.usermanagement.user.WebAuthenticationDetails;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.config.ConfigurationService;
 import com.tle.core.services.user.UserService;
-import com.tle.core.user.UserState;
-import com.tle.core.user.WebAuthenticationDetails;
 
 @Bind
 @Singleton
 public class AutoIpLogonService
 {
-	@Inject
-	private ConfigurationService configService;
 	@Inject
 	private UserService userService;
 
@@ -41,7 +39,7 @@ public class AutoIpLogonService
 	{
 		AutoLogin settings = userService.getAttribute(AutoLogin.class);
 		WebAuthenticationDetails details = userService.getWebAuthenticationDetails(request);
-		if( configService.isAutoLoginAvailable(settings, details.getIpAddress()) )
+		if( isAutoLoginAvailable(settings, details.getIpAddress()) )
 		{
 			String autoLoginAsUsername = settings.getUsername();
 			if( !Check.isEmpty(autoLoginAsUsername) )
@@ -55,5 +53,19 @@ public class AutoIpLogonService
 			}
 		}
 		return false;
+	}
+
+	public boolean isAutoLoginAvailable(AutoLogin autoLogin, String ipAddress)
+	{
+		if( autoLogin.isEnabledViaIp() )
+		{
+			return autoLogin.getHostMatcher().matches(ipAddress);
+		}
+		return false;
+	}
+
+	public boolean isAutoLoginAvailable(AutoLogin autoLogin)
+	{
+		return isAutoLoginAvailable(autoLogin, CurrentUser.getUserState().getIpAddress());
 	}
 }

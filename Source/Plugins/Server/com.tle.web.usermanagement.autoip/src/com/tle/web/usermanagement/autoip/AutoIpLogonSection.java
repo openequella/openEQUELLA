@@ -19,9 +19,9 @@ package com.tle.web.usermanagement.autoip;
 import javax.inject.Inject;
 
 import com.tle.annotation.NonNullByDefault;
-import com.tle.beans.system.AutoLogin;
+import com.tle.common.settings.standard.AutoLogin;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;
@@ -70,7 +70,7 @@ public class AutoIpLogonSection extends AbstractPrototypeSection<AutoIpLogonSect
 	{
 		Model model = getModel(context);
 		AutoLogin autoLogin = configService.getProperties(new AutoLogin());
-		if( configService.isAutoLoginAvailable(autoLogin) )
+		if( autoIpLogonService.isAutoLoginAvailable(autoLogin) )
 		{
 			model.setAutoUsername(autoLogin.getUsername());
 			return viewFactory.createResult("autoiplogon.ftl", this);

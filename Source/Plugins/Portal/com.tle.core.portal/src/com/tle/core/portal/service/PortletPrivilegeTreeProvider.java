@@ -29,8 +29,8 @@ import com.tle.common.portal.entity.Portlet;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.remoting.RemotePrivilegeTreeService.SecurityTarget;
 import com.tle.common.security.remoting.RemotePrivilegeTreeService.TargetId;
+import com.tle.core.entity.security.AbstractEntityPrivilegeTreeProvider;
 import com.tle.core.guice.Bind;
-import com.tle.core.security.AbstractEntityPrivilegeTreeProvider;
 import com.tle.web.resources.ResourcesService;
 
 @Bind
@@ -38,17 +38,18 @@ import com.tle.web.resources.ResourcesService;
 @SuppressWarnings("nls")
 public class PortletPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeProvider<Portlet>
 {
-	private static final String PORTLET_TARGET_KEY = ResourcesService.getResourceHelper(
-		PortletPrivilegeTreeProvider.class).key("securitytree.targetportlettype");
+	private static final String PORTLET_TARGET_KEY = ResourcesService
+		.getResourceHelper(PortletPrivilegeTreeProvider.class).key("securitytree.targetportlettype");
 
 	private final PortletService portletService;
 
 	@Inject
 	public PortletPrivilegeTreeProvider(PortletService portletService)
 	{
-		super(portletService, Node.ALL_PORTLETS, ResourcesService.getResourceHelper(PortletPrivilegeTreeProvider.class)
-			.key("securitytree.allportlets"), Node.PORTLET, ResourcesService.getResourceHelper(
-			PortletPrivilegeTreeProvider.class).key("securitytree.targetallportlets"));
+		super(portletService, Node.ALL_PORTLETS,
+			ResourcesService.getResourceHelper(PortletPrivilegeTreeProvider.class).key("securitytree.allportlets"),
+			Node.PORTLET, ResourcesService.getResourceHelper(PortletPrivilegeTreeProvider.class)
+				.key("securitytree.targetallportlets"));
 
 		this.portletService = portletService;
 	}

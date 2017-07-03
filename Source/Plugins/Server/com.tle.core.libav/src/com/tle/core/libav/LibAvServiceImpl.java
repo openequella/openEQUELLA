@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.util.ExecUtils;
 import com.tle.common.util.ExecUtils.ExecResult;
 import com.tle.core.guice.Bind;
@@ -92,9 +92,9 @@ public class LibAvServiceImpl implements LibAvService
 		}
 		else if( videoDuration > MIN_VIDEO_LENGTH )
 		{
-			result = ExecUtils.exec(avconvExe.getAbsolutePath(), "-ss", "00:00:0" + MIN_VIDEO_LENGTH, "-i", new String(
-				srcFile.getAbsolutePath().getBytes("UTF-8")), "-b", "350k", "-q:v", "1", "-vframes", "1", new String(
-				dstFile.getAbsolutePath().getBytes("UTF-8")));
+			result = ExecUtils.exec(avconvExe.getAbsolutePath(), "-ss", "00:00:0" + MIN_VIDEO_LENGTH, "-i",
+				new String(srcFile.getAbsolutePath().getBytes("UTF-8")), "-b", "350k", "-q:v", "1", "-vframes", "1",
+				new String(dstFile.getAbsolutePath().getBytes("UTF-8")));
 			result.ensureOk();
 		}
 		// video is under 5 seconds, screenshot half way into video

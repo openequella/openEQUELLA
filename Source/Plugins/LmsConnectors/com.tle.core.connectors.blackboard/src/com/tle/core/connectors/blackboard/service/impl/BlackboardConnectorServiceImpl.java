@@ -98,6 +98,7 @@ import com.tle.common.connectors.ConnectorTerminology;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.searching.SearchResults;
 import com.tle.common.searching.SimpleSearchResults;
 import com.tle.common.util.BlindSSLSocketFactory;
@@ -129,12 +130,11 @@ import com.tle.core.connectors.service.ConnectorRepositoryImplementation;
 import com.tle.core.connectors.service.ConnectorRepositoryService.ExternalContentSortType;
 import com.tle.core.guice.Bind;
 import com.tle.core.guice.Bindings;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.helper.ItemHelper;
+import com.tle.core.item.service.ItemResolver;
 import com.tle.core.services.impl.ProxyDetails;
-import com.tle.core.services.item.ItemResolver;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.util.ItemHelper;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.integration.Integration.LmsLink;
 import com.tle.web.integration.Integration.LmsLinkInfo;
 import com.tle.web.selection.SelectedResource;
@@ -159,8 +159,8 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 	private static final String VENDOR_ID = "Apereo";
 	private static final String PROGRAM_ID = "EQUELLA";
 	private static final String[] REQUIRED_METHODS = new String[]{"Context.WS:emulateUser", "Context.WS:logout",
-			"Context.WS:getMemberships", "Context.WS.getServerVersion", "Context.WS.initialize",
-			"Context.WS.loginTool", "Context.WS.registerTool", "Course.WS:getCourse"};
+			"Context.WS:getMemberships", "Context.WS.getServerVersion", "Context.WS.initialize", "Context.WS.loginTool",
+			"Context.WS.registerTool", "Course.WS:getCourse"};
 
 	private static final String BB_ERROR_CODE_USER_NOT_EXIST = "[Context.WS004]";
 
@@ -198,7 +198,7 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 	@Inject
 	private ConfigurationService configService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private ItemHelper itemHelper;
 	@Inject
@@ -248,7 +248,7 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 	@Override
 	public ConnectorFolder addItemToCourse(Connector connector, final String username, final String courseId,
 		final String folderId, final IItem<?> item, final SelectedResource selectedResource)
-		throws LmsUserNotFoundException
+			throws LmsUserNotFoundException
 	{
 		return doBb(connector.getServerUrl(), username, true, new BbFunction<ConnectorFolder>()
 		{
@@ -284,12 +284,12 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 				addItemToCourse.setItemVersion(version);
 				addItemToCourse.setUrl(lmsLink.getUrl());
 				addItemToCourse.setUsername(username); // unused
-				addItemToCourse.setServerUrl(urlService.getInstitutionUrl().toString());
+				addItemToCourse.setServerUrl(institutionService.getInstitutionUrl().toString());
 				addItemToCourse.setAttachment(attachmentUuid);
 
 				// FIXME: Yikes, probably only works for real Items
-				final PropBagEx xml = itemHelper.convertToXml(new ItemPack(resourcesItem, itemResolver.getXml(
-					resourcesItem, selectedResource.getKey().getExtensionType()), null));
+				final PropBagEx xml = itemHelper.convertToXml(new ItemPack(resourcesItem,
+					itemResolver.getXml(resourcesItem, selectedResource.getKey().getExtensionType()), null));
 
 				// Note: the version in the XML must match the version recorded
 				// in the usage DB!!
@@ -297,15 +297,15 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 				itemxml.setNode("@version", version);
 
 				// If the selected object is the item
-				if( selectedResource.getType() == SelectedResource.TYPE_PATH && selectedResource.getUrl().length() == 0 )
+				if( selectedResource.getType() == SelectedResource.TYPE_PATH
+					&& selectedResource.getUrl().length() == 0 )
 				{
 					selectedResource.setUrl("./"); //$NON-NLS-1$
 				}
 				else if( selectedResource.getType() == SelectedResource.TYPE_ATTACHMENT )
 				{
-					itemxml.setNode(
-						"attachments/@selectedType", lmsLinkInfo.getResourceAttachment().getAttachmentType().name() //$NON-NLS-1$
-							.toLowerCase());
+					itemxml.setNode("attachments/@selectedType", //$NON-NLS-1$
+						lmsLinkInfo.getResourceAttachment().getAttachmentType().name().toLowerCase());
 				}
 
 				itemxml.setNode("attachments/@selectedTitle", lmsLink.getName());
@@ -319,8 +319,8 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 				if( attachment != null )
 				{
 					itemxml.setNode("attachments/@selected", lmsLink.getUrl());
-					final ViewableResource viewableResource = attachmentResourceService.getViewableResource(
-						createViewItemInfo(), viewableItem, attachment);
+					final ViewableResource viewableResource = attachmentResourceService
+						.getViewableResource(createViewItemInfo(), viewableItem, attachment);
 					mimeType = viewableResource.getMimeType();
 				}
 				else
@@ -416,13 +416,13 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 				final ConnectorCourse cc = new ConnectorCourse(courseId);
 				final Collection<ConnectorFolder> folders = Collections2.transform(Arrays.asList(foldersArray),
 					new Function<Folder, ConnectorFolder>()
+				{
+					@Override
+					public ConnectorFolder apply(Folder f)
 					{
-						@Override
-						public ConnectorFolder apply(Folder f)
-						{
-							return convertFolder(f, cc);
-						}
-					});
+						return convertFolder(f, cc);
+					}
+				});
 
 				return new ArrayList<ConnectorFolder>(folders);
 			}
@@ -450,13 +450,13 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 				final ConnectorCourse cc = new ConnectorCourse(courseId);
 				final Collection<ConnectorFolder> folders = Collections2.transform(Arrays.asList(foldersArray),
 					new Function<Folder, ConnectorFolder>()
+				{
+					@Override
+					public ConnectorFolder apply(Folder f)
 					{
-						@Override
-						public ConnectorFolder apply(Folder f)
-						{
-							return convertFolder(f, cc);
-						}
-					});
+						return convertFolder(f, cc);
+					}
+				});
 				return new ArrayList<ConnectorFolder>(folders);
 			}
 		});
@@ -523,8 +523,8 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 			registerTool.setRequiredToolMethods(REQUIRED_METHODS);
 
 			// register the proxy tool
-			final RegisterToolResponse registerToolResponse = stubs.getContextWebservice(null).registerTool(
-				registerTool);
+			final RegisterToolResponse registerToolResponse = stubs.getContextWebservice(null)
+				.registerTool(registerTool);
 
 			final RegisterToolResultVO registerToolResultVO = registerToolResponse.get_return();
 			if( !Check.isEmpty(registerToolResultVO.getFailureErrors()) )
@@ -564,7 +564,7 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 	@Override
 	public List<ConnectorContent> findUsages(final Connector connector, String username, final String uuid,
 		final int version, final boolean versionIsLatest, final boolean showArchived, final boolean allVersions)
-		throws LmsUserNotFoundException
+			throws LmsUserNotFoundException
 	{
 		LOGGER.trace("findUsages enter");
 		return doBb(connector.getServerUrl(), username, false, new BbFunction<List<ConnectorContent>>()
@@ -593,14 +593,14 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 					LOGGER.trace("transforming results");
 					final List<ConnectorContent> cc = Lists.transform(Arrays.asList(content),
 						new Function<Content, ConnectorContent>()
+					{
+						@Override
+						public ConnectorContent apply(Content input)
 						{
-							@Override
-							public ConnectorContent apply(Content input)
-							{
-								return convertContent(input, courseMap.get(input.getCourseId()),
-									folderMap.get(input.getFolderId()), connector.getServerUrl(), !showArchived);
-							}
-						});
+							return convertContent(input, courseMap.get(input.getCourseId()),
+								folderMap.get(input.getFolderId()), connector.getServerUrl(), !showArchived);
+						}
+					});
 					LOGGER.trace("findUsages exit");
 					return cc;
 				}
@@ -610,10 +610,9 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 	}
 
 	@Override
-	public SearchResults<ConnectorContent> findAllUsages(final Connector connector, String username,
-		final String query, final String courseId, final String folderId, final boolean archived, final int offset,
-		final int count, final ExternalContentSortType sortType, final boolean reverseSort)
-		throws LmsUserNotFoundException
+	public SearchResults<ConnectorContent> findAllUsages(final Connector connector, String username, final String query,
+		final String courseId, final String folderId, final boolean archived, final int offset, final int count,
+		final ExternalContentSortType sortType, final boolean reverseSort) throws LmsUserNotFoundException
 	{
 		final String sortCol;
 		final boolean reverse;
@@ -664,14 +663,14 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 					LOGGER.trace("transforming results");
 					final List<ConnectorContent> cc = Lists.transform(Arrays.asList(content),
 						new Function<Content, ConnectorContent>()
+					{
+						@Override
+						public ConnectorContent apply(Content input)
 						{
-							@Override
-							public ConnectorContent apply(Content input)
-							{
-								return convertContent(input, courseMap.get(input.getCourseId()),
-									folderMap.get(input.getFolderId()), connector.getServerUrl(), !archived);
-							}
-						});
+							return convertContent(input, courseMap.get(input.getCourseId()),
+								folderMap.get(input.getFolderId()), connector.getServerUrl(), !archived);
+						}
+					});
 
 					LOGGER.trace("findAllUsages exit");
 
@@ -763,8 +762,8 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 		long dateAccessed = content.getDateAccessed();
 		if( dateAccessed != 0 )
 		{
-			c.setAttribute(ConnectorContent.KEY_DATE_ACCESSED, getKey("finduses.label.dateAccessed"), new Date(
-				dateAccessed));
+			c.setAttribute(ConnectorContent.KEY_DATE_ACCESSED, getKey("finduses.label.dateAccessed"),
+				new Date(dateAccessed));
 		}
 		return c;
 	}
@@ -934,8 +933,8 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 			{
 				return f.execute(contextWSStub, equellaWSStub);
 			}
-			throw new BlackboardException(CurrentLocale.get("com.tle.core.connectors.blackboard.error.failtoemulate",
-				username));
+			throw new BlackboardException(
+				CurrentLocale.get("com.tle.core.connectors.blackboard.error.failtoemulate", username));
 		}
 		catch( Exception t )
 		{
@@ -1054,8 +1053,8 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 					tempService = equellaWebservice;
 					if( tempService == null )
 					{
-						equellaWebservice = new EQUELLAWSStub(ctx, PathUtils.urlPath(bbUrl,
-							"/webapps/ws/services/EQUELLA.WS"));
+						equellaWebservice = new EQUELLAWSStub(ctx,
+							PathUtils.urlPath(bbUrl, "/webapps/ws/services/EQUELLA.WS"));
 						tempService = equellaWebservice;
 						initStub(tempService);
 					}
@@ -1145,16 +1144,17 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 					return new OMLinkedListMetaFactory();
 				}
 			});
-			axisConfig = populateAxisConfiguration(getClass().getResourceAsStream(
-				"/com/tle/core/connectors/blackboard/service/axis2.xml"));
+			axisConfig = populateAxisConfiguration(
+				getClass().getResourceAsStream("/com/tle/core/connectors/blackboard/service/axis2.xml"));
 
 			AxisModule module = new AxisModule("rampart");
 			module.setModuleClassLoader(getClass().getClassLoader());
 			module.setParent(axisConfig);
 			module.setArchiveName("rampart-1.5.1");
 
-			ModuleBuilder moduleBuilder = new ModuleBuilder(getClass().getResourceAsStream(
-				"/com/tle/core/connectors/blackboard/service/module.xml"), module, axisConfig);
+			ModuleBuilder moduleBuilder = new ModuleBuilder(
+				getClass().getResourceAsStream("/com/tle/core/connectors/blackboard/service/module.xml"), module,
+				axisConfig);
 			moduleBuilder.populateModule();
 			addNewModule(module, axisConfig);
 
@@ -1249,7 +1249,7 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 				// String url, String xml
 				editContent.setTitle(title);
 				editContent.setDescription(description);
-				editContent.setInstitutionUrl(urlService.getInstitutionUrl().toString());
+				editContent.setInstitutionUrl(institutionService.getInstitutionUrl().toString());
 
 				return equellaWs.editContent(editContent).get_return();
 			}

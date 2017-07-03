@@ -23,6 +23,9 @@ import javax.inject.Inject;
 
 import com.google.common.collect.Maps;
 import com.tle.beans.DatabaseSchema;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.SystemUserState;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.guice.Bind;
 import com.tle.core.migration.MigrationErrorReport;
 import com.tle.core.migration.MigrationService;
@@ -31,9 +34,6 @@ import com.tle.core.migration.SchemaInfo;
 import com.tle.core.migration.impl.HibernateMigrationService;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.core.system.SystemConfigService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.SystemUserState;
-import com.tle.core.user.UserState;
 import com.tle.exceptions.BadCredentialsException;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -189,7 +189,6 @@ public class LogonMigrateSection extends AbstractPrototypeSection<LogonMigrateSe
 		getModel(context).setDescription(message);
 		return viewFactory.createResult("logon/waitforsystem.ftl", this);
 	}
-
 
 	@AjaxMethod(priority = SectionEvent.PRIORITY_HIGH)
 	public boolean waitForStatus(SectionInfo info)

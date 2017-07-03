@@ -72,10 +72,11 @@ import com.google.common.collect.Multimaps;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.common.NamedThreadFactory;
+import com.tle.core.cluster.ClusterMessageHandler;
+import com.tle.core.cluster.service.ClusterMessagingService;
 import com.tle.core.plugins.PluginAwareObjectInputStream;
 import com.tle.core.plugins.PluginAwareObjectOutputStream;
 import com.tle.core.services.ApplicationVersion;
-import com.tle.core.services.ClusterMessagingService;
 import com.tle.core.services.GlobalTaskStartInfo;
 import com.tle.core.services.TaskStatus;
 import com.tle.core.services.TaskStatusChange;
@@ -111,8 +112,8 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
 
 	private final Cache<String, Serializable[]> taskArgs = CacheBuilder.newBuilder()
 		.expireAfterWrite(5, TimeUnit.MINUTES).build();
-	private Multimap<String, TaskStatusListener> taskListeners = Multimaps.synchronizedMultimap(ArrayListMultimap
-		.<String, TaskStatusListener> create());
+	private Multimap<String, TaskStatusListener> taskListeners = Multimaps
+		.synchronizedMultimap(ArrayListMultimap.<String, TaskStatusListener>create());
 	private final Cache<String, BlockingQueue<SimpleMessage>> messageResponses = CacheBuilder.newBuilder()
 		.expireAfterAccess(30, TimeUnit.MINUTES).build();
 	private CompletionService<TaskResult> taskRunnerExecutor;
@@ -219,8 +220,8 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
 			{
 				LOGGER.trace("Serialized ClusteredTask size is " + taskBytes.length);
 			}
-			curator.create().creatingParentsIfNeeded()
-				.forPath(zookeeperService.getFullPath(ZK_TASKPATH, taskId), taskBytes);
+			curator.create().creatingParentsIfNeeded().forPath(zookeeperService.getFullPath(ZK_TASKPATH, taskId),
+				taskBytes);
 		}
 		catch( NodeExistsException nee )
 		{
@@ -612,8 +613,9 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
 			{
 				suspendedSessionId = sessionId;
 			}
-			else if( (type == Type.CONNECTION_RECONNECTED && suspendedSessionId != sessionId)
-				|| type == Type.CONNECTION_LOST )
+			else
+				if( (type == Type.CONNECTION_RECONNECTED && suspendedSessionId != sessionId)
+					|| type == Type.CONNECTION_LOST )
 			{
 				runnerHandler.lostConnection();
 			}
@@ -670,18 +672,18 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
 
 	public class TaskStatusHandler
 	{
-		private final Logger LOGGER_STATUSES = LoggerFactory.getLogger(ClusteredTaskServiceImpl.class.getName()
-			+ ".TaskStatusHandler");
+		private final Logger LOGGER_STATUSES = LoggerFactory
+			.getLogger(ClusteredTaskServiceImpl.class.getName() + ".TaskStatusHandler");
 		private final Map<String, TaskStatusImpl> taskStatuses = Collections
 			.synchronizedMap(new HashMap<String, TaskStatusImpl>());
 		private final Cache<String, TaskStatusImpl> finishedStatuses = CacheBuilder.newBuilder().concurrencyLevel(4)
 			.expireAfterAccess(30, TimeUnit.MINUTES).build();
-		private final ExecutorService listenerThread = Executors.newSingleThreadExecutor(new NamedThreadFactory(
-			"TaskServiceImpl.listenerThread"));
+		private final ExecutorService listenerThread = Executors
+			.newSingleThreadExecutor(new NamedThreadFactory("TaskServiceImpl.listenerThread"));
 
 		public synchronized Map<String, TaskStatus> getAllStatuses()
 		{
-			return Maps.<String, TaskStatus> newHashMap(taskStatuses);
+			return Maps.<String, TaskStatus>newHashMap(taskStatuses);
 		}
 
 		public synchronized TaskStatusImpl getStatus(String taskId)
@@ -791,8 +793,8 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
 
 	public class TaskRunnerHandler
 	{
-		private final Logger LOGGER_RUNNER = LoggerFactory.getLogger(ClusteredTaskServiceImpl.class.getName()
-			+ ".TaskRunnerHandler");
+		private final Logger LOGGER_RUNNER = LoggerFactory
+			.getLogger(ClusteredTaskServiceImpl.class.getName() + ".TaskRunnerHandler");
 		private final Map<String, TaskRunner> runningTasks = Maps.newHashMap();
 
 		public synchronized void addErroredRunner(String taskId, Exception exception)
@@ -1036,8 +1038,8 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
 								{
 									if( LOGGER_RUNNER.isTraceEnabled() )
 									{
-										LOGGER_RUNNER.trace("Waiting on previous lock for: " + taskId + " : "
-											+ nextLowest);
+										LOGGER_RUNNER
+											.trace("Waiting on previous lock for: " + taskId + " : " + nextLowest);
 									}
 									synchronized( this )
 									{
@@ -1117,8 +1119,8 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
 						initialStatus = new TaskStatusImpl(ourNodeId, clusteredTask.getInternalId());
 					}
 					statusHandler.setStatus(taskId, initialStatus);
-					clusterMessagingService.postMessage(new FullStatusResponseMessage(Collections.singletonMap(taskId,
-						initialStatus)));
+					clusterMessagingService
+						.postMessage(new FullStatusResponseMessage(Collections.singletonMap(taskId, initialStatus)));
 					LOGGER_RUNNER.info("Starting task with id:" + taskId + " class:" + task.getClass());
 					running = true;
 					task.call();
@@ -1417,8 +1419,8 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
 					}
 					if( !fullStatuses.isEmpty() )
 					{
-						clusterMessagingService.postMessage(fMsg.getRequestingId(), new FullStatusResponseMessage(
-							fullStatuses));
+						clusterMessagingService.postMessage(fMsg.getRequestingId(),
+							new FullStatusResponseMessage(fullStatuses));
 					}
 				}
 				break;
@@ -1539,11 +1541,11 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
 							{
 								try
 								{
-									Collection<TaskStatusChange<?>> changes = Lists.newArrayList(task
-										.getCurrentChanges());
+									Collection<TaskStatusChange<?>> changes = Lists
+										.newArrayList(task.getCurrentChanges());
 									changes.add(new FinishedStatusChange(error));
-									updateTaskStatus(task, changes, task.getStatusVersion(), UUID.randomUUID()
-										.toString());
+									updateTaskStatus(task, changes, task.getStatusVersion(),
+										UUID.randomUUID().toString());
 								}
 								catch( Exception e )
 								{
@@ -1553,8 +1555,8 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
 							String taskId = runner.getTaskId();
 							String globalId = runner.getGlobalId();
 							String taskPath = zookeeperService.getFullPath(ZK_TASKPATH, taskId);
-							String globalPath = globalId != null ? zookeeperService.getFullPath(ZK_GLOBALTASKPATH,
-								globalId) : null;
+							String globalPath = globalId != null
+								? zookeeperService.getFullPath(ZK_GLOBALTASKPATH, globalId) : null;
 
 							if( error != null )
 							{
@@ -1570,8 +1572,9 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
 							}
 							catch( Exception ke )
 							{
-								LOGGER.warn("Failed to delete path '" + taskPath
-									+ "' after completion, using reaper instead", ke);
+								LOGGER.warn(
+									"Failed to delete path '" + taskPath + "' after completion, using reaper instead",
+									ke);
 								reaper.addPath(taskPath, Mode.REAP_UNTIL_GONE);
 							}
 							if( globalPath != null )

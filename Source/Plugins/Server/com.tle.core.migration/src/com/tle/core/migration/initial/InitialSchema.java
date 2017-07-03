@@ -80,6 +80,7 @@ import com.tle.common.workflow.WorkflowItemStatus;
 import com.tle.common.workflow.WorkflowNodeStatus;
 import com.tle.common.workflow.node.DecisionNode;
 import com.tle.common.workflow.node.ParallelNode;
+import com.tle.common.workflow.node.ScriptNode;
 import com.tle.common.workflow.node.SerialNode;
 import com.tle.common.workflow.node.WorkflowItem;
 import com.tle.common.workflow.node.WorkflowNode;
@@ -103,10 +104,10 @@ public class InitialSchema extends AbstractCreateMigration
 			SchemaScript.class, Institution.class, Language.class, Staging.class, UserPreference.class,
 			UserPreference.UserPrefKey.class, AuditLogEntry.class, BaseEntity.class, LanguageBundle.class,
 			LanguageString.class, EntityLock.class, ItemDefinition.class, ItemdefBlobs.class, Workflow.class,
-			WorkflowNodeStatus.class, WorkflowItemStatus.class, DecisionNode.class, ParallelNode.class,
-			SerialNode.class, WorkflowItem.class, WorkflowNode.class, ReferencedURL.class, Comment.class,
-			DrmAcceptance.class, HistoryEvent.class, Item.class, ItemXml.class, DrmSettings.class, ItemLock.class,
-			ModerationStatus.class, CourseInfo.class, Attachment.class, IMSResourceAttachment.class,
+			WorkflowNodeStatus.class, WorkflowItemStatus.class, DecisionNode.class, ScriptNode.class,
+			ParallelNode.class, SerialNode.class, WorkflowItem.class, WorkflowNode.class, ReferencedURL.class,
+			Comment.class, DrmAcceptance.class, HistoryEvent.class, Item.class, ItemXml.class, DrmSettings.class,
+			ItemLock.class, ModerationStatus.class, CourseInfo.class, Attachment.class, IMSResourceAttachment.class,
 			FileAttachment.class, HtmlAttachment.class, ImsAttachment.class, CustomAttachment.class,
 			LinkAttachment.class, ZipAttachment.class, ItemNavigationNode.class, ItemNavigationTab.class,
 			NavigationSettings.class, AccessEntry.class, AccessExpression.class, SharePass.class, TLEUser.class,

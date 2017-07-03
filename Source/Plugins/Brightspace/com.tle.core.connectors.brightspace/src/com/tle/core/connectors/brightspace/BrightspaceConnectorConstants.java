@@ -27,6 +27,7 @@ public class BrightspaceConnectorConstants
 	public static final String FIELD_APP_OK = "appOk";
 	public static final String FIELD_APP_ID = "appId";
 	public static final String FIELD_APP_KEY = "appKey";
+
 	public static final String FIELD_ADMIN_USER_ID = "adminUserId";
 	public static final String FIELD_ADMIN_USER_KEY = "adminUserKeyEncrypted";
 	public static final String FIELD_ADMIN_OK = "adminOk";

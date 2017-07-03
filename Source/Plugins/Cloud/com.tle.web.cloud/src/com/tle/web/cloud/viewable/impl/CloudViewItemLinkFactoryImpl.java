@@ -29,7 +29,7 @@ import com.tle.core.cloud.beans.converted.CloudAttachment;
 import com.tle.core.cloud.beans.converted.CloudItem;
 import com.tle.core.cloud.service.CloudService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.web.cloud.viewable.CloudViewItemLinkFactory;
 import com.tle.web.mimetypes.service.WebMimeTypeService;
 import com.tle.web.sections.Bookmark;
@@ -46,7 +46,7 @@ public class CloudViewItemLinkFactoryImpl implements CloudViewItemLinkFactory
 	@Inject
 	private CloudService cloudService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private WebMimeTypeService webMimeTypeService;
 
@@ -65,8 +65,8 @@ public class CloudViewItemLinkFactoryImpl implements CloudViewItemLinkFactory
 	@Override
 	public Bookmark createThumbnailLink(CloudItem item)
 	{
-		return new SimpleBookmark(webMimeTypeService.getIconForEntry(
-			webMimeTypeService.getEntryForMimeType("equella/item")).toString());
+		return new SimpleBookmark(
+			webMimeTypeService.getIconForEntry(webMimeTypeService.getEntryForMimeType("equella/item")).toString());
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class CloudViewItemLinkFactoryImpl implements CloudViewItemLinkFactory
 			{
 				url = itemBase;
 			}
-			return urlService.institutionalise(url);
+			return institutionService.institutionalise(url);
 		}
 	}
 }

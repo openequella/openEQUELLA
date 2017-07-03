@@ -24,15 +24,15 @@ import javax.inject.Singleton;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 
-import com.dytech.edge.common.valuebean.ValidationError;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.portal.entity.Portlet;
 import com.tle.common.portal.entity.impl.PortletRecentContrib;
 import com.tle.core.guice.Bind;
 import com.tle.core.portal.dao.PortletDao;
 import com.tle.core.portal.service.PortletEditingBean;
 import com.tle.core.portal.service.PortletServiceExtension;
-import com.tle.core.user.CurrentInstitution;
 
 /**
  * @author aholland

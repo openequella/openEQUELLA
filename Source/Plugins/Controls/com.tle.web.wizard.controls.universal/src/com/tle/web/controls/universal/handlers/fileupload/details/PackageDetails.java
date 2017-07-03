@@ -31,7 +31,8 @@ import com.tle.beans.item.attachments.ImsAttachment;
 import com.tle.beans.item.attachments.ModifiableAttachments;
 import com.tle.common.NameValue;
 import com.tle.common.collection.AttachmentConfigConstants;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.FileSystemConstants;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.security.TLEAclManager;
@@ -110,8 +111,8 @@ public class PackageDetails extends AbstractDetailsEditor<PackageDetails.Package
 	{
 		PackageDetailsModel model = getModel(context);
 		model.setEditTitle(new TextLabel(displayName.getValue(context)));
-		model.setShowRestrict(!aclManager.filterNonGrantedPrivileges(AttachmentConfigConstants.RESTRICT_ATTACHMENTS)
-			.isEmpty());
+		model.setShowRestrict(
+			!aclManager.filterNonGrantedPrivileges(AttachmentConfigConstants.RESTRICT_ATTACHMENTS).isEmpty());
 		model.setShowPreview(getFileUploadHandler().getFileSettings().isAllowPreviews());
 		model.setShowViewers(!(viewers.getListModel().getOptions(context).size() == 2));
 		model.setShowExpandButtons(uploadedFile.getResolvedSubType().equals(IMSPackageAttachmentHandler.PACKAGE_TYPE));
@@ -184,7 +185,7 @@ public class PackageDetails extends AbstractDetailsEditor<PackageDetails.Package
 		fileSystemService.removeFile(stagingFile, packageName);
 		// Only supports one package
 		// FIXME: plugin point
-		fileSystemService.removeFile(stagingFile, FileSystemService.IMS_FOLDER);
+		fileSystemService.removeFile(stagingFile, FileSystemConstants.IMS_FOLDER);
 		fileSystemService.removeFile(stagingFile, FileSystemService.SCORM_FOLDER);
 		fileSystemService.removeFile(stagingFile, FileSystemService.SECURE_FOLDER);
 	}

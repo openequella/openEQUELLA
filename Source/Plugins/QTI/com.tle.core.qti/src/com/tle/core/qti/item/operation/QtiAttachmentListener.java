@@ -23,7 +23,7 @@ import javax.inject.Singleton;
 
 import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
 
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.CustomAttachment;

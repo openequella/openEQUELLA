@@ -24,14 +24,14 @@ import javax.inject.Inject;
 
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.VersionSelection;
-import com.tle.beans.system.QuickContributeAndVersionSettings;
 import com.tle.common.Check;
 import com.tle.common.Format;
 import com.tle.common.NameValue;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.web.i18n.BundleCache;
-import com.tle.web.i18n.BundleNameValue;
+import com.tle.common.settings.standard.QuickContributeAndVersionSettings;
+import com.tle.core.collection.service.ItemDefinitionService;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.i18n.BundleNameValue;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.annotations.EventFactory;
@@ -121,8 +121,8 @@ public class RootQuickContributeAndVersionSettingsSection
 
 		disable.setChecked(info, settings.isButtonDisable());
 
-		return new GenericTemplateResult(viewFactory.createNamedResult(BODY, "quickcontributeandversionsettings.ftl",
-			this));
+		return new GenericTemplateResult(
+			viewFactory.createNamedResult(BODY, "quickcontributeandversionsettings.ftl", this));
 	}
 
 	@Override
@@ -148,11 +148,11 @@ public class RootQuickContributeAndVersionSettingsSection
 			}
 		});
 
-		SimpleHtmlListModel<NameValue> versionOptions = new SimpleHtmlListModel<NameValue>(new BundleNameValue(
-			FORCE_CURRENT_KEY, VersionSelection.FORCE_CURRENT.toString()), new BundleNameValue(FORCE_LATEST_KEY,
-			VersionSelection.FORCE_LATEST.toString()), new BundleNameValue(DEFAULT_CURRENT_KEY,
-			VersionSelection.DEFAULT_TO_CURRENT.toString()), new BundleNameValue(DEFAULT_LATEST_KEY,
-			VersionSelection.DEFAULT_TO_LATEST.toString()));
+		SimpleHtmlListModel<NameValue> versionOptions = new SimpleHtmlListModel<NameValue>(
+			new BundleNameValue(FORCE_CURRENT_KEY, VersionSelection.FORCE_CURRENT.toString()),
+			new BundleNameValue(FORCE_LATEST_KEY, VersionSelection.FORCE_LATEST.toString()),
+			new BundleNameValue(DEFAULT_CURRENT_KEY, VersionSelection.DEFAULT_TO_CURRENT.toString()),
+			new BundleNameValue(DEFAULT_LATEST_KEY, VersionSelection.DEFAULT_TO_LATEST.toString()));
 		versionViewOptions.setListModel(versionOptions);
 		versionViewOptions.setAlwaysSelect(true);
 

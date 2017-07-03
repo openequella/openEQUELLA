@@ -26,18 +26,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.dytech.edge.common.LockedException;
-import com.dytech.edge.common.valuebean.UserBean;
 import com.dytech.edge.exceptions.BadRequestException;
 import com.dytech.edge.exceptions.DRMException;
 import com.dytech.edge.exceptions.WebException;
 import com.tle.common.Check;
 import com.tle.common.Pair;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
-import com.tle.core.services.UrlService;
 import com.tle.core.services.user.UserService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -65,7 +65,7 @@ public class DefaultErrorSection extends AbstractErrorSection<DefaultErrorSectio
 	@Inject
 	private UserService userService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private MimeTypeService mimeTypeService;
 	@PlugKey("errors.part.actions.goback")
@@ -124,9 +124,9 @@ public class DefaultErrorSection extends AbstractErrorSection<DefaultErrorSectio
 			return new Pair<Integer, String>(webex.getCode(), mapErrorCode(webex.getCode()));
 		}
 
-		if( ex instanceof com.dytech.edge.exceptions.NotFoundException )
+		if( ex instanceof com.tle.common.beans.exception.NotFoundException )
 		{
-			if( ((com.dytech.edge.exceptions.NotFoundException) ex).isFromRequest() )
+			if( ((com.tle.common.beans.exception.NotFoundException) ex).isFromRequest() )
 			{
 				// cool, standard 404
 				return generic404(model, ex, requestURI);
@@ -143,8 +143,8 @@ public class DefaultErrorSection extends AbstractErrorSection<DefaultErrorSectio
 		{
 			if( LOGGER.isDebugEnabled() )
 			{
-				LOGGER.debug("Access denied to user: "
-					+ userService.convertUserStateToString(CurrentUser.getUserState()));
+				LOGGER.debug(
+					"Access denied to user: " + userService.convertUserStateToString(CurrentUser.getUserState()));
 			}
 
 			// TODO: do we need this any more???
@@ -155,7 +155,7 @@ public class DefaultErrorSection extends AbstractErrorSection<DefaultErrorSectio
 				String mime = mimeTypeService.getMimeTypeForFilename(filename);
 				if( mime.startsWith("image") )
 				{
-					info.forwardToUrl(urlService.institutionalise("images/denied.png"));
+					info.forwardToUrl(institutionService.institutionalise("images/denied.png"));
 					return null;
 				}
 			}

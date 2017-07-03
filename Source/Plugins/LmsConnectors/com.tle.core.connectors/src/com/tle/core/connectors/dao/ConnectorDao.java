@@ -19,7 +19,7 @@ package com.tle.core.connectors.dao;
 import java.util.List;
 
 import com.tle.common.connectors.entity.Connector;
-import com.tle.core.dao.AbstractEntityDao;
+import com.tle.core.entity.dao.AbstractEntityDao;
 
 /**
  * @author aholland

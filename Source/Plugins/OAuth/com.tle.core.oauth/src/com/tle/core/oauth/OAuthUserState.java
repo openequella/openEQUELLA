@@ -18,7 +18,7 @@ package com.tle.core.oauth;
 
 import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.core.oauth.dao.OAuthClientDao;
-import com.tle.core.user.UserState;
+import com.tle.common.usermanagement.user.UserState;
 
 /**
  * @author Aaron

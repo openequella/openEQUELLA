@@ -42,10 +42,10 @@ import com.tle.common.search.DefaultSearch;
 import com.tle.common.search.whereparser.WhereParser;
 import com.tle.common.searching.Search.SortType;
 import com.tle.common.searching.SearchResults;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.serializer.ItemSerializerItemBean;
 import com.tle.core.item.serializer.ItemSerializerService;
-import com.tle.core.services.item.FreeTextService;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.item.ItemLinkService;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
@@ -166,7 +166,8 @@ public class SearchMyResource
 					}
 				});
 
-				final ItemSerializerItemBean serializer = itemSerializerService.createItemBeanSerializer(ids, infos);
+				final ItemSerializerItemBean serializer = itemSerializerService.createItemBeanSerializer(ids, infos,
+					false);
 				for( ItemIdKey itemId : itemIds )
 				{
 					EquellaItemBean itemBean = new EquellaItemBean();

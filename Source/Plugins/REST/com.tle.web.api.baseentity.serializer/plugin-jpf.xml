@@ -2,7 +2,7 @@
 <plugin id="com.tle.web.api.baseentity.serializer" version="1">
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
-		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.entity" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.web.api.interfaces" />
 		<import plugin-id="com.tle.common.interfaces.equella" />

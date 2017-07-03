@@ -17,7 +17,7 @@
 package com.tle.core.connectors.service;
 
 import com.tle.common.connectors.entity.Connector;
-import com.tle.core.services.entity.EntityEditingSession;
+import com.tle.core.entity.EntityEditingSession;
 
 /**
  * @author aholland

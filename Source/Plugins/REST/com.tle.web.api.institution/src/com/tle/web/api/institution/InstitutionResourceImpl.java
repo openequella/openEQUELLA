@@ -18,6 +18,7 @@ package com.tle.web.api.institution;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -35,7 +36,6 @@ import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dytech.edge.exceptions.BadRequestException;
-import com.dytech.edge.exceptions.NotFoundException;
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -45,25 +45,28 @@ import com.tle.beans.usermanagement.standard.wrapper.GroupWrapperSettings;
 import com.tle.beans.usermanagement.standard.wrapper.RoleWrapperSettings;
 import com.tle.beans.usermanagement.standard.wrapper.UserWrapperSettings;
 import com.tle.common.Check;
+import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.beans.progress.ListProgressCallback;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.hash.Hash;
 import com.tle.common.i18n.KeyString;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.filesystem.InstitutionFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.institution.InstitutionStatus;
+import com.tle.core.institution.convert.service.InstitutionImportService;
 import com.tle.core.migration.SchemaInfo;
 import com.tle.core.mimetypes.dao.MimeEntryDao;
 import com.tle.core.mimetypes.institution.MimeMigrator;
 import com.tle.core.plugins.impl.PluginServiceImpl;
-import com.tle.core.progress.ListProgressCallback;
 import com.tle.core.security.RunAsUser;
 import com.tle.core.security.impl.SecureOnCallSystem;
-import com.tle.core.services.InstitutionImportService;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.services.FileSystemService;
 import com.tle.core.services.user.UserService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.core.system.SystemConfigService;
 import com.tle.core.system.service.SchemaDataSourceService;
-import com.tle.core.user.CurrentUser;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.institution.interfaces.InstitutionResource;
 import com.tle.web.api.institution.interfaces.beans.InstitutionBean;
@@ -85,13 +88,13 @@ public class InstitutionResourceImpl implements InstitutionResource
 	@Inject
 	private InstitutionService institutionService;
 	@Inject
-	private UrlService urlService;
-	@Inject
 	private SystemConfigService systemConfigService;
 	@Inject
 	private SchemaDataSourceService schemaDataSourceService;
 	@Inject
 	private InstitutionImportService institutionImportService;
+	@Inject
+	private FileSystemService fileSystemService;
 	@Inject
 	private RunAsUser runAs;
 	@Inject
@@ -197,8 +200,7 @@ public class InstitutionResourceImpl implements InstitutionResource
 			return Response.status(Status.NOT_FOUND).entity(uniqueId).build();
 		}
 		// the institutionImportService does all the preliminary deletes of
-		// entities.
-		// the callback cannot be null, so we need a do-nothing
+		// entities. The callback cannot be null, so we need a do-nothing
 		institutionImportService.delete(institution, new ListProgressCallback());
 		return Response.noContent().build();
 	}
@@ -296,20 +298,20 @@ public class InstitutionResourceImpl implements InstitutionResource
 		{
 			if( Objects.equals(institutionBean.getName(), instati.getInstitution().getName()) )
 			{
-				KeyString messg = new KeyString(KEY_PREFIX + "institution.validate.use", VALDATION_PREAMBLE
-					+ "Institution name", institutionBean.getName());
+				KeyString messg = new KeyString(KEY_PREFIX + "institution.validate.use",
+					VALDATION_PREAMBLE + "Institution name", institutionBean.getName());
 				throw new BadRequestException(messg.toString());
 			}
 			if( Objects.equals(institutionBean.getFilestoreId(), instati.getInstitution().getFilestoreId()) )
 			{
-				KeyString messg = new KeyString(KEY_PREFIX + "institution.validate.use", VALDATION_PREAMBLE
-					+ "Filestore ID", institutionBean.getFilestoreId());
+				KeyString messg = new KeyString(KEY_PREFIX + "institution.validate.use",
+					VALDATION_PREAMBLE + "Filestore ID", institutionBean.getFilestoreId());
 				throw new BadRequestException(messg.toString());
 			}
 			if( Objects.equals(institutionBean.getUrl(), instati.getInstitution().getUrl()) )
 			{
-				KeyString messg = new KeyString(KEY_PREFIX + "institution.validate.use", VALDATION_PREAMBLE
-					+ "Institution URL", institutionBean.getFilestoreId());
+				KeyString messg = new KeyString(KEY_PREFIX + "institution.validate.use",
+					VALDATION_PREAMBLE + "Institution URL", institutionBean.getFilestoreId());
 				throw new BadRequestException(messg.toString());
 			}
 		}
@@ -325,7 +327,39 @@ public class InstitutionResourceImpl implements InstitutionResource
 			public Long call() throws Exception
 			{
 				Institution inst = deserialize(institutionBean, uniqueId, null);
-				return institutionService.createInstitution(inst, schemaId).getUniqueId();
+				// ensure we can create the base directory for the filestore
+				FileHandle handle = new InstitutionFile(inst);
+				boolean createdBaseDir = false;
+				if( !fileSystemService.fileExists(handle) )
+				{
+					fileSystemService.mkdir(handle, null);
+					createdBaseDir = true;
+				}
+				else if( !fileSystemService.fileIsDir(handle, null) )
+				{
+					throw new FileAlreadyExistsException(handle.getAbsolutePath(), null, "non-directory file exists");
+				}
+				try
+				{
+					return institutionService.createInstitution(inst, schemaId).getUniqueId();
+				}
+				catch( Exception e )
+				{
+					if( createdBaseDir )
+					{
+						// try a cleanup if we manufactured the base directory
+						try
+						{
+							fileSystemService.removeFile(handle);
+						}
+						catch( Throwable t )
+						{
+							// ignore an exception on delete, rethrow original
+							// exception
+						}
+					}
+					throw e;
+				}
 			}
 		});
 		final Institution institution = institutionService.getInstitution(resultantId);
@@ -352,7 +386,8 @@ public class InstitutionResourceImpl implements InstitutionResource
 		return institution;
 	}
 
-	private Institution deserialize(InstitutionBean bean, final long uniqueId, @Nullable Institution originalInstitution)
+	private Institution deserialize(InstitutionBean bean, final long uniqueId,
+		@Nullable Institution originalInstitution)
 	{
 		Institution newInstitution = originalInstitution != null ? originalInstitution : new Institution();
 		newInstitution.setUniqueId(uniqueId);
@@ -388,7 +423,7 @@ public class InstitutionResourceImpl implements InstitutionResource
 		URI uri;
 		try
 		{
-			uri = new URI(urlService.institutionalise("api/institution/" + uniqueID + '/'));
+			uri = new URI(institutionService.institutionalise("api/institution/" + uniqueID + '/'));
 		}
 		catch( URISyntaxException e )
 		{

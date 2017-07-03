@@ -20,11 +20,11 @@ import java.util.Collections;
 
 import javax.inject.Inject;
 
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
-import com.tle.core.notification.indexer.NotificationSearch;
-import com.tle.core.services.item.FreeTextService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
+import com.tle.core.notification.standard.indexer.NotificationSearch;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.IconLabel;
@@ -45,7 +45,7 @@ public class NotificationTopbarLink extends AbstractCachedTopbarLink
 
 	@Inject
 	private FreeTextService freeTextService;
-	
+
 	@Override
 	public int getCount()
 	{

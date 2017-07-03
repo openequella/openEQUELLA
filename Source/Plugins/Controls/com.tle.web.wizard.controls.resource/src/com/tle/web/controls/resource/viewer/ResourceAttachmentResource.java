@@ -29,7 +29,6 @@ import javax.inject.Singleton;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.dytech.edge.exceptions.NotFoundException;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
@@ -39,15 +38,16 @@ import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.Check;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.service.ItemCommentService;
 import com.tle.core.mimetypes.MimeTypeConstants;
 import com.tle.core.mimetypes.RegisterMimeTypeExtension;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.item.ItemCommentService;
-import com.tle.core.services.item.ItemService;
 import com.tle.web.controls.universal.AttachmentHandlerUtils;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.integration.service.IntegrationService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -109,7 +109,7 @@ public class ResourceAttachmentResource
 	@Inject
 	private IntegrationService integService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private BundleCache bundleCache;
 	@Inject
@@ -165,7 +165,6 @@ public class ResourceAttachmentResource
 
 				//TODO: quicker? possibly slower if getItem is called elsewhere
 				//Attachment linkedAttachment = itemService.getAttachmentForFilepath(itemId, attachment.getUrl());
-
 				Attachment linkedAttachment = attachMap.get(attachment.getUrl());
 				if( linkedAttachment != null )
 				{
@@ -225,7 +224,7 @@ public class ResourceAttachmentResource
 		public ImageRenderer createStandardThumbnailRenderer(Label label)
 		{
 			ItemKey itemId = getViewableItem().getItemId();
-			String source = urlService
+			String source = institutionService
 				.institutionalise(MessageFormat.format("thumbs/{0}/{1}/", itemId.getUuid(), itemId.getVersion()));
 			return new ImageRenderer(source, label);
 		}

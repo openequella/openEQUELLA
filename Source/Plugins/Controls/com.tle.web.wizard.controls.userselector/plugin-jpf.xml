@@ -8,6 +8,8 @@
 		<import plugin-id="com.tle.web.wizard" />
 		<import plugin-id="com.tle.web.viewurl" />
 		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.common.usermanagement" />
+		<import plugin-id="com.tle.core.usermanagement" />
 	</requires>
 
 	<runtime>

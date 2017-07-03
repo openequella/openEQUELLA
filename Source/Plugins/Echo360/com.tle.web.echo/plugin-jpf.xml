@@ -3,12 +3,12 @@
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.core.echo" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.web.api.item.equella.serializer" />
 		<import plugin-id="com.tle.core.jackson" />
 		<import plugin-id="com.tle.core.security" />
 		<import plugin-id="com.tle.core.migration" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.web.sections" />
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.web.settings" />
@@ -21,6 +21,9 @@
 		<import plugin-id="joda-time:joda-time" />
 		<import plugin-id="com.tle.core.url" />
 		<import plugin-id="com.tle.web.api.item.equella.interfaces" />
+		<import plugin-id="com.tle.core.institution.convert" />
+		<import plugin-id="com.tle.core.entity.security" />
+		<import plugin-id="com.tle.xstream" />
 	</requires>
 	
 	<runtime>
@@ -61,7 +64,7 @@
 		<parameter id="date" value="1970-01-01" />
 	</extension>
 	
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="addEchoMimeTypeXmlMigration">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="addEchoMimeTypeXmlMigration">
 		<parameter id="id" value="com.tle.web.echo.migration.AddEchoMimeTypeXmlMigration" />
 		<parameter id="bean" value="bean:com.tle.web.echo.migration.AddEchoMimeTypeXmlMigration" />
 	</extension>

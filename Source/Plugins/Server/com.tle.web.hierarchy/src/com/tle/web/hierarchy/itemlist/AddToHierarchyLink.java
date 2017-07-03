@@ -26,7 +26,7 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.hierarchy.addkey.HierarchyTreeSection;
 import com.tle.web.itemlist.item.ItemListEntry;
 import com.tle.web.itemlist.item.ItemlikeListEntryExtension;

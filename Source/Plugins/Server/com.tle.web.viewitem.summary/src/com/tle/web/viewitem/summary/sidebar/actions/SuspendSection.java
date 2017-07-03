@@ -21,7 +21,7 @@ import javax.inject.Inject;
 import com.tle.beans.item.ItemStatus;
 import com.tle.beans.workflow.WorkflowStatus;
 import com.tle.core.guice.Bind;
-import com.tle.core.workflow.operations.WorkflowFactory;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
@@ -37,7 +37,7 @@ public class SuspendSection extends GenericMinorActionSection
 	@PlugKey("summary.sidebar.actions.suspend.receipt")
 	private static Label RECEIPT_LABEL;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 
 	@Override
 	@SuppressWarnings("nls")

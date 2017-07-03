@@ -20,7 +20,7 @@ import java.util.List;
 
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.FederatedSearch;
-import com.tle.core.dao.AbstractEntityDao;
+import com.tle.core.entity.dao.AbstractEntityDao;
 
 /**
  * @author Nicholas Read

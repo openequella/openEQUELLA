@@ -19,8 +19,8 @@ package com.tle.mypages.parse;
 import java.io.Reader;
 import java.util.List;
 
-import com.tle.core.util.HrefCallback;
-import com.tle.core.util.HtmlContentHandler;
+import com.tle.core.services.html.HrefCallback;
+import com.tle.core.services.html.HtmlContentHandler;
 import com.tle.mypages.parse.conversion.HrefConversion;
 
 /**

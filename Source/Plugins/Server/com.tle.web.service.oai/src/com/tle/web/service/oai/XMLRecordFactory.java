@@ -25,24 +25,24 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 
-import ORG.oclc.oai.server.catalog.RecordFactory;
-import ORG.oclc.oai.server.crosswalk.Crosswalk;
-import ORG.oclc.oai.server.crosswalk.CrosswalkItem;
-import ORG.oclc.oai.server.crosswalk.Crosswalks;
-import ORG.oclc.oai.server.verb.CannotDisseminateFormatException;
-import ORG.oclc.oai.server.verb.ServerVerb;
-
 import com.dytech.devlib.PropBagEx;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.SchemaTransform;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemPack;
 import com.tle.beans.item.ItemStatus;
-import com.tle.core.schema.SchemaService;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.util.ItemHelper;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.helper.ItemHelper;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.schema.service.SchemaService;
+import com.tle.core.settings.service.ConfigurationService;
+
+import ORG.oclc.oai.server.catalog.RecordFactory;
+import ORG.oclc.oai.server.crosswalk.Crosswalk;
+import ORG.oclc.oai.server.crosswalk.CrosswalkItem;
+import ORG.oclc.oai.server.crosswalk.Crosswalks;
+import ORG.oclc.oai.server.verb.CannotDisseminateFormatException;
+import ORG.oclc.oai.server.verb.ServerVerb;
 
 public class XMLRecordFactory extends RecordFactory
 {
@@ -55,7 +55,7 @@ public class XMLRecordFactory extends RecordFactory
 	@Inject
 	private ConfigurationService configService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private ItemHelper itemHelper;
 
@@ -85,7 +85,7 @@ public class XMLRecordFactory extends RecordFactory
 	@Override
 	public String getOAIIdentifier(Object record)
 	{
-		return OAIUtils.getInstance(urlService, configService).getIdentifier(getItem(record).getItemId());
+		return OAIUtils.getInstance(institutionService, configService).getIdentifier(getItem(record).getItemId());
 	}
 
 	@Override
@@ -141,8 +141,8 @@ public class XMLRecordFactory extends RecordFactory
 
 	private CrosswalkItem createCrossWalkItem(String metadataPrefix, String schema, String metadataNamespace)
 	{
-		return new CrosswalkItem(metadataPrefix, schema, metadataNamespace, new TLECrossWalk(metadataPrefix,
-			metadataNamespace + ' ' + schema, null, null, null));
+		return new CrosswalkItem(metadataPrefix, schema, metadataNamespace,
+			new TLECrossWalk(metadataPrefix, metadataNamespace + ' ' + schema, null, null, null));
 	}
 
 	private class TLECrossWalk extends Crosswalk

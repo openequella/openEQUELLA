@@ -28,10 +28,10 @@ import com.tle.beans.item.ItemPack;
 import com.tle.beans.item.Relation;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.operations.AbstractWorkflowOperation;
+import com.tle.core.item.standard.operations.DuringSaveOperation;
+import com.tle.core.item.standard.operations.DuringSaveOperationGenerator;
 import com.tle.core.qti.QtiConstants;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
-import com.tle.core.workflow.operations.DuringSaveOperation;
-import com.tle.core.workflow.operations.DuringSaveOperationGenerator;
 
 @Bind
 public class CloneRelationOperation extends AbstractWorkflowOperation implements DuringSaveOperationGenerator

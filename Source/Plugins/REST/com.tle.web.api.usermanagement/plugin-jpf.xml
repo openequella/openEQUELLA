@@ -9,6 +9,7 @@
 		<import plugin-id="com.tle.common.usermanagement" />
 		<import plugin-id="com.tle.web.api.interfaces" />
 		<import plugin-id="com.tle.web.api.users.interfaces" />
+		<import plugin-id="com.tle.core.security" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

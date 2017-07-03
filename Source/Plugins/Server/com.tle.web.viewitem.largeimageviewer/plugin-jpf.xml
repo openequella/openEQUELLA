@@ -10,6 +10,8 @@
 		<import plugin-id="com.tle.web.wizard" />
 		<import plugin-id="com.tle.web.viewurl" />
 		<import plugin-id="com.tle.web.viewitem" />
+		<import plugin-id="com.tle.core.filesystem" />
+		<import plugin-id="com.tle.core.item.standard" />
 	</requires>
 
 	<runtime>

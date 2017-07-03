@@ -27,15 +27,15 @@ import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.guice.Bind;
-import com.tle.core.schema.SchemaService;
-import com.tle.core.services.entity.ItemDefinitionService;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.schema.service.SchemaService;
 import com.tle.web.cloneormove.model.CloneOrMoveModel;
 import com.tle.web.cloneormove.model.ContributableCollectionsModel;
 import com.tle.web.cloneormove.model.SchemaTransformsModel;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.itemadmin.section.ItemAdminResultsDialog;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -145,14 +145,13 @@ public class CloneOrMoveSection extends AbstractPrototypeSection<CloneOrMoveMode
 
 		JSExpression schemaImportExpression = (showSchemas ? schemaImports.createGetExpression()
 			: new StringExpression("")); //$NON-NLS-1$
-		Object cloneParam = showCloneOpts ? cloneOptions.createGetExpression() : cloneOptions
-			.getSelectedValueAsString(info);
+		Object cloneParam = showCloneOpts ? cloneOptions.createGetExpression()
+			: cloneOptions.getSelectedValueAsString(info);
 		Object submitParam = model.getSubmitLabel() != null ? submitOptions.createGetExpression() : ""; //$NON-NLS-1$
 		if( !forBulk )
 		{
-			proceedButton.setClickHandler(info,
-				new OverrideHandler(okFunction, cloneParam, collections.createGetExpression(), schemaImportExpression,
-					submitParam));
+			proceedButton.setClickHandler(info, new OverrideHandler(okFunction, cloneParam,
+				collections.createGetExpression(), schemaImportExpression, submitParam));
 		}
 		if( model.isMove() )
 		{

@@ -19,6 +19,8 @@ package com.tle.common.searching;
 import java.io.Serializable;
 import java.util.Objects;
 
+import org.apache.lucene.search.FieldComparatorSource;
+
 /**
  * The real question is.. Do we just want to expose the lucene classes instead?
  * 
@@ -30,12 +32,13 @@ public class SortField implements Cloneable, Serializable
 
 	public enum Type
 	{
-		STRING, INT, LONG, SCORE
+		STRING, INT, LONG, SCORE, CUSTOM
 	}
 
 	private final String field;
 	private final Type type;
 	private boolean reverse;
+	private FieldComparatorSource fieldComparatorSource;
 
 	public SortField(String field, boolean reverse)
 	{
@@ -47,6 +50,14 @@ public class SortField implements Cloneable, Serializable
 		this.field = field;
 		this.reverse = reverse;
 		this.type = type;
+	}
+
+	public SortField(String field, FieldComparatorSource fieldComparatorSource)
+	{
+		this.field = field;
+		this.fieldComparatorSource = fieldComparatorSource;
+		this.reverse = false;
+		this.type = Type.CUSTOM;
 	}
 
 	public String getField()
@@ -69,6 +80,11 @@ public class SortField implements Cloneable, Serializable
 		this.reverse = reverse;
 	}
 
+	public FieldComparatorSource getFieldComparatorSource()
+	{
+		return fieldComparatorSource;
+	}
+
 	// Explicit catch of CloneNotSupportedException from super.clone()
 	@Override
 	public SortField clone() // NOSONAR
@@ -86,7 +102,7 @@ public class SortField implements Cloneable, Serializable
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(field, type, reverse);
+		return Objects.hash(field, type, reverse, fieldComparatorSource);
 	}
 
 	@Override
@@ -103,7 +119,8 @@ public class SortField implements Cloneable, Serializable
 		else
 		{
 			SortField rhs = (SortField) obj;
-			return reverse == rhs.reverse && Objects.equals(type, rhs.type) && Objects.equals(field, rhs.field);
+			return reverse == rhs.reverse && Objects.equals(type, rhs.type) && Objects.equals(field, rhs.field)
+				&& Objects.equals(fieldComparatorSource, rhs.fieldComparatorSource);
 		}
 	}
 }

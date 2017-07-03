@@ -53,10 +53,8 @@ public class ActivationSerializer
 		if( request.getCourse() != null )
 		{
 			CourseBean courseBean = courseSerializer.serialize(request.getCourse(), null, false);
-			courseBean.set(
-				"links",
-				Collections.singletonMap("self",
-					UriBuilder.fromMethod(CourseResource.class, "get").build(courseBean.getUuid()).toString()));
+			courseBean.set("links", Collections.singletonMap("self",
+				UriBuilder.fromMethod(CourseResource.class, "get").build(courseBean.getUuid()).toString()));
 			activation.setCourse(courseBean);
 		}
 		activation.setFrom(request.getFrom());
@@ -83,7 +81,7 @@ public class ActivationSerializer
 			EquellaItemBean itemBean = new EquellaItemBean();
 			Item item = request.getItem();
 			ItemSerializerItemBean serializer = itemSerializerService.createItemBeanSerializer(
-				Collections.singletonList(item.getId()), Sets.newHashSet("basic", "attachment"));
+				Collections.singletonList(item.getId()), Sets.newHashSet("basic", "attachment"), false);
 			itemBean.setUuid(item.getUuid());
 			itemBean.setVersion(item.getVersion());
 			serializer.writeItemBeanResult(itemBean, item.getId());

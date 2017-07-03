@@ -3,12 +3,13 @@
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.core.guice" />
-		<import plugin-id="com.tle.core.entity.services" />
+		
 		<import plugin-id="com.tle.web.freemarker" />
 		<import plugin-id="com.tle.web.resources" />
 		<import plugin-id="com.tle.web.sections" />
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.web.sections.standard" />
+		<import plugin-id="com.tle.core.usermanagement" />
 	</requires>
 
 	<runtime>

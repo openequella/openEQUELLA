@@ -26,13 +26,14 @@ import javax.inject.Inject;
 import javax.mail.internet.AddressException;
 
 import com.google.common.collect.Lists;
-import com.tle.beans.system.MailSettings;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.settings.standard.MailSettings;
 import com.tle.core.email.EmailResult;
 import com.tle.core.email.EmailService;
+import com.tle.core.encryption.EncryptionService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourceHelper;
 import com.tle.web.sections.SectionInfo;
@@ -91,6 +92,8 @@ public class MailSettingsSection extends OneColumnLayout<MailSettingsSection.Mai
 	private MailSettingsPrivilegeTreeProvider securityProvider;
 	@Inject
 	private EmailService emailService;
+	@Inject
+	private EncryptionService encryptionService;
 
 	@Component(name = "fe", stateful = false)
 	private TextField fromEmailAddr;
@@ -119,9 +122,9 @@ public class MailSettingsSection extends OneColumnLayout<MailSettingsSection.Mai
 	{
 		super.registered(id, tree);
 		saveButton.setClickHandler(events.getNamedHandler("save"));
-		testButton.setClickHandler(new OverrideHandler(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("test"), ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING), "emailstatus",
-			"required", "testemail")));
+		testButton.setClickHandler(
+			new OverrideHandler(ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("test"),
+				ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING), "emailstatus", "required", "testemail")));
 	}
 
 	@Override
@@ -134,7 +137,7 @@ public class MailSettingsSection extends OneColumnLayout<MailSettingsSection.Mai
 			MailSettings mailSettings = getMailSettings();
 			fromEmailAddr.setValue(info, mailSettings.getSender());
 			username.setValue(info, mailSettings.getUsername());
-			password.setValue(info, mailSettings.getPassword());
+			// Don't set password in form
 			displayName.setValue(info, mailSettings.getSenderName());
 			serverUrl.setValue(info, mailSettings.getServer());
 			getModel(info).setLoaded(true);
@@ -170,7 +173,13 @@ public class MailSettingsSection extends OneColumnLayout<MailSettingsSection.Mai
 		// Save settings
 		mailSettings.setSender(fromEmailAddr.getValue(info));
 		mailSettings.setUsername(username.getValue(info));
-		mailSettings.setPassword(password.getValue(info));
+
+		// If password is blank... leave unchanged
+		String pwd = password.getValue(info);
+		if( !Check.isEmpty(pwd) )
+		{
+			mailSettings.setPassword(encryptionService.encrypt(pwd));
+		}
 		mailSettings.setSenderName(displayName.getValue(info));
 		mailSettings.setServer(serverUrl.getValue(info));
 
@@ -229,11 +238,15 @@ public class MailSettingsSection extends OneColumnLayout<MailSettingsSection.Mai
 			testSettings.setSender(from);
 			testSettings.setServer(srv);
 			testSettings.setUsername(username.getValue(info));
-			testSettings.setPassword(password.getValue(info));
+
+			String origpwd = getMailSettings().getPassword();
+			String newpwd = password.getValue(info);
+			// Use original if it exists and new is blank
+			testSettings.setPassword(Check.isEmpty(newpwd) ? origpwd : newpwd);
 			testSettings.setSenderName(displayName.getValue(info));
 
 			Future<EmailResult<String>> result = emailService.sendEmail(CurrentLocale.get(TEST_EMAIL_SUBJECT),
-				Lists.newArrayList(to), CurrentLocale.get(TEST_EMAIL_TEXT), testSettings);
+				Lists.newArrayList(to), CurrentLocale.get(TEST_EMAIL_TEXT), testSettings, !Check.isEmpty(newpwd));
 
 			EmailResult<String> emailResult;
 			try
@@ -245,10 +258,8 @@ public class MailSettingsSection extends OneColumnLayout<MailSettingsSection.Mai
 				{
 					Throwable error = emailResult.getError();
 					Throwable cause = error.getCause();
-					model.addError(
-						"emailError",
-						MessageFormat.format("{0} {1}", CurrentLocale.get(TEST_EMAIL_FAILURE),
-							(cause != null) ? cause.getMessage() : error.getMessage()));
+					model.addError("emailError", MessageFormat.format("{0} {1}", CurrentLocale.get(TEST_EMAIL_FAILURE),
+						(cause != null) ? cause.getMessage() : error.getMessage()));
 				}
 				else
 				{

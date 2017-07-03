@@ -26,14 +26,14 @@ import com.dytech.devlib.PropBagEx;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.annotation.Nullable;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.beans.item.attachments.HtmlAttachment;
 import com.tle.beans.item.attachments.ModifiableAttachments;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
+import com.tle.core.item.operations.AbstractWorkflowOperation;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.mycontent.MyContentConstants;
 import com.tle.mycontent.service.MyContentFields;
 import com.tle.mypages.service.MyPagesService;
@@ -48,6 +48,7 @@ public class EditMyPagesOperation extends AbstractWorkflowOperation
 
 	@Inject
 	private MyPagesService myPagesService;
+
 	@AssistedInject
 	private EditMyPagesOperation(@Assisted MyContentFields fields, @Assisted String filename,
 		@Assisted @Nullable InputStream inputStream, @Assisted("remove") boolean removeExistingAttachments,
@@ -60,6 +61,7 @@ public class EditMyPagesOperation extends AbstractWorkflowOperation
 		this.removeExistingAttachments = removeExistingAttachments;
 		this.useExistingAttachment = useExistingAttachment;
 	}
+
 	@Override
 	public boolean execute()
 	{

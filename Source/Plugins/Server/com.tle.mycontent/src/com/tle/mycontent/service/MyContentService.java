@@ -22,7 +22,7 @@ import java.util.Set;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
-import com.tle.core.workflow.operations.WorkflowOperation;
+import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.mycontent.ContentHandler;
 import com.tle.mycontent.web.section.ContributeMyContentAction;
 import com.tle.web.sections.SectionInfo;

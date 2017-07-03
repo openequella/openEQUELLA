@@ -28,12 +28,12 @@ import com.tle.beans.item.ItemIdKey;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.search.whereparser.WhereParser;
 import com.tle.common.searching.SearchResults;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.FreeTextService;
-import com.tle.core.services.item.ItemService;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.item.service.ItemService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.annotations.Bookmarked;
@@ -81,8 +81,8 @@ public class HarvestListSection extends AbstractPrototypeSection<HarvestListSect
 			search.setFreeTextQuery(WhereParser.parse(where));
 		}
 
-		final SearchResults<ItemIdKey> results = freeTextService.searchIds(search, model.getCurrentPage()
-			* MAX_PER_PAGE, MAX_PER_PAGE);
+		final SearchResults<ItemIdKey> results = freeTextService.searchIds(search,
+			model.getCurrentPage() * MAX_PER_PAGE, MAX_PER_PAGE);
 		final List<ItemIdKey> ids = results.getResults();
 
 		final Map<ItemId, Long> names = itemService.getItemNameIds(ids);

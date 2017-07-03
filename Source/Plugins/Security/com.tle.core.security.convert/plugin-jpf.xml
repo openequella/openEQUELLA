@@ -1,0 +1,124 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.security.convert" version="1">
+	<requires>
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.institution.convert" />
+		<import plugin-id="com.tle.common.filesystem" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.core.migration" />
+		<import plugin-id="com.tle.core.encryption" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+	
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.hibernate.guice.TransactionModule" />
+	</extension>
+	
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="aclConverter">
+		<parameter id="id" value="ACLS" />
+		<parameter id="class" value="bean:com.tle.core.security.convert.AclConverter" />
+		<parameter id="order" value="1200" />
+		<parameter id="selections">
+			<parameter id="id" value="ACLS" />
+			<parameter id="nameKey" value="institutions.tasks.acls" />
+		</parameter>
+	</extension>
+	
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="secureEmailMigration">
+		<parameter id="id" value="com.tle.core.institution.migration.v65.SecurityMigration" />
+		<parameter id="bean" value="bean:com.tle.core.security.convert.migration.v65.SecurityMigration" />
+		<parameter id="date" value="2015-11-03" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="securityXmlMigration">
+		<parameter id="id" value="com.tle.core.institution.migration.v65.SecurityXmlMigration" />
+		<parameter id="bean" value="bean:com.tle.core.security.convert.migration.v65.SecurityXmlMigration" />
+		<parameter id="date" value="2015-11-03" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="increaseColumnForEncryptionMigration">
+		<parameter id="id" value="com.tle.core.institution.migration.v65.IncreaseColumnForEncryptionMigration" />
+		<parameter id="bean" value="bean:com.tle.core.security.convert.migration.v65.IncreaseColumnForEncryptionMigration" />
+		<parameter id="date" value="2015-11-03" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="systemSecurityMigration">
+		<parameter id="id" value="com.tle.core.institution.migration.v65.SystemSecurityMigration" />
+		<parameter id="bean" value="bean:com.tle.core.security.convert.migration.v65.SystemSecurityMigration" />
+		<parameter id="system" value="true" />
+		<parameter id="date" value="2015-11-03" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="NewPagesACLsMigration">
+		<parameter id="id" value="com.tle.core.institution.migration.v64.NewPagesACLsMigration" />
+		<parameter id="bean" value="bean:com.tle.core.security.convert.migration.v64.NewPagesACLsMigration" />
+		<parameter id="date" value="2015-06-15" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.institution.convert" point-id="postreadmigration" id="newPagesACLsPostMigration">
+		<parameter id="id" value="com.tle.core.institution.migration.v64.NewPagesACLsPostMigration" />
+		<parameter id="bean" value="bean:com.tle.core.security.convert.migration.v64.NewPagesACLsPostMigration" />
+		<parameter id="forconverter" value="acls" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="fixAccessExpressionMigration">
+		<parameter id="id" value="com.tle.core.institution.migration.v64.FixAccessExpressionsMigration" />
+		<parameter id="bean" value="bean:com.tle.core.security.convert.migration.v64.FixAccessExpressionsMigration" />
+		<parameter id="date" value="2015-12-23" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="mergeOneClickSubmitAndVersionSelectionMigrator">
+		<parameter id="id" value="com.tle.core.institution.migration.v52.MergeOneClickSubmitAndVersionSelectionDatabaseMigration" />
+		<parameter id="bean" value="bean:com.tle.core.security.convert.migration.v52.MergeOneClickSubmitAndVersionSelectionDatabaseMigration" />
+		<parameter id="date" value="1970-01-01" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.institution.convert" point-id="postreadmigration" id="mergeOneClickSubmitAndVersionSelectionXmlMigrator">
+		<parameter id="id" value="com.tle.core.institution.migration.v52.MergeOneClickSubmitAndVersionSelectionAclXmlMigrator" />
+		<parameter id="bean" value="bean:com.tle.core.security.convert.migration.v52.MergeOneClickSubmitAndVersionSelectionAclXmlMigrator" />
+		<parameter id="forconverter" value="acls" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="removeUnusedSystemSettingsPrivilegesMigrator">
+		<parameter id="id" value="com.tle.core.institution.migration.v52.RemoveUnusedSystemSettingsPrivilegesDatabaseMigration" />
+		<parameter id="bean" value="bean:com.tle.core.security.convert.migration.v52.RemoveUnusedSystemSettingsPrivilegesDatabaseMigration" />
+		<parameter id="date" value="1970-01-01" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.institution.convert" point-id="postreadmigration" id="removeUnusedSystemSettingsPrivilegesXmlMigrator">
+		<parameter id="id" value="com.tle.core.institution.migration.v52.RemoveUnusedSystemSettingsPrivilegesAclXmlMigrator" />
+		<parameter id="bean" value="bean:com.tle.core.security.convert.migration.v52.RemoveUnusedSystemSettingsPrivilegesAclXmlMigrator" />
+		<parameter id="forconverter" value="acls" />
+	</extension>
+	
+	
+	<extension plugin-id="com.tle.core.institution.convert" point-id="postreadmigration" id="editHierarchyPriv">
+		<parameter id="id" value="com.tle.core.institution.migration.v40.EditHierarchyPrivilegeMigrator" />
+		<parameter id="bean" value="bean:com.tle.core.security.convert.migration.v40.EditHierarchyPrivilegeMigrator" />
+		<parameter id="forconverter" value="acls" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.institution.convert" point-id="postreadmigration" id="removeEmailTemplatePriv">
+		<parameter id="id" value="com.tle.core.institution.migration.v32.RemoveEmailTemplatePrivMigrator" />
+		<parameter id="bean" value="bean:com.tle.core.security.convert.migration.v32.RemoveEmailTemplatePrivMigrator" />
+		<parameter id="forconverter" value="acls" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.institution.convert" point-id="postreadmigration" id="aclPriorityChange">
+		<parameter id="id" value="com.tle.core.institution.migration.AclPriorityChange" />
+		<parameter id="bean" value="bean:com.tle.core.security.convert.migration.AclPriorityChange" />
+		<parameter id="forconverter" value="acls" />
+	</extension>
+</plugin>

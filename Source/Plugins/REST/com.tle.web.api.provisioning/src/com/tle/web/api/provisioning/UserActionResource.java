@@ -28,7 +28,7 @@ import com.google.inject.Singleton;
 import com.tle.core.events.UserIdChangedEvent;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.EventService;
+import com.tle.core.events.services.EventService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;

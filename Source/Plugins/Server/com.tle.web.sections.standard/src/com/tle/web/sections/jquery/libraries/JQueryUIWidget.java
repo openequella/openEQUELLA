@@ -18,6 +18,7 @@ package com.tle.web.sections.jquery.libraries;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
+import com.tle.web.DebugSettings;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.render.PreRenderable;
 
@@ -29,8 +30,8 @@ public class JQueryUIWidget implements JavascriptModule
 	/**
 	 * Includes ui.core
 	 */
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.widget.js",
-		JQueryUICore.PRERENDER);
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
+		DebugSettings.isDebuggingMode() ? "jquery.ui.widget.js" : "jquery.ui.widget.min.js", JQueryUICore.PRERENDER);
 
 	@Override
 	public String getDisplayName()

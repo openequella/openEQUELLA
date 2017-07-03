@@ -21,7 +21,7 @@ import java.util.List;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.PowerSearch;
 import com.tle.beans.entity.itemdef.ItemDefinition;
-import com.tle.core.dao.AbstractEntityDao;
+import com.tle.core.entity.dao.AbstractEntityDao;
 
 /**
  * @author Nicholas Read

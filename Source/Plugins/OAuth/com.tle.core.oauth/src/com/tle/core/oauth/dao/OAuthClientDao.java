@@ -17,7 +17,7 @@
 package com.tle.core.oauth.dao;
 
 import com.tle.common.oauth.beans.OAuthClient;
-import com.tle.core.dao.AbstractEntityDao;
+import com.tle.core.entity.dao.AbstractEntityDao;
 
 /**
  * @author aholland

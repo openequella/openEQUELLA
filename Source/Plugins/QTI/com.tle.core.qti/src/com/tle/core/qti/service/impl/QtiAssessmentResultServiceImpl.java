@@ -27,6 +27,25 @@ import javax.inject.Singleton;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 
+import com.tle.common.Check;
+import com.tle.common.qti.entity.QtiAbstractResult;
+import com.tle.common.qti.entity.QtiAssessmentItemRef;
+import com.tle.common.qti.entity.QtiAssessmentResult;
+import com.tle.common.qti.entity.QtiAssessmentTest;
+import com.tle.common.qti.entity.QtiItemResult;
+import com.tle.common.qti.entity.QtiItemVariable;
+import com.tle.common.qti.entity.QtiItemVariable.VariableType;
+import com.tle.common.qti.entity.enums.QtiBaseType;
+import com.tle.common.qti.entity.enums.QtiCardinality;
+import com.tle.common.qti.entity.enums.QtiSessionStatus;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.guice.Bind;
+import com.tle.core.qti.dao.QtiAssessmentResultDao;
+import com.tle.core.qti.service.QtiAssessmentResultService;
+import com.tle.core.qti.service.QtiService;
+import com.tle.core.services.ApplicationVersion;
+import com.tle.core.xml.XmlDocument;
+
 import uk.ac.ed.ph.jqtiplus.node.result.AssessmentResult;
 import uk.ac.ed.ph.jqtiplus.node.result.ItemResult;
 import uk.ac.ed.ph.jqtiplus.node.result.ItemVariable;
@@ -41,25 +60,6 @@ import uk.ac.ed.ph.jqtiplus.state.marshalling.TestSessionStateXmlMarshaller;
 import uk.ac.ed.ph.jqtiplus.value.BaseType;
 import uk.ac.ed.ph.jqtiplus.value.Cardinality;
 import uk.ac.ed.ph.jqtiplus.value.SingleValue;
-
-import com.tle.common.Check;
-import com.tle.common.qti.entity.QtiAbstractResult;
-import com.tle.common.qti.entity.QtiAssessmentItemRef;
-import com.tle.common.qti.entity.QtiAssessmentResult;
-import com.tle.common.qti.entity.QtiAssessmentTest;
-import com.tle.common.qti.entity.QtiItemResult;
-import com.tle.common.qti.entity.QtiItemVariable;
-import com.tle.common.qti.entity.QtiItemVariable.VariableType;
-import com.tle.common.qti.entity.enums.QtiBaseType;
-import com.tle.common.qti.entity.enums.QtiCardinality;
-import com.tle.common.qti.entity.enums.QtiSessionStatus;
-import com.tle.common.util.XmlDocument;
-import com.tle.core.guice.Bind;
-import com.tle.core.qti.dao.QtiAssessmentResultDao;
-import com.tle.core.qti.service.QtiAssessmentResultService;
-import com.tle.core.qti.service.QtiService;
-import com.tle.core.services.ApplicationVersion;
-import com.tle.core.user.CurrentUser;
 
 /**
  * @author Aaron
@@ -79,13 +79,13 @@ public class QtiAssessmentResultServiceImpl implements QtiAssessmentResultServic
 
 	@Transactional
 	@Override
-	public AssessmentResult persistTestSessionState(QtiAssessmentTest test,
-		TestSessionController testSessionController, QtiAssessmentResult qtiAssessmentResult)
+	public AssessmentResult persistTestSessionState(QtiAssessmentTest test, TestSessionController testSessionController,
+		QtiAssessmentResult qtiAssessmentResult)
 	{
 		final AssessmentResult assessmentResult = computeAssessmentResult(testSessionController);
 
-		convertItemVariables(qtiAssessmentResult, qtiAssessmentResult.getItemVariables(), assessmentResult
-			.getTestResult().getItemVariables());
+		convertItemVariables(qtiAssessmentResult, qtiAssessmentResult.getItemVariables(),
+			assessmentResult.getTestResult().getItemVariables());
 
 		final List<QtiItemResult> qtiItemResults = qtiAssessmentResult.getItemResults();
 		for( ItemResult itemResult : assessmentResult.getItemResults() )
@@ -132,8 +132,8 @@ public class QtiAssessmentResultServiceImpl implements QtiAssessmentResultServic
 	public TestSessionController loadTestSessionState(ResolvedAssessmentTest resolvedAssessmentTest,
 		QtiAssessmentResult qtiAssessmentResult)
 	{
-		final String testSessionStateXml = (qtiAssessmentResult == null ? null : qtiAssessmentResult
-			.getTestSessionState());
+		final String testSessionStateXml = (qtiAssessmentResult == null ? null
+			: qtiAssessmentResult.getTestSessionState());
 		if( Check.isEmpty(testSessionStateXml) )
 		{
 			return qtiService.getNewTestSessionController(resolvedAssessmentTest);
@@ -261,8 +261,8 @@ public class QtiAssessmentResultServiceImpl implements QtiAssessmentResultServic
 	{
 		for( ItemVariable itemVariable : itemVariables )
 		{
-			QtiItemVariable qtiItemVariable = findQtiItemVariable(qtiItemVariables, itemVariable.getIdentifier()
-				.toString());
+			QtiItemVariable qtiItemVariable = findQtiItemVariable(qtiItemVariables,
+				itemVariable.getIdentifier().toString());
 			final boolean newVariable = (qtiItemVariable == null);
 
 			qtiItemVariable = convertItemVariable(qtiResult, itemVariable, qtiItemVariable);

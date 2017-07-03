@@ -17,6 +17,7 @@
 package com.tle.mypages.guice;
 
 import com.google.inject.name.Names;
+import com.tle.mypages.web.MyPagesState;
 import com.tle.mypages.web.section.MyPagesContributeSection;
 import com.tle.mypages.web.section.MyPagesEditorSection;
 import com.tle.mypages.web.section.MyPagesPageActionsSection;
@@ -45,5 +46,7 @@ public class MyPagesModule extends SectionsModule
 		node.child(createEditorTree());
 		bindNamed("/access/mypagesedit", node);
 		bind(SectionTree.class).annotatedWith(Names.named("myPagesContentTree")).toProvider(tree(createEditorTree()));
+
+		requestStaticInjection(MyPagesState.class);
 	}
 }

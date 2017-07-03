@@ -21,7 +21,7 @@ import javax.inject.Inject;
 import com.dytech.devlib.PropBagEx;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemService;
+import com.tle.core.item.service.ItemService;
 import com.tle.mycontent.ContentHandler;
 import com.tle.mycontent.MyContentConstants;
 import com.tle.mycontent.service.MyContentService;

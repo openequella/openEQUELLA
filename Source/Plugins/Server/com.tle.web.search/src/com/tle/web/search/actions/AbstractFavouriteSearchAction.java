@@ -16,7 +16,7 @@
 
 package com.tle.web.search.actions;
 
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.SectionUtils;

@@ -16,6 +16,7 @@
 
 package com.tle.web.wizard;
 
+import java.io.ObjectStreamException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -25,16 +26,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+
 import com.dytech.devlib.PropBagEx;
-import com.dytech.edge.exceptions.QuotaExceededException;
 import com.dytech.edge.wizard.beans.DRMPage;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.Wizard;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemPack;
@@ -46,9 +50,11 @@ import com.tle.beans.workflow.SecurityStatus;
 import com.tle.beans.workflow.WorkflowStatus;
 import com.tle.common.Check;
 import com.tle.common.Pair;
-import com.tle.core.filesystem.ItemFile;
-import com.tle.core.filesystem.StagingFile;
-import com.tle.core.workflow.operations.DuringSaveOperation;
+import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.common.quota.exception.QuotaExceededException;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.standard.operations.DuringSaveOperation;
 import com.tle.web.viewable.PreviewableItem;
 import com.tle.web.wizard.impl.UnsavedEditOperation;
 import com.tle.web.wizard.page.WebWizardPageState;
@@ -57,6 +63,11 @@ import com.tle.web.wizard.section.model.DuplicateData;
 public class WizardState implements WizardStateInterface
 {
 	private static final long serialVersionUID = 1;
+
+	@Inject
+	private static Provider<WizardState> provider;
+	@Inject
+	private transient ItemFileService itemFileService;
 
 	public enum Operation
 	{
@@ -103,7 +114,8 @@ public class WizardState implements WizardStateInterface
 	private transient List<WebWizardPage> pages;
 	private transient WorkflowStatus workflowStatus;
 
-	public WizardState(Operation operation)
+	@AssistedInject
+	public WizardState(@Assisted Operation operation)
 	{
 		wizid = UUID.randomUUID().toString();
 		this.operation = operation;
@@ -363,7 +375,7 @@ public class WizardState implements WizardStateInterface
 		{
 			return new StagingFile(staging);
 		}
-		return new ItemFile(getItem());
+		return itemFileService.getItemFile(getItem());
 	}
 
 	public String getOriginalUrl()
@@ -566,5 +578,10 @@ public class WizardState implements WizardStateInterface
 	public void setThumbnail(String thumbnail)
 	{
 		this.thumbnail = thumbnail;
+	}
+
+	private Object readResolve() throws ObjectStreamException
+	{
+		return provider.get();
 	}
 }

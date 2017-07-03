@@ -18,9 +18,9 @@ package com.tle.web.sections.equella.search;
 
 import javax.inject.Inject;
 
-import com.tle.beans.system.SearchSettings;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.common.settings.standard.SearchSettings;
 import com.tle.core.services.user.UserPreferenceService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.TreeIndexed;
@@ -223,8 +223,8 @@ public class PagingSection<E extends AbstractSearchEvent<E>, RE extends Abstract
 		SearchSettings searchingSettings = getSearchSettings();
 		if( isSearchAttachments() && searchingSettings.getAttachmentBoost() != 0 )
 		{
-			event.addScreenOptions(new SettingsRenderer(LABEL_ATTACHMENT_SEARCH, renderSection(context,
-				attachmentSearch), "screen-option"));
+			event.addScreenOptions(new SettingsRenderer(LABEL_ATTACHMENT_SEARCH,
+				renderSection(context, attachmentSearch), "screen-option"));
 		}
 	}
 

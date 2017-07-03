@@ -32,15 +32,16 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.tle.annotation.Nullable;
 import com.tle.beans.entity.BaseEntityLabel;
+import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.Check;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.search.PresetSearch;
 import com.tle.common.search.whereparser.InvalidWhereException;
 import com.tle.common.search.whereparser.WhereParser;
+import com.tle.core.collection.service.ItemDefinitionService;
+import com.tle.core.i18n.BundleCache;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.itemadmin.WithinEntry;
 import com.tle.web.itemadmin.WithinExtension;
 import com.tle.web.search.event.FreetextSearchEvent;
@@ -80,6 +81,8 @@ import com.tle.web.sections.standard.model.Option;
 public class ItemAdminQuerySection
 	extends
 		AbstractResetFiltersQuerySection<ItemAdminQuerySection.ItemAdminQueryModel, FreetextSearchEvent>
+	implements
+		ItemDefinitionSelection
 {
 	static
 	{
@@ -418,8 +421,8 @@ public class ItemAdminQuerySection
 		protected Iterable<WithinEntry> populateModel(SectionInfo info)
 		{
 			List<BaseEntityLabel> listAll = itemDefinitionService.listAll();
-			List<WithinEntry> list = Lists.newArrayList(Lists.transform(listAll,
-				new Function<BaseEntityLabel, WithinEntry>()
+			List<WithinEntry> list = Lists
+				.newArrayList(Lists.transform(listAll, new Function<BaseEntityLabel, WithinEntry>()
 				{
 
 					@Override
@@ -440,8 +443,8 @@ public class ItemAdminQuerySection
 		protected Option<WithinEntry> convertToOption(SectionInfo info, final WithinEntry obj)
 		{
 			BaseEntityLabel bel = obj.getBel();
-			Label label = obj.getOverrideLabel() == null ? new BundleLabel(bel.getBundleId(), bundleCache) : obj
-				.getOverrideLabel();
+			Label label = obj.getOverrideLabel() == null ? new BundleLabel(bel.getBundleId(), bundleCache)
+				: obj.getOverrideLabel();
 			return new LabelOption<WithinEntry>(label, bel.getUuid(), obj)
 			{
 				@Override
@@ -495,5 +498,23 @@ public class ItemAdminQuerySection
 	public Label getCollectionsLabel()
 	{
 		return KEY_COLLECTIONS;
+	}
+
+	@Override
+	public ItemDefinition getCollection(SectionInfo info)
+	{
+		WithinEntry selectedValue = collectionList.getSelectedValue(info);
+		if( selectedValue != null )
+		{
+			return itemDefinitionService.getByUuid(selectedValue.getBel().getUuid());
+		}
+		return null;
+	}
+
+	@Override
+	public void setCollection(SectionInfo info, ItemDefinition collection)
+	{
+		collectionList.setSelectedStringValue(info, collection.getUuid());
+
 	}
 }

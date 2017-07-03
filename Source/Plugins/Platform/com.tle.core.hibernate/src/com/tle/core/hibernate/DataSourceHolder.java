@@ -40,8 +40,10 @@ public class DataSourceHolder
 	public String getDefaultSchema()
 	{
 		Connection connection = null;
+		final ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
 		try
 		{
+			Thread.currentThread().setContextClassLoader(DataSourceHolder.class.getClassLoader());
 			connection = this.dataSource.getConnection();
 			return dialect.getDefaultSchema(connection);
 		}
@@ -51,6 +53,7 @@ public class DataSourceHolder
 		}
 		finally
 		{
+			Thread.currentThread().setContextClassLoader(oldLoader);
 			if( connection != null )
 			{
 				try

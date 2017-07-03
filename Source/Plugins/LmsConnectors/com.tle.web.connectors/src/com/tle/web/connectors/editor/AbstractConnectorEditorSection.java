@@ -37,13 +37,13 @@ import com.tle.core.connectors.service.ConnectorEditingBean;
 import com.tle.core.connectors.service.ConnectorEditingSession;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.connectors.service.ConnectorService;
+import com.tle.core.entity.EntityEditingSession;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.services.HttpService;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.services.entity.AbstractEntityService;
-import com.tle.core.services.entity.EntityEditingSession;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Response;
 import com.tle.core.services.user.UserService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.DebugSettings;
 import com.tle.web.entities.section.AbstractEntityEditor;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -87,8 +87,8 @@ public abstract class AbstractConnectorEditorSection<M extends AbstractConnector
 {
 	private static final Logger LOGGER = Logger.getLogger(AbstractConnectorEditorSection.class);
 
-	private static final IncludeFile INCLUDE = new IncludeFile(ResourcesService.getResourceHelper(
-		AbstractConnectorEditorSection.class).url("scripts/editcommon.js"));
+	private static final IncludeFile INCLUDE = new IncludeFile(
+		ResourcesService.getResourceHelper(AbstractConnectorEditorSection.class).url("scripts/editcommon.js"));
 	private static final ExternallyDefinedFunction FUNCTION_MODIFY_USERNAME_CHANGED = new ExternallyDefinedFunction(
 		"modifyUsernameChanged", 2, INCLUDE);
 
@@ -149,7 +149,8 @@ public abstract class AbstractConnectorEditorSection<M extends AbstractConnector
 	@Component(name = "es", stateful = false)
 	private Checkbox exportSummary;
 
-	protected abstract void customValidate(SectionInfo info, ConnectorEditingBean connector, Map<String, Object> errors);
+	protected abstract void customValidate(SectionInfo info, ConnectorEditingBean connector,
+		Map<String, Object> errors);
 
 	protected abstract void customLoad(SectionInfo info, ConnectorEditingBean connector);
 
@@ -193,8 +194,8 @@ public abstract class AbstractConnectorEditorSection<M extends AbstractConnector
 			{
 				exportableExpression = Recipient.OWNER.getPrefix();
 			}
-			model.setExportableExpressionPretty(new ExpressionFormatter(userService)
-				.convertToInfix(exportableExpression));
+			model.setExportableExpressionPretty(
+				new ExpressionFormatter(userService).convertToInfix(exportableExpression));
 			exportableSelector.setExpression(context, exportableExpression);
 		}
 
@@ -223,8 +224,8 @@ public abstract class AbstractConnectorEditorSection<M extends AbstractConnector
 
 	private Label getConnectorLmsName(SectionInfo info, ConnectorEditingBean connector)
 	{
-		final Label lmsNameLabel = new KeyLabel(connectorService.mapAllAvailableTypes().get(connector.getLmsType())
-			.getNameKey());
+		final Label lmsNameLabel = new KeyLabel(
+			connectorService.mapAllAvailableTypes().get(connector.getLmsType()).getNameKey());
 		getModel(info).setConnectorLmsName(lmsNameLabel);
 		return lmsNameLabel;
 	}
@@ -234,23 +235,23 @@ public abstract class AbstractConnectorEditorSection<M extends AbstractConnector
 	{
 		super.registered(id, tree);
 
-		testUrlButton.setClickHandler(ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("testUrl"),
-			getAjaxDivId()));
+		testUrlButton.setClickHandler(
+			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("testUrl"), getAjaxDivId()));
 
 		exportableSelector.setStateful(false);
-		exportableSelector.setOkCallback(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("expression"), "exportable"));
+		exportableSelector.setOkCallback(
+			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("expression"), "exportable"));
 		componentFactory.registerComponent(id, "exportableSelector", tree, exportableSelector);
 		exportableSelector.setTitle(EXPRESSION_LABEL);
 
 		viewableSelector.setStateful(false);
-		viewableSelector.setOkCallback(ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("expression"),
-			"viewable"));
+		viewableSelector
+			.setOkCallback(ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("expression"), "viewable"));
 		componentFactory.registerComponent(id, "viewableSelector", tree, viewableSelector);
 		viewableSelector.setTitle(EXPRESSION_LABEL);
 
-		modifyUsername.addReadyStatements(Js.call_s(FUNCTION_MODIFY_USERNAME_CHANGED, Jq.$(modifyUsername),
-			Jq.$(modifyUsernameDiv), false));
+		modifyUsername.addReadyStatements(
+			Js.call_s(FUNCTION_MODIFY_USERNAME_CHANGED, Jq.$(modifyUsername), Jq.$(modifyUsernameDiv), false));
 		modifyUsername.addEventStatements("change",
 			Js.call_s(FUNCTION_MODIFY_USERNAME_CHANGED, Jq.$(modifyUsername), Jq.$(modifyUsernameDiv), true));
 
@@ -289,8 +290,7 @@ public abstract class AbstractConnectorEditorSection<M extends AbstractConnector
 			if( !resp.isOk() )
 			{
 				model.setTestUrlStatus("fail");
-				session.getValidationErrors().put(
-					"urltest",
+				session.getValidationErrors().put("urltest",
 					CurrentLocale.get("com.tle.web.connectors.editor.error.url.unreachable",
 						getConnectorLmsName(info, connector).getText()));
 				onTestUrlFail(info, connector);
@@ -368,10 +368,8 @@ public abstract class AbstractConnectorEditorSection<M extends AbstractConnector
 			}
 			if( viewExpression != null )
 			{
-				list.getEntries()
-					.add(
-						new TargetListEntry(true, false, ConnectorConstants.PRIV_VIEWCONTENT_VIA_CONNECTOR,
-							viewExpression));
+				list.getEntries().add(new TargetListEntry(true, false,
+					ConnectorConstants.PRIV_VIEWCONTENT_VIA_CONNECTOR, viewExpression));
 			}
 			session.getPack().setTargetList(list);
 		}

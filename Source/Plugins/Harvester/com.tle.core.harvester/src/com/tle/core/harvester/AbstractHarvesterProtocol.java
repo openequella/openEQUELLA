@@ -28,9 +28,9 @@ import org.apache.log4j.Logger;
 
 import com.dytech.devlib.PropBagEx;
 import com.tle.beans.entity.itemdef.ItemDefinition;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.harvester.HarvesterProfile;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.filesystem.StagingFile;
 import com.tle.core.harvester.old.ContentRepository;
 import com.tle.core.harvester.old.LearningObject;
 import com.tle.core.harvester.old.TLEItem;

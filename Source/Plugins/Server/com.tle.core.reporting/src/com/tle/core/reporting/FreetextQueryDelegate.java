@@ -33,20 +33,22 @@ import org.apache.log4j.Logger;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.devlib.PropBagEx.ValueThoroughIterator;
 import com.dytech.edge.exceptions.SearchingException;
+import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemIdKey;
 import com.tle.common.Check;
+import com.tle.common.filesystem.FileEntry;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.search.whereparser.WhereParser;
 import com.tle.common.searching.Search;
 import com.tle.common.searching.SearchResults;
-import com.tle.common.util.FileEntry;
 import com.tle.core.filesystem.ItemFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.remoting.MatrixResults;
 import com.tle.core.remoting.MatrixResults.MatrixEntry;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.services.item.FreetextResult;
-import com.tle.core.services.item.ItemService;
 import com.tle.freetext.FreetextIndex;
 import com.tle.reporting.IResultSetExt;
 import com.tle.reporting.MetadataBean;
@@ -63,6 +65,8 @@ public class FreetextQueryDelegate extends SimpleTypeQuery
 	private FileSystemService fsysService;
 	@Inject
 	private ItemService itemService;
+	@Inject
+	private ItemFileService itemFileService;
 
 	enum FTQueryType
 	{
@@ -156,7 +160,7 @@ public class FreetextQueryDelegate extends SimpleTypeQuery
 		for( FreetextResult fresult : idResults )
 		{
 			ItemIdKey result = fresult.getItemIdKey();
-			ItemFile handle = new ItemFile(result);
+			ItemFile handle = itemFileService.getItemFile(ItemId.fromKey(result), null);
 			try
 			{
 				FileEntry entry = fsysService.enumerateTree(handle, "", null); //$NON-NLS-1$

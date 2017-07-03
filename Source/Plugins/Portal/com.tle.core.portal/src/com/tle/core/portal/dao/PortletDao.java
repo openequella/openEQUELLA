@@ -19,7 +19,7 @@ package com.tle.core.portal.dao;
 import java.util.List;
 
 import com.tle.common.portal.entity.Portlet;
-import com.tle.core.dao.AbstractEntityDao;
+import com.tle.core.entity.dao.AbstractEntityDao;
 import com.tle.core.portal.service.PortletSearch;
 
 /**

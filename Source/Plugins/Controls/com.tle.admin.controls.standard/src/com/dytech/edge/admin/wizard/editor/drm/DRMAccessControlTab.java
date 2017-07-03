@@ -54,7 +54,7 @@ import com.tle.admin.helper.NetworkShuffleList;
 import com.tle.common.NameValue;
 import com.tle.common.applet.gui.JGroup;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.common.util.UserBeanUtils;
+import com.tle.common.usermanagement.util.UserBeanUtils;
 import com.tle.core.remoting.RemoteUserService;
 
 /**

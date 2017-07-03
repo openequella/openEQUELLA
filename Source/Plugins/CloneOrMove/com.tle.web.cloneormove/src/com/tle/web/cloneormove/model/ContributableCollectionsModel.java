@@ -23,10 +23,10 @@ import com.dytech.common.text.NumberStringComparator;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.NameValue;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.web.TextBundle;
-import com.tle.web.i18n.BundleCache;
-import com.tle.web.i18n.BundleNameValue;
+import com.tle.core.collection.service.ItemDefinitionService;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.i18n.BundleNameValue;
+import com.tle.core.i18n.TextBundle;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.standard.model.DynamicHtmlListModel;
 import com.tle.web.sections.standard.model.NameValueOption;
@@ -70,10 +70,11 @@ public class ContributableCollectionsModel extends DynamicHtmlListModel<ItemDefi
 	{
 		if( itemDef == null )
 		{
-			return new NameValueOption<ItemDefinition>(new NameValue(
-				CurrentLocale.get("com.tle.web.cloneormove.selectcollection.option.collection.none"), ""), null);
+			return new NameValueOption<ItemDefinition>(
+				new NameValue(CurrentLocale.get("com.tle.web.cloneormove.selectcollection.option.collection.none"), ""),
+				null);
 		}
-		return new NameValueOption<ItemDefinition>(new BundleNameValue(itemDef.getName(), itemDef.getUuid(),
-			bundleCache), itemDef);
+		return new NameValueOption<ItemDefinition>(
+			new BundleNameValue(itemDef.getName(), itemDef.getUuid(), bundleCache), itemDef);
 	}
 }

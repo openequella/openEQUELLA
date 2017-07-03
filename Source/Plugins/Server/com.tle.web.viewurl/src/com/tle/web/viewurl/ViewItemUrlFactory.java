@@ -47,7 +47,7 @@ public interface ViewItemUrlFactory
 	ViewItemUrl createItemUrl(SectionInfo info, String itemServletContext, ItemKey item, UrlEncodedString filePath,
 		int flags);
 
-	ViewItemUrl createItemUrl(SectionInfo info, ItemKey item, UrlEncodedString filePath, int flags);
+	ViewItemUrl createItemUrl(SectionInfo info, ItemKey item, UrlEncodedString filePath, String queryString, int flags);
 
 	ViewItemUrl createItemUrl(SectionInfo info, ViewableItem<Item> viewableItem, UrlEncodedString filePath, int flags);
 

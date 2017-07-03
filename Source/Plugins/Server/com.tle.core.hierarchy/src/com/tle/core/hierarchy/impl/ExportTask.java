@@ -32,19 +32,20 @@ import com.tle.beans.hierarchy.ExportedHierarchyNode;
 import com.tle.beans.hierarchy.HierarchyTopic;
 import com.tle.beans.item.Item;
 import com.tle.common.URLUtils;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.security.PrivilegeTree.Node;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.usermanagement.user.UserState;
+import com.tle.core.filesystem.staging.service.StagingService;
+import com.tle.core.hibernate.equella.service.InitialiserCallback;
+import com.tle.core.hibernate.equella.service.InitialiserService;
+import com.tle.core.hibernate.equella.service.Property;
 import com.tle.core.hierarchy.HierarchyDao;
-import com.tle.core.initialiser.InitialiserCallback;
-import com.tle.core.initialiser.Property;
+import com.tle.core.hierarchy.HierarchyService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.institution.RunAsInstitution;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.InitialiserService;
-import com.tle.core.services.StagingService;
-import com.tle.core.services.UrlService;
 import com.tle.core.services.impl.SingleShotTask;
-import com.tle.core.user.UserState;
 
 @SuppressWarnings("nls")
 public class ExportTask extends SingleShotTask
@@ -54,7 +55,7 @@ public class ExportTask extends SingleShotTask
 	private final boolean withSecurity;
 
 	@Inject
-	private HierarchyServiceImpl hierarchyService;
+	private HierarchyService hierarchyService;
 	@Inject
 	private HierarchyDao dao;
 	@Inject
@@ -68,7 +69,7 @@ public class ExportTask extends SingleShotTask
 	@Inject
 	private FileSystemService fileSystemService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService instituionService;
 
 	@Inject
 	public ExportTask(@Assisted UserState userState, @Assisted long exportId, @Assisted boolean withSecurity)
@@ -145,7 +146,7 @@ public class ExportTask extends SingleShotTask
 		// Feels so dirty... Should probably be a method on
 		// StagingService to get a URL. We do this exact same thing in
 		// ServerBackendImpl for the file manager.
-		addLogEntry(URLUtils.newURL(urlService.getInstitutionUrl(),
+		addLogEntry(URLUtils.newURL(instituionService.getInstitutionUrl(),
 			"file/" + staging.getUuid() + "/$/" + URLUtils.urlEncode("topic.xml")));
 	}
 

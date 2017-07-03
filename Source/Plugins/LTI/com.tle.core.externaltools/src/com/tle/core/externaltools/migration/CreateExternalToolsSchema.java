@@ -20,6 +20,7 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Singleton;
+import com.tle.beans.Institution;
 import com.tle.common.externaltools.entity.ExternalTool;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.impl.HibernateCreationFilter;
@@ -53,8 +54,8 @@ public class CreateExternalToolsSchema extends AbstractCreateMigration
 	protected Class<?>[] getDomainClasses()
 	{
 		final Set<Class<?>> domainClasses = Sets.newHashSet(ClassDependencies.baseEntity());
+		domainClasses.add(Institution.class);
 		domainClasses.add(ExternalTool.class);
 		return domainClasses.toArray(new Class<?>[domainClasses.size()]);
 	}
 }
-

@@ -24,11 +24,13 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
-import net.miginfocom.swing.MigLayout;
-
 import com.dytech.gui.ChangeDetector;
 import com.tle.beans.usermanagement.standard.LDAPSettings;
+import com.tle.common.applet.client.ClientService;
+import com.tle.common.encryption.RemoteEncryptionService;
 import com.tle.common.i18n.CurrentLocale;
+
+import net.miginfocom.swing.MigLayout;
 
 /**
  * Create Jan 5, 2004
@@ -52,9 +54,12 @@ public class LDAPGeneralSettings extends AbstractLDAPPanel
 	private JCheckBox wildcardsBox;
 	private SpinnerNumberModel searchLimitModel;
 
-	public LDAPGeneralSettings()
+	private RemoteEncryptionService encryptionService;
+
+	public LDAPGeneralSettings(ClientService services)
 	{
 		super();
+		encryptionService = services.getService(RemoteEncryptionService.class);
 
 		createGUI();
 
@@ -126,7 +131,7 @@ public class LDAPGeneralSettings extends AbstractLDAPPanel
 		urlField.setText(ls.getUrl());
 		domainField.setText(ls.getDefaultDomain());
 		usernameField.setText(ls.getAdminUsername());
-		passwordField.setText(ls.getAdminPassword());
+		passwordField.setText(encryptionService.decrypt(ls.getAdminPassword()));
 		searchLimitModel.setValue(ls.getSearchLimit());
 		versionComboBox.setSelectedItem(ls.getVersion());
 		forceLowercaseIds.setSelected(ls.isForceLowercaseIds());
@@ -146,7 +151,7 @@ public class LDAPGeneralSettings extends AbstractLDAPPanel
 
 		saveSettings.setDefaultDomain(domainField.getText());
 		saveSettings.setAdminUsername(usernameField.getText());
-		saveSettings.setAdminPassword(new String(passwordField.getPassword()));
+		saveSettings.setAdminPassword(encryptionService.encrypt(new String(passwordField.getPassword())));
 
 		saveSettings.setVersion((String) versionComboBox.getSelectedItem());
 		saveSettings.setSearchLimit(searchLimitModel.getNumber().intValue());

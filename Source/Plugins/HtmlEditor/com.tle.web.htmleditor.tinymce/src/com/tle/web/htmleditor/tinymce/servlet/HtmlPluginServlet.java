@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.tle.common.PathUtils;
 import com.tle.core.filesystem.EntityFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.UrlService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.stream.ContentStreamWriter;
@@ -55,11 +55,11 @@ public class HtmlPluginServlet extends HttpServlet
 	@Inject
 	private ContentStreamWriter contentStreamWriter;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@Override
-	protected final void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-		IOException
+	protected final void service(HttpServletRequest request, HttpServletResponse response)
+		throws ServletException, IOException
 	{
 		String path = request.getPathInfo();
 		if( path.startsWith("/") )
@@ -99,6 +99,7 @@ public class HtmlPluginServlet extends HttpServlet
 
 	private void redirectToTinyMceFiles(HttpServletResponse response, String path) throws IOException
 	{
-		response.sendRedirect(urlService.institutionalise(resources.url(PathUtils.urlPath("scripts/tinymce/", path))));
+		response.sendRedirect(
+			institutionService.institutionalise(resources.url(PathUtils.urlPath("scripts/tinymce/", path))));
 	}
 }

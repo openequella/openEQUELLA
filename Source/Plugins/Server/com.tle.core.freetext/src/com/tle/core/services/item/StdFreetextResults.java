@@ -24,6 +24,7 @@ import com.tle.beans.item.ItemIdKey;
 import com.tle.beans.item.ItemSelect;
 import com.tle.common.searching.Search;
 import com.tle.common.searching.SearchResults;
+import com.tle.core.item.service.ItemService;
 
 public class StdFreetextResults<T extends FreetextResult> implements FreetextSearchResults<T>
 {

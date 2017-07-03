@@ -26,7 +26,6 @@ import javax.inject.Inject;
 import com.dytech.edge.exceptions.AttachmentNotFoundException;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
@@ -37,9 +36,11 @@ import com.tle.beans.item.attachments.ImsAttachment;
 import com.tle.beans.item.attachments.ItemNavigationNode;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.PathUtils;
+import com.tle.common.filesystem.FileSystemConstants;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.UrlService;
 import com.tle.core.util.ims.IMSNavigationHelper;
 import com.tle.core.util.ims.beans.IMSManifest;
 import com.tle.ims.service.IMSService;
@@ -85,7 +86,7 @@ public class TreeNavigationSection extends AbstractTreeViewerSection<TreeNavigat
 	@Inject
 	private FileSystemService fileSystem;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@Nullable
 	@Override
@@ -205,7 +206,7 @@ public class TreeNavigationSection extends AbstractTreeViewerSection<TreeNavigat
 			Attachment ims = new UnmodifiableAttachments(item).getIms();
 			final FileHandle handle = resource.getViewableItem().getFileHandle();
 
-			String folder = FileSystemService.IMS_FOLDER;
+			String folder = FileSystemConstants.IMS_FOLDER;
 			if( ims == null )
 			{
 				List<CustomAttachment> scorms = new UnmodifiableAttachments(item).getCustomList("scorm");
@@ -222,9 +223,8 @@ public class TreeNavigationSection extends AbstractTreeViewerSection<TreeNavigat
 
 				// I don't think this has ever been found _SCORM, but I can't be
 				// sure
-				if( fileSystem.fileIsDir(handle, FileSystemService.SCORM_FOLDER)
-					&& fileSystem.fileExists(handle,
-						PathUtils.filePath(FileSystemService.SCORM_FOLDER, unadornedFilename)) )
+				if( fileSystem.fileIsDir(handle, FileSystemService.SCORM_FOLDER) && fileSystem.fileExists(handle,
+					PathUtils.filePath(FileSystemService.SCORM_FOLDER, unadornedFilename)) )
 				{
 					folder = FileSystemService.SCORM_FOLDER;
 				}
@@ -233,7 +233,7 @@ public class TreeNavigationSection extends AbstractTreeViewerSection<TreeNavigat
 			// packageZip already has the IMS folder part if it was added with
 			// the universal attachment control
 			String zipFile = ims.getUrl();
-			if( !zipFile.startsWith(FileSystemService.IMS_FOLDER)
+			if( !zipFile.startsWith(FileSystemConstants.IMS_FOLDER)
 				|| !zipFile.startsWith(FileSystemService.SCORM_FOLDER) )
 			{
 				zipFile = folder + '/' + zipFile;
@@ -252,7 +252,7 @@ public class TreeNavigationSection extends AbstractTreeViewerSection<TreeNavigat
 			return null;
 		}
 
-		model.setAjaxUrl(urlService.getInstitutionUrl() + "scorm/"); //$NON-NLS-1$
+		model.setAjaxUrl(institutionService.getInstitutionUrl() + "scorm/"); //$NON-NLS-1$
 		return super.view(info, resource);
 	}
 

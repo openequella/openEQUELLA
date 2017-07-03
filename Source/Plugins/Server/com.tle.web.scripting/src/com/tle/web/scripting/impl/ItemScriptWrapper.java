@@ -34,9 +34,9 @@ import com.tle.common.scripting.objects.ItemScriptObject;
 import com.tle.common.scripting.types.CollectionScriptType;
 import com.tle.common.scripting.types.ItemScriptType;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.util.ItemHelper;
-import com.tle.core.util.ItemHelper.ItemHelperSettings;
+import com.tle.core.item.helper.ItemHelper;
+import com.tle.core.item.helper.ItemHelper.ItemHelperSettings;
+import com.tle.core.item.service.ItemService;
 import com.tle.web.scripting.impl.UtilsScriptWrapper.CollectionScriptTypeImpl;
 
 /**
@@ -156,8 +156,8 @@ public class ItemScriptWrapper extends AbstractScriptWrapper implements ItemScri
 				ItemXml itemXml = getItem().getItemXml();
 				if( itemXml != null )
 				{
-					xml = new PropBagWrapper(itemHelper.convertToXml(service.getItemPack(itemId),
-						new ItemHelperSettings(true)));
+					xml = new PropBagWrapper(
+						itemHelper.convertToXml(service.getItemPack(itemId), new ItemHelperSettings(true)));
 				}
 			}
 			return xml;

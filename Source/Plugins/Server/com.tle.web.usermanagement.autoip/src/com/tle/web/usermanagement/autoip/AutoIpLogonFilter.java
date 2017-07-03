@@ -16,9 +16,6 @@
 
 package com.tle.web.usermanagement.autoip;
 
-import hurl.build.QueryBuilder;
-import hurl.build.UriBuilder;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
@@ -27,13 +24,16 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tle.beans.system.AutoLogin;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
+import com.tle.core.settings.service.ConfigurationService;
+import com.tle.common.settings.standard.AutoLogin;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.plugins.ump.UserManagementLogonFilter;
 import com.tle.web.dispatcher.FilterResult;
+
+import hurl.build.QueryBuilder;
+import hurl.build.UriBuilder;
 
 @Bind
 public class AutoIpLogonFilter implements UserManagementLogonFilter

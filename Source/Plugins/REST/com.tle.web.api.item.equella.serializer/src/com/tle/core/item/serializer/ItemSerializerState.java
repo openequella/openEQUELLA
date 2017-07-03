@@ -28,11 +28,11 @@ import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
-import com.dytech.edge.exceptions.NotFoundException;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 import com.tle.beans.item.Item;
-import com.tle.core.user.CurrentInstitution;
+import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.institution.CurrentInstitution;
 
 @SuppressWarnings("nls")
 public class ItemSerializerState
@@ -47,6 +47,7 @@ public class ItemSerializerState
 	public static final String SECURITY_ALIAS = "metatargets";
 
 	private final Set<String> categories;
+	private final boolean export;
 
 	private final ProjectionList itemProjection;
 	private final DetachedCriteria itemQuery;
@@ -67,9 +68,10 @@ public class ItemSerializerState
 
 	private Integer firstResult;
 
-	public ItemSerializerState(Set<String> categories)
+	public ItemSerializerState(Set<String> categories, boolean export)
 	{
 		this.categories = categories;
+		this.export = export;
 		if( categories.contains(ItemSerializerService.CATEGORY_ALL) )
 		{
 			allCategories = true;
@@ -273,5 +275,10 @@ public class ItemSerializerState
 	public void setIgnorePrivileges(boolean ignorePrivileges)
 	{
 		this.ignorePrivileges = ignorePrivileges;
+	}
+
+	public boolean isExport()
+	{
+		return export;
 	}
 }

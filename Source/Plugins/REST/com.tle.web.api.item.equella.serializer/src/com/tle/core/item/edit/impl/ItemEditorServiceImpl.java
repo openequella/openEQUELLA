@@ -36,18 +36,18 @@ import com.tle.beans.item.ItemLock;
 import com.tle.beans.item.ItemStatus;
 import com.tle.beans.item.ItemXml;
 import com.tle.common.Check;
-import com.tle.core.dao.ItemDao;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.dao.ItemDao;
 import com.tle.core.item.edit.ItemEditor;
 import com.tle.core.item.edit.ItemEditorService;
 import com.tle.core.item.edit.impl.ItemEditorImpl.ItemEditorFactory;
 import com.tle.core.item.serializer.ItemDeserializerEditor;
+import com.tle.core.item.service.ItemLockingService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.security.impl.SecureOnCallSystem;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.core.services.item.ItemLockingService;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 
 @Bind(ItemEditorService.class)
 @Singleton
@@ -78,8 +78,8 @@ public class ItemEditorServiceImpl implements ItemEditorService
 		}
 		else if( itemLockingService.isLocked(item) )
 		{
-			throw new LockedException("Item is locked for editing", CurrentUser.getUserID(),
-				CurrentUser.getSessionID(), item.getId());
+			throw new LockedException("Item is locked for editing", CurrentUser.getUserID(), CurrentUser.getSessionID(),
+				item.getId());
 		}
 		ItemEditorImpl editor = editorFactory.createExistingEditor(item, lock, deserializerEditors);
 		editor.setStagingUuid(stagingUuid);
@@ -131,8 +131,8 @@ public class ItemEditorServiceImpl implements ItemEditorService
 		{
 			if( version > 1 )
 			{
-				throw new ItemEditingException("No existing item with uuid '" + uuid
-					+ "' exists, must set version to 1 or use 0");
+				throw new ItemEditingException(
+					"No existing item with uuid '" + uuid + "' exists, must set version to 1 or use 0");
 			}
 			version = 1;
 		}
@@ -162,6 +162,7 @@ public class ItemEditorServiceImpl implements ItemEditorService
 		if( Check.isEmpty(uuid) )
 		{
 			uuid = UUID.randomUUID().toString();
+			version = 1;
 		}
 		else
 		{

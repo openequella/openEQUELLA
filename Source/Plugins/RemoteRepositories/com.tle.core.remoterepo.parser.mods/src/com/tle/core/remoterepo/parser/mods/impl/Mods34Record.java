@@ -25,8 +25,8 @@ import org.w3c.dom.Node;
 
 import com.dytech.devlib.PropBagEx;
 import com.tle.common.Check;
-import com.tle.common.util.XmlDocument;
 import com.tle.core.remoterepo.parser.mods.ModsRecord;
+import com.tle.core.xml.XmlDocument;
 
 /**
  * A strict implementation of the MODS 3.4 format, massaged into the

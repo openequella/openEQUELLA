@@ -27,15 +27,15 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.common.Pair;
 import com.tle.common.PathUtils;
 import com.tle.common.URLUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.BundleCache;
 import com.tle.core.services.FileSystemService;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;

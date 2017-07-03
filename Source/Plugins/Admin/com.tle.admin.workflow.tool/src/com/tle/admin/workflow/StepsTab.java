@@ -67,6 +67,7 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
 import com.tle.common.recipientselector.SingleUserSelector;
 import com.tle.common.workflow.Workflow;
+import com.tle.common.workflow.node.ScriptNode;
 import com.tle.common.workflow.node.WorkflowItem;
 import com.tle.common.workflow.node.WorkflowNode;
 import com.tle.common.workflow.node.WorkflowTreeNode;
@@ -152,6 +153,26 @@ public class StepsTab extends BaseEntityTab<Workflow> implements AbstractDetails
 				{
 					tree.setSelectionPath(new TreePath(model.getPathToRoot(item)));
 					throw new EditorException(CurrentLocale.get("com.tle.admin.workflow.stepstab.selected")); //$NON-NLS-1$
+				}
+			}
+
+			if( node.getType() == WorkflowNode.SCRIPT_TYPE )
+			{
+				final ScriptNode scriptNode = (ScriptNode) node;
+				if( scriptNode.isNotifyOnCompletion() && !scriptNode.isNotifyOnCompletionSpecified() )
+				{
+					tree.setSelectionPath(new TreePath(model.getPathToRoot(scriptNode)));
+					throw new EditorException(
+						CurrentLocale
+							.get("com.tle.admin.workflow.script.scripteditor.nofificationstab.completion.notify.nobody"));
+				}
+
+				if( scriptNode.isNotifyOnError() && !scriptNode.isNotifyNoErrorSpecified() )
+				{
+					tree.setSelectionPath(new TreePath(model.getPathToRoot(scriptNode)));
+					throw new EditorException(
+						CurrentLocale
+							.get("com.tle.admin.workflow.script.scripteditor.nofificationstab.error.notify.nobody"));
 				}
 			}
 

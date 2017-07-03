@@ -39,7 +39,6 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
@@ -49,13 +48,15 @@ import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.Check;
+import com.tle.common.filesystem.FileSystemConstants;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.item.AttachmentUtils;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.service.ItemResolver;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.item.ItemResolver;
 import com.tle.encoding.UrlEncodedString;
 import com.tle.web.mimetypes.service.WebMimeTypeService;
 import com.tle.web.sections.Bookmark;
@@ -100,7 +101,7 @@ public class AttachmentResourceServiceImpl implements AttachmentResourceService
 	@Inject
 	private WebMimeTypeService mimeService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private FileSystemService fileSystemService;
 
@@ -133,8 +134,8 @@ public class AttachmentResourceServiceImpl implements AttachmentResourceService
 		try
 		{
 			// Need the_IMS folder, not the _SCORM folder ...?
-			String zipFileUrl = urlService.institutionalise("file/" + item.getItemId() + '/')
-				+ FileSystemService.IMS_FOLDER + '/'
+			String zipFileUrl = institutionService.institutionalise("file/" + item.getItemId() + '/')
+				+ FileSystemConstants.IMS_FOLDER + '/'
 				+ URIUtil.encodePath(attachment.getUrl(), Charsets.UTF_8.toString());
 			return new URI(zipFileUrl);
 		}
@@ -310,8 +311,8 @@ public class AttachmentResourceServiceImpl implements AttachmentResourceService
 				if( viewableItem.isItemForReal() )
 				{
 					ItemKey key = viewableItem.getItemId();
-					source = urlService.institutionalise(MessageFormat.format("thumbs/{0}/{1}/{2}", key.getUuid(),
-						key.getVersion(), attachment.getUuid()));
+					source = institutionService.institutionalise(MessageFormat.format("thumbs/{0}/{1}/{2}",
+						key.getUuid(), key.getVersion(), attachment.getUuid()));
 				}
 				else
 				{
@@ -324,8 +325,8 @@ public class AttachmentResourceServiceImpl implements AttachmentResourceService
 						if( stagingUuid != null )
 						{
 							// We add the .jpeg extension to fool the browser
-							source = urlService.institutionalise(MessageFormat.format("thumbs/{0}/$/{1}", stagingUuid,
-								attachment.getUrl() + FileSystemService.THUMBNAIL_EXTENSION));
+							source = institutionService.institutionalise(MessageFormat.format("thumbs/{0}/$/{1}",
+								stagingUuid, attachment.getUrl() + FileSystemService.THUMBNAIL_EXTENSION));
 						}
 						else
 						{
@@ -358,8 +359,8 @@ public class AttachmentResourceServiceImpl implements AttachmentResourceService
 			ItemKey key = getViewableItem().getItemId();
 			GalleryParameter param = !preview ? GalleryParameter.THUMBNAIL
 				: original ? GalleryParameter.ORIGINAL : GalleryParameter.PREVIEW;
-			return urlService.institutionalise(MessageFormat.format("thumbs/{0}/{1}/{2}?gallery={3}", key.getUuid(),
-				key.getVersion(), attachment.getUuid(), param.toString().toLowerCase()));
+			return institutionService.institutionalise(MessageFormat.format("thumbs/{0}/{1}/{2}?gallery={3}",
+				key.getUuid(), key.getVersion(), attachment.getUuid(), param.toString().toLowerCase()));
 		}
 
 		@Override

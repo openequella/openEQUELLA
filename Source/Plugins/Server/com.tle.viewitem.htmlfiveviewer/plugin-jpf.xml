@@ -12,9 +12,12 @@
 		<import plugin-id="com.tle.web.viewurl" />
 		<import plugin-id="com.tle.core.migration" />
 		<import plugin-id="net.sf.json-lib:json-lib" />
-		<import plugin-id="com.tle.core.entity.services" />
+		
 		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.web.searching" />
+		<import plugin-id="com.tle.core.filesystem" />
+		<import plugin-id="com.tle.core.institution.convert" />
+		<import plugin-id="com.tle.xstream" />
 	</requires>
 
 	<runtime>
@@ -49,7 +52,7 @@
 		<parameter id="date" value="1970-01-01" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="htmlFiveMimeTypeAndPlayerMigrationXml">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="htmlFiveMimeTypeAndPlayerMigrationXml">
 		<parameter id="id" value="com.tle.web.viewitem.htmlfiveviewer.migrationHtmlFiveMimeTypeAndPlayerMigrationXml" />
 		<parameter id="bean" value="bean:com.tle.web.viewitem.htmlfiveviewer.migration.HtmlFiveMimeTypeAndPlayerMigrationXml" />
 	</extension>

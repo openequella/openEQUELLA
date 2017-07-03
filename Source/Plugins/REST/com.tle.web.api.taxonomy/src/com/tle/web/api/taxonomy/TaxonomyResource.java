@@ -46,13 +46,13 @@ import com.tle.beans.taxonomy.TermBean;
 import com.tle.common.Pair;
 import com.tle.common.taxonomy.SelectionRestriction;
 import com.tle.common.taxonomy.Taxonomy;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.entity.service.EntityLockingService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.LockingService;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.taxonomy.TaxonomyService;
 import com.tle.core.taxonomy.TermResult;
 import com.tle.core.taxonomy.TermService;
-import com.tle.core.user.CurrentUser;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -73,13 +73,13 @@ public class TaxonomyResource
 	}
 
 	@Inject
-	private LockingService lockingService;
+	private EntityLockingService lockingService;
 	@Inject
 	private TaxonomyService taxonomyService;
 	@Inject
 	private TermService termService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private TaxonomyBeanSerializer taxonomySerializer;
 
@@ -200,8 +200,9 @@ public class TaxonomyResource
 			}
 			else
 			{
-				throw new WebApplicationException("You do not own the lock on this taxonomy.  It is held by user ID "
-					+ ex.getUserID(), Status.UNAUTHORIZED);
+				throw new WebApplicationException(
+					"You do not own the lock on this taxonomy.  It is held by user ID " + ex.getUserID(),
+					Status.UNAUTHORIZED);
 			}
 		}
 		return Response.ok().build();
@@ -231,8 +232,8 @@ public class TaxonomyResource
 	{
 		final Taxonomy taxonomy = ensureTaxonomy(uuid, PrivCheck.VIEW);
 
-		SelectionRestriction restrict = (restriction == null ? SelectionRestriction.UNRESTRICTED : SelectionRestriction
-			.valueOf(restriction.toUpperCase()));
+		SelectionRestriction restrict = (restriction == null ? SelectionRestriction.UNRESTRICTED
+			: SelectionRestriction.valueOf(restriction.toUpperCase()));
 		int max = (limit <= 0 ? 20 : limit);
 
 		Pair<Long, List<TermResult>> searchTerms = taxonomyService.searchTerms(uuid, query, restrict, max,
@@ -591,7 +592,7 @@ public class TaxonomyResource
 	{
 		try
 		{
-			String url = urlService.institutionalise("api/taxonomy/" + taxonomyUuid + "/term/" + termUuid);
+			String url = institutionService.institutionalise("api/taxonomy/" + taxonomyUuid + "/term/" + termUuid);
 			return new URI(url);
 		}
 		catch( URISyntaxException e )

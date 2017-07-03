@@ -38,11 +38,12 @@ import com.tle.common.scripting.service.ScriptContextCreationParams;
 import com.tle.common.scripting.types.ItemScriptType;
 import com.tle.common.util.Logger;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.helper.ItemHelper;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.scripting.service.ScriptObjectContributor;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.item.ItemService;
 import com.tle.core.services.user.UserService;
-import com.tle.core.util.ItemHelper;
 import com.tle.core.util.script.SearchScriptWrapper;
 import com.tle.web.scripting.impl.AttachmentsScriptWrapper;
 import com.tle.web.scripting.impl.FileScriptingObjectImpl;
@@ -71,6 +72,8 @@ public class StandardScriptObjectContributor implements ScriptObjectContributor
 	private FileSystemService fileSystemService;
 	@Inject
 	private ItemService itemService;
+	@Inject
+	private ItemFileService itemFileService;
 	@Inject
 	private ItemHelper itemHelper;
 	@Inject
@@ -105,7 +108,7 @@ public class StandardScriptObjectContributor implements ScriptObjectContributor
 		if( params.getFileHandle() != null )
 		{
 			objects.put(FileScriptObject.DEFAULT_VARIABLE,
-				new FileScriptingObjectImpl(fileSystemService, params.getFileHandle()));
+				new FileScriptingObjectImpl(fileSystemService, itemFileService, params.getFileHandle()));
 		}
 
 		final PropBagWrapper wrapper = new PropBagWrapper();

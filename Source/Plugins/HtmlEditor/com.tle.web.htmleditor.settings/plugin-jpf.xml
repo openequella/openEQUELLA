@@ -2,7 +2,7 @@
 <plugin id="com.tle.web.htmleditor.settings" version="1">
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
-		<import plugin-id="com.tle.core.entity.services" />
+		
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.htmleditor" />	
 		<import plugin-id="com.tle.core.security" />

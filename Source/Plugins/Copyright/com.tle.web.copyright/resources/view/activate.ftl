@@ -21,7 +21,7 @@
 		<@setting label=b.key("activate.activate")>${m.attachmentList}</@setting>
 		<@a.div id="courseajax">
 			<#if m.showCourseSelector>
-				<@setting label=b.key("activate.course")>
+				<@setting label=b.key("activate.course") mandatory=true>
 					<#if m.course??>
 						<span>(${m.course.code}) ${b.bundle(m.course.name)}</span>
 					</#if>

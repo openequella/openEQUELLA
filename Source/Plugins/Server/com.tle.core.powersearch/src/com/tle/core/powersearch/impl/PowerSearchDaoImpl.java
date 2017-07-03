@@ -25,7 +25,7 @@ import org.hibernate.Query;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.PowerSearch;
 import com.tle.beans.entity.itemdef.ItemDefinition;
-import com.tle.core.dao.impl.AbstractEntityDaoImpl;
+import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.powersearch.PowerSearchDao;
 import com.tle.core.remoting.RemotePowerSearchService;

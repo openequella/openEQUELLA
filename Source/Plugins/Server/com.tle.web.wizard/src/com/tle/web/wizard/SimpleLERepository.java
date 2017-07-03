@@ -38,7 +38,7 @@ import com.tle.common.NameValue;
 import com.tle.common.Pair;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.language.LanguageService;
+import com.tle.core.i18n.service.LanguageService;
 import com.tle.core.wizard.LERepository;
 import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.core.wizard.controls.WizardPage;

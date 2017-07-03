@@ -28,13 +28,18 @@ import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 import com.tle.common.interfaces.BaseEntityReference;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.serializer.ItemSerializerProvider;
+import com.tle.core.item.serializer.ItemSerializerService;
 import com.tle.core.item.serializer.ItemSerializerState;
 import com.tle.core.item.serializer.XMLStreamer;
 import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
+import com.tle.web.api.item.interfaces.beans.HistoryEventBean;
+import com.tle.web.api.item.interfaces.beans.ItemExportBean;
+import com.tle.web.api.item.interfaces.beans.ItemLockBean;
 
 @SuppressWarnings("nls")
 @Bind
@@ -45,6 +50,9 @@ public class DetailsItemSerializerProvider implements ItemSerializerProvider
 	private static final String MODIFIED_PROPERTY = "dateModified";
 	private static final String RATING_PROPERTY = "rating";
 	private static final String THUMBNAIL_PROPERTY = "thumb";
+
+	@Inject
+	private ItemSerializerService itemSerializerService;
 
 	@Override
 	public void prepareItemQuery(ItemSerializerState state)
@@ -102,6 +110,18 @@ public class DetailsItemSerializerProvider implements ItemSerializerProvider
 			}
 			equellaItemBean.setCollaborators(collabBeans);
 		}
+		if( state.isExport() )
+		{
+			ItemExportBean exportBean = itemSerializerService.getExportDetails(equellaItemBean);
+			List<HistoryEventBean> history = itemSerializerService.getHistory(equellaItemBean.getUuid(),
+				equellaItemBean.getVersion());
+			exportBean.setHistory(history);
+			ItemLockBean itemLockBean = itemSerializerService.getItemLock(equellaItemBean);
+			if( itemLockBean != null )
+			{
+				exportBean.setLock(itemLockBean);
+			}
+			equellaItemBean.setExportDetails(exportBean);
+		}
 	}
-
 }

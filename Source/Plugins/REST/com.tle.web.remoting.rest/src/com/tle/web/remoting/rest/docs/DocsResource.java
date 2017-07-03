@@ -23,7 +23,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 
 @Bind
 @Produces({"text/html"})
@@ -32,13 +32,13 @@ import com.tle.core.services.UrlService;
 public class DocsResource
 {
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@GET
 	@Path("/")
 	@Produces("text/html")
 	public Response docs()
 	{
-		return new DocsRedirect(urlService.institutionalise("apidocs.do"));
+		return new DocsRedirect(institutionService.institutionalise("apidocs.do"));
 	}
 }

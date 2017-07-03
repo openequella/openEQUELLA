@@ -23,7 +23,7 @@ import javax.inject.Inject;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.item.ItemIdKey;
 import com.tle.common.search.DefaultSearch;
-import com.tle.core.services.item.FreeTextService;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.web.bulk.section.AbstractBulkResultsDialog;
 import com.tle.web.bulk.section.AbstractBulkSelectionSection;
 import com.tle.web.search.base.AbstractFreetextResultsSection;

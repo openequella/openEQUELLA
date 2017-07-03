@@ -26,16 +26,15 @@ import java.util.concurrent.Future;
 import javax.inject.Inject;
 import javax.mail.internet.AddressException;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.google.common.base.Strings;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.email.EmailResult;
 import com.tle.core.email.EmailService;
-import com.tle.core.security.SharePassService;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.item.ItemService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.services.user.UserService;
+import com.tle.core.usermanagement.standard.service.SharePassService;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
@@ -53,13 +52,16 @@ import com.tle.web.viewitem.summary.content.AbstractContentSection;
 @SuppressWarnings("nls")
 public abstract class AbstractShareWithOthersSection
 	extends
-		AbstractContentSection<AbstractShareWithOthersSection.ShareModel> implements ViewableChildInterface
+		AbstractContentSection<AbstractShareWithOthersSection.ShareModel>
+	implements ViewableChildInterface
 {
 	private static final String MESSAGE_FIELD = "message";
 	private static final String EMAIL_FIELD = "email";
 
 	@PlugKey("summary.content.sharewithothers.share.email.")
 	private static String PREFIX;
+	@PlugKey("unknown.user")
+	protected static String UNKNOWN_USER;
 
 	@PlugKey("summary.content.sharewithothers.pagetitle")
 	protected static Label TITLE_LABEL;
@@ -78,8 +80,6 @@ public abstract class AbstractShareWithOthersSection
 	@PlugKey("summary.content.sharewithothers.share.email.subject")
 	protected static String EMAIL_SUBJECT;
 
-	@Inject
-	protected UrlService urlService;
 	@Inject
 	protected SharePassService sharePassService;
 	@Inject
@@ -141,11 +141,11 @@ public abstract class AbstractShareWithOthersSection
 			{
 				List<String> addresses = emailService.parseAddresses(email);
 
-				Future<EmailResult<String>> result = emailService.sendEmail(CurrentLocale.get(EMAIL_SUBJECT),
-					addresses, createEmail(info));
+				Future<EmailResult<String>> result = emailService.sendEmail(CurrentLocale.get(EMAIL_SUBJECT), addresses,
+					createEmail(info));
 
 				EmailResult<String> emailResult;
-					emailResult = result.get();
+				emailResult = result.get();
 				boolean successful = emailResult.isSuccessful();
 
 				receiptService.setReceipt(successful ? SUCCESS_LABEL : FAIL_LABEL);
@@ -179,6 +179,10 @@ public abstract class AbstractShareWithOthersSection
 
 	protected String getUser(UserBean ub)
 	{
+		if( ub == null )
+		{
+			return CurrentLocale.get(UNKNOWN_USER);
+		}
 		return MessageFormat.format("{0} {1} ({2})", Strings.nullToEmpty(ub.getFirstName()),
 			Strings.nullToEmpty(ub.getLastName()), Strings.nullToEmpty(ub.getEmailAddress()).toString());
 	}

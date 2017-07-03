@@ -6,22 +6,28 @@
 		<import plugin-id="com.wordnik:swagger-annotations" />
 		<import plugin-id="com.fasterxml.jackson.core:jackson-annotations" />
 		<import plugin-id="com.tle.platform.common" />
-		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.common.item" exported="true" />
 		<import plugin-id="com.tle.common.usermanagement" />
 		<import plugin-id="com.tle.core.i18n" />
+		<import plugin-id="com.tle.ims" />
 		<import plugin-id="com.tle.web.api.interfaces" />
 		<import plugin-id="com.tle.web.api.item.interfaces" />
+		<import plugin-id="com.tle.web.remoting.rest" />
 		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.core.filesystem" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.hibernate.equella" />
 		<import plugin-id="com.tle.web.api.item.equella.interfaces" />
 		<import plugin-id="com.tle.core.item" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.core.url" />
+		<import plugin-id="com.tle.core.workflow" />
 		<import plugin-id="com.tle.core.workflow.thumbnail" />
 		<import plugin-id="com.tle.core.jackson" exported="true" />
 		<import plugin-id="com.tle.core.workflow.video" />
+		<import plugin-id="com.tle.core.filesystem.staging" />
+		<import plugin-id="com.tle.core.item.standard" />
+		<import plugin-id="com.tle.core.collection" />
+		<import plugin-id="com.tle.core.quota" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="classes">

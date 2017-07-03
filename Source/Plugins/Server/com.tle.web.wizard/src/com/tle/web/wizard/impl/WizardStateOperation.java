@@ -21,10 +21,10 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemPack;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
+import com.tle.core.item.standard.operations.AbstractStandardWorkflowOperation;
 import com.tle.web.wizard.WizardState;
 
-public class WizardStateOperation extends AbstractWorkflowOperation
+public class WizardStateOperation extends AbstractStandardWorkflowOperation
 {
 	private WizardState state;
 

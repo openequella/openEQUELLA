@@ -17,6 +17,7 @@
 		<import plugin-id="com.tle.core.mimetypes" />
 		<import plugin-id="com.tle.web.api.item.equella.serializer" />
 		<import plugin-id="com.tle.web.api.item.equella.interfaces" />
+		<import plugin-id="com.tle.core.institution" />
 	</requires>
 
 	<runtime>

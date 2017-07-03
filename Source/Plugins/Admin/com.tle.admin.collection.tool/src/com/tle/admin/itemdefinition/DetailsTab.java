@@ -48,6 +48,7 @@ import com.tle.common.Check;
 import com.tle.common.Format;
 import com.tle.common.NameValue;
 import com.tle.common.applet.gui.AppletGuiUtils;
+import com.tle.common.filesystem.remoting.RemoteFileSystemService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.SingleUserSelector;
 import com.tle.common.workflow.RemoteWorkflowService;
@@ -74,8 +75,12 @@ public class DetailsTab extends AbstractItemdefTab implements ActionListener, Ab
 	private JCheckBox denyDirectContribution;
 
 	private JComboBox scormPackagingTransformation;
+	private JComboBox<NameValue> filestoreList;
+	private boolean advancedFilestore;
+	private Collection<NameValue> filestores;
 
 	private RemoteItemDefinitionService itemdefService;
+	private RemoteFileSystemService remoteFileSystemService;
 
 	@Override
 	public void init(Component parent)
@@ -87,7 +92,10 @@ public class DetailsTab extends AbstractItemdefTab implements ActionListener, Ab
 	public void setDriver(Driver driver)
 	{
 		super.setDriver(driver);
-		itemdefService = driver.getClientService().getService(RemoteItemDefinitionService.class);
+		itemdefService = clientService.getService(RemoteItemDefinitionService.class);
+		remoteFileSystemService = clientService.getService(RemoteFileSystemService.class);
+		advancedFilestore = remoteFileSystemService.isAdvancedFilestore();
+		filestores = getFilestores();
 	}
 
 	@Override
@@ -165,6 +173,12 @@ public class DetailsTab extends AbstractItemdefTab implements ActionListener, Ab
 			workflow.setId(Long.parseLong(nv.getValue()));
 		}
 		itemDef.setWorkflow(workflow);
+
+		if( filestoreList != null )
+		{
+			itemDef.setAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE,
+				((NameValue) filestoreList.getSelectedItem()).getValue());
+		}
 	}
 
 	@Override
@@ -218,6 +232,16 @@ public class DetailsTab extends AbstractItemdefTab implements ActionListener, Ab
 		AppletGuiUtils
 			.selectInJCombo(reviewPeriod, new NameValue(null, Integer.toString(itemDef.getReviewperiod())), 0);
 
+		if( filestoreList != null )
+		{
+			String filestoreId = itemDef.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
+			if( filestoreId == null )
+			{
+				filestoreId = RemoteFileSystemService.DEFAULT_FILESTORE_ID;
+			}
+			AppletGuiUtils.selectInJCombo(filestoreList, new NameValue(null, filestoreId), 0);
+		}
+
 		updateGUI();
 	}
 
@@ -236,6 +260,7 @@ public class DetailsTab extends AbstractItemdefTab implements ActionListener, Ab
 		JLabel wizCatLabel = new JLabel(s("selectwiz"));
 		JLabel moderationLabel = new JLabel(s("map"));
 		JLabel reviewLabel = new JLabel(s("selectreview"));
+		JLabel filestoreLabel = new JLabel(s("filestore"));
 
 		descriptionLabel.setVerticalAlignment(SwingConstants.TOP);
 		descriptionLabel.setVerticalTextPosition(SwingConstants.TOP);
@@ -250,8 +275,12 @@ public class DetailsTab extends AbstractItemdefTab implements ActionListener, Ab
 		ownerLabel.setLabelFor(owner);
 
 		schemaList = new JComboBox();
-		AppletGuiUtils.addItemsToJCombo(schemaList, getSchemaList());
-		schemaList.setSelectedIndex(0);
+		List<NameValue> schemas = getSchemaList();
+		AppletGuiUtils.addItemsToJCombo(schemaList, schemas);
+		if( schemas.size() > 0 )
+		{
+			schemaList.setSelectedIndex(0);
+		}
 		schemaList.addActionListener(this);
 		schemaLabel.setLabelFor(schemaList);
 
@@ -281,6 +310,20 @@ public class DetailsTab extends AbstractItemdefTab implements ActionListener, Ab
 		wizardCategoryAdd = new JLinkButton(s("add"));
 		wizardCategoryAdd.addActionListener(this);
 
+		if( advancedFilestore )
+		{
+			if( filestores.size() > 1 )
+			{
+				filestoreList = new JComboBox<>();
+				AppletGuiUtils.addItemsToJCombo(filestoreList, filestores);
+				//Make it locked on existing collections
+				if( state.getEntity().getId() != 0 )
+				{
+					filestoreList.setEnabled(false);
+				}
+			}
+		}
+
 		final int height1 = itemName.getPreferredSize().height;
 		final int height2 = owner.getPreferredSize().height;
 
@@ -293,7 +336,7 @@ public class DetailsTab extends AbstractItemdefTab implements ActionListener, Ab
 
 		final int columns[] = {width4, TableLayout.DOUBLE_FILL, width5, TableLayout.FILL, TableLayout.FILL,};
 		final int rows[] = {height1, height1 * 3, height2, gap, height1, height1, gap, height1, height1, height1,
-				height1, gap, TableLayout.FILL,};
+				height1, height1, gap, TableLayout.FILL,};
 
 		setLayout(new TableLayout(rows, columns, 5, 5));
 
@@ -327,6 +370,12 @@ public class DetailsTab extends AbstractItemdefTab implements ActionListener, Ab
 		add(wizardCategory, new Rectangle(1, row, 1, 1));
 		add(wizardCategoryAdd, new Rectangle(2, row++, 1, 1));
 		add(denyDirectContribution, new Rectangle(1, row++, 1, 1));
+
+		if( filestoreList != null )
+		{
+			add(filestoreLabel, new Rectangle(0, row, 1, 1));
+			add(filestoreList, new Rectangle(1, row++, 1, 1));
+		}
 
 		updateGUI();
 		switchSchemas(schemaList.getSelectedIndex());
@@ -383,6 +432,20 @@ public class DetailsTab extends AbstractItemdefTab implements ActionListener, Ab
 		{
 			Driver.displayError(null, "workflow/enumerating", ex);
 			LOGGER.error("Error enumerating workflows", ex);
+			return null;
+		}
+	}
+
+	protected Collection<NameValue> getFilestores()
+	{
+		try
+		{
+			return remoteFileSystemService.listFilestores();
+		}
+		catch( Exception ex )
+		{
+			Driver.displayError(null, "filestores/enumerating", ex);
+			LOGGER.error("Error enumerating filestores", ex);
 			return null;
 		}
 	}

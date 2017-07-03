@@ -24,7 +24,7 @@ import com.tle.common.portal.PortletTypeDescriptor;
 import com.tle.common.portal.entity.Portlet;
 import com.tle.common.portal.entity.PortletPreference;
 import com.tle.common.portal.service.RemotePortletService;
-import com.tle.core.services.entity.AbstractEntityService;
+import com.tle.core.entity.service.AbstractEntityService;
 
 /**
  * @author aholland

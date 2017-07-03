@@ -49,6 +49,8 @@ public class NotificationPortalExtension implements TaskListExtension // NOSONAR
 		notificationFilters.add(factory.create("notebadurl", Notification.REASON_BADURL, true));
 		notificationFilters.add(factory.create("notewentlive2", Notification.REASON_WENTLIVE2, true));
 		notificationFilters.add(factory.create("noteoverdue", Notification.REASON_OVERDUE, true));
+		notificationFilters.add(factory.create("noteerror", Notification.REASON_SCRIPT_ERROR, true));
+		notificationFilters.add(factory.create("noteexecuted", Notification.REASON_SCRIPT_EXECUTED, true));
 		return notificationFilters.build();
 	}
 }

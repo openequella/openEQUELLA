@@ -32,7 +32,7 @@ import com.tle.core.healthcheck.listeners.ServiceCheckRequestListener.CheckServi
 import com.tle.core.healthcheck.listeners.ServiceCheckResponseListener;
 import com.tle.core.healthcheck.listeners.bean.ServiceStatus;
 import com.tle.core.healthcheck.listeners.bean.ServiceStatus.ServiceName;
-import com.tle.core.services.EventService;
+import com.tle.core.events.services.EventService;
 import com.tle.core.zookeeper.ZookeeperService;
 
 @Bind(HealthCheckService.class)

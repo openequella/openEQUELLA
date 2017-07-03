@@ -26,9 +26,9 @@ import com.tle.web.filemanager.common.FileInfo;
 public class LocalBackend extends AbstractRemoteBackendImpl
 {
 	// FIXME: copied from com.tle.core.entity.services
-	public static final Set<String> ILLEGAL_FILENAMES = new HashSet<String>(Arrays.asList("com1", "com2", "com3",
-		"com4", "com5", "com6", "com7", "com8", "com9", "lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8",
-		"lpt9", "con", "nul", "prn"));
+	public static final Set<String> ILLEGAL_FILENAMES = new HashSet<String>(
+		Arrays.asList("com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8", "com9", "lpt1", "lpt2", "lpt3",
+			"lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9", "con", "nul", "prn"));
 
 	private static final Logger LOGGER = Logger.getLogger(LocalBackend.class.getName());
 
@@ -118,7 +118,7 @@ public class LocalBackend extends AbstractRemoteBackendImpl
 		File file = getActualFile(info);
 		try
 		{
-			FileUtils.delete(file);
+			FileUtils.delete(file.toPath(), null, true);
 		}
 		catch( IOException ex )
 		{

@@ -54,7 +54,7 @@ public class LDAPPlugin extends GeneralPlugin<LDAPSettings> implements ChangeLis
 	@Override
 	public void init()
 	{
-		generalSettings = new LDAPGeneralSettings();
+		generalSettings = new LDAPGeneralSettings(clientService);
 		mapping = new LDAPMappingPanel(clientService);
 		tabbed = new JTabbedPane();
 		setup();

@@ -3,7 +3,7 @@
 	<requires>
 		<import plugin-id="com.tle.common.entity" />
 		<import plugin-id="com.tle.common.i18n" />
-		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.security" />
 		<import plugin-id="com.tle.core.settings" />
@@ -12,6 +12,8 @@
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.web.sections.standard" />
 		<import plugin-id="com.tle.web.settings" />
+		<import plugin-id="com.tle.core.filesystem.staging" />
+		<import plugin-id="com.tle.core.filesystem" />
 	</requires>
 
 	<runtime>

@@ -36,8 +36,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import javassist.NotFoundException;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -64,6 +62,7 @@ import com.tle.beans.mime.MimeEntry;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
 import com.tle.common.NamedThreadFactory;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.interfaces.I18NStrings;
 import com.tle.common.searching.SimpleSearchResults;
@@ -85,13 +84,13 @@ import com.tle.core.cloud.service.CloudSearchResults;
 import com.tle.core.cloud.service.CloudService;
 import com.tle.core.cloud.settings.CloudSettings;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemResolverExtension;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.HttpService;
-import com.tle.core.services.config.ConfigurationService;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Response;
-import com.tle.core.services.item.ItemResolverExtension;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.DebugSettings;
 
 /**
@@ -171,15 +170,15 @@ public class CloudServiceImpl implements CloudService, ItemResolverExtension
 					"basic,metadata,attachment,detail", offset, pcs.getLength());
 				final CloudSearchResultsBean csr = getObjectMapper().readValue(response, CloudSearchResultsBean.class);
 
-				final List<CloudItem> itemResults = Lists.newArrayList(Lists.transform(csr.getResults(),
-					new Function<CloudItemBean, CloudItem>()
+				final List<CloudItem> itemResults = Lists
+					.newArrayList(Lists.transform(csr.getResults(), new Function<CloudItemBean, CloudItem>()
+				{
+					@Override
+					public CloudItem apply(CloudItemBean cib)
 					{
-						@Override
-						public CloudItem apply(CloudItemBean cib)
-						{
-							return convertCloudItemBean(cib);
-						}
-					}));
+						return convertCloudItemBean(cib);
+					}
+				}));
 				// EPS feature request perhaps? thoughts?
 				return new CloudSearchResultsInternal(itemResults, csr.getLength(), offset, csr.getAvailable());
 			}
@@ -641,8 +640,8 @@ public class CloudServiceImpl implements CloudService, ItemResolverExtension
 		cloudItem.setMetadata(cib.getMetadata());
 		cloudItem.setDateCreated(cib.getCreatedDate());
 		cloudItem.setDateModified(cib.getModifiedDate());
-		cloudItem.setAttachments(Lists.newArrayList(Lists.transform(cib.getAttachments(),
-			new Function<CloudAttachmentBean, CloudAttachment>()
+		cloudItem.setAttachments(Lists
+			.newArrayList(Lists.transform(cib.getAttachments(), new Function<CloudAttachmentBean, CloudAttachment>()
 			{
 				@Override
 				public CloudAttachment apply(CloudAttachmentBean cab)
@@ -737,8 +736,8 @@ public class CloudServiceImpl implements CloudService, ItemResolverExtension
 		public List<NameValue> call()
 		{
 			final CloudFacetSearchResults searchResults = facetSearch(facet);
-			final List<NameValue> nameVals = new ArrayList<>(Lists.transform(searchResults.getResults(),
-				getTransformer()));
+			final List<NameValue> nameVals = new ArrayList<>(
+				Lists.transform(searchResults.getResults(), getTransformer()));
 			clean(nameVals);
 			Collections.sort(nameVals, new NameValueComparator());
 			return nameVals;

@@ -28,6 +28,7 @@ import com.tle.web.sections.equella.freemarker.ExtendedFreemarkerFactory;
 import com.tle.web.sections.equella.guice.SectionsModule;
 import com.tle.web.viewitem.summary.sidebar.LockedByGroupSection;
 import com.tle.web.wizard.PackageTreeBuilder;
+import com.tle.web.wizard.WizardState;
 import com.tle.web.wizard.command.Cancel;
 import com.tle.web.wizard.command.EditInWizard;
 import com.tle.web.wizard.command.Preview;
@@ -57,9 +58,9 @@ public class WizardModule extends SectionsModule
 		rootNode.child(SelectThumbnailSection.class);
 		bind(Object.class).annotatedWith(Names.named("/access/runwizard")).toProvider(rootNode);
 
-		ListProvider<WizardCommand> commands = new ListProvider<WizardCommand>(binder(), ImmutableList.of(
-			EditInWizard.class, ViewSummary.class, SaveAndContinue.class, Preview.class, Save.class, Cancel.class,
-			SelectThumbnail.class));
+		ListProvider<WizardCommand> commands = new ListProvider<WizardCommand>(binder(),
+			ImmutableList.of(EditInWizard.class, ViewSummary.class, SaveAndContinue.class, Preview.class, Save.class,
+				Cancel.class, SelectThumbnail.class));
 		ListProvider<SectionId> additional = new ListProvider<SectionId>(binder());
 		additional.add(LockedByGroupSection.class);
 
@@ -73,6 +74,8 @@ public class WizardModule extends SectionsModule
 		bind(WizardExtendedFactory.class).annotatedWith(Names.named("TitleFactory")).to(NamedTitleFactory.class)
 			.asEagerSingleton();
 		install(new WizardTracker());
+
+		requestStaticInjection(WizardState.class);
 	}
 
 	private NodeProvider wizardNav()

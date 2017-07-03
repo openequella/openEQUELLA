@@ -24,10 +24,10 @@ import javax.inject.Singleton;
 
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.Check;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.BundleCache;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.navigation.BreadcrumbProvider;
 import com.tle.web.searching.section.SearchQuerySection;
 import com.tle.web.sections.Bookmark;

@@ -34,12 +34,12 @@ import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.Check;
 import com.tle.common.Format;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.fedsearch.FederatedSearchService;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.web.TextBundle;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.i18n.TextBundle;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.remoterepo.service.RemoteRepoWebService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -169,8 +169,8 @@ public class ContributeSection extends AbstractPrototypeSection<ContributeSectio
 					reWizard.setResumeLink(resumeLink);
 					reWizard.setCollectionName(new TextLabel(wizInfo.getCollectionName()));
 
-					final HtmlLinkState removeLink = new HtmlLinkState(LABEL_REMOVE, events.getNamedHandler(
-						"removeWizard", uuid));
+					final HtmlLinkState removeLink = new HtmlLinkState(LABEL_REMOVE,
+						events.getNamedHandler("removeWizard", uuid));
 					reWizard.setRemoveLink(new LinkRenderer(removeLink));
 
 					resumables.add(reWizard);

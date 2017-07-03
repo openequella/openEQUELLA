@@ -17,6 +17,11 @@
 package com.tle.web.endpoint.srw;
 
 import ORG.oclc.os.SRW.*;
+import com.tle.core.freetext.service.FreeTextService;
+import com.tle.core.item.helper.ItemHelper;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.schema.service.SchemaService;
+import com.tle.core.services.item.FreetextSearchResults;
 import gov.loc.www.zing.srw.ExtraDataType;
 import gov.loc.www.zing.srw.ScanRequestType;
 import gov.loc.www.zing.srw.ScanResponseType;
@@ -48,11 +53,6 @@ import com.tle.common.Utils;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.searching.Search;
 import com.tle.core.guice.Bind;
-import com.tle.core.schema.SchemaService;
-import com.tle.core.services.item.FreeTextService;
-import com.tle.core.services.item.FreetextSearchResults;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.util.ItemHelper;
 
 @Bind
 @Singleton

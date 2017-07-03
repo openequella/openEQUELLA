@@ -26,7 +26,7 @@ import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
-import com.tle.web.i18n.BundleCache;
+import com.tle.core.i18n.BundleCache;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.annotations.TreeLookup;

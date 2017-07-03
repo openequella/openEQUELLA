@@ -18,7 +18,7 @@ package com.tle.web.itemadmin.operation;
 
 import java.io.Serializable;
 
-import com.tle.core.workflow.operations.WorkflowOperation;
+import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.web.bulk.operation.SimpleOperationExecutor;
 
 public final class StandardOperation

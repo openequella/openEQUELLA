@@ -16,17 +16,15 @@
 
 package com.tle.core.services.item.relation;
 
+import com.google.inject.AbstractModule;
 import com.tle.core.guice.PluginTrackerModule;
-import com.tle.core.services.guice.ServicesModule;
 
 @SuppressWarnings("nls")
-public class RelationModule extends ServicesModule
+public class RelationModule extends AbstractModule
 {
-
 	@Override
 	protected void configure()
 	{
-		super.configure();
 		requestStaticInjection(RelationModify.class);
 		install(new RelationTrackerModule());
 	}

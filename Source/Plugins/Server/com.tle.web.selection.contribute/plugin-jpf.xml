@@ -9,8 +9,9 @@
 		<import plugin-id="com.tle.web.viewurl" />
 		<import plugin-id="com.tle.web.wizard" />
 		<import plugin-id="com.tle.core.imagemagick" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.item.standard" />
+		<import plugin-id="com.tle.core.quickupload" />
 	</requires>
 
 	<runtime>
@@ -36,5 +37,4 @@
 		<parameter id="parentid" value="SELECTION_HOME" />
 		<parameter id="layout" value="{column:'left', order: 10}" />
 	</extension>
-
 </plugin>

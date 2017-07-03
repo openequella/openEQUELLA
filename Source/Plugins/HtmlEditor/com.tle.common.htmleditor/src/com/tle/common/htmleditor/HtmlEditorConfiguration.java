@@ -19,9 +19,9 @@ package com.tle.common.htmleditor;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tle.common.property.ConfigurationProperties;
-import com.tle.common.property.annotation.Property;
-import com.tle.common.property.annotation.PropertyDataList;
+import com.tle.common.settings.ConfigurationProperties;
+import com.tle.common.settings.annotation.Property;
+import com.tle.common.settings.annotation.PropertyDataList;
 
 /**
  * Making this class final overcomes some of Sonar's technical complaints about

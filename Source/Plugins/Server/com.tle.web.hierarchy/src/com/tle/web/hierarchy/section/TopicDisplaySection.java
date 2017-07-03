@@ -45,19 +45,19 @@ import com.tle.common.search.DefaultSearch;
 import com.tle.common.search.PresetSearch;
 import com.tle.core.auditlog.AuditLogService;
 import com.tle.core.freetext.queries.FreeTextBooleanQuery;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.hierarchy.HierarchyService;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.search.VirtualisableAndValue;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.item.FreeTextService;
 import com.tle.core.services.item.FreetextResult;
 import com.tle.core.services.item.FreetextSearchResults;
-import com.tle.core.services.item.ItemService;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.hierarchy.model.TopicDisplayModel;
 import com.tle.web.hierarchy.model.TopicDisplayModel.DisplayHierarchyNode;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.itemlist.item.ListSettings;
 import com.tle.web.itemlist.item.StandardItemListEntry;
 import com.tle.web.search.actions.SkinnySearchActionsSection;
@@ -198,10 +198,10 @@ public class TopicDisplaySection extends AbstractPrototypeSection<TopicDisplaySe
 		{
 			hierarchyService.assertViewAccess(topic);
 
-			model.setDescription(labelForValue(new BundleLabel(topic.getLongDescription(), bundleCache).setHtml(true),
-				topicVirtValue));
-			model.setSubtopicName(labelForValue(new BundleLabel(topic.getSubtopicsSectionName(), bundleCache),
-				topicVirtValue));
+			model.setDescription(
+				labelForValue(new BundleLabel(topic.getLongDescription(), bundleCache).setHtml(true), topicVirtValue));
+			model.setSubtopicName(
+				labelForValue(new BundleLabel(topic.getSubtopicsSectionName(), bundleCache), topicVirtValue));
 
 			PowerSearch powerSearch = topic.getAdvancedSearch();
 			model.setShowAdvanced(powerSearch != null
@@ -223,8 +223,8 @@ public class TopicDisplaySection extends AbstractPrototypeSection<TopicDisplaySe
 		// Go through the child topics and get item counts for them, either as
 		// calculated (if by Contributed virtualiser) or as a one-at-a-time
 		// search (if manual virtualiser).
-		final List<VirtualisableAndValue<HierarchyTopic>> childTopics = hierarchyService.expandVirtualisedTopics(
-			hierarchyService.getChildTopics(topic), values, collectionUuids);
+		final List<VirtualisableAndValue<HierarchyTopic>> childTopics = hierarchyService
+			.expandVirtualisedTopics(hierarchyService.getChildTopics(topic), values, collectionUuids);
 		for( VirtualisableAndValue<HierarchyTopic> p : childTopics )
 		{
 			HierarchyTopic childTopic = p.getVt();
@@ -263,8 +263,8 @@ public class TopicDisplaySection extends AbstractPrototypeSection<TopicDisplaySe
 				searchCount += dynamicKeyResources.size();
 			}
 
-			DisplayHierarchyNode node = new DisplayHierarchyNode(childTopic, childValue, link, searchCount,
-				bundleCache, aclManager, keyResPrivs);
+			DisplayHierarchyNode node = new DisplayHierarchyNode(childTopic, childValue, link, searchCount, bundleCache,
+				aclManager, keyResPrivs);
 
 			if( !hideZero || node.getResultCountInt() > 0 )
 			{
@@ -496,8 +496,8 @@ public class TopicDisplaySection extends AbstractPrototypeSection<TopicDisplaySe
 				topicId = buildTopicId(topic, value, values);
 			}
 
-			crumbs.addToStart(new HtmlLinkState(getLabelForTopic(topic, value), events.getNamedHandler("changeTopic",
-				topicId)));
+			crumbs.addToStart(
+				new HtmlLinkState(getLabelForTopic(topic, value), events.getNamedHandler("changeTopic", topicId)));
 		}
 	}
 
@@ -528,8 +528,9 @@ public class TopicDisplaySection extends AbstractPrototypeSection<TopicDisplaySe
 	public FreetextSearchResults<? extends FreetextResult> processFreetextResults(SectionInfo info,
 		FreetextSearchEvent searchEvent)
 	{
-		List<Item> keyResources = (List<Item>) aclManager.filterNonGrantedObjects(Collections
-			.singleton(selectionService.getSearchPrivilege(info)), getModel(info).getTopic().getKeyResources());
+		List<Item> keyResources = (List<Item>) aclManager.filterNonGrantedObjects(
+			Collections.singleton(selectionService.getSearchPrivilege(info)),
+			getModel(info).getTopic().getKeyResources());
 
 		if( getDynamicKeyResourceItems(info) != null )
 		{
@@ -666,8 +667,8 @@ public class TopicDisplaySection extends AbstractPrototypeSection<TopicDisplaySe
 		private final int offset;
 		private final int mixedEnd;
 
-		public KeyResourceAddedResults(FreetextSearchResults<? extends FreetextResult> results,
-			List<Item> keyResources, FreetextSearchEvent searchEvent)
+		public KeyResourceAddedResults(FreetextSearchResults<? extends FreetextResult> results, List<Item> keyResources,
+			FreetextSearchEvent searchEvent)
 		{
 			this.wrapped = results;
 			this.keyResources = keyResources;

@@ -8,6 +8,7 @@
 		<import plugin-id="com.tle.core.settings" />
 		<import plugin-id="com.tle.web.appletcommon" />
 		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.core.institution" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

@@ -28,6 +28,7 @@ import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.collection.AttachmentConfigConstants;
 import com.tle.core.filesystem.ItemFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemFileService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
@@ -56,6 +57,8 @@ public class GalleryThumbnailAndPreviewDisplay extends AbstractPrototypeSection<
 	private AttachmentResourceService attachmentResourceService;
 	@Inject
 	private FileSystemService fileSystemService;
+	@Inject
+	private ItemFileService itemFileService;
 	@Inject
 	private FileFilterService filters;
 	@Inject
@@ -101,8 +104,8 @@ public class GalleryThumbnailAndPreviewDisplay extends AbstractPrototypeSection<
 							if( attachmentThumb != null && !attachmentThumb.equals("suppress") )
 							{
 
-								entry.addThumbnail(viewableResource.createGalleryThumbnailRenderer(entry
-									.getTitleLabel()));
+								entry.addThumbnail(
+									viewableResource.createGalleryThumbnailRenderer(entry.getTitleLabel()));
 								if( canUserViewAttachment(item, attachment) )
 								{
 									entry.addExtras(attachPreview(attachment, viewableResource));
@@ -128,9 +131,8 @@ public class GalleryThumbnailAndPreviewDisplay extends AbstractPrototypeSection<
 				break;
 			}
 		}
-		if( attach.isRestricted()
-			&& aclManager.filterNonGrantedPrivileges(item,
-				Collections.singleton(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)).isEmpty() )
+		if( attach.isRestricted() && aclManager.filterNonGrantedPrivileges(item,
+			Collections.singleton(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)).isEmpty() )
 		{
 			canView = false;
 		}
@@ -139,17 +141,17 @@ public class GalleryThumbnailAndPreviewDisplay extends AbstractPrototypeSection<
 
 	private DivRenderer attachPreview(IAttachment att, ViewableResource viewableResource)
 	{
-
 		String thumbPath = att.getThumbnail();
 		if( thumbPath == null || thumbPath.equals("suppress") )
 		{
 			return null;
 		}
 		int lastIndex = thumbPath.lastIndexOf(FileSystemService.THUMBNAIL_EXTENSION);
-		String previewPath = new StringBuilder(thumbPath).replace(lastIndex, thumbPath.length(),
-			FileSystemService.GALLERY_PREVIEW_EXTENSION).toString();
+		String previewPath = new StringBuilder(thumbPath)
+			.replace(lastIndex, thumbPath.length(), FileSystemService.GALLERY_PREVIEW_EXTENSION).toString();
 
-		final ItemFile itemFile = new ItemFile(viewableResource.getViewableItem().getItemId());
+		final ViewableItem vitem = viewableResource.getViewableItem();
+		final ItemFile itemFile = itemFileService.getItemFile(vitem.getItemId(), null);
 		String source;
 		if( !fileSystemService.fileExists(itemFile, previewPath) )
 		{

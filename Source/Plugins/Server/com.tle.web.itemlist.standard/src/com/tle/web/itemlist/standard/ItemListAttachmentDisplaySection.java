@@ -27,8 +27,8 @@ import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
 import com.tle.common.security.SecurityConstants;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.item.ItemService;
 import com.tle.web.itemlist.item.ItemListEntry;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.events.RenderEventContext;
@@ -78,8 +78,9 @@ public class ItemListAttachmentDisplaySection extends AbstractItemlikeListAttach
 	protected boolean canSeeAttachments(Item item)
 	{
 		// No VIEW_ITEM privilege, no view attachment toggle
-		return !aclManager.filterNonGrantedObjects(Collections.singleton(SecurityConstants.VIEW_ITEM),
-			Collections.singleton(item)).isEmpty();
+		return !aclManager
+			.filterNonGrantedObjects(Collections.singleton(SecurityConstants.VIEW_ITEM), Collections.singleton(item))
+			.isEmpty();
 	}
 
 	@Override

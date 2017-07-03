@@ -16,6 +16,7 @@
 
 package com.tle.core.services.item.relation;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -30,12 +31,12 @@ import com.tle.beans.item.ItemPack;
 import com.tle.beans.item.Relation;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.common.item.AbstractHelper;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemService;
+import com.tle.core.item.helper.AbstractHelper;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.operations.SaveOperation;
 import com.tle.core.services.item.relation.RelationOperation.RelationOperationFactory;
-import com.tle.core.workflow.operations.SaveOperation;
-import com.tle.core.workflow.operations.WorkflowOperation;
 
 @Bind
 @Singleton
@@ -110,7 +111,13 @@ public class RelationHelper extends AbstractHelper
 		}
 
 		List<WorkflowOperation> preSave = pack.getAttribute(SaveOperation.KEY_PRESAVE);
+		if( preSave == null )
+		{
+			preSave = new ArrayList<>();
+			pack.setAttribute(SaveOperation.KEY_PRESAVE, preSave);
+		}
 		preSave.add(relationOperationFactory.create(state));
+
 		handled.add("relations"); //$NON-NLS-1$
 	}
 

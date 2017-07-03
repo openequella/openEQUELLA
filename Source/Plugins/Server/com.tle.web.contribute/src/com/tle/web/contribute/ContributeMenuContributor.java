@@ -22,8 +22,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.entity.ItemDefinitionService;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionInfo;
@@ -38,10 +38,10 @@ import com.tle.web.template.section.MenuContributor;
 @SuppressWarnings("nls")
 public class ContributeMenuContributor implements MenuContributor
 {
-	private static final Label LABEL_KEY = new KeyLabel(ResourcesService.getResourceHelper(
-		ContributeMenuContributor.class).key("menu"));
-	private static final String ICON_PATH = ResourcesService.getResourceHelper(ContributeMenuContributor.class).url(
-		"images/menu-icon-contribute.png");
+	private static final Label LABEL_KEY = new KeyLabel(
+		ResourcesService.getResourceHelper(ContributeMenuContributor.class).key("menu"));
+	private static final String ICON_PATH = ResourcesService.getResourceHelper(ContributeMenuContributor.class)
+		.url("images/menu-icon-contribute.png");
 	private static final String SESSION_KEY = "CONTRIBUTE-MENU";
 
 	@Inject

@@ -24,14 +24,14 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.dytech.edge.common.Constants;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.beans.item.attachments.HtmlAttachment;
 import com.tle.common.Check;
 import com.tle.common.PathUtils;
-import com.tle.common.util.FileEntry;
+import com.tle.common.filesystem.FileEntry;
 import com.tle.core.services.FileSystemService;
 import com.tle.mypages.service.MyPagesService;
 import com.tle.web.freemarker.FreemarkerFactory;

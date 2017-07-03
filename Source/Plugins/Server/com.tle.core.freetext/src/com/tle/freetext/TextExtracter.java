@@ -49,11 +49,13 @@ import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.beans.item.attachments.HtmlAttachment;
 import com.tle.beans.mime.MimeEntry;
-import com.tle.beans.system.SearchSettings;
 import com.tle.common.URLUtils;
+import com.tle.common.settings.standard.SearchSettings;
 import com.tle.core.TextExtracterExtension;
 import com.tle.core.filesystem.ItemFile;
+import com.tle.core.freetext.indexer.AbstractIndexingExtension;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemFileService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.util.ims.beans.IMSManifest;
@@ -75,6 +77,8 @@ public class TextExtracter
 
 	@Inject
 	private FileSystemService fileSystemService;
+	@Inject
+	private ItemFileService itemFileService;
 	@Inject
 	private MimeTypeService mimeService;
 	@Inject
@@ -121,7 +125,8 @@ public class TextExtracter
 								final List<TextExtracterExtension> extractors = getExtractors(mimeEntry);
 								if( !extractors.isEmpty() )
 								{
-									try( InputStream input = fileSystemService.read(new ItemFile(item), filename) )
+									try( InputStream input = fileSystemService.read(itemFileService.getItemFile(item),
+										filename) )
 									{
 										extractTextFromStream(extractors, input, mimeEntry, sbuf);
 									}
@@ -138,7 +143,8 @@ public class TextExtracter
 							final List<TextExtracterExtension> extractors = getExtractors(mimeEntry);
 							if( !extractors.isEmpty() )
 							{
-								try( InputStream input = fileSystemService.read(new ItemFile(item), filename) )
+								try( InputStream input = fileSystemService.read(itemFileService.getItemFile(item),
+									filename) )
 								{
 									extractTextFromStream(extractors, input, mimeEntry, sbuf);
 								}
@@ -174,7 +180,8 @@ public class TextExtracter
 									List<TextExtracterExtension> extractors = getExtractors(mimeEntry);
 
 									boolean isHtmlAndNeedsParsing = (mimeEntry != null
-										&& mimeEntry.getType().indexOf("html") != -1 && urlLevel >= SearchSettings.URL_DEPTH_LEVEL_REFERENCED_AND_LINKED);
+										&& mimeEntry.getType().indexOf("html") != -1
+										&& urlLevel >= SearchSettings.URL_DEPTH_LEVEL_REFERENCED_AND_LINKED);
 									boolean isIndexable = extractors.size() > 0;
 									ByteArrayOutputStream baos = new ByteArrayOutputStream();
 									if( isIndexable || isHtmlAndNeedsParsing )
@@ -243,7 +250,7 @@ public class TextExtracter
 							{
 								Attachment imsAttach = attach;
 								String imsFolder = imsAttach.getUrl();
-								ItemFile file = new ItemFile(item);
+								ItemFile file = itemFileService.getItemFile(item);
 								IMSManifest imsManifest = imsService.getImsManifest(file, imsFolder, true);
 								if( imsManifest != null )
 								{
@@ -255,8 +262,8 @@ public class TextExtracter
 										final List<TextExtracterExtension> extractors = getExtractors(entry);
 										if( !extractors.isEmpty() )
 										{
-											try( InputStream input = fileSystemService.read(file, imsFolder + '/'
-												+ fullHref) )
+											try( InputStream input = fileSystemService.read(file,
+												imsFolder + '/' + fullHref) )
 											{
 												extractTextFromStream(extractors, input, entry, sbuf);
 											}
@@ -281,8 +288,8 @@ public class TextExtracter
 					String attachmentText = sbuf.toString();
 					fields.add(AbstractIndexingExtension.unstoredAndVectored(FreeTextQuery.FIELD_ATTACHMENT_VECTORED,
 						attachmentText));
-					fields.add(AbstractIndexingExtension.unstoredAndVectored(
-						FreeTextQuery.FIELD_ATTACHMENT_VECTORED_NOSTEM, attachmentText));
+					fields.add(AbstractIndexingExtension
+						.unstoredAndVectored(FreeTextQuery.FIELD_ATTACHMENT_VECTORED_NOSTEM, attachmentText));
 				}
 			}
 			catch( FileNotFoundException ex )
@@ -308,8 +315,8 @@ public class TextExtracter
 				}
 				else
 				{
-					LOGGER.trace("No mimeEntry for attachment " + attach.getDescription() + " on item "
-						+ item.getIdString());
+					LOGGER.trace(
+						"No mimeEntry for attachment " + attach.getDescription() + " on item " + item.getIdString());
 				}
 			}
 			catch( Throwable t )

@@ -5,11 +5,12 @@
 		<import plugin-id="com.tle.common.usermanagement.canvas" />
 		<import plugin-id="com.tle.core.connectors.canvas" />
 		<import plugin-id="com.tle.core.guice" />
-		<import plugin-id="com.tle.core.entity.services" />
+		
 		<import plugin-id="com.tle.core.settings" />
 		<import plugin-id="com.tle.core.usermanagement" />
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.web.core" />
+		<import plugin-id="com.tle.core.jackson" />
 		<import plugin-id="org.hurl:hurl" />
 	</requires>
 

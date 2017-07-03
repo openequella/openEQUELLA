@@ -23,7 +23,7 @@ import java.net.URI;
 import uk.ac.ed.ph.jqtiplus.xmlutils.locators.ResourceLocator;
 
 import com.google.common.base.Throwables;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.PathUtils;
 import com.tle.core.services.FileSystemService;
 

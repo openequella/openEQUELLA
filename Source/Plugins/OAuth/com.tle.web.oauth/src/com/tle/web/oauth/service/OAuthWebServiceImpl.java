@@ -32,13 +32,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 
-import net.oauth.OAuth;
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthMessage;
-import net.oauth.OAuthProblemException;
-import net.oauth.signature.OAuthSignatureMethod;
-
-import com.dytech.edge.common.valuebean.UserBean;
 import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -47,23 +40,31 @@ import com.tle.beans.Institution;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.common.oauth.beans.OAuthToken;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
+import com.tle.core.encryption.EncryptionService;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.service.LanguageService;
 import com.tle.core.institution.InstitutionCache;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.oauth.OAuthConstants;
 import com.tle.core.oauth.OAuthUserState;
-import com.tle.core.oauth.service.DeleteOAuthTokensEvent;
-import com.tle.core.oauth.service.DeleteOAuthTokensEventListener;
+import com.tle.core.oauth.event.DeleteOAuthTokensEvent;
+import com.tle.core.oauth.event.listener.DeleteOAuthTokensEventListener;
 import com.tle.core.oauth.service.OAuthService;
 import com.tle.core.replicatedcache.ReplicatedCacheService;
 import com.tle.core.replicatedcache.ReplicatedCacheService.ReplicatedCache;
-import com.tle.core.services.language.LanguageService;
 import com.tle.core.services.user.UserService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.UserState;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.web.oauth.OAuthException;
 import com.tle.web.oauth.OAuthUserStateImpl;
 import com.tle.web.oauth.OAuthWebConstants;
+
+import net.oauth.OAuth;
+import net.oauth.OAuthAccessor;
+import net.oauth.OAuthMessage;
+import net.oauth.OAuthProblemException;
+import net.oauth.signature.OAuthSignatureMethod;
 
 /**
  * @author Aaron
@@ -87,6 +88,8 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
 	private UserService userService;
 	@Inject
 	private LanguageService languageService;
+	@Inject
+	private EncryptionService encryptionService;
 
 	private ReplicatedCache<Boolean> oAuthNonceCache;
 	private ReplicatedCache<CodeReg> oAuthCodesCache;
@@ -146,8 +149,8 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
 		if( !client.getClientId().equals(codeReg.getClientId())
 			|| !Objects.equals(client.getRedirectUrl(), codeReg.getRedirectUrl()) )
 		{
-			throw new OAuthException(400, OAuthConstants.ERROR_UNAUTHORIZED_CLIENT, CurrentLocale.get(
-				KEY_CLIENT_CODE_MISMATCH, client.getClientId()), true);
+			throw new OAuthException(400, OAuthConstants.ERROR_UNAUTHORIZED_CLIENT,
+				CurrentLocale.get(KEY_CLIENT_CODE_MISMATCH, client.getClientId()), true);
 		}
 
 		final AuthorisationDetails auth = new AuthorisationDetails();
@@ -159,7 +162,7 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
 	@Override
 	public AuthorisationDetails getAuthorisationDetailsBySecret(OAuthClient client, String clientSecret)
 	{
-		if( clientSecret != null && !client.getClientSecret().equals(clientSecret) )
+		if( clientSecret != null && !encryptionService.decrypt(client.getClientSecret()).equals(clientSecret) )
 		{
 			throw new OAuthException(400, OAuthConstants.ERROR_INVALID_GRANT, CurrentLocale.get(KEY_INVALID_SECRET));
 		}
@@ -198,8 +201,8 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
 			{
 				// FIXME: Need to fall back on server language since
 				// LocaleEncodingFilter has not run yet...
-				throw new OAuthException(403, OAuthConstants.ERROR_ACCESS_DENIED, languageService.getResourceBundle(
-					Locale.getDefault(), "resource-centre").getString(KEY_TOKEN_NOT_FOUND));
+				throw new OAuthException(403, OAuthConstants.ERROR_ACCESS_DENIED, languageService
+					.getResourceBundle(Locale.getDefault(), "resource-centre").getString(KEY_TOKEN_NOT_FOUND));
 			}
 
 			final UserState userState = userService.authenticateAsUser(token.getUsername(),
@@ -231,8 +234,8 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
 	}
 
 	@Override
-	public void validateMessage(OAuthMessage message, OAuthAccessor accessor) throws net.oauth.OAuthException,
-		IOException, URISyntaxException
+	public void validateMessage(OAuthMessage message, OAuthAccessor accessor)
+		throws net.oauth.OAuthException, IOException, URISyntaxException
 	{
 		checkSingleParameters(message); // No duplicates
 		validateVersion(message); // Is OAuth 1
@@ -349,8 +352,8 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
 		oAuthNonceCache.put(nonce, Boolean.TRUE);
 	}
 
-	private void validateSignature(OAuthMessage message, OAuthAccessor accessor) throws net.oauth.OAuthException,
-		IOException, URISyntaxException
+	private void validateSignature(OAuthMessage message, OAuthAccessor accessor)
+		throws net.oauth.OAuthException, IOException, URISyntaxException
 	{
 		message.requireParameters(OAuth.OAUTH_CONSUMER_KEY, OAuth.OAUTH_SIGNATURE_METHOD, OAuth.OAUTH_SIGNATURE);
 		OAuthSignatureMethod.newSigner(message, accessor).validate(message);

@@ -9,7 +9,7 @@
 		<import plugin-id="com.tle.web.sections" />
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.core.security" />
-		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.entity" exported="true" />
 		<import plugin-id="com.tle.web.settings" />
 		<import plugin-id="com.tle.web.bulk" />
 		<import plugin-id="com.tle.common.item" />

@@ -33,9 +33,9 @@ import com.tle.common.i18n.LangUtils;
 import com.tle.common.i18n.beans.LanguageBundleBean;
 import com.tle.common.userscripts.UserScriptsConstants.ScriptTypes;
 import com.tle.common.userscripts.entity.UserScript;
+import com.tle.core.entity.EntityEditingSession;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.entity.AbstractEntityService;
-import com.tle.core.services.entity.EntityEditingSession;
 import com.tle.core.userscripts.service.UserScriptsService;
 import com.tle.core.userscripts.service.session.UserScriptEditingBean;
 import com.tle.web.entities.section.AbstractEntityEditor;
@@ -155,14 +155,14 @@ public class UserScriptEditorSection
 		freemakerEditor.setShowHelp(true);
 
 		scriptTypeList.setListModel(new EnumListModel<ScriptTypes>(KEY_SCRIPT_TYPE_PFX, true, ScriptTypes.values()));
-		StatementHandler listUpdate = new StatementHandler(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("typeChanged"), ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING),
-			"script-field"));
+		StatementHandler listUpdate = new StatementHandler(
+			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("typeChanged"),
+				ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING), "script-field"));
 		scriptTypeList.setEventHandler(JSHandler.EVENT_CHANGE, listUpdate);
 		scriptTypeList.setAlwaysSelect(true);
 
-		checkSyntaxButton.setClickHandler(new StatementHandler(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("checkSyntax"), "syntax-div")));
+		checkSyntaxButton.setClickHandler(new StatementHandler(
+			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("checkSyntax"), "syntax-div")));
 		checkSyntaxButton.setStyleClass("validate-button");
 	}
 

@@ -22,7 +22,7 @@ import java.util.List;
 import javax.inject.Singleton;
 
 import com.tle.core.guice.Bind;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionInfo;

@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dytech.edge.queries.FreeTextQuery;
-import com.tle.beans.system.SearchSettings.SearchFilter;
 import com.tle.common.NameValue;
+import com.tle.common.settings.standard.SearchSettings.SearchFilter;
 import com.tle.web.search.event.FreetextSearchEvent;
 import com.tle.web.sections.SectionInfo;
 

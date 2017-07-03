@@ -21,14 +21,14 @@ import java.util.Properties;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import ORG.oclc.oai.server.catalog.AbstractCatalog;
-
 import com.google.common.base.Throwables;
-import com.tle.beans.system.MailSettings;
 import com.tle.common.Utils;
+import com.tle.common.settings.standard.MailSettings;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.settings.service.ConfigurationService;
+
+import ORG.oclc.oai.server.catalog.AbstractCatalog;
 
 @Deprecated
 @Bind
@@ -39,7 +39,7 @@ public class OAIProperties
 	@Inject
 	private ConfigurationService configConstants;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	// Sonar objects to 'throws Throwable' but here we're bound by the
 	// declaration in external jar
@@ -78,7 +78,7 @@ public class OAIProperties
 			}
 			else if( "OAIHandler.baseURL".equals(key) ) //$NON-NLS-1$
 			{
-				return urlService.getInstitutionUrl() + "oai"; //$NON-NLS-1$
+				return institutionService.getInstitutionUrl() + "oai"; //$NON-NLS-1$
 			}
 			return super.getProperty(key);
 		}

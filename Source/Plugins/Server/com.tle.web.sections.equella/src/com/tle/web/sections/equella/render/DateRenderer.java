@@ -21,10 +21,10 @@ import java.util.Date;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import com.tle.beans.system.DateFormatSettings;
 import com.tle.common.Check;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.common.settings.standard.DateFormatSettings;
 import com.tle.core.services.user.UserPreferenceService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.render.SectionRenderable;
@@ -49,8 +49,8 @@ public class DateRenderer implements SectionRenderable
 	protected DateRenderer(@Assisted Date date, @Assisted boolean suppressSuffix, ConfigurationService configService,
 		UserPreferenceService userPrefs)
 	{
-		String displayDateFormat = suppressSuffix ? JQueryTimeAgo.DATE_FORMAT_APPROX : getDisplayDateFormat(
-			configService, userPrefs);
+		String displayDateFormat = suppressSuffix ? JQueryTimeAgo.DATE_FORMAT_APPROX
+			: getDisplayDateFormat(configService, userPrefs);
 		timeAgo = JQueryTimeAgo.timeAgoTag(date, suppressSuffix, displayDateFormat);
 	}
 

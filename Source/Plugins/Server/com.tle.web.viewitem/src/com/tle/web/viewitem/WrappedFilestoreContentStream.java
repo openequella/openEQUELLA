@@ -16,7 +16,7 @@
 
 package com.tle.web.viewitem;
 
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.ItemKey;
 import com.tle.web.stream.WrappedContentStream;
 

@@ -48,7 +48,7 @@ public class ButtonRenderer extends AbstractElementRenderer implements JSDisable
 		ADD(null, Icon.ADD), 
 		DELETE(ButtonTrait.WARNING, Icon.DELETE), 
 		EDIT(null, Icon.EDIT), 
-		SELECT(ButtonTrait.SUCCESS, Icon.SELECT),
+		SELECT(ButtonTrait.PRIMARY, Icon.ADD),
 		CANCEL(null, null),
 		UNSELECT(null, Icon.UNSELECT), 
 		SEARCH(null, Icon.SEARCH), 

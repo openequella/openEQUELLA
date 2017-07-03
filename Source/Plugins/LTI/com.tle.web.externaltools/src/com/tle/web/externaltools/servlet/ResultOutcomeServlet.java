@@ -39,6 +39,7 @@ import com.google.gson.JsonSyntaxException;
 import com.tle.common.Check;
 import com.tle.common.externaltools.SourcedIdPackage;
 import com.tle.common.lti.consumers.entity.LtiConsumer;
+import com.tle.core.encryption.EncryptionService;
 import com.tle.core.guice.Bind;
 import com.tle.core.lti.consumers.service.LtiConsumerService;
 import com.tle.core.oauth.OAuthConstants;
@@ -105,6 +106,8 @@ public class ResultOutcomeServlet extends HttpServlet
 	private LtiService ltiService;
 	@Inject
 	private LtiConsumerService ltiConsumerService;
+	@Inject
+	private EncryptionService encryptionService;
 
 	/**
 	 * The gradebook update from Icodeon will be in an XML stream
@@ -135,8 +138,8 @@ public class ResultOutcomeServlet extends HttpServlet
 			JAXBElement<?> ummagumma = (JAXBElement<?>) unmarshalled;
 			if( !ummagumma.getDeclaredType().equals(ImsxPOXEnvelopeType.class) )
 			{
-				throw new ServletException("Unexpected object in unmarshalled request data: "
-					+ unmarshalled.getClass().getSimpleName());
+				throw new ServletException(
+					"Unexpected object in unmarshalled request data: " + unmarshalled.getClass().getSimpleName());
 			}
 			env = ((JAXBElement<ImsxPOXEnvelopeType>) ummagumma).getValue();
 		}
@@ -170,7 +173,7 @@ public class ResultOutcomeServlet extends HttpServlet
 			{
 				throw new ServletException("client not found for oauth key: " + lmsoauthkey);
 			}
-			clientSecret = ltiConsumer.getConsumerSecret();
+			clientSecret = encryptionService.decrypt(ltiConsumer.getConsumerSecret());
 
 			lmsResultSourcedId = sourcedIdPackage.getLmsSourcedId();
 			LOGGER.debug("Processing grades with JSON string " + lmsResultSourcedId + "...");

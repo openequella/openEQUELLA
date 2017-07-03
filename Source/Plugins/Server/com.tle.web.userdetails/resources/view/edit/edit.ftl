@@ -8,6 +8,7 @@
 		<#include "sections/user.ftl" /><hr>
 		<#include "sections/general.ftl" /><hr>
 		<#include "sections/itemdefs.ftl" /><hr>
+		<#if m.showWorkflowOptInSection><#include "sections/workflow.ftl" /><hr></#if>
 		<#include "sections/languages.ftl" />
 	</div>
 </div>

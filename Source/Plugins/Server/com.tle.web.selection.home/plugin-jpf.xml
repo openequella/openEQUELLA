@@ -3,6 +3,7 @@
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.common.search" />
+		<import plugin-id="com.tle.common.item" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.web.freemarker" />
 		<import plugin-id="com.tle.web.resources" />
@@ -12,6 +13,7 @@
 		<import plugin-id="com.tle.web.selection" />
 		<import plugin-id="com.tle.web.viewurl" />
 		<import plugin-id="net.sf.json-lib:json-lib" />
+		<import plugin-id="com.tle.common.usermanagement" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

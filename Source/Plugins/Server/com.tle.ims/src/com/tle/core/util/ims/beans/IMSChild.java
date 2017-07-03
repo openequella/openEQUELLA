@@ -16,7 +16,7 @@
 
 package com.tle.core.util.ims.beans;
 
-import com.dytech.common.xml.XMLDataChild;
+import com.tle.core.xstream.XMLDataChild;
 
 /**
  * @author jmaginnis

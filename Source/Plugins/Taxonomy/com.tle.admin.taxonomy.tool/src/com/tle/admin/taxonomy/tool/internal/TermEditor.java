@@ -46,6 +46,7 @@ import com.tle.admin.gui.common.ListWithViewInterface;
 import com.tle.common.Check;
 import com.tle.common.LazyTreeNode;
 import com.tle.common.Pair;
+import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.common.taxonomy.TaxonomyConstants;
 import com.tle.common.taxonomy.terms.RemoteTermService;
@@ -143,7 +144,7 @@ public class TermEditor extends AbstractTreeNodeEditor
 	}
 
 	@Override
-	protected void save()
+	protected void save() throws Exception
 	{
 		// Save the data
 		Map<String, String> data = new HashMap<String, String>();
@@ -157,7 +158,15 @@ public class TermEditor extends AbstractTreeNodeEditor
 		String newName = termName.getText().trim();
 		if( !newName.equals(ttn.getName()) )
 		{
-			termService.renameTermValue(taxonomy, ttn.getFullPath(), newName);
+			try{
+				termService.renameTermValue(taxonomy, ttn.getFullPath(), newName);
+			}catch(Exception e){
+				if (e.getMessage() != null){
+					if (e.getMessage().contains("SIBLING_CHECK"))
+						termService.setAllData(taxonomy, ttn.getFullPath(), data);
+						throw new Exception(CurrentLocale.get("com.tle.admin.taxonomy.tool.internal.tab.siblingwithsamename.message"));	
+				}
+			}
 		}
 	}
 

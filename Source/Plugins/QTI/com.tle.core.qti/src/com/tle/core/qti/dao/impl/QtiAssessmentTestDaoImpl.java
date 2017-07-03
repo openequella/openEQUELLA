@@ -24,15 +24,15 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dytech.edge.exceptions.NotFoundException;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.Item;
+import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.qti.entity.QtiAssessmentTest;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
 import com.tle.core.qti.dao.QtiAssessmentTestDao;
-import com.tle.core.user.CurrentInstitution;
 
 /**
  * @author aholland

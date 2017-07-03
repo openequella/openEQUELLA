@@ -38,7 +38,6 @@ import com.dytech.edge.common.FileInfo;
 import com.dytech.edge.common.FileNode;
 import com.dytech.edge.common.PropBagWrapper;
 import com.dytech.edge.common.ScriptContext;
-import com.dytech.edge.exceptions.QuotaExceededException;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableCollection;
@@ -58,20 +57,21 @@ import com.tle.beans.item.attachments.ItemNavigationTree;
 import com.tle.beans.item.attachments.ModifiableAttachments;
 import com.tle.common.Check;
 import com.tle.common.Pair;
+import com.tle.common.filesystem.handle.ConversionFile;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
-import com.tle.core.filesystem.ConversionFile;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.quota.exception.QuotaExceededException;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.service.LanguageService;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.service.MetadataMappingService;
+import com.tle.core.office2html.service.Office2HtmlConversionService;
 import com.tle.core.plugins.PluginTracker;
+import com.tle.core.quota.service.QuotaService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.MetadataMappingService;
-import com.tle.core.services.QuotaService;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.external.Office2HtmlConversionService;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.services.language.LanguageService;
-import com.tle.core.user.CurrentUser;
 import com.tle.core.wizard.LERepository;
 import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.core.wizard.controls.WizardPage;
@@ -105,7 +105,7 @@ public class WebRepository implements LERepository
 	@Inject
 	private ItemService itemService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private WizardService wizardService;
 	@Inject
@@ -410,7 +410,7 @@ public class WebRepository implements LERepository
 	@Override
 	public String getWebUrl()
 	{
-		return urlService.getInstitutionUrl().toString();
+		return institutionService.getInstitutionUrl().toString();
 	}
 
 	@Override
@@ -503,11 +503,6 @@ public class WebRepository implements LERepository
 	public PropBagEx getItemXML(ItemId key)
 	{
 		return itemService.getItemPack(key).getXml();
-	}
-
-	public String getServerURL()
-	{
-		return urlService.getInstitutionUrl().toString();
 	}
 
 	public void selectTopLevelFilesAsAttachments()

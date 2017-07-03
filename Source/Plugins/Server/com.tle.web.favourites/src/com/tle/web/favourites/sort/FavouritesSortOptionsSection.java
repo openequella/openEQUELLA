@@ -20,7 +20,7 @@ import java.util.List;
 
 import com.dytech.edge.queries.FreeTextQuery;
 import com.tle.common.searching.SortField;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.search.event.FreetextSearchEvent;
 import com.tle.web.search.sort.SortOption;
 import com.tle.web.search.sort.StandardSortOptionsSection;

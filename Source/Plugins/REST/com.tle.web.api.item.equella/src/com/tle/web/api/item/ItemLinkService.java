@@ -19,7 +19,7 @@ package com.tle.web.api.item;
 import java.net.URI;
 
 import com.tle.beans.item.ItemKey;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
 import com.tle.web.api.item.interfaces.beans.FileBean;
 import com.tle.web.api.item.interfaces.beans.FolderBean;

@@ -29,7 +29,7 @@ import com.tle.common.Check;
 import com.tle.common.NameValue;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.language.LanguageService;
+import com.tle.core.i18n.service.LanguageService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;

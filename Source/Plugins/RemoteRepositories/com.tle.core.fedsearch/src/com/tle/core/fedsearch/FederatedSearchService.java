@@ -20,9 +20,9 @@ import java.util.List;
 
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.FederatedSearch;
+import com.tle.core.entity.EntityEditingBean;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.remoting.RemoteFederatedSearchService;
-import com.tle.core.services.entity.AbstractEntityService;
-import com.tle.core.services.entity.EntityEditingBean;
 
 public interface FederatedSearchService
 	extends

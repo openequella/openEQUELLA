@@ -32,9 +32,9 @@ import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.orm.hibernate3.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.HibernateService;
-import com.tle.core.user.CurrentInstitution;
 import com.tle.web.dispatcher.AbstractWebFilter;
 import com.tle.web.dispatcher.FilterResult;
 import com.tle.web.dispatcher.WebFilterCallback;

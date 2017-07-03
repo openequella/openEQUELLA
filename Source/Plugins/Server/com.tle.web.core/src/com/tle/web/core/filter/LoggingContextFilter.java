@@ -121,8 +121,8 @@ public class LoggingContextFilter extends AbstractWebFilter
 	// There is no guarantee that all sensitive information will be blanked!
 	private static class RequestLogger
 	{
-		private static final Logger REQUEST_LOGGER = Logger.getLogger(LoggingContextFilter.class.getName()
-			+ ".RequestLogger");
+		private static final Logger REQUEST_LOGGER = Logger
+			.getLogger(LoggingContextFilter.class.getName() + ".RequestLogger");
 
 		public void logRequest(HttpServletRequest request)
 		{

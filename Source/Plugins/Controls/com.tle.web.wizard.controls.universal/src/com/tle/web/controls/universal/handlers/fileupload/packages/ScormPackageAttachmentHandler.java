@@ -22,10 +22,10 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.common.Check;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.FileSystemConstants;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.mimetypes.MimeTypeConstants;
-import com.tle.core.services.FileSystemService;
 import com.tle.web.controls.universal.handlers.FileUploadHandler;
 import com.tle.web.controls.universal.handlers.fileupload.AbstractPackageAttachmentHandler;
 import com.tle.web.controls.universal.handlers.fileupload.UploadedFile;
@@ -117,7 +117,7 @@ public class ScormPackageAttachmentHandler extends AbstractPackageAttachmentHand
 
 		attachment.setUrl(packageFilename);
 		StagingFile staging = handler.getStagingFile();
-		move(staging, stagingPath, FileSystemService.IMS_FOLDER + '/' + packageFilename);
+		move(staging, stagingPath, FileSystemConstants.IMS_FOLDER + '/' + packageFilename);
 		if( !Check.isEmpty(extractedPath) )
 		{
 			move(staging, extractedPath, packageFilename);

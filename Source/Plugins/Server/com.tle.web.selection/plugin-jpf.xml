@@ -12,6 +12,11 @@
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.web.sections.standard" />
 		<import plugin-id="com.tle.web.viewurl" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.common.usermanagement" />
+		<import plugin-id="com.tle.common.settings.standard" />
+		<import plugin-id="com.tle.core.usermanagement" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

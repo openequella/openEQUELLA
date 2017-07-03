@@ -21,9 +21,10 @@ import javax.inject.Inject;
 import com.tle.beans.Institution;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.institution.RunAsInstitution;
-import com.tle.core.services.InstitutionImportService;
-import com.tle.core.services.QuotaService;
+import com.tle.core.institution.convert.service.InstitutionImportService;
+import com.tle.core.quota.service.QuotaService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;
@@ -56,6 +57,8 @@ public class EditSection extends AbstractEditSection<EditInstitutionModel>
 	@PlugKey("institutions.edit.filewarning")
 	private static Label LABEL_FILEWARNING;
 
+	@Inject
+	private InstitutionService institutionService;
 	@Inject
 	private InstitutionImportService instImportService;
 	@Inject
@@ -93,7 +96,7 @@ public class EditSection extends AbstractEditSection<EditInstitutionModel>
 
 	public void setupEdit(SectionInfo info, long institutionId)
 	{
-		final Institution insti = instImportService.getInstitution(institutionId);
+		final Institution insti = institutionService.getInstitution(institutionId);
 		setupFieldsFromInstitution(info, insti);
 	}
 
@@ -114,7 +117,7 @@ public class EditSection extends AbstractEditSection<EditInstitutionModel>
 	public void calculateUsage(SectionInfo info)
 	{
 		final EditInstitutionModel model = getModel(info);
-		Institution insti = instImportService.getInstitution(model.getId());
+		Institution insti = institutionService.getInstitution(model.getId());
 
 		runAs.executeAsSystem(insti, new Runnable()
 		{
@@ -138,13 +141,13 @@ public class EditSection extends AbstractEditSection<EditInstitutionModel>
 		unlockUrlButton.setClickHandler(new StatementHandler(Js.call_s(unlockUrlButton.createDisableFunction(), true),
 			Js.call_s(urlField.createDisableFunction(), false)).addValidator(new Confirm(LABEL_URLWARNING)));
 
-		unlockFilestoreButton.setClickHandler(new StatementHandler(Js.call_s(
-			unlockFilestoreButton.createDisableFunction(), true), Js.call_s(filestore.createDisableFunction(), false))
-			.addValidator(new Confirm(LABEL_FILEWARNING)));
+		unlockFilestoreButton
+			.setClickHandler(new StatementHandler(Js.call_s(unlockFilestoreButton.createDisableFunction(), true),
+				Js.call_s(filestore.createDisableFunction(), false)).addValidator(new Confirm(LABEL_FILEWARNING)));
 
-		usageRefreshHandler = new OverrideHandler(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("calculateUsage"), ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING),
-			"usage-ajax"));
+		usageRefreshHandler = new OverrideHandler(
+			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("calculateUsage"),
+				ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING), "usage-ajax"));
 	}
 
 	@Override
@@ -152,7 +155,7 @@ public class EditSection extends AbstractEditSection<EditInstitutionModel>
 	{
 		getModel(info).setNavigateAway(true);
 		EditInstitutionModel model = getModel(info);
-		Institution oldInst = instImportService.getInstitution(model.getId());
+		Institution oldInst = institutionService.getInstitution(model.getId());
 		TextField urlField = getUrl();
 		if( Check.isEmpty(urlField.getValue(info)) )
 		{

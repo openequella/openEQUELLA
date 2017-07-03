@@ -1,0 +1,30 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.i18n.convert" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.core.i18n" />
+		<import plugin-id="com.tle.core.institution.convert" />
+		<import plugin-id="com.tle.platform.common" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.common.filesystem" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.hibernate.guice.TransactionModule" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="languageConverter">
+		<parameter id="id" value="LANGUAGES" />
+		<parameter id="class" value="bean:com.tle.core.i18n.convert.LanguagesConverter" />
+		<parameter id="order" value="1300" />
+		<parameter id="selections">
+			<parameter id="id" value="LANGUAGES" />
+			<parameter id="nameKey" value="institutions.tasks.languages" />
+		</parameter>
+	</extension>
+</plugin>

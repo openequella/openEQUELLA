@@ -27,11 +27,11 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.portal.entity.Portlet;
 import com.tle.common.portal.entity.PortletPreference;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
-import com.tle.core.user.CurrentInstitution;
 
 /**
  * @author aholland
@@ -56,8 +56,8 @@ public class PortletPreferenceDaoImpl extends GenericInstitionalDaoImpl<PortletP
 			@Override
 			public Object doInHibernate(Session session)
 			{
-				Query query = session.createQuery("FROM PortletPreference WHERE userId = :userId"
-					+ " AND portlet = :portlet");
+				Query query = session
+					.createQuery("FROM PortletPreference WHERE userId = :userId" + " AND portlet = :portlet");
 				query.setParameter("userId", userId);
 				query.setParameter("portlet", portlet);
 				return query.uniqueResult();
@@ -94,8 +94,8 @@ public class PortletPreferenceDaoImpl extends GenericInstitionalDaoImpl<PortletP
 			@Override
 			public Object doInHibernate(Session session)
 			{
-				Query query = session.createQuery("FROM PortletPreference WHERE userId = :userId"
-					+ " AND portlet IN (:portlets)");
+				Query query = session
+					.createQuery("FROM PortletPreference WHERE userId = :userId" + " AND portlet IN (:portlets)");
 				query.setParameter("userId", userId);
 				query.setParameterList("portlets", portlets);
 				return query.list();

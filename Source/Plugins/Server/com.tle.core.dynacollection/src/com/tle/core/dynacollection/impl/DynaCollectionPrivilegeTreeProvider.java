@@ -22,8 +22,8 @@ import javax.inject.Singleton;
 import com.tle.beans.entity.DynaCollection;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.core.dynacollection.DynaCollectionService;
+import com.tle.core.entity.security.AbstractEntityPrivilegeTreeProvider;
 import com.tle.core.guice.Bind;
-import com.tle.core.security.AbstractEntityPrivilegeTreeProvider;
 import com.tle.web.resources.ResourcesService;
 
 @Bind
@@ -34,10 +34,11 @@ public class DynaCollectionPrivilegeTreeProvider extends AbstractEntityPrivilege
 	@Inject
 	public DynaCollectionPrivilegeTreeProvider(DynaCollectionService dynaCollectionService)
 	{
-		super(dynaCollectionService, Node.ALL_DYNA_COLLECTIONS, ResourcesService.getResourceHelper(
-			DynaCollectionPrivilegeTreeProvider.class).key("securitytree.alldynacollections"), Node.DYNA_COLLECTION,
-			ResourcesService.getResourceHelper(DynaCollectionPrivilegeTreeProvider.class).key(
-				"securitytree.targetalldynacollections"));
+		super(dynaCollectionService, Node.ALL_DYNA_COLLECTIONS,
+			ResourcesService.getResourceHelper(DynaCollectionPrivilegeTreeProvider.class)
+				.key("securitytree.alldynacollections"),
+			Node.DYNA_COLLECTION, ResourcesService.getResourceHelper(DynaCollectionPrivilegeTreeProvider.class)
+				.key("securitytree.targetalldynacollections"));
 	}
 
 	@Override

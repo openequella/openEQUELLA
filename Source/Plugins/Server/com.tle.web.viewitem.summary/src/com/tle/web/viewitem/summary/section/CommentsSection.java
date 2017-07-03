@@ -25,18 +25,18 @@ import javax.inject.Inject;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Constants;
-import com.dytech.edge.common.valuebean.UserBean;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.beans.item.Comment;
 import com.tle.common.Check;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemCommentService;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.item.standard.service.ItemCommentService;
 import com.tle.core.services.user.UserService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -85,8 +85,8 @@ public class CommentsSection extends AbstractParentViewItemSection<CommentsSecti
 		BOTH, FIRST, LAST;
 	}
 
-	private static final IncludeFile INCLUDE = new IncludeFile(ResourcesService
-		.getResourceHelper(CommentsSection.class).url("scripts/viewitem/comments.js"));
+	private static final IncludeFile INCLUDE = new IncludeFile(
+		ResourcesService.getResourceHelper(CommentsSection.class).url("scripts/viewitem/comments.js"));
 	private static final JSCallable COMMENT_EFFECT = new ExternallyDefinedFunction("commentEffect", INCLUDE);
 	private static final JSCallable SETUP_CHANGE_EVENTS = new ExternallyDefinedFunction("setupChangeEvents", INCLUDE);
 
@@ -255,8 +255,8 @@ public class CommentsSection extends AbstractParentViewItemSection<CommentsSecti
 		if( canDelete )
 		{
 			final String c = comment.getComment();
-			final Label confirmText = Check.isEmpty(c) ? DELETE_CONFIRM_EMPTY_LABEL : new KeyLabel(DELETE_CONFIRM_KEY,
-				c);
+			final Label confirmText = Check.isEmpty(c) ? DELETE_CONFIRM_EMPTY_LABEL
+				: new KeyLabel(DELETE_CONFIRM_KEY, c);
 
 			IconLabel label = new IconLabel(Icon.DELETE, null);
 			final HtmlLinkState hls = new HtmlLinkState(

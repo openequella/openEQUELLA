@@ -32,23 +32,22 @@ import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.dytech.edge.wizard.beans.control.WizardControl;
 import com.dytech.edge.wizard.beans.control.WizardControlItem;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.core.util.CompositeClassLoader;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.common.Check;
-import com.tle.common.util.XmlDocument;
-import com.tle.common.util.XmlDocument.NodeListIterable.NodeListIterator;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.common.wizard.controls.resource.ResourceSettings;
 import com.tle.common.wizard.controls.resource.ResourceSettings.AllowedSelection;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings;
 import com.tle.common.wizard.controls.universal.handlers.ITunesUSettings;
-import com.tle.core.filesystem.SubTemporaryFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
-import com.tle.core.institution.XmlHelper;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.InstitutionInfo;
-import com.tle.core.institution.migration.XmlMigrator;
+import com.tle.core.institution.convert.XmlHelper;
+import com.tle.core.institution.convert.XmlMigrator;
+import com.tle.core.xml.XmlDocument;
+import com.tle.core.xml.XmlDocument.NodeListIterable.NodeListIterator;
 
 /**
  * @author Aaron
@@ -103,7 +102,7 @@ public class ReplaceDeletedControlsXmlMigration extends XmlMigrator
 
 	public static XStream createXStream(XmlHelper xmlHelper)
 	{
-		final XStream x = xmlHelper.createXStream();
+		final XStream x = xmlHelper.createXStream(ReplaceDeletedControlsXmlMigration.class.getClassLoader());
 		x.alias(ITEM_FINDER_CLASS, FakeItemFinder.class);
 		x.alias(LINK_CLASS, FakeEditBox.class);
 		x.alias(SINGLE_LINK_CLASS, FakeEmptyControl.class);
@@ -112,10 +111,6 @@ public class ReplaceDeletedControlsXmlMigration extends XmlMigrator
 		x.alias(FILE_CLASS, FakeFileControl.class);
 		x.alias(SINGLE_FILE_CLASS, FakeFileControl.class);
 		x.alias(CUSTOM_CONTROL_CLASS, FakeCustomControl.class);
-		final CompositeClassLoader classLoader = new CompositeClassLoader();
-		classLoader.add(x.getClassLoader());
-		classLoader.add(ReplaceDeletedControlsXmlMigration.class.getClassLoader());
-		x.setClassLoader(classLoader);
 		return x;
 	}
 
@@ -235,13 +230,13 @@ public class ReplaceDeletedControlsXmlMigration extends XmlMigrator
 		int idx = 0;
 		int prevIdx = idx;
 
-		idx = replaceGeneric(xml, wizardNode, x, LINKS_XPATH, new DefaultHandlerAttributesCallback<FakeMultiControl>(
-			"urlHandler", true), prevIdx);
+		idx = replaceGeneric(xml, wizardNode, x, LINKS_XPATH,
+			new DefaultHandlerAttributesCallback<FakeMultiControl>("urlHandler", true), prevIdx);
 		modified |= (idx != prevIdx);
 		prevIdx = idx;
 
-		idx = replaceGeneric(xml, wizardNode, x, LINK_XPATH, new DefaultHandlerAttributesCallback<FakeEditBox>(
-			"urlHandler", false), prevIdx);
+		idx = replaceGeneric(xml, wizardNode, x, LINK_XPATH,
+			new DefaultHandlerAttributesCallback<FakeEditBox>("urlHandler", false), prevIdx);
 		modified |= (idx != prevIdx);
 		prevIdx = idx;
 
@@ -254,17 +249,17 @@ public class ReplaceDeletedControlsXmlMigration extends XmlMigrator
 
 	private static boolean replacePackageUploader(XmlDocument xml, Node wizardNode, XStream x)
 	{
-		return replaceGeneric(xml, wizardNode, x, IMS_XPATH, new DefaultHandlerAttributesCallback<FakeEmptyControl>(
-			"fileHandler", "_pkg", false)
-		{
-			@Override
-			public void mapExtra(CustomControl newControl, FakeEmptyControl oldControl)
+		return replaceGeneric(xml, wizardNode, x, IMS_XPATH,
+			new DefaultHandlerAttributesCallback<FakeEmptyControl>("fileHandler", "_pkg", false)
 			{
-				final FileUploadSettings settings = new FileUploadSettings(newControl);
-				settings.setNoUnzip(true);
-				settings.setPackagesOnly(true);
-			}
-		}, 0) != 0;
+				@Override
+				public void mapExtra(CustomControl newControl, FakeEmptyControl oldControl)
+				{
+					final FileUploadSettings settings = new FileUploadSettings(newControl);
+					settings.setNoUnzip(true);
+					settings.setPackagesOnly(true);
+				}
+			}, 0) != 0;
 	}
 
 	private static boolean replaceMyPages(XmlDocument xml, Node wizardNode, XStream x)

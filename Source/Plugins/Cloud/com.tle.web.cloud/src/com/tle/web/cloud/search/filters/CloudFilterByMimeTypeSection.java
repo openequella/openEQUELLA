@@ -19,8 +19,8 @@ package com.tle.web.cloud.search.filters;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tle.beans.system.SearchSettings.SearchFilter;
 import com.tle.common.NameValue;
+import com.tle.common.settings.standard.SearchSettings.SearchFilter;
 import com.tle.web.cloud.event.CloudSearchEvent;
 import com.tle.web.search.filter.AbstractFilterByMimeTypeSection;
 import com.tle.web.sections.SectionInfo;

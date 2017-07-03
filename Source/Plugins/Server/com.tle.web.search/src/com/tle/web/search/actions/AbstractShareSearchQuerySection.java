@@ -23,16 +23,16 @@ import java.util.concurrent.Future;
 import javax.inject.Inject;
 import javax.mail.internet.AddressException;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.google.common.base.Strings;
 import com.tle.annotation.Nullable;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.email.EmailResult;
 import com.tle.core.email.EmailService;
+import com.tle.core.freetext.service.FreeTextService;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.security.RunAsUser;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.item.FreeTextService;
-import com.tle.core.services.item.ItemService;
 import com.tle.core.services.user.UserService;
 import com.tle.web.search.base.AbstractRootSearchSection;
 import com.tle.web.search.base.AbstractSearchResultsSection;
@@ -67,6 +67,8 @@ public abstract class AbstractShareSearchQuerySection
 	private static String PREFIX;
 	@PlugKey("actions.share.dialog.email.subject")
 	protected static String SUBJECT_KEY;
+	@PlugKey("unknown.user")
+	protected static String UNKNOWN_USER;
 
 	@PlugKey("actions.share.dialog.email.validation.nonblank")
 	protected static Label BLANK_EMAIL_LABEL;
@@ -82,7 +84,7 @@ public abstract class AbstractShareSearchQuerySection
 	@Inject
 	protected ItemService itemService;
 	@Inject
-	protected UrlService urlService;
+	protected InstitutionService institutionService;
 	@Inject
 	protected ViewItemUrlFactory urlFactory;
 	@Inject
@@ -183,6 +185,11 @@ public abstract class AbstractShareSearchQuerySection
 
 	protected String getUser(UserBean ub)
 	{
+		if( ub == null )
+		{
+			return CurrentLocale.get(UNKNOWN_USER);
+		}
+
 		return MessageFormat.format("{0} {1} ({2})", Strings.nullToEmpty(ub.getFirstName()),
 			Strings.nullToEmpty(ub.getLastName()), Strings.nullToEmpty(ub.getEmailAddress()).toString());
 	}

@@ -29,6 +29,7 @@ import com.tle.web.sections.generic.InfoBookmark;
 public class IntegrationShareSearchQuerySection extends StandardShareSearchQuerySection
 {
 	private static final String SEARCHURL;
+
 	static
 	{
 		SEARCHURL = RootSearchSection.SEARCHURL.startsWith("/") ? RootSearchSection.SEARCHURL.substring(1)
@@ -43,7 +44,7 @@ public class IntegrationShareSearchQuerySection extends StandardShareSearchQuery
 			@Override
 			public void addToBookmark(SectionInfo info, Map<String, String[]> bookmarkState)
 			{
-				bookmarkState.put(SectionInfo.KEY_PATH, new String[]{urlService.institutionalise(SEARCHURL)});
+				bookmarkState.put(SectionInfo.KEY_PATH, new String[]{institutionService.institutionalise(SEARCHURL)});
 			}
 		}).getHref());
 		url.getState(context).setEditable(false);

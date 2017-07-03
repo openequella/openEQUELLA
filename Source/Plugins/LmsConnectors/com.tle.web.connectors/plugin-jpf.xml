@@ -7,7 +7,6 @@
 		<import plugin-id="com.tle.web.settings" />
 		<import plugin-id="com.tle.core.connectors" exported="true" />
 		<import plugin-id="com.tle.web.sections.equella" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.common.recipientselector" />
 		<import plugin-id="com.tle.web.recipientselector" />
 		<import plugin-id="com.tle.web.viewitem" />
@@ -16,6 +15,7 @@
 		<import plugin-id="com.tle.web.search" />
 		<import plugin-id="com.tle.core.security" />
 		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.web.bulk" />
 		<import plugin-id="com.tle.common.item" />
 		<import plugin-id="com.tle.web.entities" exported="true" />
@@ -27,6 +27,9 @@
 		<import plugin-id="com.tle.common.interfaces.equella" />
 		<import plugin-id="com.tle.web.api.baseentity.serializer" />
 		<import plugin-id="com.tle.core.migration" />
+		<import plugin-id="com.tle.core.institution.convert" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.core.security.convert" />
 	</requires>
 
 	<runtime>
@@ -109,7 +112,7 @@
 		<parameter id="class" value="com.tle.web.connectors.api.search.ConnectorResource" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="postreadmigration" id="addPushToLMSACLPostMigrator">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="postreadmigration" id="addPushToLMSACLPostMigrator">
 		<parameter id="id" value="com.tle.web.connectors.migration.AddPushToLMSACLPostMigrator" />
 		<parameter id="bean" value="bean:com.tle.web.connectors.migration.AddPushToLMSACLPostMigrator" />
 		<parameter id="forconverter" value="acls" />

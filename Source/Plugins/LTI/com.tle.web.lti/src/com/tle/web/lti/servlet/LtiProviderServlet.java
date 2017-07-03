@@ -29,7 +29,7 @@ import com.dytech.edge.exceptions.WebException;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.web.sections.equella.annotation.PlugKey;
 
 @Bind
@@ -41,7 +41,7 @@ public class LtiProviderServlet extends HttpServlet
 	private static String ERROR_PREFIX;
 
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
@@ -50,13 +50,13 @@ public class LtiProviderServlet extends HttpServlet
 		if( !Check.isEmpty(customParam) )
 		{
 			customParam = customParam.startsWith("/") ? customParam.substring(1) : customParam;
-			resp.sendRedirect(urlService.institutionalise(customParam));
+			resp.sendRedirect(institutionService.institutionalise(customParam));
 		}
 		else
 		{
 			// HTTP 400 Bad request - missing parameter
-			throw new WebException(400, CurrentLocale.get(ERROR_PREFIX + "error"), CurrentLocale.get(ERROR_PREFIX
-				+ "message"));
+			throw new WebException(400, CurrentLocale.get(ERROR_PREFIX + "error"),
+				CurrentLocale.get(ERROR_PREFIX + "message"));
 		}
 	}
 }

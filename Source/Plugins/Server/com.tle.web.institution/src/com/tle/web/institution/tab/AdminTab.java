@@ -30,9 +30,9 @@ import com.tle.common.PathUtils;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.institution.InstitutionStatus;
 import com.tle.core.institution.convert.InstitutionInfo;
-import com.tle.core.progress.ListProgressCallback;
-import com.tle.core.services.InstitutionImportService;
-import com.tle.core.services.InstitutionImportService.ConvertType;
+import com.tle.core.institution.convert.service.InstitutionImportService;
+import com.tle.core.institution.convert.service.InstitutionImportService.ConvertType;
+import com.tle.common.beans.progress.ListProgressCallback;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.institution.AbstractInstitutionTab;
@@ -193,8 +193,8 @@ public class AdminTab extends AbstractInstitutionTab<AdminTab.AdminTabModel>
 				if( instStatus.isValid() )
 				{
 					status = LABEL_STATUS_ENABLED;
-					actions.add(new HtmlLinkState(LABEL_LOGIN, new SimpleBookmark(PathUtils.urlPath(
-						institution.getUrl(), "logon.do"))));
+					actions.add(new HtmlLinkState(LABEL_LOGIN,
+						new SimpleBookmark(PathUtils.urlPath(institution.getUrl(), "logon.do"))));
 				}
 				actions.add(actionLink(LABEL_DISABLE, "disableClicked", id));
 			}
@@ -205,8 +205,8 @@ public class AdminTab extends AbstractInstitutionTab<AdminTab.AdminTabModel>
 			}
 			actions.add(actionLink(LABEL_EDIT, "editClicked", id));
 
-			actions.add(new HtmlLinkState(LABEL_DELETE, events.getNamedHandler("deleteClicked", id).addValidator(
-				new Confirm(new KeyLabel(KEY_CONFIRM_DELETE, institution.getName())))));
+			actions.add(new HtmlLinkState(LABEL_DELETE, events.getNamedHandler("deleteClicked", id)
+				.addValidator(new Confirm(new KeyLabel(KEY_CONFIRM_DELETE, institution.getName())))));
 
 			actions.add(actionLink(LABEL_CLONE, "cloneClicked", id));
 			actions.add(actionLink(LABEL_EXPORT, "dumpClicked", id));

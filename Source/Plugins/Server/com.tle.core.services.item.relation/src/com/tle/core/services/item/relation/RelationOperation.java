@@ -23,7 +23,7 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.Relation;
 import com.tle.core.guice.BindFactory;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
+import com.tle.core.item.operations.AbstractWorkflowOperation;
 
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum

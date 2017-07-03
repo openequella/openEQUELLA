@@ -20,7 +20,7 @@ import javax.inject.Inject;
 
 import com.tle.core.guice.Bind;
 import com.tle.core.scheduler.SchedulerService.Schedules;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;

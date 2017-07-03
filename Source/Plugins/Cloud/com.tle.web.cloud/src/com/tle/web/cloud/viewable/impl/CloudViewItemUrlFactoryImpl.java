@@ -27,7 +27,7 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.common.PathUtils;
 import com.tle.core.cloud.beans.converted.CloudAttachment;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.encoding.UrlEncodedString;
 import com.tle.web.cloud.view.CloudViewableItem;
 import com.tle.web.cloud.viewable.CloudViewItemUrl;
@@ -46,7 +46,7 @@ import com.tle.web.sections.registry.TreeRegistry;
 public class CloudViewItemUrlFactoryImpl implements CloudViewItemUrlFactory
 {
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private SectionsController sectionsController;
 	@Inject
@@ -64,7 +64,7 @@ public class CloudViewItemUrlFactoryImpl implements CloudViewItemUrlFactory
 		final String itemdir = viewableItem.getItemdir();
 		final String path = viewableItem.isIntegration() ? "/summary" : "";
 		final SectionInfo fwd = createViewInfo(info, PathUtils.urlPath(itemdir, path));
-		return new CloudViewItemUrl(fwd, itemdir, UrlEncodedString.createFromFilePath(path), urlService, flags);
+		return new CloudViewItemUrl(fwd, itemdir, UrlEncodedString.createFromFilePath(path), institutionService, flags);
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public class CloudViewItemUrlFactoryImpl implements CloudViewItemUrlFactory
 		final String itemdir = viewableItem.getItemdir();
 		final String path = "/" + PathUtils.urlPath("attachment", attachment.getUuid());
 		final SectionInfo fwd = createViewInfo(info, PathUtils.urlPath(itemdir, path));
-		return new CloudViewItemUrl(fwd, itemdir, UrlEncodedString.createFromFilePath(path), urlService, flags);
+		return new CloudViewItemUrl(fwd, itemdir, UrlEncodedString.createFromFilePath(path), institutionService, flags);
 	}
 
 	private SectionInfo createViewInfo(SectionInfo existing, String itemdir)
@@ -88,7 +88,7 @@ public class CloudViewItemUrlFactoryImpl implements CloudViewItemUrlFactory
 		HttpServletRequest request = existing.getRequest();
 		HttpServletResponse response = existing.getResponse();
 		SectionTree tree = treeRegistry.getTreeForPath("/cloud/viewitem.do");
-		URI institutionUri = urlService.getInstitutionUri();
+		URI institutionUri = institutionService.getInstitutionUri();
 		URI itemDirUri;
 		try
 		{

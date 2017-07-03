@@ -29,8 +29,8 @@ import com.tle.common.EntityPack;
 import com.tle.common.util.CsvReader;
 import com.tle.core.activation.service.CourseInfoService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.InitialiserService;
-import com.tle.core.xstream.XmlService;
+import com.tle.core.hibernate.equella.service.InitialiserService;
+import com.tle.core.xml.service.XmlService;
 
 @Bind
 @Singleton

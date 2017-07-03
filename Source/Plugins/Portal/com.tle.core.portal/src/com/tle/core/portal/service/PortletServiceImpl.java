@@ -39,14 +39,19 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dytech.edge.common.LockedException;
-import com.dytech.edge.common.valuebean.ValidationError;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.tle.annotation.Nullable;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.EntityPack;
+import com.tle.common.beans.exception.ValidationError;
+import com.tle.common.filesystem.handle.BucketFile;
+import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.portal.PortletConstants;
 import com.tle.common.portal.PortletTypeDescriptor;
 import com.tle.common.portal.PortletTypeTarget;
@@ -56,15 +61,14 @@ import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.TargetList;
 import com.tle.common.security.TargetListEntry;
+import com.tle.core.entity.EntityEditingSession;
+import com.tle.core.entity.service.impl.AbstractEntityServiceImpl;
 import com.tle.core.events.UserDeletedEvent;
 import com.tle.core.events.UserIdChangedEvent;
-import com.tle.core.filesystem.BucketFile;
 import com.tle.core.filesystem.EntityFile;
-import com.tle.core.filesystem.StagingFile;
-import com.tle.core.filesystem.SubTemporaryFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
+import com.tle.core.institution.convert.DefaultMessageCallback;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.portal.dao.PortletDao;
@@ -73,11 +77,7 @@ import com.tle.core.security.impl.SecureAllOnCall;
 import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.security.impl.SecureOnCall;
 import com.tle.core.security.impl.SecureOnReturn;
-import com.tle.core.services.entity.EntityEditingSession;
-import com.tle.core.services.entity.impl.AbstractEntityServiceImpl;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.util.DefaultMessageCallback;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.exceptions.AccessDeniedException;
 
 /**
@@ -386,7 +386,7 @@ public class PortletServiceImpl extends AbstractEntityServiceImpl<PortletEditing
 				stagingFile = new StagingFile(stagingID);
 			}
 			afterImport(stagingFile, persistedPortlet,
-				new ConverterParams(institutionService.getInfoForCurrentInstitution()));
+				new ConverterParams(institutionImportService.getInfoForCurrentInstitution()));
 
 			saveTargetLists(session, pack);
 
@@ -633,7 +633,8 @@ public class PortletServiceImpl extends AbstractEntityServiceImpl<PortletEditing
 	protected void beforeClone(TemporaryFileHandle staging, EntityPack<Portlet> pack)
 	{
 		// export the prefs into the staging area
-		prepareExport(staging, pack.getEntity(), new ConverterParams(institutionService.getInfoForCurrentInstitution()));
+		prepareExport(staging, pack.getEntity(),
+			new ConverterParams(institutionImportService.getInfoForCurrentInstitution()));
 	}
 
 	@Override

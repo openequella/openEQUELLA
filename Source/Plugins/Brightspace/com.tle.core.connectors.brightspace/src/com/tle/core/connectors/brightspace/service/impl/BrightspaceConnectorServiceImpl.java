@@ -62,6 +62,7 @@ import com.tle.common.connectors.ConnectorFolder;
 import com.tle.common.connectors.ConnectorTerminology;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.searching.SearchResults;
 import com.tle.common.searching.SimpleSearchResults;
 import com.tle.common.util.DateHelper;
@@ -89,15 +90,14 @@ import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.AbstractIntegrationConnectorRespository;
 import com.tle.core.connectors.service.ConnectorRepositoryService.ExternalContentSortType;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.services.HttpService;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.config.ConfigurationService;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Request.Method;
 import com.tle.core.services.http.Response;
-import com.tle.core.services.item.ItemService;
 import com.tle.core.services.user.UserSessionService;
-import com.tle.core.user.CurrentInstitution;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.integration.Integration.LmsLink;
 import com.tle.web.integration.Integration.LmsLinkInfo;
 import com.tle.web.selection.SelectedResource;
@@ -145,7 +145,7 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
 	@Inject
 	private ConfigurationService configService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private UserSessionService userSessionService;
 	@Inject
@@ -164,6 +164,7 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
 	{
 		jsonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		jsonMapper.setSerializationInclusion(Include.NON_NULL);
+
 		prettyJsonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		prettyJsonMapper.setSerializationInclusion(Include.NON_NULL);
 		prettyJsonMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
@@ -272,7 +273,7 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
 		try
 		{
 			uri = appContext.createWebUrlForAuthentication(
-				URI.create(urlService.institutionalise(BrightspaceConnectorConstants.AUTH_URL)),
+				URI.create(institutionService.institutionalise(BrightspaceConnectorConstants.AUTH_URL)),
 				encrypt(mapper.writeValueAsString(stateJson)));
 		}
 		catch( JsonProcessingException e )

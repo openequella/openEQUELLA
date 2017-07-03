@@ -23,11 +23,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.tle.beans.Institution;
+import com.tle.common.filesystem.handle.BucketFile;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.favourites.bean.FavouriteSearch;
 import com.tle.core.favourites.dao.FavouriteSearchDao;
-import com.tle.core.filesystem.BucketFile;
-import com.tle.core.filesystem.SubTemporaryFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.AbstractMigratableConverter;
 import com.tle.core.institution.convert.ConverterParams;

@@ -24,7 +24,7 @@ import javax.inject.Singleton;
 import com.tle.common.NameValue;
 import com.tle.core.guice.Bind;
 import com.tle.core.htmleditor.migration.v61.EnsureDefaultToolbarMigration;
-import com.tle.core.institution.migration.PostReadMigrator;
+import com.tle.core.institution.convert.PostReadMigrator;
 
 @Bind
 @Singleton

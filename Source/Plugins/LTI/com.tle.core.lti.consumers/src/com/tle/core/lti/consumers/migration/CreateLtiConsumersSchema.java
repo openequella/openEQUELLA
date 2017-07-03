@@ -21,6 +21,7 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Singleton;
+import com.tle.beans.Institution;
 import com.tle.common.lti.consumers.entity.LtiConsumer;
 import com.tle.common.lti.consumers.entity.LtiConsumerCustomRole;
 import com.tle.core.guice.Bind;
@@ -60,6 +61,7 @@ public class CreateLtiConsumersSchema extends AbstractCreateMigration
 	protected Class<?>[] getDomainClasses()
 	{
 		final Set<Class<?>> domainClasses = Sets.newHashSet(ClassDependencies.baseEntity());
+		domainClasses.add(Institution.class);
 		domainClasses.add(LtiConsumer.class);
 		domainClasses.add(LtiConsumerCustomRole.class);
 		return domainClasses.toArray(new Class<?>[domainClasses.size()]);

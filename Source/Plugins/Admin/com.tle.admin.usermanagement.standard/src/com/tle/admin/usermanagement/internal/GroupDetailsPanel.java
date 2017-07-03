@@ -30,9 +30,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import com.dytech.edge.common.valuebean.UserBean;
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.ValidationError;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.dytech.gui.ChangeDetector;
 import com.dytech.gui.JSmartTextField;
 import com.dytech.gui.TableLayout;
@@ -48,6 +47,7 @@ import com.tle.common.Check;
 import com.tle.common.Format;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.remoting.RemoteTLEGroupService;
 import com.tle.core.remoting.RemoteUserService;
 

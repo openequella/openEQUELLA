@@ -21,12 +21,12 @@ import java.io.IOException;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tle.common.util.FileEntry;
+import com.tle.common.filesystem.FileEntry;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.filesystem.CustomisationFile;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.StagingService;
 import com.tle.core.util.archive.ArchiveType;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;

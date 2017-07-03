@@ -6,7 +6,6 @@
 		<import plugin-id="com.tle.common.security" />
 		<import plugin-id="com.tle.core.accessibility" />
 		<import plugin-id="com.tle.core.activation" />
-		<import plugin-id="com.tle.core.entity.services" exported="true" />
 		<import plugin-id="com.tle.core.freetext" exported="true" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.javascript" />
@@ -26,6 +25,13 @@
 		<import plugin-id="net.sf.json-lib:json-lib" />
 		<import plugin-id="com.tle.core.zookeeper" />
 		<import plugin-id="com.tle.core.hibernate" />
+		<import plugin-id="com.tle.core.i18n" exported="true" />
+		<import plugin-id="com.tle.core.usermanagement" />
+		<import plugin-id="com.tle.common.usermanagement" />
+		<import plugin-id="com.tle.core.institution" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.auditlog" />
+		<import plugin-id="com.tle.common.settings.standard" exported="true" />
 	</requires>
 
 	<runtime>

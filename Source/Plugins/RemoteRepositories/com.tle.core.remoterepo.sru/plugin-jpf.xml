@@ -9,6 +9,7 @@
 		<import plugin-id="com.tle.core.remoterepo.srw" />
 		<import plugin-id="com.tle.web.endpoint.srw" /><!-- same endpoint class for SRW/U ...? -->
 		<import plugin-id="commons-httpclient:commons-httpclient" />
+		<import plugin-id="com.tle.core.xslt" />
 	</requires>
 
 	<runtime>

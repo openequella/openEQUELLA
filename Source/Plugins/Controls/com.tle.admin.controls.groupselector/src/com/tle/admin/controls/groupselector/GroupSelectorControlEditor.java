@@ -42,7 +42,7 @@ import com.tle.admin.schema.SchemaModel;
 import com.tle.common.NameValue;
 import com.tle.common.applet.gui.JGroup;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.common.util.UserBeanUtils;
+import com.tle.common.usermanagement.util.UserBeanUtils;
 import com.tle.common.wizard.controls.groupselector.GroupSelectorControl;
 import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;

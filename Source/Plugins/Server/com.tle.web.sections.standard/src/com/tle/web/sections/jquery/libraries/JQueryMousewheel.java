@@ -26,7 +26,7 @@ public class JQueryMousewheel implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.mousewheel.js");
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.mousewheel.pack.js");
 
 	@Override
 	public String getDisplayName()

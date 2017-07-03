@@ -24,8 +24,8 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.taxonomy.TaxonomyBean;
 import com.tle.common.taxonomy.Taxonomy;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.guice.BindFactory;
-import com.tle.core.services.entity.AbstractEntityService;
 import com.tle.core.taxonomy.TaxonomyService;
 import com.tle.web.api.baseentity.serializer.AbstractBaseEntityEditor;
 

@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.web.controls.advancedscript.scripting.objects.impl.RequestMapScriptWrapper;
 import com.tle.web.viewable.impl.ViewableItemFactory;
 import com.tle.web.wizard.scripting.WizardScriptContextCreationParams;
@@ -36,7 +36,7 @@ import com.tle.web.wizard.scripting.WizardScriptObjectContributor;
 public class AdvancedScriptControlObjectContributor implements WizardScriptObjectContributor
 {
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private ViewableItemFactory viewableItemFactory;
 
@@ -58,15 +58,15 @@ public class AdvancedScriptControlObjectContributor implements WizardScriptObjec
 			if( wizId != null )
 			{
 				objects.put(AdvancedScriptWebControlConstants.PREVIEW_URL_BASE,
-					urlService.institutionalise(viewableItemFactory.getItemdirForPreview(wizId)));
+					institutionService.institutionalise(viewableItemFactory.getItemdirForPreview(wizId)));
 			}
 
 			final Map<Object, Object> requestMap = (Map<Object, Object>) attributes
 				.get(AdvancedScriptWebControlConstants.REQUEST_MAP);
 			if( requestMap != null )
 			{
-				objects.put(AdvancedScriptWebControlConstants.REQUEST_MAP, new RequestMapScriptWrapper(prefix,
-					requestMap));
+				objects.put(AdvancedScriptWebControlConstants.REQUEST_MAP,
+					new RequestMapScriptWrapper(prefix, requestMap));
 			}
 		}
 	}

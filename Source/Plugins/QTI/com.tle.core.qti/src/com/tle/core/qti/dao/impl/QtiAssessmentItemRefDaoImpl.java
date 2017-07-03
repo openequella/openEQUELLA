@@ -23,14 +23,14 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
-import com.dytech.edge.exceptions.NotFoundException;
 import com.tle.annotation.NonNullByDefault;
+import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.qti.entity.QtiAssessmentItemRef;
 import com.tle.common.qti.entity.QtiAssessmentTest;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
 import com.tle.core.qti.dao.QtiAssessmentItemRefDao;
-import com.tle.core.user.CurrentInstitution;
 
 /**
  * @author aholland
@@ -51,8 +51,8 @@ public class QtiAssessmentItemRefDaoImpl extends GenericInstitionalDaoImpl<QtiAs
 	@Override
 	public QtiAssessmentItemRef getByUuid(final String uuid)
 	{
-		final QtiAssessmentItemRef question = (QtiAssessmentItemRef) getHibernateTemplate().execute(
-			new TLEHibernateCallback()
+		final QtiAssessmentItemRef question = (QtiAssessmentItemRef) getHibernateTemplate()
+			.execute(new TLEHibernateCallback()
 			{
 				@Override
 				public Object doInHibernate(Session session) throws HibernateException
@@ -77,8 +77,8 @@ public class QtiAssessmentItemRefDaoImpl extends GenericInstitionalDaoImpl<QtiAs
 			Restrictions.eq("identifier", identifier));
 		if( question == null )
 		{
-			throw new NotFoundException("Cannot find assessment item with identifier " + identifier + " in test "
-				+ test.getUuid());
+			throw new NotFoundException(
+				"Cannot find assessment item with identifier " + identifier + " in test " + test.getUuid());
 		}
 		return question;
 	}

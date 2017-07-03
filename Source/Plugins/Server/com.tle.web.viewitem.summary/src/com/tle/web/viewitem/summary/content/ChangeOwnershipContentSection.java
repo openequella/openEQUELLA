@@ -24,14 +24,14 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.tle.beans.item.Item;
 import com.tle.common.Format;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.services.user.UserService;
-import com.tle.core.workflow.operations.WorkflowFactory;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -118,7 +118,7 @@ public class ChangeOwnershipContentSection
 	@Inject
 	private UserService userService;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 	@Inject
 	private SelectUserDialog ownerSelect;
 	@Inject
@@ -157,9 +157,8 @@ public class ChangeOwnershipContentSection
 		collabSelect.setTitle(COLLAB_DIALOG_TITLE);
 		collabSelect.setPrompt(COLLAB_DIALOG_PROMPT);
 		collabSelect.setMultipleUsers(true);
-		collabSelect.setOkCallback(ajax.getAjaxUpdateDomFunction(tree, null,
-			events.getEventHandler("addCollaborators"), ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
-			"collaborators", "adjacentuls"));
+		collabSelect.setOkCallback(ajax.getAjaxUpdateDomFunction(tree, null, events.getEventHandler("addCollaborators"),
+			ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), "collaborators", "adjacentuls"));
 		collabSelect.setOkLabel(COLLAB_DIALOG_OK);
 		collabSelect.setUsersCallback(this);
 
@@ -221,8 +220,8 @@ public class ChangeOwnershipContentSection
 	@EventHandlerMethod
 	public void addCollaborators(SectionInfo info, String usersJson)
 	{
-		saveCollaborators(info, Collections2.transform(SelectUserDialog.usersFromJsonString(usersJson),
-			new Function<SelectedUser, String>()
+		saveCollaborators(info,
+			Collections2.transform(SelectUserDialog.usersFromJsonString(usersJson), new Function<SelectedUser, String>()
 			{
 				@Override
 				public String apply(SelectedUser user)
@@ -242,32 +241,33 @@ public class ChangeOwnershipContentSection
 
 	private void saveCollaborators(final SectionInfo info, final Collection<String> userIds)
 	{
-		ParentViewItemSectionUtils.getItemInfo(info).modify(
-			workflowFactory.addCollaborators(new HashSet<String>(userIds)));
+		ParentViewItemSectionUtils.getItemInfo(info)
+			.modify(workflowFactory.addCollaborators(new HashSet<String>(userIds)));
 	}
 
 	@Override
 	public List<SelectedUser> getCurrentSelectedUsers(SectionInfo info)
 	{
-		return Lists.newArrayList(Collections2.transform(ParentViewItemSectionUtils.getItemInfo(info).getItem()
-			.getCollaborators(), new Function<String, SelectedUser>()
-		{
-			@Override
-			public SelectedUser apply(final String uuidOrEmail)
-			{
-				final UserBean userBean = userService.getInformationForUser(uuidOrEmail);
-				final String displayName;
-				if( userBean == null )
+		return Lists.newArrayList(
+			Collections2.transform(ParentViewItemSectionUtils.getItemInfo(info).getItem().getCollaborators(),
+				new Function<String, SelectedUser>()
 				{
-					displayName = uuidOrEmail;
-				}
-				else
-				{
-					displayName = Format.format(userBean);
-				}
-				return new SelectedUser(uuidOrEmail, displayName);
-			}
-		}));
+					@Override
+					public SelectedUser apply(final String uuidOrEmail)
+					{
+						final UserBean userBean = userService.getInformationForUser(uuidOrEmail);
+						final String displayName;
+						if( userBean == null )
+						{
+							displayName = uuidOrEmail;
+						}
+						else
+						{
+							displayName = Format.format(userBean);
+						}
+						return new SelectedUser(uuidOrEmail, displayName);
+					}
+				}));
 	}
 
 	private Set<String> getList(Item item)

@@ -22,11 +22,11 @@ import javax.ws.rs.core.Response;
 
 import com.tle.beans.item.ItemTaskId;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.workflow.operations.CommentOperation;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.tasks.AcceptOperation;
-import com.tle.core.workflow.operations.tasks.RejectOperation;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.core.item.standard.operations.workflow.AcceptOperation;
+import com.tle.core.item.standard.operations.workflow.RejectOperation;
+import com.tle.core.item.standard.operations.workflow.WorkflowCommentOperation;
 import com.tle.web.api.item.tasks.interfaces.ItemTaskResource;
 
 /**
@@ -42,7 +42,7 @@ public class ItemTasksResourceImpl implements ItemTaskResource
 	@Inject
 	private ItemService itemService;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory operationFactory;
 
 	/**
 	 * accept equates to 'Approving' a task ...<br>
@@ -65,8 +65,8 @@ public class ItemTasksResourceImpl implements ItemTaskResource
 	)
 	{
 		ItemTaskId itemTaskIdObj = new ItemTaskId(uuid, version, taskUuid);
-		AcceptOperation acceptance = workflowFactory.accept(itemTaskIdObj.getTaskId(), message);
-		itemService.operation(itemTaskIdObj, acceptance, workflowFactory.save());
+		AcceptOperation acceptance = operationFactory.accept(itemTaskIdObj.getTaskId(), message, null);
+		itemService.operation(itemTaskIdObj, acceptance, operationFactory.save());
 		return Response.ok().build();
 	}
 
@@ -92,8 +92,8 @@ public class ItemTasksResourceImpl implements ItemTaskResource
 	)
 	{
 		ItemTaskId itemTaskIdObj = new ItemTaskId(uuid, version, taskUuid);
-		RejectOperation rejection = workflowFactory.reject(itemTaskIdObj.getTaskId(), message, toNodeUuid);
-		itemService.operation(itemTaskIdObj, rejection, workflowFactory.save());
+		RejectOperation rejection = operationFactory.reject(itemTaskIdObj.getTaskId(), message, toNodeUuid, null);
+		itemService.operation(itemTaskIdObj, rejection, operationFactory.save());
 		return Response.ok().build();
 	}
 
@@ -114,8 +114,8 @@ public class ItemTasksResourceImpl implements ItemTaskResource
 	)
 	{
 		ItemTaskId itemTaskIdObj = new ItemTaskId(uuid, version, taskUuid);
-		CommentOperation commentary = workflowFactory.comment(itemTaskIdObj.getTaskId(), message);
-		itemService.operation(itemTaskIdObj, commentary, workflowFactory.save());
+		WorkflowCommentOperation commentary = operationFactory.comment(itemTaskIdObj.getTaskId(), message, null);
+		itemService.operation(itemTaskIdObj, commentary, operationFactory.save());
 		return Response.ok().build();
 	}
 }

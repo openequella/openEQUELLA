@@ -24,8 +24,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import net.sf.json.JSONArray;
-
 import com.dytech.edge.common.Constants;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -40,10 +38,10 @@ import com.tle.beans.item.attachments.LinkAttachment;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.core.i18n.BundleCache;
 import com.tle.core.url.URLCheckerService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.integration.service.IntegrationService;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionContext;
@@ -62,7 +60,6 @@ import com.tle.web.sections.events.js.BookmarkAndModify;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.generic.CachedData.CacheFiller;
-import com.tle.web.sections.jquery.libraries.JQueryDimensions;
 import com.tle.web.sections.jquery.libraries.JQueryTabs;
 import com.tle.web.sections.result.util.BundleLabel;
 import com.tle.web.sections.result.util.IconLabel.Icon;
@@ -80,6 +77,8 @@ import com.tle.web.viewurl.ViewItemUrl;
 import com.tle.web.viewurl.ViewItemViewer;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceService;
+
+import net.sf.json.JSONArray;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
@@ -161,7 +160,7 @@ public abstract class AbstractTreeViewerSection<M extends AbstractTreeViewerMode
 	@Override
 	public SectionResult view(RenderContext info, ViewItemResource resource)
 	{
-		SectionUtils.preRender(info, JQueryDimensions.PRERENDER, TreeLibrary.INCLUDE);
+		SectionUtils.preRender(info, TreeLibrary.INCLUDE);
 		AbstractTreeViewerModel model = getModel(info);
 		model.setResource(resource);
 
@@ -424,7 +423,7 @@ public abstract class AbstractTreeViewerSection<M extends AbstractTreeViewerMode
 			decorations.setFullscreen(FullScreen.YES_WITH_TOOLBAR);
 			decorations.clearAllDecorations();
 
-			info.preRender(JQueryTabs.PRERENDER, JQueryDimensions.PRERENDER);
+			info.preRender(JQueryTabs.PRERENDER);
 
 			return viewFactory.createTemplateResult("viewtabs.ftl", this);
 		}

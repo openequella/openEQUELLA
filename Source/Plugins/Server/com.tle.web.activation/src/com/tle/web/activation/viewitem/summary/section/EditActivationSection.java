@@ -26,7 +26,7 @@ import com.tle.common.util.UtcDate;
 import com.tle.core.activation.service.ActivationService;
 import com.tle.core.activation.service.CourseInfoService;
 import com.tle.core.guice.Bind;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.activation.filter.SelectCourseDialog;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;

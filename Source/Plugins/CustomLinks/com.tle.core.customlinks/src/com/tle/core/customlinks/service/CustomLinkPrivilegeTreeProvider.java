@@ -21,8 +21,8 @@ import javax.inject.Singleton;
 
 import com.tle.common.customlinks.entity.CustomLink;
 import com.tle.common.security.PrivilegeTree.Node;
+import com.tle.core.entity.security.AbstractEntityPrivilegeTreeProvider;
 import com.tle.core.guice.Bind;
-import com.tle.core.security.AbstractEntityPrivilegeTreeProvider;
 import com.tle.web.resources.ResourcesService;
 
 @Bind
@@ -33,10 +33,11 @@ public class CustomLinkPrivilegeTreeProvider extends AbstractEntityPrivilegeTree
 	@Inject
 	public CustomLinkPrivilegeTreeProvider(CustomLinkService customLinkService)
 	{
-		super(customLinkService, Node.ALL_CUSTOM_LINKS, ResourcesService.getResourceHelper(
-			CustomLinkPrivilegeTreeProvider.class).key("securitytree.allcustomlinks"), Node.CUSTOM_LINK,
-			ResourcesService.getResourceHelper(CustomLinkPrivilegeTreeProvider.class).key(
-				"securitytree.targetallcustomlinks"));
+		super(customLinkService, Node.ALL_CUSTOM_LINKS,
+			ResourcesService.getResourceHelper(CustomLinkPrivilegeTreeProvider.class)
+				.key("securitytree.allcustomlinks"),
+			Node.CUSTOM_LINK, ResourcesService.getResourceHelper(CustomLinkPrivilegeTreeProvider.class)
+				.key("securitytree.targetallcustomlinks"));
 	}
 
 	@Override

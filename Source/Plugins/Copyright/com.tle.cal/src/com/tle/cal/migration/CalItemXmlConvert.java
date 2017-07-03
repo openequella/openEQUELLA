@@ -36,15 +36,15 @@ import com.dytech.devlib.PropBagEx.PropBagThoroughIterator;
 import com.thoughtworks.xstream.XStream;
 import com.tle.beans.activation.ActivateRequest;
 import com.tle.beans.item.cal.request.CourseInfo;
-import com.tle.core.activation.ActivationsConverter;
-import com.tle.core.filesystem.SubTemporaryFile;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.core.activation.convert.ActivationsConverter;
+import com.tle.core.entity.registry.EntityRegistry;
+import com.tle.core.entity.service.impl.BaseEntityXmlConverter;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.convert.AbstractItemXmlMigrator;
 import com.tle.core.institution.convert.ConverterParams;
-import com.tle.core.institution.migration.AbstractItemXmlMigrator;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.entity.BaseEntityXmlConverter;
-import com.tle.core.services.entity.EntityRegistry;
-import com.tle.core.xstream.XmlService;
+import com.tle.core.xml.service.XmlService;
 
 @Bind
 @Singleton
@@ -162,8 +162,8 @@ public class CalItemXmlConvert extends AbstractItemXmlMigrator
 
 			if( changesMade )
 			{
-				try( OutputStreamWriter outStream = new OutputStreamWriter(fileSystemService.getOutputStream(file,
-					metadataPath, false)) )
+				try( OutputStreamWriter outStream = new OutputStreamWriter(
+					fileSystemService.getOutputStream(file, metadataPath, false)) )
 				{
 					outStream.write(metadata.toString());
 				}

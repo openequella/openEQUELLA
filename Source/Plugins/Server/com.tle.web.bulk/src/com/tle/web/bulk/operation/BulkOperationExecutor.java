@@ -18,7 +18,7 @@ package com.tle.web.bulk.operation;
 
 import java.io.Serializable;
 
-import com.tle.core.workflow.operations.WorkflowOperation;
+import com.tle.core.item.operations.WorkflowOperation;
 
 public interface BulkOperationExecutor extends Serializable
 {

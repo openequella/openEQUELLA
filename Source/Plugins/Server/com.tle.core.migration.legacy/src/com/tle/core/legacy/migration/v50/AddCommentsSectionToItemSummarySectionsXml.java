@@ -20,12 +20,12 @@ import javax.inject.Singleton;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.devlib.PropBagEx.PropBagIterator;
-import com.tle.core.filesystem.SubTemporaryFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.InstitutionInfo;
-import com.tle.core.institution.migration.XmlMigrator;
+import com.tle.core.institution.convert.XmlMigrator;
 
 @Bind
 @Singleton

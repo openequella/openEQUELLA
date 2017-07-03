@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.usermanagement.user.CurrentUser;
 
 @Bind
 @Singleton

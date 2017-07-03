@@ -20,8 +20,8 @@ import javax.inject.Inject;
 
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.core.guice.Bind;
-import com.tle.web.i18n.BundleCache;
-import com.tle.web.i18n.BundleNameValue;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.i18n.BundleNameValue;
 import com.tle.web.search.actions.AbstractFavouriteSearchSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.annotations.TreeLookup;

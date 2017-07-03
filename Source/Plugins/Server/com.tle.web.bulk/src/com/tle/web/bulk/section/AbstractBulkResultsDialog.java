@@ -16,8 +16,6 @@
 
 package com.tle.web.bulk.section;
 
-import it.uniroma3.mat.extendedset.wrappers.LongSet;
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -86,11 +84,15 @@ import com.tle.web.sections.standard.model.HtmlTreeNode;
 import com.tle.web.sections.standard.model.TableState.TableCell;
 import com.tle.web.sections.standard.renderers.DivRenderer;
 
+import it.uniroma3.mat.extendedset.wrappers.LongSet;
+
 @TreeIndexed
 @SuppressWarnings("nls")
 @NonNullByDefault
-public abstract class AbstractBulkResultsDialog<T extends ItemKey> extends
-	EquellaDialog<AbstractBulkResultsDialog.Model> implements OkayableDialog
+public abstract class AbstractBulkResultsDialog<T extends ItemKey>
+	extends
+		EquellaDialog<AbstractBulkResultsDialog.Model>
+	implements OkayableDialog
 {
 	protected static final int PER_PAGE = 8;
 
@@ -210,8 +212,11 @@ public abstract class AbstractBulkResultsDialog<T extends ItemKey> extends
 	@EventHandlerMethod
 	public void open(SectionInfo info, boolean execute)
 	{
+		String page = getModel(info).getPage();
+
 		SectionUtils.clearModel(info, this);
 		getModel(info).setForExecute(execute);
+		getModel(info).setPage(page);
 		super.showDialog(info);
 	}
 
@@ -394,9 +399,15 @@ public abstract class AbstractBulkResultsDialog<T extends ItemKey> extends
 	public void execute(SectionInfo info)
 	{
 		final OperationInfo opInfo = operationList.getSelectedValue(info);
+
+		if( opInfo == null )
+		{
+			throw new SectionsRuntimeException("Can't execute the operation without appropriate privileges");
+		}
+
 		final String opId = opInfo.getOpId();
 		final BulkOperationExtension op = opInfo.getOp();
-		if( op.areOptionsFinished(info, opId) )
+		if( op.areOptionsFinished(info, opId) && op.validateOptions(info, opId) )
 		{
 			final Model model = getModel(info);
 			model.setTaskId(selectionSection.executeWithExecutor(info, op.getExecutor(info, opId)));
@@ -563,6 +574,8 @@ public abstract class AbstractBulkResultsDialog<T extends ItemKey> extends
 		@Bookmarked
 		private long previewItemId;
 		private Label previewErrorLabel;
+		@Bookmarked
+		private String page;
 
 		public Label getPreviewErrorLabel()
 		{
@@ -704,6 +717,15 @@ public abstract class AbstractBulkResultsDialog<T extends ItemKey> extends
 			this.showPreview = showPreview;
 		}
 
+		public String getPage()
+		{
+			return page;
+		}
+
+		public void setPage(String page)
+		{
+			this.page = page;
+		}
 	}
 
 	public static class SelectionRow
@@ -836,8 +858,8 @@ public abstract class AbstractBulkResultsDialog<T extends ItemKey> extends
 			if( !Check.isEmpty(content) )
 			{
 				name = name + ": ";
-				nodeDiv = new DivRenderer(new CombinedRenderer(new LabelRenderer(getLabel()), new LabelRenderer(
-					new TextLabel(content))));
+				nodeDiv = new DivRenderer(
+					new CombinedRenderer(new LabelRenderer(getLabel()), new LabelRenderer(new TextLabel(content))));
 			}
 			else
 			{

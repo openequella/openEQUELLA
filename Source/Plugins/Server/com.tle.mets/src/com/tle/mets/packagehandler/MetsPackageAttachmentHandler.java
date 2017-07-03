@@ -25,7 +25,7 @@ import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.common.Check;
 import com.tle.common.PathUtils;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.guice.Bind;
 import com.tle.mets.metsimport.METSTreeBuilder;
 import com.tle.web.controls.universal.UniversalControlState;

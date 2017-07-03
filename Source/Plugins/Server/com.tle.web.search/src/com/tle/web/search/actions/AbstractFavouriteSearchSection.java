@@ -23,10 +23,10 @@ import javax.inject.Inject;
 import com.tle.annotation.Nullable;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.favourites.bean.FavouriteSearch;
 import com.tle.core.favourites.service.FavouriteSearchService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -104,8 +104,8 @@ public abstract class AbstractFavouriteSearchSection extends AbstractPrototypeSe
 	{
 		super.registered(id, tree);
 		JSStatements alert = Js.alert_s(LABEL_VALIDATE);
-		addHandler = events.getNamedHandler("addToFavourites").addValidator(
-			nameField.createNotBlankValidator().setFailureStatements(alert));
+		addHandler = events.getNamedHandler("addToFavourites")
+			.addValidator(nameField.createNotBlankValidator().setFailureStatements(alert));
 		addButton.setClickHandler(addHandler);
 		tree.setLayout(id, AbstractSearchActionsSection.AREA_SAVE);
 	}

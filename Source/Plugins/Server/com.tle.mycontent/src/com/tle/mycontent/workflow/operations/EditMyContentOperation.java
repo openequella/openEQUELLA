@@ -29,17 +29,17 @@ import com.dytech.edge.exceptions.WorkflowException;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.annotation.Nullable;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.beans.item.attachments.ModifiableAttachments;
 import com.tle.core.filesystem.ItemFile;
 import com.tle.core.imagemagick.ImageMagickService;
+import com.tle.core.item.operations.AbstractWorkflowOperation;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.mycontent.MyContentConstants;
 import com.tle.mycontent.service.MyContentFields;
 
@@ -157,7 +157,7 @@ public class EditMyContentOperation extends AbstractWorkflowOperation // NOSONAR
 
 			if( stagingUuid != null )
 			{
-				final ItemFile itemFile = new ItemFile(item);
+				final ItemFile itemFile = itemFileService.getItemFile(item);
 				fileSystemService.saveFiles(getStaging(), itemFile);
 				attachments.addAttachment(fattach);
 			}

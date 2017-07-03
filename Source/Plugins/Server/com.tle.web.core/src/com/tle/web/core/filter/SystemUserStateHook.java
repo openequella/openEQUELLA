@@ -22,13 +22,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.dytech.edge.exceptions.WebException;
 import com.tle.common.hash.Hash;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.usermanagement.user.SystemUserState;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.guice.Bind;
 import com.tle.core.migration.MigrationService;
 import com.tle.core.migration.SchemaInfo;
 import com.tle.core.system.SystemConfigService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.SystemUserState;
-import com.tle.core.user.UserState;
 import com.tle.web.core.filter.UserStateResult.Result;
 
 /**
@@ -52,7 +52,7 @@ public class SystemUserStateHook implements UserStateHook
 	{
 		// X-Authorization header
 		String xauth = request.getHeader("Authorization");
-		if(xauth == null)
+		if( xauth == null )
 		{
 			xauth = request.getHeader("X-Authorization");
 		}

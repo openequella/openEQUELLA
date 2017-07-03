@@ -25,10 +25,10 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.ImsAttachment;
 import com.tle.common.Check;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.FileSystemConstants;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.mimetypes.MimeTypeConstants;
-import com.tle.core.services.FileSystemService;
 import com.tle.web.controls.universal.handlers.FileUploadHandler;
 import com.tle.web.controls.universal.handlers.fileupload.AbstractPackageAttachmentHandler;
 import com.tle.web.controls.universal.handlers.fileupload.UploadedFile;
@@ -138,7 +138,7 @@ public class IMSPackageAttachmentHandler extends AbstractPackageAttachmentHandle
 				repo.createPackageNavigation(info, extractedPath, stagingPath, packageExtractedFolder, true);
 			}
 			attachment.setUrl(packageExtractedFolder);
-			move(staging, stagingPath, FileSystemService.IMS_FOLDER + '/' + packageExtractedFolder);
+			move(staging, stagingPath, FileSystemConstants.IMS_FOLDER + '/' + packageExtractedFolder);
 			if( !Check.isEmpty(extractedPath) )
 			{
 				move(staging, extractedPath, packageExtractedFolder);
@@ -165,8 +165,8 @@ public class IMSPackageAttachmentHandler extends AbstractPackageAttachmentHandle
 				try
 				{
 					String packageFilename = imsAttachment.getUrl();
-					repo.createPackageNavigation(info, packageFilename, FileSystemService.IMS_FOLDER + '/'
-						+ packageFilename, packageFilename, true);
+					repo.createPackageNavigation(info, packageFilename,
+						FileSystemConstants.IMS_FOLDER + '/' + packageFilename, packageFilename, true);
 				}
 				catch( IOException e )
 				{

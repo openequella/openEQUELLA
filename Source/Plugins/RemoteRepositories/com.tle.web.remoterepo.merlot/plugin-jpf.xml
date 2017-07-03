@@ -5,6 +5,7 @@
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.remoterepo.merlot" />
 		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.web.fedsearch" />
 		<import plugin-id="com.tle.web.freemarker" />
 		<import plugin-id="com.tle.web.htmleditor" />

@@ -24,14 +24,14 @@ import javax.inject.Singleton;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.FileInfo;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.beans.item.attachments.ItemNavigationNode;
-import com.tle.core.filesystem.ItemFile;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemFileService;
 import com.tle.core.services.FileSystemService;
 import com.tle.mets.MetsIDElementInfo;
 import com.tle.web.sections.SectionInfo;
@@ -51,6 +51,8 @@ public class FileMetsAttachmentImporterExporter extends AbstractMetsAttachmentIm
 {
 	@Inject
 	private FileSystemService fileSystemService;
+	@Inject
+	private ItemFileService itemFileService;
 
 	@Override
 	public boolean canExport(Item item, Attachment attachment)
@@ -64,11 +66,11 @@ public class FileMetsAttachmentImporterExporter extends AbstractMetsAttachmentIm
 	{
 		final List<MetsIDElementInfo<? extends MetsIDElement>> res = new ArrayList<MetsIDElementInfo<? extends MetsIDElement>>();
 
-		final FileHandle fileHandle = new ItemFile(item);
+		final FileHandle fileHandle = itemFileService.getItemFile(item);
 		final String filename = attachment.getUrl();
 		final FileInfo fileInfo = fileSystemService.getFileInfo(fileHandle, filename);
-		res.add(exportBinaryFile(new ItemFile(item), filename, fileInfo.getLength(), attachment.getDescription(),
-			"data:" + attachment.getUuid(), attachment.getUuid()));
+		res.add(exportBinaryFile(itemFileService.getItemFile(item), filename, fileInfo.getLength(),
+			attachment.getDescription(), "data:" + attachment.getUuid(), attachment.getUuid()));
 		return res;
 	}
 

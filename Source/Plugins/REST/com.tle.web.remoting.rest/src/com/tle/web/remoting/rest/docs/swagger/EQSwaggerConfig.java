@@ -16,12 +16,11 @@
 
 package com.tle.web.remoting.rest.docs.swagger;
 
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 import com.wordnik.swagger.config.SwaggerConfig;
 
 @SuppressWarnings("nls")
@@ -30,11 +29,11 @@ import com.wordnik.swagger.config.SwaggerConfig;
 public class EQSwaggerConfig extends SwaggerConfig
 {
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@Override
 	public String basePath()
 	{
-		return urlService.institutionalise("api");
+		return institutionService.institutionalise("api");
 	}
 }

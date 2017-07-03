@@ -44,14 +44,14 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.dytech.edge.common.valuebean.GroupBean;
-import com.dytech.edge.common.valuebean.RoleBean;
-import com.dytech.edge.common.valuebean.UserBean;
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.common.Format;
 import com.tle.common.gui.models.GenericListModel;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
+import com.tle.common.usermanagement.user.valuebean.RoleBean;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.remoting.RemoteUserService;
 
 /**

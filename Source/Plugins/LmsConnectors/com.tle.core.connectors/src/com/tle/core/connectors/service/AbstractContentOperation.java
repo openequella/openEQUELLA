@@ -20,15 +20,15 @@ import javax.inject.Inject;
 
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemPack;
-import com.tle.core.workflow.operations.WorkflowOperation;
-import com.tle.core.workflow.operations.WorkflowParams;
+import com.tle.core.item.operations.ItemOperationParams;
+import com.tle.core.item.operations.WorkflowOperation;
 
 public abstract class AbstractContentOperation implements WorkflowOperation
 {
 	@Inject
 	private ConnectorRepositoryService repositoryService;
 
-	protected WorkflowParams params;
+	protected ItemOperationParams params;
 
 	@Override
 	public Item getItem()
@@ -49,7 +49,7 @@ public abstract class AbstractContentOperation implements WorkflowOperation
 	}
 
 	@Override
-	public void setParams(WorkflowParams params)
+	public void setParams(ItemOperationParams params)
 	{
 		this.params = params;
 	}
@@ -60,4 +60,9 @@ public abstract class AbstractContentOperation implements WorkflowOperation
 		return repositoryService == null;
 	}
 
+	@Override
+	public boolean isDeleteLike()
+	{
+		return false;
+	}
 }

@@ -21,12 +21,12 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import com.tle.beans.Institution;
-import com.tle.core.filesystem.ImportFile;
+import com.tle.common.filesystem.handle.ImportFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.InstitutionInfo;
-import com.tle.core.progress.ListProgressCallback;
-import com.tle.core.services.InstitutionImportService;
-import com.tle.core.services.InstitutionImportService.ConvertType;
+import com.tle.core.institution.convert.service.InstitutionImportService;
+import com.tle.core.institution.convert.service.InstitutionImportService.ConvertType;
+import com.tle.common.beans.progress.ListProgressCallback;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.institution.section.ProgressSection.ProgressRunnable;
@@ -155,6 +155,11 @@ public class ImportSection extends AbstractEditSection<ImportSection.ImportModel
 			}
 		}.start();
 
+		super.cancel(info);
+	}
+
+	public void cancelSectionOnly(final SectionInfo info)
+	{
 		super.cancel(info);
 	}
 

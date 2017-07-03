@@ -2,7 +2,6 @@
 <plugin id="com.tle.mets" version="1">
 	<requires>
 		<import plugin-id="com.tle.core.guice" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.web.wizard" />
 		<import plugin-id="com.tle.web.wizard.controls.universal" />
@@ -14,6 +13,9 @@
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="edu.harvard.hul:mets" exported="true" />
+		<import plugin-id="com.tle.ims" />
+		<import plugin-id="com.tle.core.institution" />
+		<import plugin-id="com.tle.core.item" />
 	</requires>
 
 	<runtime>

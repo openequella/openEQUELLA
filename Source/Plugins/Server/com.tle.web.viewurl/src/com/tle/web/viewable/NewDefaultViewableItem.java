@@ -28,18 +28,18 @@ import com.dytech.edge.exceptions.AttachmentNotFoundException;
 import com.dytech.edge.exceptions.ItemNotFoundException;
 import com.dytech.edge.exceptions.WorkflowException;
 import com.google.inject.Provider;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemPack;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.beans.workflow.WorkflowStatus;
-import com.tle.core.filesystem.ItemFile;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.workflow.operations.StatusOperation;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.operations.workflow.StatusOperation;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.viewurl.FilestoreBookmark;
 
@@ -49,7 +49,9 @@ public class NewDefaultViewableItem implements ViewableItem<Item>
 	@Inject
 	private ItemService itemService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
+	@Inject
+	private ItemFileService itemFileService;
 	@Inject
 	private Provider<StatusOperation> statusOpFactpry;
 
@@ -132,7 +134,7 @@ public class NewDefaultViewableItem implements ViewableItem<Item>
 	public FileHandle getFileHandle()
 	{
 		ItemKey itemKey = getItemId();
-		return new ItemFile(itemKey.getUuid(), itemKey.getVersion());
+		return itemFileService.getItemFile(getItem());
 	}
 
 	@Override
@@ -174,7 +176,7 @@ public class NewDefaultViewableItem implements ViewableItem<Item>
 	@Override
 	public String getItemdir()
 	{
-		return state.getItemdir(urlService);
+		return state.getItemdir(institutionService);
 	}
 
 	@Override
@@ -244,7 +246,7 @@ public class NewDefaultViewableItem implements ViewableItem<Item>
 	@Override
 	public Bookmark createStableResourceUrl(final String path)
 	{
-		return new FilestoreBookmark(urlService, getItemId(), path);
+		return new FilestoreBookmark(institutionService, getItemId(), path);
 	}
 
 	@Override

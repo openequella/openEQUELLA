@@ -25,7 +25,7 @@ import com.google.inject.Inject;
 import com.tle.core.guice.Bind;
 import com.tle.core.oauth.OAuthConstants;
 import com.tle.core.oauth.OAuthUserState;
-import com.tle.core.user.UserState;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.web.core.filter.UserStateHook;
 import com.tle.web.core.filter.UserStateResult;
 import com.tle.web.core.filter.UserStateResult.Result;

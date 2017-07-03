@@ -1,0 +1,50 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.auditlog" version="1">
+	<requires>
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.common.auditlog" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.common.usermanagement" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.hibernate" />
+		<import plugin-id="com.tle.core.hibernate.equella" />
+		<import plugin-id="com.tle.core.institution.convert" />
+		<import plugin-id="com.tle.common.filesystem" />
+	</requires>
+
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+
+	<extension-point id="auditTable">
+		<parameter-def id="bean" multiplicity="one" />
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+	</extension>
+	
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="objects">
+		<parameter id="class" value="com.tle.beans.audit.AuditLogEntry" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="auditLogConverter">
+		<parameter id="id" value="AUDITLOGS" />
+		<parameter id="class" value="bean:com.tle.core.auditlog.convert.AuditLogConverter" />
+		<parameter id="order" value="200" />
+		<parameter id="selections">
+			<parameter id="id" value="AUDITLOGS" />
+			<parameter id="nameKey" value="institutions.tasks.auditlogs" />
+		</parameter>
+	</extension>
+</plugin>

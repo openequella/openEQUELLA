@@ -23,9 +23,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.services.UrlService;
-import com.tle.core.user.CurrentUser;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.sections.MutableSectionInfo;
 import com.tle.web.sections.SectionFilter;
@@ -38,6 +39,8 @@ import com.tle.web.sections.registry.TreeRegistry;
 @Singleton
 public class TemplateFilter implements SectionFilter
 {
+	@Inject
+	private InstitutionService institutionService;
 	@Inject
 	private UrlService urlService;
 	@Inject
@@ -54,7 +57,7 @@ public class TemplateFilter implements SectionFilter
 		}
 		else
 		{
-			info.setAttribute(SectionInfo.KEY_BASE_HREF, URI.create(urlService.getInstitutionUrl().toString()));
+			info.setAttribute(SectionInfo.KEY_BASE_HREF, URI.create(institutionService.getInstitutionUrl().toString()));
 		}
 		SectionTree tree = treeRegistry.getTreeForPath(TEMPLATE_TREE);
 		info.setAttribute(EventAuthoriser.class, new EventAuthoriser()

@@ -16,9 +16,9 @@
 
 package com.tle.common.scripting.types.impl;
 
-import com.dytech.edge.common.valuebean.DefaultRoleBean;
-import com.dytech.edge.common.valuebean.RoleBean;
 import com.tle.common.scripting.types.RoleScriptType;
+import com.tle.common.usermanagement.user.valuebean.DefaultRoleBean;
+import com.tle.common.usermanagement.user.valuebean.RoleBean;
 
 /**
  * @author aholland

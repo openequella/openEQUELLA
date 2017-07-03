@@ -22,12 +22,12 @@ import java.util.List;
 import com.tle.beans.item.ItemPack;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
-import com.tle.core.item.operations.CloneFactory;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.standard.operations.CloneFactory;
+import com.tle.core.item.standard.operations.MetadataTransformingOperation;
 import com.tle.core.plugins.BeanLocator;
 import com.tle.core.plugins.FactoryMethodLocator;
 import com.tle.core.plugins.SerializedBeanLocator;
-import com.tle.core.workflow.operations.MetadataTransformingOperation;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.web.bulk.operation.BulkOperationExecutor;
 import com.tle.web.bulk.operation.BulkOperationExtension;
 import com.tle.web.cloneormove.model.CloneOptionsModel;
@@ -102,10 +102,10 @@ public class CloneOrMoveBulkOperation extends CloneOrMoveSection implements Bulk
 	@Override
 	public BeanLocator<CloneOrMoveExecutor> getExecutor(SectionInfo info, String operationId)
 	{
-		final CloneOption cloneOption = CloneOption.values()[Integer.parseInt(getCloneOptions()
-			.getSelectedValueAsString(info))];
-		return new SerializedBeanLocator<CloneOrMoveExecutor>(new CloneOrMoveExecutor(getCollections()
-			.getSelectedValueAsString(info), getSchemaImports().getSelectedValueAsString(info),
+		final CloneOption cloneOption = CloneOption.values()[Integer
+			.parseInt(getCloneOptions().getSelectedValueAsString(info))];
+		return new SerializedBeanLocator<CloneOrMoveExecutor>(new CloneOrMoveExecutor(
+			getCollections().getSelectedValueAsString(info), getSchemaImports().getSelectedValueAsString(info),
 			"submit".equals(getSubmitOptions().getSelectedValueAsString(info)), cloneOption));
 	}
 
@@ -169,7 +169,7 @@ public class CloneOrMoveBulkOperation extends CloneOrMoveSection implements Bulk
 		{
 			if( cloneOption == CloneOption.MOVE )
 			{
-				return new Object[]{newCollectionUuid};
+				return new Object[]{newCollectionUuid, true};
 			}
 			return new Object[]{newCollectionUuid, cloneOption == CloneOption.CLONE, submit};
 		}
@@ -205,9 +205,15 @@ public class CloneOrMoveBulkOperation extends CloneOrMoveSection implements Bulk
 	}
 
 	@Override
-	public boolean areOptionsFinished(SectionInfo info, String operationId)
+	public boolean validateOptions(SectionInfo info, String operationId)
 	{
 		return !Check.isEmpty(getCollections().getSelectedValueAsString(info));
+	}
+
+	@Override
+	public boolean areOptionsFinished(SectionInfo info, String operationId)
+	{
+		return validateOptions(info, operationId);
 	}
 
 	@Override

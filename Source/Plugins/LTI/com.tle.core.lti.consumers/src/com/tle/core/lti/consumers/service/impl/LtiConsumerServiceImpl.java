@@ -22,7 +22,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.ValidationError;
+import com.tle.common.beans.exception.ValidationError;
 import com.google.common.collect.Sets;
 import com.google.inject.Singleton;
 import com.tle.annotation.NonNullByDefault;
@@ -33,14 +33,15 @@ import com.tle.common.Pair;
 import com.tle.common.lti.consumers.entity.LtiConsumer;
 import com.tle.common.lti.consumers.entity.LtiConsumerCustomRole;
 import com.tle.common.security.PrivilegeTree.Node;
+import com.tle.core.encryption.EncryptionService;
+import com.tle.core.entity.EntityEditingSession;
+import com.tle.core.entity.service.impl.AbstractEntityServiceImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.lti.consumers.dao.LtiConsumerDao;
 import com.tle.core.lti.consumers.service.LtiConsumerService;
 import com.tle.core.lti.consumers.service.session.LtiConsumerEditingBean;
 import com.tle.core.lti.consumers.service.session.LtiConsumerEditingSession;
 import com.tle.core.security.impl.SecureEntity;
-import com.tle.core.services.entity.EntityEditingSession;
-import com.tle.core.services.entity.impl.AbstractEntityServiceImpl;
 
 @NonNullByDefault
 @Bind(LtiConsumerService.class)
@@ -49,9 +50,11 @@ import com.tle.core.services.entity.impl.AbstractEntityServiceImpl;
 public class LtiConsumerServiceImpl
 	extends
 		AbstractEntityServiceImpl<LtiConsumerEditingBean, LtiConsumer, LtiConsumerService>
-	implements
-		LtiConsumerService
+	implements LtiConsumerService
 {
+	@Inject
+	private EncryptionService encryptionService;
+
 	LtiConsumerDao dao;
 
 	@Inject
@@ -92,10 +95,11 @@ public class LtiConsumerServiceImpl
 	protected void populateEditingBean(LtiConsumerEditingBean bean, LtiConsumer entity)
 	{
 		super.populateEditingBean(bean, entity);
+
 		if( bean.getId() != 0 )
 		{
 			bean.setConsumerKey(entity.getConsumerKey());
-			bean.setConsumerSecret(entity.getConsumerSecret());
+			bean.setConsumerSecret(encryptionService.decrypt(entity.getConsumerSecret()));
 			bean.setPrefix(entity.getPrefix());
 			bean.setPostfix(entity.getPostfix());
 			bean.setAllowedExpression(entity.getAllowedExpression());
@@ -105,8 +109,8 @@ public class LtiConsumerServiceImpl
 			bean.setUnknownGroups(copySet(entity.getUnknownGroups()));
 
 			final Set<Pair<String, String>> customRoleBeans = new HashSet<Pair<String, String>>();
-			entity.getCustomRoles().forEach(
-				cr -> customRoleBeans.add(new Pair<String, String>(cr.getLtiRole(), cr.getEquellaRole())));
+			entity.getCustomRoles()
+				.forEach(cr -> customRoleBeans.add(new Pair<String, String>(cr.getLtiRole(), cr.getEquellaRole())));
 			bean.setCustomRoles(customRoleBeans);
 		}
 	}
@@ -116,7 +120,7 @@ public class LtiConsumerServiceImpl
 	{
 		super.populateEntity(bean, entity);
 		entity.setConsumerKey(bean.getConsumerKey());
-		entity.setConsumerSecret(bean.getConsumerSecret());
+		entity.setConsumerSecret(encryptionService.encrypt(bean.getConsumerSecret()));
 		entity.setPrefix(bean.getPrefix());
 		entity.setPostfix(bean.getPostfix());
 		entity.setAllowedExpression(bean.getAllowedExpression());

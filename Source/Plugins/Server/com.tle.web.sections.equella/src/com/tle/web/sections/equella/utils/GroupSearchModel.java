@@ -20,9 +20,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.dytech.edge.common.valuebean.GroupBean;
 import com.tle.common.Check;
 import com.tle.common.Format;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.core.services.user.UserService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.standard.MultiSelectionList;

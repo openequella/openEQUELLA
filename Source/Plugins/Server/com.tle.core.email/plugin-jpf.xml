@@ -7,6 +7,9 @@
 		<import plugin-id="javax.mail:mail" exported="true" />
 		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.core.system" />
+		<import plugin-id="com.tle.core.encryption" />
+		<import plugin-id="com.tle.common.institution" />
+		<import plugin-id="com.tle.common.settings.standard" />
 	</requires>
 
 	<runtime>

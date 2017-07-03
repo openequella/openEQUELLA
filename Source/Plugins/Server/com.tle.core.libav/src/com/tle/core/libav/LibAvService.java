@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 
 public interface LibAvService
 {

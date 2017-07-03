@@ -23,11 +23,11 @@ import javax.inject.Singleton;
 import org.hibernate.Session;
 
 import com.tle.common.Check;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.lti.consumers.entity.LtiConsumer;
-import com.tle.core.dao.impl.AbstractEntityDaoImpl;
+import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.lti.consumers.dao.LtiConsumerDao;
-import com.tle.core.user.CurrentInstitution;
 
 @Bind(LtiConsumerDao.class)
 @Singleton

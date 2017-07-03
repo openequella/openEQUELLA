@@ -76,12 +76,12 @@ import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.AbstractIntegrationConnectorRespository;
 import com.tle.core.connectors.service.ConnectorRepositoryService.ExternalContentSortType;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.services.HttpService;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.config.ConfigurationService;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Request.Method;
 import com.tle.core.services.http.Response;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.selection.SelectedResource;
 
 @SuppressWarnings("nls")
@@ -112,7 +112,7 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
 	@Inject
 	private ConfigurationService configService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	private static final ObjectMapper jsonMapper = new ObjectMapper();
 
@@ -411,7 +411,7 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
 
 				for( CanvasExternalToolBean tool : tools )
 				{
-					if( urlService.isInstitutionUrl(tool.getUrl()) )
+					if( institutionService.isInstitutionUrl(tool.getUrl()) )
 					{
 						return tool;
 					}
@@ -443,7 +443,7 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
 					});
 				for( CanvasExternalToolBean tool : tools )
 				{
-					if( urlService.isInstitutionUrl(tool.getUrl()) )
+					if( institutionService.isInstitutionUrl(tool.getUrl()) )
 					{
 						return tool;
 					}
@@ -960,9 +960,9 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
 			// hb image vomit
 
 			final String externalToolUrl = item.getEquellaUrl();
-			if( urlService.isInstitutionUrl(externalToolUrl) )
+			if( institutionService.isInstitutionUrl(externalToolUrl) )
 			{
-				final String relUrl = urlService.removeInstitution(externalToolUrl);
+				final String relUrl = institutionService.removeInstitution(externalToolUrl);
 				final String path;
 				final String query;
 				final int questionIndex = relUrl.lastIndexOf("?");

@@ -18,7 +18,7 @@ package com.tle.web.lti;
 
 import com.google.inject.Singleton;
 import com.tle.core.guice.Bind;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.lti.usermanagement.LtiUserState;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.template.section.HtmlStyleClass;

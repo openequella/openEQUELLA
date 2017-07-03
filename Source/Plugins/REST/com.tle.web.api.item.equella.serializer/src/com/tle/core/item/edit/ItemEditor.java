@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.dytech.devlib.PropBagEx;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.ItemIdKey;
 import com.tle.core.item.edit.attachment.AttachmentEditor;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
@@ -66,6 +66,8 @@ public interface ItemEditor
 	<T extends AttachmentEditor> T getAttachmentEditor(String uuid, Class<T> type);
 
 	void editAttachmentOrder(List<String> attachmentUuids);
+
+	void processExportDetails(EquellaItemBean itemBean);
 
 	NavigationEditor getNavigationEditor();
 

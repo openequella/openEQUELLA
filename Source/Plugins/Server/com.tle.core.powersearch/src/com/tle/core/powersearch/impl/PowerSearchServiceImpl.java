@@ -26,26 +26,27 @@ import org.hibernate.Hibernate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.ejb.helpers.ValidationHelper;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.PowerSearch;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.EntityPack;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.security.PrivilegeTree.Node;
-import com.tle.core.events.PowerSearchDeletionEvent;
-import com.tle.core.events.listeners.ItemDefinitionDeletionListener;
+import com.tle.core.collection.event.listener.ItemDefinitionDeletionListener;
+import com.tle.core.entity.EntityEditingBean;
+import com.tle.core.entity.EntityEditingSession;
+import com.tle.core.entity.service.impl.AbstractEntityServiceImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.powersearch.PowerSearchDao;
 import com.tle.core.powersearch.PowerSearchService;
+import com.tle.core.powersearch.event.PowerSearchDeletionEvent;
 import com.tle.core.remoting.RemotePowerSearchService;
 import com.tle.core.schema.SchemaReferences;
+import com.tle.core.schema.event.listener.SchemaReferencesListener;
 import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.security.impl.SecureOnReturn;
-import com.tle.core.services.entity.EntityEditingBean;
-import com.tle.core.services.entity.EntityEditingSession;
-import com.tle.core.services.entity.impl.AbstractEntityServiceImpl;
+import com.tle.core.services.ValidationHelper;
 
 /**
  * @author Nicholas Read
@@ -59,6 +60,7 @@ public class PowerSearchServiceImpl
 	implements
 		PowerSearchService,
 		SchemaReferences,
+		SchemaReferencesListener,
 		ItemDefinitionDeletionListener
 {
 	private static final String[] BLANKS = {"name"}; //$NON-NLS-1$
@@ -149,5 +151,14 @@ public class PowerSearchServiceImpl
 	public List<BaseEntityLabel> getSchemaUses(long id)
 	{
 		return listAllForSchema(id);
+	}
+
+	@Override
+	public void addSchemaReferencingClasses(Schema schema, List<Class<?>> referencingClasses)
+	{
+		if( powerSearchDao.listAllForSchema(schema.getId()).size() > 0 )
+		{
+			referencingClasses.add(PowerSearch.class);
+		}
 	}
 }

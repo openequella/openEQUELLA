@@ -34,18 +34,6 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 
-import ORG.oclc.oai.server.catalog.AbstractCatalog;
-import ORG.oclc.oai.server.verb.BadArgumentException;
-import ORG.oclc.oai.server.verb.BadResumptionTokenException;
-import ORG.oclc.oai.server.verb.CannotDisseminateFormatException;
-import ORG.oclc.oai.server.verb.IdDoesNotExistException;
-import ORG.oclc.oai.server.verb.NoItemsMatchException;
-import ORG.oclc.oai.server.verb.NoMetadataFormatsException;
-import ORG.oclc.oai.server.verb.NoRecordsMatchException;
-import ORG.oclc.oai.server.verb.NoSetHierarchyException;
-import ORG.oclc.oai.server.verb.OAIInternalServerError;
-import ORG.oclc.oai.util.OAIUtil;
-
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -61,17 +49,29 @@ import com.tle.common.util.Dates;
 import com.tle.common.util.UtcDate;
 import com.tle.core.dynacollection.DynaCollectionService;
 import com.tle.core.freetext.queries.FreeTextBooleanQuery;
+import com.tle.core.freetext.service.FreeTextService;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.replicatedcache.ReplicatedCacheService;
 import com.tle.core.replicatedcache.ReplicatedCacheService.ReplicatedCache;
-import com.tle.core.schema.SchemaService;
+import com.tle.core.schema.service.SchemaService;
 import com.tle.core.search.QueryGatherer;
 import com.tle.core.search.VirtualisableAndValue;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.services.item.FreeTextService;
 import com.tle.core.services.item.FreetextResult;
 import com.tle.core.services.item.FreetextSearchResults;
-import com.tle.core.services.item.ItemService;
+import com.tle.core.settings.service.ConfigurationService;
+
+import ORG.oclc.oai.server.catalog.AbstractCatalog;
+import ORG.oclc.oai.server.verb.BadArgumentException;
+import ORG.oclc.oai.server.verb.BadResumptionTokenException;
+import ORG.oclc.oai.server.verb.CannotDisseminateFormatException;
+import ORG.oclc.oai.server.verb.IdDoesNotExistException;
+import ORG.oclc.oai.server.verb.NoItemsMatchException;
+import ORG.oclc.oai.server.verb.NoMetadataFormatsException;
+import ORG.oclc.oai.server.verb.NoRecordsMatchException;
+import ORG.oclc.oai.server.verb.NoSetHierarchyException;
+import ORG.oclc.oai.server.verb.OAIInternalServerError;
+import ORG.oclc.oai.util.OAIUtil;
 
 /**
  * This uses Dynamic Collections rather than normal Collections. If a DC is
@@ -96,7 +96,7 @@ public class OAICatalog extends AbstractCatalog
 	@Inject
 	private ConfigurationService configService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	private ReplicatedCache<ResumptionToken> resumptionTokens;
 
@@ -117,7 +117,7 @@ public class OAICatalog extends AbstractCatalog
 	@Override
 	public String getDescriptions()
 	{
-		OAIUtils utils = OAIUtils.getInstance(urlService, configService);
+		OAIUtils utils = OAIUtils.getInstance(institutionService, configService);
 
 		StringBuilder s = new StringBuilder();
 		s.append("<description><oai-identifier");
@@ -138,53 +138,51 @@ public class OAICatalog extends AbstractCatalog
 	@Override
 	public Map<String, Iterator<String>> listSets() throws NoSetHierarchyException, OAIInternalServerError
 	{
-		return Collections.singletonMap(
-			"sets",
-			Lists.transform(dynaCollectionService.enumerateExpanded(OAI_USAGE),
-				new Function<VirtualisableAndValue<DynaCollection>, String>()
+		return Collections.singletonMap("sets", Lists.transform(dynaCollectionService.enumerateExpanded(OAI_USAGE),
+			new Function<VirtualisableAndValue<DynaCollection>, String>()
+			{
+				@Override
+				public String apply(VirtualisableAndValue<DynaCollection> pair)
 				{
-					@Override
-					public String apply(VirtualisableAndValue<DynaCollection> pair)
-					{
-						final DynaCollection dynaColl = pair.getVt();
-						final String virtualiseValue = pair.getVirtualisedValue();
-						final String name = CurrentLocale.get(dynaColl.getName(), "");
-						final String description = CurrentLocale.get(dynaColl.getDescription(), "");
+					final DynaCollection dynaColl = pair.getVt();
+					final String virtualiseValue = pair.getVirtualisedValue();
+					final String name = CurrentLocale.get(dynaColl.getName(), "");
+					final String description = CurrentLocale.get(dynaColl.getDescription(), "");
 
-						StringBuilder sb = new StringBuilder();
-						sb.append("<set><setSpec>");
-						sb.append(OAIUtil.xmlEncode(dynaColl.getUuid()));
-						if( !Check.isEmpty(virtualiseValue) )
-						{
-							sb.append(':');
-							// The setSpec element cannot contain spaces, so we
-							// need to URL encode the value to remove any.
-							sb.append(URLUtils.basicUrlEncode(virtualiseValue));
-						}
-						sb.append("</setSpec><setName>");
-						sb.append(OAIUtil.xmlEncode(name));
-						sb.append("</setName>");
-						if( !Check.isEmpty(description) )
-						{
-							sb.append("<setDescription><oai_dc:dc ")
-								.append("xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" ")
-								.append("xmlns:dc=\"http://purl.org/dc/elements/1.1/\" ")
-								.append("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ")
-								.append("xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ ")
-								.append("http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">");
-							sb.append("<dc:description>");
-							sb.append(OAIUtil.xmlEncode(description));
-							sb.append("</dc:description></oai_dc:dc></setDescription>");
-						}
-						sb.append("</set>"); //$NON-NLS-1$
-						return sb.toString();
+					StringBuilder sb = new StringBuilder();
+					sb.append("<set><setSpec>");
+					sb.append(OAIUtil.xmlEncode(dynaColl.getUuid()));
+					if( !Check.isEmpty(virtualiseValue) )
+					{
+						sb.append(':');
+						// The setSpec element cannot contain spaces, so we
+						// need to URL encode the value to remove any.
+						sb.append(URLUtils.basicUrlEncode(virtualiseValue));
 					}
-				}).iterator());
+					sb.append("</setSpec><setName>");
+					sb.append(OAIUtil.xmlEncode(name));
+					sb.append("</setName>");
+					if( !Check.isEmpty(description) )
+					{
+						sb.append("<setDescription><oai_dc:dc ")
+							.append("xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" ")
+							.append("xmlns:dc=\"http://purl.org/dc/elements/1.1/\" ")
+							.append("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ")
+							.append("xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ ")
+							.append("http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">");
+						sb.append("<dc:description>");
+						sb.append(OAIUtil.xmlEncode(description));
+						sb.append("</dc:description></oai_dc:dc></setDescription>");
+					}
+					sb.append("</set>"); //$NON-NLS-1$
+					return sb.toString();
+				}
+			}).iterator());
 	}
 
 	@Override
-	public Map<?, ?> listSets(String resumption) throws ORG.oclc.oai.server.verb.BadResumptionTokenException,
-		OAIInternalServerError
+	public Map<?, ?> listSets(String resumption)
+		throws ORG.oclc.oai.server.verb.BadResumptionTokenException, OAIInternalServerError
 	{
 		throw new BadResumptionTokenException();
 	}
@@ -234,8 +232,7 @@ public class OAICatalog extends AbstractCatalog
 	}
 
 	@Override
-	public String getRecord(String identifier, String mdPrefix)
-		throws ORG.oclc.oai.server.verb.IdDoesNotExistException,
+	public String getRecord(String identifier, String mdPrefix) throws ORG.oclc.oai.server.verb.IdDoesNotExistException,
 		ORG.oclc.oai.server.verb.CannotDisseminateFormatException, OAIInternalServerError
 	{
 		String schemaURL = mdPrefix != null ? getCrosswalks().getSchemaURL(mdPrefix) : null;
@@ -248,7 +245,7 @@ public class OAICatalog extends AbstractCatalog
 
 	private Item getRecord(String identifier) throws IdDoesNotExistException
 	{
-		final OAIUtils utils = OAIUtils.getInstance(urlService, configService);
+		final OAIUtils utils = OAIUtils.getInstance(institutionService, configService);
 		final ItemId id = utils.parseRecordIdentifier(identifier);
 		try
 		{
@@ -306,7 +303,7 @@ public class OAICatalog extends AbstractCatalog
 	private Map<?, ?> list(String set, String from, String until, String metadataFormat, Handler handler)
 		throws NoRecordsMatchException, BadArgumentException, OAIInternalServerError
 	{
-		final OAIUtils utils = OAIUtils.getInstance(urlService, configService);
+		final OAIUtils utils = OAIUtils.getInstance(institutionService, configService);
 		DefaultSearch search = new DefaultSearch();
 		search.setSortType(SortType.DATEMODIFIED);
 
@@ -450,8 +447,8 @@ public class OAICatalog extends AbstractCatalog
 		}
 
 		@Override
-		public void add(Item item, String metadataPrefix) throws IllegalArgumentException,
-			CannotDisseminateFormatException
+		public void add(Item item, String metadataPrefix)
+			throws IllegalArgumentException, CannotDisseminateFormatException
 		{
 			String schemaURL = null;
 			if( metadataPrefix != null )

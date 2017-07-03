@@ -16,8 +16,8 @@
 
 package com.tle.core.cloud.settings;
 
-import com.tle.common.property.ConfigurationProperties;
-import com.tle.common.property.annotation.Property;
+import com.tle.common.settings.ConfigurationProperties;
+import com.tle.common.settings.annotation.Property;
 
 public class CloudSettings implements ConfigurationProperties
 {

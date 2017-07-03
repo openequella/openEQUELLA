@@ -20,7 +20,7 @@ import java.util.List;
 
 import com.tle.beans.item.ItemStatus;
 import com.tle.common.search.DefaultSearch;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 
 public class MyResourcesSearch extends DefaultSearch
 {

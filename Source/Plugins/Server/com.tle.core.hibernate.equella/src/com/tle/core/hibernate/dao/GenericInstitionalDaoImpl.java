@@ -25,7 +25,7 @@ import org.hibernate.Session;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tle.common.Check;
-import com.tle.core.user.CurrentInstitution;
+import com.tle.common.institution.CurrentInstitution;
 
 public class GenericInstitionalDaoImpl<T, ID extends Serializable> extends GenericDaoImpl<T, ID>
 	implements

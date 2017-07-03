@@ -3,7 +3,7 @@
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.common.item" />
-		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.migration" />
 		<import plugin-id="com.tle.core.mimetypes" />
@@ -17,6 +17,9 @@
 		<import plugin-id="com.tle.web.viewitem" />
 		<import plugin-id="net.oauth.core:oauth" />
 		<import plugin-id="com.tle.common.licences" />
+		<import plugin-id="com.tle.core.usermanagement" />
+		<import plugin-id="com.tle.ims" />
+		<import plugin-id="com.tle.core.institution.convert" />
 	</requires>
 
 	<runtime>
@@ -52,7 +55,7 @@
 		<parameter id="date" value="1970-01-01" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="addQTIMimeTypeXmlMigration">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="addQTIMimeTypeXmlMigration">
 		<parameter id="id" value="com.tle.web.qti.migration.AddQTIMimeTypeXmlMigration" />
 		<parameter id="bean" value="bean:com.tle.web.qti.migration.AddQTIMimeTypeXmlMigration" />
 	</extension>

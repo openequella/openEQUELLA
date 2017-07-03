@@ -6,8 +6,10 @@
 	<div class="input select">
 		<@render section=s.itemStatus />
 	</div>
-	<div class="input checkbox">
-		<@render section=s.onlyInModeration/>
-	</div>
+	<#if !m.hideCheckBox>
+		<div class="input checkbox">
+			<@render section=s.onlyInModeration/>
+		</div>
+	</#if>
 </div>
 <hr>

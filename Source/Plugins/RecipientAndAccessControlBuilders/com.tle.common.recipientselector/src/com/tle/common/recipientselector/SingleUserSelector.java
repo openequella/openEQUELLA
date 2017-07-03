@@ -27,10 +27,10 @@ import javax.swing.text.JTextComponent;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.tle.common.Format;
 import com.tle.common.Pair;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.remoting.RemoteUserService;
 
 @SuppressWarnings("nls")

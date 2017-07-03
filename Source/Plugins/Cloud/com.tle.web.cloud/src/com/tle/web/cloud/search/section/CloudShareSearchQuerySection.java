@@ -30,7 +30,7 @@ import com.tle.core.cloud.beans.converted.CloudItem;
 import com.tle.core.cloud.service.CloudSearchResults;
 import com.tle.core.cloud.service.CloudService;
 import com.tle.core.guice.Bind;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.cloud.event.CloudSearchEvent;
 import com.tle.web.cloud.viewable.CloudViewItemLinkFactory;
 import com.tle.web.freemarker.FreemarkerFactory;

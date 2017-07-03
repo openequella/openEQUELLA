@@ -27,21 +27,22 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemTaskId;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.collection.AttachmentConfigConstants;
+import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.SecurityConstants;
-import com.tle.core.filesystem.ItemFile;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.user.CurrentUser;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.login.LogonSection;
 import com.tle.web.resources.PluginResourceHelper;
@@ -60,6 +61,8 @@ public class ItemFilestoreServlet extends HttpServlet
 
 	@Inject
 	private FileSystemService fileSystemService;
+	@Inject
+	private ItemFileService itemFileService;
 	@Inject
 	private MimeTypeService mimeService;
 	@Inject
@@ -97,7 +100,7 @@ public class ItemFilestoreServlet extends HttpServlet
 			else
 			{
 				itemId = ItemTaskId.parse(uuid + '/' + version);
-				fileHandle = new ItemFile(itemId);
+				fileHandle = itemFileService.getItemFile(ItemId.fromKey(itemId), null);
 				Set<String> privs = itemService.getCachedPrivileges(itemId);
 				if( privs == null )
 				{

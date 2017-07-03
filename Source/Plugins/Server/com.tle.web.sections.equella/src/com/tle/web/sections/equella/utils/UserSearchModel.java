@@ -21,9 +21,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.tle.common.Check;
 import com.tle.common.Format;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.services.user.UserService;
 import com.tle.plugins.ump.UserDirectoryUtils;
 import com.tle.web.sections.SectionInfo;

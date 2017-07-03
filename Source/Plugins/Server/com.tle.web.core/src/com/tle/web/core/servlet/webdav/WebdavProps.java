@@ -24,7 +24,7 @@ import java.util.Set;
 import com.dytech.devlib.PropBagEx;
 import com.tle.common.Pair;
 import com.tle.common.URLUtils;
-import com.tle.common.util.FileEntry;
+import com.tle.common.filesystem.FileEntry;
 import com.tle.core.mimetypes.MimeTypeService;
 
 /**

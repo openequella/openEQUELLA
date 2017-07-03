@@ -18,11 +18,11 @@ package com.tle.core.accessibility;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserPreferenceService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
 
 @Bind
 @Singleton

@@ -33,8 +33,8 @@ import com.tle.beans.item.attachments.ItemNavigationNode;
 import com.tle.beans.item.attachments.ItemNavigationTab;
 import com.tle.beans.item.attachments.ItemNavigationTree;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
-import com.tle.common.item.AbstractHelper;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.helper.AbstractHelper;
 
 @Bind
 @Singleton
@@ -96,8 +96,8 @@ public class NavigationNodeHelper extends AbstractHelper
 		PropBagEx navNodes = xml.getSubtree("navigationNodes");
 		if( navNodes != null )
 		{
-			Map<String, Attachment> attachMap = UnmodifiableAttachments.convertToMapUuid(item
-				.getAttachmentsUnmodifiable());
+			Map<String, Attachment> attachMap = UnmodifiableAttachments
+				.convertToMapUuid(item.getAttachmentsUnmodifiable());
 			List<ItemNavigationNode> allNodes = new ArrayList<ItemNavigationNode>();
 			readXmlNodes(navNodes, null, allNodes, attachMap, item);
 			item.setTreeNodes(allNodes);

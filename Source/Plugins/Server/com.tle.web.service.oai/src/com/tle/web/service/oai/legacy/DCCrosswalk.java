@@ -28,11 +28,11 @@ import ORG.oclc.oai.server.crosswalk.Crosswalk;
 import ORG.oclc.oai.server.crosswalk.XML2oai_dc;
 import ORG.oclc.oai.server.verb.CannotDisseminateFormatException;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.tle.beans.item.Item;
 import com.tle.common.Format;
 import com.tle.common.Utils;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.common.util.UtcDate;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;

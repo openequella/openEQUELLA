@@ -17,8 +17,8 @@
 package com.tle.web.entities.section;
 
 import com.tle.beans.entity.BaseEntity;
-import com.tle.core.services.entity.EntityEditingBean;
-import com.tle.core.services.entity.EntityEditingSession;
+import com.tle.core.entity.EntityEditingBean;
+import com.tle.core.entity.EntityEditingSession;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.events.RenderContext;

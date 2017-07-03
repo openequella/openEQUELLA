@@ -22,9 +22,9 @@ import java.util.concurrent.TimeUnit;
 
 import com.tle.common.util.TleDate;
 import com.tle.common.util.UtcDate;
+import com.tle.core.i18n.BundleNameValue;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleNameValue;
 import com.tle.web.remoterepo.event.RemoteRepoSearchEvent;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourceHelper;

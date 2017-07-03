@@ -54,23 +54,23 @@ import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.beans.item.attachments.ImsAttachment;
-import com.tle.beans.system.SearchSettings;
 import com.tle.common.Check;
 import com.tle.common.URLUtils;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.settings.standard.SearchSettings;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.security.RunAsUser;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.services.item.FreeTextService;
 import com.tle.core.services.item.FreetextResult;
 import com.tle.core.services.item.FreetextSearchResults;
 import com.tle.core.services.user.UserService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.exceptions.AuthenticationException;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.itemlist.item.ItemList;
 import com.tle.web.itemlist.item.ItemListEntry;
 import com.tle.web.login.LogonSection;
@@ -108,7 +108,7 @@ public class FeedServlet extends HttpServlet
 	@Inject
 	private MimeTypeService mimeTypeService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private BundleCache bundleCache;
 	@Inject
@@ -137,7 +137,8 @@ public class FeedServlet extends HttpServlet
 				}
 				bookmarkState.put(PARAM_FEED, new String[]{feedType});
 				bookmarkState.put(PARAM_PATH, new String[]{info.getAttribute(SectionInfo.KEY_PATH)});
-				bookmarkState.put(SectionInfo.KEY_PATH, new String[]{urlService.institutionalise(SERVLET_PATH)});
+				bookmarkState.put(SectionInfo.KEY_PATH,
+					new String[]{institutionService.institutionalise(SERVLET_PATH)});
 			}
 		};
 	}
@@ -213,9 +214,10 @@ public class FeedServlet extends HttpServlet
 			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 			return true;
 		}
-		StringBuilder requestUrl = new StringBuilder(urlService.removeInstitution(req.getRequestURL().toString()));
-		LogonSection.forwardToLogon(controller, req, resp, requestUrl.append('?').append(req.getQueryString())
-			.toString(), LogonSection.STANDARD_LOGON_PATH);
+		StringBuilder requestUrl = new StringBuilder(
+			institutionService.removeInstitution(req.getRequestURL().toString()));
+		LogonSection.forwardToLogon(controller, req, resp,
+			requestUrl.append('?').append(req.getQueryString()).toString(), LogonSection.STANDARD_LOGON_PATH);
 		return true;
 	}
 
@@ -267,14 +269,14 @@ public class FeedServlet extends HttpServlet
 			{
 				urlPath = urlPath.substring(1);
 			}
-			feed.setLink(urlService.institutionalise(urlPath));
+			feed.setLink(institutionService.institutionalise(urlPath));
 			feed.setDescription(title);
 			WireFeed wfeed = feed.createWireFeed(feedType);
 			if( wfeed instanceof Feed )
 			{
 				// add compulsory Atom fields
 				Feed atomFeed = (Feed) wfeed;
-				atomFeed.setId(urlService.institutionalise("atom_1.0"));
+				atomFeed.setId(institutionService.institutionalise("atom_1.0"));
 				atomFeed.setUpdated(new Date());
 			}
 
@@ -327,7 +329,7 @@ public class FeedServlet extends HttpServlet
 			SyndEntryImpl entry = new SyndEntryImpl();
 			HtmlLinkState title = listEntry.getTitle();
 			entry.setTitleEx(new LabelContent(title.getLabel()));
-			String url = urlService.institutionalise(title.getBookmark().getHref());
+			String url = institutionService.institutionalise(title.getBookmark().getHref());
 			entry.setUri(url);
 			entry.setLink(url);
 			entry.setPublishedDate(item.getDateModified());

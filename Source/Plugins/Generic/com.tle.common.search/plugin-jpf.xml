@@ -5,6 +5,7 @@
 		<import plugin-id="com.tle.common.collection" />
 		<import plugin-id="com.tle.common.item" />
 		<import plugin-id="com.tle.common.schema" />
+		<import plugin-id="org.apache.lucene:lucene-core" exported="true" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

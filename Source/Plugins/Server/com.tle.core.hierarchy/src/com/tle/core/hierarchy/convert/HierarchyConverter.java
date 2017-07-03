@@ -26,15 +26,15 @@ import javax.inject.Singleton;
 import com.thoughtworks.xstream.XStream;
 import com.tle.beans.hierarchy.HierarchyTopic;
 import com.tle.beans.item.Item;
+import com.tle.common.beans.xml.IdOnlyConverter;
+import com.tle.core.entity.convert.BaseEntityTreeNodeConverter;
 import com.tle.core.guice.Bind;
 import com.tle.core.hierarchy.HierarchyDao;
 import com.tle.core.institution.convert.ConverterParams;
-import com.tle.core.institution.convert.TreeNodeConverter;
-import com.tle.core.services.entity.IdOnlyConverter;
 
 @Bind
 @Singleton
-public class HierarchyConverter extends TreeNodeConverter<HierarchyTopic>
+public class HierarchyConverter extends BaseEntityTreeNodeConverter<HierarchyTopic>
 {
 	@Inject
 	private HierarchyDao hierarchyDao;

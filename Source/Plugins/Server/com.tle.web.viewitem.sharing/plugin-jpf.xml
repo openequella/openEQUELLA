@@ -12,6 +12,12 @@
 		<import plugin-id="com.tle.web.viewitem.summary" />
 		<import plugin-id="com.tle.web.viewurl" />
 		<import plugin-id="com.tle.web.workflow" />
+		<import plugin-id="com.tle.core.usermanagement" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.common.usermanagement" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.item.standard" />
+		<import plugin-id="com.tle.core.institution" />
 	</requires>
 
 	<runtime>

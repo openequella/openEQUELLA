@@ -31,12 +31,12 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.qti.entity.QtiItemResult;
 import com.tle.core.dao.helpers.ScrollableResultsIterator;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericDaoImpl;
 import com.tle.core.qti.dao.QtiItemResultDao;
-import com.tle.core.user.CurrentInstitution;
 
 /**
  * @author Aaron
@@ -53,8 +53,8 @@ public class QtiItemResultDaoImpl extends GenericDaoImpl<QtiItemResult, Long> im
 
 	private Query getAllQuery(Session session)
 	{
-		final Query query = session
-			.createQuery("SELECT result FROM QtiItemResult result INNER JOIN result.assessmentResult ass WHERE ass.test.institution = :institution");
+		final Query query = session.createQuery(
+			"SELECT result FROM QtiItemResult result INNER JOIN result.assessmentResult ass WHERE ass.test.institution = :institution");
 		query.setParameter("institution", CurrentInstitution.get());
 		return query;
 	}
@@ -76,8 +76,8 @@ public class QtiItemResultDaoImpl extends GenericDaoImpl<QtiItemResult, Long> im
 	@Override
 	public Iterator<QtiItemResult> getIterator()
 	{
-		final ScrollableResults cinnamonScroll = (ScrollableResults) getHibernateTemplate().execute(
-			new HibernateCallback()
+		final ScrollableResults cinnamonScroll = (ScrollableResults) getHibernateTemplate()
+			.execute(new HibernateCallback()
 			{
 				@Override
 				public Object doInHibernate(Session session) throws HibernateException, SQLException

@@ -10,7 +10,8 @@
 		<import plugin-id="com.tle.web.viewitem" />
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.core.mimetypes" />
-		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.filesystem" />
 	</requires>
 
 	<runtime>

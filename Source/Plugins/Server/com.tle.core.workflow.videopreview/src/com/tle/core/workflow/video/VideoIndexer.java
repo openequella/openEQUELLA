@@ -25,8 +25,8 @@ import com.dytech.edge.queries.FreeTextQuery;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.IAttachment;
+import com.tle.core.freetext.indexer.AbstractIndexingExtension;
 import com.tle.core.guice.Bind;
-import com.tle.freetext.AbstractIndexingExtension;
 import com.tle.freetext.IndexedItem;
 
 /**

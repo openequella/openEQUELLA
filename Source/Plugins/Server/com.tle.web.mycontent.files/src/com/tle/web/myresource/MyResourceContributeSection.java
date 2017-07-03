@@ -1,19 +1,3 @@
-/*
- * Copyright 2017 Apereo
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.tle.web.myresource;
 
 import java.io.File;
@@ -22,8 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,34 +18,31 @@ import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.Attachments;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
-import com.tle.beans.system.QuotaSettings;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
 import com.tle.common.Utils;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.BundleNameValue;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.StagingService;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.services.item.ItemService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.core.util.archive.ArchiveProgress;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.mycontent.ContentHandlerSection;
 import com.tle.mycontent.service.MyContentFields;
 import com.tle.mycontent.service.MyContentService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleNameValue;
 import com.tle.web.inplaceeditor.service.InPlaceEditorWebService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
-import com.tle.web.sections.BookmarkModifier;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxGenerator;
-import com.tle.web.sections.ajax.exception.AjaxException;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
 import com.tle.web.sections.ajax.handler.AjaxMethod;
 import com.tle.web.sections.annotations.Bookmarked;
@@ -114,12 +93,11 @@ import com.tle.web.template.section.event.BlueBarRenderable;
 import com.tle.web.viewable.impl.ViewableItemFactory;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceService;
-import org.joda.time.Partial;
 
 @SuppressWarnings("nls")
 @Bind
 public class MyResourceContributeSection extends AbstractPrototypeSection<MyResourceContributeSection.MyResourceModel>
-	implements
+		implements
 		HtmlRenderer,
 		ContentHandlerSection,
 		BlueBarEventListener
@@ -135,7 +113,7 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 	private static final String UNARCHIVE_DELETE = "unarchivedelete";
 
 	private static final PluginResourceHelper URL_HELPER = ResourcesService
-		.getResourceHelper(MyResourceContributeSection.class);
+			.getResourceHelper(MyResourceContributeSection.class);
 
 	private static String DOWNLOAD_OFFICE_INTEG_URL="https://equella.github.io/";
 
@@ -166,8 +144,6 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 	private static Label LABEL_REPLACE_FILE;
 	@PlugKey("label.downloads")
 	private static Label LABEL_DOWNLOADS;
-    @PlugKey("label.information")
-    private static Label LABEL_INFORMATION;
 
 	@Inject
 	private ConfigurationService configService;
@@ -186,7 +162,7 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 	@Inject
 	private AttachmentResourceService attachmentResourceService;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 	@Inject
 	private StagingService stagingService;
 
@@ -237,7 +213,7 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 	private static final JSCallAndReference SCRAPBOOK_CLASS = new ExternallyDefinedFunction("Scrapbook", INCLUDE);
 
 	private static final ExternallyDefinedFunction VALIDATE_FILE = new ExternallyDefinedFunction(SCRAPBOOK_CLASS,
-		"validateFile", 0);
+			"validateFile", 0);
 
 	@Override
 	public SectionResult renderHtml(RenderEventContext context)
@@ -248,12 +224,13 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 		fileDrop.setValidateFile(context, Js.functionValue(Js.call(VALIDATE_FILE,
 				PartiallyApply.partial(ajax.getAjaxFunction("contributeDND"), 3))));
 
+
 		if( model.isEditing() )
 		{
 			final ItemId itemId = new ItemId(model.getEditItem());
 			final FileAttachment attachment = getAttachment(context, itemId);
 			final ViewableResource attachmentResource = attachmentResourceService.getViewableResource(context,
-				viewableItemService.createNewViewableItem(itemId), attachment);
+					viewableItemService.createNewViewableItem(itemId), attachment);
 			final Label description = new TextLabel(attachmentResource.getDescription());
 			final ImageRenderer thumbImage = attachmentResource.createStandardThumbnailRenderer(description);
 			model.setThumbnail(thumbImage);
@@ -278,36 +255,37 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 	{
 		super.registered(id, tree);
 
-		archiveOptionsDropDown.setListModel(new SimpleHtmlListModel<FileDropAction>(new FileDropAction(STRING_UPLOAD,
-			UPLOAD_ONLY, false, false), new FileDropAction(STRING_EXTRACT, UNARCHIVE_ONLY, true, false),
-			new FileDropAction(STRING_EXTRACT_DELETE, UNARCHIVE_DELETE, true, true))
-		{
-			@Override
-			protected Option<FileDropAction> convertToOption(FileDropAction obj)
-			{
-				return new NameValueOption<MyResourceContributeSection.FileDropAction>(new BundleNameValue(obj
-					.getName(), obj.getValue()), obj);
-			}
-		});
+		archiveOptionsDropDown.setListModel(
+				new SimpleHtmlListModel<FileDropAction>(new FileDropAction(STRING_UPLOAD, UPLOAD_ONLY, false, false),
+						new FileDropAction(STRING_EXTRACT, UNARCHIVE_ONLY, true, false),
+						new FileDropAction(STRING_EXTRACT_DELETE, UNARCHIVE_DELETE, true, true))
+				{
+					@Override
+					protected Option<FileDropAction> convertToOption(FileDropAction obj)
+					{
+						return new NameValueOption<MyResourceContributeSection.FileDropAction>(
+								new BundleNameValue(obj.getName(), obj.getValue()), obj);
+					}
+				});
 
 		archiveOptionsDropDown.setAlwaysSelect(true);
 		archiveOptionsDropDown.setEventHandler(JSHandler.EVENT_CHANGE,
-			events.getNamedHandler("changeType", archiveOptionsDropDown.createGetExpression()));
+				events.getNamedHandler("changeType", archiveOptionsDropDown.createGetExpression()));
 
-		saveButton.setClickHandler(inplaceEditorService.createUploadHandler(INPLACE_APPLET_ID,
-			events.getSubmitValuesFunction("contribute")));
+		saveButton.setClickHandler(
+				inplaceEditorService.createUploadHandler(INPLACE_APPLET_ID, events.getSubmitValuesFunction("contribute")));
 		cancelButton.setClickHandler(events.getSubmitValuesFunction("cancel"));
 		cancelButton.setCancel(true);
 
 		JSCallable editFileAjaxFunction = ajax.getAjaxUpdateDomFunction(tree, null, events.getEventHandler("editFile"),
-			"editFileAjaxDiv");
+				"editFileAjaxDiv");
 
 		editFileLink.setClickHandler(inplaceEditorService.createOpenHandler(INPLACE_APPLET_ID, false,
-			Js.function(Js.call_s(editFileAjaxFunction, false))));
+				Js.function(Js.call_s(editFileAjaxFunction, false))));
 		editFileWithLink.setClickHandler(inplaceEditorService.createOpenHandler(INPLACE_APPLET_ID, true,
-			Js.function(Js.call_s(editFileAjaxFunction, true))));
-		editFileLink.addReadyStatements(inplaceEditorService.createHideLinksStatements(Jq.$(Type.CLASS, "editLinks"),
-			Jq.$(editFileWithLink)));
+				Js.function(Js.call_s(editFileAjaxFunction, true))));
+		editFileLink.addReadyStatements(
+				inplaceEditorService.createHideLinksStatements(Jq.$(Type.CLASS, "editLinks"), Jq.$(editFileWithLink)));
 
 		editFileDiv.addReadyStatements(Js.call_s(new InPlaceEditFunction()));
 		editFileDiv.setStyleClass("editfilediv");
@@ -321,8 +299,8 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 			final MyResourceModel model = getModel(info);
 			final ItemId itemId = new ItemId(model.getEditItem());
 			return inplaceEditorService.createAppletFunction(INPLACE_APPLET_ID, itemId, model.getStagingId(),
-				getAttachment(info, itemId).getFilename(), model.isOpenWith(), INVOKER_SERVICE, Jq.$(editFileDiv),
-				"50px", "320px");
+					getAttachment(info, itemId).getFilename(), model.isOpenWith(), INVOKER_SERVICE, Jq.$(editFileDiv),
+					"50px", "320px");
 		}
 	}
 
@@ -420,16 +398,18 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 	private boolean isArchiveFile(String filename)
 	{
 		if( filename.endsWith(".zip") || filename.endsWith(".jar") || filename.endsWith(".war")
-			|| filename.endsWith(".tar.bz2") || filename.endsWith(".tar.gz") )
+				|| filename.endsWith(".tar.bz2") || filename.endsWith(".tar.gz") )
 		{
 			return true;
 		}
 		return false;
 	}
 
-
+	/**
+	 * @throws IOException
+	 */
 	@AjaxMethod
-	public boolean contributeDND(SectionInfo info, String stagingId, String filename) throws Exception
+	public boolean contributeDND(SectionInfo info, String stagingId, String filename) throws IOException
 	{
 		FileDropAction action = archiveOptionsDropDown.getSelectedValue(info);
 		final SectionInfo theInfo = info;
@@ -525,7 +505,7 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 		else
 		{
 			stream = fileStreamFromStaging(info, itemId); // the applet will put
-															// stuff here
+			// stuff here
 			if( stream != null )
 			{
 				fileAttached = true;
@@ -549,8 +529,7 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 		fields.setTitle(title);
 
 		ops.add(myContentService.getEditOperation(fields, filename, stream, null, fileAttached && !newItem,
-			fileAttached
-			&& !newItem));
+				fileAttached && !newItem));
 		ops.add(workflowFactory.save());
 
 		itemService.operation(itemId, ops.toArray(new WorkflowOperation[ops.size()]));
@@ -683,9 +662,8 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 		final HtmlLinkState downloadOfficeIntegrationLink = new HtmlLinkState();
 		downloadOfficeIntegrationLink.setBookmark(new SimpleBookmark(DOWNLOAD_OFFICE_INTEG_URL));
 		downloadOfficeIntegrationLink.setLabel(LABEL_DOWNLOAD_OFFICE_INTEGRATION);
-		downloadOfficeIntegrationLink.setTarget("_blank");
-		event.addTab(new BlueBarRenderable("downloads", LABEL_INFORMATION, viewFactory.createResultWithModel(
-			"downloads.ftl", downloadOfficeIntegrationLink), 50));
+		event.addTab(new BlueBarRenderable("downloads", LABEL_DOWNLOADS,
+				viewFactory.createResultWithModel("downloads.ftl", downloadOfficeIntegrationLink), 50));
 	}
 
 	public static class FileDropAction extends NameValue

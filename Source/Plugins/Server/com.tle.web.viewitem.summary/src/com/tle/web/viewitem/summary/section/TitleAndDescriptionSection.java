@@ -27,7 +27,7 @@ import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.beans.item.Item;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
-import com.tle.core.xstream.XmlService;
+import com.tle.core.xml.service.XmlService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.ViewableChildInterface;
 import com.tle.web.viewable.ViewableItem;
@@ -91,8 +91,8 @@ public class TitleAndDescriptionSection
 		{
 			try
 			{
-				final Map<String, String> settings = (Map<String, String>) xmlService.deserialiseFromXml(getClass()
-					.getClassLoader(), configuration);
+				final Map<String, String> settings = (Map<String, String>) xmlService
+					.deserialiseFromXml(getClass().getClassLoader(), configuration);
 				final boolean desc = settings.containsKey(DESCRIPTION_LENGTH_KEY);
 				if( desc )
 				{

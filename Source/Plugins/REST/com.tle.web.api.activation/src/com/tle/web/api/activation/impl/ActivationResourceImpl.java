@@ -29,20 +29,20 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.dytech.edge.exceptions.BadRequestException;
-import com.dytech.edge.exceptions.NotFoundException;
 import com.google.common.base.Strings;
 import com.tle.beans.activation.ActivateRequest;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.common.Check;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.core.activation.ActivationConstants;
 import com.tle.core.activation.service.ActivationService;
 import com.tle.core.activation.service.CourseInfoService;
 import com.tle.core.copyright.exception.CopyrightViolationException;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.item.ItemService;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.activation.ActivationBean;
 import com.tle.web.api.activation.ActivationResource;
@@ -52,7 +52,7 @@ import com.tle.web.remoting.rest.service.UrlLinkService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 
-// TODO: anything that returns an error response here should be changed to throw the exception instead, 
+// TODO: anything that returns an error response here should be changed to throw the exception instead,
 // the RestEasyExceptionMapper will turn that into a JSON object
 /**
  * @author Dongsheng Cai
@@ -84,7 +84,7 @@ public class ActivationResourceImpl implements ActivationResource
 	/**
 	 * Retrieve all activations, or if ...?course={courseUuid} param appended,
 	 * retrieve just those activations associated with the specified course.
-	 * 
+	 *
 	 * @param courseUuid
 	 * @return
 	 */
@@ -221,7 +221,7 @@ public class ActivationResourceImpl implements ActivationResource
 
 	/**
 	 * Get activations
-	 * 
+	 *
 	 * @param uuid
 	 * @param version
 	 * @return
@@ -307,7 +307,7 @@ public class ActivationResourceImpl implements ActivationResource
 
 	/**
 	 * perform activation
-	 * 
+	 *
 	 * @param bean
 	 * @return re-serialized ActivationBean
 	 */
@@ -383,7 +383,7 @@ public class ActivationResourceImpl implements ActivationResource
 		activation.setOverrideReason(bean.getOverrideMessage());
 		if( bean.getUser() != null )
 		{
-			activation.setUser(bean.getUser().getUniqueID());
+			activation.setUser(bean.getUser().getId());
 		}
 		activation.setCitation(!Check.isEmpty(bean.getCitation()) ? bean.getCitation() : course.getCitation());
 
@@ -392,7 +392,7 @@ public class ActivationResourceImpl implements ActivationResource
 
 	/**
 	 * look for course uuid, else course code
-	 * 
+	 *
 	 * @param bean
 	 * @return
 	 */

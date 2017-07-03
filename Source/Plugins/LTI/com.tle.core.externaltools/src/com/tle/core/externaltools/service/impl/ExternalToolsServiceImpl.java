@@ -28,16 +28,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import net.oauth.OAuth;
-import net.oauth.OAuth.Parameter;
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthConsumer;
-import net.oauth.OAuthMessage;
-
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dytech.edge.common.valuebean.ValidationError;
+import com.tle.common.beans.exception.ValidationError;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.inject.Singleton;
@@ -48,22 +42,28 @@ import com.tle.common.EntityPack;
 import com.tle.common.NameValue;
 import com.tle.common.externaltools.constants.ExternalToolConstants;
 import com.tle.common.externaltools.entity.ExternalTool;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.common.i18n.LangUtils;
 import com.tle.common.security.PrivilegeTree.Node;
+import com.tle.core.entity.EntityEditingSession;
+import com.tle.core.entity.service.impl.AbstractEntityServiceImpl;
 import com.tle.core.externaltools.dao.ExternalToolsDao;
 import com.tle.core.externaltools.service.ExternalToolsService;
 import com.tle.core.filesystem.EntityFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.service.session.ExternalToolEditingBean;
 import com.tle.core.service.session.ExternalToolEditingSession;
-import com.tle.core.services.entity.EntityEditingSession;
-import com.tle.core.services.entity.impl.AbstractEntityServiceImpl;
 import com.tle.web.mimetypes.service.WebMimeTypeService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
+
+import net.oauth.OAuth;
+import net.oauth.OAuth.Parameter;
+import net.oauth.OAuthAccessor;
+import net.oauth.OAuthConsumer;
+import net.oauth.OAuthMessage;
 
 @Bind(ExternalToolsService.class)
 @Singleton
@@ -84,7 +84,7 @@ public class ExternalToolsServiceImpl
 	private static final String KEY_VALIDATION_SUPERSTRINGBASE = "validation.baseurl.superstring";
 
 	@Inject
-	ExternalToolsDao toolsDao;
+	private ExternalToolsDao toolsDao;
 	@Inject
 	private WebMimeTypeService webMimeService;
 
@@ -192,18 +192,18 @@ public class ExternalToolsServiceImpl
 				{
 					if( exToolBaseStr.equalsIgnoreCase(beanStrBaseStr) )
 					{
-						errors.add(new ValidationError("errors.baseurl", resources.getString(
-							KEY_VALIDATION_DUPLICATEBASE, LangUtils.getString(exTool.getName()))));
+						errors.add(new ValidationError("errors.baseurl",
+							resources.getString(KEY_VALIDATION_DUPLICATEBASE, LangUtils.getString(exTool.getName()))));
 					}
 					else if( exToolBaseStr.startsWith(beanStrBaseStr) )
 					{
-						errors.add(new ValidationError("errors.baseurl", resources.getString(
-							KEY_VALIDATION_SUPERSTRINGBASE, LangUtils.getString(exTool.getName()))));
+						errors.add(new ValidationError("errors.baseurl", resources
+							.getString(KEY_VALIDATION_SUPERSTRINGBASE, LangUtils.getString(exTool.getName()))));
 					}
 					else if( beanStrBaseStr.startsWith(exToolBaseStr) )
 					{
-						errors.add(new ValidationError("errors.baseurl", resources.getString(
-							KEY_VALIDATION_SUBSTRINGBASE, LangUtils.getString(exTool.getName()))));
+						errors.add(new ValidationError("errors.baseurl",
+							resources.getString(KEY_VALIDATION_SUBSTRINGBASE, LangUtils.getString(exTool.getName()))));
 					}
 				}
 			}

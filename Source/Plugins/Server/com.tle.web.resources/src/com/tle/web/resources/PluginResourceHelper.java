@@ -17,31 +17,31 @@
 package com.tle.web.resources;
 
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.plugins.PluginService;
-import com.tle.core.services.UrlService;
 
 public class PluginResourceHelper
 {
 	public static final String KEY_RESOURCEHELPER = "$RSRCHELPER$"; //$NON-NLS-1$
 
 	private final ResourcesService resourcesService;
-	private final UrlService urlService;
+	private final InstitutionService institutionService;
 	private final PluginService pluginService;
 
 	private final String pluginId;
 
-	public PluginResourceHelper(ResourcesService service, UrlService urlService, String pluginId,
+	public PluginResourceHelper(ResourcesService service, InstitutionService institutionService, String pluginId,
 		PluginService pluginService)
 	{
 		resourcesService = service;
-		this.urlService = urlService;
+		this.institutionService = institutionService;
 		this.pluginId = pluginId;
 		this.pluginService = pluginService;
 	}
 
 	public String instUrl(String path)
 	{
-		return urlService.institutionalise(path);
+		return institutionService.institutionalise(path);
 	}
 
 	public String key(String key)

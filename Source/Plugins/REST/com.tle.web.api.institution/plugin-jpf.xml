@@ -2,7 +2,6 @@
 <plugin id="com.tle.web.api.institution" version="1">
 	<requires>
 		<import plugin-id="com.tle.core.guice" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.web.remoting.rest" />
 		<import plugin-id="com.tle.web.api.institution.interfaces" />
 		<import plugin-id="com.tle.web.api.acl.interfaces" />
@@ -10,9 +9,16 @@
 		<import plugin-id="com.tle.core.migration" />
 		<import plugin-id="com.tle.core.system" />
 		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.common.usermanagement.standard" />
 		<import plugin-id="com.tle.core.security.runasuser" />
 		<import plugin-id="com.tle.core.mimetypes" />
+		<import plugin-id="com.tle.core.institution.convert" />
+		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="com.tle.common.filesystem" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.usermanagement" />
+		<import plugin-id="com.tle.common.i18n" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

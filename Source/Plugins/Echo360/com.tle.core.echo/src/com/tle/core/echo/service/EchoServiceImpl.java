@@ -26,15 +26,10 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthConsumer;
-import net.oauth.OAuthException;
-import net.oauth.OAuthMessage;
-
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.ValidationError;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
@@ -44,19 +39,24 @@ import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.Check;
 import com.tle.common.EntityPack;
 import com.tle.common.i18n.LangUtils;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.core.echo.EchoConstants;
 import com.tle.core.echo.dao.EchoDao;
 import com.tle.core.echo.entity.EchoServer;
+import com.tle.core.entity.EntityEditingBean;
+import com.tle.core.entity.EntityEditingSession;
+import com.tle.core.entity.service.impl.AbstractEntityServiceImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.security.impl.SecureOnReturn;
-import com.tle.core.services.entity.EntityEditingBean;
-import com.tle.core.services.entity.EntityEditingSession;
-import com.tle.core.services.entity.impl.AbstractEntityServiceImpl;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
+
+import net.oauth.OAuthAccessor;
+import net.oauth.OAuthConsumer;
+import net.oauth.OAuthException;
+import net.oauth.OAuthMessage;
 
 @SuppressWarnings("nls")
 @Bind(EchoService.class)
@@ -236,8 +236,9 @@ public class EchoServiceImpl extends AbstractEntityServiceImpl<EntityEditingBean
 
 			try
 			{
-				OAuthMessage oam = oauthAccessor.newRequestMessage(OAuthMessage.GET, es.getContentUrl()
-					+ "ess/personapi/v1/" + CurrentUser.getUsername() + "/session", params.entrySet());
+				OAuthMessage oam = oauthAccessor.newRequestMessage(OAuthMessage.GET,
+					es.getContentUrl() + "ess/personapi/v1/" + CurrentUser.getUsername() + "/session",
+					params.entrySet());
 
 				return oam.URL + "?" + Joiner.on("&").join(oam.getParameters());
 			}

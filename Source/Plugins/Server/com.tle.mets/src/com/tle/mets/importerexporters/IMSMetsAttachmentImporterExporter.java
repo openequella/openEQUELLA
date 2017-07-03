@@ -26,7 +26,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.dytech.devlib.PropBagEx;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.AttachmentType;
@@ -34,8 +33,10 @@ import com.tle.beans.item.attachments.IMSResourceAttachment;
 import com.tle.beans.item.attachments.ImsAttachment;
 import com.tle.beans.item.attachments.ItemNavigationNode;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.filesystem.ItemFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemFileService;
 import com.tle.core.services.FileSystemService;
 import com.tle.mets.MetsIDElementInfo;
 import com.tle.web.sections.SectionInfo;
@@ -58,6 +59,8 @@ public class IMSMetsAttachmentImporterExporter extends AbstractMetsAttachmentImp
 
 	@Inject
 	private FileSystemService fileSystemService;
+	@Inject
+	private ItemFileService itemFileService;
 
 	@Override
 	public boolean canExport(Item item, Attachment attachment)
@@ -72,12 +75,12 @@ public class IMSMetsAttachmentImporterExporter extends AbstractMetsAttachmentImp
 
 		final ImsAttachment ims = (ImsAttachment) attachment;
 
-		final ItemFile fileHandle = new ItemFile(item);
+		final ItemFile fileHandle = itemFileService.getItemFile(item);
 
 		// don't export IMS manifest, we already have a METS manifest for this
 		/*
 		 * res.add(exportBinaryFile(fileHandle,
-		 * Utils.filePath(FileSystemService.IMS_FOLDER, "imsmanifest.xml"),
+		 * Utils.filePath(FileSystemConstants.IMS_FOLDER, "imsmanifest.xml"),
 		 * ims.getSize(), ims.getDescription(), "ims:" + attachment.getUuid(),
 		 * attachment.getUuid()));
 		 */
@@ -89,8 +92,8 @@ public class IMSMetsAttachmentImporterExporter extends AbstractMetsAttachmentImp
 		for( IMSResourceAttachment resource : resources )
 		{
 			linkedResources.add(resource.getUrl());
-			res.add(exportBinaryFile(new ItemFile(item), resource.getUrl(), -1, resource.getDescription(), "imsres:"
-				+ resource.getUuid(), resource.getUuid()));
+			res.add(exportBinaryFile(itemFileService.getItemFile(item), resource.getUrl(), -1,
+				resource.getDescription(), "imsres:" + resource.getUuid(), resource.getUuid()));
 		}
 
 		// export files contained within IMS zip but not actually resources

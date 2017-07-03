@@ -64,7 +64,7 @@ public abstract class AbstractFilterByUserSection<SE extends AbstractSearchEvent
 
 	@Inject
 	private UserLinkService userLinkService;
-	private UserLinkSection userLinkSection;
+	protected UserLinkSection userLinkSection;
 
 	@ViewFactory
 	private FreemarkerFactory viewFactory;

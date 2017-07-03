@@ -1,0 +1,70 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.item.convert" version="1">
+	<requires>
+		<import plugin-id="com.tagsoup.core" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.institution.convert" />
+		<import plugin-id="com.tle.core.entity" />
+		<import plugin-id="com.tle.common.institution" />
+		<import plugin-id="com.tle.core.url" />
+		<import plugin-id="net.sf.beanlib:beanlib-hibernate" />
+		<import plugin-id="com.tle.core.i18n.convert" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	<extension-point id="itemExtrasConverter">
+		<parameter-def id="class" multiplicity="one" type="string" />
+		<parameter-def id="order" multiplicity="one" type="number" />
+	</extension-point>
+	
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="itemConverter">
+		<parameter id="id" value="ITEMSATTACHMENTS" />
+		<parameter id="id" value="ITEMS" />
+		<parameter id="class" value="bean:com.tle.core.item.convert.ItemConverter" />
+		<parameter id="order" value="800" />
+		<parameter id="selections">
+			<parameter id="id" value="ITEMS" />
+			<parameter id="nameKey" value="institutions.tasks.items" />
+		</parameter>
+		<parameter id="selections">
+			<parameter id="id" value="ITEMSATTACHMENTS" />
+			<parameter id="nameKey" value="institutions.tasks.itemsattachments" />
+		</parameter>
+	</extension>
+	
+	<extension plugin-id="com.tle.core.institution.convert" point-id="postreadmigration" id="updateReferencedUrlsOnImport">
+		<parameter id="id" value="com.tle.core.institution.migration.UpdateReferencedUrlsOnImport" />
+		<parameter id="bean" value="bean:com.tle.core.item.convert.migration.UpdateReferencedUrlsOnImport" />
+		<parameter id="forconverter" value="items" />
+		<parameter id="alwaysRun" value="true" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.institution.convert" point-id="postreadmigration" id="ensureAttachmentUUID">
+		<parameter id="id" value="com.tle.core.institution.migration.EnsureAttachmentUUID" />
+		<parameter id="bean" value="bean:com.tle.core.item.convert.migration.EnsureAttachmentUUID" />
+		<parameter id="forconverter" value="items" />
+	</extension>
+
+	<extension plugin-id="com.tle.core.institution.convert" point-id="postreadmigration" id="searchDetailsUpdate">
+		<parameter id="id" value="com.tle.core.institution.migration.SearchDetailsUpdate" />
+		<parameter id="bean" value="bean:com.tle.core.item.convert.migration.SearchDetailsUpdate" />
+		<parameter id="forconverter" value="items" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.institution.convert" point-id="itemxmlmigration" id="languageBundle">
+		<parameter id="id" value="com.tle.core.institution.migration.LanguageBundleMigration" />
+		<parameter id="bean" value="bean:com.tle.core.item.convert.migration.LanguageBundleMigration" />
+		<parameter id="date" value="1970-01-03" />
+	</extension>
+</plugin>

@@ -26,11 +26,6 @@ import javax.inject.Singleton;
 
 import org.apache.log4j.Logger;
 
-import ORG.oclc.oai.server.crosswalk.Crosswalk;
-import ORG.oclc.oai.server.crosswalk.CrosswalkItem;
-import ORG.oclc.oai.server.crosswalk.Crosswalks;
-import ORG.oclc.oai.server.verb.CannotDisseminateFormatException;
-
 import com.dytech.devlib.PropBagEx;
 import com.google.common.base.Throwables;
 import com.tle.beans.entity.Schema;
@@ -38,9 +33,14 @@ import com.tle.beans.entity.SchemaTransform;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemPack;
 import com.tle.core.guice.Bind;
-import com.tle.core.schema.SchemaService;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.util.ItemHelper;
+import com.tle.core.item.helper.ItemHelper;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.schema.service.SchemaService;
+
+import ORG.oclc.oai.server.crosswalk.Crosswalk;
+import ORG.oclc.oai.server.crosswalk.CrosswalkItem;
+import ORG.oclc.oai.server.crosswalk.Crosswalks;
+import ORG.oclc.oai.server.verb.CannotDisseminateFormatException;
 
 @Deprecated
 @Bind

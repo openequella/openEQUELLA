@@ -25,19 +25,19 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 import com.thoughtworks.xstream.XStream;
+import com.tle.common.filesystem.handle.BucketFile;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.common.lti.consumers.LtiConsumerConstants.UnknownUser;
 import com.tle.common.lti.consumers.entity.LtiConsumer;
 import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.common.security.SecurityConstants.Recipient;
-import com.tle.core.filesystem.BucketFile;
-import com.tle.core.filesystem.SubTemporaryFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.InstitutionInfo;
-import com.tle.core.institution.migration.XmlMigrator;
+import com.tle.core.institution.convert.XmlMigrator;
 import com.tle.core.oauth.service.OAuthService;
-import com.tle.core.oauth.service.OAuthServiceImpl;
+import com.tle.core.oauth.service.impl.OAuthServiceImpl;
 
 @Bind
 public class ConvertOauthClientsXMLMigration extends XmlMigrator

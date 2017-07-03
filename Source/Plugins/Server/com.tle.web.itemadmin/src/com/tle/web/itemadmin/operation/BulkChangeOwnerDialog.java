@@ -26,10 +26,10 @@ import com.tle.beans.item.ItemPack;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
 import com.tle.core.guice.BindFactory;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.plugins.BeanLocator;
 import com.tle.core.plugins.FactoryMethodLocator;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.web.bulk.operation.BulkOperationExecutor;
 import com.tle.web.bulk.operation.BulkOperationExtension;
 import com.tle.web.sections.SectionInfo;
@@ -70,7 +70,7 @@ public class BulkChangeOwnerDialog extends AbstractSelectUserSection<AbstractSel
 
 		private final String toOwner;
 		@Inject
-		private WorkflowFactory workflowFactory;
+		private ItemOperationFactory workflowFactory;
 
 		@Inject
 		public ChangeOwnerExecutor(@Assisted("toOwner") String toOwner)
@@ -94,8 +94,8 @@ public class BulkChangeOwnerDialog extends AbstractSelectUserSection<AbstractSel
 	@Override
 	public Label getStatusTitleLabel(SectionInfo info, String operationId)
 	{
-		return new KeyLabel(StandardOperations.getStatusKey(), new KeyLabel(StandardOperations.getNameKey()
-			+ operationId + ".title"));
+		return new KeyLabel(StandardOperations.getStatusKey(),
+			new KeyLabel(StandardOperations.getNameKey() + operationId + ".title"));
 	}
 
 	@Override
@@ -112,8 +112,8 @@ public class BulkChangeOwnerDialog extends AbstractSelectUserSection<AbstractSel
 		List<SelectedUser> selections = getSelections(info);
 		if( selections.size() == 1 )
 		{
-			return new FactoryMethodLocator<ChangeOwnerExecutor>(ChangeOwnerExecutorFactory.class, "create", selections
-				.get(0).getUuid());
+			return new FactoryMethodLocator<ChangeOwnerExecutor>(ChangeOwnerExecutorFactory.class, "create",
+				selections.get(0).getUuid());
 		}
 		throw new Error("No user selected"); // shouldn't get here
 	}
@@ -144,9 +144,15 @@ public class BulkChangeOwnerDialog extends AbstractSelectUserSection<AbstractSel
 	}
 
 	@Override
-	public boolean areOptionsFinished(SectionInfo info, String operationId)
+	public boolean validateOptions(SectionInfo info, String operationId)
 	{
 		return !Check.isEmpty(getSelections(info));
+	}
+
+	@Override
+	public boolean areOptionsFinished(SectionInfo info, String operationId)
+	{
+		return validateOptions(info, operationId);
 	}
 
 	@Override

@@ -28,9 +28,9 @@ import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.beans.item.Item;
 import com.tle.cal.service.CALService;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.BundleCache;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.events.RenderEventContext;
@@ -77,7 +77,10 @@ public class CitationSummarySection extends AbstractParentViewItemSection<Citati
 		CALHolding holding = calService.getHoldingForItem(item);
 		Map<Long, List<CALPortion>> portions = calService.getPortionsForItems(Collections.singletonList(item));
 		CALPortion portion = portions.get(item.getId()) == null ? null : portions.get(item.getId()).get(0);
-		String citation = calService.citate(holding, portion);
+		String citation = "";
+		if(holding != null){
+			citation = calService.citate(holding, portion);
+		}
 		CitaionSummaryModel model = getModel(context);
 		model.setCitation((new TextLabel(citation, true)));
 

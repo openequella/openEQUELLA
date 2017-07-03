@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.dytech.common.xml.XMLDataMappings;
-import com.dytech.common.xml.mapping.ListMapping;
 import com.tle.common.Utils;
+import com.tle.core.xstream.XMLDataMappings;
+import com.tle.core.xstream.mapping.ListMapping;
 
 public class IMSOrganisation extends IMSChild
 {

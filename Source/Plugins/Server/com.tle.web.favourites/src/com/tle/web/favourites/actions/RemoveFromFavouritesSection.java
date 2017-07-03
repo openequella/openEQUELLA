@@ -21,7 +21,7 @@ import javax.inject.Inject;
 import com.tle.beans.item.Bookmark;
 import com.tle.core.favourites.service.BookmarkService;
 import com.tle.core.guice.Bind;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.favourites.actions.RemoveFromFavouritesSection.RemoveFromFavouritesModel;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;

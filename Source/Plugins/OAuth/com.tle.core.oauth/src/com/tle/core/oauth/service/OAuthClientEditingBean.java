@@ -19,8 +19,8 @@ package com.tle.core.oauth.service;
 import java.util.Set;
 
 import com.tle.beans.security.AccessExpression;
+import com.tle.core.entity.EntityEditingBean;
 import com.tle.core.oauth.OAuthFlowDefinition;
-import com.tle.core.services.entity.EntityEditingBean;
 
 public class OAuthClientEditingBean extends EntityEditingBean
 {

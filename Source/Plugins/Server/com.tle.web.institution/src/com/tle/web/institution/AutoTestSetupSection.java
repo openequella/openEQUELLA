@@ -18,10 +18,10 @@ package com.tle.web.institution;
 
 import javax.inject.Inject;
 
-import com.tle.core.filesystem.AllExportFile;
-import com.tle.core.filesystem.AllImportFile;
-import com.tle.core.filesystem.AllInstitutionsFile;
-import com.tle.core.filesystem.AllStagingFile;
+import com.tle.common.filesystem.handle.AllExportFile;
+import com.tle.common.filesystem.handle.AllImportFile;
+import com.tle.common.filesystem.handle.AllInstitutionsFile;
+import com.tle.common.filesystem.handle.AllStagingFile;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.services.FileSystemService;
 import com.tle.freetext.FreetextIndex;

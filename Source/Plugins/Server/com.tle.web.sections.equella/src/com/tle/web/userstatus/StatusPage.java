@@ -20,12 +20,12 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.GroupBean;
-import com.dytech.edge.common.valuebean.RoleBean;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
+import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionResult;

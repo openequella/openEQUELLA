@@ -3,6 +3,7 @@
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.web.sections" />
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.core.security" />
@@ -11,6 +12,7 @@
 		<import plugin-id="com.tle.core.userscripts" />
 		<import plugin-id="org.mozilla.rhino" />
 		<import plugin-id="commons-lang:commons-lang" />
+		<import plugin-id="com.tle.core.entity.security" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

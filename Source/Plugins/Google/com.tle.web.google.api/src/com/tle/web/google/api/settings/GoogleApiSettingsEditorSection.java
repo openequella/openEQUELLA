@@ -20,7 +20,7 @@ import javax.inject.Inject;
 
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.google.api.GoogleApiUtils;
 import com.tle.web.google.api.privileges.GoogleApiSettingsPrivilegeTreeProvider;
 import com.tle.web.sections.SectionInfo;

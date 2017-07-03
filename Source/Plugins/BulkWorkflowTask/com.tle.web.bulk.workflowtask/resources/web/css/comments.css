@@ -1,0 +1,33 @@
+.mandatory {
+	color:red;
+}
+
+#bulkresults_inner textarea {
+	width:98%;
+	height:270px;
+}
+
+#bulkresults_inner #uploaded {
+	margin-bottom: .5em;
+}
+
+#bulkresults_inner #uploaded a {
+	text-decoration: underline;
+}
+
+#bulkresults_inner .filedrop {
+	border: 0;
+	min-height: inherit;
+	margin: 0;
+}
+
+#bulkresults_inner .filedrop .dndicon {
+	height: auto;
+	width: auto;
+	background: none;
+	margin-top: 0;
+}
+
+#bulkresults_inner .filedrop p {
+	display: none;
+}

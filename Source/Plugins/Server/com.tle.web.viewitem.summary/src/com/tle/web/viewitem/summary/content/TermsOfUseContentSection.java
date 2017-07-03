@@ -23,7 +23,7 @@ import javax.inject.Inject;
 import com.tle.beans.item.DrmAcceptance;
 import com.tle.beans.item.DrmSettings;
 import com.tle.beans.item.Item;
-import com.tle.core.services.item.DrmService;
+import com.tle.core.item.service.DrmService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionResult;

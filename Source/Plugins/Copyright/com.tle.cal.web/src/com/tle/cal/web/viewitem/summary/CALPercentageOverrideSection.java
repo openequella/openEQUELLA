@@ -38,7 +38,7 @@ import com.tle.core.activation.validation.PageCounter;
 import com.tle.core.activation.validation.PageCounter.RangeCounter;
 import com.tle.core.copyright.exception.CopyrightViolationException;
 import com.tle.core.guice.Bind;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.copyright.CopyrightOverrideSection;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;

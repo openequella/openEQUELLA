@@ -23,12 +23,12 @@ import javax.inject.Inject;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.tle.beans.system.QuotaSettings;
-import com.tle.beans.system.QuotaSettings.UserQuota;
 import com.tle.common.FileSizeUtils;
+import com.tle.common.quota.settings.QuotaSettings;
+import com.tle.common.quota.settings.QuotaSettings.UserQuota;
 import com.tle.common.recipientselector.ExpressionFormatter;
-import com.tle.core.services.config.ConfigurationService;
 import com.tle.core.services.user.UserService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.contentrestrictions.dialog.AddBannedExtDialog;
 import com.tle.web.contentrestrictions.dialog.SelectedQuota;
 import com.tle.web.freemarker.FreemarkerFactory;

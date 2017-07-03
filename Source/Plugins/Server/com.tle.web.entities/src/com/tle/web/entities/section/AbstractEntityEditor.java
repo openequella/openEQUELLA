@@ -20,14 +20,14 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.google.common.collect.Maps;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.common.i18n.LangUtils;
 import com.tle.common.i18n.beans.LanguageBundleBean;
-import com.tle.core.services.entity.AbstractEntityService;
-import com.tle.core.services.entity.EntityEditingBean;
-import com.tle.core.services.entity.EntityEditingSession;
+import com.tle.core.entity.EntityEditingBean;
+import com.tle.core.entity.EntityEditingSession;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.web.DebugSettings;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;

@@ -20,7 +20,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.portal.editor.PortletEditor;
 import com.tle.web.portal.section.enduser.ModalPortletSection;
 import com.tle.web.portal.service.PortletWebService;

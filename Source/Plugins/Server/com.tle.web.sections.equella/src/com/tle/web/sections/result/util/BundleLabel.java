@@ -20,8 +20,8 @@ import java.util.Collection;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.InternalI18NString;
-import com.tle.web.TextBundle;
-import com.tle.web.i18n.BundleCache;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.i18n.TextBundle;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.js.generic.expression.ScriptVariable;
 import com.tle.web.sections.js.generic.expression.StringExpression;
@@ -114,8 +114,8 @@ public class BundleLabel implements Label, InternalI18NString
 		public void preRender(PreRenderContext info)
 		{
 			String var = "i18n_" + bundleKey.replace(".", "_");
-			info.addStatements(new AssignStatement(new ScriptVariable(var), new StringExpression(CurrentLocale
-				.get(bundleKey))));
+			info.addStatements(
+				new AssignStatement(new ScriptVariable(var), new StringExpression(CurrentLocale.get(bundleKey))));
 		}
 	}
 }

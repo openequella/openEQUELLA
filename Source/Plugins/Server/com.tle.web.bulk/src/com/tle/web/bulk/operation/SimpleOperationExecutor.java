@@ -18,9 +18,9 @@ package com.tle.web.bulk.operation;
 
 import java.io.Serializable;
 
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.plugins.FactoryMethodLocator;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
 
 public class SimpleOperationExecutor extends FactoryMethodLocator<WorkflowOperation> implements BulkOperationExecutor
 {
@@ -32,7 +32,7 @@ public class SimpleOperationExecutor extends FactoryMethodLocator<WorkflowOperat
 	public SimpleOperationExecutor(Class<? extends WorkflowOperation> operationClass, String methodName, boolean save,
 		Serializable... args)
 	{
-		super(WorkflowFactory.class, methodName, args);
+		super(ItemOperationFactory.class, methodName, args);
 		this.operationClass = operationClass;
 		this.save = save;
 	}
@@ -40,7 +40,7 @@ public class SimpleOperationExecutor extends FactoryMethodLocator<WorkflowOperat
 	@Override
 	public WorkflowOperation[] getOperations()
 	{
-		WorkflowFactory factory = getFactory();
+		ItemOperationFactory factory = getFactory();
 		WorkflowOperation op = invokeFactoryMethod(factory);
 		operationClass.cast(op);
 		if( !save )

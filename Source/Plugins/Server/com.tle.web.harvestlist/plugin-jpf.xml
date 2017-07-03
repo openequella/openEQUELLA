@@ -8,6 +8,7 @@
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.web.freemarker" />
 		<import plugin-id="com.tle.web.viewurl" />
+		<import plugin-id="com.tle.core.item" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

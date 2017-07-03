@@ -29,7 +29,7 @@ import com.tle.common.connectors.service.ConnectorItemKey;
 import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.guice.Bind;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.connectors.manage.EditConnectorContentDialog.EditConnectorModel;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;

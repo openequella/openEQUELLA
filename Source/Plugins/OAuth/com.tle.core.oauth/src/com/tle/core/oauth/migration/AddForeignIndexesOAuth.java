@@ -25,6 +25,7 @@ import org.hibernate.classic.Session;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Singleton;
+import com.tle.beans.Institution;
 import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.common.oauth.beans.OAuthToken;
 import com.tle.core.guice.Bind;
@@ -81,6 +82,7 @@ public class AddForeignIndexesOAuth extends AbstractHibernateSchemaMigration
 	{
 		Set<Class<?>> clazzes = Sets.newHashSet();
 		clazzes.addAll(ClassDependencies.baseEntity());
+		clazzes.add(Institution.class);
 		clazzes.add(OAuthClient.class);
 		clazzes.add(OAuthToken.class);
 		return clazzes.toArray(new Class<?>[clazzes.size()]);

@@ -35,6 +35,7 @@ import com.tle.admin.workflow.StepDialog;
 import com.tle.admin.workflow.WorkflowCellRenderer;
 import com.tle.admin.workflow.editor.DecisionEditor;
 import com.tle.admin.workflow.editor.NodeEditor;
+import com.tle.admin.workflow.editor.ScriptEditor;
 import com.tle.admin.workflow.editor.StepEditor;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.common.i18n.CurrentLocale;
@@ -218,6 +219,10 @@ public class WorkflowTree extends JTree
 			else if( node.getType() == WorkflowNode.DECISION_TYPE )
 			{
 				wid = new DecisionEditor(Driver.instance());
+			}
+			else if( node.getType() == WorkflowNode.SCRIPT_TYPE )
+			{
+				wid = new ScriptEditor(userService, schemaService);
 			}
 			else
 			{

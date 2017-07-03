@@ -31,7 +31,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.inject.Singleton;
@@ -39,11 +39,12 @@ import com.tle.beans.user.TLEUser;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.user.TLEUserService;
+import com.tle.core.usermanagement.standard.service.TLEUserService;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.interfaces.beans.UserExportBean;
+import com.tle.web.remoting.rest.service.RestImportExportHelper;
 import com.tle.web.remoting.rest.service.UrlLinkService;
 
 /**
@@ -81,7 +82,7 @@ public class UserManagementResourceImpl implements EquellaUserResource
 
 		for( TLEUser tleUser : rawResults )
 		{
-			UserBean newB = apiUserBeanFromTLEUser(tleUser);
+			UserBean newB = apiUserBeanFromTLEUser(tleUser, uriInfo);
 			resultsOfBeans.add(newB);
 		}
 
@@ -144,17 +145,13 @@ public class UserManagementResourceImpl implements EquellaUserResource
 
 			String hashedPassword = uneditedUser.getPassword();
 			// if there's a password value in the userbean, and it's different
-			// from
-			// what already exists (which we see as a hashed value), then we
-			// assume
-			// the caller intends update the password value with a new value
-			// presented in its unhashed form.
+			// from what already exists (which we see as a hashed value), then
+			// we assume the caller intends update the password value with a new
+			// value presented in its unhashed form.
 
 			boolean passwordVaries = false;
 			// if there's no password value in the incoming argument, we ensure
-			// that
-			// //
-			// the existing value is sent into the update
+			// that the existing value is sent into the update
 			UserExportBean exportDetails = userBean.getExportDetails();
 			final String newHashedPassword = (exportDetails == null ? null : exportDetails.getPasswordHash());
 			if( !Check.isEmpty(newHashedPassword) )
@@ -163,8 +160,8 @@ public class UserManagementResourceImpl implements EquellaUserResource
 			}
 
 			// Now impose all the beans values - including password be it old
-			// (hashed) or new (unhashed) -
-			// in to a TLEUser entity, and commit update
+			// (hashed) or new (unhashed) - in to a TLEUser entity, and commit
+			// update
 			if( userId == null )
 			{
 				userBean.setId(uuid);
@@ -200,7 +197,7 @@ public class UserManagementResourceImpl implements EquellaUserResource
 	{
 		ensurePriv();
 		TLEUser tleUser = tleUserService.get(uuid);
-		return userResponse(tleUser);
+		return userResponse(tleUser, uriInfo);
 	}
 
 	@Override
@@ -208,14 +205,14 @@ public class UserManagementResourceImpl implements EquellaUserResource
 	{
 		ensurePriv();
 		TLEUser tleUser = tleUserService.getByUsername(username);
-		return userResponse(tleUser);
+		return userResponse(tleUser, uriInfo);
 	}
 
-	private UserBean userResponse(TLEUser tleUser)
+	private UserBean userResponse(TLEUser tleUser, UriInfo uriInfo)
 	{
 		if( tleUser != null )
 		{
-			UserBean userBean = apiUserBeanFromTLEUser(tleUser);
+			UserBean userBean = apiUserBeanFromTLEUser(tleUser, uriInfo);
 			return userBean;
 		}
 		throw new NotFoundException();
@@ -228,7 +225,7 @@ public class UserManagementResourceImpl implements EquellaUserResource
 		return Response.status(Status.NO_CONTENT).build();
 	}
 
-	private UserBean apiUserBeanFromTLEUser(TLEUser tleUser)
+	private UserBean apiUserBeanFromTLEUser(TLEUser tleUser, UriInfo uriInfo)
 	{
 		UserBean newB = new UserBean(tleUser.getUniqueID());
 		newB.setEmailAddress(tleUser.getEmailAddress());
@@ -236,9 +233,13 @@ public class UserManagementResourceImpl implements EquellaUserResource
 		newB.setLastName(tleUser.getLastName());
 		newB.setUsername(tleUser.getUsername());
 		newB.setId(tleUser.getUniqueID());
-		UserExportBean exportBean = new UserExportBean();
-		exportBean.setExportVersion("1.0");
-		exportBean.setPasswordHash(tleUser.getPassword());
+		if( RestImportExportHelper.isExport(uriInfo) )
+		{
+			UserExportBean exportBean = new UserExportBean();
+			exportBean.setExportVersion("1.0");
+			exportBean.setPasswordHash(tleUser.getPassword());
+			newB.setExportDetails(exportBean);
+		}
 
 		Map<String, String> links = Collections.singletonMap("self", getSelfLink(newB.getId()).toString());
 		newB.set("links", links);

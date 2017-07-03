@@ -20,11 +20,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.tle.common.Format;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.common.wizard.controls.userselector.UserSelectorControl;
 import com.tle.core.freetext.queries.BaseQuery;
 import com.tle.core.guice.Bind;
@@ -146,8 +146,8 @@ public class UserSelectorWebControl extends AbstractWebControl<UserSelectorWebCo
 			? definitionControl.getRestrictedTo(UserSelectorControl.KEY_RESTRICT_USER_GROUPS) : null);
 
 		componentFactory.registerComponent(id, "s", tree, selectUserDialog);
-		removeUserFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("removeUser"), id
-			+ "userselector");
+		removeUserFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("removeUser"),
+			id + "userselector");
 
 		addLink.setClickHandler(selectUserDialog.getOpenFunction());
 		addLink.setDisablable(true);

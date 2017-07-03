@@ -30,9 +30,9 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
+import com.tle.core.freetext.indexer.AbstractIndexingExtension;
 import com.tle.core.guice.Bind;
 import com.tle.core.mimetypes.MimeTypeService;
-import com.tle.freetext.AbstractIndexingExtension;
 import com.tle.freetext.IndexedItem;
 
 /**

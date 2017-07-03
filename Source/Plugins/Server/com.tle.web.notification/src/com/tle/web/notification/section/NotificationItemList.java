@@ -27,12 +27,12 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemNotificationId;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.notification.NotificationService;
 import com.tle.core.notification.beans.Notification;
-import com.tle.core.notification.indexer.NotificationResult;
+import com.tle.core.notification.standard.indexer.NotificationResult;
 import com.tle.core.services.item.FreetextResult;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.workflow.operations.WorkflowFactory;
 import com.tle.web.itemlist.item.AbstractItemList;
 import com.tle.web.notification.NotificationItemListEntry;
 import com.tle.web.notification.WebNotificationExtension;
@@ -85,7 +85,7 @@ public class NotificationItemList
 	@Inject
 	private ReceiptService receiptService;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 	@Inject
 	private Provider<NotificationItemListEntry> entryFactory;
 
@@ -109,21 +109,21 @@ public class NotificationItemList
 					.getExtensionForType(reason);
 				entry.addDelimitedMetadata(LABEL_REASON, extension.getReasonLabel(reason));
 
-				HtmlLinkState state = new HtmlLinkState(LABEL_CLEAR, events.getNamedHandler("clear", entry.getItem()
-					.getItemId(), notificantionId.getNotificationId()));
+				HtmlLinkState state = new HtmlLinkState(LABEL_CLEAR,
+					events.getNamedHandler("clear", entry.getItem().getItemId(), notificantionId.getNotificationId()));
 				entry.addRatingAction(new ButtonRenderer(state).showAs(ButtonType.DELETE));
 			}
 
 			if( !selectionSection.isSelected(context, notificantionId) )
 			{
-				HtmlLinkState link = new HtmlLinkState(LABEL_SELECT, new OverrideHandler(selectCall, item.getUuid(),
-					item.getVersion(), entry.getNotificationId()));
+				HtmlLinkState link = new HtmlLinkState(LABEL_SELECT,
+					new OverrideHandler(selectCall, item.getUuid(), item.getVersion(), entry.getNotificationId()));
 				entry.addRatingAction(new ButtonRenderer(link).showAs(ButtonType.SELECT));
 			}
 			else
 			{
-				HtmlLinkState link = new HtmlLinkState(LABEL_UNSELECT, new OverrideHandler(removeCall, item.getUuid(),
-					item.getVersion(), entry.getNotificationId()));
+				HtmlLinkState link = new HtmlLinkState(LABEL_UNSELECT,
+					new OverrideHandler(removeCall, item.getUuid(), item.getVersion(), entry.getNotificationId()));
 				entry.addRatingAction(new ButtonRenderer(link).showAs(ButtonType.UNSELECT));
 				entry.setSelected(true);
 			}

@@ -19,7 +19,7 @@ package com.tle.core.taxonomy.datasource;
 import java.util.List;
 import java.util.Map;
 
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.Pair;
 import com.tle.common.taxonomy.SelectionRestriction;
 import com.tle.core.taxonomy.TermResult;

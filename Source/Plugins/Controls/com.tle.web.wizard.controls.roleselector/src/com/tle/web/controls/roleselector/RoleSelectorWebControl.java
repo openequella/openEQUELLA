@@ -20,11 +20,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.RoleBean;
 import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.tle.common.Format;
+import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.common.wizard.controls.roleselector.RoleSelectorControl;
 import com.tle.core.freetext.queries.BaseQuery;
 import com.tle.core.guice.Bind;
@@ -138,8 +138,8 @@ public class RoleSelectorWebControl extends AbstractWebControl<RoleSelectorWebCo
 		selectRoleDialog.setRolesCallback(this);
 
 		componentFactory.registerComponent(id, "s", tree, selectRoleDialog);
-		removeRoleFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("removeRole"), id
-			+ "roleselector");
+		removeRoleFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("removeRole"),
+			id + "roleselector");
 
 		addLink.setClickHandler(selectRoleDialog.getOpenFunction());
 		addLink.setDisablable(true);
@@ -248,9 +248,8 @@ public class RoleSelectorWebControl extends AbstractWebControl<RoleSelectorWebCo
 		protected void transform(SectionInfo info, SelectionsTableSelection selection, String roleId,
 			List<SectionRenderable> actions, int index)
 		{
-			selection.setViewAction(new LabelRenderer(
-				new TextLabel(userService.getInformationForRole(roleId)
-				.getName())));
+			selection
+				.setViewAction(new LabelRenderer(new TextLabel(userService.getInformationForRole(roleId).getName())));
 			if( isEnabled() )
 			{
 				actions.add(makeRemoveAction(LABEL_REMOVE,
@@ -267,7 +266,7 @@ public class RoleSelectorWebControl extends AbstractWebControl<RoleSelectorWebCo
 		private List<SelectedRole> selectedRoles;
 
 		public List<SelectedRole> getSelectedRoles()
-{
+		{
 			return selectedRoles;
 		}
 
@@ -275,7 +274,7 @@ public class RoleSelectorWebControl extends AbstractWebControl<RoleSelectorWebCo
 		{
 			this.selectedRoles = selectedRoles;
 		}
-}
+	}
 
 	@Override
 	protected ElementId getIdForLabel()

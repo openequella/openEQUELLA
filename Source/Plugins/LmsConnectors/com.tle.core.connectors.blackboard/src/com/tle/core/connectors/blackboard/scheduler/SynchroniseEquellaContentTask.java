@@ -35,7 +35,7 @@ import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.guice.Bind;
 import com.tle.core.scheduler.ScheduledTask;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 
 /**
  * @author Aaron

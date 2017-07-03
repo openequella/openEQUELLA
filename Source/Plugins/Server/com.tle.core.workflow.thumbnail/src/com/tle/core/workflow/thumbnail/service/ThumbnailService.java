@@ -16,7 +16,7 @@
 
 package com.tle.core.workflow.thumbnail.service;
 
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.ItemKey;
 
 public interface ThumbnailService

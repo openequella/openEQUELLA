@@ -63,6 +63,7 @@ public abstract class FreeTextQuery implements Serializable
 	public static final String FIELD_LIVE_APPROVAL_DATE = "live.approval.date";
 	public static final String FIELD_REAL_THUMB = "realthumb";
 	public static final String FIELD_VIDEO_THUMB = "videothumb";
+	public static final String FIELD_IS_BAD_URL = "badurl";
 
 	public static final String FIELD_INDEXEDTIME = "indexedtime";
 	public static final String FIELD_RATING = "rating";

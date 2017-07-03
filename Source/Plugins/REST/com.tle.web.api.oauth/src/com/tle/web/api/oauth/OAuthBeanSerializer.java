@@ -22,9 +22,10 @@ import javax.inject.Singleton;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.common.security.PrivilegeTree.Node;
+import com.tle.core.encryption.EncryptionService;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.guice.Bind;
 import com.tle.core.oauth.service.OAuthService;
-import com.tle.core.services.entity.AbstractEntityService;
 import com.tle.web.api.baseentity.serializer.AbstractEquellaBaseEntitySerializer;
 import com.tle.web.api.oauth.OAuthEditorImpl.OAuthEditorFactory;
 import com.tle.web.api.oauth.interfaces.beans.OAuthClientBean;
@@ -41,6 +42,8 @@ public class OAuthBeanSerializer extends AbstractEquellaBaseEntitySerializer<OAu
 	private OAuthService oauthClientService;
 	@Inject
 	private OAuthEditorFactory editorFactory;
+	@Inject
+	private EncryptionService encryptionService;
 
 	@Override
 	protected OAuthClientBean createBean()
@@ -71,7 +74,7 @@ public class OAuthBeanSerializer extends AbstractEquellaBaseEntitySerializer<OAu
 	{
 		bean.setClientId(client.getClientId());
 		// We really shouldn't be doing this...
-		bean.setClientSecret(client.getClientSecret());
+		bean.setClientSecret(encryptionService.decrypt(client.getClientSecret()));
 		bean.setRedirectUrl(client.getRedirectUrl());
 		bean.setUserId(client.getUserId());
 	}

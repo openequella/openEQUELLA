@@ -23,35 +23,36 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.IllegalOperationException;
-import com.dytech.edge.exceptions.InvalidDataException;
-import com.dytech.edge.exceptions.NotFoundException;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.tle.beans.Institution;
 import com.tle.common.EntityPack;
 import com.tle.common.Pair;
+import com.tle.common.beans.exception.IllegalOperationException;
+import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.beans.exception.ValidationError;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.scripting.service.ScriptContextCreationParams;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.taxonomy.SelectionRestriction;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.common.taxonomy.TaxonomyConstants;
-import com.tle.core.events.InstitutionEvent;
-import com.tle.core.events.listeners.InstitutionListener;
-import com.tle.core.filesystem.SubTemporaryFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
+import com.tle.core.entity.EntityEditingBean;
+import com.tle.core.entity.EntityEditingSession;
+import com.tle.core.entity.service.impl.AbstractEntityServiceImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
+import com.tle.core.institution.events.InstitutionEvent;
+import com.tle.core.institution.events.listeners.InstitutionListener;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.scripting.service.ScriptObjectContributor;
 import com.tle.core.security.impl.SecureEntity;
-import com.tle.core.services.EventService;
-import com.tle.core.services.entity.EntityEditingBean;
-import com.tle.core.services.entity.EntityEditingSession;
-import com.tle.core.services.entity.impl.AbstractEntityServiceImpl;
+import com.tle.core.events.services.EventService;
 import com.tle.core.taxonomy.TaxonomyDao;
 import com.tle.core.taxonomy.TaxonomyService;
 import com.tle.core.taxonomy.TermResult;
@@ -60,7 +61,6 @@ import com.tle.core.taxonomy.datasource.TaxonomyDataSource;
 import com.tle.core.taxonomy.datasource.TaxonomyDataSourceFactory;
 import com.tle.core.taxonomy.scripting.objects.TaxonomyServiceScriptObject;
 import com.tle.core.taxonomy.scripting.objects.impl.TaxonomyServiceScriptWrapper;
-import com.tle.core.user.CurrentInstitution;
 
 @SuppressWarnings("nls")
 @SecureEntity("TAXONOMY")
@@ -127,8 +127,8 @@ public class TaxonomyServiceImpl extends AbstractEntityServiceImpl<EntityEditing
 
 	private TaxonomyDataSource getDataSourceNoCache(final Taxonomy taxonomy)
 	{
-		final TaxonomyDataSourceFactory factory = dataSourceFactoryTracker.getBeanMap().get(
-			taxonomy.getDataSourcePluginId());
+		final TaxonomyDataSourceFactory factory = dataSourceFactoryTracker.getBeanMap()
+			.get(taxonomy.getDataSourcePluginId());
 
 		try
 		{
@@ -173,8 +173,8 @@ public class TaxonomyServiceImpl extends AbstractEntityServiceImpl<EntityEditing
 	}
 
 	@Override
-	public Pair<Long, List<TermResult>> searchTerms(String taxonomyUuid, String query,
-		SelectionRestriction restriction, int limit, boolean searchFullTerm)
+	public Pair<Long, List<TermResult>> searchTerms(String taxonomyUuid, String query, SelectionRestriction restriction,
+		int limit, boolean searchFullTerm)
 	{
 		return getDataSource(taxonomyUuid).searchTerms(query, restriction, limit, searchFullTerm);
 	}
@@ -279,7 +279,8 @@ public class TaxonomyServiceImpl extends AbstractEntityServiceImpl<EntityEditing
 	protected void beforeClone(TemporaryFileHandle staging, EntityPack<Taxonomy> pack)
 	{
 		// export the terms into the staging area
-		prepareExport(staging, pack.getEntity(), new ConverterParams(institutionService.getInfoForCurrentInstitution()));
+		prepareExport(staging, pack.getEntity(),
+			new ConverterParams(institutionImportService.getInfoForCurrentInstitution()));
 	}
 
 	@Override

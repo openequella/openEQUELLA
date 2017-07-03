@@ -28,7 +28,7 @@ import com.tle.beans.search.TLESettings;
 import com.tle.common.Check;
 import com.tle.common.util.TokenGenerator;
 import com.tle.core.guice.Bind;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.remoterepo.service.RemoteRepoWebService;

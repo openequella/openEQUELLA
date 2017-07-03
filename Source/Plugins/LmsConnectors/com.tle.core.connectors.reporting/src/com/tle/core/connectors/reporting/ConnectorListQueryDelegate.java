@@ -29,11 +29,11 @@ import com.google.common.collect.Maps;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.BundleCache;
 import com.tle.core.reporting.SimpleResultSet;
 import com.tle.core.reporting.SimpleTypeQuery;
 import com.tle.reporting.IResultSetExt;
 import com.tle.reporting.MetadataBean;
-import com.tle.web.i18n.BundleCache;
 
 /**
  * @author Aaron

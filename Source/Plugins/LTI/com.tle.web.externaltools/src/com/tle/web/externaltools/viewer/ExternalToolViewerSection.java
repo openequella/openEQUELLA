@@ -49,7 +49,6 @@ import org.apache.log4j.Logger;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.name.Named;
@@ -62,13 +61,14 @@ import com.tle.common.externaltools.SourcedIdPackage.SrcdIdPkgSerializer;
 import com.tle.common.externaltools.constants.ExternalToolConstants;
 import com.tle.common.externaltools.entity.ExternalTool;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.externaltools.service.ExternalToolsService;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.services.ApplicationVersion;
-import com.tle.core.services.UrlService;
 import com.tle.core.services.http.Request.Method;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
 import com.tle.web.lti.LtiData.OAuthData;
 import com.tle.web.lti.usermanagement.LtiUserState;
 import com.tle.web.sections.SectionInfo;
@@ -107,7 +107,7 @@ public class ExternalToolViewerSection extends AbstractViewerSection<ExternalToo
 	@Inject
 	private ExternalToolsService toolService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private ViewItemUrlFactory itemUrls;
 
@@ -196,16 +196,16 @@ public class ExternalToolViewerSection extends AbstractViewerSection<ExternalToo
 
 		// These booleans are the EQUELLA config T/Fs for sending personal user
 		// details, and prevail over any lms POST data.
-		boolean shareEmail = deriveBoolean(attachmentData.get(ExternalToolConstants.SHARE_EMAIL), toolProvider != null
-			? toolProvider.getShareEmail() : null);
-		boolean shareName = deriveBoolean(attachmentData.get(ExternalToolConstants.SHARE_NAME), toolProvider != null
-			? toolProvider.getShareName() : null);
+		boolean shareEmail = deriveBoolean(attachmentData.get(ExternalToolConstants.SHARE_EMAIL),
+			toolProvider != null ? toolProvider.getShareEmail() : null);
+		boolean shareName = deriveBoolean(attachmentData.get(ExternalToolConstants.SHARE_NAME),
+			toolProvider != null ? toolProvider.getShareName() : null);
 
 		// This map is used to create the hidden inputs in the form
 		Map<String, String> formParams = new TreeMap<String, String>();
 
-		addDynamicLtiParameters(context, formParams, attachment, toolProvider, shareEmail, shareName, (Item) resource
-			.getViewableItem().getItem());
+		addDynamicLtiParameters(context, formParams, attachment, toolProvider, shareEmail, shareName,
+			(Item) resource.getViewableItem().getItem());
 
 		// if this is a POST request, we assume this to be a relayed request
 		// from an LMS, with EQUELLA acting as the front for an actual Tool
@@ -246,8 +246,8 @@ public class ExternalToolViewerSection extends AbstractViewerSection<ExternalToo
 		}
 		// a neater way of calling "submit" than to have a dedicated one-line
 		// javascript file
-		formTag.addReadyStatements(Js.statement(Js.methodCall(Jq.$('#' + formTag.getElementId(context)),
-			Js.function("submit"))));
+		formTag.addReadyStatements(
+			Js.statement(Js.methodCall(Jq.$('#' + formTag.getElementId(context)), Js.function("submit"))));
 		return null;
 
 	}
@@ -554,7 +554,8 @@ public class ExternalToolViewerSection extends AbstractViewerSection<ExternalToo
 		// If there's an outcome service url, we want to replace it with our own
 		if( !Check.isEmpty(lmsOutcomeServiceUrl) )
 		{
-			String instiUrlExtended = urlService.institutionalise(ExternalToolConstants.OUTCOME_SERVICE_URL_PATH);
+			String instiUrlExtended = institutionService
+				.institutionalise(ExternalToolConstants.OUTCOME_SERVICE_URL_PATH);
 
 			formParams.put(ExternalToolConstants.LIS_OUTCOME_SERVICE_URL, instiUrlExtended);
 		}

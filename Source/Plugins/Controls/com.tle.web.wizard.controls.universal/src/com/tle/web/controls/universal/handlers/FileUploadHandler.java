@@ -1,19 +1,3 @@
-/*
- * Copyright 2017 Apereo
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.tle.web.controls.universal.handlers;
 
 import java.io.FilterInputStream;
@@ -33,10 +17,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.servlet.http.Part;
 
-import com.tle.web.sections.ajax.AjaxEffects;
 import com.tle.web.sections.ajax.handler.UpdateDomFunction;
-import com.tle.web.sections.events.PreRenderContext;
-import com.tle.web.sections.js.JSExpression;
 import com.tle.web.sections.js.generic.function.*;
 import com.tle.web.sections.standard.*;
 import com.tle.web.sections.standard.model.*;
@@ -61,22 +42,22 @@ import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.ImsAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.beans.item.attachments.ZipAttachment;
-import com.tle.beans.system.QuotaSettings;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
 import com.tle.common.Pair;
 import com.tle.common.PathUtils;
+import com.tle.common.filesystem.FileEntry;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.common.util.FileEntry;
+import com.tle.common.quota.settings.QuotaSettings;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings;
-import com.tle.core.filesystem.ItemFile;
-import com.tle.core.filesystem.StagingFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.user.CurrentUser;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.core.wizard.LERepository;
 import com.tle.mycontent.service.MyContentService;
 import com.tle.mycontent.web.selection.MyContentSelectable;
@@ -161,13 +142,13 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 
 	private static final IncludeFile INCLUDE = new IncludeFile(resources.url("scripts/file/fileuploadhandler.js"));
 	private static final JSCallAndReference FILE_UPLOAD_HANDLER_CLASS = new ExternallyDefinedFunction(
-		"FileUploadHandler", INCLUDE);
+			"FileUploadHandler", INCLUDE);
 	private static final ExternallyDefinedFunction VALIDATE_FUNC = new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "validateFile", 5);
 
 	private static final ExternallyDefinedFunction DONE_UPLOAD = new ExternallyDefinedFunction(
-		FILE_UPLOAD_HANDLER_CLASS, "dndUploadFinishedCallback", 0, JQueryProgression.PRERENDER);
+			FILE_UPLOAD_HANDLER_CLASS, "dndUploadFinishedCallback", 0, JQueryProgression.PRERENDER);
 	private static final ExternallyDefinedFunction CHECK_UPLOAD = new ExternallyDefinedFunction(
-		FILE_UPLOAD_HANDLER_CLASS, "dndCheckUpload", 2);
+			FILE_UPLOAD_HANDLER_CLASS, "dndCheckUpload", 2);
 
 	/**
 	 * Temporary folder for uploaded files
@@ -192,6 +173,8 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 	private ViewItemService viewItemService;
 	@Inject
 	private ItemService itemService;
+	@Inject
+	private ItemFileService itemFileService;
 
 	// Maybe move these to an extension point? Seems a bit overkill though.
 	@Inject
@@ -285,8 +268,8 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 				renderOptions.setShowSave(true);
 				TypeDetails typeDetails = getTypeDetails(upload.getResolvedType());
 				return CombinedRenderer.combineResults(
-					renderOptionsAndDetailsHeader(context, typeDetails.isShowViewLink()),
-					typeDetails.renderDetailsEditor(context, renderOptions, upload));
+						renderOptionsAndDetailsHeader(context, typeDetails.isShowViewLink()),
+						typeDetails.renderDetailsEditor(context, renderOptions, upload));
 			}
 
 			return renderTypeOptions(context, renderOptions, upload);
@@ -303,7 +286,6 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 		uploadState.processErrors();
 		List<UploadedFile> uploads = uploadState.getOrderedFiles();
 		model.setCanScrapbook(/* !settings.isNoScrapbook()&& */myContentService.isMyContentContributionAllowed());
-
 
 		final BookmarkAndModify uploadUrl = new BookmarkAndModify(context, ajax.getModifier("processUploadOld"));
 
@@ -348,7 +330,7 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 		}
 
 		if( (!dialogState.isReplacing(context) && currentlyAttachedPackages > 0 && uploadedPackageCount > 0)
-			|| uploadedPackageCount > 1 )
+				|| uploadedPackageCount > 1 )
 		{
 			canContinue = false;
 			model.setWarningLabel(LABEL_WARN_ONLYONEPACKAGE);
@@ -361,11 +343,11 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 			final HtmlLinkState remove = new HtmlLinkState();
 
 			updis.setRemove(new UnselectLinkRenderer(remove, uploadFinished ? LABEL_REMOVE_UPLOAD
-				: LABEL_CANCEL_UPLOAD));
+					: LABEL_CANCEL_UPLOAD));
 			// The description will be already populated in the case of
 			// import scrapbook content
 			updis.setFilename(Check.isEmpty(upload.getDescription()) ? upload.getFilename() : upload
-				.getDescription());
+					.getDescription());
 
 			final HtmlComponentState progressDivState = new HtmlComponentState();
 			final DivRenderer progressDiv = new DivRenderer(progressDivState);
@@ -411,14 +393,14 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 	}
 
 	private SectionRenderable renderTypeOptions(RenderContext context, DialogRenderOptions renderOptions,
-		UploadedFile upload)
+												UploadedFile upload)
 	{
 		TypeOptions options = getTypeOptions(upload);
 		options.loadOptions(context, upload);
 		optionsButton.setClickHandler(context, events.getNamedHandler("pickedType"));
 		renderOptions.addAction(optionsButton);
 		return CombinedRenderer.combineResults(renderOptionsAndDetailsHeader(context, false),
-			renderSection(context, options));
+				renderSection(context, options));
 	}
 
 	@Override
@@ -497,14 +479,14 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 	public SectionRenderable getThumbnailUrlForAttachment(SectionInfo info, Attachment attachment)
 	{
 		return attachmentResourceService.getViewableResource(info, dialogState.getViewableItem(info), attachment)
-			.createStandardThumbnailRenderer(new TextLabel(attachment.getDescription())).addClass("file-thumbnail");
+				.createStandardThumbnailRenderer(new TextLabel(attachment.getDescription())).addClass("file-thumbnail");
 	}
 
 	public SectionRenderable getThumbnailUrlForFile(SectionInfo info, String filename, String mimeType)
 	{
 		return attachmentResourceService
-			.createPathResource(info, dialogState.getViewableItem(info), filename, filename, mimeType, null)
-			.createStandardThumbnailRenderer(new TextLabel(mimeType)).addClass("file-thumbnail");
+				.createPathResource(info, dialogState.getViewableItem(info), filename, filename, mimeType, null)
+				.createStandardThumbnailRenderer(new TextLabel(mimeType)).addClass("file-thumbnail");
 	}
 
 	@Override
@@ -750,8 +732,8 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 
 		UploadedFile fileInfo = getDetailsUpload(context);
 		model.setFileInfo(fileInfo);
-		model.setEditTitle((Check.isEmpty(fileInfo.getDescription()) ? fileInfo.getFilename() : fileInfo
-			.getDescription()));
+		model.setEditTitle(
+				(Check.isEmpty(fileInfo.getDescription()) ? fileInfo.getFilename() : fileInfo.getDescription()));
 
 		ViewableResource viewableResource = getDetailsViewableResource(context);
 
@@ -760,8 +742,8 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 		// fileInfo.getFilename(), fileInfo.getMimeType()));
 
 		// Use custom thumb http://jira.pearsoncmg.com/jira/browse/EQ-389
-		ImageRenderer thumbRenderer = viewableResource.createStandardThumbnailRenderer(new TextLabel((Check
-			.isEmpty(fileInfo.getDescription()) ? fileInfo.getFilename() : fileInfo.getDescription())));
+		ImageRenderer thumbRenderer = viewableResource.createStandardThumbnailRenderer(new TextLabel(
+				(Check.isEmpty(fileInfo.getDescription()) ? fileInfo.getFilename() : fileInfo.getDescription())));
 
 		model.setThumbnail(thumbRenderer);
 
@@ -808,7 +790,7 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 	private SectionRenderable renderSelection(RenderContext context, DialogRenderOptions renderOptions)
 	{
 		final SectionInfo forward = selectionService.getSelectionSessionForward(context, initSession(),
-			myContentSelectable);
+				myContentSelectable);
 
 		renderOptions.setFullscreen(true);
 		final FileUploadModel model = getModel(context);
@@ -950,42 +932,42 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 		final UploadState uploadState = getUploadState(info);
 
 		final String uniqueFilename = uniqueName(info, filename);
-        final UploadedFile uploadedFile = uploadState.initialiseUpload(uploadId, uniqueFilename);
-        if( fileSettings.isRestrictByMime() && !isCorrectMimetype(uploadedFile) )
-        {
-            String actualPath = UPLOADS_FOLDER + '/' + uploadedFile.getIntendedFilepath();
-            uploadedFile.setFilepath(actualPath);
-            uploadedFile.setProblemKey(KEY_INCORRECT_MIMETYPE);
-            success = false;
-        }
-        else
-        {
-            try( InputStream in = new CancellableStream(uploadedFile, upload.getInputStream()) )
-            {
-                writeStreamToDisk(dialogState.getRepository(), uploadedFile, in);
-                validateUpload(info, uploadedFile);
-            }
-            catch( StreamKilledException k )
-            {
-                success = false;
-                // whatever
-            }
-            catch( BannedFileException b )
-            {
-                success = false;
-                uploadedFile.setProblemKey(KEY_ERROR_BANNED);
-            }
-            catch( Exception e )
-            {
-                success = false;
-                SectionUtils.throwRuntime(e);
-            }
-            finally
-            {
-                uploadedFile.setFinished(true);
-                uploadedFile.setFileUploadUuid(null);
-            }
-        }
+		final UploadedFile uploadedFile = uploadState.initialiseUpload(uploadId, uniqueFilename);
+		if( fileSettings.isRestrictByMime() && !isCorrectMimetype(uploadedFile) )
+		{
+			String actualPath = UPLOADS_FOLDER + '/' + uploadedFile.getIntendedFilepath();
+			uploadedFile.setFilepath(actualPath);
+			uploadedFile.setProblemKey(KEY_INCORRECT_MIMETYPE);
+			success = false;
+		}
+		else
+		{
+			try( InputStream in = new CancellableStream(uploadedFile, upload.getInputStream()) )
+			{
+				writeStreamToDisk(dialogState.getRepository(), uploadedFile, in);
+				validateUpload(info, uploadedFile);
+			}
+			catch( StreamKilledException k )
+			{
+				success = false;
+				// whatever
+			}
+			catch( BannedFileException b )
+			{
+				success = false;
+				uploadedFile.setProblemKey(KEY_ERROR_BANNED);
+			}
+			catch( Exception e )
+			{
+				success = false;
+				SectionUtils.throwRuntime(e);
+			}
+			finally
+			{
+				uploadedFile.setFinished(true);
+				uploadedFile.setFileUploadUuid(null);
+			}
+		}
 		return new SimpleSectionResult(success);
 	}
 
@@ -1211,7 +1193,8 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 				// But do *you* really want to put it the days of pissing around
 				// to get this working?
 				// I thought not. Maybe a 10.0 feature
-				try( InputStream in = fileSystemService.read(new ItemFile(itemId), attachment.getFilename()) )
+				try( InputStream in = fileSystemService.read(itemFileService.getItemFile(item),
+						attachment.getFilename()) )
 				{
 					final UploadedFile upload = new UploadedFile(uuid);
 					upload.setFilepath(UPLOADS_FOLDER + '/' + filename);
@@ -1260,13 +1243,13 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 	{
 		// FIXME: extension point, this is a dog's breakfast
 		return ((attachment instanceof FileAttachment && !(attachment instanceof HtmlAttachment))
-			|| attachment instanceof ImsAttachment
-			|| attachment instanceof ZipAttachment
-			|| (attachment instanceof CustomAttachment && ((CustomAttachment) attachment).getType().equalsIgnoreCase(
-				"scorm"))
-			|| (attachment instanceof CustomAttachment && ((CustomAttachment) attachment).getType().equalsIgnoreCase(
-				"qtitest")) || (attachment instanceof CustomAttachment && ((CustomAttachment) attachment).getType()
-			.equalsIgnoreCase("mets")));
+				|| attachment instanceof ImsAttachment || attachment instanceof ZipAttachment
+				|| (attachment instanceof CustomAttachment
+				&& ((CustomAttachment) attachment).getType().equalsIgnoreCase("scorm"))
+				|| (attachment instanceof CustomAttachment
+				&& ((CustomAttachment) attachment).getType().equalsIgnoreCase("qtitest"))
+				|| (attachment instanceof CustomAttachment
+				&& ((CustomAttachment) attachment).getType().equalsIgnoreCase("mets")));
 	}
 
 	@Override
@@ -1351,7 +1334,7 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 	private static class UploadState implements Serializable
 	{
 		private final Map<String, UploadedFile> uploadMap = Collections
-			.synchronizedMap(new HashMap<String, UploadedFile>());
+				.synchronizedMap(new HashMap<String, UploadedFile>());
 		private final List<UploadedFile> orderedFiles = Lists.newArrayList();
 		private final Set<String> erroredFiles = Sets.newHashSet();
 		private Label errorLabel = null;
@@ -1444,7 +1427,6 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 			return uploadedFile;
 		}
 	}
-
 	@NonNullByDefault(false)
 	public static class FileUploadModel extends AbstractDetailsAttachmentHandler.AbstractAttachmentHandlerModel
 	{
@@ -1618,8 +1600,8 @@ public class FileUploadHandler extends AbstractAttachmentHandler<FileUploadHandl
 		ViewableResource viewableResource = model.getDetailsViewableResource();
 		if( viewableResource == null )
 		{
-			viewableResource = attachmentResourceService.getViewableResource(info, dialogState.getRepository()
-				.getViewableItem(), getDetailsUpload(info).getAttachment());
+			viewableResource = attachmentResourceService.getViewableResource(info,
+					dialogState.getRepository().getViewableItem(), getDetailsUpload(info).getAttachment());
 			model.setDetailsViewableResource(viewableResource);
 		}
 		return viewableResource;

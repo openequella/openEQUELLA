@@ -33,10 +33,10 @@ import com.tle.common.Check;
 import com.tle.common.search.DefaultSearch;
 import com.tle.core.freetext.queries.FreeTextAutocompleteQuery;
 import com.tle.core.freetext.queries.FreeTextBooleanQuery;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.FreeTextService;
-import com.tle.core.services.item.ItemService;
-import com.tle.web.i18n.BundleCache;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.item.service.ItemService;
 
 @Bind(AutoCompleteService.class)
 @Singleton

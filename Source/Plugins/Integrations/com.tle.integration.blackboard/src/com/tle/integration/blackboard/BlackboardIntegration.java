@@ -55,14 +55,14 @@ import com.tle.beans.item.attachments.ImsAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
-import com.tle.core.filesystem.ItemFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.helper.ItemHelper;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.jackson.mapper.JaxbMapperExtension;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.util.ItemHelper;
 import com.tle.integration.blackboard.gateways.BlackboardExport;
 import com.tle.web.integration.AbstractIntegrationService;
 import com.tle.web.integration.IntegrationActionInfo;
@@ -91,13 +91,15 @@ public class BlackboardIntegration extends AbstractIntegrationService<BlackBoard
 	@Inject
 	private FileSystemService fileSystemService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private ViewableItemResolver viewableItemResolver;
 	@Inject
 	private ObjectMapperService objectMapperService;
 	@Inject
 	private ItemService itemService;
+	@Inject
+	private ItemFileService itemFileService;
 	@Inject
 	private IntegrationService integrationService;
 
@@ -234,7 +236,7 @@ public class BlackboardIntegration extends AbstractIntegrationService<BlackBoard
 			Item item = (Item) resourceItem;
 			StringWriter out = new StringWriter();
 			try( Reader in = new InputStreamReader(
-				fileSystemService.read(new ItemFile(item), imsOrScorm.getUrl() + "/imsmanifest.xml")) )
+				fileSystemService.read(itemFileService.getItemFile(item), imsOrScorm.getUrl() + "/imsmanifest.xml")) )
 			{
 				CharStreams.copy(in, out);
 			}
@@ -368,7 +370,7 @@ public class BlackboardIntegration extends AbstractIntegrationService<BlackBoard
 			}
 			parameters.add(new NameValue(courseId, "course_id"));
 		}
-		parameters.add(new NameValue(urlService.getInstitutionUrl().toString(), "url"));
+		parameters.add(new NameValue(institutionService.getInstitutionUrl().toString(), "url"));
 
 		String entryUrl = data.getEntryUrl();
 		if( entryUrl.toLowerCase().contains(".jnlp") )

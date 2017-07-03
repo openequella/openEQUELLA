@@ -18,6 +18,7 @@ package com.tle.web.sections.jquery.libraries;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
+import com.tle.web.DebugSettings;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.js.generic.function.IncludeFile;
@@ -30,7 +31,9 @@ public class JQuerySlider implements JavascriptModule
 
 	public static final PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(JQuerySlider.class);
 
-	public static final PreRenderable PRERENDER = new IncludeFile(urlHelper.url("jquerylib/jquery.ui.slider.js"),
+	public static final PreRenderable PRERENDER = new IncludeFile(
+		urlHelper.url(
+			DebugSettings.isDebuggingMode() ? "jquerylib/jquery.ui.slider.js" : "jquerylib/jquery.ui.slider.min.js"),
 		JQueryMouse.PRERENDER);
 
 	@Override

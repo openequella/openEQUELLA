@@ -34,11 +34,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tle.beans.item.Bookmark;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
-import com.tle.core.dao.ItemDaoExtension;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
+import com.tle.core.item.dao.ItemDaoExtension;
+import com.tle.common.usermanagement.user.CurrentUser;
 
 @SuppressWarnings("nls")
 @Bind(BookmarkDao.class)
@@ -114,8 +114,8 @@ public class BookmarkDaoImpl extends GenericInstitionalDaoImpl<Bookmark, Long> i
 			@Override
 			public Object doInHibernate(Session session)
 			{
-				Query q = session.createQuery("UPDATE Bookmark SET owner = :toUser WHERE owner = :fromUser"
-					+ " AND institution = :institution");
+				Query q = session.createQuery(
+					"UPDATE Bookmark SET owner = :toUser WHERE owner = :fromUser" + " AND institution = :institution");
 				q.setParameter("fromUser", fromUser);
 				q.setParameter("toUser", toUser);
 				q.setParameter("institution", CurrentInstitution.get());
@@ -187,8 +187,8 @@ public class BookmarkDaoImpl extends GenericInstitionalDaoImpl<Bookmark, Long> i
 			return map;
 		}
 
-		List<Bookmark> bookmarks = getHibernateTemplate().findByNamedParam(
-			"FROM Bookmark b LEFT JOIN FETCH b.keywords WHERE b.item.id IN (:ids)", "ids", ids);
+		List<Bookmark> bookmarks = getHibernateTemplate()
+			.findByNamedParam("FROM Bookmark b LEFT JOIN FETCH b.keywords WHERE b.item.id IN (:ids)", "ids", ids);
 
 		for( Bookmark b : bookmarks )
 		{

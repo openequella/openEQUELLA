@@ -8,11 +8,15 @@
 		<import plugin-id="com.tle.web.viewitem" />
 		<import plugin-id="com.tle.web.viewitem.summary" />
 		<import plugin-id="com.tle.web.sections" />
-		<import plugin-id="com.tle.core.entity.services" />
+		
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.web.wizard" />
 		<import plugin-id="com.tle.web.viewitem.treeviewer" />
 		<import plugin-id="com.tle.core.schema" />
+		<import plugin-id="com.tle.core.institution.convert" />
+		<import plugin-id="com.tle.core.item.convert" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.core.filesystem.staging" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">
@@ -53,7 +57,7 @@
 		<parameter id="order" value="1000" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="postreadmigration" id="imsTreeMigrator">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="postreadmigration" id="imsTreeMigrator">
 		<parameter id="id" value="com.tle.ims.migration.IMSNavigationCreation" />
 		<parameter id="bean" value="bean:com.tle.ims.migration.IMSNavigationCreation" />
 		<parameter id="forconverter" value="items" />

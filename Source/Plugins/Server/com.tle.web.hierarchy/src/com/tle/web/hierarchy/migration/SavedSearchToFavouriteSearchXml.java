@@ -27,16 +27,16 @@ import com.dytech.devlib.PropBagEx;
 import com.dytech.devlib.PropBagEx.PropBagIterator;
 import com.tle.beans.UserPreference;
 import com.tle.common.SavedSearch;
+import com.tle.common.filesystem.handle.BucketFile;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.favourites.bean.FavouriteSearch;
-import com.tle.core.filesystem.BucketFile;
-import com.tle.core.filesystem.SubTemporaryFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
+import com.tle.core.hibernate.equella.service.InitialiserService;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.InstitutionInfo;
-import com.tle.core.institution.migration.XmlMigrator;
-import com.tle.core.services.InitialiserService;
-import com.tle.core.xstream.XmlService;
+import com.tle.core.institution.convert.XmlMigrator;
+import com.tle.core.xml.service.XmlService;
 
 @Bind
 @Singleton

@@ -29,9 +29,9 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.HtmlAttachment;
-import com.tle.common.item.AbstractHelper;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemResolver;
+import com.tle.core.item.helper.AbstractHelper;
+import com.tle.core.item.service.ItemResolver;
 import com.tle.mypages.MyPagesConstants;
 
 /**

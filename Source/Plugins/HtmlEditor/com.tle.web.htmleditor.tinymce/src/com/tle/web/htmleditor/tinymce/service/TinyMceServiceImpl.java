@@ -48,12 +48,12 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
 import com.tle.common.scripting.ScriptContextFactory;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.jackson.mapper.LenientMapperExtension;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.htmleditor.HtmlEditorButtonDefinition;
 import com.tle.web.htmleditor.HtmlEditorControl;
 import com.tle.web.htmleditor.HtmlEditorInterface;
@@ -125,6 +125,7 @@ public class TinyMceServiceImpl implements TinyMceService
 	private static Label LABEL_STYLE_SELECT;
 	@PlugKey("button.")
 	private static String KEY_BUTTON_PREFIX;
+
 	static
 	{
 		PluginResourceHandler.init(TinyMceServiceImpl.class);
@@ -132,6 +133,7 @@ public class TinyMceServiceImpl implements TinyMceService
 
 	// ! Needs to be up to date with scripts/tinymce/langs
 	private static final Map<String, String> LANG_PACKS;
+
 	static
 	{
 		// Attempts at getting this dynamically failed, feel free to try
@@ -219,51 +221,51 @@ public class TinyMceServiceImpl implements TinyMceService
 		LANG_PACKS = Collections.unmodifiableMap(tempMap);
 	}
 
-	private static final CssInclude TLE_SKIN = CssInclude.include(
-		RESOURCES.url("scripts/tinymce/themes/advanced/skins/tle/ui.css")).make();
+	private static final CssInclude TLE_SKIN = CssInclude
+		.include(RESOURCES.url("scripts/tinymce/themes/advanced/skins/tle/ui.css")).make();
 	private static final CssInclude TLE_SILVER_SKIN = CssInclude
 		.include(RESOURCES.url("scripts/tinymce/themes/advanced/skins/tle/ui_silver.css")).prerender(TLE_SKIN).make();
 
 	private static final IncludeFile TINY_MCE_JS = new IncludeFile(RESOURCES.url("scripts/tinymce/tiny_mce.js"),
 		JQueryCore.PRERENDER);
-	private static final IncludeFile TINY_MCE_DEV_JS = new IncludeFile(
-		RESOURCES.url("scripts/tinymce/tiny_mce_src.js"), JQueryCore.PRERENDER);
+	private static final IncludeFile TINY_MCE_DEV_JS = new IncludeFile(RESOURCES.url("scripts/tinymce/tiny_mce_src.js"),
+		JQueryCore.PRERENDER);
 
 	private static final String DEFAULT_PLUGINS = "inlinepopups,paste,wordcount,fullscreen";
 
-	private final IncludeFile htmlEditorJs = new IncludeFile(RESOURCES.url("scripts/htmleditor.js"),
-		new PreRenderable()
+	private final IncludeFile htmlEditorJs = new IncludeFile(RESOURCES.url("scripts/htmleditor.js"), new PreRenderable()
+	{
+		@Override
+		public void preRender(PreRenderContext info)
 		{
-			@Override
-			public void preRender(PreRenderContext info)
+			if( configService.isDebuggingMode() )
 			{
-				if( configService.isDebuggingMode() )
-				{
-					info.preRender(TINY_MCE_DEV_JS);
-				}
-				else
-				{
-					info.preRender(TINY_MCE_JS);
-				}
+				info.preRender(TINY_MCE_DEV_JS);
 			}
-		});
+			else
+			{
+				info.preRender(TINY_MCE_JS);
+			}
+		}
+	});
 
 	private static final List<List<String>> DEFAULT_BUTTON_LAYOUT;
+
 	static
 	{
 		final List<List<String>> def = Lists.newArrayList();
 		final List<String> row1 = Collections.unmodifiableList(Lists.newArrayList("bold", "italic", "underline",
 			"strikethrough", "|", "justifyleft", "justifycenter", "justifyright", "justifyfull", "|", "formatselect",
 			"hr", "removeformat", "visualaid", "|", "sub", "sup", "|", "charmap", "link", "unlink", "anchor", "image"));
-		final List<String> row2 = Collections.unmodifiableList(Lists.newArrayList("code", "|", "undo", "redo", "cut",
-			"copy", "paste", "selectall", "|", "table", "|", "row_props", "cell_props", "|", "row_before", "row_after",
-			"delete_row", "|", "col_before", "col_after", "delete_col", "|", "split_cells", "merge_cells", "|",
-			"forecolorpicker", "backcolorpicker"));
+		final List<String> row2 = Collections.unmodifiableList(
+			Lists.newArrayList("code", "|", "undo", "redo", "cut", "copy", "paste", "selectall", "|", "table", "|",
+				"row_props", "cell_props", "|", "row_before", "row_after", "delete_row", "|", "col_before", "col_after",
+				"delete_col", "|", "split_cells", "merge_cells", "|", "forecolorpicker", "backcolorpicker"));
 		// Not ideal, it 'knows' about tle_fileuploader, tle_reslinker and
 		// tle_scrapbookpicker when it shouldn't
-		final List<String> row3 = Collections.unmodifiableList(Lists.newArrayList("bullist", "numlist", "|", "outdent",
-			"indent", "|", "tle_fileuploader", "tle_reslinker", "tle_scrapbookpicker", "|", "fontselect",
-			"fontsizeselect", "|", "spellchecker"));
+		final List<String> row3 = Collections.unmodifiableList(
+			Lists.newArrayList("bullist", "numlist", "|", "outdent", "indent", "|", "tle_fileuploader", "tle_reslinker",
+				"tle_scrapbookpicker", "|", "fontselect", "fontsizeselect", "|", "spellchecker"));
 		def.add(row1);
 		def.add(row2);
 		def.add(row3);
@@ -284,7 +286,7 @@ public class TinyMceServiceImpl implements TinyMceService
 	@Inject
 	private DictionaryService dictionaryService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private ConfigurationService configService;
 	@Inject
@@ -387,14 +389,14 @@ public class TinyMceServiceImpl implements TinyMceService
 			if( usedPluginIds.contains("spellchecker") )
 			{
 				options.put("spellchecker_languages", "+" + model.getLanguagesList());
-				options.put("spellchecker_rpc_url", urlService.institutionalise("spellcheck/"));
+				options.put("spellchecker_rpc_url", institutionService.institutionalise("spellcheck/"));
 			}
 
 			options.put("body_class", "htmleditor");
 			final String css = htmlEditorService.getStylesheetRelativeUrl();
 			if( css != null )
 			{
-				options.put("content_css", urlService.institutionalise(css));
+				options.put("content_css", institutionService.institutionalise(css));
 			}
 
 			final ScriptContextFactory scriptContextFactory = model.getScriptContextFactory();
@@ -407,7 +409,7 @@ public class TinyMceServiceImpl implements TinyMceService
 					final ScriptContext scriptContext = scriptContextFactory.createScriptContext();
 					scriptContext.addScriptObject("pluginUrl", addOn.getBaseUrl());
 					scriptContext.addScriptObject("resourcesUrl", addOn.getResourcesUrl());
-					scriptContext.addScriptObject("institutionUrl", urlService.getInstitutionUrl().toString());
+					scriptContext.addScriptObject("institutionUrl", institutionService.getInstitutionUrl().toString());
 
 					addOn.setScriptContext(context, scriptContext);
 					context.preRender(addOn);
@@ -573,7 +575,7 @@ public class TinyMceServiceImpl implements TinyMceService
 			restrictedContributables, collectionUuids, contributableUuids);
 
 		model.setActionUrl(actionInfo.getPublicBookmark().getHref());
-		model.setBaseUrl(urlService.institutionalise(RESOURCES.url("scripts/tinymce")));
+		model.setBaseUrl(institutionService.institutionalise(RESOURCES.url("scripts/tinymce")));
 		model.setLang(getClosestLangPack(LANG_PACKS));
 		model.setDirectionality(CurrentLocale.isRightToLeft() ? "rtl" : "ltr");
 
@@ -604,8 +606,8 @@ public class TinyMceServiceImpl implements TinyMceService
 	public JSCallable getDisableFunction(ElementId element, ElementId fullscreenLinkElement)
 	{
 		final ScriptVariable dis = new ScriptVariable("dis");
-		final JSAssignable setDisabledThis = Js.function(
-			Js.call_s(setDisabled, Jq.$(element), Jq.$(fullscreenLinkElement), dis), dis);
+		final JSAssignable setDisabledThis = Js
+			.function(Js.call_s(setDisabled, Jq.$(element), Jq.$(fullscreenLinkElement), dis), dis);
 		return CallAndReferenceFunction.get(setDisabledThis, element);
 	}
 
@@ -689,8 +691,8 @@ public class TinyMceServiceImpl implements TinyMceService
 					addDdButton(buttons, "fontsizeselect", null, "mce_fontsizeselect", LABEL_FONT_SIZE_SELECT, 2, true);
 					addButton(buttons, "spellchecker", "spellchecker", 2);
 
-					DivRenderer renderer = new DivRenderer("tleSkin", new SpanRenderer("mceSeparator",
-						new LabelRenderer(new TextLabel("&nbsp;", true))));
+					DivRenderer renderer = new DivRenderer("tleSkin",
+						new SpanRenderer("mceSeparator", new LabelRenderer(new TextLabel("&nbsp;", true))));
 					HtmlEditorButtonDefinition seppo = new HtmlEditorButtonDefinition("|", null, renderer,
 						new KeyLabel(KEY_BUTTON_PREFIX + "separator"), 2, false);
 					buttons.put("|", seppo);
@@ -754,16 +756,16 @@ public class TinyMceServiceImpl implements TinyMceService
 	private void addButton(Map<String, HtmlEditorButtonDefinition> buttons, String id, String pluginId, int row,
 		boolean singleton)
 	{
-		HtmlEditorButtonDefinition bold = new HtmlEditorButtonDefinition(id, pluginId, new StandardButtonRenderer(
-			"mce_" + id), new KeyLabel(KEY_BUTTON_PREFIX + id), row, singleton);
+		HtmlEditorButtonDefinition bold = new HtmlEditorButtonDefinition(id, pluginId,
+			new StandardButtonRenderer("mce_" + id), new KeyLabel(KEY_BUTTON_PREFIX + id), row, singleton);
 		buttons.put(id, bold);
 	}
 
 	private void addDdButton(Map<String, HtmlEditorButtonDefinition> buttons, String id, String pluginId,
 		String cssClass, Label text, int row, boolean singleton)
 	{
-		HtmlEditorButtonDefinition bold = new HtmlEditorButtonDefinition(id, pluginId, new DropdownButtonRenderer(
-			cssClass, text), new KeyLabel(KEY_BUTTON_PREFIX + id), row, singleton);
+		HtmlEditorButtonDefinition bold = new HtmlEditorButtonDefinition(id, pluginId,
+			new DropdownButtonRenderer(cssClass, text), new KeyLabel(KEY_BUTTON_PREFIX + id), row, singleton);
 		buttons.put(id, bold);
 	}
 
@@ -785,8 +787,8 @@ public class TinyMceServiceImpl implements TinyMceService
 		TableCell ddtext = new TableCell(atag);
 		ddtext.addClass("mceLeft");
 
-		DivRenderer aopen = new DivRenderer("a", "mceOpen", new SpanRenderer(new SpanRenderer("mceIconOnly",
-			new LabelRenderer(new TextLabel("&nbsp;", true)))));
+		DivRenderer aopen = new DivRenderer("a", "mceOpen",
+			new SpanRenderer(new SpanRenderer("mceIconOnly", new LabelRenderer(new TextLabel("&nbsp;", true)))));
 		TableCell dddrop = new TableCell(aopen);
 		dddrop.addClass("mceRight");
 		state.addRow(ddtext, dddrop);
@@ -797,11 +799,11 @@ public class TinyMceServiceImpl implements TinyMceService
 	{
 		public DropdownButtonRenderer(String buttonCss, Label buttonText)
 		{
-			super("tleSkin", new DivRenderer("span", new TableRenderer(selectButtonState(buttonCss, buttonText),
-				rendererFactory)
-			{
-				// sonar fix - remove the useless overriding method
-			}));
+			super("tleSkin",
+				new DivRenderer("span", new TableRenderer(selectButtonState(buttonCss, buttonText), rendererFactory)
+				{
+					// sonar fix - remove the useless overriding method
+				}));
 		}
 	}
 
@@ -809,8 +811,8 @@ public class TinyMceServiceImpl implements TinyMceService
 	{
 		public StandardButtonRenderer(String buttonCss)
 		{
-			super("tleSkin tleSkinSilver", new DivRenderer("a", "mceButton", new DivRenderer("span", "mceIcon "
-				+ buttonCss, null)));
+			super("tleSkin tleSkinSilver",
+				new DivRenderer("a", "mceButton", new DivRenderer("span", "mceIcon " + buttonCss, null)));
 		}
 
 		@Override

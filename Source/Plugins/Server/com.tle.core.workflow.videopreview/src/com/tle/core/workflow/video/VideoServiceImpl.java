@@ -24,7 +24,7 @@ import javax.inject.Singleton;
 
 import org.apache.log4j.Logger;
 
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.core.guice.Bind;
 import com.tle.core.libav.LibAvService;

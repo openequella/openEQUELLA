@@ -33,7 +33,7 @@ import com.tle.common.Check;
 import com.tle.common.NameValue;
 import com.tle.common.Pair;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
-import com.tle.web.i18n.BundleNameValue;
+import com.tle.core.i18n.BundleNameValue;
 import com.tle.web.mimetypes.section.FakeMimeTypeResource;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;

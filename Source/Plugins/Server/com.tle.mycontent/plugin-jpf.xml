@@ -3,7 +3,6 @@
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.common.search" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.core.freetext" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.imagemagick" />
@@ -24,6 +23,8 @@
 		<import plugin-id="com.tle.web.itemadmin" />
 		<import plugin-id="com.tle.core.item" />
 		<import plugin-id="com.tle.web.api.search" />
+		<import plugin-id="com.tle.core.item.standard" />
+		<import plugin-id="com.tle.core.soap" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

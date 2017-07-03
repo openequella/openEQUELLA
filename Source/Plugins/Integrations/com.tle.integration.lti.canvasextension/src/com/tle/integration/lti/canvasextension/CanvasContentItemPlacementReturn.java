@@ -31,7 +31,7 @@ import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemResolver;
+import com.tle.core.item.service.ItemResolver;
 import com.tle.web.integration.Integration.LmsLink;
 import com.tle.web.integration.IntegrationInterface;
 import com.tle.web.integration.service.IntegrationService;

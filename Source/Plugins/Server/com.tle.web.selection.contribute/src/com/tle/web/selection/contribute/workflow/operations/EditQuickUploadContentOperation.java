@@ -27,18 +27,18 @@ import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.FileInfo;
 import com.dytech.edge.exceptions.WorkflowException;
 import com.tle.beans.entity.Schema;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.beans.item.attachments.ModifiableAttachments;
 import com.tle.core.imagemagick.ImageMagickService;
+import com.tle.core.item.standard.operations.AbstractStandardWorkflowOperation;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.selection.contribute.SelectionHomeContributePortalSection.ContentFields;
 
-public class EditQuickUploadContentOperation extends AbstractWorkflowOperation
+public class EditQuickUploadContentOperation extends AbstractStandardWorkflowOperation
 {
 	private final InputStream inputStream;
 	private final String filename;

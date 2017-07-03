@@ -29,16 +29,17 @@ import java.util.List;
 
 import com.dytech.edge.common.FileInfo;
 import com.google.common.io.CharStreams;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.scripting.objects.FileScriptObject;
 import com.tle.common.scripting.types.BinaryDataScriptType;
 import com.tle.common.scripting.types.FileHandleScriptType;
 import com.tle.common.scripting.types.ItemScriptType;
-import com.tle.core.filesystem.ItemFile;
+import com.tle.core.item.service.ItemFileService;
 import com.tle.core.scripting.service.ErrorThrowingFileHandle;
 import com.tle.core.services.FileSystemService;
+import com.tle.web.scripting.impl.ItemScriptWrapper.ItemScriptTypeImpl;
 import com.tle.web.scripting.impl.UtilsScriptWrapper.BinaryDataScriptTypeImpl;
 
 @SuppressWarnings("nls")
@@ -47,11 +48,14 @@ public class FileScriptingObjectImpl extends AbstractScriptWrapper implements Fi
 	private static final long serialVersionUID = 1L;
 
 	private final FileSystemService fileSystemService;
+	private final ItemFileService itemFileService;
 	private final FileHandle handle;
 
-	public FileScriptingObjectImpl(FileSystemService fileSystemService, FileHandle handle)
+	public FileScriptingObjectImpl(FileSystemService fileSystemService, ItemFileService itemFileService,
+		FileHandle handle)
 	{
 		this.fileSystemService = fileSystemService;
+		this.itemFileService = itemFileService;
 		this.handle = handle;
 
 		Check.checkNotNull(handle);
@@ -179,8 +183,13 @@ public class FileScriptingObjectImpl extends AbstractScriptWrapper implements Fi
 	@Override
 	public FileHandleScriptType getFileHandle(ItemScriptType item, String filename)
 	{
+		if( item instanceof ItemScriptTypeImpl )
+		{
+			return new FileHandleScriptTypeImpl(filename,
+				itemFileService.getItemFile(((ItemScriptTypeImpl) item).getItem()), true);
+		}
 		final ItemId itemId = new ItemId(item.getUuid(), item.getVersion());
-		return new FileHandleScriptTypeImpl(filename, new ItemFile(itemId), true);
+		return new FileHandleScriptTypeImpl(filename, itemFileService.getItemFile(itemId, null), true);
 	}
 
 	public static class FileHandleScriptTypeImpl implements FileHandleScriptType

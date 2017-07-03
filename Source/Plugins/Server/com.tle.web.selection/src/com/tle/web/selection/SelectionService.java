@@ -70,7 +70,8 @@ public interface SelectionService
 	void addSelectedPath(SectionInfo info, IItem<?> item, String resource, @Nullable TargetFolder folder,
 		@Nullable String extensionType);
 
-	void addSelectedItem(SectionInfo info, IItem<?> item, @Nullable TargetFolder folder, @Nullable String extensionType);
+	void addSelectedItem(SectionInfo info, IItem<?> item, @Nullable TargetFolder folder,
+		@Nullable String extensionType);
 
 	void addSelectedResource(SectionInfo info, SelectedResource selection, boolean forward);
 

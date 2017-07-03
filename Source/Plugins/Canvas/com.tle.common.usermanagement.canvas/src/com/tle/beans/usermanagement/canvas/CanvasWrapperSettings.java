@@ -17,7 +17,7 @@
 package com.tle.beans.usermanagement.canvas;
 
 import com.tle.beans.ump.UserManagementSettings;
-import com.tle.common.property.annotation.Property;
+import com.tle.common.settings.annotation.Property;
 
 /**
  * @author aholland

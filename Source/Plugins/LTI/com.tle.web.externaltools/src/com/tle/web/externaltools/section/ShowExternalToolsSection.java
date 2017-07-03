@@ -21,9 +21,9 @@ import javax.inject.Inject;
 import com.tle.common.externaltools.constants.ExternalToolConstants;
 import com.tle.common.externaltools.entity.ExternalTool;
 import com.tle.common.i18n.LangUtils;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.externaltools.service.ExternalToolsService;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.entity.AbstractEntityService;
 import com.tle.web.entities.section.AbstractShowEntitiesSection;
 import com.tle.web.externaltools.section.ShowExternalToolsSection.ShowExternalToolsModel;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -122,4 +122,3 @@ public class ShowExternalToolsSection extends AbstractShowEntitiesSection<Extern
 	{
 	}
 }
-

@@ -10,6 +10,9 @@
 		<import plugin-id="com.tle.core.usermanagement.standard" />
 		<import plugin-id="com.tle.web.sections" />
 		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.core.collection" />
+		<import plugin-id="com.tle.common.settings.standard" />
+		<import plugin-id="com.tle.core.notification.standard" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

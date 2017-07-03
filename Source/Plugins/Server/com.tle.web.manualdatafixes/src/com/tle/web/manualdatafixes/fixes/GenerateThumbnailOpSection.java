@@ -30,22 +30,21 @@ import com.tle.beans.Institution;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemPack;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.guice.BindFactory;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.institution.RunAsInstitution;
+import com.tle.core.item.operations.BaseFilter;
+import com.tle.core.item.operations.FilterResultListener;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.services.TaskService;
 import com.tle.core.services.TaskStatus;
 import com.tle.core.services.impl.BeanClusteredTask;
 import com.tle.core.services.impl.SingleShotTask;
 import com.tle.core.services.impl.Task;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.workflow.filters.BaseFilter;
-import com.tle.core.workflow.filters.FilterResultListener;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.manualdatafixes.ManualDataFixModel;
@@ -146,8 +145,9 @@ public class GenerateThumbnailOpSection
 	{
 		boolean force = Boolean.valueOf(forceUpdate.getSelectedValueAsString(info));
 		long instId = CurrentInstitution.get().getUniqueId();
-		taskService.getGlobalTask(new BeanClusteredTask(TASK_ID + instId, GenerateThumbnailOpSection.class,
-			"createTask", instId, force), TimeUnit.SECONDS.toMillis(20));
+		taskService.getGlobalTask(
+			new BeanClusteredTask(TASK_ID + instId, GenerateThumbnailOpSection.class, "createTask", instId, force),
+			TimeUnit.SECONDS.toMillis(20));
 	}
 
 	public Task createTask(final long currentInstitution, final boolean force)
@@ -178,7 +178,7 @@ public class GenerateThumbnailOpSection
 							}
 
 							@Override
-							public void failed(ItemKey itemId, Item item, Throwable e)
+							public void failed(ItemKey itemId, Item item, ItemPack pack, Throwable e)
 							{
 								incrementWork();
 							}
@@ -208,7 +208,7 @@ public class GenerateThumbnailOpSection
 		@Inject
 		private GenerateThumbnailOpFactory thumbOpFactory;
 		@Inject
-		private WorkflowFactory workflowFactory;
+		private ItemOperationFactory workflowFactory;
 
 		@AssistedInject
 		protected GenerateThumbnailFilter(@Assisted boolean forceUpdate)
@@ -219,7 +219,7 @@ public class GenerateThumbnailOpSection
 		@Override
 		protected WorkflowOperation[] createOperations()
 		{
-			return new AbstractWorkflowOperation[]{thumbOpFactory.generateThumbnail(forceUpdate),
+			return new WorkflowOperation[]{thumbOpFactory.generateThumbnail(forceUpdate),
 					workflowFactory.reindexOnly(false)};
 		}
 

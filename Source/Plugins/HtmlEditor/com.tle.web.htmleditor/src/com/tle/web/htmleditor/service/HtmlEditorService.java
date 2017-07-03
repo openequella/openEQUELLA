@@ -16,10 +16,10 @@
 
 package com.tle.web.htmleditor.service;
 
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.htmleditor.HtmlEditorConfiguration;
 import com.tle.web.htmleditor.HtmlEditorConfigurationEditingSession;
 import com.tle.web.htmleditor.HtmlEditorControl;

@@ -83,13 +83,13 @@ import com.tle.common.search.whereparser.WhereParser;
 import com.tle.common.searching.Search;
 import com.tle.common.searching.Search.SortType;
 import com.tle.common.searching.SearchResults;
+import com.tle.core.collection.service.ItemDefinitionService;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.core.services.item.FreeTextService;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.util.ItemHelper;
+import com.tle.core.item.helper.ItemHelper;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.search.LegacySearch;
 import com.tle.freetext.FreetextIndex;
-import com.tle.searching.LegacySearch;
 import com.tle.web.scripting.impl.ItemScriptWrapper.ItemScriptTypeImpl;
 import com.tle.web.viewurl.ViewItemUrlFactory;
 
@@ -164,8 +164,8 @@ public class UtilsScriptWrapper extends AbstractScriptWrapper implements UtilsSc
 		req.setWhere(where);
 		req.setOnlyLive(onlyLive);
 
-		return new SearchResultsScriptTypeImpl(itemService, itemHelper, freetextService.search(new LegacySearch(req,
-			collectionService), offset, maxResults));
+		return new SearchResultsScriptTypeImpl(itemService, itemHelper,
+			freetextService.search(new LegacySearch(req, collectionService), offset, maxResults));
 	}
 
 	@Override
@@ -441,8 +441,8 @@ public class UtilsScriptWrapper extends AbstractScriptWrapper implements UtilsSc
 				Transformer transformer = TransformerFactory.newInstance().newTransformer();
 
 				DOMResult result = new DOMResult();
-				transformer
-					.transform(new SAXSource(htmlParser, new InputSource(new StringReader(getAsText()))), result);
+				transformer.transform(new SAXSource(htmlParser, new InputSource(new StringReader(getAsText()))),
+					result);
 
 				Node node = result.getNode();
 				if( node.getNodeType() == Node.DOCUMENT_NODE )

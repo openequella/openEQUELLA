@@ -29,21 +29,21 @@ import javax.inject.Singleton;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dytech.edge.common.valuebean.ValidationError;
 import com.tle.common.EntityPack;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.customlinks.entity.CustomLink;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.TargetList;
 import com.tle.common.security.TargetListEntry;
 import com.tle.core.customlinks.dao.CustomLinkDao;
+import com.tle.core.entity.EntityEditingSession;
+import com.tle.core.entity.service.impl.AbstractEntityServiceImpl;
 import com.tle.core.filesystem.EntityFile;
-import com.tle.core.filesystem.StagingFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.security.impl.RequiresPrivilege;
 import com.tle.core.security.impl.SecureEntity;
-import com.tle.core.services.entity.EntityEditingSession;
-import com.tle.core.services.entity.impl.AbstractEntityServiceImpl;
 
 @SuppressWarnings("nls")
 @SecureEntity("CUSTOM_LINK")
@@ -51,7 +51,8 @@ import com.tle.core.services.entity.impl.AbstractEntityServiceImpl;
 @Singleton
 public class CustomLinkServiceImpl
 	extends
-		AbstractEntityServiceImpl<CustomLinkEditingBean, CustomLink, CustomLinkService> implements CustomLinkService
+		AbstractEntityServiceImpl<CustomLinkEditingBean, CustomLink, CustomLinkService>
+	implements CustomLinkService
 {
 	private static final String ORDER = "order";
 	private static final String EDIT_CUSTOM_LINK = "EDIT_CUSTOM_LINK";
@@ -248,7 +249,8 @@ public class CustomLinkServiceImpl
 	}
 
 	@Override
-	protected void onStartNewSession(EntityEditingSession<CustomLinkEditingBean, CustomLink> session, EntityFile entFile)
+	protected void onStartNewSession(EntityEditingSession<CustomLinkEditingBean, CustomLink> session,
+		EntityFile entFile)
 	{
 		super.onStartNewSession(session, entFile);
 

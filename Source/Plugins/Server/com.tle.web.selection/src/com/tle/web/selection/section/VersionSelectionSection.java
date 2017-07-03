@@ -31,14 +31,14 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.VersionSelection;
-import com.tle.beans.system.QuickContributeAndVersionSettings;
 import com.tle.common.Check;
 import com.tle.common.Pair;
+import com.tle.common.settings.standard.QuickContributeAndVersionSettings;
 import com.tle.core.guice.Bind;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;
@@ -185,7 +185,7 @@ public class VersionSelectionSection
 					}
 					versionCell.addContent(
 						versionSelections.getListState(info, key, getVersionOptionsForSelectedResource(res), dvo));
-					versionCell.addClass("version");
+					versionCell.addClasses("version");
 				}
 
 				final HtmlComponentState unselect = new HtmlComponentState();

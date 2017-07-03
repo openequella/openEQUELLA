@@ -29,7 +29,6 @@ import org.hibernate.Hibernate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dytech.edge.common.valuebean.ValidationError;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.tle.beans.EntityScript;
@@ -41,24 +40,25 @@ import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.Check;
 import com.tle.common.EntityPack;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.dynacollection.SearchSetAdapter;
 import com.tle.common.search.searchset.SearchSet;
 import com.tle.common.security.PrivilegeTree.Node;
+import com.tle.core.collection.event.listener.ItemDefinitionDeletionListener;
 import com.tle.core.dynacollection.DynaCollectionDao;
 import com.tle.core.dynacollection.DynaCollectionReferencesEvent;
 import com.tle.core.dynacollection.DynaCollectionService;
-import com.tle.core.events.listeners.ItemDefinitionDeletionListener;
-import com.tle.core.events.listeners.SchemaDeletionListener;
+import com.tle.core.entity.EntityEditingBean;
+import com.tle.core.entity.EntityEditingSession;
+import com.tle.core.entity.service.impl.AbstractEntityServiceImpl;
 import com.tle.core.freetext.queries.FreeTextBooleanQuery;
 import com.tle.core.guice.Bind;
+import com.tle.core.schema.event.listener.SchemaDeletionListener;
 import com.tle.core.search.VirtualisableAndValue;
 import com.tle.core.search.searchset.SearchSetService;
 import com.tle.core.search.searchset.virtualisation.VirtualisationHelper;
 import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.security.impl.SecureOnReturn;
-import com.tle.core.services.entity.EntityEditingBean;
-import com.tle.core.services.entity.EntityEditingSession;
-import com.tle.core.services.entity.impl.AbstractEntityServiceImpl;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 
@@ -113,8 +113,8 @@ public class DynaCollectionServiceImpl
 		}
 		else
 		{
-			List<VirtualisableAndValue<DynaCollection>> expanded = searchSetService.expandSearchSets(
-				Collections.singletonList(unexpanded), null, null, virtualisationHelper);
+			List<VirtualisableAndValue<DynaCollection>> expanded = searchSetService
+				.expandSearchSets(Collections.singletonList(unexpanded), null, null, virtualisationHelper);
 			for( VirtualisableAndValue<DynaCollection> expand : expanded )
 			{
 				String virtual = expand.getVirtualisedValue();

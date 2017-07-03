@@ -37,7 +37,7 @@ import com.tle.core.migration.AbstractHibernateSchemaMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
 import com.tle.core.plugins.impl.PluginServiceImpl;
-import com.tle.core.xstream.XmlService;
+import com.tle.core.xml.service.XmlService;
 
 @Bind
 public class SavedSearchToFavouriteSearchMigration extends AbstractHibernateSchemaMigration
@@ -60,8 +60,8 @@ public class SavedSearchToFavouriteSearchMigration extends AbstractHibernateSche
 	@Override
 	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
 	{
-		Query query = session
-			.createQuery("SELECT p.key.institution, p FROM UserPreference p WHERE p.key.preferenceID = 'saved.searches'"); //$NON-NLS-1$
+		Query query = session.createQuery(
+			"SELECT p.key.institution, p FROM UserPreference p WHERE p.key.preferenceID = 'saved.searches'"); //$NON-NLS-1$
 		List<Object[]> savedSearchesPrefs = query.list();
 
 		for( Object[] pair : savedSearchesPrefs )

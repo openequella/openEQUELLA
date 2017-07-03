@@ -4,12 +4,13 @@
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.core.services" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.web.sections" />
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.web.htmleditor" />
 		<import plugin-id="com.tle.web.itemlist" />
 		<import plugin-id="com.tle.web.search" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.core.item.standard" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

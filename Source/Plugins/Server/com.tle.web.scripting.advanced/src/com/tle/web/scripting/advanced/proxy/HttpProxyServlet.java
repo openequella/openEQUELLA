@@ -37,11 +37,11 @@ import com.tle.common.NameValue;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.HttpService;
-import com.tle.core.services.config.ConfigurationService;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Request.Method;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.core.services.http.Response;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 
 /**
  * <p>

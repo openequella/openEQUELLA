@@ -24,10 +24,10 @@ import javax.inject.Inject;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.tle.beans.system.SearchSettings;
-import com.tle.beans.system.SearchSettings.SearchFilter;
 import com.tle.common.NameValue;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.common.settings.standard.SearchSettings;
+import com.tle.common.settings.standard.SearchSettings.SearchFilter;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.search.base.AbstractSearchResultsSection;
@@ -49,7 +49,8 @@ import com.tle.web.sections.standard.model.DynamicHtmlListModel;
 
 public abstract class AbstractFilterByMimeTypeSection<SE extends AbstractSearchEvent<SE>>
 	extends
-		AbstractPrototypeSection<Object> implements HtmlRenderer, SearchEventListener<SE>, ResetFiltersListener
+		AbstractPrototypeSection<Object>
+	implements HtmlRenderer, SearchEventListener<SE>, ResetFiltersListener
 {
 	@Inject
 	protected ConfigurationService configService;

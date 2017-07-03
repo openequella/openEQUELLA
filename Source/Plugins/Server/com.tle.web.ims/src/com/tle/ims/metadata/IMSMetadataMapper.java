@@ -26,7 +26,7 @@ import javax.inject.Singleton;
 
 import com.dytech.edge.ejb.helpers.metadata.mappers.AbstractXPathPackageMapper;
 import com.google.common.base.Throwables;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
 import com.tle.ims.service.IMSService;

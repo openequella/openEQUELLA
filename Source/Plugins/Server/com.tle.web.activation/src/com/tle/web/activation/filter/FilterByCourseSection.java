@@ -22,9 +22,9 @@ import javax.inject.Inject;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.core.activation.service.CourseInfoService;
+import com.tle.core.i18n.BundleCache;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.search.base.AbstractSearchResultsSection;
 import com.tle.web.search.event.FreetextSearchEvent;
 import com.tle.web.search.filter.ResetFiltersListener;
@@ -88,10 +88,10 @@ public class FilterByCourseSection extends AbstractPrototypeSection<FilterByCour
 	public void treeFinished(String id, SectionTree tree)
 	{
 		super.treeFinished(id, tree);
-		selCourse.setOkCallback(searchResults.getResultsUpdater(tree, events.getEventHandler("courseSelected"),
-			COURSE_DIV));
-		remove.setClickHandler(new OverrideHandler(searchResults.getResultsUpdater(tree,
-			events.getEventHandler("courseRemoved"), COURSE_DIV)));
+		selCourse
+			.setOkCallback(searchResults.getResultsUpdater(tree, events.getEventHandler("courseSelected"), COURSE_DIV));
+		remove.setClickHandler(new OverrideHandler(
+			searchResults.getResultsUpdater(tree, events.getEventHandler("courseRemoved"), COURSE_DIV)));
 	}
 
 	@Override

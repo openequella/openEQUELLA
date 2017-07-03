@@ -30,8 +30,6 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONArray;
-
 import com.dytech.edge.common.Constants;
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
@@ -49,12 +47,12 @@ import com.tle.beans.item.attachments.NavigationSettings;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.NameValue;
 import com.tle.common.PathUtils;
+import com.tle.common.filesystem.FileSystemConstants;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.FileSystemService;
+import com.tle.core.i18n.BundleNameValue;
 import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleNameValue;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
@@ -108,6 +106,8 @@ import com.tle.web.wizard.controls.WebControlModel;
 import com.tle.web.wizard.impl.WebRepository;
 import com.tle.web.wizard.render.WizardFreemarkerFactory;
 import com.tle.web.wizard.standard.controls.js.TreeNavControlLibrary;
+
+import net.sf.json.JSONArray;
 
 @NonNullByDefault
 @Bind
@@ -237,8 +237,8 @@ public class TreeNavWebControl extends AbstractWebControl<TreeNavWebControl.Tree
 				// NOOP
 			}
 		};
-		prepopButton.setClickHandler(new OverrideHandler(Js.iff(prepopconfirm,
-			events.getSubmitValuesHandler("prepopulate")))); //$NON-NLS-1$
+		prepopButton
+			.setClickHandler(new OverrideHandler(Js.iff(prepopconfirm, events.getSubmitValuesHandler("prepopulate")))); //$NON-NLS-1$
 		attachmentList.setListModel(new AttachmentListModel(true));
 		viewerList.setListModel(new ViewerListModel(attachmentList));
 
@@ -256,16 +256,16 @@ public class TreeNavWebControl extends AbstractWebControl<TreeNavWebControl.Tree
 		viewerListAjaxCall = new AnonymousFunction(new FunctionCallStatement(optionsAjaxCall, callback, attachUuid),
 			attachUuid, callback);
 
-		addChildNodeButton.setClickHandler(new OverrideHandler(TreeNavControlLibrary.CREATE_NODE,
-			TreeNavControlLibrary.THE_TREE, false));
-		addSiblingNodeButton.setClickHandler(new OverrideHandler(TreeNavControlLibrary.CREATE_NODE,
-			TreeNavControlLibrary.THE_TREE, true));
-		removeNodeButton.setClickHandler(new OverrideHandler(TreeNavControlLibrary.REMOVE_NODE,
-			TreeNavControlLibrary.THE_TREE));
-		moveUpButton.setClickHandler(new OverrideHandler(TreeNavControlLibrary.MOVE_NODE_UP,
-			TreeNavControlLibrary.THE_TREE));
-		moveDownButton.setClickHandler(new OverrideHandler(TreeNavControlLibrary.MOVE_NODE_DOWN,
-			TreeNavControlLibrary.THE_TREE));
+		addChildNodeButton.setClickHandler(
+			new OverrideHandler(TreeNavControlLibrary.CREATE_NODE, TreeNavControlLibrary.THE_TREE, false));
+		addSiblingNodeButton.setClickHandler(
+			new OverrideHandler(TreeNavControlLibrary.CREATE_NODE, TreeNavControlLibrary.THE_TREE, true));
+		removeNodeButton
+			.setClickHandler(new OverrideHandler(TreeNavControlLibrary.REMOVE_NODE, TreeNavControlLibrary.THE_TREE));
+		moveUpButton
+			.setClickHandler(new OverrideHandler(TreeNavControlLibrary.MOVE_NODE_UP, TreeNavControlLibrary.THE_TREE));
+		moveDownButton
+			.setClickHandler(new OverrideHandler(TreeNavControlLibrary.MOVE_NODE_DOWN, TreeNavControlLibrary.THE_TREE));
 
 		showSplit.setLabel(SPLIT_LABEL);
 		showUnassignedAttachments.setLabel(UNASSIGNED_ATTACHMENTS_LABEL);
@@ -300,9 +300,8 @@ public class TreeNavWebControl extends AbstractWebControl<TreeNavWebControl.Tree
 
 	protected String getTreeDef()
 	{
-		return JSONArray.fromObject(
-			AbstractTreeViewerSection.addChildNodes(treeControl.getRootNodes(), treeControl.getItemNavigationTree(),
-				openNodes, null)).toString();
+		return JSONArray.fromObject(AbstractTreeViewerSection.addChildNodes(treeControl.getRootNodes(),
+			treeControl.getItemNavigationTree(), openNodes, null)).toString();
 	}
 
 	@Override
@@ -355,8 +354,8 @@ public class TreeNavWebControl extends AbstractWebControl<TreeNavWebControl.Tree
 							tab.setNode(node);
 							tab.setName(AbstractHTMLControl.urlDecode(parts[0]));
 							tab.setViewer(parts.length < 2 ? null : AbstractHTMLControl.urlDecode(parts[1]));
-							tab.setAttachment(parts.length < 3 ? null : (Attachment) attachMap.get(AbstractHTMLControl
-								.urlDecode(parts[2])));
+							tab.setAttachment(parts.length < 3 ? null
+								: (Attachment) attachMap.get(AbstractHTMLControl.urlDecode(parts[2])));
 
 							tabs.add(tab);
 						}
@@ -437,8 +436,7 @@ public class TreeNavWebControl extends AbstractWebControl<TreeNavWebControl.Tree
 		return attachList;
 	}
 
-	private void prepopulateIms(SectionInfo info, Item item, Map<String, IAttachment> attachmentsToAdd)
-		throws Exception
+	private void prepopulateIms(SectionInfo info, Item item, Map<String, IAttachment> attachmentsToAdd) throws Exception
 	{
 		// remove existing IMSResource/METS attachments
 		for( Attachment attachment : repository.getPackageAttachments() )
@@ -458,14 +456,14 @@ public class TreeNavWebControl extends AbstractWebControl<TreeNavWebControl.Tree
 			{
 				attachmentsToAdd.remove(imsAttachment.getUuid());
 				repository.createPackageNavigation(info, imsAttachment.getUrl(),
-					PathUtils.filePath(FileSystemService.IMS_FOLDER, imsAttachment.getUrl()), imsAttachment.getUrl(),
+					PathUtils.filePath(FileSystemConstants.IMS_FOLDER, imsAttachment.getUrl()), imsAttachment.getUrl(),
 					true);
 			}
 
 			// remove this attachment from the list of attachments to add
 			attachmentsToAdd.remove(imsAttachment.getUuid());
 			repository.createPackageNavigation(info, imsAttachment.getUrl(),
-				PathUtils.filePath(FileSystemService.IMS_FOLDER, imsAttachment.getUrl()), imsAttachment.getUrl(), true);
+				PathUtils.filePath(FileSystemConstants.IMS_FOLDER, imsAttachment.getUrl()), imsAttachment.getUrl(), true);
 		}
 	}
 
@@ -522,8 +520,8 @@ public class TreeNavWebControl extends AbstractWebControl<TreeNavWebControl.Tree
 		IAttachment attachment = attachments.get(attachmentUuid);
 		if( attachment != null )
 		{
-			ViewableResource resource = attachmentResourceService.getViewableResource(info, getWebRepository()
-				.getViewableItem(), attachment);
+			ViewableResource resource = attachmentResourceService.getViewableResource(info,
+				getWebRepository().getViewableItem(), attachment);
 			resource.setAttribute(ViewableResource.KEY_TARGETS_FRAME, true);
 			List<NameValue> viewersList = viewItemService.getEnabledViewers(info, resource);
 			for( NameValue viewerName : viewersList )

@@ -18,7 +18,7 @@ package com.tle.web.copyright.service;
 
 import java.util.Map;
 
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.core.copyright.Holding;

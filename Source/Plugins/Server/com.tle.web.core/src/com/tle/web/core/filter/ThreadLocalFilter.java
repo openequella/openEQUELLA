@@ -24,16 +24,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.i18n.ServerSideLocaleImplementation;
+import com.tle.core.i18n.ServerSideTimeZoneImplementation;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
-import com.tle.core.services.language.impl.ServerSideLocaleImplementation;
-import com.tle.core.services.language.impl.ServerSideTimeZoneImplementation;
 import com.tle.core.services.user.UserSessionService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
 import com.tle.web.dispatcher.FilterResult;
-import com.tle.web.i18n.BundleCache;
 
 @Bind
 @Singleton

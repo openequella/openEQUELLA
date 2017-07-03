@@ -36,7 +36,7 @@ import org.eclipse.datatools.connectivity.oda.OdaException;
 import com.tle.core.reporting.ReportPrivileges;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.user.UserService;
-import com.tle.core.xstream.XmlService;
+import com.tle.core.xml.service.XmlService;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.reporting.IResultSetExt;
 import com.tle.reporting.LearningEdgeOdaDelegate;
@@ -60,6 +60,7 @@ public class ReportStreamingService extends AbstractPrototypeSection<ReportStrea
 
 	// UGH. What a bunch of bollocks.
 	private static Log LOGGER;
+
 	static
 	{
 		ClassLoader old = Thread.currentThread().getContextClassLoader();

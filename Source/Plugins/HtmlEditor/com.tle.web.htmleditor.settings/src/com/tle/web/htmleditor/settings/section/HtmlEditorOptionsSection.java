@@ -18,7 +18,7 @@ package com.tle.web.htmleditor.settings.section;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.annotation.Nullable;
 import com.tle.core.guice.Bind;
 import com.tle.web.freemarker.FreemarkerFactory;

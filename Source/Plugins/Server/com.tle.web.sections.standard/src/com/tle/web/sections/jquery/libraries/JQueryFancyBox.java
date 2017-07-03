@@ -18,6 +18,7 @@ package com.tle.web.sections.jquery.libraries;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
+import com.tle.web.DebugSettings;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.js.JSCallAndReference;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
@@ -28,8 +29,9 @@ public class JQueryFancyBox implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.fancybox.js",
-		"fancybox/jquery.fancybox.css");
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
+		DebugSettings.isDebuggingMode() ? "jquery.fancybox.js" : "jquery.fancybox.min.js",
+		DebugSettings.isDebuggingMode() ? "fancybox/jquery.fancybox.css" : "fancybox/jquery.fancybox.min.css");
 
 	public static final JSCallAndReference FANCYBOX = new ExternallyDefinedFunction("fancybox", -1, PRERENDER);
 

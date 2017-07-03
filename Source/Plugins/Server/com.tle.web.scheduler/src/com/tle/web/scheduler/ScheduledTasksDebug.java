@@ -23,7 +23,7 @@ import javax.inject.Inject;
 
 import com.tle.core.guice.Bind;
 import com.tle.core.scheduler.SchedulerService;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.annotations.EventFactory;

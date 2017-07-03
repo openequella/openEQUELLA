@@ -25,7 +25,6 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
 import com.dytech.gui.filter.FilterModel;
 import com.dytech.gui.filter.FilteredShuffleBox;
@@ -34,6 +33,7 @@ import com.tle.admin.plugin.GeneralPlugin;
 import com.tle.beans.usermanagement.standard.wrapper.SuspendedUserWrapperSettings;
 import com.tle.common.Format;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.remoting.RemoteUserService;
 
 public class SuspensionWrapper extends GeneralPlugin<SuspendedUserWrapperSettings>

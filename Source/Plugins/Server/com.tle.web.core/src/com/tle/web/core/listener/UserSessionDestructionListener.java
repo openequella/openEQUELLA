@@ -26,14 +26,14 @@ import org.apache.log4j.Logger;
 
 import com.dytech.edge.web.WebConstants;
 import com.tle.beans.Institution;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.events.UserSessionLogoutEvent;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.institution.RunAsInstitution;
-import com.tle.core.services.EventService;
+import com.tle.core.events.services.EventService;
 import com.tle.core.services.user.UserSessionService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.UserState;
 
 @Bind
 @Singleton

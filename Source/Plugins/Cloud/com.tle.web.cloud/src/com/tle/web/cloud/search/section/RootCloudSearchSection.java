@@ -21,11 +21,11 @@ import javax.inject.Inject;
 import com.dytech.edge.web.WebConstants;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.cloud.service.CloudService;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.UrlService;
-import com.tle.core.user.CurrentUser;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.login.LogonSection;
 import com.tle.web.search.base.ContextableSearchSection;
@@ -56,7 +56,7 @@ public class RootCloudSearchSection extends ContextableSearchSection<Contextable
 	@Inject
 	private TLEAclManager aclManager;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@Override
 	public SectionResult renderHtml(RenderEventContext context)
@@ -72,12 +72,12 @@ public class RootCloudSearchSection extends ContextableSearchSection<Contextable
 			if( CurrentUser.isGuest() )
 			{
 				LogonSection.forwardToLogon(context,
-					urlService.removeInstitution(context.getPublicBookmark().getHref()),
+					institutionService.removeInstitution(context.getPublicBookmark().getHref()),
 					LogonSection.STANDARD_LOGON_PATH);
 				return null;
 			}
-			throw new AccessDeniedException(CurrentLocale.get("com.tle.web.searching.missingprivileges",
-				WebConstants.SEARCH_PAGE_PRIVILEGE));
+			throw new AccessDeniedException(
+				CurrentLocale.get("com.tle.web.searching.missingprivileges", WebConstants.SEARCH_PAGE_PRIVILEGE));
 		}
 
 		return super.renderHtml(context);

@@ -18,6 +18,7 @@ package com.tle.web.sections.jquery.libraries;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
+import com.tle.web.DebugSettings;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.render.PreRenderable;
 
@@ -29,8 +30,8 @@ public class JQuerySortable implements JavascriptModule
 	/**
 	 * Includes ui.mouse
 	 */
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.sortable.js",
-		JQueryMouse.PRERENDER);
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
+		DebugSettings.isDebuggingMode() ? "jquery.ui.sortable.js" : "jquery.ui.sortable.min.js", JQueryMouse.PRERENDER);
 
 	@Override
 	public String getDisplayName()

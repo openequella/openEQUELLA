@@ -29,7 +29,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.SystemDatabase;
 import com.tle.core.hibernate.event.SchemaListener;
 import com.tle.core.security.impl.SecureOnCallSystem;
-import com.tle.core.services.EventService;
+import com.tle.core.events.services.EventService;
 import com.tle.core.system.SystemConfigService;
 import com.tle.core.system.dao.SystemConfigDao;
 import com.tle.core.system.events.ServerMessageChangeListener;

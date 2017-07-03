@@ -26,7 +26,6 @@ import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dytech.edge.exceptions.NotFoundException;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -34,9 +33,10 @@ import com.google.common.collect.Lists;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.Relation;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.plugins.PluginTracker;
-import com.tle.core.services.item.ItemService;
 import com.tle.exceptions.AccessDeniedException;
 
 @Bind(RelationService.class)

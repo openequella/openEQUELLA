@@ -30,9 +30,9 @@ import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
 import com.tle.common.PathUtils;
 import com.tle.common.URLUtils;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.web.api.item.ItemLinkService;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
 import com.tle.web.api.item.interfaces.beans.AttachmentBean;
@@ -63,7 +63,7 @@ public class ItemLinkServiceImpl implements ItemLinkService
 	@Inject
 	private ViewItemLinkFactory linkFactory;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@Override
 	public URI getItemURI(ItemKey itemKey)
@@ -81,7 +81,7 @@ public class ItemLinkServiceImpl implements ItemLinkService
 	private String getItemURLStr(ItemKey itemKey)
 	{
 		ItemId itemId = ItemId.fromKey(itemKey);
-		return urlService.institutionalise(PATH_ITEMAPI + itemId + '/');
+		return institutionService.institutionalise(PATH_ITEMAPI + itemId + '/');
 	}
 
 	@Override
@@ -98,10 +98,10 @@ public class ItemLinkServiceImpl implements ItemLinkService
 			for( AttachmentBean attachmentBean : attachments )
 			{
 				final Map<String, String> attachLinks = Maps.newHashMap();
-				attachLinks.put(REL_VIEW, linkFactory.createViewAttachmentLink(itemId, attachmentBean.getUuid())
-					.getHref());
-				attachLinks.put(REL_THUMB, linkFactory.createThumbnailAttachmentLink(itemId, attachmentBean.getUuid())
-					.getHref());
+				attachLinks.put(REL_VIEW,
+					linkFactory.createViewAttachmentLink(itemId, attachmentBean.getUuid()).getHref());
+				attachLinks.put(REL_THUMB,
+					linkFactory.createThumbnailAttachmentLink(itemId, attachmentBean.getUuid()).getHref());
 				attachmentBean.set("links", attachLinks);
 			}
 		}
@@ -123,10 +123,10 @@ public class ItemLinkServiceImpl implements ItemLinkService
 			for( AttachmentBean attachmentBean : attachments )
 			{
 				final Map<String, String> attachLinks = Maps.newHashMap();
-				attachLinks.put(REL_VIEW, linkFactory.createViewAttachmentLink(itemId, attachmentBean.getUuid())
-					.getHref());
-				attachLinks.put(REL_THUMB, linkFactory.createThumbnailAttachmentLink(itemId, attachmentBean.getUuid())
-					.getHref());
+				attachLinks.put(REL_VIEW,
+					linkFactory.createViewAttachmentLink(itemId, attachmentBean.getUuid()).getHref());
+				attachLinks.put(REL_THUMB,
+					linkFactory.createThumbnailAttachmentLink(itemId, attachmentBean.getUuid()).getHref());
 				attachmentBean.set("links", attachLinks);
 			}
 		}
@@ -139,8 +139,8 @@ public class ItemLinkServiceImpl implements ItemLinkService
 	{
 		try
 		{
-			return new URI(urlService.institutionalise(PathUtils.filePath(PATH_FILE_API, staging.getUuid(),
-				CONTEXT_FILE_DIR, path)));
+			return new URI(institutionService
+				.institutionalise(PathUtils.filePath(PATH_FILE_API, staging.getUuid(), CONTEXT_FILE_DIR, path)));
 		}
 		catch( URISyntaxException e )
 		{
@@ -153,8 +153,8 @@ public class ItemLinkServiceImpl implements ItemLinkService
 	{
 		try
 		{
-			return new URI(urlService.institutionalise(PathUtils.filePath(PATH_FILE_API, staging.getUuid(),
-				CONTEXT_FILE_CONTENT, path)));
+			return new URI(institutionService
+				.institutionalise(PathUtils.filePath(PATH_FILE_API, staging.getUuid(), CONTEXT_FILE_CONTENT, path)));
 		}
 		catch( URISyntaxException e )
 		{
@@ -166,13 +166,12 @@ public class ItemLinkServiceImpl implements ItemLinkService
 	public RootFolderBean addLinks(RootFolderBean stagingBean)
 	{
 		final Map<String, String> links = Maps.newHashMap();
-		final String selfUrl = urlService.institutionalise(PathUtils.filePath(PATH_FILE_API, stagingBean.getUuid(),
-			CONTEXT_FILE_DIR));
+		final String selfUrl = institutionService
+			.institutionalise(PathUtils.filePath(PATH_FILE_API, stagingBean.getUuid(), CONTEXT_FILE_DIR));
 		links.put(REL_SELF, selfUrl);
 		links.put(REL_DIR, selfUrl);
-		links
-			.put(REL_CONTENT, urlService.institutionalise(PathUtils.filePath(PATH_FILE_API, stagingBean.getUuid(),
-				CONTEXT_FILE_CONTENT)));
+		links.put(REL_CONTENT, institutionService
+			.institutionalise(PathUtils.filePath(PATH_FILE_API, stagingBean.getUuid(), CONTEXT_FILE_CONTENT)));
 		stagingBean.set("links", links);
 		return stagingBean;
 	}
@@ -194,14 +193,12 @@ public class ItemLinkServiceImpl implements ItemLinkService
 	private void addGenericFileLinks(StagingFile staging, GenericFileBean fileBean, String fullPath)
 	{
 		final Map<String, String> links = Maps.newHashMap();
-		final String selfUrl = urlService.institutionalise(URLUtils.urlEncode(
-			PathUtils.filePath(PATH_FILE_API, staging.getUuid(), CONTEXT_FILE_DIR, fullPath), false));
+		final String selfUrl = institutionService.institutionalise(URLUtils
+			.urlEncode(PathUtils.filePath(PATH_FILE_API, staging.getUuid(), CONTEXT_FILE_DIR, fullPath), false));
 		links.put(REL_SELF, selfUrl);
 		links.put(REL_DIR, selfUrl);
-		links.put(
-			REL_CONTENT,
-			urlService.institutionalise(URLUtils.urlEncode(
-				PathUtils.filePath(PATH_FILE_API, staging.getUuid(), CONTEXT_FILE_CONTENT, fullPath), false)));
+		links.put(REL_CONTENT, institutionService.institutionalise(URLUtils
+			.urlEncode(PathUtils.filePath(PATH_FILE_API, staging.getUuid(), CONTEXT_FILE_CONTENT, fullPath), false)));
 		fileBean.set("links", links);
 	}
 }

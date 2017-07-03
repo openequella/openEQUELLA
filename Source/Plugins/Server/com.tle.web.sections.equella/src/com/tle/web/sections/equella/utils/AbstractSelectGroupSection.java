@@ -25,13 +25,13 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.GroupBean;
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.tle.common.Check;
 import com.tle.common.Format;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.core.services.user.UserService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;

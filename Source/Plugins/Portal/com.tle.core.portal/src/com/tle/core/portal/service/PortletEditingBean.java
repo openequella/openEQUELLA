@@ -16,7 +16,7 @@
 
 package com.tle.core.portal.service;
 
-import com.tle.core.services.entity.EntityEditingBean;
+import com.tle.core.entity.EntityEditingBean;
 
 public class PortletEditingBean extends EntityEditingBean
 {

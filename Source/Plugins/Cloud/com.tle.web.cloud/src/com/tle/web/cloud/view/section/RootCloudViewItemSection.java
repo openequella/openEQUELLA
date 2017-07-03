@@ -23,12 +23,12 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.exceptions.NotFoundException;
 import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.web.cloud.view.CloudViewItemAuditor;
 import com.tle.web.cloud.view.CloudViewableItem;
 import com.tle.web.cloud.view.section.CloudItemSectionInfo.CloudItemSectionInfoFactory;

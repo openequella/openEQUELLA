@@ -19,7 +19,7 @@ package com.tle.core.service.session;
 import java.util.List;
 
 import com.tle.common.NameValue;
-import com.tle.core.services.entity.EntityEditingBean;
+import com.tle.core.entity.EntityEditingBean;
 
 public class ExternalToolEditingBean extends EntityEditingBean
 {

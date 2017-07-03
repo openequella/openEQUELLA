@@ -31,8 +31,6 @@ import javax.inject.Singleton;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dytech.common.io.UnicodeReader;
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.ejb.helpers.ValidationHelper;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,24 +43,27 @@ import com.tle.annotation.Nullable;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.Check;
 import com.tle.common.EntityPack;
+import com.tle.common.beans.exception.ValidationError;
+import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.common.htmleditor.beans.HtmlEditorPlugin;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.beans.LanguageBundleBean;
 import com.tle.common.i18n.beans.LanguageStringBean;
 import com.tle.common.security.PrivilegeTree.Node;
+import com.tle.core.entity.EntityEditingSession;
+import com.tle.core.entity.service.impl.AbstractEntityServiceImpl;
 import com.tle.core.events.UserDeletedEvent;
 import com.tle.core.events.UserIdChangedEvent;
 import com.tle.core.filesystem.EntityFile;
 import com.tle.core.filesystem.PublicFile;
-import com.tle.core.filesystem.StagingFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.htmleditor.HtmlEditorPluginConstants;
 import com.tle.core.htmleditor.dao.HtmlEditorPluginDao;
 import com.tle.core.institution.convert.ConverterParams;
+import com.tle.core.institution.convert.service.InstitutionImportService;
 import com.tle.core.security.impl.SecureEntity;
-import com.tle.core.services.entity.EntityEditingSession;
-import com.tle.core.services.entity.impl.AbstractEntityServiceImpl;
+import com.tle.core.services.ValidationHelper;
 import com.tle.core.util.archive.ArchiveType;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
@@ -80,6 +81,7 @@ public class HtmlEditorPluginServiceImpl
 	implements
 		HtmlEditorPluginService
 {
+
 	private static final PluginResourceHelper resources = ResourcesService
 		.getResourceHelper(HtmlEditorPluginServiceImpl.class);
 	private static final String KEY_ERROR_VALIDATION_PLUGIN_ID_UNIQUE = "error.validation.pluginidunique";
@@ -89,11 +91,15 @@ public class HtmlEditorPluginServiceImpl
 
 	private static final String[] NON_BLANKS = {"name", "pluginId"};
 	private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+
 	static
 	{
 		JSON_MAPPER.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 		JSON_MAPPER.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 	}
+
+	@Inject
+	private InstitutionImportService institutionImportService;
 
 	private final HtmlEditorPluginDao pluginDao;
 
@@ -137,8 +143,8 @@ public class HtmlEditorPluginServiceImpl
 			final HtmlEditorPlugin old = getByPluginId(pluginId);
 			if( old != null && old.getId() != bean.getId() )
 			{
-				errors.add(new ValidationError("plugin", resources.getString(KEY_ERROR_VALIDATION_PLUGIN_ID_UNIQUE,
-					pluginId)));
+				errors.add(new ValidationError("plugin",
+					resources.getString(KEY_ERROR_VALIDATION_PLUGIN_ID_UNIQUE, pluginId)));
 			}
 		}
 	}
@@ -203,7 +209,8 @@ public class HtmlEditorPluginServiceImpl
 	protected void beforeClone(TemporaryFileHandle staging, EntityPack<HtmlEditorPlugin> pack)
 	{
 		// export the prefs into the staging area
-		prepareExport(staging, pack.getEntity(), new ConverterParams(institutionService.getInfoForCurrentInstitution()));
+		prepareExport(staging, pack.getEntity(),
+			new ConverterParams(institutionImportService.getInfoForCurrentInstitution()));
 	}
 
 	@Override
@@ -314,8 +321,8 @@ public class HtmlEditorPluginServiceImpl
 			final ObjectNode plugin = loadJson(stagingFile, "plugin.json");
 			if( plugin == null )
 			{
-				throw new InvalidHtmlEditorPluginException(resources.getString(KEY_ERROR_INVALID_PLUGIN_NOPROPS,
-					"plugin.json"));
+				throw new InvalidHtmlEditorPluginException(
+					resources.getString(KEY_ERROR_INVALID_PLUGIN_NOPROPS, "plugin.json"));
 			}
 
 			// populate the bean with plugin values

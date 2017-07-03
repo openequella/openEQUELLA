@@ -19,21 +19,21 @@ package com.tle.web.echo.migration;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import net.sf.json.JSONArray;
-
 import com.tle.beans.mime.MimeEntry;
-import com.tle.core.filesystem.SubTemporaryFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.InstitutionInfo;
-import com.tle.core.institution.migration.XmlMigrator;
+import com.tle.core.institution.convert.XmlMigrator;
 import com.tle.core.mimetypes.MimeTypeConstants;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.mimetypes.institution.MimeEntryConverter;
-import com.tle.core.xstream.XmlService;
+import com.tle.core.xml.service.XmlService;
 import com.tle.web.echo.EchoUtils;
 import com.tle.web.viewurl.ResourceViewerConfig;
+
+import net.sf.json.JSONArray;
 
 @Bind
 @Singleton
@@ -53,8 +53,8 @@ public class AddEchoMimeTypeXmlMigration extends XmlMigrator
 		mimeEntry.setType(EchoUtils.MIME_TYPE);
 		mimeEntry.setDescription(EchoUtils.MIME_DESC);
 		mimeEntry.setAttribute(MimeTypeConstants.KEY_DEFAULT_VIEWERID, "echoCenterViewer");
-		mimeEntry.setAttribute(MimeTypeConstants.KEY_ENABLED_VIEWERS, JSONArray.fromObject(EchoUtils.VIEWERS)
-			.toString());
+		mimeEntry.setAttribute(MimeTypeConstants.KEY_ENABLED_VIEWERS,
+			JSONArray.fromObject(EchoUtils.VIEWERS).toString());
 		mimeEntry.setAttribute(MimeTypeConstants.KEY_DISABLE_FILEVIEWER, "true");
 		mimeEntry.setAttribute(MimeTypeConstants.KEY_ICON_PLUGINICON, EchoUtils.MIME_ICON_PATH);
 

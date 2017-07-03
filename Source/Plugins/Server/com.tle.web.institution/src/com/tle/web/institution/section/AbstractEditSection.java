@@ -29,10 +29,10 @@ import com.tle.beans.Institution;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
 import com.tle.common.util.DateHelper;
+import com.tle.core.i18n.BundleNameValue;
 import com.tle.core.institution.convert.ConverterParams;
+import com.tle.core.institution.convert.service.InstitutionImportService;
 import com.tle.core.migration.MigrationService;
-import com.tle.core.services.InstitutionImportService;
-import com.tle.web.i18n.BundleNameValue;
 import com.tle.web.institution.database.DatabaseTabUtils;
 import com.tle.web.institution.database.SelectDatabaseDialog;
 import com.tle.web.sections.SectionInfo;
@@ -186,10 +186,8 @@ public abstract class AbstractEditSection<M extends EditInstitutionModel> extend
 
 		itemsCheck.setLabel(ITEMS_LABEL);
 
-		itemsCheck.addEventStatements(
-			JSHandler.EVENT_CHANGE,
-			new FunctionCallStatement(attachmentsCheck.createDisableFunction(), new NotExpression(itemsCheck
-				.createGetExpression())));
+		itemsCheck.addEventStatements(JSHandler.EVENT_CHANGE, new FunctionCallStatement(
+			attachmentsCheck.createDisableFunction(), new NotExpression(itemsCheck.createGetExpression())));
 
 		attachmentsCheck.setLabel(ITEM_ATTACHMENTS_LABEL);
 		auditlogsCheck.setLabel(AUDITLOGS_LABEL);
@@ -199,13 +197,14 @@ public abstract class AbstractEditSection<M extends EditInstitutionModel> extend
 
 		cancelButton.setClickHandler(events.getNamedHandler("cancel"));
 		SubmitValuesHandler handler = events.getNamedHandler("doAction");
-		handler.addValidator(new SimpleValidator(new EqualityExpression(adminPassword.createGetExpression(),
-			adminConfirm.createGetExpression())).setFailureStatements(Js.alert_s(LABEL_PASSWORDMATCH)));
+		handler.addValidator(new SimpleValidator(
+			new EqualityExpression(adminPassword.createGetExpression(), adminConfirm.createGetExpression()))
+				.setFailureStatements(Js.alert_s(LABEL_PASSWORDMATCH)));
 		handler.addValidator(new Confirm(LABEL_PROCEED));
 		actionButton.setClickHandler(handler);
 
-		timeZones.setListModel(new SimpleHtmlListModel<NameValue>(DateHelper.getTimeZoneNameValues(new BundleNameValue(
-			KEY_TIMEZONE_SYSTEM, ""), false)));
+		timeZones.setListModel(new SimpleHtmlListModel<NameValue>(
+			DateHelper.getTimeZoneNameValues(new BundleNameValue(KEY_TIMEZONE_SYSTEM, ""), false)));
 
 		selectDatabaseDialog.setOkCallback(events.getSubmitValuesFunction("schemaSelected"));
 		selectDatabase.setClickHandler(selectDatabaseDialog.getOpenFunction());

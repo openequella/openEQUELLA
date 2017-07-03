@@ -18,8 +18,8 @@ package com.tle.web.remoting.impl;
 
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.item.Item;
-import com.tle.core.initialiser.InitialiserCallback;
-import com.tle.core.initialiser.Property;
+import com.tle.core.hibernate.equella.service.InitialiserCallback;
+import com.tle.core.hibernate.equella.service.Property;
 
 public class RemoteSimplifier implements InitialiserCallback
 {

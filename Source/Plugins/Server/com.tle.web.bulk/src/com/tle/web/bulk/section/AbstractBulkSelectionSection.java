@@ -16,9 +16,6 @@
 
 package com.tle.web.bulk.section;
 
-import it.uniroma3.mat.extendedset.intset.ConciseSet;
-import it.uniroma3.mat.extendedset.wrappers.LongSet;
-
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -83,6 +80,9 @@ import com.tle.web.sections.standard.RendererConstants;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.OkayableDialog;
 
+import it.uniroma3.mat.extendedset.intset.ConciseSet;
+import it.uniroma3.mat.extendedset.wrappers.LongSet;
+
 @NonNullByDefault
 @TreeIndexed
 @SuppressWarnings("nls")
@@ -96,9 +96,9 @@ public abstract class AbstractBulkSelectionSection<T extends ItemKey>
 {
 	public static final String DIVID_SELECTBOX = "bulk-selection";
 
-	public static final IncludeFile BULKINCLUDE = new IncludeFile(ResourcesService.getResourceHelper(
-		AbstractBulkSelectionSection.class).url("scripts/bulkoperation.js"), JQueryTimer.PRERENDER,
-		AjaxGenerator.AJAX_LIBRARY);
+	public static final IncludeFile BULKINCLUDE = new IncludeFile(
+		ResourcesService.getResourceHelper(AbstractBulkSelectionSection.class).url("scripts/bulkoperation.js"),
+		JQueryTimer.PRERENDER, AjaxGenerator.AJAX_LIBRARY);
 
 	static
 	{
@@ -161,8 +161,8 @@ public abstract class AbstractBulkSelectionSection<T extends ItemKey>
 		executeButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
 		executeButton.setClickHandler(new OverrideHandler(bulkDialog.getOpenFunction(), true));
 
-		bulkDialog.setCancelCallback(new SimpleFunction("cancel_" + id, StatementBlock.get(new FunctionCallStatement(
-			bulkDialog.getCloseFunction()), new ReloadStatement())));
+		bulkDialog.setCancelCallback(new SimpleFunction("cancel_" + id,
+			StatementBlock.get(new FunctionCallStatement(bulkDialog.getCloseFunction()), new ReloadStatement())));
 		tree.setLayout(id, AbstractSearchActionsSection.AREA_SELECT);
 	}
 
@@ -210,22 +210,37 @@ public abstract class AbstractBulkSelectionSection<T extends ItemKey>
 		{
 			div.setDisplayed(context, false);
 		}
+
 		return viewFactory.createResult("bulkselect.ftl", this);
 	}
 
 	protected void setupButton(SectionInfo context, int selectionCount)
 	{
-		if( selectionCount > 0 )
+		if( showExecuteButton(context) )
 		{
-			executeButton.setClickHandler(context, new OverrideHandler(getBulkDialog().getOpenFunction(), true));
+			executeButton.setDisplayed(context, true);
+			if( selectionCount > 0 )
+			{
+				executeButton.setClickHandler(context, new OverrideHandler(getBulkDialog().getOpenFunction(), true));
+			}
+			else
+			{
+				executeButton.setClickHandler(context, new OverrideHandler(Js.alert_s(getPleaseSelectLabel())));
+			}
 		}
 		else
 		{
-			executeButton.setClickHandler(context, new OverrideHandler(Js.alert_s(getPleaseSelectLabel())));
+			executeButton.setDisplayed(context, false);
 		}
+
 	}
 
 	protected boolean showSelections(SectionInfo info)
+	{
+		return true;
+	}
+
+	protected boolean showExecuteButton(SectionInfo info)
 	{
 		return true;
 	}

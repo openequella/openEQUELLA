@@ -28,8 +28,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.dytech.common.io.FileExtensionFilter;
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.ValidationError;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.dytech.gui.file.FileFilterAdapter;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.google.common.io.Files;

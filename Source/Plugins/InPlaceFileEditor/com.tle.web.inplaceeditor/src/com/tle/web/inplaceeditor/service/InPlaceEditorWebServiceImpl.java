@@ -24,9 +24,9 @@ import javax.inject.Singleton;
 import com.tle.beans.item.ItemId;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.appletcommon.AppletWebCommon;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
@@ -97,7 +97,7 @@ public class InPlaceEditorWebServiceImpl implements InPlaceEditorWebService
 		INPLACE_INCLUDE);
 
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private ConfigurationService configService;
 	@Inject
@@ -118,8 +118,9 @@ public class InPlaceEditorWebServiceImpl implements InPlaceEditorWebService
 		@Override
 		protected JSCallable createFunction(RenderContext info)
 		{
-			return CallAndReferenceFunction.get(Js.function(new ReturnStatement(resources
-				.getString("confirm.changesdetected"))), new SimpleElementId("cdt"));
+			return CallAndReferenceFunction.get(
+				Js.function(new ReturnStatement(resources.getString("confirm.changesdetected"))),
+				new SimpleElementId("cdt"));
 		}
 	};
 
@@ -145,15 +146,16 @@ public class InPlaceEditorWebServiceImpl implements InPlaceEditorWebService
 		options.put(AppletWebCommon.PARAMETER_PREFIX + "FILENAME", filename);
 		options.put(AppletWebCommon.PARAMETER_PREFIX + "MIMETYPE", mimeTypeService.getMimeTypeForFilename(filename));
 		options.put(AppletWebCommon.PARAMETER_PREFIX + "DEBUG", configService.isDebuggingMode());
-		options.put(AppletWebCommon.PARAMETER_PREFIX + "CROSSDOMAIN", urlService.institutionalise(CROSSDOMAINXML_URL));
+		options.put(AppletWebCommon.PARAMETER_PREFIX + "CROSSDOMAIN",
+			institutionService.institutionalise(CROSSDOMAINXML_URL));
 		options.put(AppletWebCommon.PARAMETER_PREFIX + "LOCALE", CurrentLocale.getLocale().toString());
-		options.put(AppletWebCommon.PARAMETER_PREFIX + "ENDPOINT", urlService.getInstitutionUrl().toString());
+		options.put(AppletWebCommon.PARAMETER_PREFIX + "ENDPOINT", institutionService.getInstitutionUrl().toString());
 		options.put(AppletWebCommon.PARAMETER_PREFIX + "INSTANCEID", UUID.randomUUID().toString());
 
-		options.put("jnlp_href", urlService.institutionalise(JNLP_URL));
+		options.put("jnlp_href", institutionService.institutionalise(JNLP_URL));
 		options.put("code", "com.tle.web.inplaceeditor.InPlaceEditAppletLauncher");
 
-		final String base = urlService.institutionalise(INPLACEEDIT_APPLET_JARBASE_URL);
+		final String base = institutionService.institutionalise(INPLACEEDIT_APPLET_JARBASE_URL);
 		options.put("codebase", base);
 		options.put("archive", base + INPLACEEDIT_APPLET_JAR);
 
@@ -171,7 +173,7 @@ public class InPlaceEditorWebServiceImpl implements InPlaceEditorWebService
 	@Override
 	public JSHandler createUploadHandler(String appletId, JSFunction doneUploadingCallback)
 	{
-		return new OverrideHandler(CHECK_SYNCED_FUNCTION, appletId, doneUploadingCallback,
-			beingUploadedMessageCallback, changesDetectedConfirmationMessageCallback);
+		return new OverrideHandler(CHECK_SYNCED_FUNCTION, appletId, doneUploadingCallback, beingUploadedMessageCallback,
+			changesDetectedConfirmationMessageCallback);
 	}
 }

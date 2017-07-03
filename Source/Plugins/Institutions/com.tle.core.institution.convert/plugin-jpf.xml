@@ -1,0 +1,77 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.institution.convert" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.beans" exported="true" />
+		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="com.tle.core.institution" exported="true" />
+		<import plugin-id="com.tle.core.filesystem" exported="true" />
+		<import plugin-id="com.tle.core.filesystem.staging" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.hibernate.equella" exported="true" />
+		<import plugin-id="com.tle.platform.common" exported="true" />
+		<import plugin-id="com.tle.core.xml" exported="true" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.common.filesystem" />
+	</requires>
+	
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	<extension-point id="converter">
+		<parameter-def id="id" multiplicity="one-or-more" />
+		<parameter-def id="class" multiplicity="one" />
+		<parameter-def id="order" multiplicity="one" type="number" />
+		<parameter-def id="selections" multiplicity="any">
+			<parameter-def id="id" type="string" multiplicity="one" />
+			<parameter-def id="nameKey" type="string" multiplicity="one" />
+		</parameter-def>
+	</extension-point>
+
+	<extension-point id="xmlmigration">
+		<parameter-def id="id" multiplicity="one" />
+		<parameter-def id="bean" multiplicity="none-or-one" />
+		<parameter-def id="depends" multiplicity="any" type="string" />
+		<parameter-def id="obsoletedby" type="string" multiplicity="any" />
+		<parameter-def id="date" type="date" multiplicity="none-or-one" />
+	</extension-point>
+	
+	<extension-point id="postreadmigration">
+		<parameter-def id="id" multiplicity="one" />
+		<parameter-def id="bean" multiplicity="one" />
+		<parameter-def id="depends" multiplicity="any" type="string" />
+		<parameter-def id="forconverter" multiplicity="one" type="string" />
+		<parameter-def id="alwaysRun" multiplicity="none-or-one" type="boolean" />
+	</extension-point>
+		
+	<extension-point id="itemxmlmigration">
+		<parameter-def id="id" multiplicity="one" />
+		<parameter-def id="bean" multiplicity="none-or-one" />
+		<parameter-def id="depends" multiplicity="any" type="string" />
+		<parameter-def id="date" type="date" multiplicity="none-or-one" />
+	</extension-point>
+	
+	<extension-point id="institutionInfoInitialiser">
+		<parameter-def id="bean" multiplicity="one" type="string" />
+	</extension-point>
+	
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+		<parameter id="class" value="com.tle.core.institution.convert.guice.InstitutionConverterTrackerModule" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="migrationConverter">
+		<parameter id="id" value="MIGRATION" />
+		<parameter id="class" value="bean:com.tle.core.institution.convert.MigrationConverter" />
+		<parameter id="order" value="100" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="zippingConverter">
+		<parameter id="id" value="ZIPFILES" />
+		<parameter id="class" value="bean:com.tle.core.institution.convert.ZippingConverter" />
+		<parameter id="order" value="20000" />
+	</extension>
+</plugin>

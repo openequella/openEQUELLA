@@ -1,19 +1,3 @@
-/*
- * Copyright 2017 Apereo
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.tle.admin.usermanagement.internal;
 
 import java.awt.Rectangle;
@@ -29,8 +13,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.ValidationError;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.dytech.gui.ChangeDetector;
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
@@ -80,19 +64,19 @@ public class UserDetailsPanel extends JChangeDetectorPanel
 	private void setupGui()
 	{
 		JLabel identifierLabel = new JLabel(
-			CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.identifier")); //$NON-NLS-1$
+				CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.identifier")); //$NON-NLS-1$
 		JLabel usernameLabel = new JLabel(
-			CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.username")); //$NON-NLS-1$
+				CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.username")); //$NON-NLS-1$
 		JLabel firstNameLabel = new JLabel(
-			CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.first")); //$NON-NLS-1$
+				CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.first")); //$NON-NLS-1$
 		JLabel lastNameLabel = new JLabel(
-			CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.last")); //$NON-NLS-1$
+				CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.last")); //$NON-NLS-1$
 		JLabel emailAddressLabel = new JLabel(
-			CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.email")); //$NON-NLS-1$
+				CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.email")); //$NON-NLS-1$
 		JLabel newPasswordLabel = new JLabel(
-			CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.newpswd")); //$NON-NLS-1$
+				CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.newpswd")); //$NON-NLS-1$
 		JLabel passwordConfirmLabel = new JLabel(
-			CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.confirmpswd")); //$NON-NLS-1$
+				CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.confirmpswd")); //$NON-NLS-1$
 
 		identifier = new JTextField();
 		identifier.setEditable(false);
@@ -164,7 +148,7 @@ public class UserDetailsPanel extends JChangeDetectorPanel
 				{
 					saveLoadedUser();
 					JOptionPane.showMessageDialog(getComponent(),
-						CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.saved")); //$NON-NLS-1$
+							CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.saved")); //$NON-NLS-1$
 				}
 
 				@Override
@@ -197,9 +181,9 @@ public class UserDetailsPanel extends JChangeDetectorPanel
 					CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.save"), //$NON-NLS-1$
 					CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.dontsave")}; //$NON-NLS-1$
 			int results = JOptionPane.showOptionDialog(this,
-				CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.confirm"), //$NON-NLS-1$
-				CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.saveuser"), //$NON-NLS-1$
-				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons, buttons[1]);
+					CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.confirm"), //$NON-NLS-1$
+					CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.saveuser"), //$NON-NLS-1$
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons, buttons[1]);
 
 			if( results == JOptionPane.NO_OPTION )
 			{
@@ -214,7 +198,7 @@ public class UserDetailsPanel extends JChangeDetectorPanel
 					{
 						saveLoadedUser();
 						JOptionPane.showMessageDialog(getComponent(),
-							CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.saved")); //$NON-NLS-1$
+								CurrentLocale.get("com.tle.admin.usermanagement.internal.userdetailspanel.saved")); //$NON-NLS-1$
 					}
 
 					@Override
@@ -269,7 +253,7 @@ public class UserDetailsPanel extends JChangeDetectorPanel
 	 */
 	private boolean saveDetails()
 	{
-		loadedUser.setUsername(username.getText());
+		loadedUser.setUsername(username.getText().trim());
 		loadedUser.setFirstName(firstName.getText());
 		loadedUser.setLastName(lastName.getText());
 		loadedUser.setEmailAddress(emailAddress.getText());
@@ -282,7 +266,7 @@ public class UserDetailsPanel extends JChangeDetectorPanel
 			if( !Arrays.equals(password, passwordConfirm.getPassword()) )
 			{
 				throw new InvalidDataException(Collections.singletonList(new ValidationError("password", CurrentLocale //$NON-NLS-1$
-					.get("com.tle.admin.usermanagement.internal.userdetailspanel.mustmatch")))); //$NON-NLS-1$
+						.get("com.tle.admin.usermanagement.internal.userdetailspanel.mustmatch")))); //$NON-NLS-1$
 			}
 		}
 		return passwordChanged;

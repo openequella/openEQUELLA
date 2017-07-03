@@ -44,9 +44,9 @@ import com.tle.beans.item.ItemIdKey;
 import com.tle.common.Check;
 import com.tle.common.Pair;
 import com.tle.common.searching.Search;
-import com.tle.core.dao.ItemDao;
+import com.tle.core.freetext.index.AbstractIndexEngine.Searcher;
 import com.tle.core.guice.BindFactory;
-import com.tle.freetext.index.AbstractIndexEngine.Searcher;
+import com.tle.core.item.dao.ItemDao;
 
 public class ItemSyncer implements Callable<Void>
 {
@@ -122,8 +122,8 @@ public class ItemSyncer implements Callable<Void>
 			}
 			final CompareDateCollector compareDates = new CompareDateCollector(indexedTimes, indexedItemFactory,
 				instMap, toDelete, startTime);
-			Collection<IndexedItem> changes = freetextIndex.getIndexer(Search.INDEX_ITEM).search(
-				new CompareSearcher(institutions, compareDates, rangeFirstId, lastInRange));
+			Collection<IndexedItem> changes = freetextIndex.getIndexer(Search.INDEX_ITEM)
+				.search(new CompareSearcher(institutions, compareDates, rangeFirstId, lastInRange));
 			if( !changes.isEmpty() )
 			{
 				waitForRoom(changes);
@@ -137,14 +137,14 @@ public class ItemSyncer implements Callable<Void>
 			int beforeCount = toDelete.size();
 			if( firstId > 0 )
 			{
-				freetextIndex.getIndexer(Search.INDEX_ITEM).search(
-					new CompareSearcher(institutions, datesBefore, 0, firstId - 1));
+				freetextIndex.getIndexer(Search.INDEX_ITEM)
+					.search(new CompareSearcher(institutions, datesBefore, 0, firstId - 1));
 			}
 			int beforeCount2 = toDelete.size();
 			if( lastId != Long.MAX_VALUE )
 			{
-				freetextIndex.getIndexer(Search.INDEX_ITEM).search(
-					new CompareSearcher(institutions, datesBefore, lastId + 1, Long.MAX_VALUE));
+				freetextIndex.getIndexer(Search.INDEX_ITEM)
+					.search(new CompareSearcher(institutions, datesBefore, lastId + 1, Long.MAX_VALUE));
 			}
 			if( toDelete.size() != beforeCount )
 			{

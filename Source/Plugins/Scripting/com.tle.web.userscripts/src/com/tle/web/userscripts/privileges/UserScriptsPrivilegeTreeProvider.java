@@ -20,8 +20,8 @@ import javax.inject.Inject;
 
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.userscripts.entity.UserScript;
+import com.tle.core.entity.security.AbstractEntityPrivilegeTreeProvider;
 import com.tle.core.guice.Bind;
-import com.tle.core.security.AbstractEntityPrivilegeTreeProvider;
 import com.tle.core.userscripts.service.UserScriptsService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;

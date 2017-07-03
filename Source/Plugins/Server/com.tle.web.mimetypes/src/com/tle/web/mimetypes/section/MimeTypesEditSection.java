@@ -20,18 +20,18 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.ValidationException;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.NameValue;
+import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.core.i18n.BundleNameValue;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.mimetypes.MimeTypeService.MimeEntryChanges;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.plugins.PluginTracker.ExtensionParamComparator;
-import com.tle.core.services.UrlService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleNameValue;
 import com.tle.web.mimetypes.MimeEditExtension;
 import com.tle.web.mimetypes.MimeEditorUtils;
 import com.tle.web.mimetypes.MimeSearchPrivilegeTreeProvider;
@@ -85,7 +85,7 @@ public class MimeTypesEditSection extends AbstractPrototypeSection<MimeTypesEdit
 	@Inject
 	private MimeSearchPrivilegeTreeProvider securityProvider;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@ViewFactory
 	private FreemarkerFactory viewFactory;
@@ -111,8 +111,8 @@ public class MimeTypesEditSection extends AbstractPrototypeSection<MimeTypesEdit
 	{
 		securityProvider.checkAuthorised();
 
-		Decorations.getDecorations(context).setTitle(
-			getModel(context).getEditId() == 0 ? ADD_TITLE_LABEL : EDIT_TITLE_LABEL);
+		Decorations.getDecorations(context)
+			.setTitle(getModel(context).getEditId() == 0 ? ADD_TITLE_LABEL : EDIT_TITLE_LABEL);
 
 		Breadcrumbs breadcrumbs = Breadcrumbs.get(context);
 		breadcrumbs.add(SettingsUtils.getBreadcrumb());
@@ -144,7 +144,7 @@ public class MimeTypesEditSection extends AbstractPrototypeSection<MimeTypesEdit
 			});
 			goBack(info);
 		}
-		catch( ValidationException ve )
+		catch( InvalidDataException ve )
 		{
 			info.preventGET();
 			model.setErrorKey(ve.getMessage());
@@ -159,7 +159,7 @@ public class MimeTypesEditSection extends AbstractPrototypeSection<MimeTypesEdit
 
 	private void goBack(SectionInfo info)
 	{
-		info.forwardToUrl(urlService.institutionalise(MimeEditorUtils.MIME_BOOKMARK));
+		info.forwardToUrl(institutionService.institutionalise(MimeEditorUtils.MIME_BOOKMARK));
 	}
 
 	@Override

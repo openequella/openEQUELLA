@@ -22,8 +22,8 @@ import javax.inject.Singleton;
 
 import com.tle.common.portal.PortletTypeTarget;
 import com.tle.common.portal.entity.Portlet;
+import com.tle.core.entity.security.BaseEntitySecurityTargetHandler;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.entity.impl.BaseEntitySecurityTargetHandler;
 
 /**
  * This is a "labeller" only. Works on Portlets and PortletTypeTargets

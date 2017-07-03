@@ -26,8 +26,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.GroupBean;
-import com.dytech.edge.common.valuebean.RoleBean;
 import com.tle.common.Check;
 import com.tle.common.Pair;
 import com.tle.common.lti.consumers.LtiConsumerConstants;
@@ -35,11 +33,13 @@ import com.tle.common.lti.consumers.LtiConsumerConstants.UnknownUser;
 import com.tle.common.lti.consumers.entity.LtiConsumer;
 import com.tle.common.recipientselector.ExpressionFormatter;
 import com.tle.common.security.SecurityConstants.Recipient;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
+import com.tle.common.usermanagement.user.valuebean.RoleBean;
+import com.tle.core.entity.EntityEditingSession;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.guice.Bind;
 import com.tle.core.lti.consumers.service.LtiConsumerService;
 import com.tle.core.lti.consumers.service.session.LtiConsumerEditingBean;
-import com.tle.core.services.entity.AbstractEntityService;
-import com.tle.core.services.entity.EntityEditingSession;
 import com.tle.core.services.user.UserService;
 import com.tle.web.entities.section.AbstractEntityEditor;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -194,8 +194,8 @@ public class LtiConsumerEditorSection
 	{
 		super.registered(id, tree);
 
-		allowedSelector.setOkCallback(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("expressionCallback"), "allowed"));
+		allowedSelector.setOkCallback(
+			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("expressionCallback"), "allowed"));
 		componentFactory.registerComponent(id, "allowedSelector", tree, allowedSelector);
 		allowedSelector.setTitle(EXPRESSION_TITLE);
 
@@ -216,8 +216,8 @@ public class LtiConsumerEditorSection
 
 		selectOtherDialog.setAjax(true);
 		selectOtherDialog.setMultipleRoles(true);
-		selectOtherDialog.setOkCallback(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("otherRoleCallback"), "otherrole"));
+		selectOtherDialog.setOkCallback(
+			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("otherRoleCallback"), "otherrole"));
 		componentFactory.registerComponent(id, "selectOther", tree, selectOtherDialog);
 
 		addOtherRole.setClickHandler(selectOtherDialog.getOpenFunction());
@@ -229,8 +229,8 @@ public class LtiConsumerEditorSection
 		removeOtherRoleFunc = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("removeRole"),
 			"otherrole");
 
-		unknownUserList.setListModel(new EnumListModel<LtiConsumerConstants.UnknownUser>(UKNOWN_USER_PFX, true,
-			UnknownUser.values()));
+		unknownUserList.setListModel(
+			new EnumListModel<LtiConsumerConstants.UnknownUser>(UKNOWN_USER_PFX, true, UnknownUser.values()));
 		unknownUserList.addChangeEventHandler(ajax.getAjaxUpdateDomFunction(tree, this, null, "unknownusergroup"));
 
 		unknowUserGroupDialog.setAjax(true);
@@ -250,8 +250,8 @@ public class LtiConsumerEditorSection
 
 		customRoleDialog.setAjax(true);
 		customRoleDialog.setMultipleRoles(true);
-		customRoleDialog.setOkCallback(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("customRolesCallback"), "customrole"));
+		customRoleDialog.setOkCallback(
+			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("customRolesCallback"), "customrole"));
 		componentFactory.registerComponent(id, "selectCustom", tree, customRoleDialog);
 
 		customRolesTable.setSelectionsModel(new CustomRoleTableModel());
@@ -333,8 +333,8 @@ public class LtiConsumerEditorSection
 	public void unknownUserGroupCallback(SectionInfo info, String groupsJson)
 	{
 		LtiConsumerEditingBean bean = getEntityService().loadSession(getModel(info).getSessionId()).getBean();
-		Set<String> selectedGroups = SelectGroupDialog.groupsFromJsonString(groupsJson).stream()
-			.map(sg -> sg.getUuid()).collect(Collectors.toSet());
+		Set<String> selectedGroups = SelectGroupDialog.groupsFromJsonString(groupsJson).stream().map(sg -> sg.getUuid())
+			.collect(Collectors.toSet());
 		if( bean.getUnknownGroups() == null )
 		{
 			bean.setUnknownGroups(selectedGroups);
@@ -348,8 +348,8 @@ public class LtiConsumerEditorSection
 	@EventHandlerMethod
 	public void customRolesCallback(SectionInfo info, String rolesJson)
 	{
-		EntityEditingSession<LtiConsumerEditingBean, LtiConsumer> session = getEntityService().loadSession(
-			getModel(info).getSessionId());
+		EntityEditingSession<LtiConsumerEditingBean, LtiConsumer> session = getEntityService()
+			.loadSession(getModel(info).getSessionId());
 		String ltiRole = customRoleField.getValue(info);
 		if( Check.isEmpty(ltiRole) )
 		{
@@ -450,8 +450,8 @@ public class LtiConsumerEditorSection
 			for( Pair<String, String> entry : bean.getCustomRoles() )
 			{
 				RoleBean roleInfo = userService.getInformationForRole(entry.getSecond());
-				customRoles.add(new CustomRoleMapping(entry.getFirst(), new SelectedRole(roleInfo.getUniqueID(),
-					roleInfo.getName())));
+				customRoles.add(new CustomRoleMapping(entry.getFirst(),
+					new SelectedRole(roleInfo.getUniqueID(), roleInfo.getName())));
 			}
 			model.setCustomRoleMappings(customRoles);
 		}
@@ -627,13 +627,13 @@ public class LtiConsumerEditorSection
 			{
 				case INSTRUCTOR:
 					selection.setViewAction(new LabelRenderer(new KeyLabel(INSTRUCTOR_ARROW, role.getDisplayName())));
-					actions.add(makeRemoveAction(TABLE_REMOVE_ACTION, new OverrideHandler(removeInstructorRoleFunc,
-						role, type)));
+					actions.add(makeRemoveAction(TABLE_REMOVE_ACTION,
+						new OverrideHandler(removeInstructorRoleFunc, role, type)));
 					break;
 				case UNKNOWN:
 					selection.setViewAction(new LabelRenderer(new KeyLabel(UNKNOWN_ARROW, role.getDisplayName())));
-					actions.add(makeRemoveAction(TABLE_REMOVE_ACTION, new OverrideHandler(removeOtherRoleFunc, role,
-						type)));
+					actions.add(
+						makeRemoveAction(TABLE_REMOVE_ACTION, new OverrideHandler(removeOtherRoleFunc, role, type)));
 			}
 
 		}
@@ -675,8 +675,8 @@ public class LtiConsumerEditorSection
 		protected void transform(SectionInfo info, SelectionsTableSelection selection, CustomRoleMapping thing,
 			List<SectionRenderable> actions, int index)
 		{
-			selection.setViewAction(new LabelRenderer(new TextLabel(thing.getLtiRole() + " ⇨ "
-				+ thing.getEquellaRole().getDisplayName())));
+			selection.setViewAction(
+				new LabelRenderer(new TextLabel(thing.getLtiRole() + " ⇨ " + thing.getEquellaRole().getDisplayName())));
 			actions.add(makeRemoveAction(TABLE_REMOVE_ACTION,
 				new OverrideHandler(removeCustomRolesFunc, thing.getLtiRole(), thing.getEquellaRole().getUuid())));
 		}

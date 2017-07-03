@@ -21,8 +21,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.tle.beans.workflow.WorkflowStatus;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.user.CurrentUser;
+import com.tle.core.item.service.ItemService;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;

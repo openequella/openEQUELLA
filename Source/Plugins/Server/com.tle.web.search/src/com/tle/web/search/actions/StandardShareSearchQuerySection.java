@@ -20,13 +20,13 @@ import com.google.common.base.Strings;
 import com.tle.beans.item.Item;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.searching.Search;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.WebAuthenticationDetails;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.item.FreetextSearchResults;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.WebAuthenticationDetails;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.search.event.FreetextSearchEvent;
@@ -89,8 +89,8 @@ public class StandardShareSearchQuerySection extends AbstractShareSearchQuerySec
 	{
 		rssLink.setBookmark(context, new BookmarkAndModify(bookmark, feedServlet.getModifier(context, "rss_2.0", "")));
 		rssLink.getState(context).setTarget(HtmlLinkState.TARGET_BLANK);
-		atomLink
-			.setBookmark(context, new BookmarkAndModify(bookmark, feedServlet.getModifier(context, "atom_1.0", "")));
+		atomLink.setBookmark(context,
+			new BookmarkAndModify(bookmark, feedServlet.getModifier(context, "atom_1.0", "")));
 		atomLink.getState(context).setTarget(HtmlLinkState.TARGET_BLANK);
 	}
 

@@ -18,8 +18,8 @@ package com.tle.web.manualdatafixes.fixes;
 
 import javax.inject.Inject;
 
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.FreeTextService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;

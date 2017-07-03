@@ -3,13 +3,15 @@
 	<requires>
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.oauth" />
-		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.entity" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.web.api.search" />
 		<import plugin-id="com.tle.web.api.interfaces" />
 		<import plugin-id="com.tle.web.api.oauth.interfaces" />
 		<import plugin-id="com.tle.web.remoting.rest" />
 		<import plugin-id="com.tle.web.api.baseentity.serializer" />
 		<import plugin-id="com.tle.web.api.baseentity" />
+		<import plugin-id="com.tle.core.encryption" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

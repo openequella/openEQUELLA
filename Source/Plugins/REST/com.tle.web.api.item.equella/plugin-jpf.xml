@@ -2,7 +2,6 @@
 <plugin id="com.tle.web.api.item.equella" version="1">
 	<requires>
 		<import plugin-id="com.tle.common.item" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.core.freetext" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.jackson" />
@@ -17,6 +16,12 @@
 		<import plugin-id="com.tle.web.api.item.equella.serializer" />
 		<import plugin-id="com.tle.web.api.staging.interfaces" />
 		<import plugin-id="com.tle.common.interfaces.equella" />
+		<import plugin-id="com.tle.core.filesystem.staging" />
+		<import plugin-id="com.tle.core.item.standard" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.filesystem" />
+		<import plugin-id="com.tle.core.institution" />
+		<import plugin-id="com.tle.core.quickupload" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

@@ -35,9 +35,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dytech.edge.common.LockedException;
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
-import com.dytech.edge.exceptions.NotFoundException;
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
@@ -46,23 +43,26 @@ import com.google.common.collect.Multimap;
 import com.tle.beans.Institution;
 import com.tle.common.Check;
 import com.tle.common.Pair;
+import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.beans.exception.ValidationError;
+import com.tle.common.filesystem.handle.BucketFile;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.taxonomy.SelectionRestriction;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.common.taxonomy.TaxonomyConstants;
 import com.tle.common.taxonomy.terms.Term;
-import com.tle.core.filesystem.BucketFile;
-import com.tle.core.filesystem.SubTemporaryFile;
+import com.tle.core.entity.service.EntityLockingService;
 import com.tle.core.guice.Bind;
-import com.tle.core.institution.XmlHelper;
+import com.tle.core.hibernate.equella.service.InitialiserService;
 import com.tle.core.institution.convert.ConverterParams;
+import com.tle.core.institution.convert.DefaultMessageCallback;
+import com.tle.core.institution.convert.XmlHelper;
 import com.tle.core.security.impl.SecureOnCall;
-import com.tle.core.services.InitialiserService;
-import com.tle.core.services.LockingService;
 import com.tle.core.taxonomy.TermDao;
 import com.tle.core.taxonomy.TermResult;
 import com.tle.core.taxonomy.TermService;
-import com.tle.core.util.DefaultMessageCallback;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 
@@ -78,7 +78,7 @@ public class TermServiceImpl implements TermService
 	@Inject
 	private TermDao termDao;
 	@Inject
-	private LockingService lockingService;
+	private EntityLockingService lockingService;
 	@Inject
 	private InitialiserService initialiserService;
 	@Inject
@@ -87,8 +87,8 @@ public class TermServiceImpl implements TermService
 	@Override
 	public List<String> listTerms(Taxonomy taxonomy, String parentFullPath)
 	{
-		return Check.isEmpty(parentFullPath) ? termDao.getRootTermValues(taxonomy) : termDao
-			.getChildTermValues(getTerm(taxonomy, parentFullPath));
+		return Check.isEmpty(parentFullPath) ? termDao.getRootTermValues(taxonomy)
+			: termDao.getChildTermValues(getTerm(taxonomy, parentFullPath));
 	}
 
 	@Override
@@ -106,8 +106,8 @@ public class TermServiceImpl implements TermService
 	@Override
 	public List<TermResult> listTermResults(Taxonomy taxonomy, String parentFullPath)
 	{
-		return Check.isEmpty(parentFullPath) ? termDao.getRootTermResults(taxonomy) : termDao
-			.getChildTermResults(getTerm(taxonomy, parentFullPath));
+		return Check.isEmpty(parentFullPath) ? termDao.getRootTermResults(taxonomy)
+			: termDao.getChildTermResults(getTerm(taxonomy, parentFullPath));
 	}
 
 	@Override
@@ -213,8 +213,8 @@ public class TermServiceImpl implements TermService
 		}
 		else if( createHierarchy )
 		{
-			final String fullPathNoRoot = (parentFullPath.startsWith(TaxonomyConstants.TERM_SEPARATOR) ? parentFullPath
-				.substring(TaxonomyConstants.TERM_SEPARATOR.length()) : parentFullPath)
+			final String fullPathNoRoot = (parentFullPath.startsWith(TaxonomyConstants.TERM_SEPARATOR)
+				? parentFullPath.substring(TaxonomyConstants.TERM_SEPARATOR.length()) : parentFullPath)
 				+ TaxonomyConstants.TERM_SEPARATOR + term;
 			final String[] parts = fullPathNoRoot.split(TaxonomyConstants.TERM_SEPARATOR_REGEX);
 
@@ -272,8 +272,8 @@ public class TermServiceImpl implements TermService
 		}
 		else
 		{
-			fullPathNoRoot = (parentFullPath.startsWith(TaxonomyConstants.TERM_SEPARATOR) ? parentFullPath
-				.substring(TaxonomyConstants.TERM_SEPARATOR.length()) : parentFullPath)
+			fullPathNoRoot = (parentFullPath.startsWith(TaxonomyConstants.TERM_SEPARATOR)
+				? parentFullPath.substring(TaxonomyConstants.TERM_SEPARATOR.length()) : parentFullPath)
 				+ TaxonomyConstants.TERM_SEPARATOR + term;
 		}
 
@@ -492,7 +492,8 @@ public class TermServiceImpl implements TermService
 	}
 
 	@Override
-	public void doExport(Taxonomy taxonomy, SubTemporaryFile termFolder, Institution institution, ConverterParams params)
+	public void doExport(Taxonomy taxonomy, SubTemporaryFile termFolder, Institution institution,
+		ConverterParams params)
 	{
 		List<Term> terms = termDao.getAllTermsInOrder(taxonomy);
 
@@ -629,8 +630,8 @@ public class TermServiceImpl implements TermService
 
 			if( LOGGER.isDebugEnabled() )
 			{
-				LOGGER.debug("IMPORT TERM " + message.getCurrent() + " (L:" + left + ",R:" + right + ") "
-					+ term.getFullValue());
+				LOGGER.debug(
+					"IMPORT TERM " + message.getCurrent() + " (L:" + left + ",R:" + right + ") " + term.getFullValue());
 			}
 
 			termDao.save(term);

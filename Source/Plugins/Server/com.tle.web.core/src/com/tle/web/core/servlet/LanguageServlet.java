@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.tle.common.i18n.LocaleUtils;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.language.LanguageService;
+import com.tle.core.i18n.service.LanguageService;
 
 /**
  * @author Nicholas Read

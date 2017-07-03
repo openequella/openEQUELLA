@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
@@ -34,10 +33,12 @@ import com.tle.beans.item.ItemStatus;
 import com.tle.common.Format;
 import com.tle.common.URLUtils;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.guice.Bind;
-import com.tle.core.user.CurrentUser;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.usermanagement.standard.wrapper.SharePassWrapper;
-import com.tle.core.workflow.operations.WorkflowFactory;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -99,7 +100,9 @@ public class ShareWithOthersContentSection extends AbstractShareWithOthersSectio
 	@Inject
 	private SelectUserDialog userSelect;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
+	@Inject
+	private InstitutionService institutionService;
 	@Inject
 	private UserLinkService userLinkService;
 	private UserLinkSection userLinkSection;
@@ -126,9 +129,10 @@ public class ShareWithOthersContentSection extends AbstractShareWithOthersSectio
 		daysList.setListModel(new SimpleHtmlListModel<VoidKeyOption>(new VoidKeyOption(t("1day"), "1"),
 			new VoidKeyOption(t("2days"), "2"), new VoidKeyOption(t("3days"), "3"), new VoidKeyOption(t("4days"), "4"),
 			new VoidKeyOption(t("5days"), "5"), new VoidKeyOption(t("6days"), "6"), new VoidKeyOption(t("1week"), "7"),
-			new VoidKeyOption(t("2weeks"), "14"), new VoidKeyOption(t("3weeks"), "21"), new VoidKeyOption(t("4weeks"),
-				"28"), new VoidKeyOption(t("2months"), "60"), new VoidKeyOption(t("3months"), "91"), new VoidKeyOption(
-				t("4months"), "122"), new VoidKeyOption(t("5months"), "152"), new VoidKeyOption(t("6months"), "182")));
+			new VoidKeyOption(t("2weeks"), "14"), new VoidKeyOption(t("3weeks"), "21"),
+			new VoidKeyOption(t("4weeks"), "28"), new VoidKeyOption(t("2months"), "60"),
+			new VoidKeyOption(t("3months"), "91"), new VoidKeyOption(t("4months"), "122"),
+			new VoidKeyOption(t("5months"), "152"), new VoidKeyOption(t("6months"), "182")));
 
 		JSCallable inplace = ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE);
 
@@ -179,25 +183,26 @@ public class ShareWithOthersContentSection extends AbstractShareWithOthersSectio
 	@Override
 	public List<SelectedUser> getCurrentSelectedUsers(SectionInfo info)
 	{
-		return Lists.newArrayList(Collections2.transform(ParentViewItemSectionUtils.getItemInfo(info).getItem()
-			.getNotifications(), new Function<String, SelectedUser>()
-		{
-			@Override
-			public SelectedUser apply(String uuidOrEmail)
-			{
-				final UserBean userBean = userService.getInformationForUser(uuidOrEmail);
-				final String displayName;
-				if( userBean == null )
+		return Lists.newArrayList(
+			Collections2.transform(ParentViewItemSectionUtils.getItemInfo(info).getItem().getNotifications(),
+				new Function<String, SelectedUser>()
 				{
-					displayName = uuidOrEmail;
-				}
-				else
-				{
-					displayName = Format.format(userBean);
-				}
-				return new SelectedUser(uuidOrEmail, displayName);
-			}
-		}));
+					@Override
+					public SelectedUser apply(String uuidOrEmail)
+					{
+						final UserBean userBean = userService.getInformationForUser(uuidOrEmail);
+						final String displayName;
+						if( userBean == null )
+						{
+							displayName = uuidOrEmail;
+						}
+						else
+						{
+							displayName = Format.format(userBean);
+						}
+						return new SelectedUser(uuidOrEmail, displayName);
+					}
+				}));
 	}
 
 	@EventHandlerMethod
@@ -225,8 +230,8 @@ public class ShareWithOthersContentSection extends AbstractShareWithOthersSectio
 
 	private void saveNotifications(final SectionInfo info, final Collection<String> userIds)
 	{
-		ParentViewItemSectionUtils.getItemInfo(info).modify(
-			workflowFactory.modifyNotifications(new HashSet<String>(userIds)));
+		ParentViewItemSectionUtils.getItemInfo(info)
+			.modify(workflowFactory.modifyNotifications(new HashSet<String>(userIds)));
 	}
 
 	@Override
@@ -291,7 +296,7 @@ public class ShareWithOthersContentSection extends AbstractShareWithOthersSectio
 		final int days = Integer.parseInt(daysList.getSelectedValueAsString(info));
 		final Date date = new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(days));
 		final String uuid = sharePassService.add(iinfo.getItem(), emailField.getValue(info), date);
-		final String url = URLUtils.newURL(urlService.getInstitutionUrl(),
+		final String url = URLUtils.newURL(institutionService.getInstitutionUrl(),
 			(iinfo.getItemdir() + "?token=" + SharePassWrapper.TOKEN_PREFIX + uuid)).toString();
 
 		email.append(s("intro", getUser(CurrentUser.getDetails())));

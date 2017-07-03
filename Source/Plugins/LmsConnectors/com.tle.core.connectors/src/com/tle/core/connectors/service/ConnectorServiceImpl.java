@@ -29,28 +29,28 @@ import javax.inject.Singleton;
 
 import org.java.plugin.registry.Extension;
 
-import com.dytech.edge.common.valuebean.ValidationError;
 import com.google.common.collect.Lists;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.EntityPack;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.connectors.ConnectorConstants;
 import com.tle.common.connectors.ConnectorTypeDescriptor;
 import com.tle.common.connectors.entity.Connector;
+import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.TargetList;
 import com.tle.common.security.TargetListEntry;
 import com.tle.core.connectors.dao.ConnectorDao;
+import com.tle.core.entity.EntityEditingSession;
+import com.tle.core.entity.service.impl.AbstractEntityServiceImpl;
 import com.tle.core.filesystem.EntityFile;
-import com.tle.core.filesystem.StagingFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.security.impl.SecureOnReturn;
-import com.tle.core.services.entity.EntityEditingSession;
-import com.tle.core.services.entity.impl.AbstractEntityServiceImpl;
 
 /**
  * @author aholland
@@ -278,7 +278,8 @@ public class ConnectorServiceImpl extends AbstractEntityServiceImpl<ConnectorEdi
 	protected void beforeClone(TemporaryFileHandle staging, EntityPack<Connector> pack)
 	{
 		// export the prefs into the staging area
-		prepareExport(staging, pack.getEntity(), new ConverterParams(institutionService.getInfoForCurrentInstitution()));
+		prepareExport(staging, pack.getEntity(),
+			new ConverterParams(institutionImportService.getInfoForCurrentInstitution()));
 	}
 
 	@Override
@@ -311,8 +312,8 @@ public class ConnectorServiceImpl extends AbstractEntityServiceImpl<ConnectorEdi
 		{
 			if( supportsFindUses(connector) && !connector.isDisabled() )
 			{
-				allConnectors.add(new BaseEntityLabel(connector.getId(), connector.getUuid(), connector.getName()
-					.getId(), connector.getOwner(), connector.isSystemType()));
+				allConnectors.add(new BaseEntityLabel(connector.getId(), connector.getUuid(),
+					connector.getName().getId(), connector.getOwner(), connector.isSystemType()));
 			}
 		}
 

@@ -23,5 +23,8 @@
 		<@render s.fullScreenLink />
 		<@render s.fullScreenLinkNewWindow />
 		<@button section=s.selectPackageButton  showAs="plus" />
-		<@render s.reorderAttachments />
+		<#-- This is a bit dirty, cloud version has no reorder link -->
+		<#if s.reorderAttachments??>
+			<@render s.reorderAttachments />
+		</#if>
 </div>

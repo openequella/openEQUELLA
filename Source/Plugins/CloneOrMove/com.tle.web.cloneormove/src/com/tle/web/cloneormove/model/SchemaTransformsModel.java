@@ -21,7 +21,7 @@ import java.util.List;
 
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
-import com.tle.core.schema.SchemaService;
+import com.tle.core.schema.service.SchemaService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.utils.KeyOption;
 import com.tle.web.sections.standard.SingleSelectionList;

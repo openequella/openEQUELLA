@@ -28,9 +28,10 @@ import com.tle.annotation.Nullable;
 import com.tle.common.lti.consumers.LtiConsumerConstants.UnknownUser;
 import com.tle.common.lti.consumers.entity.LtiConsumer;
 import com.tle.common.security.PrivilegeTree.Node;
+import com.tle.core.encryption.EncryptionService;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.guice.Bind;
 import com.tle.core.lti.consumers.service.LtiConsumerService;
-import com.tle.core.services.entity.AbstractEntityService;
 import com.tle.web.api.baseentity.serializer.AbstractEquellaBaseEntitySerializer;
 import com.tle.web.api.users.interfaces.beans.GroupBean;
 import com.tle.web.api.users.interfaces.beans.RoleBean;
@@ -51,6 +52,8 @@ public class LtiConsumerBeanSerializer
 	private LtiConsumerService ltiConsumerService;
 	@Inject
 	private LtiConsumerEditorFactory editorFactory;
+	@Inject
+	private EncryptionService encryptionService;
 
 	@Override
 	protected LtiConsumerBean createBean()
@@ -81,7 +84,7 @@ public class LtiConsumerBeanSerializer
 	protected void copyCustomFields(LtiConsumer entity, LtiConsumerBean bean, Object data)
 	{
 		bean.setConsumerKey(entity.getConsumerKey());
-		bean.setConsumerSecret(entity.getConsumerSecret());
+		bean.setConsumerSecret(encryptionService.decrypt(entity.getConsumerSecret()));
 		bean.setAllowedUsersExpression(entity.getAllowedExpression());
 		bean.setInstructorRoles(convertIdsToRoles(entity.getInstructorRoles()));
 		bean.setOtherRoles(convertIdsToRoles(entity.getOtherRoles()));

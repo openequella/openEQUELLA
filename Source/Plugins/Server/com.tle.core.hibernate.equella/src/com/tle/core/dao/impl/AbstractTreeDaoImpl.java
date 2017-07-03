@@ -28,10 +28,10 @@ import org.hibernate.Session;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tle.beans.tree.TreeNodeInterface;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.institution.TreeNodeInterface;
 import com.tle.core.dao.AbstractTreeDao;
 import com.tle.core.hibernate.dao.GenericDaoImpl;
-import com.tle.core.user.CurrentInstitution;
 
 /**
  * @author Nicholas Read
@@ -193,8 +193,8 @@ public class AbstractTreeDaoImpl<T extends TreeNodeInterface<T>> extends Generic
 	@Override
 	public int countRootNodes()
 	{
-		return ((Long) getHibernateTemplate().findByNamedParam(
-			"SELECT COUNT(*) FROM " + getPersistentClass().getName()
+		return ((Long) getHibernateTemplate()
+			.findByNamedParam("SELECT COUNT(*) FROM " + getPersistentClass().getName()
 				+ " WHERE  parent IS NULL AND institution = :institution", "institution", CurrentInstitution.get())
 			.get(0)).intValue();
 	}
@@ -232,10 +232,9 @@ public class AbstractTreeDaoImpl<T extends TreeNodeInterface<T>> extends Generic
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException
 			{
-				Query query = session
-					.createQuery("SELECT id FROM " //$NON-NLS-1$
-						+ getPersistentClass().getName()
-						+ " WHERE institution = :institution ORDER BY allParents.size ASC"); //$NON-NLS-1$
+				Query query = session.createQuery("SELECT id FROM " //$NON-NLS-1$
+					+ getPersistentClass().getName()
+					+ " WHERE institution = :institution ORDER BY allParents.size ASC"); //$NON-NLS-1$
 				query.setParameter("institution", CurrentInstitution.get()); //$NON-NLS-1$
 				query.setCacheable(true);
 				query.setReadOnly(true);

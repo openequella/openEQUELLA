@@ -21,9 +21,9 @@ import javax.inject.Singleton;
 
 import com.tle.common.harvester.HarvesterProfile;
 import com.tle.common.security.PrivilegeTree.Node;
+import com.tle.core.entity.security.AbstractEntityPrivilegeTreeProvider;
 import com.tle.core.guice.Bind;
 import com.tle.core.harvester.HarvesterProfileService;
-import com.tle.core.security.AbstractEntityPrivilegeTreeProvider;
 import com.tle.web.resources.ResourcesService;
 
 @Bind
@@ -34,10 +34,11 @@ public class HarvesterPrivilegeTreeProvider extends AbstractEntityPrivilegeTreeP
 	@Inject
 	public HarvesterPrivilegeTreeProvider(HarvesterProfileService harvesterService)
 	{
-		super(harvesterService, Node.ALL_HARVESTER_PROFILES, ResourcesService.getResourceHelper(
-			HarvesterPrivilegeTreeProvider.class).key("securitytree.allharvesterprofiles"), Node.HARVESTER_PROFILE,
-			ResourcesService.getResourceHelper(HarvesterPrivilegeTreeProvider.class).key(
-				"securitytree.targetallharvesterprofiles"));
+		super(harvesterService, Node.ALL_HARVESTER_PROFILES,
+			ResourcesService.getResourceHelper(HarvesterPrivilegeTreeProvider.class)
+				.key("securitytree.allharvesterprofiles"),
+			Node.HARVESTER_PROFILE, ResourcesService.getResourceHelper(HarvesterPrivilegeTreeProvider.class)
+				.key("securitytree.targetallharvesterprofiles"));
 	}
 
 	@Override

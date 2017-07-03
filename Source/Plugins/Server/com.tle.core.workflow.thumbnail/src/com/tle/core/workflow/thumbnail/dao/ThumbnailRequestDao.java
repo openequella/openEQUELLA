@@ -22,8 +22,8 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
 import com.tle.beans.item.ItemKey;
-import com.tle.core.dao.ItemDaoExtension;
 import com.tle.core.hibernate.dao.GenericInstitutionalDao;
+import com.tle.core.item.dao.ItemDaoExtension;
 import com.tle.core.workflow.thumbnail.entity.ThumbnailRequest;
 
 /**

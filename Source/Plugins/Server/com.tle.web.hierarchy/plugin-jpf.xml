@@ -4,7 +4,6 @@
 		<import plugin-id="com.tle.common.hierarchy" />
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.common.security" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.core.favourites" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.hierarchy" />
@@ -31,6 +30,10 @@
 		<import plugin-id="com.tle.web.viewitem.summary" />
 		<import plugin-id="com.tle.core.powersearch" />
 		<import plugin-id="com.tle.core.schema" />
+		<import plugin-id="com.tle.core.collection" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.xstream" />
+		<import plugin-id="com.tle.core.institution.convert" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">
@@ -118,7 +121,7 @@
 		<parameter id="class" value="bean:com.tle.web.hierarchy.selection.SkinnyBrowseSelectable" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="savedSearchToFavouriteSearchXml">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="savedSearchToFavouriteSearchXml">
 		<parameter id="id" value="com.tle.web.hierarchy.migration.SavedSearchToFavouriteSearchXml" />
 		<parameter id="bean" value="bean:com.tle.web.hierarchy.migration.SavedSearchToFavouriteSearchXml" />
 		<parameter id="date" value="1970-02-07" />

@@ -18,10 +18,10 @@ package com.tle.core.remoterepo.equella.service;
 
 import com.dytech.devlib.PropBagEx;
 import com.tle.beans.search.TLESettings;
-import com.tle.core.filesystem.StagingFile;
-import com.tle.core.progress.PercentageProgressCallback;
+import com.tle.common.beans.progress.PercentageProgressCallback;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.services.impl.Task;
-import com.tle.core.user.UserState;
+import com.tle.common.usermanagement.user.UserState;
 
 /**
  * @author agibb
@@ -55,8 +55,8 @@ public interface EquellaRepoService
 	 */
 	PropBagEx getItemXml(TLESettings settings, String uuid, int version, boolean stripFileBasedAttachments);
 
-	Task createDownloadTask(UserState userState, String username, String uuid, int version, String url,
-		String sharedId, String sharedValue, String key);
+	Task createDownloadTask(UserState userState, String username, String uuid, int version, String url, String sharedId,
+		String sharedValue, String key);
 
 	interface AttachmentDownloadSession
 	{

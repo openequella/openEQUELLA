@@ -22,23 +22,23 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.Attachments;
 import com.tle.beans.item.attachments.ImsAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.Check;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.guice.Bind;
-import com.tle.core.institution.convert.ItemConverter;
-import com.tle.core.institution.migration.PostReadMigrator;
+import com.tle.core.institution.convert.PostReadMigrator;
+import com.tle.core.item.convert.ItemConverter.ItemConverterInfo;
 import com.tle.core.util.ims.IMSNavigationHelper;
 import com.tle.core.util.ims.beans.IMSManifest;
 import com.tle.ims.service.IMSService;
 
 @Bind
 @Singleton
-public class IMSNavigationCreation implements PostReadMigrator<ItemConverter.ItemConverterInfo>
+public class IMSNavigationCreation implements PostReadMigrator<ItemConverterInfo>
 {
 	@Inject
 	private IMSService imsService;
@@ -46,7 +46,7 @@ public class IMSNavigationCreation implements PostReadMigrator<ItemConverter.Ite
 	private IMSNavigationHelper navHelper;
 
 	@Override
-	public void migrate(ItemConverter.ItemConverterInfo info) throws IOException
+	public void migrate(ItemConverterInfo info) throws IOException
 	{
 		Item item = info.getItem();
 		FileHandle attachFiles = info.getFileHandle();

@@ -25,14 +25,14 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.GroupBean;
-import com.dytech.edge.common.valuebean.UserBean;
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.tle.common.Check;
 import com.tle.common.Format;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.services.user.UserService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -98,6 +98,7 @@ public abstract class AbstractSelectUserSection<M extends AbstractSelectUserSect
 	// The following are not static as they can be changed by setters
 	private Label prompt = LABEL_DEFAULT_PROMPT;
 	private Label title = SelectUserDialog.getTitleLabel();
+	private Label subTitle;
 
 	@ViewFactory
 	protected FreemarkerFactory viewFactory;
@@ -523,5 +524,15 @@ public abstract class AbstractSelectUserSection<M extends AbstractSelectUserSect
 	public void setTitle(Label title)
 	{
 		this.title = title;
+	}
+
+	public Label getSubTitle()
+	{
+		return subTitle;
+	}
+
+	public void setSubTitle(Label subTitle)
+	{
+		this.subTitle = subTitle;
 	}
 }

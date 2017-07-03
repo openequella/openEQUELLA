@@ -35,26 +35,26 @@ import com.thoughtworks.xstream.XStream;
 import com.tle.beans.Institution;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.LanguageBundle;
+import com.tle.common.filesystem.handle.BucketFile;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.common.taxonomy.TaxonomyConstants;
 import com.tle.common.taxonomy.terms.Term;
-import com.tle.core.filesystem.BucketFile;
-import com.tle.core.filesystem.SubTemporaryFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
+import com.tle.core.entity.registry.EntityRegistry;
+import com.tle.core.entity.service.impl.BaseEntityXmlConverter;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
+import com.tle.core.institution.convert.DefaultMessageCallback;
 import com.tle.core.institution.convert.InstitutionInfo;
-import com.tle.core.institution.importhandler.ImportHandler;
-import com.tle.core.institution.importhandler.MultiFileImportHandler;
-import com.tle.core.institution.importhandler.SingleTreeNodeFileImportHandler;
-import com.tle.core.institution.importhandler.SingleTreeNodeFileImportHandler.NodeCreator;
-import com.tle.core.institution.migration.XmlMigrator;
-import com.tle.core.services.entity.BaseEntityXmlConverter;
-import com.tle.core.services.entity.EntityRegistry;
+import com.tle.core.institution.convert.TreeNodeCreator;
+import com.tle.core.institution.convert.XmlMigrator;
+import com.tle.core.institution.convert.importhandler.ImportHandler;
+import com.tle.core.institution.convert.importhandler.MultiFileImportHandler;
+import com.tle.core.institution.convert.importhandler.SingleTreeNodeFileImportHandler;
 import com.tle.core.taxonomy.schema.TaxonomyNode;
-import com.tle.core.util.DefaultMessageCallback;
 
 /**
  * Changes com.tle.beans.tree.TaxonomyNode to
@@ -68,7 +68,7 @@ import com.tle.core.util.DefaultMessageCallback;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class TaxonomyNodeToTermXmlMigrator extends XmlMigrator implements NodeCreator<TaxonomyNode>
+public class TaxonomyNodeToTermXmlMigrator extends XmlMigrator implements TreeNodeCreator<TaxonomyNode>
 {
 	private static final String OLD_TAXONOMY_NODE_CLASS = "com.tle.beans.tree.TaxonomyNode"; //$NON-NLS-1$
 
@@ -84,9 +84,10 @@ public class TaxonomyNodeToTermXmlMigrator extends XmlMigrator implements NodeCr
 		final SubTemporaryFile taxonomiesFolder = new SubTemporaryFile(staging, TAXONOMY_EXPORT_FOLDER);
 
 		final ImportHandler<TaxonomyNode> importHandler = (fileSystemService.fileExists(sourceFolder,
-			TaxonomyConstants.SINGLE_TAXONOMIES_FILE) ? new SingleTreeNodeFileImportHandler<TaxonomyNode>(sourceFolder,
-			TaxonomyConstants.SINGLE_TAXONOMIES_FILE, xmlHelper, this, getXStream())
-			: new MultiFileImportHandler<TaxonomyNode>(sourceFolder, xmlHelper, getXStream()));
+			TaxonomyConstants.SINGLE_TAXONOMIES_FILE)
+				? new SingleTreeNodeFileImportHandler<TaxonomyNode>(sourceFolder,
+					TaxonomyConstants.SINGLE_TAXONOMIES_FILE, xmlHelper, this, getXStream())
+				: new MultiFileImportHandler<TaxonomyNode>(sourceFolder, xmlHelper, getXStream()));
 
 		DefaultMessageCallback message = new DefaultMessageCallback(
 			"com.tle.core.taxonomy.converter.nodetoterm.progressmessage");
@@ -195,7 +196,7 @@ public class TaxonomyNodeToTermXmlMigrator extends XmlMigrator implements NodeCr
 	{
 		if( xstream == null )
 		{
-			xstream = xmlHelper.createXStream();
+			xstream = xmlHelper.createXStream(getClass().getClassLoader());
 			final Set<Class<? extends BaseEntity>> classes = new HashSet<Class<? extends BaseEntity>>();
 			classes.add(Taxonomy.class);
 			xstream.registerConverter(new BaseEntityXmlConverter(classes, registry));

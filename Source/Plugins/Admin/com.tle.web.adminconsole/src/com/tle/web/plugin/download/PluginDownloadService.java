@@ -42,10 +42,10 @@ import com.google.common.io.CharStreams;
 import com.google.common.io.Resources;
 import com.tle.common.filters.EqFilter;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.plugins.AbstractPluginService.TLEPluginLocation;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.remoting.RemotePluginDownloadService;
-import com.tle.core.services.UrlService;
 
 @Bind
 @Singleton
@@ -56,7 +56,7 @@ public class PluginDownloadService implements RemotePluginDownloadService
 	@Inject
 	private PluginService pluginService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@SuppressWarnings("nls")
 	private Set<String> DISALLOWED = ImmutableSet.of("com.tle.core.guice", "com.tle.core.spring", "org.hibernate",
 		"org.springframework.httpinvoker", "com.tle.webstart.admin");
@@ -88,8 +88,9 @@ public class PluginDownloadService implements RemotePluginDownloadService
 					URL jarUrl = location.getContextLocation();
 					if( jarUrl.getProtocol().equals("jar") )
 					{
-						jarUrl = new URL("jar", "", new URL(urlService.getInstitutionUrl(), jarPath + location.getJar()
-							+ "!/").toString());
+						jarUrl = new URL("jar", "",
+							new URL(institutionService.getInstitutionUrl(), jarPath + location.getJar() + "!/")
+								.toString());
 					}
 					details.add(new PluginDetails(jarUrl, manWriter.toString()));
 				}

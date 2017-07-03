@@ -29,19 +29,19 @@ import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemPack;
 import com.tle.cla.CLAConstants;
 import com.tle.common.NameValue;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.filesystem.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.AbstractConverter;
 import com.tle.core.institution.convert.ConverterParams;
+import com.tle.core.institution.convert.DefaultMessageCallback;
+import com.tle.core.institution.convert.service.InstitutionImportService.ConvertType;
+import com.tle.core.institution.convert.service.impl.InstitutionImportServiceImpl.ConverterTasks;
+import com.tle.core.item.operations.BaseFilter;
+import com.tle.core.item.operations.FilterResultListener;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.plugins.impl.PluginServiceImpl;
-import com.tle.core.services.InstitutionImportService.ConvertType;
-import com.tle.core.services.impl.InstitutionImportServiceImpl.ConverterTasks;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.util.DefaultMessageCallback;
-import com.tle.core.workflow.filters.BaseFilter;
-import com.tle.core.workflow.filters.FilterResultListener;
-import com.tle.core.workflow.operations.WorkflowOperation;
 
 @Bind
 @Singleton
@@ -81,7 +81,7 @@ public class CLAConverter extends AbstractConverter<Object>
 			itemService.operateAll(filterFactory.get(), new FilterResultListener()
 			{
 				@Override
-				public void failed(ItemKey itemId, Item item, Throwable e)
+				public void failed(ItemKey itemId, Item item, ItemPack pack, Throwable e)
 				{
 					message.incrementCurrent();
 				}

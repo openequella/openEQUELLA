@@ -59,22 +59,23 @@ import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.beans.item.attachments.HtmlAttachment;
 import com.tle.beans.mycontent.ScrapbookItemBean;
 import com.tle.common.Check;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.interfaces.CsvList;
 import com.tle.common.searching.Search.SortType;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.util.UnmodifiableIterable;
-import com.tle.core.filesystem.ItemFile;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.core.filesystem.staging.service.StagingService;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.core.item.standard.service.ItemStandardService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.StagingService;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.item.FreeTextService;
 import com.tle.core.services.item.FreetextResult;
 import com.tle.core.services.item.FreetextSearchResults;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.mycontent.MyContentConstants;
 import com.tle.mycontent.service.MyContentFields;
 import com.tle.mycontent.service.MyContentService;
@@ -102,18 +103,21 @@ public class ScrapbookResource
 	@Inject
 	private ItemService itemService;
 	@Inject
+	private ItemStandardService itemStandardService;
+	@Inject
+	private ItemFileService itemFileService;
+	@Inject
 	private MyContentService myContentService;
 	@Inject
 	private MyPagesService myPagesService;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 	@Inject
 	private StagingService stagingService;
 	@Inject
 	private FileSystemService fileSystemService;
 	@Inject
-	private UrlService urlService;
-
+	private InstitutionService institutionService;
 	@Inject
 	private ViewItemLinkFactory linkFactory;
 
@@ -208,7 +212,7 @@ public class ScrapbookResource
 	public Response delete(@ApiParam(value = "Scrapbook item uuid") @PathParam("uuid") String uuid)
 	{
 		ItemId itemId = new ItemId(uuid, 1);
-		itemService.delete(itemId, true, false, false);
+		itemStandardService.delete(itemId, true, false, false);
 		return Response.noContent().build();
 	}
 
@@ -284,8 +288,8 @@ public class ScrapbookResource
 				}
 				else
 				{
-					operations.add(myContentService.getEditOperation(fields, filename, new ByteArrayInputStream(page
-						.get("html").getBytes()), null, false, false));
+					operations.add(myContentService.getEditOperation(fields, filename,
+						new ByteArrayInputStream(page.get("html").getBytes()), null, false, false));
 				}
 
 			}
@@ -316,7 +320,7 @@ public class ScrapbookResource
 		try
 		{
 			ItemId itemId = ItemId.fromKey(itemKey);
-			String url = urlService.institutionalise("api/scrapbook/" + itemId.getUuid() + '/');
+			String url = institutionService.institutionalise("api/scrapbook/" + itemId.getUuid() + '/');
 			return new URI(url);
 		}
 		catch( URISyntaxException e )
@@ -348,7 +352,8 @@ public class ScrapbookResource
 
 				final String filename = htmlAttach.getFilename();
 
-				try( InputStream input = fileSystemService.read(new ItemFile(htmlAttach.getItem()), filename) )
+				try( InputStream input = fileSystemService.read(itemFileService.getItemFile(htmlAttach.getItem()),
+					filename) )
 				{
 					java.util.Scanner s = new java.util.Scanner(input);
 					s.useDelimiter("\\A");
@@ -377,7 +382,7 @@ public class ScrapbookResource
 		scrapbookItem.setKeywords(xmlBag.getNode("//keywords", ""));
 
 		final Map<String, String> links = Maps.newHashMap();
-		links.put("self", urlService.institutionalise("api/scrapbook/" + itemId.getUuid() + '/'));
+		links.put("self", institutionService.institutionalise("api/scrapbook/" + itemId.getUuid() + '/'));
 		if( type.equals("mypages") )
 		{
 			links.put("view", linkFactory.createViewLink(itemId).getHref() + "viewpages.jsp");

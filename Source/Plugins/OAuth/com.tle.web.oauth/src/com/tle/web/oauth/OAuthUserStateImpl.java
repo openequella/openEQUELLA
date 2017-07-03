@@ -23,8 +23,8 @@ import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.common.oauth.beans.OAuthToken;
 import com.tle.core.oauth.OAuthUserState;
 import com.tle.core.oauth.dao.OAuthClientDao;
-import com.tle.core.user.AbstractUserState;
-import com.tle.core.user.UserState;
+import com.tle.common.usermanagement.user.AbstractUserState;
+import com.tle.common.usermanagement.user.UserState;
 
 /**
  * @author Aaron

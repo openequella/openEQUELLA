@@ -39,14 +39,15 @@ import javax.mail.internet.MimeMessage;
 
 import com.dytech.edge.common.Constants;
 import com.google.common.collect.Lists;
-import com.tle.beans.system.MailSettings;
 import com.tle.common.Check;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.settings.standard.MailSettings;
 import com.tle.core.email.EmailResult;
 import com.tle.core.email.EmailService;
+import com.tle.core.encryption.EncryptionService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.core.system.SystemConfigService;
-import com.tle.core.user.CurrentInstitution;
 
 @Singleton
 @Bind(EmailService.class)
@@ -65,6 +66,9 @@ public class EmailServiceImpl implements EmailService
 	private static final String TEXT_MIME_TYPE = "text/plain; charset=UTF-8";
 
 	private final ExecutorService emailThread = Executors.newSingleThreadExecutor();
+
+	@Inject
+	private EncryptionService encryptionService;
 
 	@Inject
 	private ConfigurationService configService;
@@ -119,8 +123,8 @@ public class EmailServiceImpl implements EmailService
 			String server = settings.getServer();
 			if( Check.isEmpty(server) )
 			{
-				throw new RuntimeException("Incorrect mail settings - No server set on institution: "
-					+ CurrentInstitution.get().getName());
+				throw new RuntimeException(
+					"Incorrect mail settings - No server set on institution: " + CurrentInstitution.get().getName());
 			}
 			props.put(HOST_PROP, server);
 			props.put(FROM_PROP, senderEmail);
@@ -212,7 +216,8 @@ public class EmailServiceImpl implements EmailService
 		String password = settings.getPassword();
 		if( !Check.isEmpty(username) && !Check.isEmpty(password) )
 		{
-			return new Authenticator(username, password);
+			String dpwd = encryptionService.decrypt(password);
+			return new Authenticator(username, dpwd);
 		}
 
 		return null;
@@ -226,8 +231,13 @@ public class EmailServiceImpl implements EmailService
 
 	@Override
 	public Future<EmailResult<String>> sendEmail(String subject, List<String> emailAddresses, String message,
-		MailSettings settings)
+		MailSettings settings, boolean enc)
 	{
+		// If it's a new password encrypt it
+		if( enc )
+		{
+			settings.setPassword(encryptionService.encrypt(settings.getPassword()));
+		}
 		return emailThread.submit(createEmailer(subject, emailAddresses, message, message, settings));
 	}
 

@@ -62,7 +62,7 @@ import com.tle.core.hibernate.impl.HibernateMigrationHelper;
 import com.tle.core.migration.AbstractHibernateDataMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
-import com.tle.core.oauth.service.OAuthServiceImpl;
+import com.tle.core.oauth.service.impl.OAuthServiceImpl;
 import com.tle.core.plugins.impl.PluginServiceImpl;
 
 @Bind

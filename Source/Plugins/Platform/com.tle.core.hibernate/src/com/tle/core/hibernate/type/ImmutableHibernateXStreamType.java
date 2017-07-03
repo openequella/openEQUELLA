@@ -29,7 +29,7 @@ import org.hibernate.usertype.UserType;
 import org.hibernate.util.EqualsHelper;
 
 import com.google.inject.Inject;
-import com.tle.core.xstream.XmlService;
+import com.tle.core.xml.service.XmlService;
 
 public class ImmutableHibernateXStreamType implements UserType
 {

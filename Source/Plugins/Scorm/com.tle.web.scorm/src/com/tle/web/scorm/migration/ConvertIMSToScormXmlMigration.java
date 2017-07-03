@@ -21,10 +21,10 @@ import javax.inject.Singleton;
 
 import com.dytech.devlib.PropBagEx;
 import com.tle.common.Check;
-import com.tle.core.filesystem.SubTemporaryFile;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.convert.AbstractItemXmlMigrator;
 import com.tle.core.institution.convert.ConverterParams;
-import com.tle.core.institution.migration.AbstractItemXmlMigrator;
 import com.tle.core.services.FileSystemService;
 
 @Bind

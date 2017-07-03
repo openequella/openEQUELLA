@@ -24,10 +24,10 @@ import org.apache.cxf.transport.http.AbstractHTTPDestination;
 
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
+import com.tle.common.usermanagement.user.WebAuthenticationDetails;
 import com.tle.core.services.user.UserService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
-import com.tle.core.user.WebAuthenticationDetails;
 
 /**
  * @author jmaginnis
@@ -51,8 +51,8 @@ public abstract class AbstractSoapService
 
 	protected WebAuthenticationDetails getDetails()
 	{
-		return userService.getWebAuthenticationDetails((HttpServletRequest) webServiceContext.getMessageContext().get(
-			AbstractHTTPDestination.HTTP_REQUEST));
+		return userService.getWebAuthenticationDetails(
+			(HttpServletRequest) webServiceContext.getMessageContext().get(AbstractHTTPDestination.HTTP_REQUEST));
 	}
 
 	/*

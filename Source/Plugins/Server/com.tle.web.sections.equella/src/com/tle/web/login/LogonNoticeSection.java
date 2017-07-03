@@ -19,14 +19,14 @@ package com.tle.web.login;
 import javax.inject.Inject;
 
 import com.dytech.edge.web.WebConstants;
-import com.tle.beans.system.AutoLogin;
 import com.tle.common.Check;
 import com.tle.common.URLUtils;
+import com.tle.common.settings.standard.AutoLogin;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.services.user.UserPreferenceService;
 import com.tle.core.services.user.UserSessionService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.annotations.DirectEvent;
@@ -62,7 +62,7 @@ public class LogonNoticeSection extends AbstractPrototypeSection<LogonNoticeSect
 	@Inject
 	private UserSessionService userSessionService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@EventFactory
 	private EventGenerator events;
 
@@ -79,8 +79,8 @@ public class LogonNoticeSection extends AbstractPrototypeSection<LogonNoticeSect
 		BodyTag body = context.getBody();
 		if( !Check.isEmpty(notice) )
 		{
-			body.addReadyStatements(events.getSubmitValuesHandler(
-				"confirmed", new FunctionCallExpression(Confirm.CONFIRM, new TextLabel(notice)))); //$NON-NLS-1$
+			body.addReadyStatements(events.getSubmitValuesHandler("confirmed", //$NON-NLS-1$
+				new FunctionCallExpression(Confirm.CONFIRM, new TextLabel(notice))));
 		}
 		else
 		{
@@ -135,7 +135,7 @@ public class LogonNoticeSection extends AbstractPrototypeSection<LogonNoticeSect
 			// it isn't then we refuse to use it.
 			if( URLUtils.isAbsoluteUrl(homepage) )
 			{
-				if( !urlService.isInstitutionUrl(homepage) )
+				if( !institutionService.isInstitutionUrl(homepage) )
 				{
 					homepage = WebConstants.DEFAULT_HOME_PAGE;
 				}
@@ -146,7 +146,7 @@ public class LogonNoticeSection extends AbstractPrototypeSection<LogonNoticeSect
 			homepage = "logon.do?logout=true"; //$NON-NLS-1$
 		}
 
-		info.forwardToUrl(urlService.institutionalise(homepage));
+		info.forwardToUrl(institutionService.institutionalise(homepage));
 	}
 
 	public static class LoginNoticeModel

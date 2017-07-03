@@ -21,7 +21,7 @@ import java.util.List;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;

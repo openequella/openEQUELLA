@@ -22,8 +22,8 @@ import javax.inject.Inject;
 
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
-import com.tle.core.dao.ItemDao;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.dao.ItemDao;
 import com.tle.web.itemlist.item.AbstractItemlikeListEntry;
 import com.tle.web.itemlist.item.ItemListEntry;
 import com.tle.web.itemlist.item.ItemlikeListEntryExtension;

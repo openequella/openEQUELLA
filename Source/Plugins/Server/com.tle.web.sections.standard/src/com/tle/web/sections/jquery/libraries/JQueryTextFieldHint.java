@@ -39,8 +39,9 @@ public class JQueryTextFieldHint implements TagProcessor, JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable INCLUDE = new IncludeFile(ResourcesService.getResourceHelper(
-		JQueryTextFieldHint.class).url("jquerylib/jquery.hint.js"));
+	public static final PreRenderable INCLUDE = new IncludeFile(
+		ResourcesService.getResourceHelper(JQueryTextFieldHint.class)
+			.url(DebugSettings.isDebuggingMode() ? "jquerylib/jquery.hint.js" : "jquerylib/jquery.hint.min.js"));
 
 	public static final JSCallable HINT_FUNC = new ExternallyDefinedFunction("hint", INCLUDE);
 

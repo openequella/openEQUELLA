@@ -32,11 +32,11 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.tle.beans.Language;
 import com.tle.common.Check;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.core.filesystem.staging.service.StagingService;
+import com.tle.core.i18n.service.LanguageService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.StagingService;
-import com.tle.core.services.language.LanguageService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.Bookmark;
@@ -162,9 +162,8 @@ public class RootLanguageSection extends OneColumnLayout<OneColumnLayout.OneColu
 		deleteLocaleHandler = events.getSubmitValuesFunction("removeLocale");
 		languagePacksTbl.setSelectionsModel(new LocaleLanguageTableModel());
 
-		deleteContribHandler = ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("removeContribLangRow"), ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
-			"contriblanglist");
+		deleteContribHandler = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("removeContribLangRow"),
+			ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), "contriblanglist");
 		contributionLanguageTbl.setSelectionsModel(new ContributionLanguageTableModel());
 
 	}
@@ -329,7 +328,7 @@ public class RootLanguageSection extends OneColumnLayout<OneColumnLayout.OneColu
 			selection.setViewAction(new LabelRenderer(new TextLabel(lang)));
 			if( langService.getLanguages().size() > 1 )
 			{
-			actions.add(makeRemoveAction(null,
+				actions.add(makeRemoveAction(null,
 					new OverrideHandler(deleteContribHandler, lang).addValidator(CONFIRM_REMOVE_CONTRIBLANG)));
 			}
 		}
@@ -364,8 +363,8 @@ public class RootLanguageSection extends OneColumnLayout<OneColumnLayout.OneColu
 			 * 'page already being submitted', hence the BookmarkAndModify
 			 * utilisation.
 			 */
-			Bookmark bookmarkForGET = new BookmarkAndModify(info, events.getNamedModifier("exportLocale",
-				locale.toString()));
+			Bookmark bookmarkForGET = new BookmarkAndModify(info,
+				events.getNamedModifier("exportLocale", locale.toString()));
 			actions.add(new LinkRenderer(new HtmlLinkState(EXPORT_LABEL, bookmarkForGET)));
 			actions.add(makeAction(DELETE_LABEL,
 				new OverrideHandler(deleteLocaleHandler, locale.toString()).addValidator(CONFIRM_REMOVE_LANGPACK)));

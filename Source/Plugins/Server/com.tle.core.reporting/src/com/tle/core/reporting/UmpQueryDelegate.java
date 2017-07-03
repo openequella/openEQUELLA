@@ -25,12 +25,12 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.dytech.edge.common.valuebean.DefaultGroupBean;
-import com.dytech.edge.common.valuebean.DefaultRoleBean;
-import com.dytech.edge.common.valuebean.DefaultUserBean;
-import com.dytech.edge.common.valuebean.GroupBean;
-import com.dytech.edge.common.valuebean.RoleBean;
-import com.dytech.edge.common.valuebean.UserBean;
+import com.tle.common.usermanagement.user.valuebean.DefaultGroupBean;
+import com.tle.common.usermanagement.user.valuebean.DefaultRoleBean;
+import com.tle.common.usermanagement.user.valuebean.DefaultUserBean;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
+import com.tle.common.usermanagement.user.valuebean.RoleBean;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;
 import com.tle.reporting.IResultSetExt;

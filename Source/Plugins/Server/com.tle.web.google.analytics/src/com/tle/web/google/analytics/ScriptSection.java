@@ -20,8 +20,8 @@ import javax.inject.Inject;
 
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.user.CurrentInstitution;
+import com.tle.core.settings.service.ConfigurationService;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionResult;

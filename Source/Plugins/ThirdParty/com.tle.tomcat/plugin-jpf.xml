@@ -5,6 +5,7 @@
 		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.core.application" />
 		<import plugin-id="com.tle.core.config" />
+		<import plugin-id="com.tle.core.events" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.hibernate" />
 		<import plugin-id="com.tle.core.migration" />
@@ -38,7 +39,7 @@
 		<parameter id="order" value="100" />
 	</extension>
 	
-	<extension plugin-id="com.tle.core.services" point-id="applicationEventListener" id="listeners">
+	<extension plugin-id="com.tle.core.events" point-id="applicationEventListener" id="listeners">
 		<parameter id="listener" value="bean:com.tle.tomcat.service.TomcatService" />
 		<parameter id="listenerClass" value="com.tle.tomcat.events.TomcatRestartListener" />
 	</extension>

@@ -28,7 +28,7 @@ import com.tle.core.hibernate.impl.TablesOnlyFilter;
 import com.tle.core.migration.AbstractCreateMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
-import com.tle.core.services.EventService;
+import com.tle.core.events.services.EventService;
 import com.tle.tomcat.events.TomcatRestartEvent;
 
 @Bind

@@ -43,16 +43,16 @@ import org.w3c.dom.Node;
 import com.dytech.common.io.UnicodeReader;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Constants;
-import com.dytech.edge.exceptions.NotFoundException;
 import com.google.common.io.CharStreams;
 import com.tle.common.Check;
 import com.tle.common.Utils;
-import com.tle.common.util.FileEntry;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.filesystem.FileEntry;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.UrlService;
 import com.tle.web.core.servlet.webdav.WebdavProps;
 import com.tle.web.stream.ContentStreamWriter;
 import com.tle.web.stream.FileContentStream;
@@ -102,7 +102,7 @@ public class WebdavServlet extends HttpServlet
 	@Inject
 	private FileSystemService fileSystemService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private MimeTypeService mimeTypeService;
 	@Inject
@@ -322,7 +322,8 @@ public class WebdavServlet extends HttpServlet
 				{
 					try( PrintWriter out = new PrintWriter(response.getOutputStream()) )
 					{
-						out.write("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"><html><head><meta http-equiv=\"Content-type\" content=\"text/html;charset=UTF-8\"><title>No</title></head><body><div><h1>Please open this URL as a web folder.  Do not paste the URL directly in the web browser.</h1></div></body></html>");
+						out.write(
+							"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"><html><head><meta http-equiv=\"Content-type\" content=\"text/html;charset=UTF-8\"><title>No</title></head><body><div><h1>Please open this URL as a web folder.  Do not paste the URL directly in the web browser.</h1></div></body></html>");
 						out.flush();
 					}
 				}
@@ -472,7 +473,7 @@ public class WebdavServlet extends HttpServlet
 		throws IOException, Exception
 	{
 		// Don't want double //'s
-		final String basepath = urlService.getInstitutionUrl() + req.getServletPath().substring(1);
+		final String basepath = institutionService.getInstitutionUrl() + req.getServletPath().substring(1);
 
 		if( !fileSystemService.fileExists(staging, filename) )
 		{
@@ -744,8 +745,8 @@ public class WebdavServlet extends HttpServlet
 			}
 		}
 
-		final boolean success = (copy ? fileSystemService.copy(staging, filename, newname) != null : fileSystemService
-			.rename(staging, filename, newname));
+		final boolean success = (copy ? fileSystemService.copy(staging, filename, newname) != null
+			: fileSystemService.rename(staging, filename, newname));
 
 		// http://www.webdav.org/specs/rfc2518.html#rfc.section.8.9.4
 		// respond:

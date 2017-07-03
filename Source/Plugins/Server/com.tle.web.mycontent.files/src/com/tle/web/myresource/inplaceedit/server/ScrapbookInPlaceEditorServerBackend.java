@@ -22,16 +22,17 @@ import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.ItemId;
 import com.tle.common.URLUtils;
+import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.inplaceeditor.InPlaceEditorServerBackend;
 import com.tle.core.filesystem.ItemFile;
-import com.tle.core.filesystem.StagingFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.service.ItemFileService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.UrlService;
 
 @Bind
 @Singleton
@@ -41,7 +42,9 @@ public class ScrapbookInPlaceEditorServerBackend implements InPlaceEditorServerB
 	@Inject
 	private FileSystemService fileSystemService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
+	@Inject
+	private ItemFileService itemFileService;
 
 	/**
 	 * @param itemUuid
@@ -59,10 +62,10 @@ public class ScrapbookInPlaceEditorServerBackend implements InPlaceEditorServerB
 		if( !fileSystemService.fileExists(stagingFile, filename) )
 		{
 			final ItemId itemId = new ItemId(itemUuid, itemVersion);
-			final ItemFile itemFile = new ItemFile(itemId);
+			final ItemFile itemFile = itemFileService.getItemFile(itemId, null);
 			fileSystemService.copy(itemFile, filename, stagingFile, filename);
 		}
-		return urlService.institutionalise("file/" + stagingId + "/$/" + URLUtils.urlEncode(filename, false));
+		return institutionService.institutionalise("file/" + stagingId + "/$/" + URLUtils.urlEncode(filename, false));
 	}
 
 	@Override
@@ -75,8 +78,8 @@ public class ScrapbookInPlaceEditorServerBackend implements InPlaceEditorServerB
 		}
 		catch( IOException ex )
 		{
-			throw new RuntimeException(CurrentLocale.get(
-				"com.tle.web.wizard.controls.universal.handlers.file.inplacebackend.error.write", filename), ex);
+			throw new RuntimeException(CurrentLocale
+				.get("com.tle.web.wizard.controls.universal.handlers.file.inplacebackend.error.write", filename), ex);
 		}
 	}
 }

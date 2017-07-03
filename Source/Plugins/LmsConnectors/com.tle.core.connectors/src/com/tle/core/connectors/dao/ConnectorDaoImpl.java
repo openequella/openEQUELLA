@@ -23,7 +23,7 @@ import javax.inject.Singleton;
 import org.hibernate.Query;
 
 import com.tle.common.connectors.entity.Connector;
-import com.tle.core.dao.impl.AbstractEntityDaoImpl;
+import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.guice.Bind;
 
 /**

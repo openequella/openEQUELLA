@@ -20,7 +20,7 @@ import java.util.List;
 
 import com.dytech.devlib.PropBagEx;
 import com.tle.beans.entity.itemdef.ItemDefinition;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 
 /**
  * @author aholland

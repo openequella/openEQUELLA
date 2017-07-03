@@ -50,18 +50,17 @@ import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
-import com.tle.beans.system.QuickContributeAndVersionSettings;
 import com.tle.beans.workflow.WorkflowStatus;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.search.DefaultSearch;
+import com.tle.common.settings.standard.QuickContributeAndVersionSettings;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.plugins.PluginTracker;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.services.item.FreeTextService;
-import com.tle.core.services.item.ItemService;
 import com.tle.core.services.user.UserPreferenceService;
-import com.tle.core.services.user.impl.UserPreferenceServiceImpl;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.SectionsRuntimeException;
@@ -328,7 +327,7 @@ public class SelectionServiceImpl extends AbstractModalSessionServiceImpl<Select
 
 		try
 		{
-			userPreferenceService.setPreference(UserPreferenceServiceImpl.RECENT_SELECTIONS,
+			userPreferenceService.setPreference(UserPreferenceService.RECENT_SELECTIONS,
 				mapper.writeValueAsString(mapper.convertValue(list.toArray(), ArrayNode.class)));
 		}
 		catch( Exception e )
@@ -340,7 +339,7 @@ public class SelectionServiceImpl extends AbstractModalSessionServiceImpl<Select
 	private List<SelectionHistory> getAllSavedRecentSelections(ObjectMapper mapper)
 	{
 		List<SelectionHistory> recentSel = new ArrayList<SelectionHistory>();
-		final String data = userPreferenceService.getPreference(UserPreferenceServiceImpl.RECENT_SELECTIONS);
+		final String data = userPreferenceService.getPreference(UserPreferenceService.RECENT_SELECTIONS);
 		if( data != null )
 		{
 			try

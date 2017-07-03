@@ -27,8 +27,8 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.usermanagement.canvas.CanvasWrapperSettings;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.login.LoginLink;
 import com.tle.web.login.LogonSection.LogonModel;
 import com.tle.web.sections.SectionInfo;
@@ -47,7 +47,7 @@ import com.tle.web.sections.standard.renderers.LinkRenderer;
 public class CanvasLogonLink extends AbstractPrototypeSection<CanvasLogonLink.CanvasLogonModel> implements LoginLink
 {
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private ConfigurationService configurationService;
 
@@ -61,7 +61,7 @@ public class CanvasLogonLink extends AbstractPrototypeSection<CanvasLogonLink.Ca
 		if( isEnabled(context) )
 		{
 			final String page = model.getPage();
-			String ssoLink = urlService.institutionalise("canvassso");
+			String ssoLink = institutionService.institutionalise("canvassso");
 			if( !Strings.isNullOrEmpty(page) )
 			{
 				try

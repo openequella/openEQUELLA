@@ -28,8 +28,8 @@ import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.SecurityConstants.Recipient;
 import com.tle.core.dao.AccessExpressionDao;
 import com.tle.core.guice.Bind;
-import com.tle.core.institution.convert.AclConverter.AclPostReadMigratorParams;
-import com.tle.core.institution.migration.PostReadMigrator;
+import com.tle.core.institution.convert.PostReadMigrator;
+import com.tle.core.security.convert.AclConverter.AclPostReadMigratorParams;
 
 @Bind
 @Singleton
@@ -41,8 +41,8 @@ public class AddPushToLMSACLPostMigrator implements PostReadMigrator<AclPostRead
 	@Override
 	public void migrate(AclPostReadMigratorParams list) throws IOException
 	{
-		final AccessExpression everyone = accessExpressionDao.retrieveOrCreate(SecurityConstants
-			.getRecipient(Recipient.EVERYONE));
+		final AccessExpression everyone = accessExpressionDao
+			.retrieveOrCreate(SecurityConstants.getRecipient(Recipient.EVERYONE));
 		AccessEntry newEntry = new AccessEntry();
 		newEntry.setGrantRevoke(SecurityConstants.GRANT);
 		newEntry.setPrivilege(ConnectorConstants.PRIV_EXPORT_TO_LMS_ITEM);

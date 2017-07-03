@@ -33,7 +33,6 @@ import javax.inject.Singleton;
 import com.dytech.edge.exceptions.BannedFileException;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.FileAttachment;
@@ -41,14 +40,15 @@ import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.ModifiableAttachments;
 import com.tle.common.Check;
 import com.tle.common.URLUtils;
+import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.filesystem.ItemFile;
-import com.tle.core.filesystem.StagingFile;
 import com.tle.core.filesystem.SubItemFile;
-import com.tle.core.filesystem.SubTemporaryFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.UrlService;
 import com.tle.web.filemanager.common.FileInfo;
 import com.tle.web.filemanager.common.ServerBackend;
 import com.tle.web.sections.generic.DefaultSectionInfo;
@@ -64,7 +64,7 @@ public class ServerBackendImpl implements ServerBackend
 	@Inject
 	private WizardService wizardService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@SuppressWarnings("nls")
 	@Override
@@ -73,7 +73,7 @@ public class ServerBackendImpl implements ServerBackend
 		WizardStateInterface state = getWizardState(wizardId);
 		try
 		{
-			return new URL(urlService.getInstitutionUrl(),
+			return new URL(institutionService.getInstitutionUrl(),
 				"file/" + state.getStagingId() + "/$/" + URLUtils.urlEncode(filename, false)).toString();
 		}
 		catch( MalformedURLException ex )

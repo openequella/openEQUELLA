@@ -18,6 +18,7 @@
 		<import plugin-id="com.tle.core.connectors.brightspace" />
 		<import plugin-id="com.tle.core.lti.consumers" />
 		<import plugin-id="com.tle.core.config" />
+		<import plugin-id="com.tle.core.encryption" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

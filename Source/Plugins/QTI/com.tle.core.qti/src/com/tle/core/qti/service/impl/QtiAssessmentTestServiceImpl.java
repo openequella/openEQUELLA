@@ -26,15 +26,8 @@ import javax.inject.Singleton;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import uk.ac.ed.ph.jqtiplus.node.test.AssessmentItemRef;
-import uk.ac.ed.ph.jqtiplus.node.test.AssessmentTest;
-import uk.ac.ed.ph.jqtiplus.node.test.TestPart;
-import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentItem;
-import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
-import uk.ac.ed.ph.jqtiplus.resolution.RootNodeLookup;
-
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.ValidationError;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -42,20 +35,27 @@ import com.tle.beans.Institution;
 import com.tle.beans.item.Item;
 import com.tle.common.PathUtils;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.qti.entity.QtiAssessmentItem;
 import com.tle.common.qti.entity.QtiAssessmentItemRef;
 import com.tle.common.qti.entity.QtiAssessmentResult;
 import com.tle.common.qti.entity.QtiAssessmentTest;
-import com.tle.core.events.ItemDeletedEvent;
-import com.tle.core.events.listeners.ItemDeletedListener;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.event.ItemDeletedEvent;
+import com.tle.core.item.event.listener.ItemDeletedListener;
 import com.tle.core.qti.dao.QtiAssessmentItemDao;
 import com.tle.core.qti.dao.QtiAssessmentItemRefDao;
 import com.tle.core.qti.dao.QtiAssessmentResultDao;
 import com.tle.core.qti.dao.QtiAssessmentTestDao;
 import com.tle.core.qti.service.QtiAssessmentItemService;
 import com.tle.core.qti.service.QtiAssessmentTestService;
-import com.tle.core.user.CurrentInstitution;
+
+import uk.ac.ed.ph.jqtiplus.node.test.AssessmentItemRef;
+import uk.ac.ed.ph.jqtiplus.node.test.AssessmentTest;
+import uk.ac.ed.ph.jqtiplus.node.test.TestPart;
+import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentItem;
+import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
+import uk.ac.ed.ph.jqtiplus.resolution.RootNodeLookup;
 
 /**
  * @author Aaron
@@ -122,8 +122,8 @@ public class QtiAssessmentTestServiceImpl implements QtiAssessmentTestService, I
 			// this is a path relative to the test XML
 			String relPath = uri.toString();
 			String fullItemPath = PathUtils.filePath(testRootPath, relPath);
-			final ResolvedAssessmentItem resolvedAssessmentItem = resQuiz.getResolvedAssessmentItemBySystemIdMap().get(
-				URI.create(fullItemPath));
+			final ResolvedAssessmentItem resolvedAssessmentItem = resQuiz.getResolvedAssessmentItemBySystemIdMap()
+				.get(URI.create(fullItemPath));
 			final QtiAssessmentItem assessmentItem = questionService.convertItemToEntity(resQuiz,
 				resolvedAssessmentItem);
 

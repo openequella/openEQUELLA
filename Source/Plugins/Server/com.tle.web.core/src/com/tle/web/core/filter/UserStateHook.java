@@ -19,7 +19,7 @@ package com.tle.web.core.filter;
 import javax.servlet.http.HttpServletRequest;
 
 import com.dytech.edge.exceptions.WebException;
-import com.tle.core.user.UserState;
+import com.tle.common.usermanagement.user.UserState;
 
 /**
  * @author Aaron

@@ -46,13 +46,13 @@ import com.tle.common.NameValue;
 import com.tle.common.URLUtils;
 import com.tle.common.Utils;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.reporting.ReportingService;
 import com.tle.core.reporting.birttypes.AbstractBirtType;
 import com.tle.core.reporting.birttypes.BirtTypeUtils;
-import com.tle.core.services.UrlService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
@@ -140,8 +140,6 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 
 	private static final JSCallable PRINT_REPORT = new ExternallyDefinedFunction("printReport", INCLUDE_FILE);
 
-	@ViewFactory
-	private FreemarkerFactory viewFactory;
 	@Inject
 	private BundleCache bundleCache;
 	@Inject
@@ -149,8 +147,10 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 	@Inject
 	private ReportingService reportingService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
+	@ViewFactory
+	private FreemarkerFactory viewFactory;
 	@EventFactory
 	private EventGenerator events;
 	@AjaxFactory
@@ -201,8 +201,8 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 		formatList.setAlwaysSelect(true);
 		formatList.setEventHandler(JSHandler.EVENT_CHANGE,
 			events.getNamedHandler("changeType", formatList.createGetExpression()));
-		formatList.setListModel(new SimpleHtmlListModel<Format>(new Format("HTML", "html", true, false), new Format(
-			"PDF", "pdf"), new Format("Excel", "xls"), new Format("Word", "doc")));
+		formatList.setListModel(new SimpleHtmlListModel<Format>(new Format("HTML", "html", true, false),
+			new Format("PDF", "pdf"), new Format("Excel", "xls"), new Format("Word", "doc")));
 
 		refreshParametersFunction = ajax.getAjaxUpdateDomFunction(tree, this,
 			events.getEventHandler("refreshParameters"), ajax.getEffectFunction(EffectType.FADEOUTIN), "report-params");
@@ -248,11 +248,11 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 			TableState reportTableState = reportTable.getState(context);
 			for( Report report : reports )
 			{
-				BookmarkAndModify runUrl = new BookmarkAndModify(context, events.getNamedModifier("runReport",
-					report.getUuid()));
+				BookmarkAndModify runUrl = new BookmarkAndModify(context,
+					events.getNamedModifier("runReport", report.getUuid()));
 				OverrideHandler handler = new OverrideHandler(POPUP_REPORT, runUrl.getHref());
-				handler.addValidator(new Confirm(new KeyLabel(KEY_CONFIRM, new BundleLabel(report.getName(),
-					bundleCache))));
+				handler.addValidator(
+					new Confirm(new KeyLabel(KEY_CONFIRM, new BundleLabel(report.getName(), bundleCache))));
 
 				HtmlLinkState name = new HtmlLinkState();
 				name.setLabel(new BundleLabel(report.getName(), bundleCache));
@@ -315,7 +315,7 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 				url.append("?disposition=attachment");
 			}
 
-			model.setReportUrl(new URL(urlService.getInstitutionUrl(), url.toString()).getFile());
+			model.setReportUrl(new URL(institutionService.getInstitutionUrl(), url.toString()).getFile());
 		}
 		else
 		{
@@ -431,7 +431,8 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 							for( Object o : group.getContents() )
 							{
 								IParameterDefnBase param = (IParameterDefnBase) o;
-								addParameter(param, paramControls, controls, paramNum, docXml, params, paramTask, group);
+								addParameter(param, paramControls, controls, paramNum, docXml, params, paramTask,
+									group);
 								paramNum++;
 							}
 						}
@@ -653,8 +654,8 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 				reportNameMap.put(reportName, reportHandle);
 				if( reportHandle != null )
 				{
-					IGetParameterDefinitionTask paramTask = reportingService.createReportParametersTask(
-						reportHandle.getReport(), reportHandle.getFilename());
+					IGetParameterDefinitionTask paramTask = reportingService
+						.createReportParametersTask(reportHandle.getReport(), reportHandle.getFilename());
 					paramMap.put(reportName, paramTask.getParameterDefns(false));
 					paramTask.close();
 				}

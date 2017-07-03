@@ -37,8 +37,10 @@ import com.tle.beans.item.ItemSelect;
 import com.tle.beans.security.ACLEntryMapping;
 import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.SecurityConstants.Recipient;
+import com.tle.core.freetext.index.ItemIndex;
+import com.tle.core.freetext.indexer.AbstractIndexingExtension;
+import com.tle.core.freetext.indexer.StandardIndexer;
 import com.tle.core.security.TLEAclManager;
-import com.tle.freetext.index.ItemIndex;
 
 public class IndexedItem
 {

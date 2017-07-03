@@ -18,11 +18,11 @@ package com.tle.web.customdateformat;
 
 import javax.inject.Inject;
 
-import com.tle.beans.system.DateFormatSettings;
 import com.tle.common.NameValue;
+import com.tle.common.settings.standard.DateFormatSettings;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.web.i18n.BundleNameValue;
+import com.tle.core.i18n.BundleNameValue;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.annotations.EventFactory;
@@ -46,7 +46,7 @@ import com.tle.web.userdetails.EditUserSection;
 
 @Bind
 @SuppressWarnings("nls")
-public class DateFormatSettingsSection extends OneColumnLayout<DateFormatSettingsSection.DateFormatSettingsModel> 
+public class DateFormatSettingsSection extends OneColumnLayout<DateFormatSettingsSection.DateFormatSettingsModel>
 {
 	@PlugKey("settings.page.title")
 	private static Label TITLE_LABEL;
@@ -56,7 +56,7 @@ public class DateFormatSettingsSection extends OneColumnLayout<DateFormatSetting
 	private static String USE_EXACT;
 	@PlugKey("settings.dateformat.relative")
 	private static String USE_APPROX;
-	
+
 	@EventFactory
 	private EventGenerator events;
 
@@ -73,14 +73,13 @@ public class DateFormatSettingsSection extends OneColumnLayout<DateFormatSetting
 	@Inject
 	private ReceiptService receiptService;
 
-
 	@Override
 	public void registered(String id, SectionTree tree)
 	{
 		super.registered(id, tree);
-		SimpleHtmlListModel<NameValue> dateFormatOptions = new SimpleHtmlListModel<NameValue>(new BundleNameValue(
-			USE_APPROX, EditUserSection.DATE_FORMAT_APPROX), new BundleNameValue(USE_EXACT,
-			EditUserSection.DATE_FORMAT_EXACT));
+		SimpleHtmlListModel<NameValue> dateFormatOptions = new SimpleHtmlListModel<NameValue>(
+			new BundleNameValue(USE_APPROX, EditUserSection.DATE_FORMAT_APPROX),
+			new BundleNameValue(USE_EXACT, EditUserSection.DATE_FORMAT_EXACT));
 		dateFormats.setListModel(dateFormatOptions);
 		dateFormats.setAlwaysSelect(true);
 
@@ -115,10 +114,10 @@ public class DateFormatSettingsSection extends OneColumnLayout<DateFormatSetting
 	}
 
 	@Override
-	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs) 
+	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
 	{
 		decorations.setTitle(TITLE_LABEL);
-		crumbs.addToStart(SettingsUtils.getBreadcrumb());	
+		crumbs.addToStart(SettingsUtils.getBreadcrumb());
 	}
 
 	public Button getSaveButton()
@@ -136,7 +135,7 @@ public class DateFormatSettingsSection extends OneColumnLayout<DateFormatSetting
 	{
 		return DateFormatSettingsModel.class;
 	}
-	
+
 	public static class DateFormatSettingsModel extends OneColumnLayout.OneColumnLayoutModel
 	{
 		// nothing

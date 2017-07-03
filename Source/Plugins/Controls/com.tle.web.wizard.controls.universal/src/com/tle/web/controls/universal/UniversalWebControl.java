@@ -306,16 +306,10 @@ public class UniversalWebControl extends AbstractWebControl<WebControlModel>
 				final LinkRenderer viewLink = new LinkRenderer(view);
 				viewLink.setTarget("_blank");
 
-				if( hiddenFromSummary )
-				{
-					//selection.setViewAction(null);
-					viewLink.setDisabled(true);
-				}
-
 				if( attachment.isPreview() )
 				{
-					selection.setViewAction(CombinedRenderer.combineResults(viewLink,
-						new SpanRenderer(PREVIEW).addClass("preview-tag")));
+					selection.setViewAction(
+						CombinedRenderer.combineResults(viewLink, new SpanRenderer(PREVIEW).addClass("preview-tag")));
 				}
 				else
 				{

@@ -33,9 +33,9 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.cal.service.CALService;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.common.item.AbstractHelper;
 import com.tle.core.activation.service.ActivationService;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.helper.AbstractHelper;
 
 @Bind
 @Singleton
@@ -58,7 +58,8 @@ public class CALHelper extends AbstractHelper
 			{
 				PropBagEx activeXML = activations.newSubtree("activation");
 				setNode(activeXML, "@uuid", activation.getUuid());
-				setNode(activeXML, "@status", CurrentLocale.get(activationService.getStatusKey(activation.getStatus())));
+				setNode(activeXML, "@status",
+					CurrentLocale.get(activationService.getStatusKey(activation.getStatus())));
 
 				setNode(activeXML, "attachment", activation.getAttachment());
 

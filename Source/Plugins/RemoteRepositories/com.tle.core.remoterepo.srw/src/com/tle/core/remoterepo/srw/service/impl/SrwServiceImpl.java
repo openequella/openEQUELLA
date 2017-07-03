@@ -16,16 +16,6 @@
 
 package com.tle.core.remoterepo.srw.service.impl;
 
-import gov.loc.www.zing.srw.DiagnosticsType;
-import gov.loc.www.zing.srw.RecordType;
-import gov.loc.www.zing.srw.RecordsType;
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
-import gov.loc.www.zing.srw.SearchRetrieveResponseType;
-import gov.loc.www.zing.srw.StringOrXmlFragment;
-import gov.loc.www.zing.srw.diagnostic.DiagnosticType;
-import gov.loc.www.zing.srw.interfaces.SRWPort;
-import gov.loc.www.zing.srw.service.SRWSampleServiceLocator;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -56,7 +46,17 @@ import com.tle.core.fedsearch.impl.NullRecord;
 import com.tle.core.guice.Bind;
 import com.tle.core.remoterepo.parser.mods.impl.loose.LooseModsRecord;
 import com.tle.core.remoterepo.srw.service.SrwService;
-import com.tle.core.services.XsltService;
+import com.tle.core.xslt.service.XsltService;
+
+import gov.loc.www.zing.srw.DiagnosticsType;
+import gov.loc.www.zing.srw.RecordType;
+import gov.loc.www.zing.srw.RecordsType;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+import gov.loc.www.zing.srw.SearchRetrieveResponseType;
+import gov.loc.www.zing.srw.StringOrXmlFragment;
+import gov.loc.www.zing.srw.diagnostic.DiagnosticType;
+import gov.loc.www.zing.srw.interfaces.SRWPort;
+import gov.loc.www.zing.srw.service.SRWSampleServiceLocator;
 
 /**
  * @author agibb
@@ -471,8 +471,8 @@ public class SrwServiceImpl implements SrwService
 		this.xsltService = xsltService;
 		try
 		{
-			this.xsltService.cacheXslt(Resources.toString(getClass().getResource("MARC21slim2MODS3-3.xsl"),
-				Charsets.UTF_8));
+			this.xsltService
+				.cacheXslt(Resources.toString(getClass().getResource("MARC21slim2MODS3-3.xsl"), Charsets.UTF_8));
 		}
 		catch( Exception e )
 		{

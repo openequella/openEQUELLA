@@ -21,16 +21,15 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.dytech.edge.common.valuebean.ValidationError;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.common.Check;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.core.activation.service.CourseInfoService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.entity.AbstractEntityService;
 import com.tle.web.api.activation.impl.CourseEditorImpl.CourseEditorFactory;
 import com.tle.web.api.baseentity.serializer.AbstractEquellaBaseEntitySerializer;
 
@@ -97,7 +96,7 @@ public class CourseBeanSerializer extends AbstractEquellaBaseEntitySerializer<Co
 	}
 
 	@Override
-	protected AbstractEntityService<?, CourseInfo> getEntityService()
+	protected CourseInfoService getEntityService()
 	{
 		return courseService;
 	}

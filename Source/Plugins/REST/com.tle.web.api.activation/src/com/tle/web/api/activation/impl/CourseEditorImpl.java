@@ -27,7 +27,6 @@ import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.common.Check;
 import com.tle.core.activation.service.CourseInfoService;
 import com.tle.core.guice.BindFactory;
-import com.tle.core.services.entity.AbstractEntityService;
 import com.tle.web.api.activation.CourseBean;
 import com.tle.web.api.activation.CourseEditor;
 import com.tle.web.api.baseentity.serializer.AbstractBaseEntityEditor;
@@ -92,7 +91,7 @@ public class CourseEditorImpl extends AbstractBaseEntityEditor<CourseInfo, Cours
 	}
 
 	@Override
-	protected AbstractEntityService<?, CourseInfo> getEntityService()
+	protected CourseInfoService getEntityService()
 	{
 		return courseService;
 	}

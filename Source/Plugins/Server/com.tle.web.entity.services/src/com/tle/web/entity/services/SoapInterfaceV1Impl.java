@@ -37,7 +37,6 @@ import com.dytech.devlib.Base64;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.valuebean.ItemKey;
 import com.dytech.edge.common.valuebean.SearchRequest;
-import com.dytech.edge.exceptions.NotFoundException;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -46,23 +45,24 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemPack;
 import com.tle.beans.item.ItemStatus;
+import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.searching.Search;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.core.collection.service.ItemDefinitionService;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
+import com.tle.core.hibernate.equella.service.InitialiserService;
+import com.tle.core.item.helper.ItemHelper;
+import com.tle.core.item.helper.ItemHelper.ItemHelperSettings;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.core.search.LegacySearch;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.InitialiserService;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.core.services.item.FreeTextService;
 import com.tle.core.services.item.FreetextResult;
 import com.tle.core.services.item.FreetextSearchResults;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.util.ItemHelper;
-import com.tle.core.util.ItemHelper.ItemHelperSettings;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
-import com.tle.core.xstream.XmlService;
-import com.tle.searching.LegacySearch;
+import com.tle.core.xml.service.XmlService;
 import com.tle.web.viewurl.ViewItemUrlFactory;
 
 @Bind
@@ -89,7 +89,7 @@ public class SoapInterfaceV1Impl extends AbstractSoapService implements com.tle.
 	@Inject
 	private XmlService xmlService;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 
 	@SuppressWarnings("nls")
 	private PropBagEx doSave(PropBagEx item, final boolean submit, boolean unlock)

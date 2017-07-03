@@ -36,17 +36,17 @@ import com.tle.beans.entity.DynaCollection;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.PowerSearch;
 import com.tle.beans.entity.itemdef.ItemDefinition;
-import com.tle.beans.system.SearchSettings;
 import com.tle.common.Check;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.search.LiveItemSearch;
 import com.tle.common.search.PresetSearch;
+import com.tle.common.settings.standard.SearchSettings;
 import com.tle.core.auditlog.AuditLogService;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.dynacollection.DynaCollectionService;
 import com.tle.core.fedsearch.FederatedSearchService;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.services.entity.ItemDefinitionService;
 import com.tle.core.services.user.UserSessionService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.remoterepo.service.RemoteRepoWebService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
@@ -237,7 +237,10 @@ public class SearchQuerySection
 
 		editQueryButton.setLabel(context, Check.isEmpty(model.getCriteria()) ? ADD_QUERY_LABEL : EDIT_QUERY_LABEL);
 
-		renderQueryActions(context, getModel(context));
+		if( !model.isEditQuery() )
+		{
+			renderQueryActions(context, getModel(context));
+		}
 
 		return viewFactory.createResult("query.ftl", this);
 	}

@@ -18,6 +18,7 @@ package com.tle.web.userdetails;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -29,31 +30,31 @@ import java.util.TimeZone;
 import javax.inject.Inject;
 
 import com.dytech.edge.common.Constants;
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
 import com.dytech.edge.web.WebConstants;
 import com.tle.annotation.NonNullByDefault;
+import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.itemdef.ItemDefinition;
-import com.tle.beans.system.AutoLogin;
 import com.tle.beans.user.TLEUser;
 import com.tle.common.NameValue;
+import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.settings.standard.AutoLogin;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.ModifiableUserState;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.util.DateHelper;
 import com.tle.core.accessibility.AccessibilityModeService;
-import com.tle.core.notification.NotificationService;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.core.services.language.LanguageService;
-import com.tle.core.services.user.TLEUserService;
+import com.tle.core.collection.service.ItemDefinitionService;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.i18n.BundleNameValue;
+import com.tle.core.i18n.service.LanguageService;
+import com.tle.core.notification.standard.service.NotificationPreferencesService;
 import com.tle.core.services.user.UserPreferenceService;
 import com.tle.core.services.user.UserSessionService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.ModifiableUserState;
-import com.tle.core.user.UserState;
-import com.tle.core.workflow.notification.WorkflowPreferencesService;
+import com.tle.core.settings.service.ConfigurationService;
+import com.tle.core.usermanagement.standard.service.TLEUserService;
 import com.tle.exceptions.AccessDeniedException;
-import com.tle.web.i18n.BundleCache;
-import com.tle.web.i18n.BundleNameValue;
 import com.tle.web.navigation.MenuService;
 import com.tle.web.sections.SectionContext;
 import com.tle.web.sections.SectionInfo;
@@ -101,7 +102,6 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 	public static final String GMT_TIMEZONE_ID = "Etc/GMT";
 	public static final String DATE_FORMAT_APPROX = "format.approx";
 	public static final String DATE_FORMAT_EXACT = "format.exact";
-
 	@PlugKey("common.savesuccess")
 	private static Label SAVE_SUCCESS;
 
@@ -135,7 +135,7 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 	@Inject
 	private UserPreferenceService userPrefs;
 	@Inject
-	private WorkflowPreferencesService workflowPrefs;
+	private NotificationPreferencesService notificationPrefs;
 	@Inject
 	private LanguageService languageService;
 	@Inject
@@ -148,8 +148,6 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 	private ConfigurationService configService;
 	@Inject
 	private ReceiptService receiptService;
-	@Inject
-	private NotificationService notificationService;
 	@Inject
 	private AccessibilityModeService acModeService;
 
@@ -170,8 +168,6 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 	@Component(name = "acm")
 	private Checkbox accessibilityMode;
 
-	@Component(stateful = false)
-	private Checkbox enableEmails;
 	@Component
 	private Button saveButton;
 	@Component
@@ -181,6 +177,9 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 
 	@Component(name = "itd")
 	protected CollectionsList itemDefs;
+
+	@Component(name = "wtd")
+	private CollectionsList workflowItemDefs;
 
 	// i18n screen
 	@Component(name = "ll")
@@ -219,11 +218,13 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 
 			// General
 			hideLoginNotice.setChecked(context, userPrefs.isHideLoginNotice());
-			enableEmails.setChecked(context, notificationService.isEmailEnabled());
 			accessibilityMode.setChecked(context, acModeService.isAccessibilityMode());
 
 			// Notifications
-			prepareNotifications(context, workflowPrefs.getWatchedCollections());
+			prepareNotifications(context, notificationPrefs.getWatchedCollections());
+
+			// prepare workflow
+			prepareWorkflowNotifications(context, notificationPrefs.getOptedOutCollections());
 
 			// Regional
 			HtmlListModel<NameValue> languagesListModel = new LanguagesModel();
@@ -330,6 +331,29 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 		itemDefs.setSelectedStringValues(context, watchedItemDefs);
 	}
 
+	private void prepareWorkflowNotifications(RenderEventContext context, Set<String> optedOutCollections)
+	{
+		EditUserModel model = getModel(context);
+
+		workflowItemDefs.setListModel(new WorkflowCollectionsListModel());
+
+		Set<String> itemDefs = new HashSet<String>();
+		for( BaseEntityLabel itemDef : itemDefService.listSearchable() )
+		{
+			itemDefs.add(itemDef.getUuid());
+		}
+		itemDefs.removeAll(optedOutCollections);
+		workflowItemDefs.setSelectedStringValues(context, itemDefs);
+		if( itemDefService.enumerateWithWorkflow().size() > 0 )
+		{
+			model.setShowWorkflowOptInSection(true);
+		}
+		else
+		{
+			model.setShowWorkflowOptInSection(false);
+		}
+	}
+
 	@Override
 	public void registered(String id, SectionTree tree)
 	{
@@ -338,8 +362,8 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 		saveButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
 		saveButton.setLabel(SAVE_LABEL);
 		saveButton.setStyleClass("profile-save-button");
-		timeZones.setListModel(new SimpleHtmlListModel<NameValue>(DateHelper.getTimeZoneNameValues(new BundleNameValue(
-			"com.tle.web.userdetails.defaulttimezone", ""), false)));
+		timeZones.setListModel(new SimpleHtmlListModel<NameValue>(DateHelper
+			.getTimeZoneNameValues(new BundleNameValue("com.tle.web.userdetails.defaulttimezone", ""), false)));
 
 		changePassButton.setLabel(PASS_LABEL);
 		changePassButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
@@ -425,7 +449,6 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 	private void saveUser(SectionContext context)
 	{
 		userPrefs.setHideLoginNotice(hideLoginNotice.isChecked(context));
-		notificationService.setEmailEnabled(enableEmails.isChecked(context));
 
 		acModeService.setAccessibilityMode(accessibilityMode.isChecked(context));
 
@@ -452,7 +475,17 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 	private Set<String> saveNotifications(SectionInfo info)
 	{
 		Set<String> watches = itemDefs.getSelectedValuesAsStrings(info);
-		workflowPrefs.setWatchedCollections(watches);
+		notificationPrefs.setWatchedCollections(watches);
+
+		Set<String> itemDefs = new HashSet<String>();
+		for( BaseEntityLabel itemDef : itemDefService.listSearchable() )
+		{
+			itemDefs.add(itemDef.getUuid());
+		}
+		Set<String> optedines = workflowItemDefs.getSelectedValuesAsStrings(info);
+		itemDefs.removeAll(optedines);
+
+		notificationPrefs.setOptedOutCollections(itemDefs);
 		return watches;
 	}
 
@@ -500,8 +533,30 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 		@Override
 		protected Option<ItemDefinition> convertToOption(SectionInfo info, ItemDefinition collection)
 		{
-			return new NameValueOption<ItemDefinition>(new BundleNameValue(collection.getName(), collection.getUuid(),
-				bundleCache), collection);
+			return new NameValueOption<ItemDefinition>(
+				new BundleNameValue(collection.getName(), collection.getUuid(), bundleCache), collection);
+		}
+	}
+
+	protected class WorkflowCollectionsListModel extends DynamicHtmlListModel<ItemDefinition>
+	{
+		public WorkflowCollectionsListModel()
+		{
+			setSort(true);
+		}
+
+		@Override
+		protected Iterable<ItemDefinition> populateModel(SectionInfo info)
+		{
+
+			return itemDefService.enumerateWithWorkflow();
+		}
+
+		@Override
+		protected Option<ItemDefinition> convertToOption(SectionInfo info, ItemDefinition collection)
+		{
+			return new NameValueOption<ItemDefinition>(
+				new BundleNameValue(collection.getName(), collection.getUuid(), bundleCache), collection);
 		}
 	}
 
@@ -512,6 +567,8 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 		private String defaultLanguage;
 		private Boolean status;
 		private Map<String, String> errors = new HashMap<String, String>();
+
+		private boolean showWorkflowOptInSection;
 
 		public boolean isSetUpForm()
 		{
@@ -566,6 +623,16 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 		public Map<String, String> getErrors()
 		{
 			return errors;
+		}
+
+		public boolean isShowWorkflowOptInSection()
+		{
+			return showWorkflowOptInSection;
+		}
+
+		public void setShowWorkflowOptInSection(boolean showWorkflowOptInSection)
+		{
+			this.showWorkflowOptInSection = showWorkflowOptInSection;
 		}
 	}
 
@@ -624,18 +691,24 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 		return itemDefs;
 	}
 
+	public CollectionsList getWorkflowItemDefs()
+	{
+		return workflowItemDefs;
+	}
+
+	public void setWorkflowItemDefs(CollectionsList workflowItemDefs)
+	{
+		this.workflowItemDefs = workflowItemDefs;
+	}
+
 	public Button getCloseButton()
 	{
 		return closeButton;
-	}
-
-	public Checkbox getEnableEmails()
-	{
-		return enableEmails;
 	}
 
 	public SingleSelectionList<NameValue> getDateFormats()
 	{
 		return dateFormats;
 	}
+
 }

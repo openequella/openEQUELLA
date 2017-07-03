@@ -18,6 +18,7 @@ package com.tle.web.sections.jquery.libraries;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
+import com.tle.web.DebugSettings;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.js.JSCallable;
@@ -33,17 +34,16 @@ public class JQueryStarRating implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.stars.js", "jquery.stars.css",
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
+		DebugSettings.isDebuggingMode() ? "jquery.stars.js" : "jquery.stars.min.js", "jquery.stars.css",
 		JQueryUIWidget.PRERENDER);
 
 	public static final JSCallable FUNC_STARRATING = new ExternallyDefinedFunction("stars", PRERENDER);
 
 	public static void starRating(RenderContext info, JSExpression selector, JSExpression params)
 	{
-		JQueryCore.appendReady(
-			info,
-			new ScriptStatement(PropertyExpression
-				.create(selector, new FunctionCallExpression(FUNC_STARRATING, params))));
+		JQueryCore.appendReady(info, new ScriptStatement(
+			PropertyExpression.create(selector, new FunctionCallExpression(FUNC_STARRATING, params))));
 	}
 
 	@Override

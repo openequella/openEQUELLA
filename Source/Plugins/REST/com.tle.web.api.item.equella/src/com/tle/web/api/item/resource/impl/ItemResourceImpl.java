@@ -56,13 +56,15 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemEditingException;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemIdKey;
+import com.tle.beans.item.ItemLock;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.common.Check;
 import com.tle.common.Pair;
 import com.tle.common.PathUtils;
+import com.tle.common.filesystem.FileEntry;
 import com.tle.common.interfaces.CsvList;
-import com.tle.common.util.FileEntry;
 import com.tle.core.filesystem.ItemFile;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.security.ItemSecurityConstants;
 import com.tle.core.item.serializer.ItemCommentSerializer;
@@ -73,29 +75,34 @@ import com.tle.core.item.serializer.ItemSerializerService;
 import com.tle.core.item.serializer.where.AllVersionsWhereClause;
 import com.tle.core.item.serializer.where.LatestVersionWhereClause;
 import com.tle.core.item.serializer.where.SingleItemWhereClause;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.service.ItemHistoryService;
+import com.tle.core.item.service.ItemLockingService;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.service.ItemCommentService;
+import com.tle.core.item.standard.service.ItemStandardService;
 import com.tle.core.mimetypes.MimeTypeService;
+import com.tle.core.quickupload.service.QuickUploadService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.QuickUploadService;
-import com.tle.core.services.item.FreeTextService;
-import com.tle.core.services.item.ItemCommentService;
-import com.tle.core.services.item.ItemHistoryService;
-import com.tle.core.services.item.ItemService;
 import com.tle.exceptions.PrivilegeRequiredException;
 import com.tle.web.api.interfaces.beans.BlobBean;
 import com.tle.web.api.interfaces.beans.FileListBean;
 import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.item.ItemLinkService;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
+import com.tle.web.api.item.interfaces.ItemLockResource;
 import com.tle.web.api.item.interfaces.ItemResource;
 import com.tle.web.api.item.interfaces.beans.AttachmentBean;
 import com.tle.web.api.item.interfaces.beans.CommentBean;
 import com.tle.web.api.item.interfaces.beans.HistoryEventBean;
 import com.tle.web.api.item.interfaces.beans.ItemBean;
+import com.tle.web.api.item.interfaces.beans.ItemExportBean;
+import com.tle.web.api.item.interfaces.beans.ItemLockBean;
 import com.tle.web.api.item.interfaces.beans.NavigationNodeBean;
 import com.tle.web.api.item.interfaces.beans.NavigationTabBean;
 import com.tle.web.api.item.interfaces.beans.NavigationTreeBean;
 import com.tle.web.api.item.resource.EquellaItemResource;
-import com.tle.web.remoting.rest.service.RestImportHelper;
+import com.tle.web.remoting.rest.service.RestImportExportHelper;
 import com.tle.web.remoting.rest.service.UrlLinkService;
 
 /**
@@ -133,20 +140,30 @@ public class ItemResourceImpl implements EquellaItemResource
 	@Inject
 	private ItemService itemService;
 	@Inject
+	private ItemStandardService itemStandardService;
+	@Inject
+	private ItemFileService itemFileService;
+	@Inject
 	private FreeTextService freeTextService;
 	@Inject
 	private QuickUploadService quickUploadService;
 	@Inject
 	private MimeTypeService mimeService;
+	@Inject
+	private ItemLockingService lockingService;
 
+	/**
+	 * NB: import|export=true is also an option in the query parameters.
+	 */
 	@Override
 	public EquellaItemBean getItem(UriInfo uriInfo, String uuid, int version, CsvList info)
 	{
 		List<String> infos = CsvList.asList(info, ItemSerializerService.CATEGORY_ALL);
 		ItemId itemId = new ItemId(uuid, version);
-		ItemSerializerItemBean serializer = itemSerializerService.createItemBeanSerializer(new SingleItemWhereClause(
-			itemId), infos, VIEW_ITEM, DISCOVER_ITEM);
-		return singleItem(uuid, version, serializer);
+		ItemSerializerItemBean serializer = itemSerializerService.createItemBeanSerializer(
+			new SingleItemWhereClause(itemId), infos, RestImportExportHelper.isExport(uriInfo), VIEW_ITEM,
+			DISCOVER_ITEM);
+		return singleItem(uuid, version, serializer, uriInfo);
 	}
 
 	@Override
@@ -178,7 +195,7 @@ public class ItemResourceImpl implements EquellaItemResource
 		final boolean ensureOnIndexList = Boolean.parseBoolean(waitForIndex);
 
 		final ItemIdKey itemId;
-		if( RestImportHelper.isImport(uriInfo) )
+		if( RestImportExportHelper.isImport(uriInfo) )
 		{
 			itemId = itemDeserializerService.importItem(equellaItemBean, stagingUuid, ensureOnIndexList);
 		}
@@ -215,12 +232,10 @@ public class ItemResourceImpl implements EquellaItemResource
 					{
 						throw new ItemEditingException("Another attachment is already using this placeholder: " + key);
 					}
-					else
-					{
-						String uuid = UUID.randomUUID().toString();
-						uuidMap.put(key, uuid);
-						attachment.setUuid(uuid);
-					}
+					// else
+					String uuid = UUID.randomUUID().toString();
+					uuidMap.put(key, uuid);
+					attachment.setUuid(uuid);
 				}
 			}
 		}
@@ -260,10 +275,7 @@ public class ItemResourceImpl implements EquellaItemResource
 					{
 						throw new ItemEditingException("No attachment is using this placeholder: " + key);
 					}
-					else
-					{
-						node.setNode("", uuidMap.get(key));
-					}
+					node.setNode("", uuidMap.get(key));
 				}
 			}
 		}
@@ -291,10 +303,8 @@ public class ItemResourceImpl implements EquellaItemResource
 						{
 							throw new ItemEditingException("No attachment is using this placeholder: " + key);
 						}
-						else
-						{
-							tab.getAttachment().setUuid(uuidMap.get(key));
-						}
+						// else
+						tab.getAttachment().setUuid(uuidMap.get(key));
 					}
 
 				}
@@ -304,7 +314,7 @@ public class ItemResourceImpl implements EquellaItemResource
 
 	}
 
-	private EquellaItemBean singleItem(String uuid, int version, ItemSerializerItemBean serializer)
+	private EquellaItemBean singleItem(String uuid, int version, ItemSerializerItemBean serializer, UriInfo uriInfo)
 	{
 		Collection<Long> itemIds = serializer.getItemIds();
 		Iterator<Long> iter = itemIds.iterator();
@@ -315,13 +325,14 @@ public class ItemResourceImpl implements EquellaItemResource
 		Long itemKey = iter.next();
 		if( serializer.hasPrivilege(itemKey, VIEW_ITEM) || serializer.hasPrivilege(itemKey, DISCOVER_ITEM) )
 		{
-			return serializeOne(itemKey, uuid, version, serializer);
+			return serializeOne(itemKey, uuid, version, serializer, uriInfo);
 		}
 
 		throw new PrivilegeRequiredException(ItemSecurityConstants.VIEW_ITEM, ItemSecurityConstants.DISCOVER_ITEM);
 	}
 
-	private EquellaItemBean serializeOne(Long itemKey, String uuid, int version, ItemSerializerItemBean serializer)
+	private EquellaItemBean serializeOne(Long itemKey, String uuid, int version, ItemSerializerItemBean serializer,
+		UriInfo uriInfo)
 	{
 		int setVersion = version == 0 ? (Integer) serializer.getData(itemKey, AllVersionsWhereClause.ALIAS_VERSION)
 			: version;
@@ -330,22 +341,33 @@ public class ItemResourceImpl implements EquellaItemResource
 		equellaBean.setVersion(setVersion);
 		serializer.writeItemBeanResult(equellaBean, itemKey);
 
+		// This check will enforce Administrator credentials, if export=true in
+		// parameter string ...
+		if( RestImportExportHelper.isExport(uriInfo) )
+		{
+			ItemExportBean exportBean = buildExportBean(equellaBean);
+			equellaBean.setExportDetails(exportBean);
+		}
 		itemLinkService.addLinks(equellaBean);
 		return equellaBean;
 	}
 
+	/**
+	 * NB: import|export=true is also an option in the query parameters.
+	 */
 	@Override
 	public List<ItemBean> getAllVersions(UriInfo uriInfo, String uuid, CsvList info)
 	{
 		List<String> infos = CsvList.asList(info, ItemSerializerService.CATEGORY_ALL);
-		ItemSerializerItemBean serializer = itemSerializerService.createItemBeanSerializer(new AllVersionsWhereClause(
-			uuid), infos, VIEW_ITEM, DISCOVER_ITEM);
+		ItemSerializerItemBean serializer = itemSerializerService.createItemBeanSerializer(
+			new AllVersionsWhereClause(uuid), infos, RestImportExportHelper.isExport(uriInfo), VIEW_ITEM,
+			DISCOVER_ITEM);
 		List<ItemBean> itemBeans = Lists.newArrayList();
 		for( Long itemKey : serializer.getItemIds() )
 		{
 			if( serializer.hasPrivilege(itemKey, VIEW_ITEM) || serializer.hasPrivilege(itemKey, DISCOVER_ITEM) )
 			{
-				itemBeans.add(serializeOne(itemKey, uuid, 0, serializer));
+				itemBeans.add(serializeOne(itemKey, uuid, 0, serializer, uriInfo));
 			}
 		}
 		return itemBeans;
@@ -356,8 +378,9 @@ public class ItemResourceImpl implements EquellaItemResource
 	{
 		List<String> infos = CsvList.asList(info, ItemSerializerService.CATEGORY_ALL);
 		ItemSerializerItemBean serializer = itemSerializerService.createItemBeanSerializer(
-			new LatestVersionWhereClause(uuid, false), infos, VIEW_ITEM, DISCOVER_ITEM);
-		return singleItem(uuid, 0, serializer);
+			new LatestVersionWhereClause(uuid, false), infos, RestImportExportHelper.isExport(uriInfo), VIEW_ITEM,
+			DISCOVER_ITEM);
+		return singleItem(uuid, 0, serializer, uriInfo);
 	}
 
 	@Override
@@ -365,8 +388,9 @@ public class ItemResourceImpl implements EquellaItemResource
 	{
 		List<String> infos = CsvList.asList(info, ItemSerializerService.CATEGORY_ALL);
 		ItemSerializerItemBean serializer = itemSerializerService.createItemBeanSerializer(
-			new LatestVersionWhereClause(uuid, true), infos, VIEW_ITEM, DISCOVER_ITEM);
-		return singleItem(uuid, 0, serializer);
+			new LatestVersionWhereClause(uuid, true), infos, RestImportExportHelper.isExport(uriInfo), VIEW_ITEM,
+			DISCOVER_ITEM);
+		return singleItem(uuid, 0, serializer, uriInfo);
 	}
 
 	@Override
@@ -406,7 +430,7 @@ public class ItemResourceImpl implements EquellaItemResource
 	{
 		boolean ensureOnIndexList = Boolean.parseBoolean(waitForIndex);
 
-		itemService.delete(new ItemId(uuid, version), purge, ensureOnIndexList, false);
+		itemStandardService.delete(new ItemId(uuid, version), purge, ensureOnIndexList, false);
 		return Response.status(Status.NO_CONTENT).build();
 	}
 
@@ -420,8 +444,9 @@ public class ItemResourceImpl implements EquellaItemResource
 	public FileListBean listFiles(UriInfo uriInfo, String uuid, int version)
 	{
 		ItemId itemId = new ItemId(uuid, version);
-		ItemFile itemFile = new ItemFile(itemId);
 		checkViewItem(itemId);
+		ItemFile itemFile = itemFileService.getItemFile(itemId, null);
+
 		FileEntry base;
 		try
 		{
@@ -492,7 +517,8 @@ public class ItemResourceImpl implements EquellaItemResource
 	{
 		ItemId itemId = new ItemId(uuid, version);
 		checkViewItem(itemId);
-		ItemFile itemFile = new ItemFile(itemId);
+
+		ItemFile itemFile = itemFileService.getItemFile(itemId, null);
 		ResponseBuilder builder = makeBlobHeaders(itemFile, path);
 
 		String contentType = mimeService.getMimeTypeForFilename(path);
@@ -510,7 +536,7 @@ public class ItemResourceImpl implements EquellaItemResource
 	{
 		ItemId itemId = new ItemId(uuid, version);
 		checkViewItem(itemId);
-		ItemFile itemFile = new ItemFile(itemId);
+		ItemFile itemFile = itemFileService.getItemFile(itemId, null);
 
 		try
 		{
@@ -561,11 +587,11 @@ public class ItemResourceImpl implements EquellaItemResource
 	// EQUELLA specific endpoints defined by EquellaItemResource
 
 	@Override
-	public Response newItemQuick(String filename, InputStream binaryData, UriInfo info)
+	public Response newItemQuick(UriInfo uriInfo, String filename, InputStream binaryData)
 	{
-		try (InputStream bd = binaryData)
+		try( InputStream bd = binaryData )
 		{
-			Map<String, List<String>> params = info.getQueryParameters();
+			Map<String, List<String>> params = uriInfo.getQueryParameters();
 			Pair<ItemId, Attachment> attInfo = quickUploadService.createOrSelectExisting(bd, filename, params);
 
 			return Response.status(Status.CREATED).location(itemLinkService.getItemURI(attInfo.getFirst())).build();
@@ -577,7 +603,7 @@ public class ItemResourceImpl implements EquellaItemResource
 	}
 
 	@Override
-	public CommentBean getOneComment(String uuid, int version, String commentUuid)
+	public CommentBean getOneComment(UriInfo uriInfo, String uuid, int version, String commentUuid)
 	{
 		Item item = itemService.get(new ItemId(uuid, version));
 		Comment comment = itemCommentService.getComment(item, commentUuid);
@@ -590,17 +616,18 @@ public class ItemResourceImpl implements EquellaItemResource
 	}
 
 	@Override
-	public Response postComments(String uuid, int version, CommentBean commentBean)
+	public Response postComments(UriInfo uriInfo, String uuid, int version, CommentBean commentBean)
 	{
 		UserBean postedBy = commentBean.getPostedBy();
 		itemCommentService.addComment(new ItemId(uuid, version), commentBean.getComment(), commentBean.getRating(),
-			commentBean.isAnonymous(), postedBy != null ? postedBy.getId() : "");
+			commentBean.isAnonymous(),
+			postedBy != null && RestImportExportHelper.isImport(uriInfo) ? postedBy.getId() : "");
 
 		return Response.status(Status.CREATED).build();
 	}
 
 	@Override
-	public Response deleteComment(String uuid, int version, String commentUuid)
+	public Response deleteComment(UriInfo uriInfo, String uuid, int version, String commentUuid)
 	{
 		itemCommentService.deleteComment(new ItemId(uuid, version), commentUuid);
 		return Response.status(Status.OK).build();
@@ -621,8 +648,8 @@ public class ItemResourceImpl implements EquellaItemResource
 
 	private void checkViewItem(ItemId itemId)
 	{
-		ItemSerializerItemBean serializer = itemSerializerService.createItemBeanSerializer(new SingleItemWhereClause(
-			itemId), new HashSet<String>(), VIEW_ITEM);
+		ItemSerializerItemBean serializer = itemSerializerService
+			.createItemBeanSerializer(new SingleItemWhereClause(itemId), new HashSet<String>(), false, VIEW_ITEM);
 
 		Iterator<Long> iter = serializer.getItemIds().iterator();
 		if( !iter.hasNext() )
@@ -635,5 +662,49 @@ public class ItemResourceImpl implements EquellaItemResource
 		{
 			throw new PrivilegeRequiredException(ItemSecurityConstants.VIEW_ITEM);
 		}
+	}
+
+	private ItemExportBean buildExportBean(EquellaItemBean equellaBean)
+	{
+		ItemExportBean exportBean = itemSerializerService.getExportDetails(equellaBean);
+
+		List<HistoryEventBean> history = getHistory(equellaBean.getUuid(), equellaBean.getVersion());
+		exportBean.setHistory(history);
+
+		ItemLockBean itemLockBean = getItemLock(equellaBean);
+		if( itemLockBean != null )
+		{
+			exportBean.setLock(itemLockBean);
+		}
+
+		return exportBean;
+	}
+
+	/**
+	 * Similar operation in the ItemLockResource
+	 * 
+	 * @see com.tle.web.api.item.interfaces.ItemLockResource#get(UriInfo,
+	 *      String, int)
+	 * @param uuid
+	 * @param version
+	 * @return
+	 */
+	private ItemLockBean getItemLock(EquellaItemBean equellaBean)
+	{
+		Item item = itemService.get(new ItemId(equellaBean.getUuid(), equellaBean.getVersion()));
+		final ItemLock lock = lockingService.get(item);
+		if( lock == null )
+		{
+			return null;
+		}
+		final URI loc = urlLinkService.getMethodUriBuilder(ItemLockResource.class, "get").build(item.getUuid(),
+			item.getVersion());
+		final ItemLockBean lockBean = new ItemLockBean();
+		final Map<String, String> linkMap = Maps.newHashMap();
+		linkMap.put("self", loc.toString());
+		lockBean.setOwner(new UserBean(lock.getUserID()));
+		lockBean.setUuid(lock.getUserSession());
+		lockBean.set("links", linkMap);
+		return lockBean;
 	}
 }

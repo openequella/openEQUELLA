@@ -23,9 +23,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-import com.dytech.edge.common.valuebean.GroupBean;
-import com.dytech.edge.common.valuebean.RoleBean;
-import com.dytech.edge.common.valuebean.UserBean;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.tle.common.Check;
@@ -37,6 +34,9 @@ import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.SecurityConstants.Recipient;
 import com.tle.common.security.expressions.PostfixExpressionParser;
 import com.tle.common.security.expressions.PostfixExpressionParser.BooleanOp;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
+import com.tle.common.usermanagement.user.valuebean.RoleBean;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;
 import com.tle.core.services.user.UserSessionService;
@@ -110,8 +110,7 @@ import com.tle.web.sections.standard.model.SimpleOption;
 public class ExpressionSelectorSection
 	extends
 		AbstractPrototypeSection<ExpressionSelectorSection.ExpressionSelectorModel>
-	implements
-		HtmlRenderer
+	implements HtmlRenderer
 {
 	protected static final int SEARCH_LIMIT = 50;
 	public static final String RESULTS_DIVID = "search-result-list";
@@ -738,7 +737,10 @@ public class ExpressionSelectorSection
 		}
 		for( SelectionGroupingTreeNode group : rootNode.getChildren() )
 		{
-			return recipientExistInTree(recipient, group);
+			if( recipientExistInTree(recipient, group) )
+			{
+				return true;
+			}
 		}
 		return false;
 	}
@@ -1334,8 +1336,9 @@ public class ExpressionSelectorSection
 				return root;
 			}
 		}
-		else if( childCount == 1
-			&& (root.getGrouping() == Grouping.MATCH_ALL || root.getGrouping() == Grouping.MATCH_ANY) )
+		else
+			if( childCount == 1
+				&& (root.getGrouping() == Grouping.MATCH_ALL || root.getGrouping() == Grouping.MATCH_ANY) )
 		{
 			if( Check.isEmpty(root.getSelection()) )
 			{
@@ -1525,8 +1528,9 @@ public class ExpressionSelectorSection
 				parent = first;
 				((SelectionGroupingTreeNode) parent).add(second);
 			}
-			else if( second instanceof SelectionGroupingTreeNode
-				&& ((SelectionGroupingTreeNode) second).getGrouping() == grouping )
+			else
+				if( second instanceof SelectionGroupingTreeNode
+					&& ((SelectionGroupingTreeNode) second).getGrouping() == grouping )
 			{
 				parent = second;
 				((SelectionGroupingTreeNode) parent).add(first);

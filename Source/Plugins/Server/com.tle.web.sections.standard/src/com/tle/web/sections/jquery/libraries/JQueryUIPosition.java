@@ -18,6 +18,7 @@ package com.tle.web.sections.jquery.libraries;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
+import com.tle.web.DebugSettings;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.render.PreRenderable;
 
@@ -29,7 +30,8 @@ public class JQueryUIPosition implements JavascriptModule
 	/**
 	 * Includes ui.position
 	 */
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.position.js",
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
+		DebugSettings.isDebuggingMode() ? "jquery.ui.position.js" : "jquery.ui.position.min.js",
 		JQueryUICore.PRERENDER);
 
 	@Override

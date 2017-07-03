@@ -22,7 +22,7 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.web.appletcommon.AppletWebCommon;
 import com.tle.web.controls.filemanager.FileManagerWebControl;
 import com.tle.web.filemanager.FileManagerConstants;
@@ -54,7 +54,7 @@ public class FileManagerDialog extends EquellaDialog<DialogModel>
 	private static Label LABEL_FILE_MANAGER;
 
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@ViewFactory
 	private FreemarkerFactory viewFactory;
@@ -91,7 +91,7 @@ public class FileManagerDialog extends EquellaDialog<DialogModel>
 		@Override
 		protected JSCallable createFunction(RenderContext info)
 		{
-			final String jarUrl = urlService.institutionalise(FileManagerConstants.FILEMANAGER_APPLET_JAR_URL);
+			final String jarUrl = institutionService.institutionalise(FileManagerConstants.FILEMANAGER_APPLET_JAR_URL);
 
 			final ObjectExpression options = new ObjectExpression();
 			options.put(AppletWebCommon.PARAMETER_PREFIX + "WIZARD", fileManagerControl.getRepository().getWizid());
@@ -99,10 +99,11 @@ public class FileManagerDialog extends EquellaDialog<DialogModel>
 			options.put(AppletWebCommon.PARAMETER_PREFIX + "BACKEND",
 				"com.tle.web.filemanager.applet.backend.ServerBackendConnector");
 
-			return CallAndReferenceFunction.get(Js.function(Js.call_s(AppletWebCommon.WRITE_APPLET, Jq
-				.$(filemanagerDiv), jarUrl, "com.tle.web.filemanager.applet.AppletLauncher", CurrentLocale.getLocale()
-				.toString(), CurrentLocale.isRightToLeft(), urlService.getInstitutionUrl().toString(), "534px", "100%",
-				options, "fileManager")), FileManagerDialog.this);
+			return CallAndReferenceFunction.get(Js.function(Js.call_s(AppletWebCommon.WRITE_APPLET,
+				Jq.$(filemanagerDiv), jarUrl, "com.tle.web.filemanager.applet.AppletLauncher",
+				CurrentLocale.getLocale().toString(), CurrentLocale.isRightToLeft(),
+				institutionService.getInstitutionUrl().toString(), "534px", "100%", options, "fileManager")),
+				FileManagerDialog.this);
 		}
 	}
 

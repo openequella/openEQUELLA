@@ -22,10 +22,10 @@ import com.tle.beans.entity.FederatedSearch;
 import com.tle.common.NameValue;
 import com.tle.common.searching.SearchResults;
 import com.tle.core.fedsearch.GenericRecord;
+import com.tle.core.i18n.BundleCache;
 import com.tle.core.remoterepo.z3950.AdvancedSearchOptions;
 import com.tle.core.remoterepo.z3950.Z3950SearchResult;
 import com.tle.core.remoting.RemoteZ3950Service;
-import com.tle.web.i18n.BundleCache;
 
 /**
  * @author aholland

@@ -23,7 +23,7 @@ import javax.inject.Singleton;
 
 import com.tle.beans.item.Item;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.DrmService;
+import com.tle.core.item.service.DrmService;
 import com.tle.encoding.UrlEncodedString;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;

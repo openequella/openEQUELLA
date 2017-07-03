@@ -2,16 +2,21 @@
 <plugin id="com.tle.core.legacy.migration" version="1">
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.hibernate.equella" />
 		<import plugin-id="com.tle.core.migration" />
 		<import plugin-id="com.tle.core.mimetypes" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.common.activation" />
 		<import plugin-id="com.tle.common.usermanagement.standard" />
 		<import plugin-id="com.tle.common.dynacollection" />
 		<import plugin-id="com.tle.common.hierarchy" />
 		<import plugin-id="net.sf.json-lib:json-lib" />
+		<import plugin-id="com.tle.core.institution.convert" />
+		<import plugin-id="com.tle.common.auditlog" />
+		<import plugin-id="com.tle.common.url" />
+		<import plugin-id="com.tle.xstream" />
+		<import plugin-id="com.tle.common.settings" />
 	</requires>
 
 	<runtime>
@@ -38,7 +43,7 @@
 		<parameter id="date" value="1970-01-01" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="RemoveNavigationGroupsAndLinksOnImport">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="RemoveNavigationGroupsAndLinksOnImport">
 		<parameter id="id" value="com.tle.core.legacy.migration.v50.RemoveNavigationGroupsAndLinksXml" />
 		<parameter id="bean" value="bean:com.tle.core.legacy.migration.v50.RemoveNavigationGroupsAndLinksXml" />
 		<parameter id="date" value="1970-02-01" />
@@ -52,7 +57,7 @@
 		<parameter id="date" value="1970-01-01" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="RemoveCourseMirgrationXml">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="RemoveCourseMirgrationXml">
 		<parameter id="id" value="com.tle.core.legacy.migration.v50.RemoveCourseMigrationXml" />
 		<parameter id="bean" value="bean:com.tle.core.legacy.migration.v50.RemoveCourseMigrationXml" />
 		<parameter id="date" value="1970-02-10" />
@@ -67,7 +72,7 @@
 		<parameter id="date" value="1970-01-01" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="addCommentsSectionToItemSummarySectionsXml">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="addCommentsSectionToItemSummarySectionsXml">
 		<parameter id="id" value="com.tle.core.legacy.migration.v50.AddCommentsSectionToItemSummarySectionsXml" />
 		<parameter id="bean" value="bean:com.tle.core.legacy.migration.v50.AddCommentsSectionToItemSummarySectionsXml" />
 		<parameter id="date" value="1970-02-03" />
@@ -82,7 +87,7 @@
 		<parameter id="date" value="1970-01-01" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="convertXsltTemplateFileToStringXml">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="convertXsltTemplateFileToStringXml">
 		<parameter id="id" value="com.tle.core.legacy.migration.v50.ConvertXsltTemplateFileToStringXml" />
 		<parameter id="bean" value="bean:com.tle.core.legacy.migration.v50.ConvertXsltTemplateFileToStringXml" />
 		<parameter id="date" value="1970-02-04" />
@@ -90,7 +95,7 @@
 
 	<!-- Mov popup fix viewer (incorporating pretty viewer below) -->
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="removePopupFixViewerXml">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="removePopupFixViewerXml">
 		<parameter id="id" value="com.tle.core.legacy.migration.v50.RemovePopupFixViewerAndConvertPrettyViewerXml" />
 		<parameter id="bean" value="bean:com.tle.core.legacy.migration.v50.RemovePopupFixViewerAndConvertPrettyViewerXml" />
 		<parameter id="date" value="1970-02-11" />
@@ -140,20 +145,20 @@
 		<parameter id="date" value="1970-01-01" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="itemxmlmigration" id="removeExistingThumbnailsXml">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="itemxmlmigration" id="removeExistingThumbnailsXml">
 		<parameter id="id" value="com.tle.core.legacy.migration.v50.RemoveExistingThumbnailsXml" />
 		<parameter id="bean" value="bean:com.tle.core.legacy.migration.v50.RemoveExistingThumbnailsXml" />
 	</extension>
 
 	<!-- Import migrations to remove assembler and activity wizard cruft -->
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="removeAssemblerAndActivityWizardPart1">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="removeAssemblerAndActivityWizardPart1">
 		<parameter id="id" value="com.tle.core.legacy.migration.v50.RemoveAssemblerAndActivityWizardEntitiesFix" />
 		<parameter id="bean" value="bean:com.tle.core.legacy.migration.v50.RemoveAssemblerAndActivityWizardEntitiesFix" />
 		<parameter id="date" value="1970-02-02" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="itemxmlmigration" id="removeAssemblerAndActivityWizardPart2">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="itemxmlmigration" id="removeAssemblerAndActivityWizardPart2">
 		<parameter id="id" value="com.tle.core.legacy.migration.v50.RemoveAssemblerAndActivityWizardItemsFix" />
 		<parameter id="bean" value="bean:com.tle.core.legacy.migration.v50.RemoveAssemblerAndActivityWizardItemsFix" />
 		<parameter id="date" value="1970-01-10" />
@@ -179,13 +184,13 @@
 		<parameter id="date" value="1970-01-01" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="removeObsoleteCollectionSettingsXml">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="removeObsoleteCollectionSettingsXml">
 		<parameter id="id" value="com.tle.core.legacy.migration.v50.RemoveObsoleteCollectionSettingsXml" />
 		<parameter id="bean" value="bean:com.tle.core.legacy.migration.v50.RemoveObsoleteCollectionSettingsXml" />
 		<parameter id="date" value="1970-02-08" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="RemoveHierarchyColumnsXml">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="RemoveHierarchyColumnsXml">
 		<parameter id="id" value="com.tle.core.legacy.migration.v50.RemoveHierarchyColumnsXml" />
 		<parameter id="bean" value="bean:com.tle.core.legacy.migration.v50.RemoveHierarchyColumnsXml" />
 		<parameter id="date" value="1970-02-05" />

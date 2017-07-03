@@ -19,7 +19,7 @@ package com.tle.web.viewitem.section;
 import javax.inject.Inject;
 
 import com.tle.common.Check;
-import com.tle.core.services.external.Office2HtmlConversionService;
+import com.tle.core.office2html.service.Office2HtmlConversionService;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
@@ -115,8 +115,8 @@ public class ConversionSection extends AbstractPrototypeSection<ConversionSectio
 		{
 			try
 			{
-				String convertedFile = conversionService
-					.convert(getViewableItem().getFileHandle(), getFilepath(), type);
+				String convertedFile = conversionService.convert(getViewableItem().getFileHandle(), getFilepath(),
+					type);
 				return getViewableItem().createStableResourceUrl(convertedFile);
 			}
 			catch( Exception e )

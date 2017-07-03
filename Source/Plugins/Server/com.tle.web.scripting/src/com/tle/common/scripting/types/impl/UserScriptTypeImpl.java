@@ -16,9 +16,9 @@
 
 package com.tle.common.scripting.types.impl;
 
-import com.dytech.edge.common.valuebean.DefaultUserBean;
-import com.dytech.edge.common.valuebean.UserBean;
 import com.tle.common.scripting.types.UserScriptType;
+import com.tle.common.usermanagement.user.valuebean.DefaultUserBean;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 
 /**
  * @author aholland

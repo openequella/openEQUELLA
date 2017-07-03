@@ -34,6 +34,7 @@ import com.dytech.edge.queries.FreeTextQuery;
 import com.tle.beans.entity.Schema.SchemaNode;
 import com.tle.common.util.Dates;
 import com.tle.common.util.UtcDate;
+import com.tle.core.freetext.indexer.AbstractIndexingExtension;
 import com.tle.freetext.htmlfilter.HTMLFilter;
 
 public class XmlSchemaIndexer

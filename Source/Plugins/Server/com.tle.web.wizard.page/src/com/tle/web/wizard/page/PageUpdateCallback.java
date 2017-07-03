@@ -38,14 +38,13 @@ import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.js.generic.function.PrependedParameterFunction;
-import com.tle.web.sections.standard.js.modules.JSONModule;
 
 @SuppressWarnings("nls")
 public abstract class PageUpdateCallback implements JSONResponseCallback
 {
-	private static final IncludeFile INCJS = new IncludeFile(ResourcesService.getResourceHelper(
-		PageUpdateCallback.class).url("scripts/updatecontrols.js"), AjaxEffects.EFFECTS_LIB, JQueryUIEffects.HIGHLIGHT,
-		JQueryUIEffects.BLIND, JSONModule.PRERENDERER);
+	private static final IncludeFile INCJS = new IncludeFile(
+		ResourcesService.getResourceHelper(PageUpdateCallback.class).url("scripts/updatecontrols.js"),
+		AjaxEffects.EFFECTS_LIB, JQueryUIEffects.HIGHLIGHT, JQueryUIEffects.BLIND);
 	private static final JSCallable UPDATE_CONTROLS = new ExternallyDefinedFunction("updateControls", 4, INCJS);
 
 	protected AjaxRenderContext context;

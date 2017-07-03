@@ -1,0 +1,202 @@
+package com.tle.common.workflow.node;
+
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.AccessType;
+import org.hibernate.annotations.Index;
+
+import com.tle.beans.entity.LanguageBundle;
+import com.tle.common.Check;
+import com.tle.common.workflow.node.WorkflowItem.MoveLive;
+
+@Entity(name = "WorkflowScript")
+@AccessType("field")
+@DiscriminatorValue("x")
+public class ScriptNode extends WorkflowTreeNode
+{
+	private static final long serialVersionUID = 1;
+
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@Index(name = "workflowNodeDesc")
+	private LanguageBundle description;
+	private boolean movelive;
+	private boolean moveliveAccept;
+	private boolean proceedNext;
+	@Lob
+	private String script;
+	
+	@ElementCollection
+	@Column(name = "`user`", length = 255)
+	@CollectionTable(name = "wf_script_notify_completion_u", joinColumns = @JoinColumn(name = "workflow_node_id"))
+	private Set<String> usersNotifyOnCompletion;
+	@ElementCollection
+	@Column(name = "`group`", length = 255)
+	@CollectionTable(name = "wf_script_notify_completion_g", joinColumns = @JoinColumn(name = "workflow_node_id"))
+	private Set<String> groupsNotifyOnCompletion;
+
+	@ElementCollection
+	@Column(name = "`user`", length = 255)
+	@CollectionTable(name = "wf_script_notify_error_u", joinColumns = @JoinColumn(name = "workflow_node_id"))
+	private Set<String> usersNotifyOnError;
+	@ElementCollection
+	@Column(name = "`group`", length = 255)
+	@CollectionTable(name = "wf_script_notify_error_g", joinColumns = @JoinColumn(name = "workflow_node_id"))
+	private Set<String> groupsNotifyOnError;
+
+	private boolean notifyOnCompletion;
+	private boolean notifyOnError;
+
+	public ScriptNode(final LanguageBundle name)
+	{
+		super(name);
+	}
+	
+	public ScriptNode()
+	{
+		super();
+	}
+	
+	@Override
+	public char getType()
+	{
+		return 'x';
+	}
+
+	@Override
+	public boolean canAddChildren()
+	{
+		return false;
+	}
+
+	@Override
+	public boolean canHaveSiblingRejectPoints()
+	{
+		return false;
+	}
+	
+	public LanguageBundle getDescription()
+	{
+		return description;
+	}
+
+	public void setDescription(final LanguageBundle description)
+	{
+		this.description = description;
+	}
+	
+	public MoveLive getMovelive()
+	{
+		if( !movelive )
+		{
+			return MoveLive.NO;
+		}
+		return moveliveAccept ? MoveLive.ACCEPTED : MoveLive.ARRIVAL;
+	}
+
+	public void setMovelive(MoveLive movelive)
+	{
+		this.movelive = movelive != MoveLive.NO;
+		this.moveliveAccept = (movelive == MoveLive.ACCEPTED);
+	}
+
+	public String getScript()
+	{
+		return script;
+	}
+
+	public void setScript(String script)
+	{
+		this.script = script;
+	}
+
+	public boolean isProceedNext()
+	{
+		return proceedNext;
+	}
+
+	public void setProceedNext(final boolean proceedNext)
+	{
+		this.proceedNext = proceedNext;
+	}
+
+	public boolean isNotifyOnCompletion()
+	{
+		return notifyOnCompletion;
+	}
+
+	public void setNotifyOnCompletion(boolean notifyOnCompletion)
+	{
+		this.notifyOnCompletion = notifyOnCompletion;
+	}
+
+	public boolean isNotifyOnError()
+	{
+		return notifyOnError;
+	}
+
+	public void setNotifyOnError(boolean notifyOnError)
+	{
+		this.notifyOnError = notifyOnError;
+	}
+
+	public Set<String> getUsersNotifyOnCompletion()
+	{
+		return usersNotifyOnCompletion;
+	}
+
+	public void setUsersNotifyOnCompletion(Set<String> usersNotifyOnCompletion)
+	{
+		this.usersNotifyOnCompletion = usersNotifyOnCompletion;
+	}
+
+	public Set<String> getGroupsNotifyOnCompletion()
+	{
+		return groupsNotifyOnCompletion;
+	}
+
+	public void setGroupsNotifyOnCompletion(Set<String> groupsNotifyOnCompletion)
+	{
+		this.groupsNotifyOnCompletion = groupsNotifyOnCompletion;
+	}
+
+	public Set<String> getUsersNotifyOnError()
+	{
+		return usersNotifyOnError;
+	}
+
+	public void setUsersNotifyOnError(Set<String> usersNotifyOnError)
+	{
+		this.usersNotifyOnError = usersNotifyOnError;
+	}
+
+	public Set<String> getGroupsNotifyOnError()
+	{
+		return groupsNotifyOnError;
+	}
+
+	public void setGroupsNotifyOnError(Set<String> groupsNotifyOnError)
+	{
+		this.groupsNotifyOnError = groupsNotifyOnError;
+	}
+
+	public boolean isNotifyOnCompletionSpecified()
+	{
+		return (!Check.isEmpty(usersNotifyOnCompletion) || !Check.isEmpty(groupsNotifyOnCompletion));
+	}
+
+	public boolean isNotifyNoErrorSpecified()
+	{
+		return (!Check.isEmpty(usersNotifyOnError) || !Check.isEmpty(groupsNotifyOnError));
+	}
+}

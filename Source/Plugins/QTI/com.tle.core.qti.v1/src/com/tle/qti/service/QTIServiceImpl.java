@@ -82,8 +82,8 @@ public class QTIServiceImpl implements QTIService
 			qtiItem.getGeneralFeedback().addAll(parseGeneralFeedbackXml(resource, itemXml));
 			qtiItem.getResponseFeedback().putAll(parseResponseFeedbackXml(resource, itemXml));
 
-			qtiItem.getAnswers().addAll(
-				parseResponseConditionsXml(resProcXml, qtiItem.getResponseFeedback(), qtiItem.getResponses()));
+			qtiItem.getAnswers()
+				.addAll(parseResponseConditionsXml(resProcXml, qtiItem.getResponseFeedback(), qtiItem.getResponses()));
 
 			quiz.putQuestion(questId, qtiItem);
 		}
@@ -284,7 +284,6 @@ public class QTIServiceImpl implements QTIService
 				String url = materialElement.getNode("@uri");
 				if( urlService.isRelativeUrl(url) )
 				{
-
 					url = resource + "/" + url;
 				}
 				if( materialType.equals("mataudio") )

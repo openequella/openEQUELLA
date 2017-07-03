@@ -19,15 +19,15 @@ package com.tle.web.entity.services;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.dytech.edge.exceptions.NotFoundException;
 import com.tle.beans.item.ItemTaskId;
 import com.tle.beans.user.TLEGroup;
 import com.tle.beans.user.TLEUser;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.services.user.TLEGroupService;
-import com.tle.core.services.user.TLEUserService;
-import com.tle.core.workflow.operations.WorkflowFactory;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.core.usermanagement.standard.service.TLEGroupService;
+import com.tle.core.usermanagement.standard.service.TLEUserService;
 
 /**
  * @author jmaginnis
@@ -43,11 +43,11 @@ public class SoapInterfaceV2Impl extends AbstractSoapService implements com.tle.
 	@Inject
 	private ItemService itemService;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory operationFactory;
 
 	@Override
-	public String addUser(String ssid, String uuid, String username, String password, String firstName,
-		String lastName, String email)
+	public String addUser(String ssid, String uuid, String username, String password, String firstName, String lastName,
+		String email)
 	{
 		authenticate(ssid);
 		TLEUser user = new TLEUser();
@@ -125,8 +125,8 @@ public class SoapInterfaceV2Impl extends AbstractSoapService implements com.tle.
 	private String acceptTask(String ssid, ItemTaskId itemTaskId, boolean unlock) throws Exception
 	{
 		authenticate(ssid);
-		itemService.operation(itemTaskId, workflowFactory.accept(itemTaskId.getTaskId(), null),
-			workflowFactory.status(), workflowFactory.saveUnlock(unlock));
+		itemService.operation(itemTaskId, operationFactory.accept(itemTaskId.getTaskId(), null, null),
+			operationFactory.status(), operationFactory.saveUnlock(unlock));
 		return itemTaskId.getTaskId();
 	}
 
@@ -142,9 +142,8 @@ public class SoapInterfaceV2Impl extends AbstractSoapService implements com.tle.
 		throws Exception
 	{
 		authenticate(ssid);
-		itemService.operation(itemTaskId, workflowFactory.reject(itemTaskId.getTaskId(), rejectMessage, toStep),
-			workflowFactory.status(), workflowFactory.saveUnlock(unlock));
-
+		itemService.operation(itemTaskId, operationFactory.reject(itemTaskId.getTaskId(), rejectMessage, toStep, null),
+			operationFactory.status(), operationFactory.saveUnlock(unlock));
 		return itemTaskId.getTaskId();
 	}
 

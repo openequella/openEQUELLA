@@ -33,11 +33,15 @@ import org.hibernate.criterion.Restrictions;
 import org.java.plugin.registry.Extension;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dytech.edge.common.valuebean.ValidationError;
+import com.tle.common.beans.exception.ValidationError;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
 import com.tle.common.harvester.HarvesterProfile;
 import com.tle.common.harvester.RemoteHarvesterProfileService;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.security.PrivilegeTree.Node;
+import com.tle.core.entity.EntityEditingBean;
+import com.tle.core.entity.EntityEditingSession;
+import com.tle.core.entity.service.impl.AbstractEntityServiceImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.harvester.HarvesterProfileDao;
 import com.tle.core.harvester.HarvesterProfileService;
@@ -46,13 +50,9 @@ import com.tle.core.institution.RunAsInstitution;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.services.TaskService;
-import com.tle.core.services.entity.EntityEditingBean;
-import com.tle.core.services.entity.EntityEditingSession;
-import com.tle.core.services.entity.impl.AbstractEntityServiceImpl;
 import com.tle.core.services.impl.BeanClusteredTask;
 import com.tle.core.services.impl.SingleShotTask;
 import com.tle.core.services.impl.Task;
-import com.tle.core.user.CurrentInstitution;
 
 @SuppressWarnings("nls")
 @Bind(HarvesterProfileService.class)
@@ -136,8 +136,8 @@ public class HarvesterProfileServiceImpl
 
 		Extension extension = tools.get(profile.getType());
 
-		ContentRepository contentRepository = (ContentRepository) pluginService.getBean(
-			extension.getDeclaringPluginDescriptor(), extension.getParameter("class").valueAsString());
+		ContentRepository contentRepository = (ContentRepository) pluginService
+			.getBean(extension.getDeclaringPluginDescriptor(), extension.getParameter("class").valueAsString());
 
 		return contentRepository.setupAndRun(profile, testOnly);
 	}

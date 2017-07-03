@@ -21,9 +21,9 @@ import javax.inject.Inject;
 import com.dytech.edge.web.WebConstants;
 import com.tle.annotation.Nullable;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.UrlService;
-import com.tle.core.user.CurrentUser;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.login.LogonSection;
 import com.tle.web.sections.SectionId;
@@ -48,7 +48,7 @@ public class RootPortletSection extends CombinedLayout<CombinedModel>
 	@Inject
 	private TLEAclManager aclManager;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@Override
 	public Class<CombinedModel> getModelClass()
@@ -82,12 +82,13 @@ public class RootPortletSection extends CombinedLayout<CombinedModel>
 		{
 			if( CurrentUser.isGuest() )
 			{
-				LogonSection.forwardToLogon(info, urlService.removeInstitution(info.getPublicBookmark().getHref()),
+				LogonSection.forwardToLogon(info,
+					institutionService.removeInstitution(info.getPublicBookmark().getHref()),
 					LogonSection.STANDARD_LOGON_PATH);
 				return null;
 			}
-			throw new AccessDeniedException(CurrentLocale.get("com.tle.web.portal.missingprivileges",
-				WebConstants.DASHBOARD_PAGE_PRIVILEGE));
+			throw new AccessDeniedException(
+				CurrentLocale.get("com.tle.web.portal.missingprivileges", WebConstants.DASHBOARD_PAGE_PRIVILEGE));
 		}
 
 		getModel(info).setReceiptSpanBothColumns(true);

@@ -27,16 +27,16 @@ import com.dytech.edge.common.Constants;
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
-import com.tle.beans.system.SearchSettings;
-import com.tle.beans.system.SearchSettings.SearchFilter;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.searching.Search.SortType;
+import com.tle.common.settings.standard.SearchSettings;
+import com.tle.common.settings.standard.SearchSettings.SearchFilter;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.search.service.impl.SearchPrivilegeTreeProvider;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionId;
@@ -255,11 +255,12 @@ public class SearchSettingsSection extends OneColumnLayout<SearchSettingsSection
 		sorts.add(new VoidKeyOption(SORT_RATING_KEY, SortType.RATING.toString()));
 		defaultSortType.setListModel(new SimpleHtmlListModel<VoidKeyOption>(sorts));
 
-		SimpleHtmlListModel<NameValue> harvestOptionsList = new SimpleHtmlListModel<NameValue>(new NameValue(
-			CurrentLocale.get(INDEX_NONE_LABEL), Integer.toString(SearchSettings.URL_DEPTH_LEVEL_NONE)), new NameValue(
-			CurrentLocale.get(INDEX_REFERENCED_LABEL), Integer.toString(SearchSettings.URL_DEPTH_LEVEL_REFERENCED)),
-			new NameValue(CurrentLocale.get(INDEX_REFLINKED_LABEL), Integer
-				.toString(SearchSettings.URL_DEPTH_LEVEL_REFERENCED_AND_LINKED)));
+		SimpleHtmlListModel<NameValue> harvestOptionsList = new SimpleHtmlListModel<NameValue>(
+			new NameValue(CurrentLocale.get(INDEX_NONE_LABEL), Integer.toString(SearchSettings.URL_DEPTH_LEVEL_NONE)),
+			new NameValue(CurrentLocale.get(INDEX_REFERENCED_LABEL),
+				Integer.toString(SearchSettings.URL_DEPTH_LEVEL_REFERENCED)),
+			new NameValue(CurrentLocale.get(INDEX_REFLINKED_LABEL),
+				Integer.toString(SearchSettings.URL_DEPTH_LEVEL_REFERENCED_AND_LINKED)));
 		harvestOptions.setListModel(harvestOptionsList);
 		saveButton.setClickHandler(events.getNamedHandler("save"));
 

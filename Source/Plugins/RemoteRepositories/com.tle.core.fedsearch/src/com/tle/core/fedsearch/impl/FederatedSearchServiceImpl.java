@@ -24,12 +24,15 @@ import javax.inject.Singleton;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.ejb.helpers.ValidationHelper;
+import com.tle.common.beans.exception.ValidationError;
+import com.tle.core.services.ValidationHelper;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.common.EntityPack;
 import com.tle.common.security.PrivilegeTree.Node;
+import com.tle.core.entity.EntityEditingBean;
+import com.tle.core.entity.EntityEditingSession;
+import com.tle.core.entity.service.impl.AbstractEntityServiceImpl;
 import com.tle.core.fedsearch.FedSearchPrivileges;
 import com.tle.core.fedsearch.FederatedSearchDao;
 import com.tle.core.fedsearch.FederatedSearchService;
@@ -37,9 +40,6 @@ import com.tle.core.guice.Bind;
 import com.tle.core.remoting.RemoteFederatedSearchService;
 import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.security.impl.SecureOnReturn;
-import com.tle.core.services.entity.EntityEditingBean;
-import com.tle.core.services.entity.EntityEditingSession;
-import com.tle.core.services.entity.impl.AbstractEntityServiceImpl;
 
 @SuppressWarnings("nls")
 @Bind(FederatedSearchService.class)

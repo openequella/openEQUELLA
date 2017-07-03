@@ -32,13 +32,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.dytech.edge.exceptions.NotFoundException;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.Check;
 import com.tle.common.URLUtils;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.core.cloud.beans.converted.CloudItem;
 import com.tle.core.cloud.service.CloudService;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.services.UrlService;
 import com.tle.web.cloud.view.CloudViewableItem;
 import com.tle.web.cloud.view.section.RootCloudViewItemSection;
@@ -59,11 +60,14 @@ public class CloudItemServlet extends HttpServlet
 {
 	@PlugKey("viewitem.error.notfound.remoteserver")
 	private static Label LABEL_ITEM_NOT_FOUND;
+
 	static
 	{
 		PluginResourceHandler.init(CloudItemServlet.class);
 	}
 
+	@Inject
+	private InstitutionService institutionService;
 	@Inject
 	private UrlService urlService;
 	@Inject
@@ -228,7 +232,8 @@ public class CloudItemServlet extends HttpServlet
 		{
 			try
 			{
-				redirectUrl = new URL(urlService.getInstitutionUrl(), URLUtils.urlEncode(path, false)).toString();
+				redirectUrl = new URL(institutionService.getInstitutionUrl(), URLUtils.urlEncode(path, false))
+					.toString();
 				String queryString = request.getQueryString();
 				if( queryString != null )
 				{

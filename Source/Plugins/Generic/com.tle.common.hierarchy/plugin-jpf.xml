@@ -7,6 +7,7 @@
 		<import plugin-id="com.tle.common.powersearch" exported="true" />
 		<import plugin-id="com.tle.common.search" />
 		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="com.tle.common.institution" />
 	</requires>
 	<runtime>
 		<library id="core" path="classes/" type="code">

@@ -38,8 +38,8 @@ import com.tle.core.favourites.SearchFavouritesSearchResults;
 import com.tle.core.favourites.bean.FavouriteSearch;
 import com.tle.core.favourites.dao.FavouriteSearchDao;
 import com.tle.core.guice.Bind;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionsController;
 

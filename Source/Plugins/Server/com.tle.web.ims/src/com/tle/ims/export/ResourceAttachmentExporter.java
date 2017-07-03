@@ -23,7 +23,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.dytech.devlib.PropBagEx;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.AttachmentType;
@@ -32,8 +31,9 @@ import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.LinkAttachment;
 import com.tle.common.Check;
 import com.tle.common.URLUtils;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.util.ims.beans.IMSCustomData;
 import com.tle.core.util.ims.beans.IMSManifest;
 import com.tle.core.util.ims.beans.IMSMetadata;
@@ -58,7 +58,7 @@ public class ResourceAttachmentExporter implements IMSAttachmentExporter, IMSMan
 	// @Inject
 	// private AttachmentResourceService resourceService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	// @Inject
 	// private ViewableItemFactory viewableItemFactory;
@@ -107,7 +107,7 @@ public class ResourceAttachmentExporter implements IMSAttachmentExporter, IMSMan
 				{
 					attachmentUuid = attachment.getUrl();
 				}
-				res.setHref(urlService.institutionalise("items/" + itemUuid + "/" + itemVersion
+				res.setHref(institutionService.institutionalise("items/" + itemUuid + "/" + itemVersion
 					+ (attachmentUuid == null ? "" : "/?attachment.uuid=" + URLUtils.urlEncode(attachmentUuid))));
 
 				resources.add(res);

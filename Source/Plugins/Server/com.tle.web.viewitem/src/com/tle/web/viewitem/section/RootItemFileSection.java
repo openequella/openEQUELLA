@@ -33,10 +33,10 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.UrlService;
-import com.tle.core.user.CurrentUser;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.integration.Integration;
 import com.tle.web.integration.IntegrationSessionData;
@@ -100,7 +100,7 @@ public class RootItemFileSection extends AbstractPrototypeSection<RootItemFileSe
 	@Inject
 	private FileSystemService fileSystemService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private Provider<DefaultItemFileInfo> itemInfoProvider;
 
@@ -280,7 +280,8 @@ public class RootItemFileSection extends AbstractPrototypeSection<RootItemFileSe
 		{
 			if( CurrentUser.isGuest() )
 			{
-				LogonSection.forwardToLogon(info, urlService.removeInstitution(info.getPublicBookmark().getHref()),
+				LogonSection.forwardToLogon(info,
+					institutionService.removeInstitution(info.getPublicBookmark().getHref()),
 					LogonSection.STANDARD_LOGON_PATH);
 				return null;
 			}

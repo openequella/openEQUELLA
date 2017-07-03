@@ -18,11 +18,11 @@ package com.tle.web.freemarker.methods;
 
 import java.util.List;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.tle.common.Format;
 import com.tle.common.Utils;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.services.user.UserService;
-import com.tle.core.user.CurrentUser;
 
 import freemarker.template.AdapterTemplateModel;
 import freemarker.template.SimpleScalar;

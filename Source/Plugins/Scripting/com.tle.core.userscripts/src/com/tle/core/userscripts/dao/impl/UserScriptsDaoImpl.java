@@ -26,11 +26,11 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.userscripts.UserScriptsConstants.ScriptTypes;
 import com.tle.common.userscripts.entity.UserScript;
-import com.tle.core.dao.impl.AbstractEntityDaoImpl;
+import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.guice.Bind;
-import com.tle.core.user.CurrentInstitution;
 import com.tle.core.userscripts.dao.UserScriptsDao;
 
 @Bind(UserScriptsDao.class)

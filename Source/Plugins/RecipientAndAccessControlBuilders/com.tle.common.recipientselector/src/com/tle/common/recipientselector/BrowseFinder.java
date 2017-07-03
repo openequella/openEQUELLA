@@ -54,13 +54,13 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.dytech.common.text.NumberStringComparator;
-import com.dytech.edge.common.valuebean.GroupBean;
-import com.dytech.edge.common.valuebean.UserBean;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.common.Check;
 import com.tle.common.Format;
 import com.tle.common.gui.models.GenericListModel;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.remoting.RemoteUserService;
 
 public class BrowseFinder extends JPanel implements UserGroupRoleFinder

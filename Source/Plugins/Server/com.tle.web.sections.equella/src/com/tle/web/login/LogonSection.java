@@ -16,8 +16,6 @@
 
 package com.tle.web.login;
 
-import hurl.build.UriBuilder;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -33,16 +31,16 @@ import javax.servlet.http.HttpServletResponse;
 import com.dytech.edge.web.WebConstants;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
-import com.tle.beans.system.AutoLogin;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.settings.standard.AutoLogin;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.WebAuthenticationDetails;
 import com.tle.core.auditlog.AuditLogService;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.user.UserService;
 import com.tle.core.services.user.UserSessionService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.WebAuthenticationDetails;
 import com.tle.exceptions.AccountExpiredException;
 import com.tle.exceptions.AuthenticationException;
 import com.tle.exceptions.BadCredentialsException;
@@ -80,6 +78,8 @@ import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.Decorations.MenuMode;
+
+import hurl.build.UriBuilder;
 
 @SuppressWarnings("nls")
 @NonNullByDefault

@@ -89,10 +89,10 @@ public class HibernateMigrationService
 	{
 		if( configuration == null )
 		{
-			configuration = hibernateFactoryService.createConfiguration(new DataSourceHolder(new DynamicDataSource(),
-				datasourceService.getSystemDataSource().getDialect()), MigrationLog.class,
-				MigrationLog.LogStatus.class, ConfigurationProperty.class, ConfigurationProperty.PropertyKey.class,
-				SystemConfig.class, SchemaId.class);
+			configuration = hibernateFactoryService.createConfiguration(
+				new DataSourceHolder(new DynamicDataSource(), datasourceService.getSystemDataSource().getDialect()),
+				MigrationLog.class, MigrationLog.LogStatus.class, ConfigurationProperty.class,
+				ConfigurationProperty.PropertyKey.class, SystemConfig.class, SchemaId.class);
 		}
 		return configuration;
 	}
@@ -293,8 +293,8 @@ public class HibernateMigrationService
 		Session session = openSession();
 		try
 		{
-			HibernateMigrationHelper helper = new HibernateMigrationHelper(getHibernateFactory(), datasourceService
-				.getSystemDataSource().getDefaultSchema());
+			HibernateMigrationHelper helper = new HibernateMigrationHelper(getHibernateFactory(),
+				datasourceService.getSystemDataSource().getDefaultSchema());
 			if( helper.tableExists(session, SystemConfig.TABLE_NAME) )
 			{
 				SystemConfig configRow = (SystemConfig) session.get(SystemConfig.class, SystemConfig.ADMIN_PASSWORD);

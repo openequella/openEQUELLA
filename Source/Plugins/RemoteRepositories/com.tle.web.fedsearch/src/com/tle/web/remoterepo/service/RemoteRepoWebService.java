@@ -18,7 +18,7 @@ package com.tle.web.remoterepo.service;
 
 import com.dytech.devlib.PropBagEx;
 import com.tle.beans.entity.FederatedSearch;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.web.sections.SectionInfo;
 
 /**

@@ -4,7 +4,6 @@
 		<import plugin-id="com.tagsoup.core" />
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.common.scripting" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.ims" />
 		<import plugin-id="com.tle.mets" />
 		<import plugin-id="com.tle.mycontent" />
@@ -23,6 +22,10 @@
 		<import plugin-id="com.tle.web.api.item.equella.serializer" />
 		<import plugin-id="com.tle.web.itemlist" />
 		<import plugin-id="com.tle.web.api.item.equella.interfaces" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.core.item.standard" />
+		<import plugin-id="com.tle.common.quota" />
+		<import plugin-id="com.tle.core.quota" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">
@@ -71,7 +74,7 @@
 		<parameter id="order" value="3000" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="itemHelpers" id="myPagesItemHelper">
+	<extension plugin-id="com.tle.core.item" point-id="itemHelpers" id="myPagesItemHelper">
 		<parameter id="bean" value="bean:com.tle.mypages.conversion.MyPagesHelper" />
 		<parameter id="display" value="true" />
 		<parameter id="import" value="true" />
@@ -102,7 +105,7 @@
 		<parameter id="bean" value="bean:com.tle.mypages.serializer.HtmlPageAttachmentEditorImpl" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="cloneFileProcessor" id="htmlCloneFileProcessor">
+	<extension plugin-id="com.tle.core.item.standard" point-id="cloneFileProcessor" id="htmlCloneFileProcessor">
 		<parameter id="id" value="htmlCloneFileProcessor" />
 		<parameter id="bean" value="bean:com.tle.mypages.serializer.ChangedItemIdHtmlMunger" />
 	</extension>

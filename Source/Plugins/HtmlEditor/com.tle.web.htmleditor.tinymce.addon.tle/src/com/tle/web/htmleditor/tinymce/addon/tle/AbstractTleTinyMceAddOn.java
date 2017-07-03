@@ -19,7 +19,7 @@ package com.tle.web.htmleditor.tinymce.addon.tle;
 import javax.inject.Inject;
 
 import com.tle.common.PathUtils;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.web.htmleditor.tinymce.TinyMceAddOn;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.sections.SectionTree;
@@ -31,12 +31,12 @@ import com.tle.web.sections.SectionTree;
 public abstract class AbstractTleTinyMceAddOn implements TinyMceAddOn
 {
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@Override
 	public String getBaseUrl()
 	{
-		return urlService.institutionalise(getResourceHelper().url("scripts/" + getId()));
+		return institutionService.institutionalise(getResourceHelper().url("scripts/" + getId()));
 	}
 
 	@Override

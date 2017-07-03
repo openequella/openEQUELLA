@@ -1,0 +1,293 @@
+/*
+ * Created on Aug 17, 2005
+ */
+package com.tle.core.workflow.migrate.beans.node;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.AccessType;
+import org.hibernate.annotations.Index;
+
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import com.tle.beans.IdCloneable;
+import com.tle.beans.entity.LanguageBundle;
+import com.tle.common.DoNotSimplify;
+import com.tle.core.workflow.migrate.beans.FakeWorkflow;
+
+@Entity(name = "WorkflowNode")
+@AccessType("field")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.CHAR)
+@DiscriminatorValue("n")
+public abstract class FakeWorkflowNode implements IdCloneable, Serializable
+{
+	private static final long serialVersionUID = 1;
+
+	public static final char SERIAL_TYPE = 's';
+	public static final char PARALLEL_TYPE = 'p';
+	public static final char DECISION_TYPE = 'd';
+	public static final char ITEM_TYPE = 't';
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
+
+	@Column(length = 40, nullable = false)
+	private String uuid;
+
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@Index(name = "workflowNodeName")
+	protected LanguageBundle name;
+	private boolean rejectPoint;
+
+	@XStreamOmitField
+	@ManyToOne
+	@JoinColumn(nullable = false)
+	@Index(name = "workflowNodeWorkflow")
+	protected FakeWorkflow workflow;
+
+	@ManyToOne
+	@DoNotSimplify
+	@Index(name = "workflowNodeParent")
+	protected FakeWorkflowNode parent;
+	private int childIndex;
+
+	@Transient
+	@XStreamOmitField
+	private transient List<FakeWorkflowNode> children;
+
+	public FakeWorkflowNode()
+	{
+	}
+
+	public void setChildren(List<FakeWorkflowNode> children)
+	{
+		this.children = children;
+	}
+
+	public FakeWorkflowNode(LanguageBundle name)
+	{
+		this();
+		this.name = name;
+		this.uuid = UUID.randomUUID().toString();
+	}
+
+	public abstract char getType();
+
+	public void setParent(FakeWorkflowNode parent)
+	{
+		this.parent = parent;
+	}
+
+	public FakeWorkflowNode getParent()
+	{
+		return parent;
+	}
+
+	public void setName(LanguageBundle name)
+	{
+		this.name = name;
+	}
+
+	public LanguageBundle getName()
+	{
+		return name;
+	}
+
+	public boolean canAddChildren()
+	{
+		return false;
+	}
+
+	public boolean isLeafNode()
+	{
+		return true;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if( this == obj )
+		{
+			return true;
+		}
+		if( obj == null )
+		{
+			return false;
+		}
+		if( getClass() != obj.getClass() )
+		{
+			return false;
+		}
+		final FakeWorkflowNode other = (FakeWorkflowNode) obj;
+		if( uuid == null )
+		{
+			if( other.uuid != null )
+			{
+				return false;
+			}
+		}
+		else if( !uuid.equals(other.uuid) )
+		{
+			return false;
+		}
+		return true;
+	}
+
+	public String getUuid()
+	{
+		return uuid;
+	}
+
+	public void setUuid(String uuid)
+	{
+		this.uuid = uuid;
+	}
+
+	@Override
+	public long getId()
+	{
+		return id;
+	}
+
+	@Override
+	public void setId(long id)
+	{
+		this.id = id;
+	}
+
+	public boolean isRejectPoint()
+	{
+		return rejectPoint;
+	}
+
+	public void setRejectPoint(boolean rejectPoint)
+	{
+		this.rejectPoint = rejectPoint;
+	}
+
+	public abstract boolean canHaveSiblingRejectPoints();
+
+	public FakeWorkflow getWorkflow()
+	{
+		return workflow;
+	}
+
+	public void setWorkflow(FakeWorkflow workflow)
+	{
+		this.workflow = workflow;
+	}
+
+	public int getChildIndex()
+	{
+		return childIndex;
+	}
+
+	public FakeWorkflowNode getChild(int index)
+	{
+		return getChildren().get(index);
+	}
+
+	public void addChild(FakeWorkflowNode child)
+	{
+		List<FakeWorkflowNode> childrenList = getChildren();
+		child.childIndex = childrenList.size();
+		childrenList.add(child);
+	}
+
+	public void addChild(int index, FakeWorkflowNode child)
+	{
+		List<FakeWorkflowNode> childrenList = getChildren();
+		childrenList.add(index, child);
+		while( index < childrenList.size() )
+		{
+			childrenList.get(index).childIndex = index;
+			index++;
+		}
+
+	}
+
+	public void removeChild(FakeWorkflowNode child)
+	{
+		int index = children.indexOf(child);
+		if( index >= 0 )
+		{
+			children.remove(child);
+			while( index < children.size() )
+			{
+				children.get(index).childIndex = index;
+				index++;
+			}
+		}
+	}
+
+	public int indexOfChild(FakeWorkflowNode child)
+	{
+		return getChildren().indexOf(child);
+	}
+
+	public Iterator<FakeWorkflowNode> iterateChildren()
+	{
+		return getChildren().iterator();
+	}
+
+	public int numberOfChildren()
+	{
+		return getChildren().size();
+	}
+
+	public void setChild(FakeWorkflowNode node)
+	{
+		List<FakeWorkflowNode> childrenList = getChildren();
+		while( childrenList.size() <= node.childIndex )
+		{
+			childrenList.add(null);
+		}
+		childrenList.set(node.childIndex, node);
+	}
+
+	public void setChildIndex(int childIndex)
+	{
+		this.childIndex = childIndex;
+	}
+
+	public List<FakeWorkflowNode> getChildren()
+	{
+		if( children == null )
+		{
+			children = new ArrayList<FakeWorkflowNode>();
+		}
+		return children;
+	}
+
+}

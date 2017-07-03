@@ -36,7 +36,6 @@ import javax.inject.Singleton;
 import com.dytech.edge.common.Constants;
 import com.dytech.edge.common.FileInfo;
 import com.dytech.edge.common.ScriptContext;
-import com.dytech.edge.exceptions.QuotaExceededException;
 import com.dytech.edge.wizard.WizardException;
 import com.google.common.base.Function;
 import com.google.common.base.Throwables;
@@ -45,7 +44,6 @@ import com.google.inject.Provider;
 import com.tle.annotation.Nullable;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
@@ -61,20 +59,24 @@ import com.tle.beans.item.attachments.ItemNavigationTab;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.Check;
 import com.tle.common.PathUtils;
+import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.common.quota.exception.QuotaExceededException;
 import com.tle.common.workflow.Workflow;
 import com.tle.core.filesystem.ItemFile;
-import com.tle.core.filesystem.StagingFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.guice.BindFactory;
+import com.tle.core.hibernate.equella.service.InitialiserService;
 import com.tle.core.item.navigation.NavigationNodeHelper;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.service.ItemLockingService;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.core.item.standard.operations.EditMetadataOperation;
+import com.tle.core.item.standard.operations.workflow.StatusOperation;
+import com.tle.core.quota.service.QuotaService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.InitialiserService;
-import com.tle.core.services.LockingService;
-import com.tle.core.services.QuotaService;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.workflow.operations.EditMetadataOperation;
-import com.tle.core.workflow.operations.StatusOperation;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.mycontent.MyContentConstants;
 import com.tle.mycontent.service.MyContentFields;
 import com.tle.mycontent.workflow.operations.OperationFactory;
@@ -109,7 +111,9 @@ public class MyPagesServiceImpl implements MyPagesService
 	@Inject
 	private ItemService itemService;
 	@Inject
-	private LockingService lockService;
+	private ItemLockingService lockService;
+	@Inject
+	private ItemFileService itemFileService;
 	@Inject
 	private ItemNavigationService itemNavService;
 	@Inject
@@ -133,18 +137,19 @@ public class MyPagesServiceImpl implements MyPagesService
 	@Inject
 	private UnusedContentCleanupOperationFactory unusedFactory;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 	@Inject
 	private OperationFactory myContentFactory;
 	@Inject
 	private com.tle.mypages.workflow.operation.OperationFactory myPagesFactory;
+	@Inject
+	private MyPagesStateFactory myPagesStateFactory;
 
 	@Override
 	public WorkflowOperation getEditOperation(MyContentFields fields, String filename, InputStream inputStream,
 		boolean removeExistingAttachments, boolean useExistingAttachments)
 	{
-		return myPagesFactory.create(fields, filename, inputStream, removeExistingAttachments,
-			useExistingAttachments);
+		return myPagesFactory.create(fields, filename, inputStream, removeExistingAttachments, useExistingAttachments);
 	}
 
 	@Override
@@ -200,8 +205,8 @@ public class MyPagesServiceImpl implements MyPagesService
 				public String apply(@Nullable Reader input)
 				{
 					final String wizid = state.getWizid();
-					return convertHtmlService.convert(input, false, new StagingConversion(false, state.getItemId(),
-						wizid, state.getStagingId()).getConversions());
+					return convertHtmlService.convert(input, false,
+						new StagingConversion(false, state.getItemId(), wizid, state.getStagingId()).getConversions());
 				}
 			});
 
@@ -237,8 +242,8 @@ public class MyPagesServiceImpl implements MyPagesService
 					public String apply(@Nullable Reader input)
 					{
 						ItemKey destItem = (leaveAsPreview ? null : state.getItemId());
-						StagingConversion conversion = new StagingConversion(false, destItem, state.getWizid(), state
-							.getStagingId(), draftFolder, normalFolder);
+						StagingConversion conversion = new StagingConversion(false, destItem, state.getWizid(),
+							state.getStagingId(), draftFolder, normalFolder);
 
 						return convertHtmlService.convert(input, false, conversion.getConversions());
 					}
@@ -323,8 +328,8 @@ public class MyPagesServiceImpl implements MyPagesService
 			{
 				try
 				{
-					quotaService.checkQuotaAndReturnNewItemSize(state.getItemPack().getItem(), new StagingFile(
-						stagingId));
+					quotaService.checkQuotaAndReturnNewItemSize(state.getItemPack().getItem(),
+						new StagingFile(stagingId));
 				}
 				catch( QuotaExceededException e )
 				{
@@ -357,12 +362,12 @@ public class MyPagesServiceImpl implements MyPagesService
 	{
 		try
 		{
-			MyPagesState state = new MyPagesState();
+			MyPagesState state = myPagesStateFactory.createState();
 			state.setNewItem(false);
 			state.setItemId(id);
 
 			// always unlock a myPages item
-			lockService.unlockItem(itemService.get(id), true);
+			lockService.unlock(itemService.get(id), true);
 
 			StatusOperation statop = myContentFactory.status();
 			List<WorkflowOperation> ops = new ArrayList<WorkflowOperation>();
@@ -392,7 +397,7 @@ public class MyPagesServiceImpl implements MyPagesService
 			ItemPack<Item> pack = itemService.operation(null, workflowFactory.create(itemDef, ItemStatus.PERSONAL));
 			pack.getXml().setNode(MyContentConstants.CONTENT_TYPE_NODE, MyPagesConstants.MYPAGES_CONTENT_TYPE);
 
-			MyPagesState state = new MyPagesState();
+			MyPagesState state = myPagesStateFactory.createState();
 			Item item = pack.getItem();
 			item.setItemDefinition(itemDef);
 			setItemPack(pack, state);
@@ -456,7 +461,7 @@ public class MyPagesServiceImpl implements MyPagesService
 		newPage.setNew(draft);
 		newPage.setDraft(draft);
 
-		ItemFile itemFile = new ItemFile(sourceItem);
+		ItemFile itemFile = itemFileService.getItemFile(sourceItem);
 
 		final String newHtml = forFile(itemFile, sourcePage.getFilename(), new Function<Reader, String>()
 		{
@@ -464,9 +469,8 @@ public class MyPagesServiceImpl implements MyPagesService
 			@Nullable
 			public String apply(@Nullable Reader input)
 			{
-				List<HrefConversion> conversions = new StagingConversion(true, sourceItem.getItemId(),
-					state.getWizid(), state.getStagingId(), sourcePage.getFolder(), newPage.getFolder())
-					.getConversions();
+				List<HrefConversion> conversions = new StagingConversion(true, sourceItem.getItemId(), state.getWizid(),
+					state.getStagingId(), sourcePage.getFolder(), newPage.getFolder()).getConversions();
 				return convertHtmlService.convert(input, false, conversions);
 			}
 		});
@@ -504,10 +508,10 @@ public class MyPagesServiceImpl implements MyPagesService
 			@Nullable
 			public String apply(@Nullable Reader input)
 			{
-				StagingConversion draftConversion = new StagingConversion(true, itemId, sessionId,
-					state.getStagingId(), attachment.getNormalFolder(), attachment.getDraftFolder());
-				StagingConversion stagingConversion = new StagingConversion(true, itemId, sessionId, state
-					.getStagingId());
+				StagingConversion draftConversion = new StagingConversion(true, itemId, sessionId, state.getStagingId(),
+					attachment.getNormalFolder(), attachment.getDraftFolder());
+				StagingConversion stagingConversion = new StagingConversion(true, itemId, sessionId,
+					state.getStagingId());
 
 				final List<HrefConversion> conversions = new ArrayList<HrefConversion>();
 				conversions.addAll(draftConversion.getConversions());
@@ -788,7 +792,7 @@ public class MyPagesServiceImpl implements MyPagesService
 	@Override
 	public FileInfo saveHtml(FileHandle handle, String filename, Reader html)
 	{
-		try (Writer wrt = getWriter(handle, filename))
+		try( Writer wrt = getWriter(handle, filename) )
 		{
 			CharStreams.copy(html, wrt);
 		}
@@ -803,7 +807,7 @@ public class MyPagesServiceImpl implements MyPagesService
 	@Override
 	public <T> T forFile(FileHandle handle, String filename, Function<Reader, T> withReader)
 	{
-		try (Reader reader = new InputStreamReader(fileSystemService.read(handle, filename), Constants.UTF8))
+		try( Reader reader = new InputStreamReader(fileSystemService.read(handle, filename), Constants.UTF8) )
 		{
 			return withReader.apply(reader);
 		}
@@ -829,5 +833,11 @@ public class MyPagesServiceImpl implements MyPagesService
 	public ScriptContext createScriptContext(WizardStateInterface state)
 	{
 		return wizardService.createScriptContext(state.getItemPack(), null, null, null);
+	}
+
+	@BindFactory
+	public interface MyPagesStateFactory
+	{
+		MyPagesState createState();
 	}
 }

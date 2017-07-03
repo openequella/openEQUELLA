@@ -32,7 +32,7 @@ import com.tle.common.connectors.entity.Connector;
 import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.services.user.UserSessionService;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.search.base.AbstractSearchResultsSection;

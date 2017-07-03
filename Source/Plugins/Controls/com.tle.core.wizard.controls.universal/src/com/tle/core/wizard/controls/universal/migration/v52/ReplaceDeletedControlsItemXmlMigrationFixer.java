@@ -29,13 +29,13 @@ import com.dytech.devlib.PropBagEx.PropBagIterator;
 import com.google.inject.Inject;
 import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
-import com.tle.common.util.XmlDocument;
-import com.tle.core.filesystem.SubTemporaryFile;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.core.guice.Bind;
-import com.tle.core.institution.XmlHelper;
 import com.tle.core.institution.convert.ConverterParams;
+import com.tle.core.institution.convert.XmlHelper;
 import com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemXmlMigration;
 import com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsXmlMigration;
+import com.tle.core.xml.XmlDocument;
 
 @Bind
 @Singleton
@@ -67,8 +67,9 @@ public class ReplaceDeletedControlsItemXmlMigrationFixer extends ReplaceDeletedC
 				changed = true;
 				continue;
 			}
-			else if( axml.getNodeName().equals("com.tle.beans.item.attachments.ZipAttachment")
-				&& !urlVal.startsWith("_zips/") )
+			else
+				if( axml.getNodeName().equals("com.tle.beans.item.attachments.ZipAttachment")
+					&& !urlVal.startsWith("_zips/") )
 			{
 				axml.setNode("description", urlVal);
 				axml.setNode("url", "_zips/" + urlVal);
@@ -129,8 +130,8 @@ public class ReplaceDeletedControlsItemXmlMigrationFixer extends ReplaceDeletedC
 				final XmlDocument xMetadata = new XmlDocument(metadata.toString());
 
 				String uuid = axml.getNode("uuid");
-				if( xMetadata.node("xml/" + ReplaceDeletedControlsXmlMigration.getXpathForHandler(handler)
-					+ "[text()='" + uuid + "']") == null )
+				if( xMetadata.node("xml/" + ReplaceDeletedControlsXmlMigration.getXpathForHandler(handler) + "[text()='"
+					+ uuid + "']") == null )
 				{
 					metadata.createNode(ReplaceDeletedControlsXmlMigration.getXpathForHandler(handler), uuid);
 				}
@@ -154,8 +155,8 @@ public class ReplaceDeletedControlsItemXmlMigrationFixer extends ReplaceDeletedC
 				// nodes with
 				// [@uuid=UUID and @version=version] and add the attachment UUID
 				// underneath them
-				for( Node node : xMetadata.nodeList("//*[@uuid='" + itemId.getUuid() + "' and @version='"
-					+ itemId.getVersion() + "']") )
+				for( Node node : xMetadata
+					.nodeList("//*[@uuid='" + itemId.getUuid() + "' and @version='" + itemId.getVersion() + "']") )
 				{
 					// Don't modify attachment nodes! (actually, these probably
 					// don't exist in ItemXml anyway)

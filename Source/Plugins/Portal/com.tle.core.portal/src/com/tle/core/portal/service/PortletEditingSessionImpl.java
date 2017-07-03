@@ -18,7 +18,7 @@ package com.tle.core.portal.service;
 
 import com.tle.common.EntityPack;
 import com.tle.common.portal.entity.Portlet;
-import com.tle.core.services.entity.impl.EntityEditingSessionImpl;
+import com.tle.core.entity.service.impl.EntityEditingSessionImpl;
 
 /**
  * @author aholland

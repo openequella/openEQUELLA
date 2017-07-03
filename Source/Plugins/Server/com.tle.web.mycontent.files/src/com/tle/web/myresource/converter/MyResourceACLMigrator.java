@@ -27,12 +27,12 @@ import com.tle.beans.security.AccessEntry;
 import com.tle.beans.security.AccessExpression;
 import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.SecurityConstants.Recipient;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.dao.AccessExpressionDao;
 import com.tle.core.dao.AclDao;
 import com.tle.core.guice.Bind;
-import com.tle.core.institution.convert.AclConverter.AclPostReadMigratorParams;
-import com.tle.core.institution.migration.PostReadMigrator;
-import com.tle.core.services.entity.ItemDefinitionService;
+import com.tle.core.institution.convert.PostReadMigrator;
+import com.tle.core.security.convert.AclConverter.AclPostReadMigratorParams;
 import com.tle.mycontent.MyContentConstants;
 
 @Bind
@@ -50,10 +50,10 @@ public class MyResourceACLMigrator implements PostReadMigrator<AclPostReadMigrat
 	@SuppressWarnings("nls")
 	public void migrate(AclPostReadMigratorParams list) throws IOException
 	{
-		final AccessExpression owner = accessExpressionDao.retrieveOrCreate(SecurityConstants
-			.getRecipient(Recipient.OWNER));
-		final AccessExpression everyone = accessExpressionDao.retrieveOrCreate(SecurityConstants
-			.getRecipient(Recipient.EVERYONE));
+		final AccessExpression owner = accessExpressionDao
+			.retrieveOrCreate(SecurityConstants.getRecipient(Recipient.OWNER));
+		final AccessExpression everyone = accessExpressionDao
+			.retrieveOrCreate(SecurityConstants.getRecipient(Recipient.EVERYONE));
 
 		final ItemDefinition collection = itemDefinitionService.getByUuid(MyContentConstants.MY_CONTENT_UUID);
 		final String target = "B:" + collection.getId();

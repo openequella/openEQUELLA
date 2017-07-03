@@ -32,8 +32,8 @@ import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.ItemNavigationNode;
 import com.tle.beans.item.attachments.ItemNavigationTab;
 import com.tle.common.interfaces.UuidReference;
-import com.tle.core.dao.ItemDao;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.dao.ItemDao;
 import com.tle.core.item.security.ItemSecurityConstants;
 import com.tle.core.item.serializer.ItemSerializerProvider;
 import com.tle.core.item.serializer.ItemSerializerState;
@@ -77,8 +77,8 @@ public class NavigationNodeSerializerProvider implements ItemSerializerProvider
 	{
 		if( state.hasCategory(CATEGORY_NAVIGATION) )
 		{
-			ListMultimap<Long, ItemNavigationNode> nodes = itemDao.getNavigationNodesForItemIds(state
-				.getItemIdsWithPrivilege(ItemSecurityConstants.VIEW_ITEM));
+			ListMultimap<Long, ItemNavigationNode> nodes = itemDao
+				.getNavigationNodesForItemIds(state.getItemIdsWithPrivilege(ItemSecurityConstants.VIEW_ITEM));
 			for( Long itemId : nodes.keySet() )
 			{
 				state.setData(itemId, KEY_NAVIGATION_NODES, nodes.get(itemId));

@@ -19,9 +19,12 @@ package com.tle.web.viewurl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.dytech.edge.common.Constants;
 import com.google.common.base.Strings;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.encoding.UrlEncodedString;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.BookmarkModifier;
@@ -33,6 +36,7 @@ import com.tle.web.sections.generic.InfoBookmark;
 @SuppressWarnings("nls")
 public class ViewItemUrl implements Bookmark
 {
+	private final Log log = LogFactory.getLog(ViewItemUrl.class);
 	// public static int FLAG_NO_BACK = 1;
 	public static final int FLAG_IGNORE_TRANSIENT = 2;
 	public static final int FLAG_FULL_URL = 4;
@@ -64,16 +68,16 @@ public class ViewItemUrl implements Bookmark
 	private List<ItemUrlExtender> extenders;
 	private List<BookmarkModifier> modifiers;
 	private String href;
-	private final UrlService urlService;
+	private final InstitutionService institutionService;
 
 	public ViewItemUrl(SectionInfo info, String itemdir, UrlEncodedString filepath, String extraQueryString,
-		UrlService urlService, int flags)
+		InstitutionService institutionService, int flags)
 	{
 		this.info = info;
 		this.itemdir = itemdir;
 		this.filepath = filepath;
 		this.extraQueryString = extraQueryString;
-		this.urlService = urlService;
+		this.institutionService = institutionService;
 		this.flags = flags;
 		this.anchor = Constants.BLANK;
 	}
@@ -183,17 +187,29 @@ public class ViewItemUrl implements Bookmark
 	{
 		if( href == null )
 		{
-			href = itemdir + filepath;
+			if( filepath != null && !"".equals(filepath.toString()) && filepath.toString().contains("%3F") )
+			{
+				log.debug("File path location :: " + filepath);
+				href = itemdir + filepath.toString().replace("%3F", "?");
+				log.debug("Href value :: " + href);
+			}
+			else
+			{
+				href = itemdir + filepath;
+				log.debug("Inside Else href path location :: " + href);
+			}
 			String query = getQueryString();
 			if( query.length() > 0 )
 			{
 				href += '?' + query;
+				log.debug("Href with query string :: " + href);
 			}
 			if( (flags & FLAG_FULL_URL) != 0 )
 			{
-				href = urlService.institutionalise(href);
+				href = institutionService.institutionalise(href);
 			}
 		}
+		log.debug("Href URL :: " + href);
 		return href;
 	}
 

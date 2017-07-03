@@ -35,14 +35,13 @@ import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.js.generic.function.PrependedParameterFunction;
-import com.tle.web.sections.standard.js.modules.JSONModule;
 
 @SuppressWarnings("nls")
 public class CourseListFolderUpdateCallback implements JSONResponseCallback
 {
-	private static final IncludeFile INCJS = new IncludeFile(ResourcesService.getResourceHelper(
-		CourseListFolderUpdateCallback.class).url("scripts/courselist.js"), AjaxEffects.EFFECTS_LIB,
-		JQueryUIEffects.HIGHLIGHT, JQueryUIEffects.BLIND, JSONModule.PRERENDERER);
+	private static final IncludeFile INCJS = new IncludeFile(
+		ResourcesService.getResourceHelper(CourseListFolderUpdateCallback.class).url("scripts/courselist.js"),
+		AjaxEffects.EFFECTS_LIB, JQueryUIEffects.HIGHLIGHT, JQueryUIEffects.BLIND);
 	private static final JSCallAndReference COURSE_LIST_CLASS = new ExternallyDefinedFunction("CourseList");
 	private static final JSCallable UPDATE_TARGET_FOLDER = new ExternallyDefinedFunction(COURSE_LIST_CLASS,
 		"updateTargetFolder", 4, INCJS);

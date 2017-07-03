@@ -29,10 +29,9 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
 import com.dytech.edge.wizard.beans.DRMPage;
 import com.dytech.edge.wizard.beans.WizardPage;
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
@@ -46,21 +45,27 @@ import com.tle.beans.entity.itemdef.SummaryDisplayTemplate;
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.beans.entity.itemdef.Wizard;
 import com.tle.beans.item.ItemStatus;
+import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.common.beans.exception.ValidationError;
+import com.tle.common.filesystem.remoting.RemoteFileSystemService;
 import com.tle.common.interfaces.BaseEntityReference;
 import com.tle.common.security.ItemMetadataTarget;
 import com.tle.common.security.ItemStatusTarget;
 import com.tle.common.security.TargetList;
 import com.tle.common.security.TargetListEntry;
 import com.tle.common.workflow.Workflow;
-import com.tle.core.events.ItemOperationEvent;
+import com.tle.core.collection.service.ItemDefinitionService;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.guice.BindFactory;
+import com.tle.core.item.event.ItemOperationBatchEvent;
+import com.tle.core.item.event.ItemOperationEvent;
+import com.tle.core.item.operations.BaseFilter;
+import com.tle.core.item.standard.FilterFactory;
 import com.tle.core.plugins.FactoryMethodLocator;
-import com.tle.core.schema.SchemaService;
-import com.tle.core.services.entity.AbstractEntityService;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.core.services.entity.WorkflowService;
-import com.tle.core.workflow.filters.BaseFilter;
-import com.tle.core.workflow.filters.FilterFactory;
+import com.tle.core.remoting.RemoteItemDefinitionService;
+import com.tle.core.schema.service.SchemaService;
+import com.tle.core.services.FileSystemService;
+import com.tle.core.workflow.service.WorkflowService;
 import com.tle.web.api.baseentity.serializer.AbstractBaseEntityEditor;
 import com.tle.web.api.collection.CollectionEditor;
 import com.tle.web.api.collection.interfaces.beans.CollectionBean;
@@ -84,6 +89,8 @@ public class CollectionEditorImpl extends AbstractBaseEntityEditor<ItemDefinitio
 	private SchemaService schemaService;
 	@Inject
 	private WorkflowService workflowService;
+	@Inject
+	private FileSystemService fileSystemService;
 
 	@Nullable
 	private Collection<String> drmPageIds;
@@ -144,6 +151,23 @@ public class CollectionEditorImpl extends AbstractBaseEntityEditor<ItemDefinitio
 		itemSummaryDisplayTemplate.setConfigList(SummarySectionsConfig.createDefaultConfigs());
 		entity.setItemSummaryDisplayTemplate(itemSummaryDisplayTemplate);
 
+		if( fileSystemService.isAdvancedFilestore() )
+		{
+			collection.setAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_BUCKETS, true);
+		}
+		final String filestoreId = bean.getFilestoreId();
+		if( !Strings.isNullOrEmpty(filestoreId) )
+		{
+			if( RemoteFileSystemService.DEFAULT_FILESTORE_ID.equals(filestoreId) )
+			{
+				collection.removeAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
+			}
+			else
+			{
+				collection.setAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE, filestoreId);
+			}
+		}
+
 		processDRM(collection);
 	}
 
@@ -168,8 +192,8 @@ public class CollectionEditorImpl extends AbstractBaseEntityEditor<ItemDefinitio
 					}
 					catch( IllegalArgumentException ill )
 					{
-						throw new InvalidDataException(new ValidationError("security.statuses." + statusName,
-							"Unrecognised status"));
+						throw new InvalidDataException(
+							new ValidationError("security.statuses." + statusName, "Unrecognised status"));
 					}
 					final ItemStatusTarget target = new ItemStatusTarget(statusEnum, entity);
 
@@ -255,23 +279,35 @@ public class CollectionEditorImpl extends AbstractBaseEntityEditor<ItemDefinitio
 	{
 		super.afterFinishedEditing();
 
+		//FIXME:  THIS IS PRETTY MUCH A COPY AND PASTE OF ItemStandardServiceImpl.collectionSaved
+
 		if( editing && (drmPageIds != null && !drmPageIds.isEmpty()) )
 		{
 			publishEventAfterCommit(new ItemOperationEvent(new FactoryMethodLocator<BaseFilter>(FilterFactory.class,
 				"drmUpdate", entity.getId(), (Serializable) drmPageIds)));
 		}
 
+		boolean fireEvent = false;
+		final ItemOperationBatchEvent batchEvent = new ItemOperationBatchEvent();
+
 		// Check if the workflow has changed
 		if( editing && workflowChanged )
 		{
-			publishEventAfterCommit(new ItemOperationEvent(new FactoryMethodLocator<BaseFilter>(FilterFactory.class,
-				"workflowChanged", entity.getId())));
+			fireEvent = true;
+			batchEvent.addEvent(new ItemOperationEvent(
+				new FactoryMethodLocator<BaseFilter>(FilterFactory.class, "workflowChanged", entity.getId())));
 		}
 
 		if( editing && (itemMetadataRulesChanged || dynamicMetadataRuleChanged || searchDisplayNodesChanged) )
 		{
-			publishEventAfterCommit(new ItemOperationEvent(new FactoryMethodLocator<BaseFilter>(FilterFactory.class,
-				"refreshCollectionItems", entity.getId())));
+			fireEvent = true;
+			batchEvent.addEvent(new ItemOperationEvent(
+				new FactoryMethodLocator<BaseFilter>(FilterFactory.class, "refreshCollectionItems", entity.getId())));
+		}
+
+		if( fireEvent )
+		{
+			publishEventAfterCommit(batchEvent);
 		}
 	}
 

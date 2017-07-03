@@ -2,12 +2,15 @@
 <plugin id="com.tle.integration.lti.canvasextension" version="1">
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.common.item" />
 		<import plugin-id="com.tle.web.core" />
 		<import plugin-id="com.tle.web.integration" />
 		<import plugin-id="com.tle.web.sections" />
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.web.selection" />
+		<import plugin-id="com.tle.core.item" />
 		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.jackson" />
 		<import plugin-id="com.tle.web.viewurl" />
 		<import plugin-id="com.tle.core.replicatedcache" />
 		<import plugin-id="com.tle.web.lti" />

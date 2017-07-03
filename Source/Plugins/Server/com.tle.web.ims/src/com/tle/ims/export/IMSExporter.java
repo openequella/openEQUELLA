@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.dytech.common.xml.TLEXStream;
 import com.dytech.devlib.PropBagEx;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.Item;
@@ -46,15 +45,16 @@ import com.tle.beans.item.attachments.ItemNavigationTree;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.Check;
 import com.tle.common.URLUtils;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.filesystem.ItemFile;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemFileService;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
-import com.tle.core.schema.SchemaService;
+import com.tle.core.schema.service.SchemaService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.StagingService;
 import com.tle.core.util.archive.ArchiveType;
 import com.tle.core.util.ims.IMSNavigationHelper;
 import com.tle.core.util.ims.beans.IMSItem;
@@ -64,6 +64,7 @@ import com.tle.core.util.ims.beans.IMSResource;
 import com.tle.core.util.ims.extension.IMSAttachmentExporter;
 import com.tle.core.util.ims.extension.IMSFileExporter;
 import com.tle.core.util.ims.extension.IMSManifestExporter;
+import com.tle.core.xstream.TLEXStream;
 import com.tle.ims.export.IMSExporter.IMSExporterModel;
 import com.tle.ims.service.IMSService;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -107,6 +108,8 @@ public class IMSExporter extends AbstractPrototypeSection<IMSExporterModel> impl
 	private StagingService stagingService;
 	@Inject
 	private FileSystemService fileSystemService;
+	@Inject
+	private ItemFileService itemFileService;
 	@Inject
 	private IMSService imsService;
 	@Inject
@@ -175,7 +178,7 @@ public class IMSExporter extends AbstractPrototypeSection<IMSExporterModel> impl
 		final HttpServletResponse response = info.getResponse();
 		final Item item = itemSectionInfo.getItem();
 		final StagingFile stagingFile = stagingService.createStagingArea();
-		final ItemFile itemFile = new ItemFile(item);
+		final ItemFile itemFile = itemFileService.getItemFile(item);
 
 		if( fileSystemService.fileExists(itemFile) )
 		{

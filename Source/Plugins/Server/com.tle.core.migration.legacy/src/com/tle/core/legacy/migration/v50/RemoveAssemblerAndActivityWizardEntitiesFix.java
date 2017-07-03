@@ -24,24 +24,24 @@ import java.util.Set;
 import javax.inject.Singleton;
 
 import com.dytech.devlib.PropBagEx;
-import com.tle.core.filesystem.SubTemporaryFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.InstitutionInfo;
-import com.tle.core.institution.migration.XmlMigrator;
+import com.tle.core.institution.convert.XmlMigrator;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
 public class RemoveAssemblerAndActivityWizardEntitiesFix extends XmlMigrator
 {
-	public static final Set<String> ASSEM_COLLECTIONS = new HashSet<String>(Arrays.asList(
-		"d243936d-67ba-0a6f-6f4c-4a2a6b676d54", "855f6055-5271-1e13-ceae-336e70cf5110",
-		"16dda617-1829-8555-1510-4348c162c592", "5ac082d2-3015-aba1-a749-cd928a5c6e9c",
-		"77279582-ce3f-97ee-84c3-66de5af5a4c5", "01d4757e-b10e-788d-a713-176427d4f90c",
-		"e8f050dd-f6c0-4cec-559f-e54d7ef19836", "5eafc9ff-cad1-7290-2bd5-bd0cb7c193ee",
-		"16815372-d700-0aa8-83d6-cf9906f5a0ef", "2f6bd1b8-6ddb-3b7c-554c-646617b1dad7"));
+	public static final Set<String> ASSEM_COLLECTIONS = new HashSet<String>(
+		Arrays.asList("d243936d-67ba-0a6f-6f4c-4a2a6b676d54", "855f6055-5271-1e13-ceae-336e70cf5110",
+			"16dda617-1829-8555-1510-4348c162c592", "5ac082d2-3015-aba1-a749-cd928a5c6e9c",
+			"77279582-ce3f-97ee-84c3-66de5af5a4c5", "01d4757e-b10e-788d-a713-176427d4f90c",
+			"e8f050dd-f6c0-4cec-559f-e54d7ef19836", "5eafc9ff-cad1-7290-2bd5-bd0cb7c193ee",
+			"16815372-d700-0aa8-83d6-cf9906f5a0ef", "2f6bd1b8-6ddb-3b7c-554c-646617b1dad7"));
 
 	@Override
 	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)

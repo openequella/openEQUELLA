@@ -24,32 +24,55 @@ import static com.tle.common.collection.AttachmentConfigConstants.SHOW_FULLSCREE
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 
 import com.dytech.devlib.PropBagEx;
+import com.dytech.edge.exceptions.AttachmentNotFoundException;
+import com.google.common.collect.Maps;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
 import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemIdKey;
+import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.AttachmentType;
+import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.ImsAttachment;
 import com.tle.beans.item.attachments.LinkAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
+import com.tle.beans.item.attachments.ZipAttachment;
 import com.tle.common.Check;
+import com.tle.common.security.SecurityConstants;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.core.security.TLEAclManager;
 import com.tle.core.url.URLCheckerService;
 import com.tle.encoding.UrlEncodedString;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.ViewableChildInterface;
+import com.tle.web.sections.ajax.AjaxGenerator;
+import com.tle.web.sections.ajax.handler.AjaxFactory;
+import com.tle.web.sections.ajax.handler.AjaxMethod;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.events.RenderEventContext;
+import com.tle.web.sections.js.JSCallable;
+import com.tle.web.sections.js.generic.OverrideHandler;
+import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.BundleLabel;
+import com.tle.web.sections.result.util.IconLabel;
+import com.tle.web.sections.result.util.IconLabel.Icon;
+import com.tle.web.sections.standard.Link;
+import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewitem.AttachmentViewFilter;
 import com.tle.web.viewitem.attachments.AttachmentView;
@@ -68,8 +91,14 @@ public class AttachmentsSection extends AbstractAttachmentsSection<Item, Attachm
 		ViewableChildInterface,
 		DisplaySectionConfiguration
 {
+	private static final JSCallable SETUP_REORDER = new ExternallyDefinedFunction(
+		AbstractAttachmentsSection.ATTACHMENTS_CLASS, "setupReorder", 6);
+
 	@PlugKey("attachments.title")
 	private static Label LABEL_ATTACHMENTS_TITLE;
+	@PlugKey("summary.content.attachments.link.reorder")
+	@Component
+	private Link reorderAttachments;
 
 	private LanguageBundle title;
 	private List<String> metadataTargets;
@@ -81,6 +110,15 @@ public class AttachmentsSection extends AbstractAttachmentsSection<Item, Attachm
 	private ViewItemUrlFactory urlFactory;
 	@Inject
 	private URLCheckerService urlCheckerService;
+	@Inject
+	private ItemOperationFactory itemOperationFactory;
+	@Inject
+	private ItemService itemService;
+	@Inject
+	private TLEAclManager tleACLManager;
+
+	@AjaxFactory
+	private AjaxGenerator ajax;
 
 	@Nullable
 	@Override
@@ -91,6 +129,106 @@ public class AttachmentsSection extends AbstractAttachmentsSection<Item, Attachm
 			return null;
 		}
 		return super.renderHtml(context);
+	}
+
+	@Override
+	protected void customRender(RenderEventContext context, AttachmentsModel model, ViewableItem<Item> viewableItem,
+		List<AttachmentRowDisplay> attachmentDisplays)
+	{
+		super.customRender(context, model, viewableItem, attachmentDisplays);
+
+		final Item item = viewableItem.getItem();
+
+		if( !tleACLManager.filterNonGrantedPrivileges(item, Collections.singleton(SecurityConstants.EDIT_ITEM))
+			.isEmpty() && selectionService.getCurrentSession(context) == null
+			&& attachmentStructureReorderable(attachmentDisplays, item) )
+		{
+			reorderAttachments.setClickHandler(context,
+				new OverrideHandler(SETUP_REORDER, div.getElementId(context),
+					ajax.getAjaxFunction("attachmentsReordered"), MODAL_CLOSE_WARNING_LABEL.getText(),
+					MODAL_SAVE_LABEL.getText(), MODAL_CANCEL_LABEL.getText(), isShowStructuredView()));
+			reorderAttachments.setLabel(context, new IconLabel(Icon.MOVE, reorderAttachments.getLabel(context), false));
+		}
+		else
+		{
+			reorderAttachments.setDisplayed(context, false);
+		}
+	}
+
+	@AjaxMethod
+	public void attachmentsReordered(SectionInfo info, List<String> newOrder)
+	{
+		Item item = getViewableItem(info).getItem();
+		List<Attachment> attachments = item.getAttachments();
+		Map<String, Attachment> attachmentMap = UnmodifiableAttachments.convertToMapUuid(item);
+		Map<Integer, Attachment> movedItems = Maps.newHashMap();
+
+		for( int x = 0; x < newOrder.size(); x++ )
+		{
+			Attachment currAttach = attachments.get(x);
+			String reorderdedUuid = newOrder.get(x);
+			// sanity check
+			if( attachmentMap.get(reorderdedUuid) == null )
+			{
+				throw new AttachmentNotFoundException(item.getItemId(), " with uuid: " + reorderdedUuid);
+			}
+
+			if( !newOrder.contains(currAttach.getUuid()) )
+			{
+				newOrder.add(x, "nothing");// move elements up
+				continue;
+			}
+			if( !currAttach.getUuid().equals(reorderdedUuid) )
+			{
+				movedItems.put(x, attachmentMap.get(reorderdedUuid));
+			}
+		}
+
+		if( !movedItems.isEmpty() )
+		{
+			for( Entry<Integer, Attachment> entries : movedItems.entrySet() )
+			{
+				attachments.set(entries.getKey(), entries.getValue());
+			}
+			ItemIdKey itemKey = new ItemIdKey(item);
+			itemService.operation(itemKey,
+				new WorkflowOperation[]{itemOperationFactory.editMetadata(itemService.getItemPack(itemKey)),
+						itemOperationFactory.saveNoSaveScript(true)});
+		}
+	}
+
+	private boolean attachmentStructureReorderable(List<AttachmentRowDisplay> attachmentDisplays, Item item)
+	{
+		return attachmentDisplays.size() > 1 && isFlatHierachy(attachmentDisplays)
+			&& (item.getTreeNodes() == null || item.getTreeNodes().isEmpty()) && !containsHiddenZip(item);
+	}
+
+	private boolean containsHiddenZip(Item item)
+	{
+		for( IAttachment att : item.getAttachments() )
+		{
+			if( att.getAttachmentType() == AttachmentType.ZIP )
+			{
+				ZipAttachment zip = (ZipAttachment) att;
+				if( !zip.isAttachZip() )
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean isFlatHierachy(List<AttachmentRowDisplay> attachmentDisplays)
+	{
+		for( AttachmentRowDisplay row : attachmentDisplays )
+		{
+			if( row.getLevel() > 0 )
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -251,14 +389,19 @@ public class AttachmentsSection extends AbstractAttachmentsSection<Item, Attachm
 		return new Model();
 	}
 
-	public static class Model extends AbstractAttachmentsSection.AttachmentsModel
-	{
-		// Nothing specific
-	}
-
 	@Override
 	protected String getAttchmentControlId()
 	{
 		return attachmentControlId;
+	}
+
+	public Link getReorderAttachments()
+	{
+		return reorderAttachments;
+	}
+
+	public static class Model extends AbstractAttachmentsSection.AttachmentsModel
+	{
+		// Nothing specific
 	}
 }

@@ -35,9 +35,9 @@ import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 
 import com.tle.beans.Institution;
-import com.tle.beans.tree.TreeNodeInterface;
 import com.tle.common.Check;
 import com.tle.common.Check.FieldEquality;
+import com.tle.common.institution.TreeNodeInterface;
 
 /**
  * @author Nicholas Read

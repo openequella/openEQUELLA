@@ -19,7 +19,7 @@ package com.tle.web.scripting.advanced.objects.impl;
 import java.awt.Dimension;
 import java.io.IOException;
 
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.imagemagick.ImageMagickService;
 import com.tle.core.services.FileSystemService;
 import com.tle.web.scripting.advanced.objects.ImagesScriptObject;

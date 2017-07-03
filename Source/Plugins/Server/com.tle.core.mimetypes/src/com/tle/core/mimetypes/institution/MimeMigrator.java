@@ -26,21 +26,21 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.common.io.Resources;
 import com.tle.beans.mime.MimeEntry;
-import com.tle.core.filesystem.SubTemporaryFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.InstitutionInfo;
-import com.tle.core.institution.migration.XmlMigrator;
+import com.tle.core.institution.convert.XmlMigrator;
 import com.tle.core.mimetypes.MimeFileUtils;
-import com.tle.core.xstream.XmlService;
+import com.tle.core.xml.service.XmlService;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 @Bind
 @Singleton
@@ -66,8 +66,8 @@ public class MimeMigrator extends XmlMigrator
 
 	private static List<String> getEquellaMimeEntries()
 	{
-		List<MimeEntry> defaultTypes = MimeFileUtils.readLegacyFile(
-			MimeMigrator.class.getResourceAsStream("mime.types"), null); //$NON-NLS-1$
+		List<MimeEntry> defaultTypes = MimeFileUtils
+			.readLegacyFile(MimeMigrator.class.getResourceAsStream("mime.types"), null); //$NON-NLS-1$
 		ArrayList<String> equellaTypes = new ArrayList<String>();
 		for( MimeEntry mimeEntry : defaultTypes )
 		{
@@ -83,8 +83,8 @@ public class MimeMigrator extends XmlMigrator
 	@SuppressWarnings("nls")
 	public static List<MimeEntry> getDefaultMimeEntries()
 	{
-		List<MimeEntry> defaultTypes = MimeFileUtils.readLegacyFile(
-			MimeMigrator.class.getResourceAsStream("mime.types"), null);
+		List<MimeEntry> defaultTypes = MimeFileUtils
+			.readLegacyFile(MimeMigrator.class.getResourceAsStream("mime.types"), null);
 
 		Map<String, JSONObject> typeMap = new HashMap<String, JSONObject>();
 		try

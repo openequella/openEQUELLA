@@ -32,16 +32,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.dytech.edge.exceptions.NotFoundException;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
+import com.tle.beans.Institution;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemTaskId;
 import com.tle.common.Check;
 import com.tle.common.URLUtils;
+import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.services.UrlService;
-import com.tle.core.services.item.ItemService;
 import com.tle.web.sections.MutableSectionInfo;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
@@ -57,6 +60,8 @@ public class ItemServlet extends HttpServlet
 {
 	public static final String VIEWABLE_ITEM = "viewableitem"; //$NON-NLS-1$
 
+	@Inject
+	private InstitutionService institutionService;
 	@Inject
 	private UrlService urlService;
 	@Inject
@@ -81,7 +86,7 @@ public class ItemServlet extends HttpServlet
 
 			String redirectUrl = parser.getRedirectUrl();
 			// Redirect only appropriate if original request not a POST.
-			if( redirectUrl != null /*&& !"POST".equals(request.getMethod())*/ )
+			if( redirectUrl != null /* && !"POST".equals(request.getMethod()) */ )
 			{
 				response.sendRedirect(redirectUrl);
 				return;
@@ -96,6 +101,22 @@ public class ItemServlet extends HttpServlet
 			// ItemId. This anomaly is considered harmless & not worth
 			// adjusting. The parser preserves the ItemId.
 			URI baseUri = urlService.getBaseUriFromRequest(request);
+
+			//EQ-2696 SSO fixes Start			
+			Institution institution = CurrentInstitution.get();
+			URI institutionURI = institution.getUrlAsUri();
+
+			if( institutionURI != null && institutionURI.getScheme().length() > 0
+				&& institutionURI.getScheme().equalsIgnoreCase("http") )
+			{
+				String set_cookie = response.getHeader("Set-Cookie");
+				if( set_cookie != null && set_cookie.length() > 0 && set_cookie.contains("Secure") )
+				{
+					response.setHeader("Set-Cookie", set_cookie.replace("Secure", ""));
+				}
+			}
+			//EQ-2696 SSO fixes End
+
 			String servletPath = '/' + baseUri.relativize(uri).getPath();
 			ViewableItem<?> viewableItem = parser.createViewableItem();
 			MutableSectionInfo info = controller.createInfo(tree, servletPath, request, response, null, params,
@@ -108,6 +129,10 @@ public class ItemServlet extends HttpServlet
 			RuntimeApplicationException rt = new RuntimeApplicationException(pe);
 			rt.setShowStackTrace(false);
 			t = rt;
+		}
+		catch( NumberFormatException ne )
+		{
+			throw new NotFoundException(true);
 		}
 		catch( Exception p )
 		{
@@ -169,60 +194,67 @@ public class ItemServlet extends HttpServlet
 		@Override
 		public void parse(HttpServletRequest request) throws ParseException, NotFoundException
 		{
-			this.request = request;
-			this.originalUrl = request.getPathInfo();
-
-			final boolean endSlash = originalUrl.endsWith("/");
-
-			partList = new ArrayList<String>();
-			for( String part : originalUrl.split("/") )
+			try
 			{
-				if( !Check.isEmpty(part) )
+				this.request = request;
+				this.originalUrl = request.getPathInfo();
+
+				final boolean endSlash = originalUrl.endsWith("/");
+
+				partList = new ArrayList<String>();
+				for( String part : originalUrl.split("/") )
 				{
-					partList.add(part);
+					if( !Check.isEmpty(part) )
+					{
+						partList.add(part);
+					}
 				}
-			}
 
-			setupContext();
+				setupContext();
 
-			if( partList.size() < 2 )
-			{
-				throw new ParseException("Invalid URL missing UUID and/or version: " + originalUrl, 1);
-			}
+				if( partList.size() < 2 )
+				{
+					throw new ParseException("Invalid URL missing UUID and/or version: " + originalUrl, 1);
+				}
 
-			String id = partList.get(0);
-			String version = partList.get(1);
-			StringBuilder itemPath = new StringBuilder();
-			for( int i = 2; i < partList.size(); i++ )
-			{
-				if( i > 2 )
+				String id = partList.get(0);
+				String version = partList.get(1);
+				StringBuilder itemPath = new StringBuilder();
+				for( int i = 2; i < partList.size(); i++ )
+				{
+					if( i > 2 )
+					{
+						itemPath.append('/');
+					}
+					itemPath.append(partList.get(i));
+				}
+
+				String fullid = id + '/' + version;
+				if( partList.size() == 2 && !endSlash )
+				{
+					setupRedirectFromPath(context + fullid + '/');
+					return;
+				}
+
+				if( partList.size() > 2 && endSlash )
 				{
 					itemPath.append('/');
 				}
-				itemPath.append(partList.get(i));
-			}
 
-			String fullid = id + '/' + version;
-			if( partList.size() == 2 && !endSlash )
-			{
-				setupRedirectFromPath(context + fullid + '/');
-				return;
+				this.path = itemPath.toString();
+				itemId = ItemTaskId.parse(fullid);
+				if( itemId.getVersion() == -1 )
+				{
+					throw new NotFoundException(originalUrl, true);
+				}
+				else
+				{
+					checkForRedirect();
+				}
 			}
-
-			if( partList.size() > 2 && endSlash )
+			catch( NumberFormatException ne )
 			{
-				itemPath.append('/');
-			}
-
-			this.path = itemPath.toString();
-			itemId = ItemTaskId.parse(fullid);
-			if( itemId.getVersion() == -1 )
-			{
-				throw new NotFoundException(originalUrl, true);
-			}
-			else
-			{
-				checkForRedirect();
+				throw new NotFoundException(true);
 			}
 		}
 
@@ -251,7 +283,8 @@ public class ItemServlet extends HttpServlet
 		{
 			try
 			{
-				redirectUrl = new URL(urlService.getInstitutionUrl(), URLUtils.urlEncode(path, false)).toString();
+				redirectUrl = new URL(institutionService.getInstitutionUrl(), URLUtils.urlEncode(path, false))
+					.toString();
 				String queryString = request.getQueryString();
 				if( queryString != null )
 				{

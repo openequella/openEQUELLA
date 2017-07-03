@@ -29,10 +29,10 @@ import org.xml.sax.XMLReader;
 
 import com.dytech.edge.common.Constants;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
-import com.tle.core.util.FindHrefHandler;
-import com.tle.core.util.HrefCallback;
-import com.tle.core.util.HtmlContentHandler;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.services.html.FindHrefHandler;
+import com.tle.core.services.html.HrefCallback;
+import com.tle.core.services.html.HtmlContentHandler;
 import com.tle.mypages.parse.conversion.HrefConversion;
 
 @Bind(ConvertHtmlService.class)
@@ -40,15 +40,13 @@ import com.tle.mypages.parse.conversion.HrefConversion;
 public class ConvertHtmlServiceImpl implements ConvertHtmlService
 {
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@Override
 	public String convert(Reader reader, boolean fullUrl, List<HrefConversion> conversions)
 	{
-		return modifyXml(
-			reader,
-			new DefaultHrefCallback(fullUrl, true, urlService, conversions.toArray(new HrefConversion[conversions
-				.size()])));
+		return modifyXml(reader, new DefaultHrefCallback(fullUrl, true, institutionService,
+			conversions.toArray(new HrefConversion[conversions.size()])));
 	}
 
 	/**
@@ -60,7 +58,7 @@ public class ConvertHtmlServiceImpl implements ConvertHtmlService
 	@Override
 	public String convert(Reader reader, boolean fullUrl, HrefConversion... conversions)
 	{
-		return modifyXml(reader, new DefaultHrefCallback(fullUrl, true, urlService, conversions));
+		return modifyXml(reader, new DefaultHrefCallback(fullUrl, true, institutionService, conversions));
 	}
 
 	@Override

@@ -50,6 +50,7 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.common.Check;
 import com.tle.common.EntityPack;
 import com.tle.common.customlinks.entity.CustomLink;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
 import com.tle.common.i18n.beans.LanguageBundleBean;
@@ -61,12 +62,11 @@ import com.tle.core.customlinks.service.CustomLinkEditingBean;
 import com.tle.core.customlinks.service.CustomLinkEditingSession;
 import com.tle.core.customlinks.service.CustomLinkService;
 import com.tle.core.filesystem.EntityFile;
-import com.tle.core.filesystem.StagingFile;
 import com.tle.core.imagemagick.ImageMagickService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.UrlService;
 import com.tle.core.services.user.UserService;
 import com.tle.web.customlinks.CustomLinkContentHandler;
 import com.tle.web.customlinks.CustomLinkListComponent;
@@ -179,7 +179,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksModel>
 	@Inject
 	private ImageMagickService imageMagickService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private TLEAclManager aclService;
 
@@ -729,7 +729,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksModel>
 
 		final String href = new BookmarkAndModify(info,
 			eventFactory.getNamedModifier("getIcon", session.getStagingId(), fileName)).getHref();
-		return urlService.removeInstitution(href);
+		return institutionService.removeInstitution(href);
 	}
 
 	private URL parseHtmlForFav(String url) throws Exception
@@ -739,7 +739,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksModel>
 
 		if( !url.toLowerCase().startsWith("http") )
 		{
-			method = new GetMethod(urlService.institutionalise(url));
+			method = new GetMethod(institutionService.institutionalise(url));
 		}
 		else
 		{
@@ -777,7 +777,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksModel>
 		{
 			if( !url.toLowerCase().startsWith("http") )
 			{
-				base = urlService.getInstitutionUrl();
+				base = institutionService.getInstitutionUrl();
 			}
 			else
 			{
@@ -820,7 +820,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksModel>
 					// nothing
 				}
 
-				iconUrl = urlService.institutionalise("entity/" + link.getId() + "/" + fileName);
+				iconUrl = institutionService.institutionalise("entity/" + link.getId() + "/" + fileName);
 			}
 
 			if( linkService.canDelete(link) )

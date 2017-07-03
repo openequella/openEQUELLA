@@ -30,8 +30,8 @@ import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.phase.Phase;
 
 import com.tle.core.guice.Bind;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
 
 @Bind
 @Singleton

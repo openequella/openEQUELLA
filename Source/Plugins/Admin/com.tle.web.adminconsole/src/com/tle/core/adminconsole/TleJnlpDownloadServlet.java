@@ -35,11 +35,11 @@ import org.jdom.output.XMLOutputter;
 import com.dytech.edge.common.Constants;
 import com.tle.admin.boot.Bootstrap;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.services.user.UserService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
 import com.tle.web.resources.ResourcesService;
 
 /**
@@ -54,7 +54,7 @@ public class TleJnlpDownloadServlet extends HttpServlet
 	private static final long serialVersionUID = -8559259386758382735L;
 	// required by inner classes
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private UserService userService;
 	@Inject
@@ -88,8 +88,8 @@ public class TleJnlpDownloadServlet extends HttpServlet
 	}
 
 	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-		IOException
+	protected void service(HttpServletRequest request, HttpServletResponse response)
+		throws ServletException, IOException
 	{
 		super.service(request, response);
 	}
@@ -102,7 +102,7 @@ public class TleJnlpDownloadServlet extends HttpServlet
 		resp.setHeader("Cache-Control", "private, max-age=5, must-revalidate");
 		Document locJnlpDocument = (Document) this.jnlpDocument.clone();
 		Element jnlpElem = locJnlpDocument.getRootElement();
-		String instUrl = urlService.getInstitutionUrl().toString();
+		String instUrl = institutionService.getInstitutionUrl().toString();
 		jnlpElem.setAttribute("codebase", instUrl);
 		Element resources = jnlpElem.getChild("resources");
 

@@ -11,10 +11,14 @@
 		<import plugin-id="com.tle.common.qti" exported="true" />
 		<import plugin-id="com.tle.core.migration" />
 		<import plugin-id="com.tle.core.services" />
-		<import plugin-id="com.tle.core.entity.services" />
-		<import plugin-id="com.tle.core.workflow" />
 		<import plugin-id="com.tle.web.api.item.equella.serializer" />
 		<import plugin-id="com.tle.web.api.item.equella.interfaces" />
+		<import plugin-id="com.tle.core.institution.convert" />
+		<import plugin-id="com.tle.core.entity" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.core.item.standard" />
+		<import plugin-id="com.tle.core.i18n" />
+		<import plugin-id="com.tle.core.events" />
 	</requires>
 
 	<runtime>
@@ -77,7 +81,7 @@
 		<parameter id="obsoletedby" value="com.tle.core.qti.migration.CreateQtiResultSchema" />
 	</extension>
 	
-	<extension plugin-id="com.tle.core.entity.services" point-id="converter" id="qtiConverter">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="qtiConverter">
 		<parameter id="id" value="QTI" />
 		<parameter id="class" value="bean:com.tle.core.qti.converter.QtiImportExportConverter" />
 		<parameter id="order" value="3000" />
@@ -87,12 +91,12 @@
 		</parameter>
 	</extension>
 	
-	<extension plugin-id="com.tle.core.services" point-id="applicationEventListener" id="itemdeletionlisteners">
+	<extension plugin-id="com.tle.core.events" point-id="applicationEventListener" id="itemdeletionlisteners">
 		<parameter id="listener" value="bean:com.tle.core.qti.service.QtiAssessmentTestService" />
-		<parameter id="listenerClass" value="com.tle.core.events.listeners.ItemDeletedListener" />
+		<parameter id="listenerClass" value="com.tle.core.item.event.listener.ItemDeletedListener" />
 	</extension>
 	
-	<extension plugin-id="com.tle.core.workflow" id="qtiPostSave" point-id="operation">
+	<extension plugin-id="com.tle.core.item" id="qtiPostSave" point-id="operation">
 		<parameter id="type" value="postSave" />
 		<parameter id="class" value="bean:com.tle.core.qti.item.operation.CreateTestEntitiesOperation" />
 	</extension>

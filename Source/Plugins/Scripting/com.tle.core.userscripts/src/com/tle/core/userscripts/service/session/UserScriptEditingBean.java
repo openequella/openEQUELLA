@@ -17,7 +17,7 @@
 package com.tle.core.userscripts.service.session;
 
 import com.tle.common.userscripts.UserScriptsConstants.ScriptTypes;
-import com.tle.core.services.entity.EntityEditingBean;
+import com.tle.core.entity.EntityEditingBean;
 
 public class UserScriptEditingBean extends EntityEditingBean
 {

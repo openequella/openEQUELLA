@@ -25,12 +25,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import com.dytech.edge.exceptions.NotFoundException;
 import com.google.common.collect.Maps;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemLock;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemLockingService;
+import com.tle.core.item.service.ItemLockingService;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.item.interfaces.ItemLockResource;

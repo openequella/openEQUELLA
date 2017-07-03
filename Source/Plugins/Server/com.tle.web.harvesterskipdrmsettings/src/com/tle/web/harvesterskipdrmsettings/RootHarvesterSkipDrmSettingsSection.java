@@ -18,8 +18,8 @@ package com.tle.web.harvesterskipdrmsettings;
 
 import javax.inject.Inject;
 
-import com.tle.beans.system.HarvesterSkipDrmSettings;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.common.settings.standard.HarvesterSkipDrmSettings;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.annotations.EventFactory;

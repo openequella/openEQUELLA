@@ -24,15 +24,15 @@ import javax.inject.Inject;
 
 import com.google.common.collect.Maps;
 import com.tle.beans.Institution;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.common.FileSizeUtils;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.filesystem.InstitutionFile;
 import com.tle.core.healthcheck.HealthCheckService;
 import com.tle.core.healthcheck.listeners.bean.ServiceStatus;
 import com.tle.core.healthcheck.listeners.bean.ServiceStatus.Status;
 import com.tle.core.institution.ClusterInfoService;
-import com.tle.core.services.QuotaService;
+import com.tle.core.quota.service.QuotaService;
 import com.tle.core.services.TaskService;
 import com.tle.core.services.TaskStatus;
 import com.tle.core.zookeeper.ZookeeperService;
@@ -236,8 +236,8 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel>
 		final Map<String, TaskStatus> allStatuses = taskService.getAllStatuses();
 		for( TaskStatus task : allStatuses.values() )
 		{
-			final String title = (task.getTitleKey() == null ? task.getInternalId() : CurrentLocale.get(task
-				.getTitleKey()));
+			final String title = (task.getTitleKey() == null ? task.getInternalId()
+				: CurrentLocale.get(task.getTitleKey()));
 			tasksTable.addRow(context, title, task.getNodeIdRunning());
 		}
 
@@ -300,8 +300,8 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel>
 		{
 			TableCell statusCell = new TableCell();
 			statusCell.addClass(status.getServiceStatus().toString().toLowerCase());
-			TableCell preformatted = new TableCell(status.getMoreInfo() == null ? NULL_INFO : status.getMoreInfo()
-				.trim());
+			TableCell preformatted = new TableCell(
+				status.getMoreInfo() == null ? NULL_INFO : status.getMoreInfo().trim());
 			preformatted.addClass("pre");
 			table.addRow(new KeyLabel(SERVICE_NAME_KEY + status.getServiceName()), statusCell, preformatted);
 
@@ -328,8 +328,8 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel>
 		{
 			FileHandle institutionBaseHandle = new InstitutionFile(inst);
 
-			String currentConsumtion = FileSizeUtils.humanReadableGigabyte(quotaService
-				.getInstitutionalConsumption(inst));
+			String currentConsumtion = FileSizeUtils
+				.humanReadableGigabyte(quotaService.getInstitutionalConsumption(inst));
 			quotas.put(inst.getName(), currentConsumtion);
 		}
 	}

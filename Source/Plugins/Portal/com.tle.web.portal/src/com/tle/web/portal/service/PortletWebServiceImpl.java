@@ -40,20 +40,20 @@ import com.google.common.collect.Lists;
 import com.google.inject.Provider;
 import com.tle.beans.Institution;
 import com.tle.common.Triple;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.portal.PortletConstants;
 import com.tle.common.portal.entity.Portlet;
 import com.tle.common.portal.entity.PortletPreference;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.events.UserSessionLogoutEvent;
 import com.tle.core.events.listeners.UserSessionLogoutListener;
+import com.tle.core.events.services.EventService;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.portal.service.PortletService;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.EventService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
 import com.tle.web.portal.editor.PortletEditor;
 import com.tle.web.portal.events.PortletsUpdatedEvent;
 import com.tle.web.portal.events.PortletsUpdatedEvent.PortletUpdateEventType;
@@ -73,11 +73,7 @@ import com.tle.web.sections.render.SectionRenderable;
 
 @Bind(PortletWebService.class)
 @Singleton
-public class PortletWebServiceImpl
-	implements
-		PortletWebService,
-		PortletsUpdatedEventListener,
-		UserSessionLogoutListener
+public class PortletWebServiceImpl implements PortletWebService, PortletsUpdatedEventListener, UserSessionLogoutListener
 {
 	private static final String UUID_SECTIONID_MAP_KEY = "$UUID_SECTIONID_MAP$"; //$NON-NLS-1$
 	private static final String TOP_PORTLETS_KEY = "$TOP_PORTLET_SECTION_IDS$"; //$NON-NLS-1$
@@ -132,16 +128,16 @@ public class PortletWebServiceImpl
 	@Override
 	public boolean canCreate()
 	{
-		return !CurrentUser.wasAutoLoggedIn()
-			&& !aclService.filterNonGrantedPrivileges(Arrays.asList(new String[]{PortletConstants.CREATE_PORTLET}),
-				true).isEmpty();
+		return !CurrentUser.wasAutoLoggedIn() && !aclService
+			.filterNonGrantedPrivileges(Arrays.asList(new String[]{PortletConstants.CREATE_PORTLET}), true).isEmpty();
 	}
 
 	@Override
 	public boolean canAdminister()
 	{
-		return !aclService.filterNonGrantedPrivileges(Collections.singleton(PortletConstants.PRIV_ADMINISTER_PORTLETS),
-			true).isEmpty();
+		return !aclService
+			.filterNonGrantedPrivileges(Collections.singleton(PortletConstants.PRIV_ADMINISTER_PORTLETS), true)
+			.isEmpty();
 	}
 
 	private PortletContentRenderer<?> getRendererForType(String type)
@@ -179,8 +175,8 @@ public class PortletWebServiceImpl
 
 		if( !cancelled )
 		{
-			firePortletsChanged(info, CurrentUser.getUserID(), portletUuid, institutional, portletUuid == null
-				? PortletUpdateEventType.CREATED : PortletUpdateEventType.EDITED);
+			firePortletsChanged(info, CurrentUser.getUserID(), portletUuid, institutional,
+				portletUuid == null ? PortletUpdateEventType.CREATED : PortletUpdateEventType.EDITED);
 		}
 	}
 
@@ -332,8 +328,8 @@ public class PortletWebServiceImpl
 		if( tree == null )
 		{
 			tree = buildRendererTree(info, userId);
-			final Cache<String, DefaultSectionTree> instMap = sectionCache.getIfPresent(CurrentInstitution.get()
-				.getUniqueId());
+			final Cache<String, DefaultSectionTree> instMap = sectionCache
+				.getIfPresent(CurrentInstitution.get().getUniqueId());
 			instMap.put(userId, tree);
 		}
 		return tree;
@@ -343,8 +339,8 @@ public class PortletWebServiceImpl
 	{
 		// IMPORTANT: This prefix is relied upon in portal.js
 		final DefaultSectionTree renderTree = new DefaultSectionTree(controller, new SectionNode("p")); //$NON-NLS-1$
-		final Map<Portlet, PortletPreference> prefs = portletService.getPreferences(portletService
-			.getViewablePortletsForDisplay());
+		final Map<Portlet, PortletPreference> prefs = portletService
+			.getPreferences(portletService.getViewablePortletsForDisplay());
 		final Map<String, SectionId> portletUuidToSectionId = new HashMap<String, SectionId>();
 
 		for( Entry<Portlet, PortletPreference> entry : prefs.entrySet() )

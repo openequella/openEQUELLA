@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tle.common.NameValue;
-import com.tle.web.i18n.BundleNameValue;
+import com.tle.core.i18n.BundleNameValue;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.standard.model.DynamicHtmlListModel;
 

@@ -28,7 +28,7 @@ import net.oauth.OAuthMessage;
 import com.dytech.edge.exceptions.WebException;
 import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.core.oauth.OAuthUserState;
-import com.tle.core.user.UserState;
+import com.tle.common.usermanagement.user.UserState;
 
 /**
  * @author Aaron

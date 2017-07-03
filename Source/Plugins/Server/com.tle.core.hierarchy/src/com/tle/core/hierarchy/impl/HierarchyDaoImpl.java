@@ -41,11 +41,11 @@ import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.hierarchy.HierarchyTopic;
 import com.tle.beans.hierarchy.HierarchyTopicDynamicKeyResources;
 import com.tle.beans.item.Item;
-import com.tle.core.dao.LanguageDao;
 import com.tle.core.dao.impl.AbstractTreeDaoImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.hierarchy.HierarchyDao;
-import com.tle.core.user.CurrentInstitution;
+import com.tle.core.i18n.dao.LanguageDao;
+import com.tle.common.institution.CurrentInstitution;
 
 /**
  * @author Nicholas Read

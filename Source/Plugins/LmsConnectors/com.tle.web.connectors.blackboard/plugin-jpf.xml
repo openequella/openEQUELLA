@@ -6,6 +6,7 @@
 		<import plugin-id="com.tle.core.connectors" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.web.connectors" />
 		<import plugin-id="com.tle.web.recipientselector" />
 		<import plugin-id="com.tle.web.sections.equella" />

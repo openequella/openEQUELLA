@@ -37,7 +37,7 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
-import com.tle.core.user.CurrentInstitution;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.workflow.thumbnail.entity.ThumbnailRequest;
 
 /**

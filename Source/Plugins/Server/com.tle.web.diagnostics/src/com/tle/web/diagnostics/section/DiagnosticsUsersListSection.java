@@ -20,8 +20,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.GroupBean;
-import com.dytech.edge.common.valuebean.UserBean;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -70,7 +70,7 @@ public class DiagnosticsUsersListSection extends AbstractPrototypeSection<Diagno
 	private static Label LABEL_NO_GROUP_FOUND;
 	@PlugKey("no.user.found")
 	private static Label LABEL_NO_USER_FOUND;
-	
+
 	@PlugKey("table.gropus.prefix")
 	private static Label GROUP_PREFIX;
 
@@ -86,7 +86,6 @@ public class DiagnosticsUsersListSection extends AbstractPrototypeSection<Diagno
 
 	@Inject
 	private UserService userService;
-
 	@Inject
 	private UserLinkService userLinkService;
 	private UserLinkSection userLinkSection;
@@ -131,8 +130,8 @@ public class DiagnosticsUsersListSection extends AbstractPrototypeSection<Diagno
 		getUserGroupsDialog().setMultipleUsers(false);
 
 		JSCallable inplace = ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE);
-		userGroupsDialog.setOkCallback(ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("getGroups"),
-			inplace, "usergroups"));
+		userGroupsDialog.setOkCallback(
+			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("getGroups"), inplace, "usergroups"));
 
 		getSelectGroupDialog().setAjax(true);
 		getSelectGroupDialog().setMultipleGroups(false);

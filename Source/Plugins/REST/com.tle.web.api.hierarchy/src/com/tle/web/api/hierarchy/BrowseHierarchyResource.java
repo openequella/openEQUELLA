@@ -60,13 +60,13 @@ import com.tle.common.search.PresetSearch;
 import com.tle.common.searching.Search.SortType;
 import com.tle.common.searching.SearchResults;
 import com.tle.core.freetext.queries.FreeTextBooleanQuery;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
 import com.tle.core.hierarchy.HierarchyService;
 import com.tle.core.item.serializer.ItemSerializerItemBean;
 import com.tle.core.item.serializer.ItemSerializerService;
 import com.tle.core.search.VirtualisableAndValue;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.item.FreeTextService;
 import com.tle.web.api.hierarchy.beans.HierarchyBrowseBean;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.item.ItemLinkService;
@@ -118,11 +118,11 @@ public class BrowseHierarchyResource
 	{
 		List<HierarchyTopic> topLevelNodes = hierarchyService.getChildTopics(null);
 
-		Collection<HierarchyTopic> allowedTopics = aclManager.filterNonGrantedObjects(
-			Collections.singleton("VIEW_HIERARCHY_TOPIC"), topLevelNodes);
+		Collection<HierarchyTopic> allowedTopics = aclManager
+			.filterNonGrantedObjects(Collections.singleton("VIEW_HIERARCHY_TOPIC"), topLevelNodes);
 
-		final List<VirtualisableAndValue<HierarchyTopic>> topicValues = hierarchyService.expandVirtualisedTopics(
-			(List<HierarchyTopic>) allowedTopics, null, null);
+		final List<VirtualisableAndValue<HierarchyTopic>> topicValues = hierarchyService
+			.expandVirtualisedTopics((List<HierarchyTopic>) allowedTopics, null, null);
 
 		List<HierarchyBrowseBean> results = new ArrayList<HierarchyBrowseBean>(topLevelNodes.size());
 
@@ -165,7 +165,7 @@ public class BrowseHierarchyResource
 	@Path("/{uuidcompound}")
 	@ApiOperation(value = "Browse hierarchy content")
 	public Response navigateHierarchy(
-			// @formatter:off
+		// @formatter:off
 			@ApiParam(value = "simple or compound uuid(s)", required = true)
 			@PathParam("uuidcompound")
 				String uuidCompound,
@@ -227,13 +227,13 @@ public class BrowseHierarchyResource
 
 		List<HierarchyTopic> childTopics = hierarchyService.getChildTopics(topicThisLevel);
 
-		Collection<HierarchyTopic> allowedChildTopics = aclManager.filterNonGrantedObjects(
-			Collections.singleton("VIEW_HIERARCHY_TOPIC"), childTopics);
+		Collection<HierarchyTopic> allowedChildTopics = aclManager
+			.filterNonGrantedObjects(Collections.singleton("VIEW_HIERARCHY_TOPIC"), childTopics);
 
 		Collection<String> collectionUuids = gatherCollectionUuids(topicThisLevel);
 
-		final List<VirtualisableAndValue<HierarchyTopic>> topicValues = hierarchyService.expandVirtualisedTopics(
-			(List<HierarchyTopic>) allowedChildTopics, values, collectionUuids);
+		final List<VirtualisableAndValue<HierarchyTopic>> topicValues = hierarchyService
+			.expandVirtualisedTopics((List<HierarchyTopic>) allowedChildTopics, values, collectionUuids);
 
 		VirtualisableAndValue<HierarchyTopic> vav = simple ? new VirtualisableAndValue<HierarchyTopic>(topicThisLevel)
 			: new VirtualisableAndValue<HierarchyTopic>(topicThisLevel, values.get(topicThisLevel.getUuid()), 0);
@@ -311,8 +311,9 @@ public class BrowseHierarchyResource
 
 				HierarchyTopic childTopic = childTopicValue.getVt();
 				String childDynamicValue = childTopicValue.getVirtualisedValue();
-				String childId = childDynamicValue != null ? VirtualTopicUtils.buildTopicId(childTopic,
-					childDynamicValue, virtualizedMap) : childTopic.getUuid();
+				String childId = childDynamicValue != null
+					? VirtualTopicUtils.buildTopicId(childTopic, childDynamicValue, virtualizedMap)
+					: childTopic.getUuid();
 
 				manipulateDynamicStrings(subBean, childTopicValue);
 
@@ -387,7 +388,7 @@ public class BrowseHierarchyResource
 			}
 		});
 
-		final ItemSerializerItemBean serializer = itemSerializerService.createItemBeanSerializer(ids, infos);
+		final ItemSerializerItemBean serializer = itemSerializerService.createItemBeanSerializer(ids, infos, false);
 		for( ItemIdKey itemIdKey : itemIds )
 		{
 			ItemBean returnableItemBean = writeOutItemBean(serializer, itemIdKey.getUuid(), itemIdKey.getVersion(),
@@ -429,7 +430,7 @@ public class BrowseHierarchyResource
 			}
 		});
 
-		final ItemSerializerItemBean serializer = itemSerializerService.createItemBeanSerializer(ids, infos);
+		final ItemSerializerItemBean serializer = itemSerializerService.createItemBeanSerializer(ids, infos, false);
 		for( Item item : items )
 		{
 			ItemBean itemBean = writeOutItemBean(serializer, item.getUuid(), item.getVersion(), item.getId());

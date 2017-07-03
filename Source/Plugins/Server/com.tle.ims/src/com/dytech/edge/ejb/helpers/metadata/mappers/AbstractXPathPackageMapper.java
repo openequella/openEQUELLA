@@ -28,7 +28,7 @@ import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.MetadataMapping;
 import com.tle.beans.entity.itemdef.mapping.IMSMapping;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 
 public abstract class AbstractXPathPackageMapper implements PackageMapper
 {

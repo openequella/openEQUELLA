@@ -33,8 +33,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.google.inject.name.Named;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.common.Check;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.util.ExecUtils;
 import com.tle.common.util.ExecUtils.ExecResult;
@@ -44,7 +44,7 @@ import com.tle.core.healthcheck.listeners.ServiceCheckResponseListener.CheckServ
 import com.tle.core.healthcheck.listeners.bean.ServiceStatus;
 import com.tle.core.healthcheck.listeners.bean.ServiceStatus.ServiceName;
 import com.tle.core.healthcheck.listeners.bean.ServiceStatus.Status;
-import com.tle.core.services.EventService;
+import com.tle.core.events.services.EventService;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.zookeeper.ZookeeperService;
 
@@ -96,7 +96,8 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
 			boolean madeDirs = dstFile.getParentFile().mkdirs();
 			if( !(madeDirs || dstFile.getParentFile().exists()) )
 			{
-				throw new IOException("Could not create/confirm directory " + dstFile.getParentFile().getAbsolutePath());
+				throw new IOException(
+					"Could not create/confirm directory " + dstFile.getParentFile().getAbsolutePath());
 			}
 		}
 		catch( IOException e )
@@ -185,8 +186,8 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
 		{
 			// Check that we have not created a blank (white) thumbnail - delete
 			// if so.
-			ExecResult exec2 = ExecUtils.exec(convertExe.getAbsolutePath(), dstFile.getAbsolutePath(),
-				"-threshold", "99%", "-format", "\"%[fx:100*image.mean]\"", "info:");//$NON-NLS-3$//$NON-NLS-5$
+			ExecResult exec2 = ExecUtils.exec(convertExe.getAbsolutePath(), dstFile.getAbsolutePath(), "-threshold",
+				"99%", "-format", "\"%[fx:100*image.mean]\"", "info:");//$NON-NLS-2$//$NON-NLS-4$
 			exec2.ensureOk();
 			if( exec2.getStdout().contains("100") )
 			{
@@ -222,8 +223,8 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
 	@Override
 	public Dimension getImageDimensions(File image) throws IOException
 	{
-		ExecResult result = ExecUtils.exec(identifyExe.getAbsolutePath(), "-format", "%wx%h", new String(image
-			.getAbsolutePath().getBytes("UTF-8"), "UTF-8"));
+		ExecResult result = ExecUtils.exec(identifyExe.getAbsolutePath(), "-format", "%wx%h",
+			new String(image.getAbsolutePath().getBytes("UTF-8"), "UTF-8"));
 		result.ensureOk();
 
 		Matcher m = Pattern.compile(".*?(\\d+)x(\\d+).*?", Pattern.DOTALL).matcher(result.getStdout());
@@ -338,7 +339,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
 			status.setMoreInfo(CurrentLocale.get("com.tle.core.imagemagick.servicecheck.moreinfo.problem",
 				imageMagickPath, e.getMessage()));
 		}
-		eventService.publishApplicationEvent(new CheckServiceResponseEvent(request.getRequetserNodeId(), zkService
-			.getNodeId(), status));
+		eventService.publishApplicationEvent(
+			new CheckServiceResponseEvent(request.getRequetserNodeId(), zkService.getNodeId(), status));
 	}
 }

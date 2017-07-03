@@ -28,6 +28,7 @@ import com.dytech.edge.common.FileNode;
 import com.dytech.edge.common.ScriptContext;
 import com.google.common.collect.ImmutableCollection;
 import com.tle.beans.Language;
+import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.ModifiableAttachments;
 import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.core.wizard.controls.WizardPage;
@@ -81,7 +82,7 @@ public interface LERepository
 
 	void popPathOverride();
 
-	com.tle.beans.item.Item getItem();
+	Item getItem();
 
 	Locale getLocale();
 

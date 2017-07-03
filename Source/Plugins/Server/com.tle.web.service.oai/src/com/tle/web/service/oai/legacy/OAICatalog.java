@@ -35,6 +35,27 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 
+import com.dytech.edge.common.valuebean.ItemKey;
+import com.google.common.base.Optional;
+import com.tle.beans.entity.itemdef.ItemDefinition;
+import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemId;
+import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.search.DefaultSearch;
+import com.tle.common.searching.Search.SortType;
+import com.tle.common.settings.standard.OAISettings;
+import com.tle.common.util.Dates;
+import com.tle.common.util.UtcDate;
+import com.tle.core.collection.service.ItemDefinitionService;
+import com.tle.core.freetext.service.FreeTextService;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.replicatedcache.ReplicatedCacheService;
+import com.tle.core.replicatedcache.ReplicatedCacheService.ReplicatedCache;
+import com.tle.core.schema.service.SchemaService;
+import com.tle.core.services.item.FreetextResult;
+import com.tle.core.services.item.FreetextSearchResults;
+import com.tle.core.settings.service.ConfigurationService;
+
 import ORG.oclc.oai.server.catalog.AbstractCatalog;
 import ORG.oclc.oai.server.verb.BadArgumentException;
 import ORG.oclc.oai.server.verb.BadResumptionTokenException;
@@ -46,27 +67,6 @@ import ORG.oclc.oai.server.verb.NoRecordsMatchException;
 import ORG.oclc.oai.server.verb.NoSetHierarchyException;
 import ORG.oclc.oai.server.verb.OAIInternalServerError;
 import ORG.oclc.oai.util.OAIUtil;
-
-import com.dytech.edge.common.valuebean.ItemKey;
-import com.google.common.base.Optional;
-import com.tle.beans.entity.itemdef.ItemDefinition;
-import com.tle.beans.item.Item;
-import com.tle.beans.item.ItemId;
-import com.tle.beans.system.OAISettings;
-import com.tle.common.i18n.CurrentLocale;
-import com.tle.common.search.DefaultSearch;
-import com.tle.common.searching.Search.SortType;
-import com.tle.common.util.Dates;
-import com.tle.common.util.UtcDate;
-import com.tle.core.replicatedcache.ReplicatedCacheService;
-import com.tle.core.replicatedcache.ReplicatedCacheService.ReplicatedCache;
-import com.tle.core.schema.SchemaService;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.core.services.item.FreeTextService;
-import com.tle.core.services.item.FreetextResult;
-import com.tle.core.services.item.FreetextSearchResults;
-import com.tle.core.services.item.ItemService;
 
 @Deprecated
 @SuppressWarnings("nls")
@@ -144,8 +144,8 @@ public class OAICatalog extends AbstractCatalog
 	}
 
 	@Override
-	public Map<?, ?> listSets(String resumption) throws ORG.oclc.oai.server.verb.BadResumptionTokenException,
-		OAIInternalServerError
+	public Map<?, ?> listSets(String resumption)
+		throws ORG.oclc.oai.server.verb.BadResumptionTokenException, OAIInternalServerError
 	{
 		throw new BadResumptionTokenException();
 	}
@@ -430,8 +430,8 @@ public class OAICatalog extends AbstractCatalog
 		}
 
 		@Override
-		public void add(Item item, String metadataPrefix) throws IllegalArgumentException,
-			CannotDisseminateFormatException
+		public void add(Item item, String metadataPrefix)
+			throws IllegalArgumentException, CannotDisseminateFormatException
 		{
 			String schemaURL = null;
 			if( metadataPrefix != null )

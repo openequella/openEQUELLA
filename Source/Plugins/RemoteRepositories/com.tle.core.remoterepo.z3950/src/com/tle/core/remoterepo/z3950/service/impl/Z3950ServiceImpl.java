@@ -43,6 +43,8 @@ import com.tle.common.i18n.LangUtils;
 import com.tle.core.fedsearch.GenericRecord;
 import com.tle.core.fedsearch.impl.BasicRecord;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.i18n.BundleNameValue;
 import com.tle.core.remoterepo.parser.mods.impl.loose.LooseModsRecord;
 import com.tle.core.remoterepo.z3950.AdvancedSearchOptions;
 import com.tle.core.remoterepo.z3950.AdvancedSearchOptions.ExtraQuery;
@@ -52,8 +54,6 @@ import com.tle.core.remoterepo.z3950.Z3950Constants.Use;
 import com.tle.core.remoterepo.z3950.Z3950SearchResult;
 import com.tle.core.remoterepo.z3950.Z3950SearchResults;
 import com.tle.core.remoterepo.z3950.service.Z3950Service;
-import com.tle.web.i18n.BundleCache;
-import com.tle.web.i18n.BundleNameValue;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 
@@ -150,8 +150,8 @@ public class Z3950ServiceImpl implements Z3950Service
 		catch( Exception e )
 		{
 			LOGGER.debug("Error executing search", e);
-			throw new RuntimeException("Error executing search " + CurrentLocale.get(z3950Search.getName()) + ": "
-				+ e.getMessage(), e);
+			throw new RuntimeException(
+				"Error executing search " + CurrentLocale.get(z3950Search.getName()) + ": " + e.getMessage(), e);
 		}
 		finally
 		{
@@ -274,8 +274,8 @@ public class Z3950ServiceImpl implements Z3950Service
 		wc.client.setGroup(wc.settings.getGroup());
 		wc.client.setFetchSize(fetchSize);
 		wc.client.setCheckRecordFormat(true);
-		wc.client.setRecordSchema(useConfiguredImportSchema ? wc.settings.getImportRecordSchema()
-			: "http://www.loc.gov/mods/");
+		wc.client.setRecordSchema(
+			useConfiguredImportSchema ? wc.settings.getImportRecordSchema() : "http://www.loc.gov/mods/");
 		wc.numResults = wc.client.submitQuery(searchNode);
 		return wc;
 	}
@@ -392,8 +392,8 @@ public class Z3950ServiceImpl implements Z3950Service
 		if( !Check.isEmpty(isbn) )
 		{
 			// all 13 digit ISBNs start with 978 or 979
-			int length = (isbn.startsWith("978") || isbn.startsWith("979") ? Math.min(13, isbn.length()) : Math.min(10,
-				isbn.length()));
+			int length = (isbn.startsWith("978") || isbn.startsWith("979") ? Math.min(13, isbn.length())
+				: Math.min(10, isbn.length()));
 			if( Check.isEmpty(currentIsbnValue) || length > currentIsbnValue.length() )
 			{
 				return isbn.substring(0, length);
@@ -491,8 +491,8 @@ public class Z3950ServiceImpl implements Z3950Service
 
 	private static NameValue keywordAttribute(String key, Use use)
 	{
-		return new NameValue(CurrentLocale.get(resources.key("search." + key)), use.value()
-			+ Accuracy.KEYWORD.getAttributes());
+		return new NameValue(CurrentLocale.get(resources.key("search." + key)),
+			use.value() + Accuracy.KEYWORD.getAttributes());
 	}
 
 	private List<NameValue> listBathZeroDefaultFields()

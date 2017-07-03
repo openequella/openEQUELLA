@@ -20,8 +20,8 @@ import com.tle.common.qti.entity.QtiAssessmentItem;
 import com.tle.common.qti.entity.QtiAssessmentItemRef;
 import com.tle.common.qti.entity.QtiAssessmentTest;
 import com.tle.common.qti.entity.QtiItemResult;
-import com.tle.core.initialiser.Property;
-import com.tle.core.institution.convert.EntityInitialiserCallback;
+import com.tle.core.entity.service.impl.EntityInitialiserCallback;
+import com.tle.core.hibernate.equella.service.Property;
 
 /**
  * @author Aaron

@@ -29,16 +29,16 @@ import com.thoughtworks.xstream.XStream;
 import com.tle.beans.Institution;
 import com.tle.beans.item.Bookmark;
 import com.tle.beans.item.Item;
+import com.tle.common.beans.xml.IdOnlyConverter;
+import com.tle.common.filesystem.handle.BucketFile;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.favourites.dao.BookmarkDao;
-import com.tle.core.filesystem.BucketFile;
-import com.tle.core.filesystem.SubTemporaryFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.AbstractMigratableConverter;
 import com.tle.core.institution.convert.ConverterParams;
-import com.tle.core.services.InstitutionImportService.ConvertType;
-import com.tle.core.services.entity.IdOnlyConverter;
-import com.tle.core.services.impl.InstitutionImportServiceImpl.ConverterTasks;
+import com.tle.core.institution.convert.service.InstitutionImportService.ConvertType;
+import com.tle.core.institution.convert.service.impl.InstitutionImportServiceImpl.ConverterTasks;
 
 @Bind
 @Singleton
@@ -128,7 +128,7 @@ public class FavouriteItemsConverter extends AbstractMigratableConverter<Object>
 	{
 		if( xstream == null )
 		{
-			xstream = xmlHelper.createXStream();
+			xstream = xmlHelper.createXStream(getClass().getClassLoader());
 			xstream.addDefaultImplementation(HashSet.class, Collection.class); // NOSONAR
 			xstream.registerConverter(new IdOnlyConverter(Item.class));
 		}

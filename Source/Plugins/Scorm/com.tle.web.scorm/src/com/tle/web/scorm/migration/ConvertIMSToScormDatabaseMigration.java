@@ -47,6 +47,7 @@ import org.hibernate.classic.Session;
 import com.dytech.edge.common.Constants;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import com.tle.beans.Institution;
+import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
 import com.tle.core.filesystem.ItemFile;
 import com.tle.core.guice.Bind;
@@ -117,7 +118,7 @@ public class ConvertIMSToScormDatabaseMigration extends AbstractHibernateDataMig
 					}
 				}
 
-				ItemFile itemFile = new ItemFile(item.uuid, item.version);
+				ItemFile itemFile = new ItemFile(new ItemId(item.uuid, item.version), null);
 				Institution inst = new Institution();
 				inst.setFilestoreId(item.institution.getFilestoreId());
 				itemFile.setInstitution(inst);

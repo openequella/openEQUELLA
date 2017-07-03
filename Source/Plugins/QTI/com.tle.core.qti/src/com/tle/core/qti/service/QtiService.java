@@ -23,7 +23,7 @@ import uk.ac.ed.ph.jqtiplus.state.ItemSessionState;
 import uk.ac.ed.ph.jqtiplus.state.TestSessionState;
 
 import com.tle.annotation.NonNullByDefault;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.qti.beans.QtiTestDetails;
 
 /**

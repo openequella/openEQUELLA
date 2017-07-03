@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.dytech.edge.exceptions.NotFoundException;
 import com.google.common.base.Strings;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -35,11 +34,12 @@ import com.tle.beans.item.ItemId;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.PathUtils;
 import com.tle.common.Utils;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.item.ItemService;
 import com.tle.web.mimetypes.service.WebMimeTypeService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionsController;
@@ -86,11 +86,11 @@ public class ThumbServlet extends HttpServlet
 	@Inject
 	private ContentStreamWriter contentStreamWriter;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-		IOException
+	protected void service(HttpServletRequest request, HttpServletResponse response)
+		throws ServletException, IOException
 	{
 		final String[] path = parsePath(request.getPathInfo());
 
@@ -135,8 +135,8 @@ public class ThumbServlet extends HttpServlet
 			final ThumbRef thumb = getThumbRef(request, vitem, path[2], gParam);
 			if( thumb == null )
 			{
-				response.sendRedirect(mimeService.getIconForEntry(mimeService.getEntryForMimeType("equella/item"))
-					.toString());
+				response.sendRedirect(
+					mimeService.getIconForEntry(mimeService.getEntryForMimeType("equella/item")).toString());
 				return;
 			}
 
@@ -167,9 +167,8 @@ public class ThumbServlet extends HttpServlet
 
 		if( !Strings.isNullOrEmpty(attachmentUuid) )
 		{
-			return attachmentResourceService
-				.getViewableResource(info, vitem, vitem.getAttachmentByUuid(attachmentUuid)).getThumbnailReference(
-					info, gallery);
+			return attachmentResourceService.getViewableResource(info, vitem, vitem.getAttachmentByUuid(attachmentUuid))
+				.getThumbnailReference(info, gallery);
 		}
 
 		ViewableResource backup = null;
@@ -218,7 +217,7 @@ public class ThumbServlet extends HttpServlet
 					path = ThumbInProgressServlet.GALLERY_THUMBNAIL;
 			}
 		}
-		response.sendRedirect(urlService.institutionalise("thumbprogress/" + path));
+		response.sendRedirect(institutionService.institutionalise("thumbprogress/" + path));
 	}
 
 	private String getThumbForPath(String filename, GalleryParameter gParam)

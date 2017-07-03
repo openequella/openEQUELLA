@@ -30,27 +30,27 @@ import javax.inject.Inject;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.google.common.base.Strings;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.LanguageBundle.DeleteHandler;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.beans.LanguageBundleBean;
 import com.tle.common.i18n.beans.LanguageStringBean;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.interfaces.I18NString;
 import com.tle.common.interfaces.I18NStrings;
 import com.tle.common.security.TargetList;
 import com.tle.common.security.TargetListEntry;
 import com.tle.core.auditlog.AuditLogService;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.events.ApplicationEvent;
-import com.tle.core.services.EventService;
-import com.tle.core.services.entity.AbstractEntityService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
+import com.tle.core.events.services.EventService;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.api.interfaces.beans.BaseEntityBean;
 import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
@@ -135,8 +135,8 @@ public abstract class AbstractBaseEntityEditor<BE extends BaseEntity, BEB extend
 		}
 
 		entity.setName(getBundle(entity.getName(), source.getNameStrings(), source.getName()));
-		entity.setDescription(getBundle(entity.getDescription(), source.getDescriptionStrings(),
-			source.getDescription()));
+		entity.setDescription(
+			getBundle(entity.getDescription(), source.getDescriptionStrings(), source.getDescription()));
 		if( importing )
 		{
 			final UserBean owner = source.getOwner();

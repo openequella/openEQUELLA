@@ -18,7 +18,6 @@ package com.tle.web.scripting.advanced.objects.impl;
 
 import java.util.List;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.tle.beans.item.DrmSettings;
@@ -27,6 +26,7 @@ import com.tle.beans.item.DrmSettings.Usage;
 import com.tle.beans.item.Item;
 import com.tle.common.Check;
 import com.tle.common.Format;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.services.user.UserService;
 import com.tle.web.scripting.advanced.objects.DrmScriptObject;
 import com.tle.web.scripting.advanced.types.DrmPartyScriptType;
@@ -140,8 +140,8 @@ public class DrmScriptWrapper extends AbstractScriptWrapper implements DrmScript
 		{
 			if( owners == null )
 			{
-				owners = Lists.newArrayList(Lists.transform(settings.getContentOwners(),
-					new Function<Party, DrmPartyScriptType>()
+				owners = Lists
+					.newArrayList(Lists.transform(settings.getContentOwners(), new Function<Party, DrmPartyScriptType>()
 					{
 						@Override
 						public DrmPartyScriptType apply(Party party)
@@ -159,8 +159,8 @@ public class DrmScriptWrapper extends AbstractScriptWrapper implements DrmScript
 			changed = true;
 			owners = contentOwners;
 
-			List<Party> partyContentOwners = Lists.newArrayList(Lists.transform(contentOwners,
-				new Function<DrmPartyScriptType, Party>()
+			List<Party> partyContentOwners = Lists
+				.newArrayList(Lists.transform(contentOwners, new Function<DrmPartyScriptType, Party>()
 				{
 					@Override
 					public Party apply(DrmPartyScriptType drmPartyScriptType)

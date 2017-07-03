@@ -30,11 +30,13 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 
 /**
  * @author Nicholas Read
  */
+@NonNullByDefault
 public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernateDao implements GenericDao<T, ID>
 {
 	protected static final String INSTITUTION = "institution"; //$NON-NLS-1$

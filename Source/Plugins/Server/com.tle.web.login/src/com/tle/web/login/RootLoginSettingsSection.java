@@ -24,12 +24,12 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.UserBean;
-import com.tle.beans.system.AutoLogin;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.common.settings.standard.AutoLogin;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.services.user.UserService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;

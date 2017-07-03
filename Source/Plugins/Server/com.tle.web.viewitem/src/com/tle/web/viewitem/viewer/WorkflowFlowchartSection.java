@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.dytech.edge.gui.workflow.WorkflowVisualiser;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.Item;
@@ -37,8 +36,10 @@ import com.tle.beans.item.ItemTaskId;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Format;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.common.workflow.WorkflowItemStatus;
 import com.tle.common.workflow.WorkflowNodeStatus;
+import com.tle.common.workflow.node.ScriptNode;
 import com.tle.core.services.user.UserService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -176,6 +177,17 @@ public class WorkflowFlowchartSection extends AbstractPrototypeSection<Object> i
 				else if( wis.getStatus() == WorkflowNodeStatus.INCOMPLETE )
 				{
 					incomplete.put(wis.getNode().getUuid(), wis.getAssignedTo());
+				}
+			}
+			else if( wns.getNode() instanceof ScriptNode )
+			{
+				if( wns.getStatus() == WorkflowNodeStatus.COMPLETE )
+				{
+					complete.add(wns.getNode().getUuid());
+				}
+				else if( wns.getStatus() == WorkflowNodeStatus.INCOMPLETE )
+				{
+					incomplete.put(wns.getNode().getUuid(), null);
 				}
 			}
 		}

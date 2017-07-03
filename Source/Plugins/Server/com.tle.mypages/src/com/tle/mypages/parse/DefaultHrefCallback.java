@@ -27,8 +27,8 @@ import org.ccil.cowan.tagsoup.AttributesImpl;
 import com.dytech.edge.common.Constants;
 import com.tle.common.Check;
 import com.tle.common.URLUtils;
-import com.tle.core.services.UrlService;
-import com.tle.core.util.HrefCallback;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.services.html.HrefCallback;
 import com.tle.mypages.parse.conversion.HrefConversion;
 
 @SuppressWarnings("nls")
@@ -38,7 +38,7 @@ public class DefaultHrefCallback implements HrefCallback
 
 	protected static final List<String> PROTOCOLS = Arrays.asList(new String[]{"http", "https", "ftp", "file", "jar"});
 
-	private final UrlService urlService;
+	private final InstitutionService institutionService;
 	private final boolean fullUrl;
 	private final boolean deinstitutionFoundUrls;
 	private final HrefConversion[] conversions;
@@ -50,12 +50,12 @@ public class DefaultHrefCallback implements HrefCallback
 	 * @param urlService
 	 * @param conversions
 	 */
-	public DefaultHrefCallback(boolean fullUrl, boolean deinstitutionFoundUrls, UrlService urlService,
+	public DefaultHrefCallback(boolean fullUrl, boolean deinstitutionFoundUrls, InstitutionService institutionService,
 		HrefConversion... conversions)
 	{
 		this.fullUrl = fullUrl;
 		this.deinstitutionFoundUrls = deinstitutionFoundUrls;
-		this.urlService = urlService;
+		this.institutionService = institutionService;
 		this.conversions = conversions;
 	}
 
@@ -68,7 +68,7 @@ public class DefaultHrefCallback implements HrefCallback
 			if( recognisedProtocol(url) )
 			{
 				final boolean anchor = isNamedAnchor(url);
-				final boolean institutionUrl = urlService.isInstitutionUrl(url);
+				final boolean institutionUrl = institutionService.isInstitutionUrl(url);
 				if( anchor || !URLUtils.isAbsoluteUrl(url) || institutionUrl )
 				{
 					String newUrl = url;
@@ -76,7 +76,7 @@ public class DefaultHrefCallback implements HrefCallback
 					// Remove the institution part (if there is one).
 					if( institutionUrl && deinstitutionFoundUrls )
 					{
-						newUrl = urlService.removeInstitution(newUrl);
+						newUrl = institutionService.removeInstitution(newUrl);
 					}
 
 					// we need to change the path ('items/UUID' to
@@ -90,7 +90,7 @@ public class DefaultHrefCallback implements HrefCallback
 					{
 						// Add the institution part again if it's going to
 						// be displayed in an HTML editor
-						return urlService.institutionalise(newUrl);
+						return institutionService.institutionalise(newUrl);
 					}
 					return newUrl;
 				}

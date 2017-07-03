@@ -18,7 +18,7 @@ package com.tle.core.portal.service;
 
 import java.util.List;
 
-import com.dytech.edge.common.valuebean.ValidationError;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.portal.entity.Portlet;
 
 public interface PortletServiceExtension

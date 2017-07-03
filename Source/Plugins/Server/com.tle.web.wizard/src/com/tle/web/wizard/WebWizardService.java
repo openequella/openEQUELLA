@@ -17,7 +17,7 @@
 package com.tle.web.wizard;
 
 import com.dytech.devlib.PropBagEx;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.web.sections.SectionInfo;
 
 /**

@@ -18,7 +18,7 @@ package com.tle.core.remoterepo.parser.mods.impl;
 
 import org.w3c.dom.Node;
 
-import com.tle.common.util.XmlDocument;
+import com.tle.core.xml.XmlDocument;
 
 /**
  * @author aholland

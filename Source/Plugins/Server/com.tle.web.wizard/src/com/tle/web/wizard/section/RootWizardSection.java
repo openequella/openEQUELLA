@@ -22,7 +22,6 @@ import javax.inject.Inject;
 
 import org.java.plugin.registry.Extension;
 
-import com.dytech.edge.exceptions.QuotaExceededException;
 import com.dytech.edge.wizard.WizardException;
 import com.dytech.edge.wizard.WizardTimeoutException;
 import com.google.inject.Provider;
@@ -32,10 +31,11 @@ import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemTaskId;
 import com.tle.common.Check;
+import com.tle.common.quota.exception.QuotaExceededException;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
-import com.tle.core.services.item.ItemService;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.navigation.BreadcrumbService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
@@ -276,8 +276,8 @@ public class RootWizardSection extends TwoColumnLayout<WizardForm>
 			boolean isQuota = exception instanceof QuotaExceededException;
 			boolean isTimeout = !isQuota && exception instanceof WizardTimeoutException;
 			model.setShowErrorHelp(!isQuota);
-			Decorations.getDecorations(context).setTitle(
-				isQuota ? LABEL_QUOTAERROR : (isTimeout ? LABEL_TIMEOUTERROR : LABEL_ERROR));
+			Decorations.getDecorations(context)
+				.setTitle(isQuota ? LABEL_QUOTAERROR : (isTimeout ? LABEL_TIMEOUTERROR : LABEL_ERROR));
 
 			GenericTemplateResult temp = new GenericTemplateResult();
 			temp.addNamedResult("body", viewFactory.createResult("wizard/error.ftl", context));
@@ -307,8 +307,8 @@ public class RootWizardSection extends TwoColumnLayout<WizardForm>
 
 			crumbs.add(breadcrumbService.getViewItemCrumb(info, state.getItem()));
 
-			decorations.setTitle(new KeyLabel(resources.key("breadcrumb."
-				+ state.getOperation().toString().toLowerCase())));
+			decorations
+				.setTitle(new KeyLabel(resources.key("breadcrumb." + state.getOperation().toString().toLowerCase())));
 		}
 		else
 		{

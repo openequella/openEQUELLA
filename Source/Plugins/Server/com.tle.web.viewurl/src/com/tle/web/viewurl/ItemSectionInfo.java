@@ -26,7 +26,7 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.attachments.Attachments;
 import com.tle.beans.workflow.WorkflowStatus;
-import com.tle.core.workflow.operations.WorkflowOperation;
+import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.TreeIndexed;

@@ -27,7 +27,7 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemStatus;
-import com.tle.core.services.item.ItemService;
+import com.tle.core.item.service.ItemService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.Bookmark;

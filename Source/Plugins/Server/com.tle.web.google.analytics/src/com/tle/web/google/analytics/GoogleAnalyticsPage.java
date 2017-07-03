@@ -19,7 +19,7 @@ package com.tle.web.google.analytics;
 import javax.inject.Inject;
 
 import com.tle.common.Check;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.annotations.DirectEvent;

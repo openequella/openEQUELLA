@@ -42,17 +42,17 @@ import com.tle.common.Check;
 import com.tle.common.ExpiringValue;
 import com.tle.common.Pair;
 import com.tle.core.dao.helpers.BatchingIterator;
-import com.tle.core.events.InstitutionEvent;
-import com.tle.core.events.listeners.InstitutionListener;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.events.InstitutionEvent;
+import com.tle.core.institution.events.listeners.InstitutionListener;
 import com.tle.core.plugins.PluginAwareObjectInputStream;
 import com.tle.core.plugins.PluginAwareObjectOutputStream;
 import com.tle.core.replicatedcache.ReplicatedCacheService;
 import com.tle.core.replicatedcache.dao.CachedValue;
 import com.tle.core.replicatedcache.dao.ReplicatedCacheDao;
 import com.tle.core.scheduler.ScheduledTask;
-import com.tle.core.services.EventService;
-import com.tle.core.user.CurrentInstitution;
+import com.tle.core.events.services.EventService;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.zookeeper.ZookeeperService;
 
 @Singleton

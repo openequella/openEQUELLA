@@ -22,19 +22,20 @@ import java.util.List;
 import com.dytech.edge.common.ScriptContext;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemPack;
 import com.tle.common.Check;
 import com.tle.common.scripting.service.ScriptingService;
-import com.tle.core.filesystem.ItemFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.guice.BindFactory;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.plugins.BeanLocator;
 import com.tle.core.plugins.FactoryMethodLocator;
 import com.tle.core.scripting.service.StandardScriptContextParams;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.web.bulk.executescript.operations.ExecuteScriptFactory;
 import com.tle.web.bulk.executescript.section.BulkExecuteScriptSection;
 import com.tle.web.bulk.operation.BulkOperationExecutor;
@@ -61,6 +62,8 @@ public class BulkExecuteScriptOperation extends BulkExecuteScriptSection impleme
 
 	@Inject
 	private ItemService itemService;
+	@Inject
+	private ItemFileService itemFileService;
 	@Inject
 	private ScriptingService scriptService;
 
@@ -114,9 +117,15 @@ public class BulkExecuteScriptOperation extends BulkExecuteScriptSection impleme
 	}
 
 	@Override
-	public boolean areOptionsFinished(SectionInfo info, String operationId)
+	public boolean validateOptions(SectionInfo info, String operationId)
 	{
 		return !(Check.isEmpty(getScript(info))) && !(getModel(info).isValidationErrors());
+	}
+
+	@Override
+	public boolean areOptionsFinished(SectionInfo info, String operationId)
+	{
+		return validateOptions(info, operationId);
 	}
 
 	@Override
@@ -133,7 +142,7 @@ public class BulkExecuteScriptOperation extends BulkExecuteScriptSection impleme
 		@Inject
 		private ExecuteScriptFactory exScriptFactory;
 		@Inject
-		private WorkflowFactory workflowFactory;
+		private ItemOperationFactory workflowFactory;
 
 		@Inject
 		public ExecuteScriptExecutor(@Assisted("script") String script)
@@ -186,8 +195,8 @@ public class BulkExecuteScriptOperation extends BulkExecuteScriptSection impleme
 	{
 		ItemKey itemKey = itemService.getItemIdKey(itemId);
 		ItemPack itemPack = itemService.getItemPack(itemKey);
-		StandardScriptContextParams params = new StandardScriptContextParams(itemPack, new ItemFile(itemKey), false,
-			null);
+		StandardScriptContextParams params = new StandardScriptContextParams(itemPack,
+			itemFileService.getItemFile((Item) itemPack.getItem()), false, null);
 		ScriptContext scriptContext = scriptService.createScriptContext(params);
 		scriptService.executeScript(getScript(info), "bulkExecute", scriptContext, false);
 

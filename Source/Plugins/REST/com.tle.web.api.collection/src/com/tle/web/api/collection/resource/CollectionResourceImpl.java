@@ -30,9 +30,9 @@ import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.Check;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.SecurityConstants;
+import com.tle.core.collection.service.ItemDefinitionService;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.entity.AbstractEntityService;
-import com.tle.core.services.entity.ItemDefinitionService;
 import com.tle.web.api.baseentity.serializer.BaseEntitySerializer;
 import com.tle.web.api.collection.CollectionBeanSerializer;
 import com.tle.web.api.collection.interfaces.CollectionResource;
@@ -55,23 +55,14 @@ public class CollectionResourceImpl
 	@Inject
 	private CollectionBeanSerializer collectionSerializer;
 
-	// Override the EPS definition of it. We add a new priv param
-	@Override
-	public SearchBean<CollectionBean> list(UriInfo uriInfo)
-	{
-		throw new Error();
-	}
-
 	@Override
 	public SearchBean<CollectionBean> list(UriInfo uriInfo, String privilege)
 	{
-		SearchBean<CollectionBean> result = new SearchBean<CollectionBean>();
-		List<CollectionBean> colbeans = Lists.newArrayList();
-		Collection<ItemDefinition> collections = getEntityService().enumerate();
-		// List<String> privileges = Lists.newArrayList(LIST_COLLECTION);
-		String priv = (Check.isEmpty(privilege) ? "LIST_COLLECTION" : privilege);
-		// FIXME: need to verify this returns nothing for an unknown priv
-		collections = aclManager.filterNonGrantedObjects(Collections.singleton(priv), collections);
+		final SearchBean<CollectionBean> result = new SearchBean<CollectionBean>();
+		final List<CollectionBean> colbeans = Lists.newArrayList();
+		final String priv = (Check.isEmpty(privilege) ? "LIST_COLLECTION" : privilege);
+		final Collection<ItemDefinition> collections = aclManager.filterNonGrantedObjects(Collections.singleton(priv),
+			getEntityService().enumerate());
 
 		for( ItemDefinition col : collections )
 		{

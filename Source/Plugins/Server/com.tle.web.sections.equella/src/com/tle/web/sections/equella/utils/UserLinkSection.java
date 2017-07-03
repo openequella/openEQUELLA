@@ -28,8 +28,8 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 
-import com.dytech.edge.common.valuebean.RoleBean;
-import com.dytech.edge.common.valuebean.UserBean;
+import com.tle.common.usermanagement.user.valuebean.RoleBean;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;
 import com.tle.web.sections.SectionInfo;

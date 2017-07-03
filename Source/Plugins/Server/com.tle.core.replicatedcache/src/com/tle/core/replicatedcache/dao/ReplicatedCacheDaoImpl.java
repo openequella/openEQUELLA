@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tle.beans.Institution;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericDaoImpl;
-import com.tle.core.user.CurrentInstitution;
+import com.tle.common.institution.CurrentInstitution;
 
 @Bind(ReplicatedCacheDao.class)
 @Singleton

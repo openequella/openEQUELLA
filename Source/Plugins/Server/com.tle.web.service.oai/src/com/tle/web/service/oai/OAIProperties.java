@@ -21,13 +21,13 @@ import java.util.Properties;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.tle.beans.system.MailSettings;
-import com.tle.beans.system.OAISettings;
 import com.tle.common.Check;
 import com.tle.common.Utils;
+import com.tle.common.settings.standard.MailSettings;
+import com.tle.common.settings.standard.OAISettings;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.settings.service.ConfigurationService;
 
 @Bind
 public class OAIProperties extends Properties
@@ -37,7 +37,7 @@ public class OAIProperties extends Properties
 	@Inject
 	private ConfigurationService configConstants;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@Inject
 	public OAIProperties(@Named("oaiProps") Properties properties)
@@ -59,7 +59,7 @@ public class OAIProperties extends Properties
 		}
 		else if( "OAIHandler.baseURL".equals(key) ) //$NON-NLS-1$
 		{
-			return urlService.getInstitutionUrl() + "p/oai"; //$NON-NLS-1$
+			return institutionService.getInstitutionUrl() + "p/oai"; //$NON-NLS-1$
 		}
 		return super.getProperty(key);
 	}

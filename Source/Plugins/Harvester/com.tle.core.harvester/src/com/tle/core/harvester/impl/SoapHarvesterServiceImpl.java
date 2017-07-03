@@ -31,7 +31,6 @@ import javax.xml.ws.WebServiceContext;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
 
 import com.dytech.devlib.PropBagEx;
-import com.dytech.edge.exceptions.ApplicationException;
 import com.tle.beans.entity.DynaCollection;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
@@ -39,34 +38,36 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemPack;
 import com.tle.beans.item.ItemStatus;
-import com.tle.beans.system.HarvesterSkipDrmSettings;
+import com.tle.common.beans.exception.ApplicationException;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.searching.Search.SortType;
 import com.tle.common.searching.SearchResults;
+import com.tle.common.settings.standard.HarvesterSkipDrmSettings;
+import com.tle.common.usermanagement.user.WebAuthenticationDetails;
 import com.tle.common.util.Dates;
 import com.tle.common.util.UtcDate;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.dynacollection.DynaCollectionService;
 import com.tle.core.filesystem.ItemFile;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.freetext.queries.FreeTextBooleanQuery;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
 import com.tle.core.harvester.search.DownloadItemSearch;
 import com.tle.core.harvester.soap.SoapHarvesterService;
-import com.tle.core.schema.SchemaService;
+import com.tle.core.hibernate.equella.service.InitialiserService;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.service.DrmService;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.schema.service.SchemaService;
 import com.tle.core.search.VirtualisableAndValue;
 import com.tle.core.security.impl.SecureOnCall;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.InitialiserService;
-import com.tle.core.services.StagingService;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.core.services.item.DrmService;
-import com.tle.core.services.item.FreeTextService;
-import com.tle.core.services.item.ItemService;
 import com.tle.core.services.user.UserService;
-import com.tle.core.soap.SoapXMLService;
-import com.tle.core.user.WebAuthenticationDetails;
+import com.tle.core.settings.service.ConfigurationService;
+import com.tle.core.soap.service.SoapXMLService;
 import com.tle.core.util.archive.ArchiveType;
 import com.tle.web.viewurl.ViewItemUrlFactory;
 
@@ -100,13 +101,15 @@ public class SoapHarvesterServiceImpl implements PrivateSoapHarvesterService, So
 	@Inject
 	private ItemService itemService;
 	@Inject
+	private ItemFileService itemFileService;
+	@Inject
 	private ConfigurationService config;
 	@Inject
 	private DrmService drmService;
 	@Inject
 	private SchemaService schemaService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private WebServiceContext webServiceContext;
 
@@ -159,8 +162,8 @@ public class SoapHarvesterServiceImpl implements PrivateSoapHarvesterService, So
 
 		// Would be better if we could use security filtering on
 		// UUID return results
-		List<ItemDefinition> matchingSearchableUuid = collectionService.getMatchingSearchableUuid(Arrays
-			.asList(collectionUuids));
+		List<ItemDefinition> matchingSearchableUuid = collectionService
+			.getMatchingSearchableUuid(Arrays.asList(collectionUuids));
 		search.setCollectionUuids(collectionService.convertToUuids(matchingSearchableUuid));
 		search.setDateRange(convertToDateRange(since));
 		if( onlyLive )
@@ -226,8 +229,8 @@ public class SoapHarvesterServiceImpl implements PrivateSoapHarvesterService, So
 				item = initialiserService.initialise(item);
 				item.setItemDefinition(itemDef);
 
-				PropBagEx itemXml = soapXML.convertItemPackToXML(new ItemPack(item,
-					itemService.getItemXmlPropBag(item), null), true);
+				PropBagEx itemXml = soapXML
+					.convertItemPackToXML(new ItemPack(item, itemService.getItemXmlPropBag(item), null), true);
 				itemXml.setNode("item/url", urlFactory.createFullItemUrl(item.getItemId()).getHref());
 				xml.newSubtree("result").append("", itemXml);
 			}
@@ -274,7 +277,7 @@ public class SoapHarvesterServiceImpl implements PrivateSoapHarvesterService, So
 	@SecureOnCall(priv = "DOWNLOAD_ITEM")
 	public void getItemAttachments(OutputStream cos, Item item) throws Exception
 	{
-		ItemFile itemFile = new ItemFile(item.getUuid(), item.getVersion());
+		ItemFile itemFile = itemFileService.getItemFile(item);
 
 		StagingFile stagingFile = stagingService.createStagingArea();
 
@@ -304,8 +307,8 @@ public class SoapHarvesterServiceImpl implements PrivateSoapHarvesterService, So
 
 	private WebAuthenticationDetails getDetails()
 	{
-		return userService.getWebAuthenticationDetails((HttpServletRequest) webServiceContext.getMessageContext().get(
-			AbstractHTTPDestination.HTTP_REQUEST));
+		return userService.getWebAuthenticationDetails(
+			(HttpServletRequest) webServiceContext.getMessageContext().get(AbstractHTTPDestination.HTTP_REQUEST));
 	}
 
 	@Override
@@ -336,6 +339,6 @@ public class SoapHarvesterServiceImpl implements PrivateSoapHarvesterService, So
 
 		final StagingFile staging = stagingService.createStagingArea();
 		getItemAttachments(fileSystemService.getOutputStream(staging, "download.tar.gz", false), item);
-		return urlService.institutionalise("file/" + staging.getUuid() + "/$/download.tar.gz");
+		return institutionService.institutionalise("file/" + staging.getUuid() + "/$/download.tar.gz");
 	}
 }

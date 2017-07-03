@@ -19,7 +19,7 @@ package com.tle.core.lti.consumers.service.session;
 import java.util.Set;
 
 import com.tle.common.Pair;
-import com.tle.core.services.entity.EntityEditingBean;
+import com.tle.core.entity.EntityEditingBean;
 
 public class LtiConsumerEditingBean extends EntityEditingBean
 {

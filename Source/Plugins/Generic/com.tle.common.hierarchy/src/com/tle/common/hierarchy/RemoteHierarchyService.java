@@ -19,9 +19,9 @@ package com.tle.common.hierarchy;
 import java.io.Serializable;
 import java.util.List;
 
-import com.dytech.edge.common.valuebean.ValidationError;
 import com.tle.beans.hierarchy.HierarchyPack;
 import com.tle.beans.hierarchy.HierarchyTreeNode;
+import com.tle.common.beans.exception.ValidationError;
 
 /**
  * @author Nicholas Read

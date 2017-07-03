@@ -29,11 +29,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 
-import net.oauth.OAuth;
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthConsumer;
-import net.oauth.OAuthMessage;
-
 import org.w3c.dom.Node;
 
 import com.google.api.client.util.Base64;
@@ -41,13 +36,13 @@ import com.google.common.base.Throwables;
 import com.google.common.io.CharStreams;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.common.util.XmlDocument;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.HttpService;
-import com.tle.core.services.config.ConfigurationService;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Request.Method;
 import com.tle.core.services.http.Response;
+import com.tle.core.settings.service.ConfigurationService;
+import com.tle.core.xml.XmlDocument;
 import com.tle.web.lti.LtiData;
 import com.tle.web.lti.LtiData.LisData;
 import com.tle.web.lti.LtiData.OAuthData;
@@ -63,6 +58,11 @@ import com.tle.web.lti.imsx.ResultType;
 import com.tle.web.lti.imsx.SourcedGUIDType;
 import com.tle.web.lti.imsx.TextType;
 import com.tle.web.lti.service.LtiService;
+
+import net.oauth.OAuth;
+import net.oauth.OAuthAccessor;
+import net.oauth.OAuthConsumer;
+import net.oauth.OAuthMessage;
 
 /**
  * @author Aaron
@@ -88,8 +88,8 @@ public class LtiServiceImpl implements LtiService
 			try
 			{
 				final OAuthData oauthData = ltiData.getOAuthData();
-				final Request req = createLtiOutcomesRequest(buildEnvelope(lisData, grade), outcomeServiceUrl, ltiData
-					.getOAuthData().getConsumerKey(), oauthData.getConsumerSecret());
+				final Request req = createLtiOutcomesRequest(buildEnvelope(lisData, grade), outcomeServiceUrl,
+					ltiData.getOAuthData().getConsumerKey(), oauthData.getConsumerSecret());
 				try( Response resp = httpService.getWebContent(req, configService.getProxyDetails()) )
 				{
 					parseError(resp, outcomeServiceUrl);

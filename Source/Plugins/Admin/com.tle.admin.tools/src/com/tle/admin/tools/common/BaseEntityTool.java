@@ -36,9 +36,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.dytech.edge.common.LockedException;
-import com.dytech.edge.common.valuebean.ValidationError;
+import com.tle.common.beans.exception.ValidationError;
 import com.dytech.edge.exceptions.InUseException;
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;

@@ -44,7 +44,7 @@ import com.google.gdata.data.books.VolumeEntry;
 import com.google.gdata.data.books.VolumeFeed;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.google.api.GoogleApiUtils;
 
 /**

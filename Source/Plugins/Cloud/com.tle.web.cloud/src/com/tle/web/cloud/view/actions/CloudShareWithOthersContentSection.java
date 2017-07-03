@@ -20,7 +20,7 @@ import javax.inject.Inject;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.cloud.view.section.CloudItemSectionInfo;
 import com.tle.web.cloud.viewable.CloudViewItemLinkFactory;
 import com.tle.web.freemarker.FreemarkerFactory;

@@ -14,6 +14,7 @@
 		<import plugin-id="com.tle.common.accesscontrolbuilder" />
 		<import plugin-id="com.tle.common.collection" exported="true" />
 		<import plugin-id="com.tle.common.entity" />
+		<import plugin-id="com.tle.common.filesystem" />
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.common.recipientselector" />
 		<import plugin-id="com.tle.common.security" />

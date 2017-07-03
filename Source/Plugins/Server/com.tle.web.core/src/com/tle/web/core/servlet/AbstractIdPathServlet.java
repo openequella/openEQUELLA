@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.dytech.edge.exceptions.NotFoundException;
+import com.tle.common.beans.exception.NotFoundException;
 
 @SuppressWarnings("nls")
 public abstract class AbstractIdPathServlet extends HttpServlet

@@ -1,0 +1,38 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.settings.convert" version="1">
+	<requires>
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.core.institution.convert" />
+		<import plugin-id="com.tle.common.institution" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.common.filesystem" />
+	</requires>
+	<runtime>
+		<library type="code" path="classes/" id="core">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	<extension-point id="configurationConverterExtension">
+		<parameter-def id="bean" multiplicity="one" type="string">
+			<doc>
+				<doc-text>Must extend ConfigurationConverterExtension</doc-text>
+			</doc>
+		</parameter-def>
+	</extension-point>
+
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="configurationConverter">
+		<parameter id="id" value="CONFIGURATION" />
+		<parameter id="class" value="bean:com.tle.core.settings.convert.ConfigurationConverter" />
+		<parameter id="order" value="700" />
+		<parameter id="selections">
+			<parameter id="id" value="CONFIGURATION" />
+			<parameter id="nameKey" value="institutions.tasks.configuration" />
+		</parameter>
+	</extension>
+</plugin>

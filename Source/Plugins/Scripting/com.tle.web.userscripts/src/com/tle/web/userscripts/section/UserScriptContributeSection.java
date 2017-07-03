@@ -23,7 +23,7 @@ import javax.inject.Inject;
 
 import com.tle.common.userscripts.UserScriptsConstants;
 import com.tle.common.userscripts.entity.UserScript;
-import com.tle.core.services.entity.AbstractEntityService;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.userscripts.service.UserScriptsService;
 import com.tle.core.userscripts.service.session.UserScriptEditingBean;
 import com.tle.web.entities.section.AbstractEntityContributeSection;

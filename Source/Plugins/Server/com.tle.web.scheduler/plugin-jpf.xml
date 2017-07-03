@@ -9,6 +9,7 @@
 		<import plugin-id="com.tle.web.sections" />
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.web.settings" />
+		<import plugin-id="com.tle.core.services" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

@@ -18,9 +18,9 @@ package com.tle.web.oaiidentifier;
 
 import javax.inject.Inject;
 
-import com.tle.beans.system.OAISettings;
 import com.tle.common.Check;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.common.settings.standard.OAISettings;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.annotations.Bookmarked;
@@ -45,9 +45,7 @@ import com.tle.web.template.Decorations;
 /**
  * @author larry
  */
-public class RootOaiIdentifierSettingsSection
-	extends
-		OneColumnLayout<RootOaiIdentifierSettingsSection.OaiSettingsModel>
+public class RootOaiIdentifierSettingsSection extends OneColumnLayout<RootOaiIdentifierSettingsSection.OaiSettingsModel>
 {
 	@PlugKey("oai.title")
 	private static Label TITLE_LABEL;

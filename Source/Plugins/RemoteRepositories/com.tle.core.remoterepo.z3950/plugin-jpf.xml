@@ -12,6 +12,7 @@
 		<import plugin-id="com.tle.web.resources" />
 			<import plugin-id="com.tle.web.services" />
 		<import plugin-id="com.tle.core.migration" />
+		<import plugin-id="com.tle.core.i18n" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="z3950core">

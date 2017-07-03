@@ -35,13 +35,14 @@ import com.tle.beans.item.attachments.Attachment;
 import com.tle.core.copyright.Holding;
 import com.tle.core.copyright.Portion;
 import com.tle.core.copyright.Section;
-import com.tle.core.dao.ItemDaoExtension;
 import com.tle.core.hibernate.dao.AbstractHibernateDao;
+import com.tle.core.item.dao.ItemDaoExtension;
 
 @SuppressWarnings({"unchecked", "nls"})
 public abstract class AbstractCopyrightDao<H extends Holding, P extends Portion, S extends Section>
 	extends
-		AbstractHibernateDao implements CopyrightDao<H, P, S>, ItemDaoExtension
+		AbstractHibernateDao
+	implements CopyrightDao<H, P, S>, ItemDaoExtension
 {
 	private Map<String, String> queries = Maps.newIdentityHashMap();
 
@@ -100,8 +101,8 @@ public abstract class AbstractCopyrightDao<H extends Holding, P extends Portion,
 			@Override
 			public Object doInHibernate(Session session)
 			{
-				SQLQuery sqlQuery = session
-					.createSQLQuery(sqlQuery("select count(h.item_id) as hcount, count(p.item_id) as pcount from item i left outer join %h h on h.item_id = i.id "
+				SQLQuery sqlQuery = session.createSQLQuery(sqlQuery(
+					"select count(h.item_id) as hcount, count(p.item_id) as pcount from item i left outer join %h h on h.item_id = i.id "
 						+ "left outer join %p p on p.item_id = i.id where i.id = ? and (h.id is not null or p.id is not null)"));
 				sqlQuery.setLong(0, itemId);
 				Object[] hasSome = (Object[]) sqlQuery.uniqueResult();
@@ -202,9 +203,8 @@ public abstract class AbstractCopyrightDao<H extends Holding, P extends Portion,
 	public List<Item> getAllItemsForHolding(H holding)
 	{
 		// Dirty code for Oracle bug (cannot use "select distinct(p.item)")
-		List<Item> items = getHibernateTemplate().find(
-			query("select p.item from %p p where p.item.id in "
-				+ "(select distinct(p2.item.id) from %p p2 where p2.holding = ?)"), holding);
+		List<Item> items = getHibernateTemplate().find(query("select p.item from %p p where p.item.id in "
+			+ "(select distinct(p2.item.id) from %p p2 where p2.holding = ?)"), holding);
 
 		return items;
 	}
@@ -265,14 +265,14 @@ public abstract class AbstractCopyrightDao<H extends Holding, P extends Portion,
 		Map<Long, H> holdingMap = new HashMap<Long, H>();
 		if( !items.isEmpty() )
 		{
-			List<Object[]> holdingItems = getHibernateTemplate().findByNamedParam(
-				query("select p.holding, p.item from %p p where p.item in (:items)"), "items", items);
+			List<Object[]> holdingItems = getHibernateTemplate()
+				.findByNamedParam(query("select p.holding, p.item from %p p where p.item in (:items)"), "items", items);
 			for( Object[] objs : holdingItems )
 			{
 				holdingMap.put(((Item) objs[1]).getId(), (H) objs[0]);
 			}
-			holdingItems = getHibernateTemplate().findByNamedParam(
-				query("select h, h.item from %h h where h.item in (:items)"), "items", items);
+			holdingItems = getHibernateTemplate()
+				.findByNamedParam(query("select h, h.item from %h h where h.item in (:items)"), "items", items);
 			for( Object[] objs : holdingItems )
 			{
 				holdingMap.put(((Item) objs[1]).getId(), (H) objs[0]);

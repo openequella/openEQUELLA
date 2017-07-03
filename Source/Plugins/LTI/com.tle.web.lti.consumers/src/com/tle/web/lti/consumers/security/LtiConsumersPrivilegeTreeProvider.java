@@ -20,9 +20,9 @@ import javax.inject.Inject;
 
 import com.tle.common.lti.consumers.entity.LtiConsumer;
 import com.tle.common.security.PrivilegeTree.Node;
+import com.tle.core.entity.security.AbstractEntityPrivilegeTreeProvider;
 import com.tle.core.guice.Bind;
 import com.tle.core.lti.consumers.service.LtiConsumerService;
-import com.tle.core.security.AbstractEntityPrivilegeTreeProvider;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 
@@ -35,8 +35,8 @@ public class LtiConsumersPrivilegeTreeProvider extends AbstractEntityPrivilegeTr
 	@Inject
 	protected LtiConsumersPrivilegeTreeProvider(LtiConsumerService consumerService)
 	{
-		super(consumerService, Node.ALL_LTI_CONSUMERS, RESOURCES.key("securitytree.alllticonsumers"),
-			Node.LTI_CONSUMER, RESOURCES.key("securitytree.targeralllticonsumers"));
+		super(consumerService, Node.ALL_LTI_CONSUMERS, RESOURCES.key("securitytree.alllticonsumers"), Node.LTI_CONSUMER,
+			RESOURCES.key("securitytree.targeralllticonsumers"));
 	}
 
 	@Override

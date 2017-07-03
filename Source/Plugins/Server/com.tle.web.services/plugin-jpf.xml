@@ -2,10 +2,12 @@
 <plugin id="com.tle.web.services" version="1">
 	<requires>
 		<import plugin-id="com.tle.core.guice" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.web.remoting" />
 		<import plugin-id="com.tle.web.core" />
 		<import plugin-id="org.springframework:spring-aop" exported="true" />
+		<import plugin-id="com.tle.core.hibernate.equella" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.core.services" />
 	</requires>
 
 	<runtime>
@@ -22,9 +24,9 @@
 					E.g. If the
 					servlet is mapped
 					to
-					/invoker/*, you would need &quot;/something.service&quot; here in order to
+					/invoker/*, you would need "/something.service" here in order to
 					match
-					&quot;/invoker/something.service&quot;. Usually you shouldn't specify this, as the default
+					"/invoker/something.service". Usually you shouldn't specify this, as the default
 					is to map as the fully
 					qualified name of the class followed by ".service".
 				</doc-text>

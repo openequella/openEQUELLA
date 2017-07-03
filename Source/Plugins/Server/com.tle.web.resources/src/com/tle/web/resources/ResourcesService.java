@@ -23,9 +23,9 @@ import org.java.plugin.Plugin;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.services.ApplicationVersion;
-import com.tle.core.services.UrlService;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
@@ -41,7 +41,7 @@ public class ResourcesService
 	@Inject
 	private PluginService pluginService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@PostConstruct
 	public void afterPropertiesSet()
@@ -78,7 +78,7 @@ public class ResourcesService
 			pluginId = pluginService.getPluginForObject(pluginObj).getDescriptor().getId();
 		}
 
-		return new PluginResourceHelper(this, urlService, pluginId, pluginService);
+		return new PluginResourceHelper(this, institutionService, pluginId, pluginService);
 	}
 
 	public static PluginResourceHelper getResourceHelper(Object pluginObj)

@@ -16,8 +16,8 @@
 
 package com.tle.web.sections.result.util;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.services.user.LazyUserLookup;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;

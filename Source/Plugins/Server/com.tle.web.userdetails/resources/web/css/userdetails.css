@@ -122,3 +122,13 @@ a.float-right {
 	border-color: #AAA;
 	background-color: white;
 }
+
+.workflow_container{
+	width: 499px;
+	height: 20em;
+	overflow: auto;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #AAA;
+	background-color: white;
+}

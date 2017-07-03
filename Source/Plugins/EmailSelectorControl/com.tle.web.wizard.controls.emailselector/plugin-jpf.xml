@@ -9,6 +9,7 @@
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.web.wizard" />
 		<import plugin-id="com.tle.web.viewurl" />
+		<import plugin-id="com.tle.core.usermanagement" />
 	</requires>
 
 	<runtime>

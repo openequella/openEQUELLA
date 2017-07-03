@@ -35,7 +35,8 @@ import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
 import com.tle.core.filesystem.ItemFile;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemResolver;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.service.ItemResolver;
 import com.tle.ims.service.IMSService;
 import com.tle.web.integration.IntegrationSessionExtension;
 import com.tle.web.integration.SingleSignonForm;
@@ -52,6 +53,8 @@ public class ScormResultsExtension implements IntegrationSessionExtension
 
 	@Inject
 	private ItemResolver itemResolver;
+	@Inject
+	private ItemFileService itemFileService;
 	@Inject
 	private IMSService imsService;
 
@@ -77,8 +80,8 @@ public class ScormResultsExtension implements IntegrationSessionExtension
 		{
 			ItemId itemId = getItemIdForResource(resource);
 
-			IAttachment attachment = itemResolver.getAttachmentForUuid(itemId, attachmentUuid, resource.getKey()
-				.getExtensionType());
+			IAttachment attachment = itemResolver.getAttachmentForUuid(itemId, attachmentUuid,
+				resource.getKey().getExtensionType());
 			AttachmentType type = attachment.getAttachmentType();
 			if( type.equals(AttachmentType.CUSTOM) )
 			{
@@ -89,8 +92,8 @@ public class ScormResultsExtension implements IntegrationSessionExtension
 					link.put("version", itemId.getVersion());
 					link.put("filename", custom.getUrl());
 
-					try (InputStream in = imsService
-						.getImsManifestAsStream(new ItemFile(itemId), custom.getUrl(), true))
+					ItemFile itemFile = itemFileService.getItemFile(itemId, null);
+					try( InputStream in = imsService.getImsManifestAsStream(itemFile, custom.getUrl(), true) )
 					{
 						link.put("scorm", IOUtils.toString(in));
 					}

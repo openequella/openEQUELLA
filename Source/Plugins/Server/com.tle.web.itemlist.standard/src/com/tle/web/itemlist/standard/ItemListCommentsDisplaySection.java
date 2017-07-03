@@ -22,8 +22,8 @@ import javax.inject.Inject;
 
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
-import com.tle.core.dao.ItemDao;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.dao.ItemDao;
 import com.tle.web.itemlist.item.AbstractItemlikeListEntry;
 import com.tle.web.itemlist.item.ItemListEntry;
 import com.tle.web.itemlist.item.ItemlikeListEntryExtension;
@@ -54,8 +54,10 @@ public class ItemListCommentsDisplaySection extends AbstractPrototypeSection<Obj
 	implements
 		ItemlikeListEntryExtension<Item, ItemListEntry>
 {
-	private static final CssInclude CSS = CssInclude.include(
-		ResourcesService.getResourceHelper(ItemListCommentsDisplaySection.class).url("css/commentsdisplay.css")).make();
+	private static final CssInclude CSS = CssInclude
+		.include(
+			ResourcesService.getResourceHelper(ItemListCommentsDisplaySection.class).url("css/commentsdisplay.css"))
+		.make();
 
 	@EventFactory
 	private EventGenerator events;

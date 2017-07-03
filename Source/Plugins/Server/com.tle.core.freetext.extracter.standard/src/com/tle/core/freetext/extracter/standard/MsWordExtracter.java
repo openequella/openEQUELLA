@@ -21,13 +21,14 @@ import java.io.InputStream;
 
 import javax.inject.Singleton;
 
-import org.apache.log4j.Logger;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
 
 import com.tle.beans.mime.MimeEntry;
@@ -40,7 +41,7 @@ import com.tle.core.guice.Bind;
 @Singleton
 public class MsWordExtracter extends AbstractTextExtracterExtension
 {
-	private static final Logger LOGGER = Logger.getLogger(MsWordExtracter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MsWordExtracter.class);
 
 	@Override
 	public boolean isSupportedByDefault(MimeEntry mimeEntry)

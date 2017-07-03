@@ -18,17 +18,16 @@ package com.tle.core.qti.item.operation;
 
 import javax.inject.Inject;
 
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
-import com.tle.core.filesystem.ItemFile;
 import com.tle.core.guice.Bind;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
+import com.tle.core.item.standard.operations.AbstractStandardWorkflowOperation;
 
 /**
  * @author Aaron
  */
 @Bind
-public class CreateTestEntitiesOperation extends AbstractWorkflowOperation
+public class CreateTestEntitiesOperation extends AbstractStandardWorkflowOperation
 {
 	@Inject
 	private QtiAttachmentListener attachmentListener;
@@ -40,7 +39,7 @@ public class CreateTestEntitiesOperation extends AbstractWorkflowOperation
 		FileHandle handle = getStaging();
 		if( handle == null )
 		{
-			handle = new ItemFile(item);
+			handle = itemFileService.getItemFile(item);
 		}
 		attachmentListener.attachmentsChanged(null, item, handle);
 		return false;

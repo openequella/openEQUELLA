@@ -32,13 +32,13 @@ import org.apache.log4j.Logger;
 
 import com.dytech.devlib.PropBagEx;
 import com.thoughtworks.xstream.XStream;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.harvester.HarvesterException;
 import com.tle.common.harvester.HarvesterProfile;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.searching.Search;
 import com.tle.common.util.Dates;
 import com.tle.common.util.UtcDate;
-import com.tle.core.filesystem.StagingFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.harvester.old.LearningObject;
 import com.tle.core.harvester.soap.SoapHarvesterService;

@@ -11,10 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import junit.framework.TestCase;
-
 import com.dytech.common.io.UnicodeReader;
-import com.dytech.common.xml.XMLCompare;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.ejb.helpers.metadata.mappers.PackageMapper;
 import com.dytech.edge.ejb.helpers.metadata.mappers.XPathMapper;
@@ -24,6 +21,9 @@ import com.thoughtworks.xstream.XStream;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.MetadataMapping;
 import com.tle.beans.entity.itemdef.mapping.IMSMapping;
+import com.tle.core.xstream.XMLCompare;
+
+import junit.framework.TestCase;
 
 @SuppressWarnings("nls")
 public abstract class AbstractMetadataMapperTester extends TestCase
@@ -50,8 +50,8 @@ public abstract class AbstractMetadataMapperTester extends TestCase
 
 	public void setUp(String folder)
 	{
-		try (Reader mappingReader = new UnicodeReader(getClass().getResourceAsStream("/" + folder + "/itemdef.xml"),
-			"UTF-8"); InputStream schemaIn = getClass().getResourceAsStream("/" + folder + "/schema.xml"))
+		try( Reader mappingReader = new UnicodeReader(getClass().getResourceAsStream("/" + folder + "/itemdef.xml"),
+			"UTF-8"); InputStream schemaIn = getClass().getResourceAsStream("/" + folder + "/schema.xml") )
 		{
 			itemMapping = (MetadataMapping) new XStream().fromXML(mappingReader);
 
@@ -127,7 +127,7 @@ public abstract class AbstractMetadataMapperTester extends TestCase
 				}
 			}
 		}
-		try (InputStream imsStream = getResourceAsInputStream(folder, "imsmanifest.xml"))
+		try( InputStream imsStream = getResourceAsInputStream(folder, "imsmanifest.xml") )
 		{
 
 			Collection<Mapping> mappings = mapper.map(imsStream);

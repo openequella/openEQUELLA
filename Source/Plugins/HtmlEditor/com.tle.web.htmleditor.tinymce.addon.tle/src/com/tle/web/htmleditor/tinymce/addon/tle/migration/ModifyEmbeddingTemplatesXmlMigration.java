@@ -25,12 +25,12 @@ import javax.inject.Singleton;
 
 import com.google.common.collect.Sets;
 import com.tle.beans.mime.MimeEntry;
-import com.tle.core.filesystem.SubTemporaryFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.InstitutionInfo;
-import com.tle.core.institution.migration.XmlMigrator;
+import com.tle.core.institution.convert.XmlMigrator;
 import com.tle.core.mimetypes.institution.MimeEntryConverter;
 import com.tle.web.htmleditor.tinymce.addon.tle.TinyMceAddonConstants;
 
@@ -43,6 +43,7 @@ public class ModifyEmbeddingTemplatesXmlMigration extends XmlMigrator
 {
 	private static Properties oldProps;
 	private static Properties newProps;
+
 	static
 	{
 		oldProps = loadProperties("embedder/old_templates.properties");
@@ -84,8 +85,8 @@ public class ModifyEmbeddingTemplatesXmlMigration extends XmlMigrator
 
 	private static Properties loadProperties(String filename)
 	{
-		try( InputStream file = ModifyEmbeddingTemplatesDatabaseMigration.class.getClassLoader().getResourceAsStream(
-			filename) )
+		try( InputStream file = ModifyEmbeddingTemplatesDatabaseMigration.class.getClassLoader()
+			.getResourceAsStream(filename) )
 		{
 			if( file != null )
 			{

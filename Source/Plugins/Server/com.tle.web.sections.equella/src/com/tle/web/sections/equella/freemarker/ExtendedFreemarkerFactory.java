@@ -22,10 +22,10 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import com.tle.annotation.NonNullByDefault;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.i18n.BundleCache;
 import com.tle.web.freemarker.FreemarkerSectionResult;
 import com.tle.web.freemarker.PluginFreemarkerFactory;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.sections.PathGenerator;
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.render.TextUtils;

@@ -43,8 +43,8 @@ public class HierarchyIntegrationShareSearchQuerySection extends StandardShareSe
 	 */
 	static
 	{
-		HIERARCHYURL = RootHierarchySection.HIERARCHYURL.startsWith("/") ? RootHierarchySection.HIERARCHYURL
-			.substring(1) : RootHierarchySection.HIERARCHYURL;
+		HIERARCHYURL = RootHierarchySection.HIERARCHYURL.startsWith("/")
+			? RootHierarchySection.HIERARCHYURL.substring(1) : RootHierarchySection.HIERARCHYURL;
 	}
 
 	@AjaxFactory
@@ -72,7 +72,8 @@ public class HierarchyIntegrationShareSearchQuerySection extends StandardShareSe
 			@Override
 			public void addToBookmark(SectionInfo info, Map<String, String[]> bookmarkState)
 			{
-				bookmarkState.put(SectionInfo.KEY_PATH, new String[]{urlService.institutionalise(HIERARCHYURL)});
+				bookmarkState.put(SectionInfo.KEY_PATH,
+					new String[]{institutionService.institutionalise(HIERARCHYURL)});
 			}
 		}).getHref());
 		url.getState(context).setEditable(false);

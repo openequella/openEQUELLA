@@ -1,0 +1,40 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.quota" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.quota" exported="true" />
+		<import plugin-id="com.tle.common.filesystem" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.core.institution" />
+		<import plugin-id="com.tle.core.filesystem" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.core.scheduler" />
+		<import plugin-id="com.tle.core.email" />
+	</requires>
+	<runtime>
+		<library id="core" path="classes/" type="code">
+			<export prefix="*" />
+		</library>
+		<library type="resources" path="resources/" id="resources" />
+	</runtime>
+	
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+	</extension>
+	
+	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+		<parameter id="group" value="resource-centre" />
+		<parameter id="file" value="lang/i18n.properties" />
+	</extension>
+	
+	<extension plugin-id="com.tle.core.scheduler" point-id="scheduledTask" id="checkInstitutionStorageQuotas">
+		<parameter id="id" value="Check Institution Storage Quotas" />
+		<parameter id="bean" value="bean:com.tle.core.quota.task.CheckInstitutionStorageQuotas" />
+		<parameter id="frequency" value="daily" />
+		<parameter id="scope" value="server" />
+	</extension>
+</plugin>

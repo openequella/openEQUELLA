@@ -21,8 +21,8 @@ import java.util.Collection;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
-import com.tle.web.TextBundle;
-import com.tle.web.i18n.BundleCache;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.i18n.TextBundle;
 
 public class BundleWriter
 {

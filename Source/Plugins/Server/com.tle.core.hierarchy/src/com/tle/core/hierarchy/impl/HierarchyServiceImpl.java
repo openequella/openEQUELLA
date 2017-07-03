@@ -37,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dytech.common.collections.CombinedCollection;
 import com.dytech.devlib.PropBagEx;
-import com.dytech.edge.common.valuebean.ValidationError;
 import com.thoughtworks.xstream.XStream;
 import com.tle.beans.EntityScript;
 import com.tle.beans.ItemDefinitionScript;
@@ -54,22 +53,29 @@ import com.tle.beans.hierarchy.HierarchyTreeNode;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.common.Check;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.hierarchy.SearchSetAdapter;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.search.searchset.SearchSet;
 import com.tle.common.security.PrivilegeTree.Node;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.collection.event.listener.ItemDefinitionDeletionListener;
 import com.tle.core.dao.AbstractTreeDao.DeleteAction;
-import com.tle.core.events.ItemDeletedEvent;
-import com.tle.core.events.listeners.ItemDefinitionDeletionListener;
-import com.tle.core.events.listeners.ItemDeletedListener;
-import com.tle.core.events.listeners.PowerSearchDeletionListener;
-import com.tle.core.events.listeners.SchemaDeletionListener;
+import com.tle.core.entity.registry.EntityRegistry;
+import com.tle.core.entity.service.impl.BaseEntityXmlConverter;
 import com.tle.core.freetext.queries.FreeTextBooleanQuery;
 import com.tle.core.guice.Bind;
 import com.tle.core.guice.Bindings;
 import com.tle.core.hierarchy.HierarchyDao;
 import com.tle.core.hierarchy.HierarchyService;
+import com.tle.core.hierarchy.xml.ItemXmlConverter;
+import com.tle.core.item.event.ItemDeletedEvent;
+import com.tle.core.item.event.listener.ItemDeletedListener;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.powersearch.event.listener.PowerSearchDeletionListener;
+import com.tle.core.schema.event.listener.SchemaDeletionListener;
 import com.tle.core.search.VirtualisableAndValue;
 import com.tle.core.search.searchset.SearchSetService;
 import com.tle.core.search.searchset.virtualisation.VirtualisationHelper;
@@ -80,14 +86,8 @@ import com.tle.core.security.impl.SecureOnCall;
 import com.tle.core.security.impl.SecureOnReturn;
 import com.tle.core.services.TaskService;
 import com.tle.core.services.TaskStatus;
-import com.tle.core.services.entity.BaseEntityXmlConverter;
-import com.tle.core.services.entity.EntityRegistry;
-import com.tle.core.services.entity.ItemXmlConverter;
 import com.tle.core.services.impl.BeanClusteredTask;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.xstream.XmlService;
+import com.tle.core.xml.service.XmlService;
 import com.tle.exceptions.AccessDeniedException;
 
 /**
@@ -119,7 +119,6 @@ public class HierarchyServiceImpl
 	private SearchSetService searchSetService;
 	@Inject
 	private TaskService taskService;
-
 	@Inject
 	private XmlService xmlService;
 	private XStream xstream;
@@ -725,6 +724,7 @@ public class HierarchyServiceImpl
 		return ExportStatus.progress(ts.getDoneWork(), ts.getMaxWork());
 	}
 
+	@Override
 	public XStream getXStream()
 	{
 		if( xstream == null )

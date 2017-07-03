@@ -20,8 +20,8 @@ import javax.inject.Inject;
 
 import com.tle.common.portal.entity.Portlet;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.BundleCache;
 import com.tle.core.portal.service.PortletService;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.itemlist.StdMetadataEntry;
 import com.tle.web.itemlist.item.AbstractListEntry;
 import com.tle.web.sections.equella.annotation.PlugKey;

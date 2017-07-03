@@ -23,10 +23,10 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.dytech.edge.exceptions.ApplicationException;
-import com.dytech.edge.exceptions.NotFoundException;
 import com.tle.common.NameValue;
 import com.tle.common.applet.client.ClientService;
+import com.tle.common.beans.exception.ApplicationException;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.workflow.RemoteWorkflowService;
 import com.tle.common.workflow.Workflow;

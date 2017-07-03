@@ -23,8 +23,8 @@ import javax.inject.Inject;
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;
@@ -83,7 +83,7 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel>
 	@Inject
 	private WebWizardService webWizardService;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 
 	@Component(stateful = false, name = "m")
 	private TextField message;
@@ -117,8 +117,8 @@ public class SaveDialog extends EquellaDialog<SaveDialog.SaveDialogModel>
 		final JSCallable commandExec = addParentCallable(events.getSubmitValuesFunction("save"));
 		final ScriptVariable type = new ScriptVariable("type");
 		final ScriptVariable msg = new ScriptVariable("msg");
-		final SimpleFunction execFunc = new SimpleFunction("exec", this, StatementBlock.get(
-			Js.call_s(commandExec, type, msg), Js.call_s(getCloseFunction())), type, msg);
+		final SimpleFunction execFunc = new SimpleFunction("exec", this,
+			StatementBlock.get(Js.call_s(commandExec, type, msg), Js.call_s(getCloseFunction())), type, msg);
 
 		draft.setClickHandler(new OverrideHandler(execFunc, "draft", ""));
 		cancel.setClickHandler(new OverrideHandler(getCloseFunction()));

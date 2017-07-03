@@ -23,9 +23,9 @@ import java.util.Map.Entry;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.common.NameValue;
 import com.tle.common.externaltools.entity.ExternalTool;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.remoting.RemoteExternalToolsService;
 import com.tle.core.service.session.ExternalToolEditingBean;
-import com.tle.core.services.entity.AbstractEntityService;
 
 public interface ExternalToolsService
 	extends
@@ -70,4 +70,3 @@ public interface ExternalToolsService
 	 */
 	String findApplicableIconUrl(Attachment attachment);
 }
-

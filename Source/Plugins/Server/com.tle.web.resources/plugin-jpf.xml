@@ -3,9 +3,13 @@
 	<requires>
 		<import plugin-id="com.tle.web.core" />
 		<import plugin-id="com.tle.core.mimetypes" />
-		<import plugin-id="com.tle.core.entity.services" />
+		
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.web.sections" />
+		<import plugin-id="com.tle.core.institution" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.core.filesystem" />
 	</requires>
 
 	<runtime>

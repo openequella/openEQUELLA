@@ -38,7 +38,7 @@ import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.FileInfo;
 import com.google.common.collect.Lists;
 import com.tle.annotation.Nullable;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.FileAttachment;

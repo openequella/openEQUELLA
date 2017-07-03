@@ -6,6 +6,7 @@
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.lti.consumers" />
 		<import plugin-id="com.tle.core.security" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.web.recipientselector" />
 		<import plugin-id="com.tle.web.entities" />
 		<import plugin-id="com.tle.web.sections" />
@@ -21,6 +22,8 @@
 		<import plugin-id="com.tle.common.externaltools" />
 		<import plugin-id="net.oauth.core:oauth-provider" />
 		<import plugin-id="com.tle.web.oauth" />
+		<import plugin-id="com.tle.core.encryption" />
+		<import plugin-id="com.tle.core.entity.security" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

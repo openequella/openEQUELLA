@@ -22,26 +22,26 @@ import java.net.URISyntaxException;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import net.oauth.OAuth;
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthConsumer;
-import net.oauth.OAuthException;
-import net.oauth.OAuthMessage;
-
 import org.apache.log4j.Logger;
 
 import com.dytech.edge.exceptions.WebException;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.services.UrlService;
 import com.tle.core.services.user.UserService;
-import com.tle.core.user.UserState;
 import com.tle.web.core.filter.UserStateHook;
 import com.tle.web.core.filter.UserStateResult;
 import com.tle.web.core.filter.UserStateResult.Result;
 import com.tle.web.oauth.OAuthWebConstants;
 import com.tle.web.oauth.service.OAuthWebService;
 import com.tle.web.sections.equella.annotation.PlugKey;
+
+import net.oauth.OAuth;
+import net.oauth.OAuthAccessor;
+import net.oauth.OAuthConsumer;
+import net.oauth.OAuthException;
+import net.oauth.OAuthMessage;
 
 public abstract class AbstractOAuthV1UserStateHook implements UserStateHook
 {
@@ -76,8 +76,8 @@ public abstract class AbstractOAuthV1UserStateHook implements UserStateHook
 						return null;
 					}
 
-					oauthWebService.validateMessage(getOAuthMessage(request), new OAuthAccessor(new OAuthConsumer(
-						"about:blank", consumerKey, secret, null)));
+					oauthWebService.validateMessage(getOAuthMessage(request),
+						new OAuthAccessor(new OAuthConsumer("about:blank", consumerKey, secret, null)));
 
 					returnedResult = getUserStateResult(request);
 				}

@@ -4,6 +4,10 @@
 	background-image: url("../images/execute.rtl.png") !important;
 }
 
+.action-button.moderate-action {
+	background-image: url("../images/moderate.rtl.png") !important;
+}
+
 #bulkresults_showing {
 	float: left !important;
 }

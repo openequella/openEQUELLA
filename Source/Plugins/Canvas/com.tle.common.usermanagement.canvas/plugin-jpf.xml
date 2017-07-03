@@ -2,6 +2,7 @@
 <plugin id="com.tle.common.usermanagement.canvas" version="1">
 	<requires>
 		<import plugin-id="com.tle.common.usermanagement" exported="true" />
+		<import plugin-id="com.tle.common.settings" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

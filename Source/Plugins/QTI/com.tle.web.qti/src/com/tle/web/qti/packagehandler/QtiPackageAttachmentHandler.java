@@ -22,8 +22,6 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
-
 import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -31,7 +29,7 @@ import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.common.Check;
 import com.tle.common.PathUtils;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.qti.QtiConstants;
 import com.tle.core.qti.beans.QtiTestDetails;
@@ -48,6 +46,8 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
 import com.tle.web.sections.render.Label;
 import com.tle.web.wizard.impl.WebRepository;
+
+import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
 
 /**
  * @author Aaron

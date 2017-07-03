@@ -119,9 +119,9 @@ public class FileManagerWebControl extends AbstractWebControl<WebControlModel>
 
 		if( dialog.isAjax() )
 		{
-			SimpleFunction delayedReload = new SimpleFunction("reloadFileman", new FunctionCallStatement(
-				StandardModule.SET_TIMEOUT, new AnonymousFunction(new FunctionCallStatement(getReloadFunction(true,
-					null))), 800));
+			SimpleFunction delayedReload = new SimpleFunction("reloadFileman",
+				new FunctionCallStatement(StandardModule.SET_TIMEOUT,
+					new AnonymousFunction(new FunctionCallStatement(getReloadFunction(true, null))), 800));
 			dialog.setDialogClosedCallback(new PassThroughFunction("fin" + id, delayedReload));
 		}
 	}
@@ -138,7 +138,7 @@ public class FileManagerWebControl extends AbstractWebControl<WebControlModel>
 		if( isWebdav() )
 		{
 			WebRepository repository = (WebRepository) control.getRepository();
-			String webdav = repository.getServerURL() + "wd/" + repository.getStagingid() + '/';
+			String webdav = repository.getWebUrl() + "wd/" + repository.getStagingid() + '/';
 
 			openWebdav.setClickHandler(context, new OverrideHandler(new ExternallyDefinedFunction("openWebDav"),
 				getSectionId(), CurrentLocale.get("wizard.controls.file.url", webdav), webdav));

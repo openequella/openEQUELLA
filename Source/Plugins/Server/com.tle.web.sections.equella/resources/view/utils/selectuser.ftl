@@ -14,6 +14,9 @@
 	</#if>
 
 	<h3>${s.title}</h3>
+	<#if s.subTitle??>
+		${s.subTitle}
+	</#if>
 	<#if s.prompt??>
 		<p>${s.prompt}</p>
 

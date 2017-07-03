@@ -37,12 +37,12 @@ import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.beans.item.attachments.ZipAttachment;
 import com.tle.common.Check;
 import com.tle.common.PathUtils;
-import com.tle.common.util.FileEntry;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.FileEntry;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.convert.DefaultMessageCallback;
 import com.tle.core.institution.convert.ZippingConverter.ZippingProgress;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.util.DefaultMessageCallback;
 import com.tle.web.controls.universal.DialogRenderOptions;
 import com.tle.web.controls.universal.UniversalControlState;
 import com.tle.web.controls.universal.handlers.FileUploadHandler;
@@ -573,8 +573,8 @@ public class ZipDetails extends AbstractDetailsEditor<ZipDetails.Model>
 
 	public static class Model extends AbstractDetailsEditor.Model
 	{
-		private ZippingProgress zippingProgress = new ZippingProgress(new DefaultMessageCallback(
-			ZIP_WARNING_PLACEHOLDER));
+		private ZippingProgress zippingProgress = new ZippingProgress(
+			new DefaultMessageCallback(ZIP_WARNING_PLACEHOLDER));
 		private boolean showZipPreview;
 		private List<EntryDisplay> files;
 		private TreeIds treeIds;

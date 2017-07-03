@@ -21,7 +21,7 @@ import javax.inject.Inject;
 import com.tle.beans.item.ItemStatus;
 import com.tle.beans.workflow.WorkflowStatus;
 import com.tle.core.guice.Bind;
-import com.tle.core.workflow.operations.WorkflowFactory;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
@@ -36,7 +36,7 @@ public class ReviewSection extends GenericMinorActionSection
 	@PlugKey("summary.sidebar.actions.review.receipt")
 	private static Label RECEIPT_LABEL;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 
 	@Override
 	protected Label getLinkLabel()
@@ -47,8 +47,8 @@ public class ReviewSection extends GenericMinorActionSection
 	@Override
 	protected boolean canView(SectionInfo info, ItemSectionInfo itemInfo, WorkflowStatus status)
 	{
-		return !status.isLocked() && itemInfo.hasPrivilege("REVIEW_ITEM")
-			&& itemInfo.getItemdef().getWorkflow() != null && status.getStatusName().equals(ItemStatus.LIVE);
+		return !status.isLocked() && itemInfo.hasPrivilege("REVIEW_ITEM") && itemInfo.getItemdef().getWorkflow() != null
+			&& status.getStatusName().equals(ItemStatus.LIVE);
 	}
 
 	@Override

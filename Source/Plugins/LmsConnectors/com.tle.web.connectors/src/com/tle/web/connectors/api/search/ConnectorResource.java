@@ -39,7 +39,7 @@ import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.guice.Bind;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.connectors.api.ConnectorBeanSerializer;
 import com.tle.web.connectors.api.bean.ConnectorBean;

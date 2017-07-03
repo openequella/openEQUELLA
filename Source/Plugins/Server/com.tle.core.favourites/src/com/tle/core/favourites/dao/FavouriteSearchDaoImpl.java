@@ -27,11 +27,11 @@ import org.hibernate.criterion.Restrictions;
 
 import com.tle.beans.Institution;
 import com.tle.common.Check;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.favourites.bean.FavouriteSearch;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 
 @Bind(FavouriteSearchDao.class)
 @Singleton
@@ -49,8 +49,8 @@ public class FavouriteSearchDaoImpl extends GenericInstitionalDaoImpl<FavouriteS
 	public List<FavouriteSearch> search(String freetext, Date[] dates, int offset, int perPage, String orderby,
 		boolean reverse, String userId, Institution institution)
 	{
-		return enumerateAll(new FavouriteSearchListCallback(freetext, dates, offset, perPage, orderby, reverse, userId,
-			institution));
+		return enumerateAll(
+			new FavouriteSearchListCallback(freetext, dates, offset, perPage, orderby, reverse, userId, institution));
 	}
 
 	@SuppressWarnings({"nls", "unchecked"})

@@ -32,8 +32,8 @@ import com.tle.annotation.Nullable;
 import com.tle.beans.entity.Schema.CloneDefinition;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.Check;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.entity.ItemDefinitionService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;
@@ -258,8 +258,8 @@ public class ItemAdminXPathDialog extends AbstractOkayableDialog<ItemAdminXPathD
 			if( selectable )
 			{
 				HtmlLinkState link = new HtmlLinkState();
-				link.setClickHandler(new OverrideHandler(jscall(getCloseFunction()), jscall(getOkCallback(), "/xml/"
-					+ id)));
+				link.setClickHandler(
+					new OverrideHandler(jscall(getCloseFunction()), jscall(getOkCallback(), "/xml/" + id)));
 				link.setLabel(new TextLabel(name));
 				return new LinkRenderer(link);
 			}

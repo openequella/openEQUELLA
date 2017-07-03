@@ -175,8 +175,8 @@ public class AdvancedScriptWebControl extends AbstractSimpleWebControl
 			}
 		}
 
-		return new DivRenderer(divState, new SimpleSectionResult(evaluateMarkUp(context.getRootRenderContext(),
-			definitionControl.getMarkUp(), markupScriptContext)));
+		return new DivRenderer(divState, new SimpleSectionResult(
+			evaluateMarkUp(context.getRootRenderContext(), definitionControl.getMarkUp(), markupScriptContext)));
 	}
 
 	private String evaluateMarkUp(RenderContext context, String markUp, ScriptContext scriptContext) throws Exception
@@ -285,8 +285,8 @@ public class AdvancedScriptWebControl extends AbstractSimpleWebControl
 			final RenderContext context = (RenderContext) info;
 			final ScriptVariable thisVar = new ScriptVariable("this");
 			final OverrideHandler submitHandler = new OverrideHandler(HANDLE_SUBMIT_FUNCTION, thisVar, submitFunction);
-			extra.put(AdvancedScriptWebControlConstants.SUBMIT_JS, submitHandler.getStatements(context)
-				+ " return false;");
+			extra.put(AdvancedScriptWebControlConstants.SUBMIT_JS,
+				submitHandler.getStatements(context) + " return false;");
 			// required!
 			context.preRender(submitHandler);
 		}

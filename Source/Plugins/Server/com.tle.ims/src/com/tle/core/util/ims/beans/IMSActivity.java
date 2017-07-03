@@ -16,9 +16,9 @@
 
 package com.tle.core.util.ims.beans;
 
-import com.dytech.common.xml.XMLData;
-import com.dytech.common.xml.XMLDataMappings;
-import com.dytech.common.xml.mapping.NodeMapping;
+import com.tle.core.xstream.XMLData;
+import com.tle.core.xstream.XMLDataMappings;
+import com.tle.core.xstream.mapping.NodeMapping;
 
 /**
  * @author jmaginnis

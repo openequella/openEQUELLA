@@ -29,12 +29,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import com.tle.annotation.Nullable;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
 import com.tle.common.URLUtils;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.common.util.FileEntry;
+import com.tle.common.filesystem.FileEntry;
 import com.tle.core.services.FileSystemService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;

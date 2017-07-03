@@ -18,26 +18,27 @@ package com.tle.web.service.oai;
 
 import java.util.concurrent.TimeUnit;
 
-import ORG.oclc.oai.server.verb.IdDoesNotExistException;
-
 import com.tle.beans.item.ItemId;
-import com.tle.beans.system.OAISettings;
 import com.tle.common.Check;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.common.settings.standard.OAISettings;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.settings.service.ConfigurationService;
+
+import ORG.oclc.oai.server.verb.IdDoesNotExistException;
 
 public final class OAIUtils
 {
 	private static long cachedTime = 0;
 	private static OAIUtils cachedUtils;
 
-	public static synchronized OAIUtils getInstance(UrlService urlService, ConfigurationService configService)
+	public static synchronized OAIUtils getInstance(InstitutionService institutionService,
+		ConfigurationService configService)
 	{
 		final long now = System.currentTimeMillis();
 		if( now > cachedTime + TimeUnit.MINUTES.toMillis(1) )
 		{
 			cachedTime = now;
-			cachedUtils = new OAIUtils(urlService, configService.getProperties(new OAISettings()));
+			cachedUtils = new OAIUtils(institutionService, configService.getProperties(new OAISettings()));
 		}
 		return cachedUtils;
 	}
@@ -50,14 +51,14 @@ public final class OAIUtils
 	private transient String namespaceIdentifier;
 	private transient String schemaPlusNamespace;
 
-	private OAIUtils(final UrlService urlService, final OAISettings settings)
+	private OAIUtils(final InstitutionService institutionService, final OAISettings settings)
 	{
 		this.settings = settings;
 
 		namespaceIdentifier = settings.getNamespaceIdentifier();
 		if( Check.isEmpty(namespaceIdentifier) )
 		{
-			namespaceIdentifier = urlService.getInstitutionUrl().getHost();
+			namespaceIdentifier = institutionService.getInstitutionUrl().getHost();
 		}
 
 		schemaPlusNamespace = settings.getScheme() + ':' + namespaceIdentifier + ':';

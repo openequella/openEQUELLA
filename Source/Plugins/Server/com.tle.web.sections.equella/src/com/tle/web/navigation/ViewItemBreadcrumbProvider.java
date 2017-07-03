@@ -23,7 +23,7 @@ import javax.inject.Singleton;
 
 import com.tle.beans.item.Item;
 import com.tle.core.guice.Bind;
-import com.tle.web.i18n.BundleCache;
+import com.tle.core.i18n.BundleCache;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;

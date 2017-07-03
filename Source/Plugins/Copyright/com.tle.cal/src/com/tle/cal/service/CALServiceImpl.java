@@ -42,7 +42,7 @@ import com.tle.core.activation.service.ActivationService;
 import com.tle.core.copyright.exception.CopyrightViolationException;
 import com.tle.core.copyright.service.AbstractCopyrightService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemService;
+import com.tle.core.item.service.ItemService;
 
 @Bind(CALService.class)
 @Singleton

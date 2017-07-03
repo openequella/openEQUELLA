@@ -18,6 +18,7 @@ package com.tle.web.sections.jquery.libraries;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
+import com.tle.web.DebugSettings;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.jquery.JQuerySelector;
 import com.tle.web.sections.jquery.JQueryStatement;
@@ -35,8 +36,9 @@ public class JQueryStylishSelect implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.stylish-select.js",
-		"jquery.stylish-select.css");
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
+		DebugSettings.isDebuggingMode() ? "jquery.stylish-select.js" : "jquery.stylish-select.min.js",
+		DebugSettings.isDebuggingMode() ? "jquery.stylish-select.css" : "jquery.stylish-select.min.css");
 
 	private static final JSCallable SETUP_STYLISH = new ExternallyDefinedFunction("sSelect", PRERENDER);
 
@@ -54,7 +56,7 @@ public class JQueryStylishSelect implements JavascriptModule
 	@Override
 	public String getId()
 	{
-		return "stylish-select"; //$NON-NLS-1$
+		return "stylish-select";
 	}
 
 	@Override

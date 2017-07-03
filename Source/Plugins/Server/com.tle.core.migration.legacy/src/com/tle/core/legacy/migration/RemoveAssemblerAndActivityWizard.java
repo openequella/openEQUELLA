@@ -59,8 +59,8 @@ import com.dytech.devlib.PropBagEx;
 import com.tle.beans.Institution;
 import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
-import com.tle.common.property.annotation.Property;
-import com.tle.core.filesystem.FileSystemHelper;
+import com.tle.common.filesystem.FileSystemHelper;
+import com.tle.common.settings.annotation.Property;
 import com.tle.core.filesystem.ItemFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.impl.HibernateMigrationHelper;
@@ -71,7 +71,7 @@ import com.tle.core.migration.MigrationStatusLog;
 import com.tle.core.migration.MigrationStatusLog.LogType;
 import com.tle.core.plugins.impl.PluginServiceImpl;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.xstream.XmlService;
+import com.tle.core.xml.service.XmlService;
 
 @Bind
 @Singleton
@@ -141,18 +141,17 @@ public class RemoveAssemblerAndActivityWizard extends AbstractHibernateSchemaMig
 		result.incrementStatus();
 
 		// Remove system configuration dealing with the Assembler
-		session.createSQLQuery(
-			"DELETE FROM configuration_property WHERE" + " property LIKE 'assembler.%' OR property LIKE 'webct.%'"
-				+ " OR property LIKE 'blackboard.%' OR property = 'soap.timeout'"
-				+ " OR property LIKE 'activity-wizard.%'").executeUpdate();
+		session.createSQLQuery("DELETE FROM configuration_property WHERE"
+			+ " property LIKE 'assembler.%' OR property LIKE 'webct.%'"
+			+ " OR property LIKE 'blackboard.%' OR property = 'soap.timeout'" + " OR property LIKE 'activity-wizard.%'")
+			.executeUpdate();
 		result.incrementStatus();
 
 		// Remove any security privileges for Activity Wizards and the assembler
-		session.createSQLQuery(
-			"DELETE FROM access_entry WHERE privilege LIKE '%_ACTIVITY_WIZARD'"
-				+ " OR target_object = 'C:assemblerDrmReference' OR target_object = 'C:assesmblerFileTypes'"
-				+ " OR target_object = 'C:assemblerLinks' OR target_object = 'C:lmsexport'"
-				+ " OR target_object = 'C:taxonomies' OR target_object = 'C:webct'").executeUpdate();
+		session.createSQLQuery("DELETE FROM access_entry WHERE privilege LIKE '%_ACTIVITY_WIZARD'"
+			+ " OR target_object = 'C:assemblerDrmReference' OR target_object = 'C:assesmblerFileTypes'"
+			+ " OR target_object = 'C:assemblerLinks' OR target_object = 'C:lmsexport'"
+			+ " OR target_object = 'C:taxonomies' OR target_object = 'C:webct'").executeUpdate();
 		result.incrementStatus();
 
 		// Remove wizard attributes that don't make sense
@@ -176,12 +175,12 @@ public class RemoveAssemblerAndActivityWizard extends AbstractHibernateSchemaMig
 	@SuppressWarnings("unchecked")
 	private void convertActivities(Session session, MigrationResult result) throws Exception
 	{
-		List<Long> itemIds = new ArrayList<Long>(session.createQuery(
-			"select distinct(a.item.id) from Attachment a where a.type = 'activity'").list());
+		List<Long> itemIds = new ArrayList<Long>(
+			session.createQuery("select distinct(a.item.id) from Attachment a where a.type = 'activity'").list());
 		for( Long itemId : itemIds )
 		{
-			Query query = session
-				.createQuery("select a, a.item.institution.shortName from Attachment a where a.type = 'activity' and a.item.id = ? order by a.attindex");
+			Query query = session.createQuery(
+				"select a, a.item.institution.shortName from Attachment a where a.type = 'activity' and a.item.id = ? order by a.attindex");
 			query.setParameter(0, itemId);
 			int index = 0;
 			List<Object[]> attList = query.list();
@@ -192,9 +191,9 @@ public class RemoveAssemblerAndActivityWizard extends AbstractHibernateSchemaMig
 				FakeItem item = activity.item;
 				if( Check.isEmpty(activity.value2) && Check.isEmpty(activity.url) )
 				{
-
 					activity.type = "html";
-					ItemFile itemFile = new ItemFile(item.uuid, item.version);
+					//Assembler items would never have had collection bucket folders
+					ItemFile itemFile = new ItemFile(item.uuid, item.version, null);
 					Institution inst = new Institution();
 					inst.setFilestoreId(shortName);
 					itemFile.setInstitution(inst);
@@ -353,7 +352,7 @@ public class RemoveAssemblerAndActivityWizard extends AbstractHibernateSchemaMig
 
 		@JoinColumn
 		@ElementCollection(fetch = FetchType.EAGER)
-		@CollectionTable(name = "base_entity_attributes", joinColumns = @JoinColumn(name = "base_entity_id"))
+		@CollectionTable(name = "base_entity_attributes", joinColumns = @JoinColumn(name = "base_entity_id") )
 		@Fetch(value = FetchMode.SUBSELECT)
 		List<Attribute> attributes;
 

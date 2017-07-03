@@ -16,7 +16,7 @@
 
 package com.tle.core.scripting.service;
 
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.i18n.CurrentLocale;
 
 /**
@@ -41,5 +41,11 @@ public class ErrorThrowingFileHandle implements FileHandle
 	public String getMyPathComponent()
 	{
 		throw new RuntimeException(CurrentLocale.get("com.tle.core.scripting.error.nostaging"));
+	}
+
+	@Override
+	public String getFilestoreId()
+	{
+		return null;
 	}
 }

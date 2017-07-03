@@ -1,0 +1,20 @@
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.common.usermanagement" version="1">
+	<requires>
+		<import plugin-id="com.tle.common.beans" exported="true" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.platform.common" />
+		<import plugin-id="com.tle.platform.equella" />
+		<import plugin-id="commons-codec:commons-codec" />
+		<import plugin-id="javax.servlet:servlet-api" />
+		<import plugin-id="com.tle.common.institution" />
+		<import plugin-id="com.tle.common.settings" exported="true" />
+		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="log4j:log4j" />
+	</requires>
+	<runtime>
+		<library id="core" path="classes/" type="code">
+			<export prefix="*" />
+		</library>
+	</runtime>
+</plugin>

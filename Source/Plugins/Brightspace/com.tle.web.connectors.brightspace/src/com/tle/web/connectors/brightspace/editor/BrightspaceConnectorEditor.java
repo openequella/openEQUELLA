@@ -27,9 +27,9 @@ import com.tle.core.connectors.brightspace.BrightspaceConnectorConstants;
 import com.tle.core.connectors.brightspace.service.BrightspaceConnectorService;
 import com.tle.core.connectors.service.ConnectorEditingBean;
 import com.tle.core.connectors.service.ConnectorEditingSession;
+import com.tle.core.entity.EntityEditingSession;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.entity.EntityEditingSession;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.connectors.dialog.LMSAuthDialog;
 import com.tle.web.connectors.dialog.LMSAuthDialog.LMSAuthUrlCallable;
@@ -95,7 +95,7 @@ public class BrightspaceConnectorEditor
 	@Inject
 	private BrightspaceConnectorService brightspaceConnectorService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private UserSessionService userSessionService;
 
@@ -128,7 +128,7 @@ public class BrightspaceConnectorEditor
 
 		if( model.getTestedUrl() != null )
 		{
-			model.setTrustedUrl(urlService.institutionalise(BrightspaceConnectorConstants.AUTH_URL));
+			model.setTrustedUrl(institutionService.institutionalise(BrightspaceConnectorConstants.AUTH_URL));
 
 			final String appOkStr = connector.getAttribute(BrightspaceConnectorConstants.FIELD_APP_OK);
 			if( appOkStr != null )
@@ -136,7 +136,7 @@ public class BrightspaceConnectorEditor
 				final boolean appOk = Boolean.parseBoolean(appOkStr);
 				if( appOk )
 				{
-					model.setLtiConsumersUrl(urlService.institutionalise("access/lticonsumers.do"));
+					model.setLtiConsumersUrl(institutionService.institutionalise("access/lticonsumers.do"));
 				}
 				model.setTestAppStatusClass(appOk ? "ok" : "fail");
 				model.setTestAppStatus(appOk ? TEST_APP_OK.getText() : TEST_APP_FAIL.getText());
@@ -172,8 +172,8 @@ public class BrightspaceConnectorEditor
 	{
 		super.registered(id, tree);
 
-		testAppButton.setClickHandler(ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("testApp"),
-			getAjaxDivId()));
+		testAppButton.setClickHandler(
+			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("testApp"), getAjaxDivId()));
 		authDialog.setOkCallback(events.getSubmitValuesFunction("adminSignIn"));
 	}
 
@@ -196,10 +196,10 @@ public class BrightspaceConnectorEditor
 		final EntityEditingSession<ConnectorEditingBean, Connector> session = saveToSession(info);
 		final ConnectorEditingBean connector = session.getBean();
 
-		final String userId = userSessionService.getAttribute(BrightspaceConnectorConstants.SESSION_KEY_USER_ID
-			+ POSTFIX_KEY);
-		final String userKey = userSessionService.getAttribute(BrightspaceConnectorConstants.SESSION_KEY_USER_KEY
-			+ POSTFIX_KEY);
+		final String userId = userSessionService
+			.getAttribute(BrightspaceConnectorConstants.SESSION_KEY_USER_ID + POSTFIX_KEY);
+		final String userKey = userSessionService
+			.getAttribute(BrightspaceConnectorConstants.SESSION_KEY_USER_KEY + POSTFIX_KEY);
 		connector.setAttribute(BrightspaceConnectorConstants.FIELD_ADMIN_USER_ID, userId);
 		connector.setAttribute(BrightspaceConnectorConstants.FIELD_ADMIN_USER_KEY,
 			brightspaceConnectorService.encrypt(userKey));
@@ -213,8 +213,8 @@ public class BrightspaceConnectorEditor
 		connector.setAttribute(BrightspaceConnectorConstants.FIELD_ADMIN_USERNAME, username);
 
 		// TODO: test the admin account for privs? 
-		connector.setAttribute(BrightspaceConnectorConstants.FIELD_ADMIN_OK, userId != null && userKey != null
-			&& username != null);
+		connector.setAttribute(BrightspaceConnectorConstants.FIELD_ADMIN_OK,
+			userId != null && userKey != null && username != null);
 
 		getEntityService().saveSession(session);
 	}

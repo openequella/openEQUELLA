@@ -40,13 +40,13 @@ import com.dytech.edge.common.Constants;
 import com.google.inject.Inject;
 import com.thoughtworks.xstream.XStream;
 import com.tle.beans.Institution;
-import com.tle.common.util.XmlDocument;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.impl.HibernateMigrationHelper;
-import com.tle.core.institution.XmlHelper;
+import com.tle.core.institution.convert.XmlHelper;
 import com.tle.core.migration.AbstractHibernateDataMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
+import com.tle.core.xml.XmlDocument;
 
 /**
  * @author Aaron
@@ -92,7 +92,8 @@ public class ReplaceDeletedControlsDatabaseMigration extends AbstractHibernateDa
 	@Override
 	protected Class<?>[] getDomainClasses()
 	{
-		return new Class<?>[]{Institution.class, FakeItemDefinition.class, FakeBaseEntity.class, FakeItemdefBlobs.class};
+		return new Class<?>[]{Institution.class, FakeItemDefinition.class, FakeBaseEntity.class,
+				FakeItemdefBlobs.class};
 	}
 
 	@Override

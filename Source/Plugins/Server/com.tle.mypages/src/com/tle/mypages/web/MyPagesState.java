@@ -16,18 +16,22 @@
 
 package com.tle.mypages.web;
 
+import java.io.ObjectStreamException;
 import java.util.UUID;
+
+import javax.inject.Inject;
+import javax.inject.Provider;
 
 import com.dytech.devlib.PropBagEx;
 import com.google.common.base.Throwables;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemPack;
 import com.tle.beans.item.attachments.ModifiableAttachments;
 import com.tle.beans.workflow.WorkflowStatus;
-import com.tle.core.filesystem.ItemFile;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.core.item.service.ItemFileService;
 import com.tle.web.wizard.WizardStateInterface;
 
 /*
@@ -36,6 +40,11 @@ import com.tle.web.wizard.WizardStateInterface;
 public class MyPagesState implements WizardStateInterface
 {
 	private static final long serialVersionUID = 1L;
+
+	@Inject
+	private static Provider<MyPagesState> provider;
+	@Inject
+	private transient ItemFileService itemFileService;
 
 	private final String wizid;
 
@@ -114,7 +123,7 @@ public class MyPagesState implements WizardStateInterface
 		{
 			return new StagingFile(staging);
 		}
-		return new ItemFile(item);
+		return itemFileService.getItemFile(item);
 	}
 
 	@Override
@@ -168,5 +177,10 @@ public class MyPagesState implements WizardStateInterface
 		{
 			throw Throwables.propagate(e);
 		}
+	}
+
+	private Object readResolve() throws ObjectStreamException
+	{
+		return provider.get();
 	}
 }

@@ -25,15 +25,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONSerializer;
-
 import org.apache.commons.fileupload.ProgressListener;
 import org.apache.log4j.Logger;
 
 import com.tle.common.Check;
+import com.tle.common.beans.progress.ProgressCallback;
 import com.tle.core.guice.Bind;
-import com.tle.core.progress.ProgressCallback;
 import com.tle.core.services.user.UserSessionService;
+
+import net.sf.json.JSONSerializer;
 
 @Bind
 @Singleton

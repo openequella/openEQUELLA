@@ -48,6 +48,11 @@
 	margin: 5px 0px;
 }
 
+.universalresources
+{
+word-break: break-all;
+}
+
 .universalresources td.actions
 {
 	width: 110px;

@@ -19,8 +19,8 @@ package com.tle.web.lti.usermanagement;
 import java.util.Collection;
 
 import com.tle.common.Triple;
-import com.tle.core.user.AbstractUserState;
-import com.tle.core.user.UserState;
+import com.tle.common.usermanagement.user.AbstractUserState;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.web.lti.LtiData;
 
 public class LtiUserState extends AbstractUserState

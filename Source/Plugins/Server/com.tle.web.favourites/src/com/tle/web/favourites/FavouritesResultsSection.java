@@ -24,11 +24,11 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import com.dytech.edge.queries.FreeTextQuery;
-import com.tle.beans.system.SearchSettings;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.searching.Field;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.settings.standard.SearchSettings;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.itemlist.item.AbstractItemList;

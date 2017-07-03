@@ -18,7 +18,7 @@ package com.tle.core.hierarchy.impl;
 
 import com.google.inject.assistedinject.Assisted;
 import com.tle.core.guice.BindFactory;
-import com.tle.core.user.UserState;
+import com.tle.common.usermanagement.user.UserState;
 
 @BindFactory
 public interface HierarchyTaskFactory

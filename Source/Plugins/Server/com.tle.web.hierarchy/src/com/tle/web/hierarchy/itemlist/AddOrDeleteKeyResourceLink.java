@@ -30,7 +30,7 @@ import com.tle.common.hierarchy.VirtualTopicUtils;
 import com.tle.core.guice.Bind;
 import com.tle.core.hierarchy.HierarchyService;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.hierarchy.section.TopicDisplaySection;
 import com.tle.web.hierarchy.section.TopicDisplaySection.ExtendedTopicDisplayModel;
 import com.tle.web.itemlist.item.ItemListEntry;

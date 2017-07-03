@@ -26,12 +26,12 @@ import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.common.Check;
 import com.tle.core.filesystem.ItemFile;
 import com.tle.core.guice.Bind;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
+import com.tle.core.item.standard.operations.AbstractStandardWorkflowOperation;
 import com.tle.web.scorm.ScormUtils;
 
 @SuppressWarnings("nls")
 @Bind
-public class AttachmentHashOperation extends AbstractWorkflowOperation
+public class AttachmentHashOperation extends AbstractStandardWorkflowOperation
 {
 	@Override
 	public boolean execute()
@@ -42,7 +42,7 @@ public class AttachmentHashOperation extends AbstractWorkflowOperation
 		{
 			if( Check.isEmpty(att.getMd5sum()) )
 			{
-				ItemFile itemFile = new ItemFile(item);
+				ItemFile itemFile = itemFileService.getItemFile(item);
 				try
 				{
 					if( att.getAttachmentType().equals(AttachmentType.FILE) )

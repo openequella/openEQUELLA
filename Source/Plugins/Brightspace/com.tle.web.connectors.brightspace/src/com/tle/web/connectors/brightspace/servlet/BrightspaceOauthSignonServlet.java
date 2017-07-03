@@ -64,8 +64,7 @@ public class BrightspaceOauthSignonServlet extends HttpServlet
 		String state = req.getParameter(STATE_CALLBACK_PARAMETER);
 		if( state != null )
 		{
-			ObjectNode stateJson = (ObjectNode) new ObjectMapper().readTree(brightspaceConnectorService
-				.decrypt(state));
+			ObjectNode stateJson = (ObjectNode) new ObjectMapper().readTree(brightspaceConnectorService.decrypt(state));
 			JsonNode forwardUrlNode = stateJson.get(BrightspaceConnectorConstants.STATE_KEY_FORWARD_URL);
 			if( forwardUrlNode != null )
 			{

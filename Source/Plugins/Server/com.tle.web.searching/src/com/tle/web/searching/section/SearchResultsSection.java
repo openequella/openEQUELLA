@@ -23,9 +23,9 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import com.tle.beans.system.SearchSettings;
 import com.tle.common.search.DefaultSearch;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.common.settings.standard.SearchSettings;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.itemlist.item.AbstractItemList;
 import com.tle.web.itemlist.item.StandardItemListEntry;
 import com.tle.web.search.base.AbstractFreetextResultsSection;

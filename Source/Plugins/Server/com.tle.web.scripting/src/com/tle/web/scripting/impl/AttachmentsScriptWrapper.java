@@ -35,7 +35,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.CharStreams;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.attachments.Attachment;
@@ -47,15 +46,16 @@ import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.LinkAttachment;
 import com.tle.beans.item.attachments.ModifiableAttachments;
 import com.tle.common.Check;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.item.AttachmentUtils;
 import com.tle.common.scripting.objects.AttachmentsScriptObject;
 import com.tle.common.scripting.types.AttachmentScriptType;
 import com.tle.common.scripting.types.BinaryDataScriptType;
 import com.tle.common.scripting.types.ItemScriptType;
 import com.tle.common.scripting.types.XmlScriptType;
+import com.tle.core.item.helper.ItemHelper;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.util.ItemHelper;
 import com.tle.web.scripting.impl.ItemScriptWrapper.ItemScriptTypeImpl;
 import com.tle.web.scripting.impl.UtilsScriptWrapper.BinaryDataScriptTypeImpl;
 
@@ -109,8 +109,8 @@ public class AttachmentsScriptWrapper extends AbstractScriptWrapper implements A
 	public List<AttachmentScriptType> listForItem(ItemScriptType item)
 	{
 		Item realItem = ((ItemScriptTypeImpl) item).getItem();
-		return Lists.newArrayList(Lists.transform(realItem.getAttachments(),
-			new Function<Attachment, AttachmentScriptType>()
+		return Lists
+			.newArrayList(Lists.transform(realItem.getAttachments(), new Function<Attachment, AttachmentScriptType>()
 			{
 				@Override
 				public AttachmentScriptType apply(Attachment o)
@@ -512,8 +512,8 @@ public class AttachmentsScriptWrapper extends AbstractScriptWrapper implements A
 			AttachmentType type = wrapped.getAttachmentType();
 			if( type != AttachmentType.CUSTOM )
 			{
-				throw new RuntimeException("This method requires an attachment of type CUSTOM, but it is of type "
-					+ type.toString());
+				throw new RuntimeException(
+					"This method requires an attachment of type CUSTOM, but it is of type " + type.toString());
 			}
 			return (CustomAttachment) wrapped;
 		}

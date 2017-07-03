@@ -22,11 +22,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.dytech.edge.common.Constants;
-import com.dytech.edge.common.valuebean.UserBean;
 import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.tle.common.Check;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.common.wizard.controls.emailselector.EmailSelectorControl;
 import com.tle.core.email.EmailService;
 import com.tle.core.guice.Bind;

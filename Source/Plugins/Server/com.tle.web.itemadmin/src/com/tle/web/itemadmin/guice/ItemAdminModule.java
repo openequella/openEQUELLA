@@ -24,6 +24,7 @@ import com.tle.web.itemadmin.section.ItemAdminSelectionSection;
 import com.tle.web.itemadmin.section.ItemAdminWhereSection;
 import com.tle.web.itemadmin.section.RootItemAdminSection;
 import com.tle.web.search.actions.StandardShareSearchQuerySection;
+import com.tle.web.search.filter.FilterByBadUrlSection;
 import com.tle.web.search.filter.FilterByDateRangeSection;
 import com.tle.web.search.filter.FilterByMimeTypeSection;
 import com.tle.web.search.filter.FilterByOwnerSection;
@@ -78,6 +79,7 @@ public class ItemAdminModule extends AbstractSearchModule
 		node.child(ItemAdminFilterByItemStatusSection.class);
 		node.child(FilterByMimeTypeSection.class);
 		node.child(StandardShareSearchQuerySection.class);
+		node.child(FilterByBadUrlSection.class);
 	}
 
 	@Override

@@ -141,9 +141,10 @@ public class FilterByItemStatusSection extends AbstractPrototypeSection<FilterBy
 		onlyInModeration.setChecked(info, inModeration);
 	}
 
-	protected static class Model
+	public static class Model
 	{
 		private boolean disabled;
+		private boolean hideCheckBox;
 
 		public Model(boolean disabled)
 		{
@@ -158,6 +159,16 @@ public class FilterByItemStatusSection extends AbstractPrototypeSection<FilterBy
 		public void setDisabled(boolean disabled)
 		{
 			this.disabled = disabled;
+		}
+
+		public boolean isHideCheckBox()
+		{
+			return hideCheckBox;
+		}
+
+		public void setHideCheckBox(boolean hideCheckBox)
+		{
+			this.hideCheckBox = hideCheckBox;
 		}
 	}
 

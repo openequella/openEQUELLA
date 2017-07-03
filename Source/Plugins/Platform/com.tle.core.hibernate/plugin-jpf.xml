@@ -3,7 +3,7 @@
 	<requires>
 		<import plugin-id="com.tle.core.config" />
 		<import plugin-id="com.tle.core.guice" />
-		<import plugin-id="com.tle.xstream" />
+		<import plugin-id="com.tle.core.xml" />
 		<import plugin-id="com.zaxxer:HikariCP" />
 		<import plugin-id="com.tle.platform.common" />
 		<import plugin-id="org.hibernate" exported="true" />

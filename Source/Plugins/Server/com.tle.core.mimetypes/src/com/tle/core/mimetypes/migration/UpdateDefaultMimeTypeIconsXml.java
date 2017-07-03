@@ -21,13 +21,13 @@ import javax.inject.Singleton;
 
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.Check;
-import com.tle.core.filesystem.SubTemporaryFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.InstitutionInfo;
-import com.tle.core.institution.migration.XmlMigrator;
-import com.tle.core.xstream.XmlService;
+import com.tle.core.institution.convert.XmlMigrator;
+import com.tle.core.xml.service.XmlService;
 
 @Bind
 @Singleton

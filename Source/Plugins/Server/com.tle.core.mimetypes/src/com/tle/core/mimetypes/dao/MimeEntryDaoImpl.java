@@ -29,7 +29,7 @@ import com.tle.beans.mime.MimeEntry;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
 import com.tle.core.mimetypes.MimeTypesSearchResults;
-import com.tle.core.user.CurrentInstitution;
+import com.tle.common.institution.CurrentInstitution;
 
 @Bind(MimeEntryDao.class)
 @Singleton

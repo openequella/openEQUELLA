@@ -25,9 +25,10 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.common.oauth.beans.OAuthClient;
+import com.tle.core.encryption.EncryptionService;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.guice.BindFactory;
 import com.tle.core.oauth.service.OAuthService;
-import com.tle.core.services.entity.AbstractEntityService;
 import com.tle.web.api.baseentity.serializer.AbstractBaseEntityEditor;
 import com.tle.web.api.oauth.interfaces.beans.OAuthClientBean;
 
@@ -39,6 +40,8 @@ public class OAuthEditorImpl extends AbstractBaseEntityEditor<OAuthClient, OAuth
 {
 	@Inject
 	private OAuthService oauthService;
+	@Inject
+	private EncryptionService encryptionService;
 
 	private boolean mustDeleteTokens;
 
@@ -70,7 +73,7 @@ public class OAuthEditorImpl extends AbstractBaseEntityEditor<OAuthClient, OAuth
 			mustDeleteTokens = true;
 		}
 		entity.setClientId(bean.getClientId());
-		entity.setClientSecret(bean.getClientSecret());
+		entity.setClientSecret(encryptionService.encrypt(bean.getClientSecret()));
 		entity.setPermissions(bean.getPermissions());
 		entity.setUserId(bean.getUserId());
 		entity.setRedirectUrl(bean.getRedirectUrl());

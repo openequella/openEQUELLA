@@ -16,7 +16,9 @@
 
 package com.tle.core.workflow.thumbnail.service.impl;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -28,17 +30,22 @@ import javax.inject.Singleton;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dytech.common.io.FileUtils;
+import com.dytech.common.io.FileUtils.GrepFunctor;
 import com.dytech.devlib.Md5;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.ItemKey;
+import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.core.filesystem.InstitutionFile;
 import com.tle.core.filesystem.ItemFile;
-import com.tle.core.filesystem.StagingFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.institution.InstitutionStatus;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.user.CurrentInstitution;
 import com.tle.core.workflow.thumbnail.ThumbnailQueueFile;
 import com.tle.core.workflow.thumbnail.dao.ThumbnailRequestDao;
 import com.tle.core.workflow.thumbnail.entity.ThumbnailRequest;
@@ -46,7 +53,7 @@ import com.tle.core.workflow.thumbnail.service.ThumbnailRequestService;
 
 /**
  * Do not use directly. You should invoke methods on the ThumbnailService.
- * 
+ *
  * @author Aaron
  *
  */
@@ -62,6 +69,8 @@ import com.tle.core.workflow.thumbnail.service.ThumbnailRequestService;
 	private ThumbnailRequestDao thumbRequestDao;
 	@Inject
 	private FileSystemService fileSystemService;
+	@Inject
+	private InstitutionService instService;
 
 	@Transactional
 	@Override
@@ -72,7 +81,7 @@ import com.tle.core.workflow.thumbnail.service.ThumbnailRequestService;
 		final String requestUuid = UUID.randomUUID().toString();
 		final ThumbnailQueueFile thumbQueueFile = new ThumbnailQueueFile(requestUuid);
 
-		//copy original file to ThumbQueue file 
+		//copy original file to ThumbQueue file
 		//(TODO: this could be a large video... we'd want to avoid this copy if it were possible.  COWFS anyone?)
 		fileSystemService.copy(handle, filename, thumbQueueFile, filename);
 
@@ -101,7 +110,7 @@ import com.tle.core.workflow.thumbnail.service.ThumbnailRequestService;
 
 	/**
 	 * Cancels all requests for the item that don't belong to the supplied handle+filename
-	 * 
+	 *
 	 * @param itemId
 	 * @param handle
 	 * @param filename
@@ -210,8 +219,8 @@ import com.tle.core.workflow.thumbnail.service.ThumbnailRequestService;
 	@Override
 	public List<ThumbnailRequest> listForFile(ItemKey itemId, FileHandle handle, String filename)
 	{
-		final List<ThumbnailRequest> forFile = new ArrayList<>(thumbRequestDao.listForFile(CurrentInstitution.get(),
-			itemId, new Md5(filename).getStringDigest()));
+		final List<ThumbnailRequest> forFile = new ArrayList<>(
+			thumbRequestDao.listForFile(CurrentInstitution.get(), itemId, new Md5(filename).getStringDigest()));
 		final String superSerialHandle = serialiseHandle(handle);
 		//TODO: would be more efficient with a DB query
 		final Iterator<ThumbnailRequest> iterator = forFile.iterator();
@@ -252,5 +261,28 @@ import com.tle.core.workflow.thumbnail.service.ThumbnailRequestService;
 	{
 		final String superSerial = serialiseHandle(handle);
 		return thumbRequestDao.exists(itemId, superSerial, filename, new Md5(filename).getStringDigest());
+	}
+
+	@Transactional
+	@Override
+	public void cleanThumbQueue()
+	{
+		Collection<InstitutionStatus> allInstitutions = instService.getAllInstitutions();
+
+		for( InstitutionStatus inst : allInstitutions )
+		{
+			fileSystemService.apply(new InstitutionFile(inst.getInstitution()), "ThumbQueue", "*/*", new GrepFunctor()
+			{
+				@Override
+				public void matched(Path file, String relFilepath)
+				{
+					String uuid = file.getFileName().toString();
+					if( thumbRequestDao.getByUuid(uuid) == null )
+					{
+						FileUtils.delete(file);
+					}
+				}
+			});
+		}
 	}
 }

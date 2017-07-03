@@ -37,16 +37,16 @@ import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.NameValue;
 import com.tle.common.URLUtils;
 import com.tle.common.connectors.entity.Connector;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.connectors.brightspace.BrightspaceConnectorConstants;
 import com.tle.core.connectors.brightspace.beans.BrightspaceQuicklink;
 import com.tle.core.connectors.brightspace.service.BrightspaceConnectorService;
 import com.tle.core.connectors.brightspace.service.BrightspaceConnectorService.TopicCreationOption;
 import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
-import com.tle.core.services.UrlService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
 import com.tle.web.integration.AbstractIntegrationService;
 import com.tle.web.integration.IntegrationActionInfo;
 import com.tle.web.integration.SingleSignonForm;
@@ -98,7 +98,7 @@ public class BrightspaceIntegration extends AbstractIntegrationService<Brightspa
 	@Inject
 	private BrightspaceConnectorService brightspaceService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private MimeTypeService mimeTypeService;
 
@@ -246,7 +246,7 @@ public class BrightspaceIntegration extends AbstractIntegrationService<Brightspa
 					}
 				}
 
-				fwdUrl = urlService.institutionalise("brightspacestructureinit") + qs.toString();
+				fwdUrl = institutionService.institutionalise("brightspacestructureinit") + qs.toString();
 			}
 
 			//forward to d2l auth screen

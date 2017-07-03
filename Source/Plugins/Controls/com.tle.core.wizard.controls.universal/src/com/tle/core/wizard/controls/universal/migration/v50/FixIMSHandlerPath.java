@@ -30,7 +30,6 @@ import org.w3c.dom.Node;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemXml;
 import com.tle.common.Check;
-import com.tle.common.util.XmlDocument;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.impl.HibernateMigrationHelper;
 import com.tle.core.migration.AbstractHibernateDataMigration;
@@ -38,6 +37,7 @@ import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
 import com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemDatabaseMigration.FakeAttachment;
 import com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemDatabaseMigration.FakeItem;
+import com.tle.core.xml.XmlDocument;
 
 /**
  * @author Aaron
@@ -64,8 +64,8 @@ public class FixIMSHandlerPath extends AbstractHibernateDataMigration
 	protected void executeDataMigration(HibernateMigrationHelper helper, MigrationResult result, Session session)
 		throws Exception
 	{
-		final ScrollableResults iter = session.createQuery(
-			"from Item i inner join i.attachments as a where a.type in ('ims','item')").scroll();
+		final ScrollableResults iter = session
+			.createQuery("from Item i inner join i.attachments as a where a.type in ('ims','item')").scroll();
 		while( iter.next() )
 		{
 			final FakeItem item = (FakeItem) iter.get()[0];
@@ -98,8 +98,8 @@ public class FixIMSHandlerPath extends AbstractHibernateDataMigration
 					if( Check.isEmpty(itemIdString) )
 					{
 						String file = attachment.url;
-						itemId = new ItemId(xml.nodeValue("xml" + file + "/@uuid"), Integer.valueOf(xml.nodeValue("xml"
-							+ file + "/@version")));
+						itemId = new ItemId(xml.nodeValue("xml" + file + "/@uuid"),
+							Integer.valueOf(xml.nodeValue("xml" + file + "/@version")));
 					}
 					else
 					{
@@ -140,8 +140,8 @@ public class FixIMSHandlerPath extends AbstractHibernateDataMigration
 					// ALL nodes with
 					// [@uuid=UUID and @version=version] and add the attachment
 					// UUID underneath them
-					for( Node node : xml.nodeList("//*[@uuid='" + itemId.getUuid() + "' and @version='"
-						+ itemId.getVersion() + "']") )
+					for( Node node : xml
+						.nodeList("//*[@uuid='" + itemId.getUuid() + "' and @version='" + itemId.getVersion() + "']") )
 					{
 						// Don't modify attachment nodes! (actually, these
 						// probably don't exist in ItemXml anyway)

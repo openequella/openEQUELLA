@@ -46,10 +46,10 @@ import com.dytech.devlib.PropBagEx;
 import com.dytech.devlib.PropBagEx.PropBagIterator;
 import com.dytech.edge.common.Constants;
 import com.google.common.io.CharStreams;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.Check;
 import com.tle.common.PathUtils;
-import com.tle.core.filesystem.FileHandleUtils;
+import com.tle.common.filesystem.FileHandleUtils;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.impl.HibernateMigrationHelper;
 import com.tle.core.migration.AbstractHibernateDataMigration;
@@ -124,7 +124,7 @@ public class ConvertXsltTemplateFileToString extends AbstractHibernateDataMigrat
 					// Read contents to string and close stream
 					if( fileSystemService.fileExists(item, filePath) )
 					{
-						try (Reader reader = new UnicodeReader(fileSystemService.read(item, filePath), "UTF-8"))
+						try( Reader reader = new UnicodeReader(fileSystemService.read(item, filePath), "UTF-8") )
 						{
 							StringWriter writer = new StringWriter();
 							CharStreams.copy(reader, writer);
@@ -190,6 +190,12 @@ public class ConvertXsltTemplateFileToString extends AbstractHibernateDataMigrat
 		public String getMyPathComponent()
 		{
 			return "";
+		}
+
+		@Override
+		public String getFilestoreId()
+		{
+			return null;
 		}
 	}
 

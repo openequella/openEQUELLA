@@ -2,11 +2,11 @@
 <plugin id="com.tle.core.workflow.thumbnail" version="1">
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
-		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.core.events" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.imagemagick" />
 		<import plugin-id="com.tle.core.mimetypes" />
-		<import plugin-id="com.tle.core.workflow" />
 		<import plugin-id="com.tle.web.sections" />
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.core.hibernate" />
@@ -15,8 +15,12 @@
 		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.core.zookeeper" />
 		<import plugin-id="com.tle.core.freetext" />
+		<import plugin-id="com.tle.core.scheduler" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.core.institution" />
+		<import plugin-id="com.tle.core.filesystem" />
+		<import plugin-id="com.tle.core.filesystem.staging" />
 	</requires>
-
 	<runtime>
 		<library type="code" path="classes/" id="core">
 			<export prefix="*" />
@@ -33,33 +37,33 @@
 		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
 		<parameter id="class" value="com.tle.core.workflow.thumbnail.guice.ThumbnailModule" />
 	</extension>
-	
+
 	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
 		<parameter id="file" value="lang/i18n.properties" />
 		<parameter id="group" value="resource-centre" />
 	</extension>
-	
-	<extension plugin-id="com.tle.core.services" point-id="applicationEventListener" id="listeners">
+
+	<extension plugin-id="com.tle.core.events" point-id="applicationEventListener" id="listeners">
+		<parameter id="listener" value="bean:com.tle.core.workflow.thumbnail.service.ThumbnailSupervisor" />
 		<parameter id="listenerClass" value="com.tle.core.hibernate.event.SchemaListener" />
-		<parameter id="listenerClass" value="com.tle.core.events.listeners.InstitutionListener" />
 	</extension>
-	
-	<extension plugin-id="com.tle.core.services" point-id="applicationEventListener" id="itemdeletionlisteners">
+
+	<extension plugin-id="com.tle.core.events" point-id="applicationEventListener" id="itemdeletionlisteners">
 		<parameter id="listener" value="bean:com.tle.core.workflow.thumbnail.service.ThumbnailService" />
-		<parameter id="listenerClass" value="com.tle.core.events.listeners.ItemDeletedListener" />
+		<parameter id="listenerClass" value="com.tle.core.item.event.listener.ItemDeletedListener" />
 	</extension>
-	
+
 	<extension plugin-id="com.tle.core.zookeeper" point-id="appServerExtension" id="thumbnailTaskStarter">
 		<parameter id="bean" value="bean:com.tle.core.workflow.thumbnail.service.ThumbnailSupervisor" />
 		<parameter id="order" value="3000" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.workflow" point-id="operation" id="thumbnailOperation">
+	<extension plugin-id="com.tle.core.item" point-id="operation" id="thumbnailOperation">
 		<parameter id="type" value="postSave" />
 		<parameter id="class" value="bean:com.tle.core.workflow.thumbnail.CreateThumbnailOperation" />
 	</extension>
-	
-	<extension plugin-id="com.tle.core.workflow" point-id="operation" id="cancelThumbnailOperation">
+
+	<extension plugin-id="com.tle.core.item" point-id="operation" id="cancelThumbnailOperation">
 		<parameter id="type" value="preCancel" />
 		<parameter id="class" value="bean:com.tle.core.workflow.thumbnail.CancelThumbnailOperation" />
 	</extension>
@@ -68,7 +72,7 @@
 		<parameter id="mimetype" value="image/" />
 		<parameter id="generator" value="bean:com.tle.core.workflow.thumbnail.ImageThumbnailGenerator" />
 	</extension>
-	
+
 	<extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="thumbnailObjects">
 		<parameter id="class" value="com.tle.core.workflow.thumbnail.entity.ThumbnailRequest" />
 	</extension>
@@ -82,7 +86,7 @@
 		<parameter id="bean" value="bean:com.tle.core.workflow.thumbnail.migration.CreateThumbnailRequestSchema" />
 		<parameter id="date" value="2015-02-19" />
 	</extension>
-	
+
 	<extension plugin-id="com.tle.core.freetext" point-id="indexingExtension" id="imageIndexer">
 		<parameter id="class" value="bean:com.tle.core.workflow.thumbnail.ThumbnailIndexer" />
 	</extension>

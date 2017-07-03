@@ -30,13 +30,17 @@ import com.tle.beans.entity.itemdef.DynamicMetadataRule;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.ItemMetadataRule;
 import com.tle.beans.item.ItemStatus;
+import com.tle.common.filesystem.remoting.RemoteFileSystemService;
+import com.tle.common.interfaces.BaseEntityReference;
 import com.tle.common.security.ItemMetadataTarget;
 import com.tle.common.security.ItemStatusTarget;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.TargetList;
+import com.tle.common.workflow.Workflow;
+import com.tle.core.collection.service.ItemDefinitionService;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.entity.AbstractEntityService;
-import com.tle.core.services.entity.ItemDefinitionService;
+import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.web.api.baseentity.serializer.AbstractEquellaBaseEntitySerializer;
 import com.tle.web.api.collection.impl.CollectionEditorImpl.CollectionEditorFactory;
 import com.tle.web.api.collection.interfaces.beans.CollectionBean;
@@ -144,6 +148,26 @@ public class CollectionBeanSerializer
 		return rules;
 	}
 
+	/*
+	 * If we want a comprehensive REST-export/importable collection complete
+	 * with wizard, we'd need to completely process these fields ...
+	 * (non-Javadoc)
+	 * @see com.tle.web.api.baseentity.serializer.AbstractBaseEntitySerializer#
+	 * copyCustomLightweightFields(com.tle.beans.entity.BaseEntity,
+	 * com.tle.web.api.interfaces.beans.BaseEntityBean, java.lang.Object)
+	 */
+	// @Override
+	// protected void copyCustomLightweightFields(ItemDefinition entity,
+	// CollectionBean bean, Object data)
+	// {
+	// ItemdefBlobs blobzYerungkel = entity.getSlow();
+	// SummaryDisplayTemplate sumdistem =
+	// blobzYerungkel.getItemSummarySections();
+	// MetadataMapping mandm = blobzYerungkel.getMetadataMapping();
+	// SearchDetails searchDetails = blobzYerungkel.getSearchDetails();
+	// Wizard wizard = blobzYerungkel.getWizard();
+	// }
+
 	@Override
 	protected void copyCustomFields(ItemDefinition entity, CollectionBean bean, Object data)
 	{
@@ -160,6 +184,16 @@ public class CollectionBeanSerializer
 		}
 
 		bean.setSecurity(security);
+		bean.setSchema(new BaseEntityReference(entity.getSchema().getUuid()));
+
+		Workflow workflow = entity.getWorkflow();
+		if( workflow != null )
+		{
+			bean.setWorkflow(new BaseEntityReference(workflow.getUuid()));
+		}
+
+		final String filestoreId = entity.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
+		bean.setFilestoreId(filestoreId == null ? RemoteFileSystemService.DEFAULT_FILESTORE_ID : filestoreId);
 	}
 
 	@Override

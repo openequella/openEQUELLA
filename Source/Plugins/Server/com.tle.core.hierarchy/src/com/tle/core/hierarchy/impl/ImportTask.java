@@ -25,7 +25,7 @@ import javax.inject.Inject;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dytech.edge.common.valuebean.ValidationError;
+import com.tle.common.beans.exception.ValidationError;
 import com.google.inject.assistedinject.Assisted;
 import com.tle.beans.EntityScript;
 import com.tle.beans.entity.BaseEntity;
@@ -37,9 +37,9 @@ import com.tle.common.security.TargetList;
 import com.tle.core.hierarchy.HierarchyDao;
 import com.tle.core.institution.RunAsInstitution;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.InitialiserService;
+import com.tle.core.hibernate.equella.service.InitialiserService;
 import com.tle.core.services.impl.SingleShotTask;
-import com.tle.core.user.UserState;
+import com.tle.common.usermanagement.user.UserState;
 
 public class ImportTask extends SingleShotTask
 {

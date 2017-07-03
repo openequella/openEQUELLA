@@ -25,16 +25,16 @@ import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.search.SearchSettings;
 import com.tle.beans.search.XmlBasedSearchSettings;
 import com.tle.common.Check;
+import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.fedsearch.FederatedSearchService;
 import com.tle.core.filesystem.EntityFile;
-import com.tle.core.filesystem.StagingFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
-import com.tle.core.schema.SchemaService;
-import com.tle.core.services.XsltService;
-import com.tle.core.services.entity.ItemDefinitionService;
+import com.tle.core.schema.service.SchemaService;
 import com.tle.core.services.user.UserSessionService;
+import com.tle.core.xslt.service.XsltService;
 import com.tle.web.remoterepo.RemoteRepoSearch;
 import com.tle.web.remoterepo.RemoteRepoSection;
 import com.tle.web.remoterepo.service.RemoteRepoWebService;
@@ -99,8 +99,8 @@ public class RemoteRepoWebServiceImpl implements RemoteRepoWebService
 			final PropBagEx initXml;
 			if( transformName != null )
 			{
-				initXml = new PropBagEx(schemaService.transformForImport(collection.getSchema().getId(), transformName,
-					xml));
+				initXml = new PropBagEx(
+					schemaService.transformForImport(collection.getSchema().getId(), transformName, xml));
 			}
 			else
 			{

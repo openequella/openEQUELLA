@@ -17,15 +17,19 @@
 				</#if>
 				<#if m.resultsAvailable>
 					<div id="searchresults-stats">${m.resultsText}</div>
-				</#if>
+				</#if><div id="divsearch-status" style="display:none;"><#if m.resultsAvailable>Available<#else>NA</#if></div>
+				
 			</div>
 		</#if>
 	</@a.div>
 	
-	<#if m.showResults>
-		<@render m.actions/>
-	</#if>
 	
+	<#if m.resultsAvailable>
+		<div id="divaction-buttons" style="display:block;"><@render m.actions/></div>
+	<#else>
+		<div id="divaction-buttons" style="display:none;"><@render m.actions/></div>
+	</#if>
+		
 	<@a.div id="searchresults-cont">
 		<@render s.cssInclude/>
 		

@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.dytech.edge.exceptions.WebException;
-import com.tle.beans.system.AutoLogin;
+import com.tle.common.settings.standard.AutoLogin;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;
 import com.tle.web.dispatcher.AbstractWebFilter;
@@ -49,8 +49,8 @@ public class OAuthFilter extends AbstractWebFilter
 
 	@SuppressWarnings("nls")
 	@Override
-	public FilterResult filterRequest(HttpServletRequest request, HttpServletResponse response) throws IOException,
-		ServletException
+	public FilterResult filterRequest(HttpServletRequest request, HttpServletResponse response)
+		throws IOException, ServletException
 	{
 		AutoLogin autoLogin = userService.getAttribute(AutoLogin.class);
 		if( autoLogin != null && !request.isSecure() && autoLogin.isLoginViaSSL() )

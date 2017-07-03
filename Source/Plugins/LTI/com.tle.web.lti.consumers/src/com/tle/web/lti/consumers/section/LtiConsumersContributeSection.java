@@ -23,9 +23,9 @@ import javax.inject.Inject;
 
 import com.tle.common.lti.consumers.LtiConsumerConstants;
 import com.tle.common.lti.consumers.entity.LtiConsumer;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.lti.consumers.service.LtiConsumerService;
 import com.tle.core.lti.consumers.service.session.LtiConsumerEditingBean;
-import com.tle.core.services.entity.AbstractEntityService;
 import com.tle.web.entities.section.AbstractEntityContributeSection;
 import com.tle.web.entities.section.EntityEditor;
 import com.tle.web.sections.SectionInfo;

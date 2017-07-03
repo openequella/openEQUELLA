@@ -30,10 +30,10 @@ import com.tle.core.item.edit.ItemEditor;
 import com.tle.core.item.edit.ItemEditorService;
 import com.tle.core.item.serializer.ItemDeserializerEditor;
 import com.tle.core.item.serializer.ItemDeserializerService;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.security.impl.SecureOnCallSystem;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.workflow.operations.WorkflowFactory;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
 
 @Bind(ItemDeserializerService.class)
@@ -48,7 +48,7 @@ public class ItemDeserializerServiceImpl implements ItemDeserializerService
 	@Inject
 	private ItemService itemService;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 
 	@Override
 	@Transactional
@@ -98,15 +98,14 @@ public class ItemDeserializerServiceImpl implements ItemDeserializerService
 	@Override
 	public ItemIdKey importItem(EquellaItemBean itemBean, String stagingUuid, boolean ensureOnIndexList)
 	{
-		ItemId itemId = new ItemId(itemBean.getUuid(), itemBean.getVersion());
 		BaseEntityReference collectionRef = itemBean.getCollection();
 		if( collectionRef == null )
 		{
 			throw new ItemEditingException("No collection specified");
 		}
 		String collectionUuid = collectionRef.getUuid();
-		ItemEditor editor = itemEditorService.importItemEditor(collectionUuid, itemId, stagingUuid,
-			editorsTracker.getBeanList());
+		ItemEditor editor = itemEditorService.importItemEditor(collectionUuid,
+			new ItemId(itemBean.getUuid(), itemBean.getVersion()), stagingUuid, editorsTracker.getBeanList());
 		editor.doEdits(itemBean);
 
 		ItemIdKey itemKey = editor.finishedEditing(ensureOnIndexList);

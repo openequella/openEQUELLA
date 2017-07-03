@@ -26,21 +26,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.Institution;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemIdKey;
 import com.tle.beans.item.ItemKey;
 import com.tle.common.PathUtils;
-import com.tle.core.events.ItemDeletedEvent;
-import com.tle.core.events.listeners.ItemDeletedListener;
+import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.event.ItemDeletedEvent;
+import com.tle.core.item.event.listener.ItemDeletedListener;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.services.impl.SingleShotTask;
 import com.tle.core.services.impl.Task;
-import com.tle.core.user.CurrentInstitution;
 import com.tle.core.workflow.thumbnail.ThumbnailGenerator;
 import com.tle.core.workflow.thumbnail.ThumbnailType;
 import com.tle.core.workflow.thumbnail.entity.ThumbnailRequest;
@@ -141,17 +141,17 @@ public class ThumbnailServiceImpl implements ThumbnailService, ItemDeletedListen
 		switch( thumbType )
 		{
 			case TYPE_GALLERY_THUMB:
-				return PathUtils.filePath(FileSystemService.THUMBS_FOLDER, filename
-					+ FileSystemService.GALLERY_THUMBNAIL_EXTENSION);
+				return PathUtils.filePath(FileSystemService.THUMBS_FOLDER,
+					filename + FileSystemService.GALLERY_THUMBNAIL_EXTENSION);
 
 			case TYPE_GALLERY_PREVIEW:
-				return PathUtils.filePath(FileSystemService.THUMBS_FOLDER, filename
-					+ FileSystemService.GALLERY_PREVIEW_EXTENSION);
+				return PathUtils.filePath(FileSystemService.THUMBS_FOLDER,
+					filename + FileSystemService.GALLERY_PREVIEW_EXTENSION);
 
 			case TYPE_STANDARD_THUMB:
 			default:
-				return PathUtils.filePath(FileSystemService.THUMBS_FOLDER, filename
-					+ FileSystemService.THUMBNAIL_EXTENSION);
+				return PathUtils.filePath(FileSystemService.THUMBS_FOLDER,
+					filename + FileSystemService.THUMBNAIL_EXTENSION);
 		}
 	}
 

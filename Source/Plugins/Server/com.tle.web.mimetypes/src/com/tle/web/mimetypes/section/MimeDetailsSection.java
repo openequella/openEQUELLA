@@ -19,11 +19,11 @@ package com.tle.web.mimetypes.section;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dytech.edge.common.Constants;
-import com.dytech.edge.common.ValidationException;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
+import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.core.guice.Bind;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -33,6 +33,7 @@ import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxGenerator;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
+import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.js.JSHandler;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
@@ -41,6 +42,7 @@ import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 import com.tle.web.sections.js.generic.statement.ScriptStatement;
 import com.tle.web.sections.render.HtmlRenderer;
+import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.MutableList;
 import com.tle.web.sections.standard.TextField;
@@ -53,6 +55,11 @@ public class MimeDetailsSection extends AbstractPrototypeSection<MimeDetailsSect
 		MimeEditExtension,
 		HtmlRenderer
 {
+	@PlugKey("error.mimetype.empty")
+	private static Label ERROR_MIME_TYPE_EMPTY;
+	@PlugKey("error.extensions.length")
+	private static Label ERROR_EXTENSIONS_LENGTH;
+
 	@ViewFactory
 	private FreemarkerFactory viewFactory;
 
@@ -87,7 +94,7 @@ public class MimeDetailsSection extends AbstractPrototypeSection<MimeDetailsSect
 	@Override
 	public String getDefaultPropertyName()
 	{
-		return "det"; //$NON-NLS-1$
+		return "det";
 	}
 
 	@Override
@@ -96,9 +103,9 @@ public class MimeDetailsSection extends AbstractPrototypeSection<MimeDetailsSect
 		super.registered(id, tree);
 		extensions.setListModel(new StringListModel());
 		addExtensionButton.addClickStatements(
-			new FunctionCallStatement(extensions.createAddFunction(), newExtension.createGetExpression(), newExtension
-				.createGetExpression()),
-			new ScriptStatement(JQuerySelector.valueSetExpression(newExtension, Constants.BLANK)));
+			new FunctionCallStatement(extensions.createAddFunction(), newExtension.createGetExpression(),
+				newExtension.createGetExpression()),
+			new ScriptStatement(JQuerySelector.valueSetExpression(newExtension, "")));
 		removeExtensionButton.addClickStatements(new FunctionCallStatement(extensions.createRemoveFunction()));
 		ajaxIds = new ArrayList<String>();
 	}
@@ -115,7 +122,7 @@ public class MimeDetailsSection extends AbstractPrototypeSection<MimeDetailsSect
 	@Override
 	public SectionResult renderHtml(RenderEventContext context)
 	{
-		return viewFactory.createResult("mimedetails.ftl", context); //$NON-NLS-1$
+		return viewFactory.createResult("mimedetails.ftl", context);
 	}
 
 	@Override
@@ -125,7 +132,7 @@ public class MimeDetailsSection extends AbstractPrototypeSection<MimeDetailsSect
 		{
 			description.setValue(info, entry.getDescription());
 			type.setValue(info, entry.getType());
-			newExtension.setValue(info, ""); //$NON-NLS-1$
+			newExtension.setValue(info, "");
 			extensions.getListModel().setValues(info, new ArrayList<String>(entry.getExtensions()));
 		}
 	}
@@ -135,7 +142,7 @@ public class MimeDetailsSection extends AbstractPrototypeSection<MimeDetailsSect
 	{
 		if( Check.isEmpty(type.getValue(info)) )
 		{
-			throw new ValidationException("mimetype.empty"); //$NON-NLS-1$
+			throw new InvalidDataException(new ValidationError("type", ERROR_MIME_TYPE_EMPTY.getText()));
 		}
 		entry.setDescription(description.getValue(info));
 		entry.setType(type.getValue(info));
@@ -145,7 +152,7 @@ public class MimeDetailsSection extends AbstractPrototypeSection<MimeDetailsSect
 		{
 			if( ext.length() >= 20 )
 			{
-				throw new ValidationException("extensions.length"); //$NON-NLS-1$
+				throw new InvalidDataException(new ValidationError("extensions", ERROR_EXTENSIONS_LENGTH.getText()));
 			}
 		}
 		entry.setExtensions(extensions.getValues(info));

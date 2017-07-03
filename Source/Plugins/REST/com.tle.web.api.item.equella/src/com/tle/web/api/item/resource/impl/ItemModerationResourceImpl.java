@@ -41,7 +41,7 @@ import com.tle.common.workflow.WorkflowNodeStatus;
 import com.tle.common.workflow.node.WorkflowItem;
 import com.tle.common.workflow.node.WorkflowNode;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemService;
+import com.tle.core.item.service.ItemService;
 import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.item.interfaces.ItemModerationResource;
 import com.tle.web.api.item.interfaces.beans.ItemNodeStatusBean;

@@ -21,8 +21,8 @@ import javax.inject.Singleton;
 import org.hibernate.criterion.Restrictions;
 
 import com.tle.beans.Institution;
-import com.tle.core.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.echo.entity.EchoServer;
+import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.guice.Bind;
 
 @Bind(EchoDao.class)

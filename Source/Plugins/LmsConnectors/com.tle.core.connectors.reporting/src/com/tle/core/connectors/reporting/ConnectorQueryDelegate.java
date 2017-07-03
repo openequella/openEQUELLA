@@ -48,7 +48,7 @@ import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.guice.Bind;
 import com.tle.core.reporting.SimpleResultSet;
 import com.tle.core.reporting.SimpleTypeQuery;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.reporting.IResultSetExt;
 import com.tle.reporting.MetadataBean;
 import com.tle.reporting.MetadataBean.Definition;

@@ -16,6 +16,8 @@
 
 package com.tle.web.sections.standard.js.modules;
 
+import com.tle.annotation.NonNullByDefault;
+import com.tle.annotation.Nullable;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
 import com.tle.web.resources.PluginResourceHelper;
@@ -23,41 +25,41 @@ import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.js.JSExpression;
 import com.tle.web.sections.js.generic.expression.FunctionCallExpression;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
-import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.render.PreRenderable;
 
+@NonNullByDefault
 public class JSONModule implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
 	public static final PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(JSONModule.class);
-	public static final PreRenderable PRERENDERER = new IncludeFile(urlHelper.url("js/json2.js")); //$NON-NLS-1$
 
 	public static JSExpression getParseExpression(JSExpression text)
 	{
-		return new FunctionCallExpression(new ExternallyDefinedFunction("JSON.parse", PRERENDERER), text); //$NON-NLS-1$
+		return new FunctionCallExpression(new ExternallyDefinedFunction("JSON.parse"), text);
 	}
 
 	public static JSExpression getStringifyExpression(JSExpression text)
 	{
-		return new FunctionCallExpression(new ExternallyDefinedFunction("JSON.stringify", PRERENDERER), text); //$NON-NLS-1$
+		return new FunctionCallExpression(new ExternallyDefinedFunction("JSON.stringify"), text);
 	}
 
 	@Override
 	public String getDisplayName()
 	{
-		return CurrentLocale.get("com.tle.web.sections.standard.js.modules.json.name"); //$NON-NLS-1$
+		return CurrentLocale.get("com.tle.web.sections.standard.js.modules.json.name");
 	}
 
 	@Override
 	public String getId()
 	{
-		return "json"; //$NON-NLS-1$
+		return "json";
 	}
 
+	@Nullable
 	@Override
 	public PreRenderable getPreRenderer()
 	{
-		return PRERENDERER;
+		return null;
 	}
 }

@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.inject.Singleton;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.web.resources.ResourcesService;
 
 @SuppressWarnings("nls")
@@ -38,12 +38,12 @@ public class MobileResourcesServlet extends HttpServlet
 	private static final long serialVersionUID = 1L;
 
 	@Inject
-	private UrlService urlService;
-	
+	private InstitutionService institutionService;
+
 	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-		IOException
+	protected void service(HttpServletRequest request, HttpServletResponse response)
+		throws ServletException, IOException
 	{
-		response.sendRedirect(urlService.institutionalise(URL));
+		response.sendRedirect(institutionService.institutionalise(URL));
 	}
 }

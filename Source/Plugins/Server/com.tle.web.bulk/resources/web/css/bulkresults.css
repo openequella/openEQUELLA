@@ -6,6 +6,10 @@
 	background-image: url("../images/execute.ltr.png");
 }
 
+.action-button.moderate-action {
+	background-image: url("../images/moderate.ltr.png");
+}
+
 .failedmsg .status,.simpleopsmessage {
 	color: red;
 	font-style: italic;

@@ -16,9 +16,6 @@
 
 package com.tle.web.oauth.section;
 
-import hurl.build.QueryBuilder;
-import hurl.build.UriBuilder;
-
 import java.net.URI;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,21 +23,21 @@ import java.util.Map.Entry;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import com.dytech.edge.common.valuebean.UserBean;
 import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.common.oauth.beans.OAuthToken;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.oauth.OAuthConstants;
 import com.tle.core.oauth.service.OAuthService;
-import com.tle.core.services.UrlService;
 import com.tle.core.services.user.UserService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.exceptions.BadCredentialsException;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleCache;
 import com.tle.web.oauth.OAuthException;
 import com.tle.web.oauth.OAuthWebConstants;
 import com.tle.web.oauth.service.OAuthWebService;
@@ -72,6 +69,9 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.renderers.DivRenderer;
 import com.tle.web.template.Decorations;
 
+import hurl.build.QueryBuilder;
+import hurl.build.UriBuilder;
+
 @Bind
 @SuppressWarnings("nls")
 public class OAuthLogonSection extends AbstractPrototypeSection<OAuthLogonSection.OAuthLogonModel>
@@ -94,7 +94,7 @@ public class OAuthLogonSection extends AbstractPrototypeSection<OAuthLogonSectio
 	@Inject
 	private UserService userService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@ViewFactory
 	private FreemarkerFactory viewFactory;
@@ -276,7 +276,7 @@ public class OAuthLogonSection extends AbstractPrototypeSection<OAuthLogonSectio
 			{
 				throw new OAuthException(400, OAuthConstants.ERROR_INVALID_CLIENT, LABEL_DEFAULTREDIRECT.getText());
 			}
-			return urlService.institutionalise(OAuthWebConstants.OAUTH_DEFAULT_REDIRECT_URL);
+			return institutionService.institutionalise(OAuthWebConstants.OAUTH_DEFAULT_REDIRECT_URL);
 		}
 		return redirectUri;
 	}
@@ -318,8 +318,8 @@ public class OAuthLogonSection extends AbstractPrototypeSection<OAuthLogonSectio
 		}
 		if( !OAuthWebConstants.RESPONSE_TYPES_ALL.contains(responseType) )
 		{
-			sendError(info, OAuthConstants.ERROR_UNSUPPORTED_RESPONSE_TYPE, new KeyLabel(KEY_ERROR_INVALIDRESPONSETYPE,
-				responseType));
+			sendError(info, OAuthConstants.ERROR_UNSUPPORTED_RESPONSE_TYPE,
+				new KeyLabel(KEY_ERROR_INVALIDRESPONSETYPE, responseType));
 		}
 	}
 
@@ -413,8 +413,8 @@ public class OAuthLogonSection extends AbstractPrototypeSection<OAuthLogonSectio
 				oauthClient = oauthService.getByClientIdAndRedirectUrl(clientId, redirectUri);
 				if( oauthClient == null )
 				{
-					throw new OAuthException(400, OAuthConstants.ERROR_INVALID_CLIENT, new KeyLabel(
-						KEY_CLIENT_NOT_FOUND, clientId, redirectUri).getText(), true);
+					throw new OAuthException(400, OAuthConstants.ERROR_INVALID_CLIENT,
+						new KeyLabel(KEY_CLIENT_NOT_FOUND, clientId, redirectUri).getText(), true);
 				}
 			}
 			return oauthClient;

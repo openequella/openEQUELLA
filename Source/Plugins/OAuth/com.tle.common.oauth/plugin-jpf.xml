@@ -7,6 +7,7 @@
 	<requires>
 		<import plugin-id="com.tle.common.entity" />
 		<import plugin-id="com.tle.common.security" />
+		<import plugin-id="com.tle.common.institution" />
 	</requires>
 
 	<runtime>

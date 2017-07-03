@@ -30,16 +30,16 @@ import org.apache.log4j.Logger;
 import com.dytech.devlib.PropBagEx;
 import com.google.common.io.CharStreams;
 import com.tle.beans.activation.ActivateRequest;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.copyright.Holding;
 import com.tle.core.copyright.Portion;
 import com.tle.core.copyright.Section;
 import com.tle.core.copyright.service.CopyrightService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.XsltService;
+import com.tle.core.xslt.service.XsltService;
 import com.tle.web.copyright.service.CopyrightWebService;
 import com.tle.web.sections.SectionInfo;
 
@@ -111,8 +111,8 @@ public abstract class AbstractCopyrightWebService<H extends Holding> implements 
 		Map<String, Integer> activations = info.getAttribute(ACTIVATIONS_MAP);
 		if( activations == null )
 		{
-			List<ActivateRequest> activationRequests = copyrightService.getCurrentOrPendingActivations(getHolding(info,
-				item));
+			List<ActivateRequest> activationRequests = copyrightService
+				.getCurrentOrPendingActivations(getHolding(info, item));
 			activations = new HashMap<String, Integer>();
 			for( ActivateRequest req : activationRequests )
 			{
@@ -160,7 +160,7 @@ public abstract class AbstractCopyrightWebService<H extends Holding> implements 
 		}
 		else
 		{
-			try (Reader r = new InputStreamReader(fileSystemService.read(agreementFile, null)))
+			try( Reader r = new InputStreamReader(fileSystemService.read(agreementFile, null)) )
 			{
 				return CharStreams.toString(r);
 			}

@@ -66,8 +66,8 @@ public class AdvancedScriptObjectContributor implements ScriptObjectContributor
 	{
 		// Really need to think about this one... I only included it to
 		// demonstrate the awesomeness of the script control
-		objects.put(ImagesScriptObject.DEFAULT_VARIABLE, new ImagesScriptWrapper(imageService, fileSystemService,
-			params.getFileHandle()));
+		objects.put(ImagesScriptObject.DEFAULT_VARIABLE,
+			new ImagesScriptWrapper(imageService, fileSystemService, params.getFileHandle()));
 
 		// TODO: perhaps contributed by the mime plugin itself? Yes, I think so
 		objects.put(MimeScriptObject.DEFAULT_VARIABLE, new MimeScriptWrapper(mimeService));
@@ -79,8 +79,8 @@ public class AdvancedScriptObjectContributor implements ScriptObjectContributor
 			final Item item = pack.getItem();
 			if( item != null )
 			{
-				objects.put(NavigationScriptObject.DEFAULT_VARIABLE, new NavigationScriptWrapper(itemNavigationService,
-					item));
+				objects.put(NavigationScriptObject.DEFAULT_VARIABLE,
+					new NavigationScriptWrapper(itemNavigationService, item));
 
 				// Script functionality expanded to provide for setting as well
 				// as

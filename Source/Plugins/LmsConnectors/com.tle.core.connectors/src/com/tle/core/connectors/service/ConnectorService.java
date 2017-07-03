@@ -24,15 +24,12 @@ import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.connectors.ConnectorTypeDescriptor;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.common.connectors.service.RemoteConnectorService;
-import com.tle.core.services.entity.AbstractEntityService;
+import com.tle.core.entity.service.AbstractEntityService;
 
 /**
  * @author aholland
  */
-public interface ConnectorService
-	extends
-		AbstractEntityService<ConnectorEditingBean, Connector>,
-		RemoteConnectorService
+public interface ConnectorService extends AbstractEntityService<ConnectorEditingBean, Connector>, RemoteConnectorService
 {
 	String ENTITY_TYPE = "CONNECTOR"; //$NON-NLS-1$
 

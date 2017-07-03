@@ -18,6 +18,7 @@ package com.tle.core.item.edit.impl;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -43,7 +44,6 @@ import com.tle.annotation.Nullable;
 import com.tle.beans.entity.LanguageBundle.DeleteHandler;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.Wizard;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.HistoryEvent;
 import com.tle.beans.item.HistoryEvent.Type;
 import com.tle.beans.item.Item;
@@ -53,14 +53,22 @@ import com.tle.beans.item.ItemLock;
 import com.tle.beans.item.ItemPack;
 import com.tle.beans.item.ItemStatus;
 import com.tle.beans.item.ItemXml;
+import com.tle.beans.item.ModerationStatus;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.common.Check;
-import com.tle.core.dao.ItemDao;
-import com.tle.core.events.IndexItemBackgroundEvent;
-import com.tle.core.events.IndexItemNowEvent;
+import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.workflow.WorkflowItemStatus;
+import com.tle.common.workflow.WorkflowMessage;
+import com.tle.common.workflow.WorkflowNodeStatus;
+import com.tle.common.workflow.node.WorkflowItem;
+import com.tle.common.workflow.node.WorkflowNode;
+import com.tle.core.events.services.EventService;
 import com.tle.core.filesystem.ItemFile;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.guice.BindFactory;
+import com.tle.core.item.dao.ItemDao;
 import com.tle.core.item.edit.DRMEditor;
 import com.tle.core.item.edit.ItemAttachmentListener;
 import com.tle.core.item.edit.ItemEditor;
@@ -69,25 +77,30 @@ import com.tle.core.item.edit.ItemMetadataListener;
 import com.tle.core.item.edit.NavigationEditor;
 import com.tle.core.item.edit.attachment.AbstractAttachmentEditor;
 import com.tle.core.item.edit.attachment.AttachmentEditor;
+import com.tle.core.item.event.IndexItemBackgroundEvent;
+import com.tle.core.item.event.IndexItemNowEvent;
+import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.item.security.ItemSecurityConstants;
 import com.tle.core.item.serializer.ItemDeserializerEditor;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.service.ItemLockingService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.plugins.PluginTracker;
+import com.tle.core.quota.service.QuotaService;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.EventService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.QuotaService;
-import com.tle.core.services.StagingService;
-import com.tle.core.services.WorkflowOperationService;
-import com.tle.core.services.item.ItemLockingService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.util.ItemHelper;
+import com.tle.core.workflow.dao.WorkflowDao;
 import com.tle.exceptions.PrivilegeRequiredException;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
+import com.tle.web.api.item.interfaces.beans.HistoryEventBean;
+import com.tle.web.api.item.interfaces.beans.ItemExportBean;
+import com.tle.web.api.item.interfaces.beans.ItemNodeStatusExportBean;
+import com.tle.web.api.item.interfaces.beans.ItemNodeStatusMessageBean;
 
 @SuppressWarnings("nls")
 public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEditorChangeTracker
 {
-	private static final String SAVE_SCRIPT_NAME = "saveOperation"; //$NON-NLS-1$
+	private static final String SAVE_SCRIPT_NAME = "saveOperation";
 
 	@Inject
 	private PluginTracker<AbstractAttachmentEditor> attachEditorTracker;
@@ -96,11 +109,13 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
 	@Inject
 	private PluginTracker<ItemAttachmentListener> attachmentListenerTracker;
 	@Inject
-	private WorkflowOperationService workflowOpService;
+	private ItemService itemService;
 	@Inject
 	private ItemHelper itemHelper;
 	@Inject
 	private ItemDao itemDao;
+	@Inject
+	private WorkflowDao workflowDao;
 	@Inject
 	private EventService eventService;
 	@Inject
@@ -109,6 +124,8 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
 	private QuotaService quotaService;
 	@Inject
 	private FileSystemService fileSystemService;
+	@Inject
+	private ItemFileService itemFileService;
 	@Inject
 	private ItemLockingService itemLockingService;
 
@@ -177,7 +194,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
 		this.newItem = true;
 		this.itemLock = null;
 		this.deserializerEditors = deserializerEditors;
-		this.importing = true;
+		this.importing = importing;
 		updateDateModified = false;
 		metadataEdited = true;
 		canEdit = true;
@@ -210,7 +227,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
 		{
 			if( !newItem )
 			{
-				fileHandle = new ItemFile(item);
+				fileHandle = itemFileService.getItemFile(item);
 			}
 			else
 			{
@@ -407,6 +424,170 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
 	}
 
 	@Override
+	public void processExportDetails(EquellaItemBean itemBean)
+	{
+		ItemExportBean exportBean = itemBean.getExportDetails();
+		if( exportBean == null )
+		{
+			return;
+		}
+
+		List<HistoryEventBean> historyEventBeans = exportBean.getHistory();
+		if( !Check.isEmpty(historyEventBeans) )
+		{
+			List<HistoryEvent> history = Lists.newArrayList();
+			for( HistoryEventBean heBean : historyEventBeans )
+			{
+				HistoryEvent.Type heType = HistoryEvent.Type.valueOf(heBean.getType());
+				HistoryEvent he = new HistoryEvent(heType, item);
+				// he.setApplies(); - would appear to be a redundant field ...?
+				he.setComment(heBean.getComment());
+				he.setDate(heBean.getDate());
+				if( !Check.isEmpty(heBean.getState()) )
+				{
+					// Being wary of oddity: Item.ItemStatus.toString converts
+					// uppercase style enum value to lower case, so we need to
+					// upper-case the string to extract the enum.
+					ItemStatus enumableValue = ItemStatus.valueOf(heBean.getState().toUpperCase());
+					he.setState(enumableValue);
+				}
+				he.setStep(heBean.getStep());
+				he.setStepName(heBean.getStepName());
+				he.setToStep(heBean.getToStep());
+				he.setToStepName(heBean.getToStepName());
+				if( heBean.getUser() != null )
+				{
+					he.setUser(heBean.getUser().getId());
+				}
+				history.add(he);
+			}
+			item.setHistory(history);
+		}
+		ModerationStatus modStatus = null;
+
+		item.setModerating(exportBean.isModerating());
+		if( exportBean.isModerating() )
+		{
+			modStatus = new ModerationStatus();
+			item.setModeration(modStatus);
+			modStatus.setReviewDate(exportBean.getReviewDate());
+			modStatus.setLastAction(exportBean.getLastAction());
+			modStatus.setStart(exportBean.getStart());
+			modStatus.setLiveApprovalDate(exportBean.getLiveApprovalDate());
+			if( exportBean.getResumeStatus() != null )
+			{
+				modStatus.setResumeStatus(ItemStatus.valueOf(exportBean.getResumeStatus().toUpperCase()));
+			}
+			if( exportBean.getDeletedStatus() != null )
+			{
+				modStatus.setDeletedStatus(ItemStatus.valueOf(exportBean.getDeletedStatus().toUpperCase()));
+			}
+			modStatus.setRejectedMessage(exportBean.getRejectedMessage());
+			modStatus.setRejectedBy(exportBean.getRejectedBy());
+			modStatus.setRejectedStep(exportBean.getRejectedStep());
+			modStatus.setUnarchiveModerating(exportBean.isUnarchiveModerating());
+			modStatus.setDeletedModerating(exportBean.isDeletedModerating());
+			modStatus.setNeedsReset(exportBean.isNeedsReset());
+			workflowDao.saveAny(modStatus);
+		}
+
+		List<ItemNodeStatusExportBean> nodeStatii = exportBean.getStatuses();
+		if( !Check.isEmpty(nodeStatii) )
+		{
+			List<WorkflowNodeStatus> indexedNewNodes = Lists.newArrayList();
+			for( ItemNodeStatusExportBean insexb : nodeStatii )
+			{
+				WorkflowNode workflowNode = workflowDao.getWorkflowNodeByUuid(insexb.getUuid());
+
+				final WorkflowNodeStatus wrkNodeStat;
+				if( !(workflowNode instanceof WorkflowItem) )
+				{
+					wrkNodeStat = new WorkflowNodeStatus(workflowNode);
+				}
+				else
+				{
+					WorkflowItem workflowItem = (WorkflowItem) workflowNode;
+					// we can set the cause once we've iterated through the loop and
+					// determined which node beans link to another node bean
+					WorkflowItemStatus wrkItemStat = new WorkflowItemStatus(workflowItem, null);
+					Set<String> acceptedUsers = wrkItemStat.getAcceptedUsers();
+					acceptedUsers.clear();
+					acceptedUsers.addAll(insexb.getAcceptedUsers());
+					wrkItemStat.setAssignedTo(insexb.getAssignedTo());
+					wrkItemStat.setDateDue(insexb.getDue());
+					// ? on the fly...?wrkItemStat.setOverdue();
+					wrkItemStat.setStarted(insexb.getStarted());
+
+					wrkNodeStat = wrkItemStat;
+				}
+
+				wrkNodeStat.setModStatus(modStatus); // ie, if any
+				if( !Check.isEmpty(insexb.getComments()) )
+				{
+					Set<WorkflowMessage> commentObjs = new HashSet<WorkflowMessage>();
+
+					for( ItemNodeStatusMessageBean msg : insexb.getComments() )
+					{
+						WorkflowMessage wMsg = new WorkflowMessage();
+						wMsg.setDate(msg.getDate());
+						wMsg.setMessage(msg.getMessage());
+						wMsg.setNode(wrkNodeStat);
+						if( msg.getType() != null )
+						{
+							char c = Character.toLowerCase(msg.getType().toString().charAt(0));
+							if( !WorkflowMessage.isValidMessageType(c) )
+							{
+								throw new ItemEditingException(
+									"Unrecognised workflow message type expression: " + msg.getType().toString());
+							}
+							wMsg.setType(c);
+						}
+						if( msg.getUser() != null )
+						{
+							wMsg.setUser(msg.getUser().getId());
+						}
+						commentObjs.add(wMsg);
+					}
+					wrkNodeStat.setComments(commentObjs);
+				}
+				if( !Check.isEmpty(insexb.getStatus()) )
+				{
+					char c = Character.toLowerCase(insexb.getStatus().charAt(0));
+					if( !WorkflowNodeStatus.isValidMessageType(c) )
+					{
+						throw new ItemEditingException("Unrecognised node status expression: " + insexb.getStatus());
+					}
+					wrkNodeStat.setStatus(c);
+				}
+				if( modStatus != null )
+				{
+					modStatus.getStatuses().add(wrkNodeStat);
+				}
+
+				workflowDao.saveAny(wrkNodeStat);
+				indexedNewNodes.add(wrkNodeStat);
+			}
+
+			// Now we've - at least provisionally - persisted the Nodes in a
+			// List, we reiterate through the original bean list and replicate
+			// the unidirectional hooks within.
+			int indexMe = 0;
+			for( ItemNodeStatusExportBean insexb : nodeStatii )
+			{
+				if( insexb.getCauseIndex() >= 0 )
+				{
+					WorkflowNodeStatus workflowNodeStatus = indexedNewNodes.get(indexMe);
+					if( workflowNodeStatus instanceof WorkflowItemStatus )
+					{
+						((WorkflowItemStatus) workflowNodeStatus).setCause(indexedNewNodes.get(insexb.getCauseIndex()));
+					}
+				}
+				indexMe++;
+			}
+		}
+	}
+
+	@Override
 	public void editRating(Float rating)
 	{
 		if( rating == -1 || (rating >= 0 && rating <= 5.0) )
@@ -456,8 +637,8 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
 			if( !Check.isEmpty(saveScript) )
 			{
 				ItemPack<Item> itemPack = createItemPack();
-				ScriptContext scriptContext = workflowOpService.createScriptContext(itemPack, null, null, null);
-				workflowOpService.executeScript(saveScript, SAVE_SCRIPT_NAME, scriptContext, true);
+				ScriptContext scriptContext = itemService.createScriptContext(itemPack, null, null, null);
+				itemService.executeScript(saveScript, SAVE_SCRIPT_NAME, scriptContext, true);
 				editMetadata(itemPack.getXml());
 				indexingChanges.add("savescript");
 			}
@@ -479,7 +660,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
 		itemDao.save(item);
 		if( metadataEdited )
 		{
-			workflowOpService.updateMetadataBasedSecurity(getMetadata(), item);
+			itemService.updateMetadataBasedSecurity(getMetadata(), item);
 			for( ItemMetadataListener metadataListener : metadataListenerTracker.getBeanList() )
 			{
 				metadataListener.metadataChanged(item, getMetadata());
@@ -686,7 +867,7 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
 				if( stagingUuid != null )
 				{
 					StagingFile stagingFile = (StagingFile) fileHandle;
-					ItemFile destFiles = new ItemFile(item);
+					ItemFile destFiles = itemFileService.getItemFile(item);
 					if( itemLock == null || unlock )
 					{
 						fileSystemService.commitFiles(stagingFile, destFiles);
@@ -720,7 +901,8 @@ public final class ItemEditorImpl implements ItemEditor, DeleteHandler, ItemEdit
 
 		ItemEditorImpl createNewEditor(Item item, List<ItemDeserializerEditor> deserializerEditors);
 
-		ItemEditorImpl createImportEditor(Item item, List<ItemDeserializerEditor> deserializerEditors, boolean importing);
+		ItemEditorImpl createImportEditor(Item item, List<ItemDeserializerEditor> deserializerEditors,
+			boolean importing);
 	}
 
 	@Override

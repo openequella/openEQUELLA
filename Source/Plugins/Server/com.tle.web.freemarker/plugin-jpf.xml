@@ -2,11 +2,12 @@
 <plugin id="com.tle.web.freemarker" version="1">
 	<requires>
 		<import plugin-id="com.tle.core.guice" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.web.resources" />
 		<import plugin-id="com.tle.web.sections" />
 		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="org.freemarker:freemarker" exported="true" />
+		<import plugin-id="com.tle.common.i18n" />
+		<import plugin-id="com.tle.core.usermanagement" />
 	</requires>
 
 	<runtime>

@@ -19,7 +19,7 @@ package com.tle.web.controls.universal.handlers.fileupload;
 import javax.inject.Inject;
 
 import com.google.common.base.Throwables;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.services.FileSystemService;
 import com.tle.web.controls.universal.handlers.FileUploadHandler;
 import com.tle.web.sections.SectionInfo;

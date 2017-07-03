@@ -16,8 +16,6 @@
 
 package com.tle.web.bulk.operation;
 
-import it.uniroma3.mat.extendedset.wrappers.LongSet;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -33,19 +31,21 @@ import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemPack;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.RunAsInstitution;
+import com.tle.core.item.operations.FilterResultListener;
+import com.tle.core.item.operations.ItemOperationFilter;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.plugins.BeanLocator;
 import com.tle.core.services.impl.BeanClusteredTask;
 import com.tle.core.services.impl.ClusteredTask;
 import com.tle.core.services.impl.SingleShotTask;
 import com.tle.core.services.impl.Task;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
-import com.tle.core.workflow.filters.FilterResultListener;
-import com.tle.core.workflow.filters.WorkflowFilter;
-import com.tle.core.workflow.operations.WorkflowOperation;
+
+import it.uniroma3.mat.extendedset.wrappers.LongSet;
 
 @Singleton
 @Bind(BulkOperationService.class)
@@ -61,16 +61,16 @@ public class BulkOperationServiceImpl implements BulkOperationService
 	public ClusteredTask createTask(Collection<? extends ItemKey> items,
 		BeanLocator<? extends BulkOperationExecutor> executor)
 	{
-		BeanClusteredTask clusteredTask = new BeanClusteredTask(true, null, BulkOperationService.class,
-			"createNewTask", CurrentUser.getUserState(), (Serializable) items, executor);
+		BeanClusteredTask clusteredTask = new BeanClusteredTask(true, null, BulkOperationService.class, "createNewTask",
+			CurrentUser.getUserState(), (Serializable) items, executor);
 		return clusteredTask;
 	}
 
 	@Override
 	public ClusteredTask createTask(LongSet items, BeanLocator<? extends BulkOperationExecutor> executor)
 	{
-		BeanClusteredTask clusteredTask = new BeanClusteredTask(true, null, BulkOperationService.class,
-			"createNewTask", CurrentUser.getUserState(), items, executor);
+		BeanClusteredTask clusteredTask = new BeanClusteredTask(true, null, BulkOperationService.class, "createNewTask",
+			CurrentUser.getUserState(), items, executor);
 		return clusteredTask;
 	}
 
@@ -92,7 +92,8 @@ public class BulkOperationServiceImpl implements BulkOperationService
 		private final LongSet itemsBitSet;
 		private final BulkOperationExecutor executor;
 
-		public BulkOperationTask(UserState userState, Collection<? extends ItemId> items, BulkOperationExecutor executor)
+		public BulkOperationTask(UserState userState, Collection<? extends ItemId> items,
+			BulkOperationExecutor executor)
 		{
 			this.userState = userState;
 			this.items = items;
@@ -149,7 +150,7 @@ public class BulkOperationServiceImpl implements BulkOperationService
 		}
 	}
 
-	public class BulkWorkflowFilter implements WorkflowFilter, FilterResultListener
+	public class BulkWorkflowFilter implements ItemOperationFilter, FilterResultListener
 	{
 		private final Collection<? extends ItemId> items;
 		private final LongSet itemsBitSet;
@@ -181,8 +182,8 @@ public class BulkOperationServiceImpl implements BulkOperationService
 			}
 			else
 			{
-				return new FilterResults(itemsBitSet.size(), Iterators.transform(itemsBitSet.iterator(),
-					new Function<Long, ItemKey>()
+				return new FilterResults(itemsBitSet.size(),
+					Iterators.transform(itemsBitSet.iterator(), new Function<Long, ItemKey>()
 					{
 						@Override
 						public ItemKey apply(Long id)
@@ -205,17 +206,29 @@ public class BulkOperationServiceImpl implements BulkOperationService
 			return false;
 		}
 
+		private String getResultName(Item item, ItemPack<Item> pack)
+		{
+			if( pack != null && pack.getAttribute(KEY_ITEM_RESULT_TITLE) != null )
+			{
+				return pack.getAttribute(KEY_ITEM_RESULT_TITLE);
+			}
+			else
+			{
+				return CurrentLocale.get(item.getName(), item.getUuid());
+			}
+		}
+
 		@Override
 		public void succeeded(ItemKey itemId, ItemPack<Item> pack)
 		{
 			Item item = pack.getItem();
-			task.addLogEntry(new BulkResult(true, CurrentLocale.get(item.getName(), item.getUuid()), null));
+			task.addLogEntry(new BulkResult(true, getResultName(item, pack), null));
 		}
 
 		@Override
-		public void failed(ItemKey itemId, Item item, Throwable e)
+		public void failed(ItemKey itemId, Item item, ItemPack<Item> pack, Throwable e)
 		{
-			task.addLogEntry(new BulkResult(false, CurrentLocale.get(item.getName(), item.getUuid()), e.getMessage()));
+			task.addLogEntry(new BulkResult(false, getResultName(item, pack), e.getMessage()));
 		}
 
 		@Override

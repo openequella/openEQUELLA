@@ -17,8 +17,8 @@
 package com.tle.core.echo.dao;
 
 import com.tle.beans.Institution;
-import com.tle.core.dao.AbstractEntityDao;
 import com.tle.core.echo.entity.EchoServer;
+import com.tle.core.entity.dao.AbstractEntityDao;
 
 public interface EchoDao extends AbstractEntityDao<EchoServer>
 {

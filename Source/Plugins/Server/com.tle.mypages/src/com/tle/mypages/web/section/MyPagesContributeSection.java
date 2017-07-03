@@ -25,7 +25,7 @@ import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.services.item.ItemService;
+import com.tle.core.item.service.ItemService;
 import com.tle.mycontent.ContentHandlerSection;
 import com.tle.mycontent.service.MyContentService;
 import com.tle.mypages.MyPagesConstants;

@@ -37,15 +37,15 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.HtmlAttachment;
 import com.tle.common.FileSizeUtils;
 import com.tle.common.PathUtils;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.RegisterMimeTypeExtension;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.UrlService;
 import com.tle.web.htmleditor.service.HtmlEditorService;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
@@ -103,7 +103,7 @@ public class MyPagesSummariser
 	@Inject
 	private HtmlEditorService htmlEditorService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private ExtendedFreemarkerFactory viewFactory;
 	@Inject
@@ -143,8 +143,8 @@ public class MyPagesSummariser
 			this.info = info;
 			this.handle = resource.getViewableItem().getFileHandle();
 			this.attachment = attachment;
-			stream = new MyPagesContentStream(fileSystemService.getContentStream(resource.getViewableItem()
-				.getFileHandle(), attachment.getFilename(), "text/html"));
+			stream = new MyPagesContentStream(fileSystemService
+				.getContentStream(resource.getViewableItem().getFileHandle(), attachment.getFilename(), "text/html"));
 			noBaseHref = false;
 			rawLength = -1;
 		}
@@ -157,8 +157,8 @@ public class MyPagesSummariser
 			this.attachment = page;
 			try
 			{
-				stream = new MyPagesContentStream(new ByteArrayContentStream(html.getBytes(Constants.UTF8), "",
-					"text/html"));
+				stream = new MyPagesContentStream(
+					new ByteArrayContentStream(html.getBytes(Constants.UTF8), "", "text/html"));
 			}
 			catch( UnsupportedEncodingException use )
 			{
@@ -270,9 +270,8 @@ public class MyPagesSummariser
 						{
 							// stylesheet is copied to root of package,
 							// therefore need ..
-							styles.add(noBaseHref
-								? PathUtils.filePath("..", PathUtils.getFilenameFromFilepath(userCss)) : urlService
-									.institutionalise(userCss));
+							styles.add(noBaseHref ? PathUtils.filePath("..", PathUtils.getFilenameFromFilepath(userCss))
+								: institutionService.institutionalise(userCss));
 						}
 						model.setStyles(styles);
 

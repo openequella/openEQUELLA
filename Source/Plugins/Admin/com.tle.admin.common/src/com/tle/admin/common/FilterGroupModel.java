@@ -22,10 +22,10 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.dytech.edge.common.valuebean.GroupBean;
 import com.dytech.gui.filter.FilterModel;
 import com.tle.common.NameValue;
-import com.tle.common.util.UserBeanUtils;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
+import com.tle.common.usermanagement.util.UserBeanUtils;
 import com.tle.core.remoting.RemoteUserService;
 
 public class FilterGroupModel extends FilterModel<NameValue>

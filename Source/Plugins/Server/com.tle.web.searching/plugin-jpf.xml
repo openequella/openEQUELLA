@@ -20,6 +20,9 @@
 		<import plugin-id="com.tle.core.powersearch" />
 		<import plugin-id="com.tle.core.google" />
 		<import plugin-id="com.tle.web.viewitem" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.common.settings.standard" />
+		<import plugin-id="com.tle.core.collection" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

@@ -3,8 +3,8 @@
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.core.guice" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.core.scheduler" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.web.core" />
 		<import plugin-id="com.tle.web.sections" />
 		<import plugin-id="com.tle.web.sections.equella" />
@@ -16,6 +16,9 @@
 		<import plugin-id="jdom:jdom" />
 		<import plugin-id="com.tle.core.freetext" />
 		<import plugin-id="commons-codec:commons-codec" />
+		<import plugin-id="com.tle.core.filesystem.staging" />
+		<import plugin-id="com.tle.core.entity" />
+		<import plugin-id="com.tle.common.item" />
 	</requires>
 
 	<runtime>

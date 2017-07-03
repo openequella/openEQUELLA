@@ -36,19 +36,20 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 
-import com.dytech.edge.exceptions.InvalidDataException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Singleton;
 import com.tle.beans.user.TLEGroup;
 import com.tle.common.Check;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.user.TLEGroupService;
+import com.tle.core.usermanagement.standard.service.TLEGroupService;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.users.interfaces.beans.GroupBean;
+import com.tle.web.remoting.rest.service.RestImportExportHelper;
 import com.tle.web.remoting.rest.service.UrlLinkService;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -126,10 +127,14 @@ public class GroupManagementResourceImpl implements EquellaGroupResource
 			rawResults = tleGroupService.search(query);
 		}
 
+		// If this is a call to retrieve exportable data, we want include the
+		// users per group.
+		boolean isExport = RestImportExportHelper.isExport(uriInfo);
+
 		List<GroupBean> resultsOfBeans = Lists.newArrayList();
 		for( TLEGroup tleGroup : rawResults )
 		{
-			GroupBean newB = apiGroupBeanFromTLEGroup(tleGroup, false);
+			GroupBean newB = apiGroupBeanFromTLEGroup(tleGroup, isExport);
 			resultsOfBeans.add(newB);
 		}
 		result.setStart(0);

@@ -31,13 +31,13 @@ import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.mycontent.ContentHandler;
 import com.tle.mycontent.MyContentConstants;
 import com.tle.mycontent.web.section.ContributeMyContentAction;
@@ -65,13 +65,13 @@ public class MyContentServiceImpl implements MyContentService
 	@Inject
 	private OperationFactory editOpFactory;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 
 	@Override
 	public boolean isMyContentContributionAllowed()
 	{
-		return !Check.isEmpty(itemDefinitionService.getMatchingCreatableUuid(Collections
-			.singleton(MyContentConstants.MY_CONTENT_UUID)));
+		return !Check.isEmpty(
+			itemDefinitionService.getMatchingCreatableUuid(Collections.singleton(MyContentConstants.MY_CONTENT_UUID)));
 	}
 
 	@Override
@@ -80,9 +80,9 @@ public class MyContentServiceImpl implements MyContentService
 		ItemDefinition itemdef = itemDefinitionService.getByUuid(MyContentConstants.MY_CONTENT_UUID);
 		if( itemdef == null )
 		{
-			throw new RuntimeException("My Content collection is missing or does not have a UUID of "
-				+ MyContentConstants.MY_CONTENT_UUID
-				+ ".  This collection and UUID are mandatory for the Scrapbook to function correctly.");
+			throw new RuntimeException(
+				"My Content collection is missing or does not have a UUID of " + MyContentConstants.MY_CONTENT_UUID
+					+ ".  This collection and UUID are mandatory for the Scrapbook to function correctly.");
 		}
 		return itemdef;
 	}

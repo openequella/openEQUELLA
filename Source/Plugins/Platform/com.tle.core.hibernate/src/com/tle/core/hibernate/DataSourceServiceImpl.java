@@ -17,6 +17,7 @@
 package com.tle.core.hibernate;
 
 import java.util.Properties;
+import java.util.concurrent.ThreadFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -118,6 +119,30 @@ public class DataSourceServiceImpl implements DataSourceService
 			newConfig.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
 			newConfig.setAutoCommit(false);
 			newConfig.setInitializationFailFast(false);
+			newConfig.setThreadFactory(new ThreadFactory()
+			{
+				@Override
+				public Thread newThread(final Runnable r)
+				{
+					return new Thread("CustomHikariThread")
+					{
+						@Override
+						public void run()
+						{
+							ClassLoader oldLoader = getContextClassLoader();
+							try
+							{
+								setContextClassLoader(DataSourceServiceImpl.class.getClassLoader());
+								r.run();
+							}
+							catch( Throwable t )
+							{
+								setContextClassLoader(oldLoader);
+							}
+						}
+					};
+				}
+			});
 
 			return new DataSourceHolder(new HikariDataSource(newConfig), dialect);
 		}

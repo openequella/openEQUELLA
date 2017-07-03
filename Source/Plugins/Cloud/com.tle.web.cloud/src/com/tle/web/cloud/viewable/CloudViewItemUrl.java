@@ -16,7 +16,7 @@
 
 package com.tle.web.cloud.viewable;
 
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.encoding.UrlEncodedString;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewurl.ViewItemUrl;
@@ -26,9 +26,9 @@ import com.tle.web.viewurl.ViewItemUrl;
  */
 public class CloudViewItemUrl extends ViewItemUrl
 {
-	public CloudViewItemUrl(SectionInfo info, String itemdir, UrlEncodedString filepath, UrlService urlService,
-		int flags)
+	public CloudViewItemUrl(SectionInfo info, String itemdir, UrlEncodedString filepath,
+		InstitutionService institutionService, int flags)
 	{
-		super(info, itemdir, filepath, null, urlService, flags);
+		super(info, itemdir, filepath, null, institutionService, flags);
 	}
 }

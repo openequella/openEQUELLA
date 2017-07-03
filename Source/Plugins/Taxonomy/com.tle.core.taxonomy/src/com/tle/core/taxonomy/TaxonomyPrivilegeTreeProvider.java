@@ -21,8 +21,8 @@ import javax.inject.Singleton;
 
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.taxonomy.Taxonomy;
+import com.tle.core.entity.security.AbstractEntityPrivilegeTreeProvider;
 import com.tle.core.guice.Bind;
-import com.tle.core.security.AbstractEntityPrivilegeTreeProvider;
 import com.tle.web.resources.ResourcesService;
 
 @Bind
@@ -33,9 +33,10 @@ public class TaxonomyPrivilegeTreeProvider extends AbstractEntityPrivilegeTreePr
 	@Inject
 	public TaxonomyPrivilegeTreeProvider(TaxonomyService taxonomyService)
 	{
-		super(taxonomyService, Node.ALL_TAXONOMIES, ResourcesService.getResourceHelper(
-			TaxonomyPrivilegeTreeProvider.class).key("securitytree.alltaxonomies"), Node.TAXONOMY, ResourcesService
-			.getResourceHelper(TaxonomyPrivilegeTreeProvider.class).key("securitytree.targetalltaxonomies"));
+		super(taxonomyService, Node.ALL_TAXONOMIES,
+			ResourcesService.getResourceHelper(TaxonomyPrivilegeTreeProvider.class).key("securitytree.alltaxonomies"),
+			Node.TAXONOMY, ResourcesService.getResourceHelper(TaxonomyPrivilegeTreeProvider.class)
+				.key("securitytree.targetalltaxonomies"));
 	}
 
 	@Override

@@ -22,14 +22,14 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.DatabaseSchema;
 import com.tle.common.Check;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.DataSourceService;
 import com.tle.core.hibernate.ExtendedDialect;
@@ -117,8 +117,8 @@ public class DatabaseEditDialog extends AbstractOkayableDialog<DatabaseEditDialo
 
 		setAjax(true);
 
-		addOnline.setClickHandler(events.getSubmitValuesHandler("save", true).addValidator(
-			new Confirm(LABEL_ADDONLINE_CONFIRM)));
+		addOnline.setClickHandler(
+			events.getSubmitValuesHandler("save", true).addValidator(new Confirm(LABEL_ADDONLINE_CONFIRM)));
 		addOnline.setComponentAttribute(ButtonType.class, OK_BUTTON_TYPE);
 
 		description.setDefaultRenderer(RendererConstants.TEXTAREA);
@@ -126,8 +126,8 @@ public class DatabaseEditDialog extends AbstractOkayableDialog<DatabaseEditDialo
 		reportingPassword.setPassword(true);
 
 		CombinedDisableable disableFields = new CombinedDisableable(useSystem, url, username, password);
-		useSystem.setClickHandler(new StatementHandler(disableFields.createDisableFunction(), useSystem
-			.createGetExpression()));
+		useSystem.setClickHandler(
+			new StatementHandler(disableFields.createDisableFunction(), useSystem.createGetExpression()));
 	}
 
 	@Override

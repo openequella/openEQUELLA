@@ -27,8 +27,8 @@ import org.jboss.resteasy.core.ResourceMethodInvoker;
 import com.google.inject.Singleton;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.impl.SecureOnCallSystem;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.interfaces.Institutional;
 

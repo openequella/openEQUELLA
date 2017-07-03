@@ -70,13 +70,14 @@ import com.tle.core.migration.AbstractHibernateSchemaMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
 import com.tle.core.plugins.impl.PluginServiceImpl;
-import com.tle.core.xstream.XmlService;
+import com.tle.core.xml.service.XmlService;
 
 @Bind
 @SuppressWarnings("nls")
 public class MigrateOldTaxonomyToNew extends AbstractHibernateSchemaMigration
 {
-	private static final String KEY_PREFIX = PluginServiceImpl.getMyPluginId(MigrateOldTaxonomyToNew.class) + ".migration.";
+	private static final String KEY_PREFIX = PluginServiceImpl.getMyPluginId(MigrateOldTaxonomyToNew.class)
+		+ ".migration.";
 
 	@Inject
 	private XmlService xmlService;
@@ -297,6 +298,7 @@ public class MigrateOldTaxonomyToNew extends AbstractHibernateSchemaMigration
 		Date dateCreated;
 		LanguageBundle name;
 	}
+
 	@AccessType("field")
 	@Entity(name = "Taxonomy")
 	public static class FakeTaxonomy extends FakeBaseEntity

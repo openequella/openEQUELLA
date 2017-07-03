@@ -18,6 +18,7 @@ package com.tle.web.sections.equella.render;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
+import com.tle.web.DebugSettings;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.jquery.libraries.JQueryCore;
@@ -33,14 +34,15 @@ public class Bootstrap implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
-	private static final String BOOTSTRAP_JS = "bootstrap/js/bootstrap.js";
-	private static final String BOOTSTRAP_CSS = "bootstrap/css/bootstrap.css";
 	private static final PluginResourceHelper URL_HELPER = ResourcesService.getResourceHelper(Bootstrap.class);
 
-	public static final CssInclude CSS = CssInclude.include(URL_HELPER.url(BOOTSTRAP_CSS)).priority(Priority.LOWEST)
-		.make();
-	public static final PreRenderable PRERENDER = new IncludeFile(URL_HELPER.url(BOOTSTRAP_JS), CSS,
-		JQueryCore.PRERENDER);
+	public static final CssInclude CSS = CssInclude
+		.include(URL_HELPER
+			.url(DebugSettings.isDebuggingMode() ? "bootstrap/css/bootstrap.css" : "bootstrap/css/bootstrap.min.css"))
+		.priority(Priority.LOWEST).make();
+	public static final PreRenderable PRERENDER = new IncludeFile(
+		URL_HELPER.url(DebugSettings.isDebuggingMode() ? "bootstrap/js/bootstrap.js" : "bootstrap/js/bootstrap.min.js"),
+		CSS, JQueryCore.PRERENDER);
 	public static final TagProcessor TOGGLE_ATTR = new ExtraAttributes("data-toggle", "dropdown");
 
 	@Override

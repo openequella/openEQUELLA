@@ -21,7 +21,8 @@ import java.io.InputStream;
 
 import javax.inject.Singleton;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.tle.beans.mime.MimeEntry;
 import com.tle.core.guice.Bind;
@@ -34,7 +35,7 @@ import com.tle.freetext.htmlfilter.HTMLFilter;
 @Singleton
 public class HtmlExtracter extends AbstractTextExtracterExtension
 {
-	private static final Logger LOGGER = Logger.getLogger(HtmlExtracter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(HtmlExtracter.class);
 
 	@Override
 	public boolean isSupportedByDefault(MimeEntry mimeEntry)

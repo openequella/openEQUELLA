@@ -24,6 +24,7 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
+import com.tle.web.DebugSettings;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.jquery.JQuerySelector;
@@ -40,15 +41,17 @@ public class JQueryDatepicker implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(new String[]{"jquery.ui.datepicker.js",
-			"~js/datepicker.js"}, null, JQueryUICore.PRERENDER);
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
+		new String[]{DebugSettings.isDebuggingMode() ? "jquery.ui.datepicker.js" : "jquery.ui.datepicker.min.js",
+				"~js/datepicker.js"},
+		null, JQueryUICore.PRERENDER);
 
 	private static final JSCallable SETUP_PICKER_FUNCTION = new ExternallyDefinedFunction("setupPicker", PRERENDER);
 
 	public static final JSCallable DISABLE_PICKER_FUNCTION = new ExternallyDefinedFunction("disablePicker", PRERENDER);
 
-	private static final String IMAGE_URL = ResourcesService.getResourceHelper(JQueryDatepicker.class).url(
-		"images/calendar-icon.png");
+	private static final String IMAGE_URL = ResourcesService.getResourceHelper(JQueryDatepicker.class)
+		.url("images/calendar-icon.png");
 
 	public static JSStatements setupPicker(JQuerySelector visibleElement, JQuerySelector invisibleElement,
 		Integer timezoneOffset, JSExpression onChangeExpression, JQuerySelector secondDateInvisibleElement,
@@ -71,14 +74,15 @@ public class JQueryDatepicker implements JavascriptModule
 	}
 
 	private static final Set<String> LANG_PACKS = new HashSet<String>();
+
 	static
 	{
 		// Sigh... get things working again
 		final String[] packs = new String[]{"af", "ar-DZ", "ar", "be", "bq", "bs", "ca", "cs", "cy-GB", "da", "de",
-				"el", "en-AU", "en-GB", "en-NZ", "eo", "es", "et", "eu", "fa", "fi", "fo", "fr-CA", "fr-CH", "fr",
-				"gl", "he", "hi", "hr", "hu", "hy", "id", "is", "it", "ja", "ka", "kk", "km", "ko", "ky", "lb", "lt",
-				"lv", "mk", "ml", "ms", "nb", "nl-BE", "nl", "nn", "no", "pl", "pt-BR", "pt", "rm", "ro", "ru", "sk",
-				"sl", "sq", "sr-SR", "sr", "sv", "ta", "th", "tj", "tr", "uk", "vi", "zh-CN", "zh-HK", "zh-TW"};
+				"el", "en-AU", "en-GB", "en-NZ", "eo", "es", "et", "eu", "fa", "fi", "fo", "fr-CA", "fr-CH", "fr", "gl",
+				"he", "hi", "hr", "hu", "hy", "id", "is", "it", "ja", "ka", "kk", "km", "ko", "ky", "lb", "lt", "lv",
+				"mk", "ml", "ms", "nb", "nl-BE", "nl", "nn", "no", "pl", "pt-BR", "pt", "rm", "ro", "ru", "sk", "sl",
+				"sq", "sr-SR", "sr", "sv", "ta", "th", "tj", "tr", "uk", "vi", "zh-CN", "zh-HK", "zh-TW"};
 		for( String pack : packs )
 		{
 			LANG_PACKS.add(pack);

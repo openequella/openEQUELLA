@@ -21,8 +21,14 @@
 		<import plugin-id="com.tle.web.integration" />
 		<import plugin-id="com.tle.web.workflow" />
 		<import plugin-id="org.springframework:spring-webmvc" />
-		<import plugin-id="com.tle.core.item.operations" />
 		<import plugin-id="com.tle.core.workflow.thumbnail" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.core.item.standard" exported="true" />
+		<import plugin-id="com.tle.core.i18n" />
+		<import plugin-id="com.tle.core.collection" />
+		<import plugin-id="com.tle.core.quota" />
+		<import plugin-id="com.tle.core.office2html" />
+		<import plugin-id="com.tle.common.quota" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

@@ -32,7 +32,6 @@ import com.tle.beans.Institution;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.LanguageString;
-import com.tle.beans.entity.SchemaTransform;
 import com.tle.common.portal.entity.Portlet;
 import com.tle.common.portal.entity.PortletPreference;
 import com.tle.core.guice.Bind;
@@ -86,8 +85,7 @@ public class CreatePortletEntities extends AbstractCreateMigration
 	{
 		Set<Class<?>> domainClasses = new HashSet<Class<?>>();
 		Collections.addAll(domainClasses, Portlet.class, PortletPreference.class, BaseEntity.class,
-			BaseEntity.Attribute.class, LanguageBundle.class, Institution.class, LanguageString.class,
-			SchemaTransform.class);
+			BaseEntity.Attribute.class, LanguageBundle.class, Institution.class, LanguageString.class);
 		List<Extension> extensions = portletTracker.getExtensions();
 		for( Extension ext : extensions )
 		{
@@ -105,8 +103,8 @@ public class CreatePortletEntities extends AbstractCreateMigration
 	@Override
 	public MigrationInfo createMigrationInfo()
 	{
-		return new MigrationInfo("com.tle.core.portal.migration.portletentities.title"
-			+ (tempTables != null ? "-remove" : ""), "");
+		return new MigrationInfo(
+			"com.tle.core.portal.migration.portletentities.title" + (tempTables != null ? "-remove" : ""), "");
 	}
 
 	@Inject

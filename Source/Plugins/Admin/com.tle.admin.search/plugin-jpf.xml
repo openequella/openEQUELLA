@@ -15,6 +15,7 @@
 		<import plugin-id="com.tle.admin.common" />
 		<import plugin-id="com.tle.common.collection" />
 		<import plugin-id="com.tle.common.usermanagement" />
+		<import plugin-id="com.tle.xstream" />
 	</requires>
 
 	<runtime>

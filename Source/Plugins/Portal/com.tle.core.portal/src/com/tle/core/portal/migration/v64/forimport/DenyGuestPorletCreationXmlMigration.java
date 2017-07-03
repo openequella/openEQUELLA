@@ -30,8 +30,8 @@ import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.SecurityConstants.Recipient;
 import com.tle.core.dao.AccessExpressionDao;
 import com.tle.core.guice.Bind;
-import com.tle.core.institution.convert.AclConverter.AclPostReadMigratorParams;
-import com.tle.core.institution.migration.PostReadMigrator;
+import com.tle.core.institution.convert.PostReadMigrator;
+import com.tle.core.security.convert.AclConverter.AclPostReadMigratorParams;
 
 /**
  * @author Aaron

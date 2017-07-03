@@ -54,9 +54,9 @@ import com.tle.core.guice.Bind;
 import com.tle.core.remoterepo.merlot.service.MerlotSearchParams;
 import com.tle.core.remoterepo.merlot.service.MerlotService;
 import com.tle.core.services.HttpService;
-import com.tle.core.services.config.ConfigurationService;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Response;
+import com.tle.core.settings.service.ConfigurationService;
 
 /**
  * @author agibb

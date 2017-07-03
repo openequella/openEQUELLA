@@ -24,6 +24,8 @@
 		<import plugin-id="commons-httpclient:commons-httpclient" />
 		<import plugin-id="net.sf.json-lib:json-lib" />
 		<import plugin-id="com.tle.core.userscripts" />
+		<import plugin-id="com.tle.core.collection" />
+		<import plugin-id="com.tle.core.scripting" />
 	</requires>
 
 	<runtime>

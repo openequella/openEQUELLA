@@ -2,6 +2,7 @@
 <plugin id="com.tle.common.mimetypes" version="1">
 	<requires>
 		<import plugin-id="com.tle.common.beans" />
+		<import plugin-id="com.tle.common.institution" exported="true" />
 	</requires>
 	<runtime>
 		<library id="core" path="classes/" type="code">

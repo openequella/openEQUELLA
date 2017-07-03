@@ -17,7 +17,7 @@
 package com.tle.core.htmleditor.dao;
 
 import com.tle.common.htmleditor.beans.HtmlEditorPlugin;
-import com.tle.core.dao.AbstractEntityDao;
+import com.tle.core.entity.dao.AbstractEntityDao;
 
 /**
  * @author aholland

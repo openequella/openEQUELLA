@@ -1,5 +1,5 @@
 Redmine #7890, emerged after a jquery upgrade.
-The original isLocal function read as:
+The original isLocal function (jquery.ui.tabs.js) read as:
 
 function isLocal( anchor ) {
 	return anchor.hash.length > 1 &&

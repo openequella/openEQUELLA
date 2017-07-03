@@ -24,7 +24,7 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.QuickUploadService;
+import com.tle.core.quickupload.service.QuickUploadService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionContext;

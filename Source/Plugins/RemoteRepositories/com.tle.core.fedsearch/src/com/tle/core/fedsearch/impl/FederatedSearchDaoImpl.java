@@ -25,11 +25,11 @@ import org.hibernate.criterion.Restrictions;
 
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.FederatedSearch;
-import com.tle.core.dao.impl.AbstractEntityDaoImpl;
+import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.fedsearch.FederatedSearchDao;
 import com.tle.core.guice.Bind;
 import com.tle.core.remoting.RemoteFederatedSearchService;
-import com.tle.core.user.CurrentInstitution;
+import com.tle.common.institution.CurrentInstitution;
 
 @Bind(FederatedSearchDao.class)
 @Singleton

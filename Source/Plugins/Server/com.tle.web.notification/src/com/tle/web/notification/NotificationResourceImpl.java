@@ -30,14 +30,14 @@ import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
 import com.tle.common.interfaces.CsvList;
 import com.tle.common.search.DefaultSearch;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.notification.NotificationService;
 import com.tle.core.notification.beans.Notification;
-import com.tle.core.notification.indexer.NotificationResult;
-import com.tle.core.services.item.FreeTextService;
+import com.tle.core.notification.standard.indexer.NotificationResult;
 import com.tle.core.services.item.FreetextSearchResults;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.workflow.operations.WorkflowFactory;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.item.ItemLinkService;
 import com.tle.web.api.item.interfaces.beans.ItemBean;
@@ -65,12 +65,12 @@ public class NotificationResourceImpl implements NotificationResource
 	@Inject
 	private ItemService itemService;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 
 	private final ImmutableMap<String, String> friendlyToUnfriendly = new ImmutableMap.Builder<String, String>()
 		.put("all", "noteall").put("wentlive", "notewentlive").put("rejected", "noterejected")
 		.put("badurl", "notebadurl").put("watchedwentlive", "notewentlive2").put("overdue", "noteoverdue")
-		.put("itemsold", "notesold").build();
+		.put("itemsold", "notesold").put("error", "noteerror").put("executed", "noteexecuted").build();
 
 	private final ImmutableMap<String, String> unfriendlyToFriendly = new ImmutableMap.Builder<String, String>()
 		.put("wentlive", "wentlive").put("rejected", "rejected").put("badurl", "badurl")
@@ -147,7 +147,7 @@ public class NotificationResourceImpl implements NotificationResource
 	private boolean isRestSearchableNotification(String subsearch)
 	{
 		String[] allowed = {"noteall", "notewentlive", "noterejected", "notebadurl", "notewentlive2", "noteoverdue",
-				"notesold"};
+				"notesold", "noteerror", "noteexecuted"};
 		for( String type : allowed )
 		{
 			if( type.equals(subsearch) )

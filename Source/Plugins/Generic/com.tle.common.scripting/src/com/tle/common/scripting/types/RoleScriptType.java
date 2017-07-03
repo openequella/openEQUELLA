@@ -16,7 +16,7 @@
 
 package com.tle.common.scripting.types;
 
-import com.dytech.edge.common.valuebean.RoleBean;
+import com.tle.common.usermanagement.user.valuebean.RoleBean;
 
 /**
  * Role object for usage in scripts

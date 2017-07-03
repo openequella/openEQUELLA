@@ -5,7 +5,6 @@
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.common.search" />
 		<import plugin-id="com.tle.core.activation" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.security" />
 		<import plugin-id="com.tle.core.settings" />
@@ -23,6 +22,7 @@
 		<import plugin-id="net.sf.json-lib:json-lib" />
 		<import plugin-id="com.tle.web.itemlist" />
 		<import plugin-id="com.tle.web.htmleditor" />
+		<import plugin-id="com.tle.core.item.standard" />
 	</requires>
 
 	<runtime>

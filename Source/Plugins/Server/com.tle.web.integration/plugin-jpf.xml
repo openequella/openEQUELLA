@@ -11,6 +11,7 @@
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.jackson" />
 		<import plugin-id="com.tle.web.lti" />
+		<import plugin-id="com.tle.core.item" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">
@@ -106,7 +107,7 @@
 	</extension>
 	
 	<extension plugin-id="com.tle.web.sections.equella" point-id="htmlStyleClass" id="integrationClass">
-		<parameter id="class" value="bean:com.tle.web.integration.IntegrationStyleClass"/>
+		<parameter id="class" value="bean:com.tle.web.integration.IntegrationStyleClass" />
 	</extension>
 	
 </plugin>

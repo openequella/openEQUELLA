@@ -31,9 +31,6 @@ import javax.ws.rs.core.UriInfo;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dytech.edge.common.LockedException;
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
-import com.dytech.edge.exceptions.NotFoundException;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.tle.beans.entity.BaseEntity;
@@ -41,17 +38,20 @@ import com.tle.beans.entity.EntityLock;
 import com.tle.beans.security.AccessEntry;
 import com.tle.beans.security.AccessExpression;
 import com.tle.common.Check;
+import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.SecurityConstants;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.dao.AccessExpressionDao;
 import com.tle.core.dao.AclDao;
+import com.tle.core.entity.service.AbstractEntityService;
+import com.tle.core.entity.service.EntityLockingService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.security.impl.RequiresPrivilege;
-import com.tle.core.services.LockingService;
-import com.tle.core.services.entity.AbstractEntityService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.baseentity.serializer.BaseEntitySerializer;
 import com.tle.web.api.interfaces.BaseEntityResource;
@@ -61,14 +61,14 @@ import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.interfaces.beans.security.TargetListEntryBean;
-import com.tle.web.remoting.rest.service.RestImportHelper;
+import com.tle.web.remoting.rest.service.RestImportExportHelper;
 import com.tle.web.remoting.rest.service.UrlLinkService;
 
 /**
- * FIXME: I'm not sure about having all these Transactionals in the REST resource...
+ * FIXME: I'm not sure about having all these Transactionals in the REST
+ * resource...
  * 
  * @author Aaron
- *
  * @param <BE> Base Entity type
  * @param <SB> Security Bean type
  * @param <B> Serialized bean type
@@ -99,7 +99,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	@Inject
 	private AccessExpressionDao accessExpressionDao;
 	@Inject
-	private LockingService lockingService;
+	private EntityLockingService lockingService;
 	@Inject
 	private UrlLinkService urlLinkService;
 
@@ -174,11 +174,17 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	@Transactional
 	public SearchBean<B> list(UriInfo uriInfo)
 	{
-		final List<BE> allEntities = getEntityService().enumerateListable();
+		boolean isExport = RestImportExportHelper.isExport(uriInfo);
+
+		final List<BE> allEntities = isExport ? getEntityService().enumerateListableIncludingSystem()
+			: getEntityService().enumerateListable();
 		final List<B> retBeans = new ArrayList<B>(allEntities.size());
+
 		for( BE entity : allEntities )
 		{
-			final B bean = serialize(entity, null, false);
+			// if isExport is true, we also set a flag for 'heavy' beans which
+			// include export data
+			final B bean = serialize(entity, null, isExport);
 			retBeans.add(bean);
 		}
 
@@ -301,8 +307,8 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 		lockBean.setOwner(new UserBean(lock.getUserID()));
 		lockBean.setUuid(lock.getUserSession());
 		final Map<String, String> links = new HashMap<>();
-		final String lockUrl = urlLinkService.getMethodUriBuilder(getResourceClass(), "getLock")
-			.build(entity.getUuid()).toString();
+		final String lockUrl = urlLinkService.getMethodUriBuilder(getResourceClass(), "getLock").build(entity.getUuid())
+			.toString();
 		links.put("self", lockUrl);
 		lockBean.setLinks(links);
 		return lockBean;
@@ -359,7 +365,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	public Response create(UriInfo uriInfo, B bean, String stagingUuid)
 	{
 		validate(bean.getUuid(), bean, true);
-		BE entity = getSerializer().deserializeNew(bean, stagingUuid, RestImportHelper.isImport(uriInfo));
+		BE entity = getSerializer().deserializeNew(bean, stagingUuid, RestImportExportHelper.isImport(uriInfo));
 		String uuid = entity.getUuid();
 		return Response.created(getGetUri(uuid)).build();
 	}
@@ -368,7 +374,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	{
 		validate(uuid, bean, false);
 		BE entity = getSerializer().deserializeEdit(uuid, bean, stagingUuid, lockId, keepLocked,
-			RestImportHelper.isImport(uriInfo));
+			RestImportExportHelper.isImport(uriInfo));
 		if( entity == null )
 		{
 			throw entityNotFound(uuid);
@@ -377,7 +383,10 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	}
 
 	/**
-	 * No-op by default, rely on entityService to validate.  You may need to override this for checking uniqueness before Hibernate bullshit comes into play
+	 * No-op by default, rely on entityService to validate. You may need to
+	 * override this for checking uniqueness before Hibernate bullshit comes
+	 * into play
+	 * 
 	 * @param uuid
 	 * @param bean
 	 */

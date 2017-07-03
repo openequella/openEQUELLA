@@ -16,7 +16,7 @@
 
 package com.tle.web.core.filter;
 
-import com.tle.core.user.UserState;
+import com.tle.common.usermanagement.user.UserState;
 
 public class UserStateResult
 {

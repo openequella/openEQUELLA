@@ -42,7 +42,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.tle.annotation.Nullable;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.AttachmentType;
@@ -51,12 +50,14 @@ import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.Check;
 import com.tle.common.URLUtils;
+import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.filesystem.ItemFile;
-import com.tle.core.filesystem.StagingFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.service.ItemFileService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.UrlService;
-import com.tle.core.util.AbstractHtmlContentHandler;
+import com.tle.core.services.html.AbstractHtmlContentHandler;
 import com.tle.core.util.ims.beans.IMSCustomData;
 import com.tle.core.util.ims.beans.IMSMetadata;
 import com.tle.core.util.ims.beans.IMSResource;
@@ -85,6 +86,8 @@ public class MyPagesIMSExporter implements IMSFileExporter, IMSAttachmentExporte
 	@Inject
 	private FileSystemService fileSystem;
 	@Inject
+	private ItemFileService itemFileService;
+	@Inject
 	private MyPagesService myPagesService;
 	@Inject
 	private HtmlEditorService htmlEditorService;
@@ -93,12 +96,12 @@ public class MyPagesIMSExporter implements IMSFileExporter, IMSAttachmentExporte
 	@Inject
 	private ConvertHtmlService urlConverter;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@Override
 	public void exportFiles(Object info, Item item, StagingFile imsRoot)
 	{
-		final ItemFile itemFile = new ItemFile(item);
+		final ItemFile itemFile = itemFileService.getItemFile(item);
 		final SectionInfo sinfo = (SectionInfo) info;
 
 		final List<HtmlAttachment> pages = new UnmodifiableAttachments(item).getList(AttachmentType.HTML);
@@ -139,15 +142,15 @@ public class MyPagesIMSExporter implements IMSFileExporter, IMSAttachmentExporte
 						// convert all local item URLs into this-item-relative
 						// (instead of institution relative)
 						// and all non local URLs into absolute.
-						return urlConverter.convert(input, false, new ItemsToLocalUrlConversion(thisPageBase,
-							thisItemBase, thisFileBase));
+						return urlConverter.convert(input, false,
+							new ItemsToLocalUrlConversion(thisPageBase, thisItemBase, thisFileBase));
 					}
 				});
 
 				// view it, with no base HREF
 				ViewableResource viewPage = myPagesSummariser.createMyPagesResourceFromHtml(sinfo, page, newHtml);
-				try (Reader viewedRdr = new InputStreamReader(viewPage.getContentStream().getInputStream(),
-					Constants.UTF8))
+				try( Reader viewedRdr = new InputStreamReader(viewPage.getContentStream().getInputStream(),
+					Constants.UTF8) )
 				{
 					// write it out again
 					myPagesService.saveHtml(imsRoot, page.getFilename(), viewedRdr);
@@ -175,7 +178,7 @@ public class MyPagesIMSExporter implements IMSFileExporter, IMSAttachmentExporte
 		final String thisFileBase = filePath("file", item.getItemId().toString());
 		final String thisPackageBase = filePath(thisFileBase, packageName);
 		final List<HtmlAttachment> pages = new UnmodifiableAttachments(
-			Lists.<IAttachment> newArrayList(createdAttachments)).getList(AttachmentType.HTML);
+			Lists.<IAttachment>newArrayList(createdAttachments)).getList(AttachmentType.HTML);
 		for( HtmlAttachment page : pages )
 		{
 			// use thisItemBase since page folder has package path built into it
@@ -196,7 +199,7 @@ public class MyPagesIMSExporter implements IMSFileExporter, IMSAttachmentExporte
 					// (instead of institution relative) and all non local URLs
 					// into absolute.
 					return urlConverter.modifyXml(new StringReader(stripped), new DefaultHrefCallback(false, false,
-						urlService, new LocalToItemsUrlConversion(thisPageBase, thisPackageBase)));
+						institutionService, new LocalToItemsUrlConversion(thisPageBase, thisPackageBase)));
 				}
 			});
 
@@ -294,7 +297,7 @@ public class MyPagesIMSExporter implements IMSFileExporter, IMSAttachmentExporte
 			else if( !URLUtils.isAbsoluteUrl(href) )
 			{
 				// add the base href
-				return urlService.institutionalise(href);
+				return institutionService.institutionalise(href);
 			}
 			return href;
 		}
@@ -320,10 +323,10 @@ public class MyPagesIMSExporter implements IMSFileExporter, IMSAttachmentExporte
 		@Override
 		public String convert(String href, AttributesImpl atts)
 		{
-			if( urlService.isInstitutionUrl(href) )
+			if( institutionService.isInstitutionUrl(href) )
 			{
 				// remove the base href
-				return urlService.removeInstitution(href);
+				return institutionService.removeInstitution(href);
 			}
 			else if( href.startsWith(localContentBase) )
 			{
@@ -345,10 +348,10 @@ public class MyPagesIMSExporter implements IMSFileExporter, IMSAttachmentExporte
 
 	private static class StrippingContentHandler extends AbstractHtmlContentHandler
 	{
-		private static final Set<String> IGNORE_DIRECT_CHILDREN_OF = new HashSet<String>(Arrays.asList(new String[]{
-				"html", "head", "link", "meta", "base", "body", "title"}));
-		private static final Set<String> IGNORE_TAGS = new HashSet<String>(Arrays.asList(new String[]{"html", "head",
-				"link", "meta", "base", "body", "title"}));
+		private static final Set<String> IGNORE_DIRECT_CHILDREN_OF = new HashSet<String>(
+			Arrays.asList(new String[]{"html", "head", "link", "meta", "base", "body", "title"}));
+		private static final Set<String> IGNORE_TAGS = new HashSet<String>(
+			Arrays.asList(new String[]{"html", "head", "link", "meta", "base", "body", "title"}));
 
 		private final Stack<String> elementStack = new Stack<String>();
 

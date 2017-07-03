@@ -33,15 +33,15 @@ import com.google.common.collect.Multimap;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.TargetList;
 import com.tle.common.security.TargetListEntry;
-import com.tle.core.events.ItemReindexEvent;
+import com.tle.core.freetext.event.ItemReindexEvent;
+import com.tle.core.freetext.reindex.InstitutionFilter;
+import com.tle.core.freetext.reindex.ReindexFilter;
+import com.tle.core.freetext.reindex.ReindexHandler;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.security.SecurityPostProcessor;
-import com.tle.core.services.EventService;
-import com.tle.freetext.reindex.ReindexHandler;
-import com.tle.freetext.reindexing.InstitutionFilter;
-import com.tle.freetext.reindexing.ReindexFilter;
+import com.tle.core.events.services.EventService;
 
 @Bind
 @Singleton
@@ -67,8 +67,8 @@ public class SecurityExtension implements SecurityPostProcessor
 
 		// Map equals will check Map.Entry equals, which checks List equals,
 		// which checks TargetListEntry equals
-		return !getTargetListPrivReindexingMap(reindexPrivs, oldTL).equals(
-			getTargetListPrivReindexingMap(reindexPrivs, newTL));
+		return !getTargetListPrivReindexingMap(reindexPrivs, oldTL)
+			.equals(getTargetListPrivReindexingMap(reindexPrivs, newTL));
 	}
 
 	@SuppressWarnings("nls")

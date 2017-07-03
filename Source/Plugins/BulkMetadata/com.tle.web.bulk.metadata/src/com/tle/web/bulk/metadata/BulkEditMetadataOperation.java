@@ -30,11 +30,11 @@ import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemPack;
 import com.tle.core.guice.Bind;
 import com.tle.core.guice.BindFactory;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.plugins.BeanLocator;
 import com.tle.core.plugins.FactoryMethodLocator;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.web.bulk.metadata.model.BulkEditMetadataModel;
 import com.tle.web.bulk.metadata.model.Modification;
 import com.tle.web.bulk.metadata.model.Modification.ModificationKeys;
@@ -55,7 +55,6 @@ import com.tle.web.sections.standard.model.Option;
 @Bind
 public class BulkEditMetadataOperation extends BulkEditMetadataSection implements BulkOperationExtension
 {
-
 	private static final String BULK_METADATA_VAL = "editmetadata"; //$NON-NLS-1$
 
 	@PlugKey("bulkop.editmetadata")
@@ -120,10 +119,16 @@ public class BulkEditMetadataOperation extends BulkEditMetadataSection implement
 	}
 
 	@Override
-	public boolean areOptionsFinished(SectionInfo info, String operationId)
+	public boolean validateOptions(SectionInfo info, String operationId)
 	{
 		BulkEditMetadataModel model = getModel(info);
 		return (model.getModifications().size() > 0) && !(model.isSchemaSelection() || model.isActionSelection());
+	}
+
+	@Override
+	public boolean areOptionsFinished(SectionInfo info, String operationId)
+	{
+		return validateOptions(info, operationId);
 	}
 
 	@Override
@@ -140,7 +145,7 @@ public class BulkEditMetadataOperation extends BulkEditMetadataSection implement
 		@Inject
 		private EditMetadataBulkFactory metadataFactory;
 		@Inject
-		private WorkflowFactory workflowFactory;
+		private ItemOperationFactory workflowFactory;
 
 		@Inject
 		public EditMetadataBulkExecutor(@Assisted("mods") List<Modification> mods)

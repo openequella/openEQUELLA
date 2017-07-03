@@ -22,9 +22,9 @@ import javax.inject.Inject;
 
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemIdKey;
-import com.tle.core.events.IndexItemBackgroundEvent;
 import com.tle.core.guice.Bind;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
+import com.tle.core.item.event.IndexItemBackgroundEvent;
+import com.tle.core.item.operations.AbstractWorkflowOperation;
 
 @Bind
 public class UpdateLatestOperation extends AbstractWorkflowOperation

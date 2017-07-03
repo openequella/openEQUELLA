@@ -39,10 +39,10 @@ import com.tle.web.template.section.MenuContributor;
 @SuppressWarnings("nls")
 public class SettingsMenuContributor implements MenuContributor
 {
-	private static final Label LABEL_KEY = new KeyLabel(ResourcesService.getResourceHelper(
-		SettingsMenuContributor.class).key("menu"));
-	private static final String ICON_PATH = ResourcesService.getResourceHelper(SettingsMenuContributor.class).url(
-		"images/menu-icon-settings.png");
+	private static final Label LABEL_KEY = new KeyLabel(
+		ResourcesService.getResourceHelper(SettingsMenuContributor.class).key("menu"));
+	private static final String ICON_PATH = ResourcesService.getResourceHelper(SettingsMenuContributor.class)
+		.url("images/menu-icon-settings.png");
 	private static final String SESSION_KEY = "SETTINGS-MENU";
 
 	@Inject

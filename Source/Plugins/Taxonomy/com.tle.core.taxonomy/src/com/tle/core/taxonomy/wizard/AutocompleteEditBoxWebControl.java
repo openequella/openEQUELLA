@@ -25,11 +25,11 @@ import javax.inject.Inject;
 
 import com.dytech.common.text.NumberStringComparator;
 import com.dytech.edge.common.Constants;
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.google.common.collect.Lists;
 import com.tle.common.Check;
 import com.tle.common.Pair;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.taxonomy.SelectionRestriction;
 import com.tle.common.taxonomy.TaxonomyConstants;
 import com.tle.common.taxonomy.wizard.AutocompleteEditBoxConstants;
@@ -197,9 +197,8 @@ public class AutocompleteEditBoxWebControl
 			}
 
 			editbox.setValue(info, Constants.BLANK);
-			model
-				.setSelectedTerms(Collections.singleton(definitionControl.getTermStorageFormat() == TermStorageFormat.LEAF_ONLY
-					? termName : fullTermPath));
+			model.setSelectedTerms(Collections.singleton(
+				definitionControl.getTermStorageFormat() == TermStorageFormat.LEAF_ONLY ? termName : fullTermPath));
 		}
 	}
 
@@ -238,9 +237,9 @@ public class AutocompleteEditBoxWebControl
 		}
 		else
 		{
-			selectTerm.setClickHandler(ajax.getAjaxUpdateDomFunction(tree, new SimpleSectionId(id),
-				events.getEventHandler("termSelected"), ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING),
-				ajaxDivId));
+			selectTerm.setClickHandler(
+				ajax.getAjaxUpdateDomFunction(tree, new SimpleSectionId(id), events.getEventHandler("termSelected"),
+					ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING), ajaxDivId));
 		}
 
 		editbox.setAutoCompleteCallback(ajax.getAjaxFunction("autocomplete"));

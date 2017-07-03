@@ -28,11 +28,11 @@ import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemPack;
 import com.tle.beans.workflow.WorkflowStatus;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.scripting.ScriptEvaluator;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.core.wizard.controls.WizardPage;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewable.ViewableItem;
 

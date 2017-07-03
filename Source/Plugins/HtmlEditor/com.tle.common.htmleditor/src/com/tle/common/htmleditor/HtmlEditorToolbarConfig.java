@@ -19,8 +19,8 @@ package com.tle.common.htmleditor;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.tle.common.property.ConfigurationProperties;
-import com.tle.common.property.annotation.PropertyList;
+import com.tle.common.settings.ConfigurationProperties;
+import com.tle.common.settings.annotation.PropertyList;
 
 public class HtmlEditorToolbarConfig implements ConfigurationProperties
 {

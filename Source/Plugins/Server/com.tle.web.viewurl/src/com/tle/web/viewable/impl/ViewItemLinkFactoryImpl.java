@@ -27,7 +27,7 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.ItemKey;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionUtils;
 import com.tle.web.viewable.ViewItemConstants;
@@ -39,7 +39,7 @@ import com.tle.web.viewable.ViewItemLinkFactory;
 public class ViewItemLinkFactoryImpl implements ViewItemLinkFactory
 {
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@Override
 	public Bookmark createViewLink(ItemKey itemId)
@@ -85,7 +85,8 @@ public class ViewItemLinkFactoryImpl implements ViewItemLinkFactory
 			{
 				paramString = '?' + SectionUtils.getParameterString(SectionUtils.getParameterNameValues(params, false));
 			}
-			return urlService.institutionalise(ViewItemConstants.PATH_ITEMSERVLET + itemKey + '/' + paramString);
+			return institutionService
+				.institutionalise(ViewItemConstants.PATH_ITEMSERVLET + itemKey + '/' + paramString);
 		}
 	}
 
@@ -104,7 +105,7 @@ public class ViewItemLinkFactoryImpl implements ViewItemLinkFactory
 			{
 				url.append(attachmentUuid);
 			}
-			return urlService.institutionalise(url.toString());
+			return institutionService.institutionalise(url.toString());
 		}
 	}
 }

@@ -21,8 +21,8 @@ import java.util.List;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.ItemKey;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.workflow.thumbnail.entity.ThumbnailRequest;
 
 /**
@@ -64,4 +64,6 @@ public interface ThumbnailRequestService
 	ThumbnailRequest getByUuid(String requestUuid);
 
 	boolean exists(ItemKey itemId, FileHandle handle, String filename);
+
+	void cleanThumbQueue();
 }

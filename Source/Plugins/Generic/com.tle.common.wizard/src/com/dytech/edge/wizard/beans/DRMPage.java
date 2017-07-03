@@ -25,11 +25,11 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.dytech.common.text.NumberStringComparator;
-import com.dytech.common.xml.mapping.AbstractMapping;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.tle.core.xstream.mapping.AbstractMapping;
 
 public class DRMPage extends WizardPage
 {

@@ -51,10 +51,10 @@ import com.tle.beans.SchemaScript;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.PowerSearch;
 import com.tle.beans.item.Item;
-import com.tle.beans.tree.TreeNodeInterface;
 import com.tle.common.Check;
 import com.tle.common.Check.FieldEquality;
 import com.tle.common.DoNotClone;
+import com.tle.common.institution.TreeNodeInterface;
 
 /**
  * @author Nicholas Read
@@ -98,7 +98,8 @@ public class HierarchyTopic implements TreeNodeInterface<HierarchyTopic>, FieldE
 	 */
 	@DoNotClone
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(joinColumns = {@JoinColumn(name = "hierarchy_topic_id")}, inverseJoinColumns = {@JoinColumn(name = "element")})
+	@JoinTable(joinColumns = {@JoinColumn(name = "hierarchy_topic_id")}, inverseJoinColumns = {
+			@JoinColumn(name = "element")})
 	private List<Item> keyResources;
 
 	private boolean showResults = true;

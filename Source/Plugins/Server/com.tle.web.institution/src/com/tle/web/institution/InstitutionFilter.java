@@ -43,16 +43,16 @@ import com.tle.beans.Institution;
 import com.tle.common.Check;
 import com.tle.common.Pair;
 import com.tle.common.URLUtils;
-import com.tle.core.events.InstitutionEvent;
-import com.tle.core.events.listeners.InstitutionListener;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.CurrentDataSource;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.institution.InstitutionStatus;
 import com.tle.core.institution.InstitutionStatus.InvalidReason;
+import com.tle.core.institution.events.InstitutionEvent;
+import com.tle.core.institution.events.listeners.InstitutionListener;
 import com.tle.core.services.UrlService;
 import com.tle.core.system.service.SchemaDataSourceService;
-import com.tle.core.user.CurrentInstitution;
 import com.tle.web.core.filter.OncePerRequestFilter;
 import com.tle.web.dispatcher.FilterResult;
 import com.tle.web.dispatcher.RemappedRequest;
@@ -72,8 +72,8 @@ public class InstitutionFilter extends OncePerRequestFilter implements Instituti
 
 	// Ugh, these should be pluginerised
 	private static final String[] ALLOWED_URL_BEGINNINGS = {"progress", "configurable"};
-	private static final String[] ALLOWED_URL_ENDINGS = {".css", ".js", ".jpeg", ".jpg", ".gif", ".png", ".ico",
-			".zip", ".war", ".jar", ".woff",};
+	private static final String[] ALLOWED_URL_ENDINGS = {".css", ".js", ".jpeg", ".jpg", ".gif", ".png", ".ico", ".zip",
+			".war", ".jar", ".woff",};
 
 	private static final Logger LOGGER = Logger.getLogger(InstitutionFilter.class);
 
@@ -99,8 +99,8 @@ public class InstitutionFilter extends OncePerRequestFilter implements Instituti
 			}
 
 			// Add the Institution Management site in too
-			pairedInsts.add(new Pair<String, InstitutionStatus>(processUrl(adminUrl), new InstitutionStatus(
-				Institution.FAKE, -1)));
+			pairedInsts.add(
+				new Pair<String, InstitutionStatus>(processUrl(adminUrl), new InstitutionStatus(Institution.FAKE, -1)));
 
 			// Sort largest URLs first
 			Collections.sort(pairedInsts, new Comparator<Pair<String, InstitutionStatus>>()
@@ -162,20 +162,18 @@ public class InstitutionFilter extends OncePerRequestFilter implements Instituti
 		{
 			if( LOGGER.isDebugEnabled() )
 			{
-				LOGGER.debug("No institutions were matched for request ["
-					+ request.getRequestURL()
-					+ "] where it was matching as ["
-					+ Joiner.on("] or [").join(matchStrings)
-					+ "] against enabled institutions with URLs ["
-					+ Joiner.on("] and [").join(
-						Collections2.transform(getInstitutions(), new Function<Pair<String, ?>, String>()
+				LOGGER.debug("No institutions were matched for request [" + request.getRequestURL()
+					+ "] where it was matching as [" + Joiner.on("] or [").join(matchStrings)
+					+ "] against enabled institutions with URLs [" + Joiner.on("] and [")
+						.join(Collections2.transform(getInstitutions(), new Function<Pair<String, ?>, String>()
 						{
 							@Override
 							public String apply(Pair<String, ?> input)
 							{
 								return input.getFirst();
 							}
-						})) + "]");
+						}))
+					+ "]");
 			}
 
 			response.sendError(HttpServletResponse.SC_FORBIDDEN);

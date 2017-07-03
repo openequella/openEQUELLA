@@ -24,9 +24,9 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
 import com.tle.common.htmleditor.beans.HtmlEditorPlugin;
-import com.tle.core.dao.impl.AbstractEntityDaoImpl;
+import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.guice.Bind;
-import com.tle.core.user.CurrentInstitution;
+import com.tle.common.institution.CurrentInstitution;
 
 /**
  * @author aholland

@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dytech.devlib.Md5;
-import com.dytech.edge.common.valuebean.DefaultUserBean;
 import com.google.api.client.util.Sets;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -42,20 +41,22 @@ import com.tle.beans.ump.UserManagementSettings;
 import com.tle.beans.user.TLEUser;
 import com.tle.common.Check;
 import com.tle.common.externaltools.constants.ExternalToolConstants;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.lti.consumers.LtiConsumerConstants;
 import com.tle.common.lti.consumers.LtiConsumerConstants.UnknownUser;
 import com.tle.common.lti.consumers.entity.LtiConsumer;
 import com.tle.common.lti.consumers.entity.LtiConsumerCustomRole;
+import com.tle.common.usermanagement.user.AnonymousUserState;
+import com.tle.common.usermanagement.user.ModifiableUserState;
+import com.tle.common.usermanagement.user.valuebean.DefaultUserBean;
+import com.tle.core.encryption.EncryptionService;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.RunAsInstitution;
 import com.tle.core.lti.consumers.service.LtiConsumerService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.security.impl.AclExpressionEvaluator;
-import com.tle.core.services.user.TLEGroupService;
-import com.tle.core.services.user.TLEUserService;
-import com.tle.core.user.AnonymousUserState;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.ModifiableUserState;
+import com.tle.core.usermanagement.standard.service.TLEGroupService;
+import com.tle.core.usermanagement.standard.service.TLEUserService;
 import com.tle.exceptions.AuthenticationException;
 import com.tle.exceptions.UsernameNotFoundException;
 import com.tle.plugins.ump.AbstractUserDirectory;
@@ -87,6 +88,8 @@ public class LtiWrapper extends AbstractUserDirectory
 	private PluginTracker<LtiWrapperExtension> extensions;
 	@Inject
 	private LtiConsumerService consumerService;
+	@Inject
+	private EncryptionService encryptionService;
 
 	@Override
 	protected boolean initialise(UserManagementSettings settings)
@@ -426,7 +429,7 @@ public class LtiWrapper extends AbstractUserDirectory
 		final OAuthData oData = new OAuthData();
 		oData.setNonce(request.getParameter("oauth_nonce"));
 		oData.setConsumerKey(request.getParameter("oauth_consumer_key"));
-		oData.setConsumerSecret(consumer == null ? null : consumer.getConsumerSecret());
+		oData.setConsumerSecret(consumer == null ? null : encryptionService.decrypt(consumer.getConsumerSecret()));
 		oData.setSignatureMethod(request.getParameter("oauth_signature_method"));
 		ltiData.setOAuthData(oData);
 

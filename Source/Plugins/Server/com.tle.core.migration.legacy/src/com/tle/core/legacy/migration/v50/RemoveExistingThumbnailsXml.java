@@ -19,10 +19,10 @@ package com.tle.core.legacy.migration.v50;
 import javax.inject.Singleton;
 
 import com.dytech.devlib.PropBagEx;
-import com.tle.core.filesystem.SubTemporaryFile;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.convert.AbstractItemXmlMigrator;
 import com.tle.core.institution.convert.ConverterParams;
-import com.tle.core.institution.migration.AbstractItemXmlMigrator;
 
 @Bind
 @Singleton

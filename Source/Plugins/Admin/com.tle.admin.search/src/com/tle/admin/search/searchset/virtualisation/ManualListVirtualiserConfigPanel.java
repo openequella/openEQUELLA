@@ -20,11 +20,11 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dytech.common.xml.TLEXStream;
 import com.dytech.gui.JShuffleList;
 import com.tle.admin.gui.common.DynamicChoicePanel;
 import com.tle.common.Check;
 import com.tle.common.search.searchset.SearchSet;
+import com.tle.core.xstream.TLEXStream;
 
 public class ManualListVirtualiserConfigPanel extends DynamicChoicePanel<SearchSet>
 {

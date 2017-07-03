@@ -21,16 +21,16 @@ import javax.inject.Singleton;
 
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.externaltools.constants.ExternalToolConstants;
-import com.tle.core.filesystem.SubTemporaryFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.InstitutionInfo;
-import com.tle.core.institution.migration.XmlMigrator;
+import com.tle.core.institution.convert.XmlMigrator;
 import com.tle.core.mimetypes.MimeTypeConstants;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.mimetypes.institution.MimeEntryConverter;
-import com.tle.core.xstream.XmlService;
+import com.tle.core.xml.service.XmlService;
 import com.tle.web.viewurl.ResourceViewerConfig;
 
 /**
@@ -46,12 +46,11 @@ public class AddLtiMimeTypeXmlMigration extends XmlMigrator
 	private MimeTypeService mimeService;
 
 	/**
-	 * @see com.tle.core.institution.migration.Migrator#execute(com.tle.core.filesystem.TemporaryFileHandle,
+	 * @see com.tle.core.institution.convert.Migrator#execute(com.tle.common.filesystem.handle.TemporaryFileHandle,
 	 *      com.tle.core.institution.convert.InstitutionInfo,
 	 *      com.tle.core.institution.convert.ConverterParams)
 	 */
 	@Override
-	@SuppressWarnings("nls")
 	public void execute(TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)
 	{
 		SubTemporaryFile mimeFolder = MimeEntryConverter.getMimeFolder(staging);

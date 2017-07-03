@@ -16,7 +16,7 @@
 
 package com.tle.common.scripting.types;
 
-import com.dytech.edge.common.valuebean.UserBean;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 
 /**
  * User object for usage in scripts.

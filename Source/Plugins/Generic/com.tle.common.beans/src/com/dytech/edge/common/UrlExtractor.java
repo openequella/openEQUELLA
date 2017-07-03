@@ -46,7 +46,7 @@ public class UrlExtractor
 	 * readers to a certain extent.
 	 */
 	@SuppressWarnings("nls")
-	private static final String[] URL_ENDS = new String[]{"#", " ", "\t", "\n", "\r", DOUBLE_QUOTE, "]"};
+	private static final String[] URL_ENDS = new String[]{"#", " ", "\t", "\n", "\r", DOUBLE_QUOTE, "]", "<"};
 
 	/**
 	 * E.g. someone has written (http://www.google.com.au) in a text field.

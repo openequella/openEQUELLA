@@ -33,18 +33,18 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.ItemId;
 import com.tle.common.PathUtils;
-import com.tle.core.filesystem.ItemFile;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.imagemagick.ThumbnailOptions;
 import com.tle.core.institution.RunAsInstitution;
+import com.tle.core.item.service.ItemFileService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.StagingService;
-import com.tle.core.user.CurrentInstitution;
 import com.tle.core.workflow.thumbnail.ThumbnailGenerator;
 import com.tle.core.workflow.thumbnail.ThumbnailQueueFile;
 import com.tle.core.workflow.thumbnail.ThumbnailType;
@@ -67,6 +67,8 @@ public class ThumbingCallable implements Callable<ThumbingCallableResult>
 	private ThumbnailRequestService thumbnailRequestService;
 	@Inject
 	private FileSystemService fileSystemService;
+	@Inject
+	private ItemFileService itemFileService;
 	@Inject
 	private MimeTypeService mimeTypeService;
 	@Inject
@@ -140,12 +142,12 @@ public class ThumbingCallable implements Callable<ThumbingCallableResult>
 			final ThumbnailQueueFile thumbQueueFile = new ThumbnailQueueFile(requestUuid);
 			final ThumbnailGenerator thumbGen = getThumbnailGenerator(filename);
 
-			final String thumbFile = PathUtils.filePath(FileSystemService.THUMBS_FOLDER, filename
-				+ FileSystemService.THUMBNAIL_EXTENSION);
-			final String galleryThumb = PathUtils.filePath(FileSystemService.THUMBS_FOLDER, filename
-				+ FileSystemService.GALLERY_THUMBNAIL_EXTENSION);
-			final String galleryPreview = PathUtils.filePath(FileSystemService.THUMBS_FOLDER, filename
-				+ FileSystemService.GALLERY_PREVIEW_EXTENSION);
+			final String thumbFile = PathUtils.filePath(FileSystemService.THUMBS_FOLDER,
+				filename + FileSystemService.THUMBNAIL_EXTENSION);
+			final String galleryThumb = PathUtils.filePath(FileSystemService.THUMBS_FOLDER,
+				filename + FileSystemService.GALLERY_THUMBNAIL_EXTENSION);
+			final String galleryPreview = PathUtils.filePath(FileSystemService.THUMBS_FOLDER,
+				filename + FileSystemService.GALLERY_PREVIEW_EXTENSION);
 
 			if( Thread.interrupted() )
 			{
@@ -154,8 +156,8 @@ public class ThumbingCallable implements Callable<ThumbingCallableResult>
 			final int flags = thumbnailRequest.getThumbnailTypes();
 			if( ThumbnailType.TYPE_GALLERY_PREVIEW.enabled(flags) )
 			{
-				final Dimension dimensions = thumbGen.getImageDimensions(fileSystemService.getExternalFile(
-					thumbQueueFile, filename));
+				final Dimension dimensions = thumbGen
+					.getImageDimensions(fileSystemService.getExternalFile(thumbQueueFile, filename));
 				final ThumbnailOptions options;
 				if( dimensions == null || (dimensions.getHeight() > 500 || dimensions.getWidth() > 500) )
 				{
@@ -203,11 +205,12 @@ public class ThumbingCallable implements Callable<ThumbingCallableResult>
 					&& stagingService.stagingExists(((StagingFile) destHandle).getUuid()) )
 				{
 					// Make sure the file area is there too
-					realDestHandle = (fileSystemService.fileExists(destHandle) ? destHandle : new ItemFile(itemId));
+					realDestHandle = (fileSystemService.fileExists(destHandle) ? destHandle
+						: itemFileService.getItemFile(itemId, null));
 				}
 				else
 				{
-					realDestHandle = new ItemFile(itemId);
+					realDestHandle = itemFileService.getItemFile(itemId, null);
 				}
 				fileSystemService.copy(thumbQueueFile, prodThumb, realDestHandle, prodThumb);
 			}
@@ -306,7 +309,8 @@ public class ThumbingCallable implements Callable<ThumbingCallableResult>
 			boolean madeDirs = dstFile.getParentFile().mkdirs();
 			if( !(madeDirs || dstFile.getParentFile().exists()) )
 			{
-				throw new IOException("Could not create/confirm directory " + dstFile.getParentFile().getAbsolutePath());
+				throw new IOException(
+					"Could not create/confirm directory " + dstFile.getParentFile().getAbsolutePath());
 			}
 		}
 	}
@@ -325,7 +329,7 @@ public class ThumbingCallable implements Callable<ThumbingCallableResult>
 			}
 			else if( "item".equals(type) )
 			{
-				return new ItemFile(new ItemId(id));
+				return itemFileService.getItemFile(new ItemId(id), null);
 			}
 			else
 			{

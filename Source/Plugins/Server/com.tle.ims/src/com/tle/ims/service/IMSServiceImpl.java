@@ -35,19 +35,20 @@ import javax.inject.Singleton;
 import org.apache.log4j.Logger;
 
 import com.dytech.common.io.UnicodeReader;
-import com.dytech.common.xml.TLEXStream;
 import com.dytech.edge.exceptions.FileSystemException;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.common.Check;
 import com.tle.common.PathUtils;
-import com.tle.core.filesystem.FileSystemHelper;
+import com.tle.common.filesystem.FileSystemConstants;
+import com.tle.common.filesystem.FileSystemHelper;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.services.impl.FileSystemServiceImpl;
 import com.tle.core.util.archive.ArchiveType;
 import com.tle.core.util.ims.IMSUtilities;
 import com.tle.core.util.ims.beans.IMSManifest;
+import com.tle.core.xstream.TLEXStream;
 
 @Bind(IMSService.class)
 @Singleton
@@ -85,8 +86,8 @@ public class IMSServiceImpl implements IMSService
 
 		if( logNotFound )
 		{
-			LOGGER.info("Non-existent manifest (" + newManifest.getName() + ") requested for "
-				+ handle.getAbsolutePath());
+			LOGGER.info(
+				"Non-existent manifest (" + newManifest.getName() + ") requested for " + handle.getAbsolutePath());
 		}
 		return null;
 	}
@@ -154,8 +155,8 @@ public class IMSServiceImpl implements IMSService
 		}
 		if( logNotFound )
 		{
-			LOGGER.info("Non-existent manifest (" + newManifest.getName() + ") requested for "
-				+ handle.getAbsolutePath());
+			LOGGER.info(
+				"Non-existent manifest (" + newManifest.getName() + ") requested for " + handle.getAbsolutePath());
 		}
 		return null;
 	}
@@ -238,7 +239,7 @@ public class IMSServiceImpl implements IMSService
 
 	private File ensureCombinedManifest(FileHandle handle, String packageExtractedFolder)
 	{
-		String filepath = PathUtils.filePath(FileSystemService.IMS_FOLDER, IMSUtilities.IMS_MANIFEST);
+		String filepath = PathUtils.filePath(FileSystemConstants.IMS_FOLDER, IMSUtilities.IMS_MANIFEST);
 		// Check if combined manifest file exists.
 		File newManifest = getFile(handle, filepath);
 		// Inelegant HACK to cover the possibility we are looking for a SCORM
@@ -246,7 +247,8 @@ public class IMSServiceImpl implements IMSService
 		// still appropriate.
 		if( !newManifest.exists() )
 		{
-			newManifest = getFile(handle, PathUtils.filePath(FileSystemService.SCORM_FOLDER, IMSUtilities.IMS_MANIFEST));
+			newManifest = getFile(handle,
+				PathUtils.filePath(FileSystemService.SCORM_FOLDER, IMSUtilities.IMS_MANIFEST));
 		}
 
 		File origManifest = getFile(handle, PathUtils.filePath(packageExtractedFolder, IMSUtilities.IMS_MANIFEST));
@@ -262,8 +264,8 @@ public class IMSServiceImpl implements IMSService
 				boolean madeDirs = newManifest.getParentFile().mkdirs();
 				if( !(madeDirs || newManifest.getParentFile().exists()) )
 				{
-					throw new FileSystemException("Could not create/confirm directory "
-						+ newManifest.getParentFile().getAbsolutePath());
+					throw new FileSystemException(
+						"Could not create/confirm directory " + newManifest.getParentFile().getAbsolutePath());
 				}
 
 				try( Writer imsOutput = new BufferedWriter(new FileWriter(newManifest)) )

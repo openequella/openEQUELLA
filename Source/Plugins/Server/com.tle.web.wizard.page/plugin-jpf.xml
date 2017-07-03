@@ -16,8 +16,5 @@
 		<parameter-def id="bean" multiplicity="one" />
 	</extension-point>
 
-	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
-		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
-	</extension>
-
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules" />
 </plugin>

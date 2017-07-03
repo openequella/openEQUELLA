@@ -44,17 +44,17 @@ import com.tle.beans.entity.DynaCollection;
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.common.NameValue;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.dynacollection.DynaCollectionService;
 import com.tle.core.fedsearch.FederatedSearchService;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.i18n.BundleNameValue;
 import com.tle.core.institution.InstitutionCache;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.powersearch.PowerSearchService;
 import com.tle.core.search.VirtualisableAndValue;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.core.user.CurrentUser;
-import com.tle.web.i18n.BundleCache;
-import com.tle.web.i18n.BundleNameValue;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.utils.KeyOption;
@@ -157,37 +157,36 @@ public class SearchWhereModel extends DynamicHtmlListModel<SearchWhereModel.Wher
 				{
 					return CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES)
 						.build(new CacheLoader<String, CachedWhereModelEntries>()
+					{
+						@Override
+						public CachedWhereModelEntries load(String key)
 						{
-							@Override
-							public CachedWhereModelEntries load(String key)
-							{
-								List<VirtualisableAndValue<DynaCollection>> dynaCollections = newArrayList(filter(
-									dynaCollectionService.enumerateExpanded("searchUsage"),
+							List<VirtualisableAndValue<DynaCollection>> dynaCollections = newArrayList(
+								filter(dynaCollectionService.enumerateExpanded("searchUsage"),
 									new Predicate<VirtualisableAndValue<DynaCollection>>()
+							{
+								final Set<String> dynaCollectionUuids = newHashSet(transform(
+									dynaCollectionService.listSearchable(), new Function<BaseEntityLabel, String>()
+								{
+									@Override
+									public String apply(BaseEntityLabel input)
 									{
-										final Set<String> dynaCollectionUuids = newHashSet(transform(
-											dynaCollectionService.listSearchable(),
-											new Function<BaseEntityLabel, String>()
-											{
-												@Override
-												public String apply(BaseEntityLabel input)
-												{
-													return input.getUuid();
-												}
-											}));
+										return input.getUuid();
+									}
+								}));
 
-										@Override
-										public boolean apply(@Nullable VirtualisableAndValue<DynaCollection> input)
-										{
-											return dynaCollectionUuids.contains(input.getVt().getUuid());
-										}
-									}));
+								@Override
+								public boolean apply(@Nullable VirtualisableAndValue<DynaCollection> input)
+								{
+									return dynaCollectionUuids.contains(input.getVt().getUuid());
+								}
+							}));
 
-								return new CachedWhereModelEntries(itemDefinitionService.listSearchable(),
-									powerSearchService.listSearchable(),
-									federatedSearchService.listEnabledSearchable(), dynaCollections);
-							}
-						});
+							return new CachedWhereModelEntries(itemDefinitionService.listSearchable(),
+								powerSearchService.listSearchable(), federatedSearchService.listEnabledSearchable(),
+								dynaCollections);
+						}
+					});
 				}
 			});
 	}
@@ -285,8 +284,8 @@ public class SearchWhereModel extends DynamicHtmlListModel<SearchWhereModel.Wher
 		for( VirtualisableAndValue<DynaCollection> vdc : dynaCollections )
 		{
 			DynaCollection dc = vdc.getVt();
-			collectionOptions.add(new WhereEntry(CurrentLocale.get(dc.getName()), dc.getUuid(), Strings.nullToEmpty(vdc
-				.getVirtualisedValue())));
+			collectionOptions.add(new WhereEntry(CurrentLocale.get(dc.getName()), dc.getUuid(),
+				Strings.nullToEmpty(vdc.getVirtualisedValue())));
 		}
 
 		for( BaseEntityLabel bel : powerSearches )
@@ -416,8 +415,8 @@ public class SearchWhereModel extends DynamicHtmlListModel<SearchWhereModel.Wher
 
 		public Option<WhereEntry> convert()
 		{
-			HtmlNameValueOption<WhereEntry> nameValueOption = new HtmlNameValueOption<WhereEntry>(getName(), this,
-				html, getGroupName());
+			HtmlNameValueOption<WhereEntry> nameValueOption = new HtmlNameValueOption<WhereEntry>(getName(), this, html,
+				getGroupName());
 			nameValueOption.setDisabled(disabled);
 			return nameValueOption;
 		}

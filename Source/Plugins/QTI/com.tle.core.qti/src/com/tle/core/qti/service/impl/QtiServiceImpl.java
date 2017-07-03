@@ -53,7 +53,7 @@ import uk.ac.ed.ph.jqtiplus.state.TestSessionState;
 import uk.ac.ed.ph.jqtiplus.value.Value;
 
 import com.tle.annotation.NonNullByDefault;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.PathUtils;
 import com.tle.core.guice.Bind;
 import com.tle.core.qti.beans.QtiTestDetails;

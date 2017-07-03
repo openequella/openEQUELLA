@@ -35,15 +35,15 @@ import com.tle.beans.item.ItemPack;
 import com.tle.beans.item.ItemStatus;
 import com.tle.common.Check;
 import com.tle.common.searching.Search.SortType;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.FreeTextService;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.services.item.FreetextResult;
 import com.tle.core.services.item.FreetextSearchResults;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.soap.SoapXMLService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
+import com.tle.core.soap.service.SoapXMLService;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.mycontent.MyContentConstants;
 import com.tle.mycontent.service.MyContentFields;
@@ -69,7 +69,7 @@ public class ScrapbookSoapServiceImpl implements ScrapbookSoapService
 	@Inject
 	private ViewItemUrlFactory urlFactory;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 
 	@Override
 	public String search(String query, String[] resourceTypes, String[] mimeTypes, int sortType, int offset, int length)
@@ -109,8 +109,8 @@ public class ScrapbookSoapServiceImpl implements ScrapbookSoapService
 		{
 			if( item != null )
 			{
-				PropBagEx itemXml = soapXML.convertItemPackToXML(new ItemPack(item,
-					itemService.getItemXmlPropBag(item), null), true);
+				PropBagEx itemXml = soapXML
+					.convertItemPackToXML(new ItemPack(item, itemService.getItemXmlPropBag(item), null), true);
 				itemXml.setNode("item/url", urlFactory.createFullItemUrl(item.getItemId()).getHref());
 				xml.newSubtree("result").append("", itemXml);
 			}

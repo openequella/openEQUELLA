@@ -31,16 +31,17 @@ import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Constants;
 import com.dytech.edge.common.FileInfo;
 import com.google.common.io.CharStreams;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.HtmlAttachment;
 import com.tle.beans.item.attachments.ItemNavigationNode;
 import com.tle.common.PathUtils;
-import com.tle.common.util.FileEntry;
+import com.tle.common.filesystem.FileEntry;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.filesystem.ItemFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemFileService;
 import com.tle.core.services.FileSystemService;
 import com.tle.mets.MetsIDElementInfo;
 import com.tle.mets.importerexporters.AbstractMetsAttachmentImportExporter;
@@ -70,6 +71,8 @@ public class MyPagesMetsAttachmentImporterExporter extends AbstractMetsAttachmen
 	private MyPagesService myPagesService;
 	@Inject
 	private FileSystemService fileSystemService;
+	@Inject
+	private ItemFileService itemFileService;
 
 	@Override
 	public boolean canExport(Item item, Attachment attachment)
@@ -84,7 +87,7 @@ public class MyPagesMetsAttachmentImporterExporter extends AbstractMetsAttachmen
 		try
 		{
 			final HtmlAttachment page = (HtmlAttachment) attachment;
-			final ItemFile itemFile = new ItemFile(item);
+			final ItemFile itemFile = itemFileService.getItemFile(item);
 			final List<MetsIDElementInfo<? extends MetsIDElement>> res = new ArrayList<MetsIDElementInfo<? extends MetsIDElement>>();
 			final FContent content = new FContent();
 			content.setID("html:" + attachment.getUuid());
@@ -104,8 +107,9 @@ public class MyPagesMetsAttachmentImporterExporter extends AbstractMetsAttachmen
 				if( !filename.equals("page.html") )
 				{
 					final String uuid = UUID.randomUUID().toString();
-					res.add(exportBinaryFile(new ItemFile(item), PathUtils.filePath(page.getFolder(), filename), -1,
-						filename, "htmlres:" + uuid, uuid, new XmlCallback()
+					res.add(exportBinaryFile(itemFileService.getItemFile(item),
+						PathUtils.filePath(page.getFolder(), filename), -1, filename, "htmlres:" + uuid, uuid,
+						new XmlCallback()
 						{
 							@Override
 							public void addXml(PropBagEx resXml)

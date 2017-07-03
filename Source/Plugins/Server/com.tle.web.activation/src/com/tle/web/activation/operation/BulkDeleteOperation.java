@@ -25,10 +25,10 @@ import javax.inject.Singleton;
 import com.tle.beans.item.ItemPack;
 import com.tle.core.activation.workflow.OperationFactory;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.plugins.BeanLocator;
 import com.tle.core.plugins.ClassBeanLocator;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.web.bulk.operation.BulkOperationExecutor;
 import com.tle.web.bulk.operation.BulkOperationExtension;
 import com.tle.web.sections.SectionInfo;
@@ -66,7 +66,7 @@ public class BulkDeleteOperation implements BulkOperationExtension
 		@Inject
 		private OperationFactory operationFactory;
 		@Inject
-		private WorkflowFactory workflowFactory;
+		private ItemOperationFactory workflowFactory;
 
 		@Override
 		public WorkflowOperation[] getOperations()
@@ -104,6 +104,12 @@ public class BulkDeleteOperation implements BulkOperationExtension
 	public void register(SectionTree tree, String parentId)
 	{
 		// nothing
+	}
+
+	@Override
+	public boolean validateOptions(SectionInfo info, String operationId)
+	{
+		return true;
 	}
 
 	@Override

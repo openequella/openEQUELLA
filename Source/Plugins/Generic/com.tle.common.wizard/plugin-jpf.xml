@@ -3,6 +3,8 @@
 	<requires>
 		<import plugin-id="com.tle.common.beans" exported="true" />
 		<import plugin-id="com.tle.common.i18n" />
+		<!-- Used in DRMPage -->
+		<import plugin-id="com.tle.xstream" exported="true" />
 	</requires>
 	<runtime>
 		<library id="core" path="classes/" type="code">

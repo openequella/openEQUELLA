@@ -24,9 +24,9 @@ import javax.inject.Inject;
 
 import com.tle.common.connectors.entity.Connector;
 import com.tle.core.connectors.service.ConnectorEditingBean;
+import com.tle.core.entity.EntityEditingSession;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.entity.EntityEditingSession;
+import com.tle.core.institution.InstitutionService;
 import com.tle.web.connectors.editor.AbstractConnectorEditorSection;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -49,7 +49,7 @@ public class EquellaConnectorEditor
 	private FreemarkerFactory view;
 
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@Override
 	protected SectionRenderable renderFields(RenderEventContext context,
@@ -82,7 +82,7 @@ public class EquellaConnectorEditor
 	protected Connector createNewConnector()
 	{
 		Connector connector = new Connector(CONNECTOR_TYPE);
-		connector.setServerUrl(urlService.getInstitutionUrl().toString());
+		connector.setServerUrl(institutionService.getInstitutionUrl().toString());
 		return connector;
 	}
 
@@ -104,7 +104,7 @@ public class EquellaConnectorEditor
 	@Override
 	protected void customSave(SectionInfo info, ConnectorEditingBean connector)
 	{
-		connector.setServerUrl(urlService.getInstitutionUrl().toString());
+		connector.setServerUrl(institutionService.getInstitutionUrl().toString());
 	}
 
 	@Override

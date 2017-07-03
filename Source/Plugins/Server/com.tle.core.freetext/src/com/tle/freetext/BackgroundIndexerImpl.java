@@ -40,11 +40,11 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.tle.beans.Institution;
 import com.tle.beans.item.ItemIdKey;
 import com.tle.common.Check;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.BindFactory;
 import com.tle.core.hibernate.CurrentDataSource;
 import com.tle.core.hibernate.DataSourceHolder;
 import com.tle.core.system.service.SchemaDataSourceService;
-import com.tle.core.user.CurrentInstitution;
 import com.tle.freetext.ItemSyncer.ItemSyncFactory;
 
 public class BackgroundIndexerImpl implements BackgroundIndexer
@@ -373,8 +373,8 @@ public class BackgroundIndexerImpl implements BackgroundIndexer
 		if( docsDoneSinceLast != docsDone || indexerThreads > 0 )
 		{
 			docsDoneSinceLast = docsDone;
-			LOGGER.info("Report: " + indexerThreads + " threads running, " + waitingList.size()
-				+ " documents waiting, " + docsDone + " done overall, " + errors + " errors, " + deletions
+			LOGGER.info("Report: " + indexerThreads + " threads running, " + waitingList.size() + " documents waiting, "
+				+ docsDone + " done overall, " + errors + " errors, " + deletions
 				+ " docs in Index but not in database");
 			synchronized( threadingLock )
 			{

@@ -20,7 +20,7 @@ import java.util.List;
 
 import javax.inject.Singleton;
 
-import com.dytech.edge.common.valuebean.ValidationError;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.portal.entity.Portlet;
 import com.tle.core.guice.Bind;
 

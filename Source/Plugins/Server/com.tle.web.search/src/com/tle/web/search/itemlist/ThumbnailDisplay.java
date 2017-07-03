@@ -23,13 +23,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.dytech.edge.common.Constants;
-import com.dytech.edge.exceptions.NotFoundException;
 import com.google.common.collect.Sets;
 import com.tle.beans.entity.itemdef.SearchDetails;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.Item;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemService;
+import com.tle.core.item.service.ItemService;
 import com.tle.web.itemlist.item.AbstractItemlikeListEntry;
 import com.tle.web.itemlist.item.ItemListEntry;
 import com.tle.web.itemlist.item.ItemlikeListEntryExtension;

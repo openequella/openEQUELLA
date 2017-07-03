@@ -36,14 +36,14 @@ import com.tle.common.PathUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.connectors.canvas.service.CanvasConnectorService;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.services.HttpService;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.config.ConfigurationService;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Request.FormParameters;
 import com.tle.core.services.http.Request.Method;
 import com.tle.core.services.http.Response;
 import com.tle.core.services.user.UserService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.exceptions.UsernameNotFoundException;
 import com.tle.web.login.LogonSection;
 import com.tle.web.sections.SectionsController;
@@ -72,7 +72,7 @@ public class CanvasOAuthClientServlet extends HttpServlet
 	@Inject
 	private ConfigurationService configService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private HttpService httpService;
 	@Inject
@@ -83,8 +83,8 @@ public class CanvasOAuthClientServlet extends HttpServlet
 	private SectionsController sectionsController;
 
 	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-		IOException
+	protected void service(HttpServletRequest request, HttpServletResponse response)
+		throws ServletException, IOException
 	{
 		// Was an error passed back from EQUELLA during the OAuth authorise
 		// request?
@@ -131,7 +131,7 @@ public class CanvasOAuthClientServlet extends HttpServlet
 		final FormParameters formParams = new FormParameters();
 		formParams.addParameter("client_id", settings.getClientId());
 		formParams.addParameter("client_secret", settings.getClientSecret());
-		formParams.addParameter("redirect_uri", urlService.institutionalise("canvassso"));
+		formParams.addParameter("redirect_uri", institutionService.institutionalise("canvassso"));
 		formParams.addParameter("code", code);
 		tokenRequest.setHtmlForm(formParams);
 
@@ -172,12 +172,12 @@ public class CanvasOAuthClientServlet extends HttpServlet
 		{
 			page = "home.do";
 		}
-		response.sendRedirect(urlService.institutionalise(page));
+		response.sendRedirect(institutionService.institutionalise(page));
 	}
 
 	private String getRedirectUri(HttpServletRequest request)
 	{
-		final String baseUrl = urlService.institutionalise("canvassso");
+		final String baseUrl = institutionService.institutionalise("canvassso");
 		final String page = request.getParameter("page");
 		if( page != null )
 		{

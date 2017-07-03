@@ -24,6 +24,8 @@ import com.tle.web.sections.render.PreRenderable;
 /**
  * @author aholland
  */
+//Included in UI core now
+@Deprecated
 @SuppressWarnings("nls")
 public class JQueryDimensions implements JavascriptModule
 {

@@ -34,8 +34,8 @@ import com.tle.core.integration.IntegrationLoggingDao;
 import com.tle.core.integration.IntegrationLoggingService;
 import com.tle.core.integration.IntegrationSelection;
 import com.tle.core.integration.beans.AuditLogLms;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.usermanagement.user.CurrentUser;
 
 @Bind(IntegrationLoggingService.class)
 @Singleton

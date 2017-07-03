@@ -2,9 +2,12 @@
 <plugin id="com.tle.core.services.item.relation" version="1">
 	<requires>
 		<import plugin-id="com.tle.core.guice" />
-		<import plugin-id="com.tle.core.entity.services" />
-		<import plugin-id="com.tle.core.workflow" />
 		<import plugin-id="com.tle.core.qti" />
+		<import plugin-id="com.tle.core.item" />
+		<import plugin-id="com.tle.core.institution.convert" />
+		<import plugin-id="com.tle.core.item.standard" />
+		<import plugin-id="com.tle.core.services" />
+		<import plugin-id="com.tle.common.item" />
 	</requires>
 
 	<runtime>
@@ -20,25 +23,26 @@
 
 	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModule">
 		<parameter id="class" value="com.tle.core.services.item.relation.RelationModule" />
+		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="converter" id="converter">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="converter">
 		<parameter id="id" value="item_relations" />
 		<parameter id="class" value="bean:com.tle.core.services.item.relation.RelationConverter" />
 		<parameter id="order" value="810" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="itemDaoExtension" id="relationItemDao">
+	<extension plugin-id="com.tle.core.item" point-id="itemDaoExtension" id="relationItemDao">
 		<parameter id="class" value="bean:com.tle.core.services.item.relation.RelationDao" />
 		<parameter id="order" value="100" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.workflow" point-id="operation" id="cloneRelationOperation">
+	<extension plugin-id="com.tle.core.item" point-id="operation" id="cloneRelationOperation">
 		<parameter id="type" value="postClone" />
 		<parameter id="class" value="bean:com.tle.core.services.item.relation.CloneRelationOperation" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="itemHelpers" id="itemHelper">
+	<extension plugin-id="com.tle.core.item" point-id="itemHelpers" id="itemHelper">
 		<parameter id="bean" value="bean:com.tle.core.services.item.relation.RelationHelper" />
 		<parameter id="display" value="true" />
 		<parameter id="import" value="true" />

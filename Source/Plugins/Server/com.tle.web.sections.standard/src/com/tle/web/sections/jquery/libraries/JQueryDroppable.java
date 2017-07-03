@@ -18,6 +18,7 @@ package com.tle.web.sections.jquery.libraries;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
+import com.tle.web.DebugSettings;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.render.PreRenderable;
 
@@ -26,8 +27,9 @@ public class JQueryDroppable implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.droppable.js",
-		JQueryUICore.PRERENDER);
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
+		DebugSettings.isDebuggingMode() ? "jquery.ui.droppable.js" : "jquery.ui.droppable.min.js",
+		JQueryUICore.PRERENDER, JQueryMouse.PRERENDER, JQueryUIWidget.PRERENDER, JQueryDraggable.PRERENDER);
 
 	@Override
 	public String getDisplayName()

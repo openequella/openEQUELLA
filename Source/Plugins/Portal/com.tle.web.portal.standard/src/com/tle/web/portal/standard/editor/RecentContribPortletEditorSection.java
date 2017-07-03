@@ -32,14 +32,14 @@ import com.tle.beans.item.ItemStatus;
 import com.tle.common.Check;
 import com.tle.common.portal.entity.Portlet;
 import com.tle.common.portal.entity.impl.PortletRecentContrib;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.BundleCache;
+import com.tle.core.i18n.BundleNameValue;
 import com.tle.core.portal.service.PortletEditingBean;
 import com.tle.core.portal.service.PortletService;
-import com.tle.core.services.entity.ItemDefinitionService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleCache;
-import com.tle.web.i18n.BundleNameValue;
 import com.tle.web.portal.editor.AbstractPortletEditorSection;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
@@ -124,10 +124,9 @@ public class RecentContribPortletEditorSection
 			new FunctionCallStatement(collection.createDisableFunction(), allCollections.createGetExpression()));
 
 		// Disable "All Collections" if one or more collections have been picked
-		collection.addEventStatements(
-			JSHandler.EVENT_CHANGE,
-			new FunctionCallStatement(allCollections.createDisableFunction(), new CombinedExpression(collection
-				.createGetExpression(), new PropertyExpression("length != 0"))));
+		collection.addEventStatements(JSHandler.EVENT_CHANGE,
+			new FunctionCallStatement(allCollections.createDisableFunction(),
+				new CombinedExpression(collection.createGetExpression(), new PropertyExpression("length != 0"))));
 
 		EnumSet<ItemStatus> statuses = EnumSet.allOf(ItemStatus.class);
 		statuses.remove(ItemStatus.PERSONAL);
@@ -146,16 +145,16 @@ public class RecentContribPortletEditorSection
 			@Override
 			protected Option<BaseEntityLabel> convertToOption(SectionInfo info, BaseEntityLabel bent)
 			{
-				return new NameValueOption<BaseEntityLabel>(new BundleNameValue(bent.getBundleId(), Long.toString(bent
-					.getId()), bundleCache), bent);
+				return new NameValueOption<BaseEntityLabel>(
+					new BundleNameValue(bent.getBundleId(), Long.toString(bent.getId()), bundleCache), bent);
 			}
 		};
 		listModel.setSort(true);
 
 		collection.setListModel(listModel);
 		displayTypeList.setAlwaysSelect(true);
-		displayTypeList.setListModel(new SimpleHtmlListModel<BundleNameValue>(new BundleNameValue(titleAndDescription,
-			null), new BundleNameValue(titleOnly, KEY_TITLEONLY)));
+		displayTypeList.setListModel(new SimpleHtmlListModel<BundleNameValue>(
+			new BundleNameValue(titleAndDescription, null), new BundleNameValue(titleOnly, KEY_TITLEONLY)));
 	}
 
 	@Override
@@ -193,16 +192,16 @@ public class RecentContribPortletEditorSection
 			String sessionId = getModel(info).getSessionId();
 			if( !Check.isEmpty(sessionId) )
 			{
-				allCollections.setChecked(info, !portletService.loadSession(sessionId).getValidationErrors()
-					.containsKey("collection"));
+				allCollections.setChecked(info,
+					!portletService.loadSession(sessionId).getValidationErrors().containsKey("collection"));
 			}
 			collection.addReadyStatements(info, collection.createDisableFunction(),
 				allCollections.createGetExpression());
 		}
 		else
 		{
-			allCollections.addReadyStatements(info, allCollections.createDisableFunction(), new CombinedExpression(
-				collection.createGetExpression(), new PropertyExpression("length != 0")));
+			allCollections.addReadyStatements(info, allCollections.createDisableFunction(),
+				new CombinedExpression(collection.createGetExpression(), new PropertyExpression("length != 0")));
 
 			// Note: using DB IDs for the list. See #6212. Proper fix would
 			// require major changes

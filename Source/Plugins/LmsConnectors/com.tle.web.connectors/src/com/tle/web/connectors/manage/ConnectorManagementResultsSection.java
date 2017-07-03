@@ -43,11 +43,11 @@ import com.tle.core.connectors.service.ConnectorRepositoryService.ExternalConten
 import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.freetext.queries.BaseCompoundQuery;
 import com.tle.core.freetext.queries.NodeInQuery;
-import com.tle.core.services.item.FreeTextService;
+import com.tle.core.freetext.service.FreeTextService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.services.item.FreetextResult;
 import com.tle.core.services.item.FreetextSearchResults;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.bulk.section.AbstractBulkSelectionSection;
 import com.tle.web.connectors.manage.ConnectorManagementItemList.ConnectorManagementListEntry;

@@ -27,12 +27,12 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.tle.beans.mime.MimeEntry;
-import com.tle.beans.system.SearchSettings;
 import com.tle.common.search.DefaultSearch;
+import com.tle.common.settings.standard.SearchSettings;
 import com.tle.core.guice.Bind;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.mimetypes.MimeTypesSearchResults;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.itemlist.item.AbstractItemList;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
@@ -56,8 +56,8 @@ public class GallerySearchResults extends AbstractPrototypeSection<SearchResults
 	@Inject
 	private ConfigurationService configService;
 
-	private Cache<String, Collection<String>> mimeCache = CacheBuilder.newBuilder()
-		.expireAfterAccess(1, TimeUnit.HOURS).softValues().build();
+	private Cache<String, Collection<String>> mimeCache = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS)
+		.softValues().build();
 	private final static String CACHE_KEY = "mime_types";
 
 	@Override

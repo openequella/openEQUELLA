@@ -7,62 +7,69 @@ $(function()
 	// FIXME: these are english strings...
 	$('BODY').ajaxError(function(event, response, settings, exception)
 	{
-		var mimetype = response.getResponseHeader("content-type") || "";
 		$('BODY').removeClass("waitcursor");
-
-		if (mimetype.indexOf('json') > -1)
+		if (response)
 		{
-			var jsonstring = response.responseText;
-			try
+			var mimetype = response.getResponseHeader("content-type") || "";
+			
+			if (mimetype.indexOf('json') > -1)
 			{
-				var ex = jQuery.parseJSON(jsonstring);
-				alert('An error occurred on the server: ' + ex.message);
-			} catch (e)
-			{
-				alert(e);
-			}
-		}
-		else
-		{
-			// everything else including text/html
-			var cause;
-			var status = response.status;
-			if (status == 0)
-			{
-				return;
-			}
-			if (status == 503)
-			{
-				alert('The server is unavailable');
-				return;
-			}
-			else if (status == 500)
-			{
-				cause = 'Server error';
-			}
-			else if (status == 404)
-			{
-				cause = 'File not found';
-			}
-			else if (status == 403)
-			{
-				cause = 'Forbidden';
-			}
-			else if (status >= 200 && status < 400)
-			{
-				cause = exception;
+				var jsonstring = response.responseText;
+				try
+				{
+					var ex = jQuery.parseJSON(jsonstring);
+					alert('An error occurred on the server: ' + ex.message);
+				} catch (e)
+				{
+					alert(e);
+				}
 			}
 			else
 			{
-				cause = status;
+				// everything else including text/html
+				var cause;
+				var status = response.status;
+				if (status == 0)
+				{
+					return;
+				}
+				if (status == 503)
+				{
+					alert('The server is unavailable');
+					return;
+				}
+				else if (status == 500)
+				{
+					cause = 'Server error';
+				}
+				else if (status == 404)
+				{
+					cause = 'File not found';
+				}
+				else if (status == 403)
+				{
+					cause = 'Forbidden';
+				}
+				else if (status >= 200 && status < 400)
+				{
+					cause = exception;
+				}
+				else
+				{
+					cause = status;
+				}
+	
+				var msg = 'An error occurred during the AJAX request';
+				if (cause)
+				{
+					msg += ': ' + cause;
+				}
+				if (debugEnabled)
+				{
+					debugger;
+				}
+				alert(msg);
 			}
-
-			var msg = 'An error occurred during the AJAX request';
-			if (cause)
-			{
-				msg += ': ' + cause;
-			}
-			alert(msg);
 		}
 	});
 });

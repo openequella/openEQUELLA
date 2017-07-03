@@ -18,6 +18,7 @@ package com.tle.web.sections.jquery.libraries;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
+import com.tle.web.DebugSettings;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.js.JSStatements;
 import com.tle.web.sections.js.generic.expression.PropertyExpression;
@@ -30,7 +31,8 @@ import com.tle.web.sections.render.PreRenderable;
 public class JQueryTimer implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.timer.js"); //$NON-NLS-1$
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
+		DebugSettings.isDebuggingMode() ? "jquery.timer.js" : "jquery.timer.min.js");
 
 	@SuppressWarnings("nls")
 	private static final ExternallyDefinedFunction TIMER_FUNC = new ExternallyDefinedFunction(
@@ -39,7 +41,7 @@ public class JQueryTimer implements JavascriptModule
 	@Override
 	public String getDisplayName()
 	{
-		return CurrentLocale.get("com.tle.web.sections.jquery.modules.timer.name"); //$NON-NLS-1$
+		return CurrentLocale.get("com.tle.web.sections.jquery.modules.timer.name");
 	}
 
 	public static JSStatements createTimer(int millis, JSStatements body, ScriptVariable... vars)
@@ -50,7 +52,7 @@ public class JQueryTimer implements JavascriptModule
 	@Override
 	public String getId()
 	{
-		return "timer"; //$NON-NLS-1$
+		return "timer";
 	}
 
 	@Override

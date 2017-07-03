@@ -40,13 +40,13 @@ import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.util.Dates;
 import com.tle.common.util.UtcDate;
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.StagingService;
 import com.tle.core.workflow.thumbnail.service.ThumbnailService;
 import com.tle.core.workflow.video.VideoService;
 import com.tle.web.controls.universal.DialogRenderOptions;
@@ -142,8 +142,8 @@ public class FileDetails extends AbstractDetailsEditor<FileDetails.FileDetailsMo
 		editFileWithLink.setClickHandler(inplaceEditorService.createOpenHandler(INPLACE_APPLET_ID, true,
 			Js.function(Js.call_s(editFileAjaxFunction, true))));
 
-		editFileLink.addReadyStatements(inplaceEditorService.createHideLinksStatements(Jq.$(Type.CLASS, "editLinks"),
-			Jq.$(editFileWithLink)));
+		editFileLink.addReadyStatements(
+			inplaceEditorService.createHideLinksStatements(Jq.$(Type.CLASS, "editLinks"), Jq.$(editFileWithLink)));
 
 		saveClickHandler = inplaceEditorService.createUploadHandler(INPLACE_APPLET_ID,
 			events.getSubmitValuesFunction("inplaceSave"));
@@ -212,8 +212,8 @@ public class FileDetails extends AbstractDetailsEditor<FileDetails.FileDetailsMo
 	private JSCallable createInplaceApplet(SectionInfo info)
 	{
 		FileDetailsModel model = getModel(info);
-		final ItemId wizardStagingId = new ItemId(getFileUploadHandler().getDialogState().getRepository()
-			.getStagingid(), 0);
+		final ItemId wizardStagingId = new ItemId(
+			getFileUploadHandler().getDialogState().getRepository().getStagingid(), 0);
 		return inplaceEditorService.createAppletFunction(INPLACE_APPLET_ID, wizardStagingId,
 			ensureInplaceStagingId(info), model.getInplaceFilepath(), model.getAppletMode() == AppletMode.OPENWITH,
 			"invoker/file.inplaceedit.service", Jq.$(editFileDiv), INPLACE_APPLET_WIDTH, INPLACE_APPLET_HEIGHT);
@@ -245,9 +245,8 @@ public class FileDetails extends AbstractDetailsEditor<FileDetails.FileDetailsMo
 		{
 			String mimeType = uploadedFile.getMimeType();
 
-			if( mimeType != null
-				&& (mimeType.equalsIgnoreCase(FileConstants.TYPE_DOC) || mimeType
-					.equalsIgnoreCase(FileConstants.TYPE_DOCX)) )
+			if( mimeType != null && (mimeType.equalsIgnoreCase(FileConstants.TYPE_DOC)
+				|| mimeType.equalsIgnoreCase(FileConstants.TYPE_DOCX)) )
 			{
 				processDocument(uploadedFile);
 			}
@@ -391,9 +390,8 @@ public class FileDetails extends AbstractDetailsEditor<FileDetails.FileDetailsMo
 		boolean generateThumbs = (!uploadedFile.isDetailEditing() || !fileSettings.isShowThumbOption())
 			&& !fileSettings.isSuppressThumbnails();
 
-		if( generateThumbs
-			|| (uploadedFile.isDetailEditing() && fileSettings.isShowThumbOption() && !suppressThumbnails
-				.isChecked(info)) )
+		if( generateThumbs || (uploadedFile.isDetailEditing() && fileSettings.isShowThumbOption()
+			&& !suppressThumbnails.isChecked(info)) )
 		{
 			ViewableItem<?> viewableItem = getFileUploadHandler().getDialogState().getViewableItem(info);
 			String thumbnail = thumbnailService.submitThumbnailRequest(viewableItem.getItemId(), wizardStaging,

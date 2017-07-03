@@ -21,12 +21,12 @@ import java.util.List;
 
 import com.tle.common.NameValue;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.BundleNameValue;
 import com.tle.web.controls.universal.handlers.FileUploadHandler;
 import com.tle.web.controls.universal.handlers.fileupload.TypeOptions;
 import com.tle.web.controls.universal.handlers.fileupload.UploadedFile;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleNameValue;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;

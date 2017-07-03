@@ -34,6 +34,7 @@ import com.tle.common.externaltools.constants.ExternalToolConstants;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.lti.consumers.LtiConsumerConstants;
 import com.tle.common.lti.consumers.entity.LtiConsumer;
+import com.tle.core.encryption.EncryptionService;
 import com.tle.core.guice.Bind;
 import com.tle.core.lti.consumers.service.LtiConsumerService;
 import com.tle.exceptions.AuthenticationException;
@@ -56,6 +57,8 @@ public class LtiConsumerUserStateHook extends AbstractOAuthV1UserStateHook
 
 	@Inject
 	private LtiConsumerService ltiConsumerService;
+	@Inject
+	private EncryptionService encryptionService;
 
 	@Override
 	protected String getSecretFromKey(String consumerKey)
@@ -69,7 +72,7 @@ public class LtiConsumerUserStateHook extends AbstractOAuthV1UserStateHook
 			LOGGER.error(error);
 			throw new WebException(500, error, error);
 		}
-		return consumer.getConsumerSecret();
+		return encryptionService.decrypt(consumer.getConsumerSecret());
 	}
 
 	@Override

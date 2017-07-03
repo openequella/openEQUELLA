@@ -50,13 +50,13 @@ import com.dytech.edge.admin.script.ifmodel.NotEquals;
 import com.dytech.edge.admin.script.model.Term;
 import com.dytech.edge.admin.script.options.DefaultScriptOptions;
 import com.dytech.edge.admin.script.options.ScriptOptions;
-import com.dytech.edge.common.valuebean.RoleBean;
 import com.dytech.gui.TableLayout;
 import com.tle.admin.Driver;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.admin.schema.TargetListener;
 import com.tle.common.NameValue;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.core.remoting.RemoteUserService;
 
 @SuppressWarnings("nls")

@@ -31,17 +31,17 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import com.dytech.edge.common.valuebean.ValidationError;
-import com.dytech.edge.exceptions.InvalidDataException;
-import com.dytech.edge.exceptions.NotFoundException;
+import com.tle.common.beans.exception.ValidationError;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.google.common.base.Strings;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.ump.RoleMapping;
 import com.tle.beans.usermanagement.standard.wrapper.RoleWrapperSettings;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.users.interfaces.beans.RoleBean;
@@ -58,7 +58,7 @@ public class RoleResourceImpl implements EquellaRoleResource
 	/**
 	 * Equella uses ridiculous config properties for roles, meaning every update
 	 * to a single role requires purging ALL roles from the DB and re-inserting
-	 * them. This has disasterous consequences for multiple threads updating
+	 * them. This has disastrous consequences for multiple threads updating
 	 * roles. This lock is an attempt to reduce the issue, however it will still
 	 * be an issue with clustered installs.
 	 */

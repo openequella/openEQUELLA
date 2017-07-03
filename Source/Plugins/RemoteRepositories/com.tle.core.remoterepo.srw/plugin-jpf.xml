@@ -9,6 +9,7 @@
 		<import plugin-id="com.tle.common.remoterepo.srw" exported="true" />
 		<import plugin-id="com.tle.web.endpoint.srw" />
 		<import plugin-id="javax.xml:jaxrpc-api" />
+		<import plugin-id="com.tle.core.xslt" />
 	</requires>
 
 	<runtime>

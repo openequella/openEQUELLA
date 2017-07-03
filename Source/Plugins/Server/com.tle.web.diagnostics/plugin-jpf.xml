@@ -7,6 +7,7 @@
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.security" />
 		<import plugin-id="com.tle.core.settings" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.web.freemarker" />
 		<import plugin-id="com.tle.web.recipientselector" />
 		<import plugin-id="com.tle.web.sections" />
@@ -14,6 +15,7 @@
 		<import plugin-id="com.tle.web.sections.equella" />
 		<import plugin-id="com.tle.web.settings" />		
 		<import plugin-id="net.sf.json-lib:json-lib" />
+		<import plugin-id="com.tle.core.usermanagement" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

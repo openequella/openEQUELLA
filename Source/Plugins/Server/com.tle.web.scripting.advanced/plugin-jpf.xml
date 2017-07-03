@@ -3,7 +3,7 @@
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.common.scripting" />
-		<import plugin-id="com.tle.core.entity.services" />
+		
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.imagemagick" />
 		<import plugin-id="com.tle.core.mimetypes" />
@@ -13,6 +13,10 @@
 		<import plugin-id="com.tle.web.core" />
 		<import plugin-id="com.tle.web.scripting" />
 		<import plugin-id="com.tle.web.viewurl" />
+		<import plugin-id="com.tle.core.filesystem" />
+		<import plugin-id="com.tle.core.usermanagement" />
+		<import plugin-id="com.tle.common.item" />
+		<import plugin-id="com.tle.core.services" />
 	</requires>
 
 	<runtime>

@@ -18,7 +18,7 @@ package com.tle.core.externaltools.dao.impl;
 
 import com.google.inject.Singleton;
 import com.tle.common.externaltools.entity.ExternalTool;
-import com.tle.core.dao.impl.AbstractEntityDaoImpl;
+import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.externaltools.dao.ExternalToolsDao;
 import com.tle.core.guice.Bind;
 

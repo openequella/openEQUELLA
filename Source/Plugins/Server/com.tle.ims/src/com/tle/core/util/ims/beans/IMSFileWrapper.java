@@ -16,8 +16,8 @@
 
 package com.tle.core.util.ims.beans;
 
-import com.dytech.common.xml.XMLDataMappings;
-import com.dytech.common.xml.mapping.NodeMapping;
+import com.tle.core.xstream.XMLDataMappings;
+import com.tle.core.xstream.mapping.NodeMapping;
 import com.tle.common.Utils;
 
 public class IMSFileWrapper extends IMSChild

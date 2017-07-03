@@ -64,7 +64,6 @@ import com.tle.common.connectors.entity.Connector;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.searching.SearchResults;
 import com.tle.common.searching.SimpleSearchResults;
-import com.tle.common.util.XmlDocument;
 import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.moodle.EntityStrippingWriter;
 import com.tle.core.connectors.moodle.MoodleConnectorConstants;
@@ -72,10 +71,11 @@ import com.tle.core.connectors.service.AbstractIntegrationConnectorRespository;
 import com.tle.core.connectors.service.ConnectorRepositoryService.ExternalContentSortType;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.HttpService;
-import com.tle.core.services.config.ConfigurationService;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Request.Method;
 import com.tle.core.services.http.Response;
+import com.tle.core.settings.service.ConfigurationService;
+import com.tle.core.xml.XmlDocument;
 import com.tle.web.integration.Integration.LmsLink;
 import com.tle.web.integration.Integration.LmsLinkInfo;
 import com.tle.web.selection.SelectedResource;
@@ -387,8 +387,8 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
 				{
 					content = new ConnectorContent(value);
 					contentList.add(content);
-					content.setExternalUrl(URLUtils.newURL(moodleServerUrl, "mod/equella/view.php?id=" + value)
-						.toString());
+					content.setExternalUrl(
+						URLUtils.newURL(moodleServerUrl, "mod/equella/view.php?id=" + value).toString());
 				}
 				if( key.equals("coursename") )
 				{
@@ -482,8 +482,8 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
 				else if( key.equals("visible") )
 				{
 					content.setAvailable(Integer.parseInt(value) == 1 ? true : false);
-					content.setAttribute("visible", getKey("finduses.visible"), Integer.parseInt(value) == 1 ? true
-						: false);
+					content.setAttribute("visible", getKey("finduses.visible"),
+						Integer.parseInt(value) == 1 ? true : false);
 				}
 
 				else if( key.equals("key") )
@@ -625,8 +625,8 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
 					if( message.startsWith(ERROR_USER_NOT_FOUND) )
 					{
 						String username = message.substring(ERROR_USER_NOT_FOUND.length());
-						throw new LmsUserNotFoundException(username, CurrentLocale.get(getKey("connector.error"),
-							username));
+						throw new LmsUserNotFoundException(username,
+							CurrentLocale.get(getKey("connector.error"), username));
 					}
 					throw new MoodleException("Error contacting Moodle: " + message);
 				}

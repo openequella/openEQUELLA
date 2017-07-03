@@ -27,11 +27,11 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 
 import com.google.common.base.Strings;
 import com.tle.common.Check;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.portal.entity.Portlet;
-import com.tle.core.dao.impl.AbstractEntityDaoImpl;
+import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.guice.Bind;
 import com.tle.core.portal.service.PortletSearch;
-import com.tle.core.user.CurrentInstitution;
 
 /**
  * @author aholland
@@ -55,9 +55,9 @@ public class PortletDaoImpl extends AbstractEntityDaoImpl<Portlet> implements Po
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException
 			{
-				Query query = session.createQuery("FROM Portlet WHERE"
-					+ " (owner = :owner OR institutional = :institutional)"
-					+ " AND enabled = :enabled AND institution = :institution ORDER BY dateCreated");
+				Query query = session
+					.createQuery("FROM Portlet WHERE" + " (owner = :owner OR institutional = :institutional)"
+						+ " AND enabled = :enabled AND institution = :institution ORDER BY dateCreated");
 				query.setCacheable(true);
 				query.setParameter("owner", userId);
 				query.setParameter("institutional", true);

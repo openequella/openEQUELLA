@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import com.google.common.base.Strings;
+import com.tle.beans.item.HistoryEvent.Type;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemStatus;
 import com.tle.beans.item.ModerationStatus;
@@ -29,11 +30,11 @@ import com.tle.beans.workflow.WorkflowStatus;
 import com.tle.beans.workflow.WorkflowStep;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
+import com.tle.core.i18n.BundleNameValue;
 import com.tle.core.workflow.events.StateChangeEvent;
 import com.tle.core.workflow.events.WorkflowEvent;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.i18n.BundleNameValue;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
@@ -266,11 +267,29 @@ public class HistoryContentSection extends AbstractContentSection<HistoryContent
 					label = s("newversion");
 					break;
 
+				case workflowremoved:
+					if( showAllDetails )
+					{
+						label = s("workflowremoved");
+					}
+					break;
+
 				case comment:
 					if( showAllDetails )
 					{
 						label = s("comment", atStepName);
 					}
+					break;
+
+				case scriptComplete:
+					if( showAllDetails )
+					{
+						label = s("scriptcomplete", atStepName);
+					}
+					break;
+
+				case scriptError:
+					label = s("scripterror", atStepName);
 					break;
 
 				case statechange:
@@ -320,6 +339,9 @@ public class HistoryContentSection extends AbstractContentSection<HistoryContent
 				case contributed:
 					label = s("contributed");
 					break;
+				case taskMove:
+					label = s("move", atStepName, getStepName(event.getTostep(), event.getToStepName(), refMap));
+					break;
 
 				default:
 					// 'promoted' unloved?
@@ -342,10 +364,17 @@ public class HistoryContentSection extends AbstractContentSection<HistoryContent
 					cell1 = new TableCell(label);
 				}
 
-				final HtmlLinkState userLink = userLinkSection.createLink(info, event.getUserid());
-
-				allEvents.addRow(cell1, userLink, dateRendererFactory.createDateRenderer(eventDate)).setSortData(label,
-					userLink.getLabel(), eventDate);
+				if( event.getIntType() == Type.scriptComplete || event.getIntType() == Type.scriptError )
+				{
+					allEvents.addRow(cell1, "", dateRendererFactory.createDateRenderer(eventDate)).setSortData(label,
+						"", eventDate);
+				}
+				else
+				{
+					final HtmlLinkState userLink = userLinkSection.createLink(info, event.getUserid());
+					allEvents.addRow(cell1, userLink, dateRendererFactory.createDateRenderer(eventDate)).setSortData(
+						label, userLink.getLabel(), eventDate);
+				}
 			}
 		}
 	}

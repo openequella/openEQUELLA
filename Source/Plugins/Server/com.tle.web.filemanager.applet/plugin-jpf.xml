@@ -4,7 +4,6 @@
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.common.applet" />
-		<import plugin-id="com.tle.core.entity.services" />
 		<import plugin-id="com.tle.web.resources" />
 		<import plugin-id="com.tle.web.wizard" />
 		<import plugin-id="com.tle.web.viewurl" />
@@ -12,6 +11,8 @@
 		<import plugin-id="com.tle.web.services" />
 
 		<import plugin-id="com.tle.applet.filemanager" />
+		<import plugin-id="com.tle.core.filesystem" />
+		<import plugin-id="com.tle.core.institution" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

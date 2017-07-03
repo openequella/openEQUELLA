@@ -22,7 +22,7 @@ import java.net.URISyntaxException;
 
 import com.google.common.base.Throwables;
 import com.tle.beans.item.ItemKey;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 
 public class NewViewableItemState implements Serializable
 {
@@ -82,11 +82,11 @@ public class NewViewableItemState implements Serializable
 		itemdir = null;
 	}
 
-	public String getItemdir(UrlService urlService)
+	public String getItemdir(InstitutionService institutionService)
 	{
 		if( itemdir == null )
 		{
-			String firstPart = urlService.getInstitutionUrl().getFile();
+			String firstPart = institutionService.getInstitutionUrl().getFile();
 			String itemIdPart;
 			if( latest )
 			{

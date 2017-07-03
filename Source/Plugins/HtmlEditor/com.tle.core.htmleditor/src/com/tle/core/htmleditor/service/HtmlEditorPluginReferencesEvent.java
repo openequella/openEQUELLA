@@ -16,17 +16,14 @@
 
 package com.tle.core.htmleditor.service;
 
-import java.util.List;
-
-import com.google.common.collect.Lists;
 import com.tle.common.htmleditor.beans.HtmlEditorPlugin;
-import com.tle.core.events.BaseEntityReferencesEvent;
+import com.tle.core.entity.event.BaseEntityReferencesEvent;
 
-public class HtmlEditorPluginReferencesEvent extends BaseEntityReferencesEvent<HtmlEditorPlugin, HtmlEditorPluginReferencesListener>
+public class HtmlEditorPluginReferencesEvent
+	extends
+		BaseEntityReferencesEvent<HtmlEditorPlugin, HtmlEditorPluginReferencesListener>
 {
 	private static final long serialVersionUID = 1L;
-
-	private final List<Class<?>> referencingClasses = Lists.newArrayList();
 
 	public HtmlEditorPluginReferencesEvent(HtmlEditorPlugin client)
 	{
@@ -43,10 +40,5 @@ public class HtmlEditorPluginReferencesEvent extends BaseEntityReferencesEvent<H
 	public void postEvent(HtmlEditorPluginReferencesListener listener)
 	{
 		listener.addHtmlEditorPluginReferencingClasses(entity, referencingClasses);
-	}
-
-	public List<Class<?>> getReferencingClasses()
-	{
-		return referencingClasses;
 	}
 }

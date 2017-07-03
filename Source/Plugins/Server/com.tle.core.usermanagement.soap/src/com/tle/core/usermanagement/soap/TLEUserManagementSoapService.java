@@ -25,9 +25,9 @@ import com.dytech.devlib.PropBagEx;
 import com.tle.beans.user.TLEGroup;
 import com.tle.beans.user.TLEUser;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.user.TLEGroupService;
-import com.tle.core.services.user.TLEUserService;
-import com.tle.core.soap.SoapXMLService;
+import com.tle.core.soap.service.SoapXMLService;
+import com.tle.core.usermanagement.standard.service.TLEGroupService;
+import com.tle.core.usermanagement.standard.service.TLEUserService;
 
 @Bind
 @Singleton
@@ -41,7 +41,8 @@ public class TLEUserManagementSoapService implements TLEUserManagementSoapInterf
 	private SoapXMLService soapXML;
 
 	@Override
-	public String addUser(String uuid, String username, String password, String firstName, String lastName, String email)
+	public String addUser(String uuid, String username, String password, String firstName, String lastName,
+		String email)
 	{
 		TLEUser user = new TLEUser();
 		user.setUuid(uuid);
@@ -149,7 +150,8 @@ public class TLEUserManagementSoapService implements TLEUserManagementSoapInterf
 	@Override
 	public String searchUsersByGroup(String groupUuid, String searchString)
 	{
-		List<TLEUser> searchUsers = tleUserService.searchUsers(tleUserService.prepareQuery(searchString), groupUuid, true);
+		List<TLEUser> searchUsers = tleUserService.searchUsers(tleUserService.prepareQuery(searchString), groupUuid,
+			true);
 		PropBagEx users = new PropBagEx().newSubtree("users");
 		for( TLEUser user : searchUsers )
 		{

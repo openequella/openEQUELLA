@@ -157,7 +157,7 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel impl
 		Object context = currentContextMethod.invoke(env);
 		if( bodyField == null )
 		{
-			bodyField = context.getClass().getDeclaredField("body"); //$NON-NLS-1$
+			bodyField = context.getClass().getDeclaredField("nestedContent");
 			bodyField.setAccessible(true);
 		}
 		return bodyField.get(context);

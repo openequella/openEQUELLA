@@ -20,11 +20,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.valuebean.GroupBean;
 import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.tle.common.Format;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.common.wizard.controls.groupselector.GroupSelectorControl;
 import com.tle.core.freetext.queries.BaseQuery;
 import com.tle.core.guice.Bind;
@@ -140,8 +140,8 @@ public class GroupSelectorWebControl extends AbstractWebControl<GroupSelectorWeb
 			? definitionControl.getRestrictedTo(GroupSelectorControl.KEY_RESTRICT_GROUPS) : null);
 
 		componentFactory.registerComponent(id, "s", tree, selectGroupDialog);
-		removeGroupFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("removeGroup"), id
-			+ "groupselector");
+		removeGroupFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("removeGroup"),
+			id + "groupselector");
 
 		addLink.setClickHandler(selectGroupDialog.getOpenFunction());
 		addLink.setDisablable(true);
@@ -250,8 +250,8 @@ public class GroupSelectorWebControl extends AbstractWebControl<GroupSelectorWeb
 		protected void transform(SectionInfo info, SelectionsTableSelection selection, String groupId,
 			List<SectionRenderable> actions, int index)
 		{
-			selection.setViewAction(new LabelRenderer(new TextLabel(userService.getInformationForGroup(groupId)
-				.getName())));
+			selection
+				.setViewAction(new LabelRenderer(new TextLabel(userService.getInformationForGroup(groupId).getName())));
 			if( isEnabled() )
 			{
 				actions.add(makeRemoveAction(LABEL_REMOVE,

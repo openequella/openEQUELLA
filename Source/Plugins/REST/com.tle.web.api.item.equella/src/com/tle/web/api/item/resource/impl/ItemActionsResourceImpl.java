@@ -22,8 +22,8 @@ import javax.ws.rs.core.Response;
 
 import com.tle.beans.item.ItemId;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.workflow.operations.WorkflowFactory;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.web.api.item.ItemLinkService;
 import com.tle.web.api.item.interfaces.ItemActionsResource;
 
@@ -34,7 +34,7 @@ public class ItemActionsResourceImpl implements ItemActionsResource
 	@Inject
 	private ItemService itemService;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 	@Inject
 	private ItemLinkService itemLinkService;
 

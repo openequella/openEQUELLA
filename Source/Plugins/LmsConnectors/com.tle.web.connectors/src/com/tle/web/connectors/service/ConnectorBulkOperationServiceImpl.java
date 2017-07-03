@@ -29,19 +29,19 @@ import com.tle.beans.item.ItemIdKey;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemPack;
 import com.tle.common.connectors.service.ConnectorItemKey;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.RunAsInstitution;
+import com.tle.core.item.operations.FilterResultListener;
+import com.tle.core.item.operations.ItemOperationFilter;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.plugins.BeanLocator;
 import com.tle.core.services.impl.BeanClusteredTask;
 import com.tle.core.services.impl.ClusteredTask;
 import com.tle.core.services.impl.SingleShotTask;
 import com.tle.core.services.impl.Task;
-import com.tle.core.services.item.ItemService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
-import com.tle.core.workflow.filters.FilterResultListener;
-import com.tle.core.workflow.filters.WorkflowFilter;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.web.bulk.operation.BulkOperationExecutor;
 import com.tle.web.bulk.operation.BulkResult;
 
@@ -106,7 +106,7 @@ public class ConnectorBulkOperationServiceImpl implements ConnectorBulkOperation
 		}
 	}
 
-	public static class ConnectorBulkWorkflowFilter implements WorkflowFilter, FilterResultListener
+	public static class ConnectorBulkWorkflowFilter implements ItemOperationFilter, FilterResultListener
 	{
 		private final Collection<? extends ItemKey> items;
 		private final BulkOperationExecutor executor;
@@ -146,7 +146,7 @@ public class ConnectorBulkOperationServiceImpl implements ConnectorBulkOperation
 		}
 
 		@Override
-		public void failed(ItemKey itemId, Item item, Throwable e)
+		public void failed(ItemKey itemId, Item item, ItemPack pack, Throwable e)
 		{
 			ConnectorItemKey itemKey = (ConnectorItemKey) itemId;
 			task.addLogEntry(new BulkResult(false, itemKey.getTitle(), e.getMessage()));

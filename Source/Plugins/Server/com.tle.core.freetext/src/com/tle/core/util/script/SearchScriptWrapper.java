@@ -25,8 +25,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.dytech.devlib.PropBagEx;
-import com.dytech.edge.common.valuebean.GroupBean;
-import com.dytech.edge.common.valuebean.UserBean;
 import com.dytech.edge.queries.FreeTextQuery;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.Item;
@@ -35,11 +33,13 @@ import com.tle.common.scripting.ScriptObject;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.search.whereparser.WhereParser;
 import com.tle.common.searching.Search.SortType;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
+import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.common.searching.SearchResults;
+import com.tle.core.collection.service.ItemDefinitionService;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.core.services.item.FreeTextService;
-import com.tle.core.services.item.ItemService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.services.user.UserService;
 
 @Deprecated

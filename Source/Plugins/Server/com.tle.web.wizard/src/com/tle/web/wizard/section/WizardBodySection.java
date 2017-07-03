@@ -24,7 +24,7 @@ import javax.inject.Inject;
 
 import com.dytech.edge.wizard.WizardException;
 import com.tle.common.Check;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;

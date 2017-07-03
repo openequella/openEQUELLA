@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
 
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 
 /**
  * 
@@ -31,14 +31,14 @@ import com.tle.core.services.UrlService;
 public class UrlLinkServiceImpl implements UrlLinkService
 {
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@Override
 	public UriBuilder getMethodUriBuilder(Class<?> resource, String method)
 	{
 		try
 		{
-			UriBuilder builder = UriBuilder.fromUri(urlService.getInstitutionUrl().toURI());
+			UriBuilder builder = UriBuilder.fromUri(institutionService.getInstitutionUrl().toURI());
 			builder.path("api");
 			return builder.path(resource).path(resource, method);
 		}

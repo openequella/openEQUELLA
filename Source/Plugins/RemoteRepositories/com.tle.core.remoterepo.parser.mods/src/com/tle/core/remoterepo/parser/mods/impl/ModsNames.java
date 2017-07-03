@@ -26,7 +26,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.tle.common.Check;
-import com.tle.common.util.XmlDocument;
+import com.tle.core.xml.XmlDocument;
 
 /**
  * @author aholland
@@ -56,8 +56,8 @@ public class ModsNames extends ModsPart
 		{
 			return null;
 		}
-		final List<String> stringNames = Lists.newArrayList(Collections2.transform(names,
-			new Function<ModsName, String>()
+		final List<String> stringNames = Lists
+			.newArrayList(Collections2.transform(names, new Function<ModsName, String>()
 			{
 				@Override
 				public String apply(ModsName modsName)

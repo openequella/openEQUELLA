@@ -17,7 +17,7 @@
 package com.tle.core.htmleditor.service;
 
 import com.tle.common.htmleditor.beans.HtmlEditorPlugin;
-import com.tle.core.services.entity.EntityEditingSession;
+import com.tle.core.entity.EntityEditingSession;
 
 /**
  * @author aholland

@@ -24,11 +24,11 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemPack;
 import com.tle.common.workflow.Workflow;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.InitialiserService;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
+import com.tle.core.hibernate.equella.service.InitialiserService;
+import com.tle.core.item.standard.operations.AbstractStandardWorkflowOperation;
 
 @Bind
-public class WizardInitOperation extends AbstractWorkflowOperation
+public class WizardInitOperation extends AbstractStandardWorkflowOperation
 {
 	@Inject
 	private InitialiserService initialiserService;

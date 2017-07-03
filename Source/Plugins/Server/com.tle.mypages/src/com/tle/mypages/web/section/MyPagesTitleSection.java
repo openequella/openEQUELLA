@@ -24,7 +24,7 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemPack;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.util.ItemHelper;
+import com.tle.core.item.helper.ItemHelper;
 import com.tle.mypages.web.event.LoadItemEvent;
 import com.tle.mypages.web.event.LoadItemEventListener;
 import com.tle.mypages.web.event.SaveItemEvent;

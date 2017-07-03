@@ -22,14 +22,14 @@ import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.common.URLUtils;
+import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.inplaceeditor.InPlaceEditorServerBackend;
-import com.tle.core.filesystem.StagingFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.UrlService;
 
 /**
  * @author Aaron
@@ -41,7 +41,7 @@ public class FileHandlerInplaceEditorBackend implements InPlaceEditorServerBacke
 	@Inject
 	private FileSystemService fileSystemService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@Override
 	public String getDownloadUrl(String wizardStagingId, int itemVersion, String stagingId, String filename)
@@ -54,7 +54,7 @@ public class FileHandlerInplaceEditorBackend implements InPlaceEditorServerBacke
 		{
 			fileSystemService.copy(new StagingFile(wizardStagingId), filename, stagingFile, filename);
 		}
-		return urlService.institutionalise("file/" + stagingId + "/$/" + URLUtils.urlEncode(filename, false));
+		return institutionService.institutionalise("file/" + stagingId + "/$/" + URLUtils.urlEncode(filename, false));
 	}
 
 	@Override
@@ -67,8 +67,8 @@ public class FileHandlerInplaceEditorBackend implements InPlaceEditorServerBacke
 		}
 		catch( IOException ex )
 		{
-			throw new RuntimeException(CurrentLocale.get(
-				"com.tle.web.wizard.controls.universal.handlers.file.inplacebackend.error.write", filename), ex);
+			throw new RuntimeException(CurrentLocale
+				.get("com.tle.web.wizard.controls.universal.handlers.file.inplacebackend.error.write", filename), ex);
 		}
 	}
 }

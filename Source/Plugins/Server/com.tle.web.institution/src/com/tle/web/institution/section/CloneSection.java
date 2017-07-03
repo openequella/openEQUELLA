@@ -23,10 +23,11 @@ import javax.inject.Inject;
 
 import com.tle.beans.Institution;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.institution.convert.InstitutionInfo;
-import com.tle.core.progress.ListProgressCallback;
-import com.tle.core.services.InstitutionImportService;
-import com.tle.core.services.InstitutionImportService.ConvertType;
+import com.tle.core.institution.convert.service.InstitutionImportService;
+import com.tle.core.institution.convert.service.InstitutionImportService.ConvertType;
+import com.tle.common.beans.progress.ListProgressCallback;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.institution.section.ProgressSection.ProgressRunnable;
@@ -46,6 +47,8 @@ public class CloneSection extends AbstractEditSection<CloneSection.CloneModel>
 	private static Label LABEL_ERROR_SCHEMA;
 
 	@Inject
+	private InstitutionService institutionService;
+	@Inject
 	private InstitutionImportService instImportService;
 
 	@ViewFactory
@@ -64,7 +67,7 @@ public class CloneSection extends AbstractEditSection<CloneSection.CloneModel>
 	{
 		CloneModel model = getModel(info);
 		model.setId(instId);
-		Institution i = instImportService.getInstitution(instId);
+		Institution i = institutionService.getInstitution(instId);
 		setupFieldsFromInstitution(info, i);
 	}
 

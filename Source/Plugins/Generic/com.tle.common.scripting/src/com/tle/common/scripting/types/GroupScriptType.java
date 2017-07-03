@@ -16,7 +16,7 @@
 
 package com.tle.common.scripting.types;
 
-import com.dytech.edge.common.valuebean.GroupBean;
+import com.tle.common.usermanagement.user.valuebean.GroupBean;
 
 /**
  * Group object for usage in scripts.

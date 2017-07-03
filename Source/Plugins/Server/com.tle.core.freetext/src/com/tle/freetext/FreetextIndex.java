@@ -16,20 +16,21 @@
 
 package com.tle.freetext;
 
-import it.uniroma3.mat.extendedset.wrappers.LongSet;
-
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
 import com.google.common.collect.Multimap;
-import com.tle.beans.system.SearchSettings;
 import com.tle.common.Pair;
 import com.tle.common.searching.Search;
 import com.tle.common.searching.SearchResults;
+import com.tle.common.settings.standard.SearchSettings;
+import com.tle.core.freetext.index.ItemIndex;
+import com.tle.core.freetext.indexer.IndexingExtension;
 import com.tle.core.remoting.MatrixResults;
 import com.tle.core.services.item.FreetextResult;
-import com.tle.freetext.index.ItemIndex;
+
+import it.uniroma3.mat.extendedset.wrappers.LongSet;
 
 /**
  * @author Nicholas Read

@@ -27,7 +27,7 @@ import javax.inject.Singleton;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.external.Office2HtmlConversionService;
+import com.tle.core.office2html.service.Office2HtmlConversionService;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -45,8 +45,8 @@ import com.tle.web.viewurl.ViewableResource;
 public class ConvertToHtmlViewer extends AbstractResourceViewer implements ViewItemViewer
 {
 	@SuppressWarnings("nls")
-	private static Set<String> SUPPORTED = new HashSet<String>(Arrays.asList("application/msword",
-		"application/vnd.ms-excel", "application/powerpoint"));
+	private static Set<String> SUPPORTED = new HashSet<String>(
+		Arrays.asList("application/msword", "application/vnd.ms-excel", "application/powerpoint"));
 
 	@Inject
 	private Office2HtmlConversionService conversionService;

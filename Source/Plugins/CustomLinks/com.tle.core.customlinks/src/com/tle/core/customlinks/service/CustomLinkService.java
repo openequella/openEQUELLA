@@ -19,7 +19,7 @@ package com.tle.core.customlinks.service;
 import java.util.List;
 
 import com.tle.common.customlinks.entity.CustomLink;
-import com.tle.core.services.entity.AbstractEntityService;
+import com.tle.core.entity.service.AbstractEntityService;
 
 public interface CustomLinkService extends AbstractEntityService<CustomLinkEditingBean, CustomLink>
 {

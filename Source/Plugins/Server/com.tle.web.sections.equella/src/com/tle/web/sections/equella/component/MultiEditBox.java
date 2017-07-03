@@ -38,7 +38,7 @@ import com.tle.common.i18n.LocaleUtils;
 import com.tle.common.i18n.beans.LanguageBundleBean;
 import com.tle.common.i18n.beans.LanguageStringBean;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.language.LanguageService;
+import com.tle.core.i18n.service.LanguageService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.equella.component.model.MultiEditBoxState;

@@ -39,13 +39,13 @@ import com.dytech.edge.common.Constants;
 import com.google.common.base.Function;
 import com.google.common.base.Throwables;
 import com.tle.annotation.Nullable;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.HtmlAttachment;
 import com.tle.common.URLUtils;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
-import com.tle.core.util.AbstractHtmlContentHandler;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.services.html.AbstractHtmlContentHandler;
 import com.tle.mypages.parse.ConvertHtmlService;
 import com.tle.mypages.parse.DefaultHrefCallback;
 import com.tle.mypages.parse.conversion.HrefConversion;
@@ -72,7 +72,7 @@ public class MyPagesPackageExporterUtils
 	@Inject
 	private ConvertHtmlService urlConverter;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	public Reader localiseHtmlForExport(SectionInfo info, Item item, HtmlAttachment page, FileHandle file)
 	{
@@ -99,8 +99,8 @@ public class MyPagesPackageExporterUtils
 				// convert all local item URLs into this-item-relative
 				// (instead of institution relative)
 				// and all non local URLs into absolute.
-				return urlConverter.convert(input, false, new ItemsToLocalUrlConversion(thisPageBase, thisItemBase,
-					thisFileBase));
+				return urlConverter.convert(input, false,
+					new ItemsToLocalUrlConversion(thisPageBase, thisItemBase, thisFileBase));
 			}
 		});
 
@@ -136,7 +136,7 @@ public class MyPagesPackageExporterUtils
 		// (instead of institution relative)
 		// and all non local URLs into absolute.
 		final String newHtml = urlConverter.modifyXml(new StringReader(stripped), new DefaultHrefCallback(false, false,
-			urlService, new LocalToItemsUrlConversion(thisPageBase, thisPackageBase)));
+			institutionService, new LocalToItemsUrlConversion(thisPageBase, thisPackageBase)));
 
 		return new StringReader(newHtml);
 	}
@@ -179,7 +179,7 @@ public class MyPagesPackageExporterUtils
 			else if( !URLUtils.isAbsoluteUrl(href) )
 			{
 				// add the base href
-				return urlService.institutionalise(href);
+				return institutionService.institutionalise(href);
 			}
 			return href;
 		}
@@ -205,10 +205,10 @@ public class MyPagesPackageExporterUtils
 		@Override
 		public String convert(String href, AttributesImpl atts)
 		{
-			if( urlService.isInstitutionUrl(href) )
+			if( institutionService.isInstitutionUrl(href) )
 			{
 				// remove the base href
-				return urlService.removeInstitution(href);
+				return institutionService.removeInstitution(href);
 			}
 			else if( href.startsWith(localContentBase) )
 			{
@@ -230,10 +230,10 @@ public class MyPagesPackageExporterUtils
 
 	private static class StrippingContentHandler extends AbstractHtmlContentHandler
 	{
-		private static final Set<String> IGNORE_DIRECT_CHILDREN_OF = new HashSet<String>(Arrays.asList(new String[]{
-				"html", "head", "link", "meta", "base", "body", "title"}));
-		private static final Set<String> IGNORE_TAGS = new HashSet<String>(Arrays.asList(new String[]{"html", "head",
-				"link", "meta", "base", "body", "title"}));
+		private static final Set<String> IGNORE_DIRECT_CHILDREN_OF = new HashSet<String>(
+			Arrays.asList(new String[]{"html", "head", "link", "meta", "base", "body", "title"}));
+		private static final Set<String> IGNORE_TAGS = new HashSet<String>(
+			Arrays.asList(new String[]{"html", "head", "link", "meta", "base", "body", "title"}));
 
 		private final Stack<String> elementStack = new Stack<String>();
 

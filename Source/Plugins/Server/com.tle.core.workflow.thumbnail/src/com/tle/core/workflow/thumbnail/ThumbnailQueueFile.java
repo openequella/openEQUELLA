@@ -18,7 +18,7 @@ package com.tle.core.workflow.thumbnail;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.PathUtils;
-import com.tle.core.filesystem.FileHandleUtils;
+import com.tle.common.filesystem.FileHandleUtils;
 import com.tle.core.filesystem.InstitutionFile;
 
 @SuppressWarnings("nls")
@@ -36,9 +36,9 @@ public class ThumbnailQueueFile extends InstitutionFile
 	}
 
 	@Override
-	public String getAbsolutePath()
+	protected String createAbsolutePath()
 	{
-		return PathUtils.filePath(super.getAbsolutePath(), THUMB_QUEUE_FOLDER,
+		return PathUtils.filePath(super.createAbsolutePath(), THUMB_QUEUE_FOLDER,
 			FileHandleUtils.getHashedPath(requestUuid));
 	}
 }

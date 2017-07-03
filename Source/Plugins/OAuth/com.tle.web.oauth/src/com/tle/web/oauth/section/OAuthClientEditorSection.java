@@ -26,14 +26,15 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 
-import com.dytech.edge.exceptions.InvalidDataException;
 import com.google.common.collect.Maps;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
 import com.tle.common.i18n.beans.LanguageBundleBean;
 import com.tle.common.oauth.beans.OAuthClient;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.oauth.OAuthConstants;
 import com.tle.core.oauth.OAuthFlowDefinition;
 import com.tle.core.oauth.OAuthFlowDefinitions;
@@ -41,7 +42,6 @@ import com.tle.core.oauth.service.OAuthClientEditingBean;
 import com.tle.core.oauth.service.OAuthClientEditingSession;
 import com.tle.core.oauth.service.OAuthService;
 import com.tle.core.security.TLEAclManager;
-import com.tle.core.services.UrlService;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.DebugSettings;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -190,7 +190,7 @@ public class OAuthClientEditorSection extends AbstractPrototypeSection<OAuthClie
 	@Inject
 	private TLEAclManager aclService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private UserLinkService userLinkService;
 	private UserLinkSection userLinkSection;
@@ -236,7 +236,7 @@ public class OAuthClientEditorSection extends AbstractPrototypeSection<OAuthClie
 			selectUserButton.setLabel(context, LABEL_SELECT_USER);
 		}
 
-		model.setDefaultRedirectUrl(urlService.institutionalise(OAuthWebConstants.OAUTH_DEFAULT_REDIRECT_URL));
+		model.setDefaultRedirectUrl(institutionService.institutionalise(OAuthWebConstants.OAUTH_DEFAULT_REDIRECT_URL));
 		model.setErrors(session.getValidationErrors());
 
 		OverrideHandler editHandler = new OverrideHandler(saveHandler);

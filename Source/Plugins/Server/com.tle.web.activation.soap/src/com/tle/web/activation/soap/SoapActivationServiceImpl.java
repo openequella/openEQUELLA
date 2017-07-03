@@ -22,7 +22,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.dytech.edge.exceptions.NotFoundException;
 import com.tle.beans.activation.ActivateRequest;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
@@ -31,6 +30,7 @@ import com.tle.cal.CALConstants;
 import com.tle.cal.service.CALService;
 import com.tle.cla.CLAConstants;
 import com.tle.cla.service.CLAService;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.activation.service.ActivationService;
 import com.tle.core.activation.service.CourseInfoService;

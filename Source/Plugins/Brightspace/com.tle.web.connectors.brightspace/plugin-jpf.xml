@@ -8,8 +8,9 @@
 		<import plugin-id="com.tle.web.sections" />
 		<import plugin-id="com.tle.web.recipientselector" />
 		<import plugin-id="com.tle.web.sections.equella" />
+		<import plugin-id="com.tle.core.jackson" />
 		<import plugin-id="com.tle.core.settings" />
-		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.core.connectors.brightspace" />
 	</requires>
 	<runtime>

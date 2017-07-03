@@ -41,8 +41,6 @@ import com.tle.beans.entity.FederatedSearch;
 import com.tle.beans.search.SRUSettings;
 import com.tle.common.Check;
 import com.tle.common.Pair;
-import com.tle.common.util.XmlDocument;
-import com.tle.common.util.XmlDocument.NodeListIterable;
 import com.tle.core.fedsearch.GenericRecord;
 import com.tle.core.fedsearch.impl.BasicRecord;
 import com.tle.core.fedsearch.impl.NullRecord;
@@ -50,7 +48,9 @@ import com.tle.core.guice.Bind;
 import com.tle.core.remoterepo.parser.mods.impl.loose.LooseModsRecord;
 import com.tle.core.remoterepo.sru.service.SruService;
 import com.tle.core.remoterepo.srw.service.impl.SrwServiceImpl;
-import com.tle.core.services.XsltService;
+import com.tle.core.xml.XmlDocument;
+import com.tle.core.xml.XmlDocument.NodeListIterable;
+import com.tle.core.xslt.service.XsltService;
 
 /**
  * @author larry
@@ -352,8 +352,8 @@ public class SruServiceImpl implements SruService
 		httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(sruSearch.getTimeout() * 1000);
 		httpClient.getHttpConnectionManager().getParams().setSoTimeout(sruSearch.getTimeout() * 1000);
 		// Prevent the default 3 tries - so once is enough ...?
-		httpClient.getHttpConnectionManager().getParams()
-			.setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(0, false));
+		httpClient.getHttpConnectionManager().getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
+			new DefaultHttpMethodRetryHandler(0, false));
 
 		httpClient.executeMethod(httpMethod);
 
@@ -367,8 +367,7 @@ public class SruServiceImpl implements SruService
 		return settings;
 	}
 
-	private NameValuePair[] populateNameValuePairs(String query, SRUSettings settings,
-		int offset, int perpage)
+	private NameValuePair[] populateNameValuePairs(String query, SRUSettings settings, int offset, int perpage)
 	{
 		List<NameValuePair> nameValueArray = new ArrayList<NameValuePair>();
 		nameValueArray.add(new NameValuePair(SRU_VERSION, SRU_VERSION_1_1));

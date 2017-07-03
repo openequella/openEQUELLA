@@ -18,10 +18,10 @@ package com.tle.web.cloud.settings.section;
 
 import javax.inject.Inject;
 
-import com.tle.beans.system.SearchSettings;
+import com.tle.common.settings.standard.SearchSettings;
 import com.tle.core.cloud.settings.CloudSettings;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.search.settings.SearchSettingsExtension;

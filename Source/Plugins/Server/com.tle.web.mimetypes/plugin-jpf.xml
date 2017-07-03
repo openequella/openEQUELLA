@@ -23,6 +23,7 @@
 		<import plugin-id="com.tle.web.viewurl" />
 		<import plugin-id="net.sf.json-lib:json-lib" />
 		<import plugin-id="com.tle.web.itemlist" />
+		<import plugin-id="com.tle.core.filesystem.staging" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

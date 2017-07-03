@@ -30,8 +30,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.CustomAttachment;
-import com.tle.core.dao.ItemDao;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.dao.ItemDao;
 import com.tle.core.item.security.ItemSecurityConstants;
 import com.tle.core.item.serializer.AttachmentSerializer;
 import com.tle.core.item.serializer.ItemSerializerProvider;
@@ -70,8 +70,8 @@ public class AttachmentSerializerProvider implements ItemSerializerProvider, Map
 	{
 		if( state.hasCategory(ItemSerializerService.CATEGORY_ATTACHMENT) )
 		{
-			Multimap<Long, Attachment> attachments = itemDao.getAttachmentsForItemIds(state
-				.getItemIdsWithPrivilege(ItemSecurityConstants.VIEW_ITEM));
+			Multimap<Long, Attachment> attachments = itemDao
+				.getAttachmentsForItemIds(state.getItemIdsWithPrivilege(ItemSecurityConstants.VIEW_ITEM));
 			for( Long itemId : attachments.keySet() )
 			{
 				state.setData(itemId, ALIAS_ATTACHMENTS, attachments.get(itemId));

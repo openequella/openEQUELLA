@@ -21,8 +21,8 @@ import java.util.Collection;
 import com.google.common.base.Throwables;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.services.entity.AbstractEntityService;
-import com.tle.core.services.entity.EntityEditingBean;
+import com.tle.core.entity.EntityEditingBean;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -55,7 +55,8 @@ import com.tle.web.template.section.HelpAndScreenOptionsSection;
 @TreeIndexed
 public abstract class AbstractEntityContributeSection<B extends EntityEditingBean, E extends BaseEntity, M extends AbstractEntityContributeSection<B, E, M>.EntityContributeModel>
 	extends
-		AbstractPrototypeSection<M> implements HtmlRenderer
+		AbstractPrototypeSection<M>
+	implements HtmlRenderer
 {
 	@PlugKey("editor.error.accessdenied")
 	private static String KEY_ACCESS_DENIED;

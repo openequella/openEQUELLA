@@ -5,7 +5,7 @@
 		<import plugin-id="com.tle.common.search" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.notification" />
-		<import plugin-id="com.tle.core.notification.indexer" />
+		<import plugin-id="com.tle.core.notification.standard" />
 		<import plugin-id="com.tle.web.htmleditor" />
 		<import plugin-id="com.tle.web.search" />
 		<import plugin-id="com.tle.web.sections" />
@@ -19,6 +19,7 @@
 		<import plugin-id="com.tle.web.itemlist" />
 		<import plugin-id="com.tle.web.api.item.interfaces" />
 		<import plugin-id="com.tle.web.api.notification.interfaces" />
+		<import plugin-id="com.tle.core.item.standard" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">

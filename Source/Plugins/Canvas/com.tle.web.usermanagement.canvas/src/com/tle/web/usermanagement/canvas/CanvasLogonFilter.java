@@ -31,9 +31,9 @@ import org.apache.log4j.Logger;
 
 import com.tle.beans.usermanagement.canvas.CanvasWrapperSettings;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.config.ConfigurationService;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
+import com.tle.core.settings.service.ConfigurationService;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
 import com.tle.plugins.ump.UserManagementLogonFilter;
 import com.tle.web.dispatcher.FilterResult;
 

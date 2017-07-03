@@ -29,7 +29,7 @@ import com.tle.common.customlinks.entity.CustomLink;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.customlinks.service.CustomLinkService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.UrlService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.customlinks.CustomLinkLabel;
 import com.tle.web.sections.SectionInfo;
@@ -50,7 +50,7 @@ public class CustomLinksMenuContributor implements MenuContributor
 	@Inject
 	private UserSessionService userSessionService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 
 	@Override
 	public List<MenuContribution> getMenuContributions(SectionInfo info)
@@ -82,7 +82,7 @@ public class CustomLinksMenuContributor implements MenuContributor
 						// nothing
 					}
 
-					iconUrl = urlService.institutionalise("entity/" + lk.getId() + "/" + file);
+					iconUrl = institutionService.institutionalise("entity/" + lk.getId() + "/" + file);
 				}
 
 				cachedLinks.add(new CustomLinkLabel(name, url, newWindow, iconUrl));

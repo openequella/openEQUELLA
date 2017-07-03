@@ -49,7 +49,7 @@ import com.google.common.base.Throwables;
 import com.tle.common.applet.client.DialogUtils;
 import com.tle.common.applet.client.DialogUtils.DialogResult;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.common.util.FileEntry;
+import com.tle.common.filesystem.FileEntry;
 import com.tle.core.remoting.RemoteAbstractEntityService;
 
 /**

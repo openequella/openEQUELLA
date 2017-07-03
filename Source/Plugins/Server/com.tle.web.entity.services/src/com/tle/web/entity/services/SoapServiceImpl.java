@@ -1,19 +1,3 @@
-/*
- * Copyright 2017 Apereo
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.tle.web.entity.services;
 
 import java.io.ByteArrayInputStream;
@@ -35,6 +19,7 @@ import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
 
+import com.tle.core.item.standard.service.ItemStandardService;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.apache.log4j.Logger;
 
@@ -62,46 +47,47 @@ import com.tle.beans.item.ItemStatus;
 import com.tle.beans.item.ItemTaskId;
 import com.tle.common.Check;
 import com.tle.common.Pair;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.search.whereparser.WhereParser;
 import com.tle.common.searching.Search;
 import com.tle.common.searching.SearchResults;
+import com.tle.common.usermanagement.user.WebAuthenticationDetails;
 import com.tle.common.util.Dates;
 import com.tle.common.util.EnumUtils.EnumMask;
 import com.tle.common.util.EnumUtils.EnumMaskBuilder;
 import com.tle.common.util.UtcDate;
+import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.filesystem.ItemFile;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
-import com.tle.core.item.operations.CloneFactory;
+import com.tle.core.item.helper.ItemHelper;
+import com.tle.core.item.helper.ItemHelper.ItemHelperSettings;
+import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.serializer.ItemSerializerService;
 import com.tle.core.item.serializer.ItemSerializerXml;
 import com.tle.core.item.serializer.XMLStreamer;
-import com.tle.core.schema.SchemaService;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.core.item.standard.operations.CloneFactory;
+import com.tle.core.item.standard.operations.workflow.StatusOperation;
+import com.tle.core.item.standard.service.ItemCommentService;
+import com.tle.core.item.standard.service.ItemCommentService.CommentFilter;
+import com.tle.core.item.standard.service.ItemCommentService.CommentOrder;
+import com.tle.core.schema.service.SchemaService;
+import com.tle.core.search.LegacySearch;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.core.services.item.FreeTextService;
 import com.tle.core.services.item.FreetextResult;
 import com.tle.core.services.item.FreetextSearchResults;
-import com.tle.core.services.item.ItemCommentService;
-import com.tle.core.services.item.ItemCommentService.CommentFilter;
-import com.tle.core.services.item.ItemCommentService.CommentOrder;
-import com.tle.core.services.item.ItemService;
 import com.tle.core.services.user.UserService;
-import com.tle.core.soap.SoapXMLService;
-import com.tle.core.user.WebAuthenticationDetails;
-import com.tle.core.util.ItemHelper;
-import com.tle.core.util.ItemHelper.ItemHelperSettings;
-import com.tle.core.workflow.operations.StatusOperation;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
+import com.tle.core.soap.service.SoapXMLService;
 import com.tle.freetext.FreetextIndex;
-import com.tle.searching.LegacySearch;
 import com.tle.web.viewurl.ViewItemUrlFactory;
 
 /**
  * Implementation of SoapService41 + SoapService50
- * 
+ *
  * @author aholland
  */
 @Bind
@@ -114,21 +100,25 @@ public class SoapServiceImpl implements SoapService50
 	 * Maps enums to the bitmask defined for <code>getComments</code>. Don't
 	 * change the order or position of existing enums.
 	 */
-	private static final EnumMask<CommentFilter> COMMENT_FILTER_MASK = EnumMaskBuilder
-		.with(CommentFilter.class)
-		.add(CommentFilter.MUST_HAVE_COMMENT, CommentFilter.MUST_HAVE_RATING, CommentFilter.NOT_ANONYMOUS_OR_GUEST,
-			CommentFilter.ONLY_MOST_RECENT_PER_USER).build();
+	private static final EnumMask<CommentFilter> COMMENT_FILTER_MASK = EnumMaskBuilder.with(CommentFilter.class)
+			.add(CommentFilter.MUST_HAVE_COMMENT, CommentFilter.MUST_HAVE_RATING, CommentFilter.NOT_ANONYMOUS_OR_GUEST,
+					CommentFilter.ONLY_MOST_RECENT_PER_USER)
+			.build();
 	/**
 	 * Maps enums to the order defined for <code>getComments</code>. Don't
 	 * change the order or position of existing enums.
 	 */
-	private static final EnumMask<CommentOrder> COMMENT_ORDER_MAPPING = EnumMaskBuilder
-		.with(CommentOrder.class)
-		.add(CommentOrder.REVERSE_CHRONOLOGICAL, CommentOrder.CHRONOLOGICAL, CommentOrder.HIGHEST_RATED,
-			CommentOrder.LOWEST_RATED).build();
+	private static final EnumMask<CommentOrder> COMMENT_ORDER_MAPPING = EnumMaskBuilder.with(CommentOrder.class)
+			.add(CommentOrder.REVERSE_CHRONOLOGICAL, CommentOrder.CHRONOLOGICAL, CommentOrder.HIGHEST_RATED,
+					CommentOrder.LOWEST_RATED)
+			.build();
 
 	@Inject
 	private ItemService itemService;
+	@Inject
+	private ItemStandardService itemStandardService;
+	@Inject
+	private ItemFileService itemFileService;
 	@Inject
 	private ItemCommentService itemCommentService;
 	@Inject
@@ -148,31 +138,29 @@ public class SoapServiceImpl implements SoapService50
 	@Inject
 	private UserService userService;
 	@Inject
-	private WorkflowFactory editFactory;
+	private ItemOperationFactory editFactory;
 	@Inject
 	private CloneFactory cloneFactory;
-
 	@Inject
 	private SoapXMLService soapXML;
-
 	@Inject
 	private WebServiceContext webServiceContext;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 	@Inject
 	private ItemSerializerService itemSerializerService;
 
 	private WebAuthenticationDetails getDetails()
 	{
-		return userService.getWebAuthenticationDetails((HttpServletRequest) webServiceContext.getMessageContext().get(
-			AbstractHTTPDestination.HTTP_REQUEST));
+		return userService.getWebAuthenticationDetails(
+				(HttpServletRequest) webServiceContext.getMessageContext().get(AbstractHTTPDestination.HTTP_REQUEST));
 	}
 
 	@Override
 	public String login(String username, String password)
 	{
 		return soapXML.convertUserToXML(userService.login(username, password, getDetails(), true).getUserBean())
-			.toString();
+				.toString();
 	}
 
 	@Override
@@ -197,8 +185,8 @@ public class SoapServiceImpl implements SoapService50
 	public String newItem(String collectionUuid)
 	{
 		ItemDefinition collection = collectionService.getByUuid(collectionUuid);
-		final PropBagEx item = soapXML.convertItemPackToXML(
-			itemService.operation(null, workflowFactory.create(collection)), false);
+		final PropBagEx item = soapXML
+				.convertItemPackToXML(itemService.operation(null, workflowFactory.create(collection)), false);
 		return item.toString();
 	}
 
@@ -211,7 +199,7 @@ public class SoapServiceImpl implements SoapService50
 		}
 
 		final ItemPack pack = itemService.operation(getItemId(itemUuid, itemVersion),
-			editFactory.startEdit(modifyingAttachments));
+				editFactory.startEdit(modifyingAttachments));
 		return soapXML.convertItemPackToXML(pack, true).toString();
 	}
 
@@ -241,9 +229,9 @@ public class SoapServiceImpl implements SoapService50
 		{
 			ops.add(workflowFactory.submit());
 		}
-		ops.add(workflowFactory.saveWithOperations(true,
-			(List<WorkflowOperation>) pack.getAttribute("preSaveOperations"),
-			(List<WorkflowOperation>) pack.getAttribute("postSaveOperations")));
+		ops.add(
+				workflowFactory.saveWithOperations(true, (List<WorkflowOperation>) pack.getAttribute("preSaveOperations"),
+						(List<WorkflowOperation>) pack.getAttribute("postSaveOperations")));
 
 		ItemPack<Item> ret = itemService.operation(key, ops.toArray(new WorkflowOperation[ops.size()]));
 		ret.getItem().setNewItem(false);
@@ -255,7 +243,7 @@ public class SoapServiceImpl implements SoapService50
 	public String newVersionItem(String itemUuid, int itemVersion, boolean copyAttachments)
 	{
 		final ItemPack pack = itemService.operation(getItemId(itemUuid, itemVersion),
-			workflowFactory.newVersion(copyAttachments));
+				workflowFactory.newVersion(copyAttachments));
 
 		return soapXML.convertItemPackToXML(pack, true).toString();
 	}
@@ -264,7 +252,7 @@ public class SoapServiceImpl implements SoapService50
 	public String cloneItem(String itemUuid, int itemVersion, boolean copyAttachments)
 	{
 		final ItemPack pack = itemService.operation(getItemId(itemUuid, itemVersion),
-			cloneFactory.clone(copyAttachments, false));
+				cloneFactory.clone(copyAttachments, false));
 
 		return soapXML.convertItemPackToXML(pack, true).toString();
 	}
@@ -309,7 +297,7 @@ public class SoapServiceImpl implements SoapService50
 	@Override
 	public void cancelItemEdit(String itemUuid, int itemVersion)
 	{
-		//This looks like a staging leak (no staging ID to pass to cancelEdit)
+		// This looks like a staging leak (no staging ID to pass to cancelEdit)
 		itemService.operation(getItemId(itemUuid, itemVersion), workflowFactory.cancelEdit(null, true));
 	}
 
@@ -322,7 +310,20 @@ public class SoapServiceImpl implements SoapService50
 	@Override
 	public void deleteItem(String itemUuid, int itemVersion)
 	{
-		itemService.delete(getItemId(itemUuid, itemVersion), false, true, true);
+		final ItemId itemId = getItemId(itemUuid, itemVersion);
+		itemStandardService.delete(itemId, false, true, true);
+		final StatusOperation statop = workflowFactory.status();
+		itemService.operation(itemId, statop);
+
+		final boolean purge = statop.getStatus().getStatusName().equals(ItemStatus.DELETED);
+		if( purge )
+		{
+			itemService.operation(itemId, workflowFactory.purge(true));
+		}
+		else
+		{
+			itemService.operation(itemId, workflowFactory.delete(), workflowFactory.save());
+		}
 	}
 
 	@Override
@@ -379,7 +380,7 @@ public class SoapServiceImpl implements SoapService50
 	@SuppressWarnings("nls")
 	@Override
 	public String searchItems(String freetext, String[] collectionUuids, String whereClause, boolean onlyLive,
-		int orderType, boolean reverseOrder, int offset, int length)
+							  int orderType, boolean reverseOrder, int offset, int length)
 	{
 		Preconditions.checkArgument(length <= 50, "Length must be less than or equal to 50");
 
@@ -409,8 +410,8 @@ public class SoapServiceImpl implements SoapService50
 		{
 			if( item != null )
 			{
-				PropBagEx itemXml = soapXML.convertItemPackToXML(new ItemPack(item,
-					itemService.getItemXmlPropBag(item), null), true);
+				PropBagEx itemXml = soapXML
+						.convertItemPackToXML(new ItemPack(item, itemService.getItemXmlPropBag(item), null), true);
 				itemXml.setNode("item/url", urlFactory.createFullItemUrl(item.getItemId()).getHref());
 				xml.newSubtree("result").append("", itemXml);
 			}
@@ -424,7 +425,7 @@ public class SoapServiceImpl implements SoapService50
 	@Override
 	@SuppressWarnings("nls")
 	public String searchItemsFast(String freetext, String[] collectionUuids, String whereClause, boolean onlyLive,
-		int orderType, boolean reverseOrder, int offset, int length, String[] resultCategories)
+								  int orderType, boolean reverseOrder, int offset, int length, String[] resultCategories)
 	{
 		Preconditions.checkArgument(length <= 50, "Length must be less than or equal to 50");
 
@@ -434,7 +435,7 @@ public class SoapServiceImpl implements SoapService50
 		}
 
 		final SearchResults<ItemIdKey> results = freetextService.searchIds(
-			createSearch(freetext, collectionUuids, whereClause, onlyLive, orderType, reverseOrder), offset, length);
+				createSearch(freetext, collectionUuids, whereClause, onlyLive, orderType, reverseOrder), offset, length);
 
 		// No results - return immediately
 		if( results.getResults().isEmpty() )
@@ -474,7 +475,7 @@ public class SoapServiceImpl implements SoapService50
 	}
 
 	private DefaultSearch createSearch(String freetext, String[] collectionUuids, String whereClause, boolean onlyLive,
-		int orderType, boolean reverseOrder)
+									   int orderType, boolean reverseOrder)
 	{
 		SearchRequest searchReq = new SearchRequest();
 		searchReq.setQuery(freetext);
@@ -531,7 +532,7 @@ public class SoapServiceImpl implements SoapService50
 
 	@Override
 	public String facetCount(String freetext, String[] collectionUuids, String whereClause, String[] facetXpaths)
-		throws Exception
+			throws Exception
 	{
 		PropBagEx rv = new PropBagEx("<facets/>"); //$NON-NLS-1$
 
@@ -545,14 +546,14 @@ public class SoapServiceImpl implements SoapService50
 
 		// Key is XPath without "/xml"; Value is the original XPath
 		final ImmutableMap<String, String> mappedFacets = Maps.uniqueIndex(Arrays.asList(facetXpaths),
-			new Function<String, String>()
-			{
-				@Override
-				public String apply(String input)
+				new Function<String, String>()
 				{
-					return input.substring(input.indexOf('/', 1));
-				}
-			});
+					@Override
+					public String apply(String input)
+					{
+						return input.substring(input.indexOf('/', 1));
+					}
+				});
 		final Multimap<String, Pair<String, Integer>> vcs = freetextIndex.facetCount(s, mappedFacets.keySet());
 
 		// Entry set is in same order as the passed in facet XPaths
@@ -640,18 +641,18 @@ public class SoapServiceImpl implements SoapService50
 	@Override
 	public String acceptTask(String itemUuid, int itemVersion, String taskId, boolean unlock)
 	{
-		itemService.operation(new ItemTaskId(itemUuid, itemVersion, taskId), workflowFactory.accept(taskId, null),
-			workflowFactory.status(), workflowFactory.saveUnlock(unlock));
+		itemService.operation(new ItemTaskId(itemUuid, itemVersion, taskId),
+				workflowFactory.accept(taskId, null, null), workflowFactory.status(), workflowFactory.saveUnlock(unlock));
 		return taskId;
 	}
 
 	@Override
 	public String rejectTask(String itemUuid, int itemVersion, String taskId, String rejectMessage, String toStep,
-		boolean unlock)
+							 boolean unlock)
 	{
 		itemService.operation(new ItemTaskId(itemUuid, itemVersion, taskId),
-			workflowFactory.reject(taskId, rejectMessage, toStep), workflowFactory.status(),
-			workflowFactory.saveUnlock(unlock));
+				workflowFactory.reject(taskId, rejectMessage, toStep, null), workflowFactory.status(),
+				workflowFactory.saveUnlock(unlock));
 
 		return taskId;
 	}
@@ -672,7 +673,7 @@ public class SoapServiceImpl implements SoapService50
 	public String[] getItemFilenames(String itemUuid, int itemVersion, String path, boolean system)
 	{
 		final List<String> results = new ArrayList<String>();
-		final ItemFile fileHandle = new ItemFile(itemUuid, itemVersion);
+		final ItemFile fileHandle = itemFileService.getItemFile(new ItemId(itemUuid, itemVersion), null);
 		final Collection<String> list = fileSystemService.grep(fileHandle, path, "**"); //$NON-NLS-1$
 		for( String file : list )
 		{
@@ -698,7 +699,7 @@ public class SoapServiceImpl implements SoapService50
 	public String getComment(String itemUuid, int itemVersion, String commentUuid)
 	{
 		Comment c = itemCommentService.getComment(itemService.getUnsecure(getItemId(itemUuid, itemVersion)),
-			commentUuid);
+				commentUuid);
 
 		PropBagEx xml = new PropBagEx();
 		addCommentXml(xml, c);

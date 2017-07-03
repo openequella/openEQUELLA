@@ -35,11 +35,11 @@ import org.springframework.remoting.support.RemoteInvocation;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
 import com.tle.common.util.Logger;
 import com.tle.core.guice.Bind;
+import com.tle.core.hibernate.equella.service.InitialiserService;
 import com.tle.core.plugins.PluginAwareObjectInputStream;
 import com.tle.core.plugins.PluginAwareObjectOutputStream;
-import com.tle.core.services.InitialiserService;
 import com.tle.core.services.LoggingService;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.exceptions.InvalidSessionException;
 
 @Bind
@@ -80,8 +80,8 @@ public class RemoteInterceptor extends HttpInvokerServiceExporter
 
 	@SuppressWarnings("nls")
 	@Override
-	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-		IOException
+	public void handleRequest(HttpServletRequest request, HttpServletResponse response)
+		throws ServletException, IOException
 	{
 		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 		if( enableRequestCapturing )
@@ -143,8 +143,8 @@ public class RemoteInterceptor extends HttpInvokerServiceExporter
 	}
 
 	@Override
-	protected Object invoke(final RemoteInvocation invocation, final Object targetObject) throws NoSuchMethodException,
-		IllegalAccessException, InvocationTargetException
+	protected Object invoke(final RemoteInvocation invocation, final Object targetObject)
+		throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
 	{
 		Throwable unwrapped = null;
 

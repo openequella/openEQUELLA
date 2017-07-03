@@ -28,8 +28,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.inject.Singleton;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.plugins.PluginService;
-import com.tle.core.services.UrlService;
 import com.tle.web.freemarker.CustomTemplateLoader;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
@@ -52,7 +52,7 @@ public class CanvasConfigurationServlet extends HttpServlet
 	private static final String DEFAULT_HEIGHT = "768";
 
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private SectionsController sectionController;
 	@Inject
@@ -83,7 +83,7 @@ public class CanvasConfigurationServlet extends HttpServlet
 		resp.setContentType("application/xml");
 		resp.setCharacterEncoding("utf-8");
 		final CanvasConfigurationModel model = new CanvasConfigurationModel();
-		final URL instUrl = urlService.getInstitutionUrl();
+		final URL instUrl = institutionService.getInstitutionUrl();
 		model.setDomain(instUrl.getHost());
 		model.setInstUrl(instUrl.toString());
 		// You could render the labels in the FTL in a similar manner
@@ -95,7 +95,7 @@ public class CanvasConfigurationServlet extends HttpServlet
 		info.setRequest(req);
 		info.setResponse(resp);
 
-		try (SectionWriter sectionWriter = new SectionWriter(resp.getWriter(), new StandardRenderContext(info)))
+		try( SectionWriter sectionWriter = new SectionWriter(resp.getWriter(), new StandardRenderContext(info)) )
 		{
 			sectionWriter.preRender(renderable);
 			renderable.realRender(sectionWriter);

@@ -38,7 +38,6 @@ import com.dytech.edge.common.Constants;
 import com.dytech.edge.common.FileNode;
 import com.dytech.edge.common.ScriptContext;
 import com.dytech.edge.exceptions.ItemNotFoundException;
-import com.dytech.edge.exceptions.QuotaExceededException;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
 import com.dytech.edge.exceptions.WorkflowException;
 import com.dytech.edge.wizard.WizardException;
@@ -51,10 +50,10 @@ import com.dytech.edge.wizard.beans.NavPage;
 import com.dytech.edge.wizard.beans.WizardPage;
 import com.google.common.base.Strings;
 import com.google.inject.Provider;
+import com.google.inject.assistedinject.Assisted;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.Wizard;
-import com.tle.beans.filesystem.FileHandle;
 import com.tle.beans.item.DrmSettings;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
@@ -68,38 +67,41 @@ import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.beans.workflow.WorkflowStatus;
 import com.tle.beans.workflow.WorkflowStep;
 import com.tle.common.Check;
+import com.tle.common.filesystem.FileEntry;
+import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.quota.exception.QuotaExceededException;
 import com.tle.common.scripting.ScriptException;
 import com.tle.common.scripting.service.ScriptingService;
-import com.tle.common.util.FileEntry;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.collection.service.ItemDefinitionService;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
-import com.tle.core.item.operations.CloneFactory;
-import com.tle.core.item.operations.CloneOperation;
-import com.tle.core.item.operations.MoveDirectOperation;
+import com.tle.core.guice.BindFactory;
+import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.core.item.standard.operations.AbstractCloneOperation;
+import com.tle.core.item.standard.operations.CloneFactory;
+import com.tle.core.item.standard.operations.CloneOperation;
+import com.tle.core.item.standard.operations.DuringSaveOperation;
+import com.tle.core.item.standard.operations.MoveDirectOperation;
+import com.tle.core.item.standard.operations.NewVersionOperation;
+import com.tle.core.item.standard.operations.SaveOperation;
+import com.tle.core.item.standard.operations.workflow.StatusOperation;
+import com.tle.core.item.standard.service.MetadataMappingService;
 import com.tle.core.plugins.ClassBeanLocator;
 import com.tle.core.plugins.FactoryMethodLocator;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
+import com.tle.core.quota.service.QuotaService;
 import com.tle.core.scripting.service.StandardScriptContextParams;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.services.MetadataMappingService;
-import com.tle.core.services.QuotaService;
-import com.tle.core.services.UrlService;
-import com.tle.core.services.entity.ItemDefinitionService;
-import com.tle.core.services.item.FreeTextService;
-import com.tle.core.services.item.ItemService;
 import com.tle.core.services.user.UserSessionService;
-import com.tle.core.user.CurrentUser;
 import com.tle.core.wizard.LERepository;
 import com.tle.core.wizard.controls.HTMLControl;
-import com.tle.core.workflow.operations.AbstractCloneOperation;
-import com.tle.core.workflow.operations.DuringSaveOperation;
-import com.tle.core.workflow.operations.NewVersionOperation;
-import com.tle.core.workflow.operations.SaveOperation;
-import com.tle.core.workflow.operations.StatusOperation;
-import com.tle.core.workflow.operations.WorkflowFactory;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewable.PreviewableItem;
@@ -146,7 +148,7 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 	@Inject
 	private ItemDefinitionService itemDefinitionService;
 	@Inject
-	private UrlService urlService;
+	private InstitutionService institutionService;
 	@Inject
 	private QuotaService quotaService;
 	@Inject
@@ -174,11 +176,13 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 	@Inject
 	private Provider<StatusOperation> statusOpFactory;
 	@Inject
-	private WorkflowFactory workflowFactory;
+	private ItemOperationFactory workflowFactory;
 	@Inject
 	private CloneFactory cloneFactory;
 	@Inject
 	private WizardOperationFactory wizardOpFactory;
+	@Inject
+	private WizardStateFactory wizardStateFactory;
 
 	private PluginTracker<WizardScriptObjectContributor> scriptObjectTracker;
 
@@ -225,7 +229,7 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 		mappingService.mapLiterals(itemdefinition, docxml, scriptContext);
 		List<WorkflowOperation> oplist = new ArrayList<WorkflowOperation>();
 
-		addUnsavedOperations(state, oplist, false, true);
+		addUnsavedOperations(state, oplist, true);
 		if( state.isLockedForEditing() || state.isNewItem() )
 		{
 			processDRM(state, docxml, scriptContext);
@@ -422,7 +426,7 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 	@Override
 	public WizardState loadItem(ItemKey itemkey, boolean bEdit, boolean redraft)
 	{
-		WizardState state = new WizardState(Operation.EDITING);
+		WizardState state = wizardStateFactory.createWizardState(Operation.EDITING);
 		state.setNewItem(false);
 		state.setMergeDRMDefaults(false);
 		state.setItemId(itemkey);
@@ -469,7 +473,7 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 			}
 		}
 
-		addUnsavedOperations(state, ops, true, false);
+		addUnsavedOperations(state, ops, false);
 		StatusOperation statop = statusOpFactory.get();
 		ops.add(statop);
 		ItemPack<Item> itemPack = itemService.operation(state.getItemId(),
@@ -483,7 +487,7 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 		getPagesInternal(state, !state.isInDraft(), true);
 	}
 
-	private void addUnsavedOperations(WizardState state, List<WorkflowOperation> ops, boolean forInit, boolean forSave)
+	private void addUnsavedOperations(WizardState state, List<WorkflowOperation> ops, boolean forSave)
 	{
 		if( !forSave )
 		{
@@ -496,7 +500,7 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 		List<UnsavedEditOperation> unsavedEdits = state.getUnsavedEdits();
 		for( UnsavedEditOperation editCreator : unsavedEdits )
 		{
-			ops.add(editCreator.getOperation(forInit, forSave));
+			ops.add(editCreator.getOperation(forSave));
 		}
 		if( !forSave )
 		{
@@ -548,7 +552,7 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 			ItemKey itemKey = state.getItemId();
 			ItemPack<Item> itemPack = itemService.operation(itemKey, cloneOp, initProvider.get());
 
-			WizardState newState = new WizardState(Operation.CLONING);
+			WizardState newState = wizardStateFactory.createWizardState(Operation.CLONING);
 
 			Collection<DuringSaveOperation> saveOps = cloneOp.getDuringSaveOperation();
 			int i = 0;
@@ -584,7 +588,7 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 	@Override
 	public WizardState moveItem(ItemId itemkey, final String newItemdefUuid, String transform)
 	{
-		WizardState state = new WizardState(Operation.MOVING);
+		WizardState state = wizardStateFactory.createWizardState(Operation.MOVING);
 		state.setNewItem(false);
 		state.setMergeDRMDefaults(false);
 		state.setItemId(itemkey);
@@ -618,22 +622,19 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 
 		public MoveUnsaved(String newItemdefUuid, String transform)
 		{
-			super(CloneFactory.class, "moveDirect", newItemdefUuid);
+			super(CloneFactory.class, "moveDirect", newItemdefUuid, false);
 			this.transform = transform;
 		}
 
 		@Override
-		public WorkflowOperation getOperation(boolean forInit, boolean forSave)
+		public WorkflowOperation getOperation(boolean forSave)
 		{
 			MoveDirectOperation op = get();
-			if( forInit )
+			if( !forSave )
 			{
 				op.setTransform(transform);
 			}
-			if( !forSave )
-			{
-				op.setDontReset(true);
-			}
+			op.setForWizard(!forSave);
 			return op;
 		}
 	}
@@ -992,11 +993,11 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 	@Override
 	public WizardState newItem(String itemdefUuid, PropBagEx initialXml, StagingFile staging)
 	{
-		ItemDefinition definition = itemDefinitionService.getWithNoSecurity(itemDefinitionService
-			.identifyByUuid(itemdefUuid));
+		ItemDefinition definition = itemDefinitionService
+			.getWithNoSecurity(itemDefinitionService.identifyByUuid(itemdefUuid));
 		ItemPack<Item> pack = itemService.operation(null, workflowFactory.create(initialXml, definition, staging),
 			initProvider.get());
-		WizardState state = new WizardState(Operation.CREATING);
+		WizardState state = wizardStateFactory.createWizardState(Operation.CREATING);
 		Item item = pack.getItem();
 		item.setItemDefinition(definition);
 		state.setItemPack(pack);
@@ -1087,8 +1088,8 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 	public ScriptContext createScriptContext(WizardState state, com.tle.core.wizard.controls.WizardPage page,
 		HTMLControl control, Map<String, Object> attributes)
 	{
-		WizardScriptContextParams params = new WizardScriptContextParams(state, page, control,
-			getWorkflowStatus(state), attributes);
+		WizardScriptContextParams params = new WizardScriptContextParams(state, page, control, getWorkflowStatus(state),
+			attributes);
 		return createScriptContext(params);
 	}
 
@@ -1263,9 +1264,9 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 				String stagingid = state.getStagingId();
 				if( stagingid != null )
 				{
-					return new FilestoreBookmark(urlService, stagingid, path);
+					return new FilestoreBookmark(institutionService, stagingid, path);
 				}
-				return new FilestoreBookmark(urlService, getItemId(), path);
+				return new FilestoreBookmark(institutionService, getItemId(), path);
 			}
 
 			@Override
@@ -1438,8 +1439,8 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 			info.setAttribute(WizardStateInterface.class, wizState);
 			return (T) wizState;
 		}
-		throw new WizardException(new WizardTimeoutException(
-			CurrentLocale.get("com.tle.web.wizard.error.type.timedout")));
+		throw new WizardException(
+			new WizardTimeoutException(CurrentLocale.get("com.tle.web.wizard.error.type.timedout")));
 	}
 
 	@Override
@@ -1519,5 +1520,17 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 	public Object getThreadLock()
 	{
 		return userSessionService.getSessionLock();
+	}
+
+	@BindFactory
+	public interface WizardOperationFactory
+	{
+		WizardStateOperation state(WizardState state);
+	}
+
+	@BindFactory
+	public interface WizardStateFactory
+	{
+		WizardState createWizardState(@Assisted Operation operation);
 	}
 }

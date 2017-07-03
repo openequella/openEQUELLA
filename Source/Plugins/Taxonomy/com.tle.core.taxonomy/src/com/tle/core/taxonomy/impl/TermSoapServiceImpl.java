@@ -23,12 +23,12 @@ import javax.inject.Singleton;
 
 import com.dytech.edge.common.LockedException;
 import com.tle.common.taxonomy.Taxonomy;
+import com.tle.core.entity.service.EntityLockingService;
 import com.tle.core.guice.Bind;
-import com.tle.core.services.LockingService;
 import com.tle.core.taxonomy.TaxonomyService;
 import com.tle.core.taxonomy.TermService;
 import com.tle.core.taxonomy.TermSoapService;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 
 /**
  * Ensure we have a taxonomy lock before doing any operations that modify the
@@ -40,7 +40,7 @@ import com.tle.core.user.CurrentUser;
 public class TermSoapServiceImpl implements TermSoapService
 {
 	@Inject
-	private LockingService lockingService;
+	private EntityLockingService lockingService;
 	@Inject
 	private TaxonomyService taxonomyService;
 	@Inject

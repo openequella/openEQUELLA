@@ -225,6 +225,28 @@ public abstract class AbstractSearchResultsSection<LE extends ListEntry, SE exte
 			ListEntriesSection<? extends LE> listEntrySection = getItemList(context);
 			model.setItemList(listEntrySection);
 			boolean resultsAvailable = paging.isResultsAvailable(context);
+
+			if( !resultsAvailable )
+			{
+				int currentPage = paging.getPager().getCurrentPage(context);
+				int lastPage = paging.getPager().getLastPage(context);
+
+				if( currentPage > 1 && currentPage > lastPage )
+				{
+					paging.getPager().setCurrentPage(context, 1);
+					searchEvent.setOffset(0);
+					searchEvent.setCount(10);
+					context.processEvent(searchEvent);
+					resultsEvent = createResultsEvent(context, searchEvent);
+					if( resultsEvent != null && !resultsEvent.isErrored() )
+					{
+						context.processEvent(resultsEvent);
+						listEntrySection = getItemList(context);
+						model.setItemList(listEntrySection);
+						resultsAvailable = paging.isResultsAvailable(context);
+					}
+				}
+			}
 			model.setResultsAvailable(resultsAvailable);
 			model.setResultsText(paging.getResultsText(context));
 			if( !resultsAvailable )

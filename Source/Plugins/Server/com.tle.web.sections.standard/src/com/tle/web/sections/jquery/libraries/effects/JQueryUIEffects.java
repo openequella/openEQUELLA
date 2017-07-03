@@ -21,6 +21,7 @@ import java.util.Map;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
+import com.tle.web.DebugSettings;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.jquery.libraries.JQueryCore;
 import com.tle.web.sections.js.generic.expression.FunctionCallExpression;
@@ -33,8 +34,8 @@ public class JQueryUIEffects implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
-	private static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.effect.js", JQueryCore.PRERENDER);
-
+	private static final PreRenderable PRERENDER = new JQueryLibraryInclude(
+		DebugSettings.isDebuggingMode() ? "jquery.ui.effect.js" : "jquery.ui.effect.min.js", JQueryCore.PRERENDER);
 	private static final Map<String, PreRenderable> effectLibraries = new HashMap<String, PreRenderable>();
 
 	public static PreRenderable getEffectLibrary(String effect)
@@ -50,7 +51,8 @@ public class JQueryUIEffects implements JavascriptModule
 
 	public static JQueryUIEffectsLibrary addStdEffect(String effect)
 	{
-		JQueryUIEffectsLibrary lib = new JQueryUIEffectsLibrary(effect, "jquery.ui.effect-" + effect + ".js");
+		JQueryUIEffectsLibrary lib = new JQueryUIEffectsLibrary(effect,
+			"jquery.ui.effect-" + (DebugSettings.isDebuggingMode() ? effect : effect + ".min") + ".js");
 		effectLibraries.put(effect, lib);
 		return lib;
 	}

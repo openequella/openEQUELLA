@@ -18,6 +18,7 @@ package com.tle.web.sections.jquery.libraries;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
+import com.tle.web.DebugSettings;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.render.PreRenderable;
 
@@ -29,7 +30,8 @@ public class JQueryUIAutocomplete implements JavascriptModule
 	/**
 	 * Includes ui.autocomplete
 	 */
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.autocomplete.js",
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
+		DebugSettings.isDebuggingMode() ? "jquery.ui.autocomplete.js" : "jquery.ui.autocomplete.min.js",
 		JQueryUIWidget.PRERENDER, JQueryUIPosition.PRERENDER, JQueryUIMenu.PRERENDER);
 
 	@Override

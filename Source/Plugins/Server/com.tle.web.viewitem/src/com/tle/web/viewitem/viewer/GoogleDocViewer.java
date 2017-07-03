@@ -27,7 +27,7 @@ import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.encoding.UrlEncodedString;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;

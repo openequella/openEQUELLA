@@ -16,7 +16,7 @@
 
 package com.tle.core.htmleditor.service;
 
-import com.tle.core.services.entity.EntityEditingBean;
+import com.tle.core.entity.EntityEditingBean;
 
 /**
  * @author Aaron

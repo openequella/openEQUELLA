@@ -40,12 +40,12 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.HtmlAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
-import com.tle.common.util.FileEntry;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.FileEntry;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.guice.BindFactory;
+import com.tle.core.item.operations.AbstractWorkflowOperation;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.util.HrefCallback;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
+import com.tle.core.services.html.HrefCallback;
 import com.tle.mypages.parse.ConvertHtmlService;
 import com.tle.web.htmleditor.service.HtmlEditorService;
 

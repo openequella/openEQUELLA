@@ -19,7 +19,7 @@ package com.tle.web.viewitem.summary.content;
 import javax.inject.Inject;
 
 import com.tle.beans.item.Item;
-import com.tle.web.i18n.BundleCache;
+import com.tle.core.i18n.BundleCache;
 import com.tle.web.navigation.BreadcrumbService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;

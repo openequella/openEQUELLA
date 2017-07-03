@@ -5,8 +5,11 @@
 		<import plugin-id="com.tle.common.wizard.controls.universal" />
 		<import plugin-id="com.tle.common.wizard.controls.resource" />
 		<import plugin-id="com.tle.core.guice" />
-		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.institution.convert" />
 		<import plugin-id="com.tle.core.migration" />
+		<import plugin-id="com.tle.core.item.convert" />
+		<import plugin-id="com.tle.common.wizard" />
+		<import plugin-id="com.tle.common.item" />
 	</requires>
 
 	<runtime>
@@ -23,61 +26,50 @@
 		<parameter id="group" value="resource-centre" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="replaceDeleteControls">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="replaceDeleteControls">
 		<parameter id="id" value="com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsXmlMigration" />
 		<parameter id="bean" value="bean:com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsXmlMigration" />
 		<!-- must come after assembler migration -->
 		<parameter id="date" value="1970-02-09" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="itemxmlmigration" id="replaceDeleteControlsItemXml">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="itemxmlmigration" id="replaceDeleteControlsItemXml">
 		<parameter id="id" value="com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemXmlMigration" />
-		<parameter id="bean"
-			value="bean:com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemXmlMigration" />
+		<parameter id="bean" value="bean:com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemXmlMigration" />
 		<parameter id="date" value="1970-01-12" />
 	</extension>
 
 	<!-- A repeat to ensure that ItemAttachments are definitely removed from 5.1 instances -->
-	<extension plugin-id="com.tle.core.entity.services" point-id="itemxmlmigration" id="replaceDeleteControlsItemXmlFixer">
-		<parameter id="id"
-			value="com.tle.core.wizard.controls.universal.migration.v52.ReplaceDeletedControlsItemXmlMigrationFixer" />
-		<parameter id="bean"
-			value="bean:com.tle.core.wizard.controls.universal.migration.v52.ReplaceDeletedControlsItemXmlMigrationFixer" />
+	<extension plugin-id="com.tle.core.institution.convert" point-id="itemxmlmigration" id="replaceDeleteControlsItemXmlFixer">
+		<parameter id="id" value="com.tle.core.wizard.controls.universal.migration.v52.ReplaceDeletedControlsItemXmlMigrationFixer" />
+		<parameter id="bean" value="bean:com.tle.core.wizard.controls.universal.migration.v52.ReplaceDeletedControlsItemXmlMigrationFixer" />
 		<parameter id="date" value="1970-01-13" />
 	</extension>
 
 	<extension plugin-id="com.tle.core.migration" point-id="migration" id="replaceDeleteControlsDatabase">
 		<parameter id="id" value="com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsDatabaseMigration" />
-		<parameter id="bean"
-			value="bean:com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsDatabaseMigration" />
+		<parameter id="bean" value="bean:com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsDatabaseMigration" />
 		<parameter id="date" value="1970-01-01" />
 	</extension>
 
 	<extension plugin-id="com.tle.core.migration" point-id="migration" id="replaceDeleteControlsItemDatabase">
-		<parameter id="id"
-			value="com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemDatabaseMigration" />
-		<parameter id="bean"
-			value="bean:com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemDatabaseMigration" />
+		<parameter id="id" value="com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemDatabaseMigration" />
+		<parameter id="bean" value="bean:com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemDatabaseMigration" />
 		<parameter id="date" value="1970-01-01" />
 	</extension>
 
 	<extension plugin-id="com.tle.core.migration" point-id="migration" id="replaceDeleteControlsItemDatabase2">
-		<parameter id="id"
-			value="com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemDatabaseMigration2" />
-		<parameter id="bean"
-			value="bean:com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemDatabaseMigration" />
-		<parameter id="fixes"
-			value="com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemDatabaseMigration" />
+		<parameter id="id" value="com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemDatabaseMigration2" />
+		<parameter id="bean" value="bean:com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemDatabaseMigration" />
+		<parameter id="fixes" value="com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemDatabaseMigration" />
 		<parameter id="date" value="1970-01-01" />
 	</extension>
 
 	<extension plugin-id="com.tle.core.migration" point-id="migration" id="replaceDeleteControlsItemDatabase3">
 		<parameter id="id" value="com.tle.core.wizard.controls.universal.migration.v50.FixIMSHandlerPath" />
 		<parameter id="bean" value="bean:com.tle.core.wizard.controls.universal.migration.v50.FixIMSHandlerPath" />
-		<parameter id="fixes"
-			value="com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemDatabaseMigration" />
-		<parameter id="depends"
-			value="com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemDatabaseMigration2" />
+		<parameter id="fixes" value="com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemDatabaseMigration" />
+		<parameter id="depends" value="com.tle.core.wizard.controls.universal.migration.v50.ReplaceDeletedControlsItemDatabaseMigration2" />
 		<parameter id="date" value="1970-01-01" />
 	</extension>
 
@@ -94,7 +86,7 @@
 		<parameter id="date" value="2012-06-28" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="postreadmigration" id="fixZipsImport">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="postreadmigration" id="fixZipsImport">
 		<parameter id="id" value="com.tle.core.wizard.controls.universal.migration.v60.MigrateZipFilesImport" />
 		<parameter id="bean" value="bean:com.tle.core.wizard.controls.universal.migration.v60.MigrateZipFilesImport" />
 		<parameter id="forconverter" value="items" />

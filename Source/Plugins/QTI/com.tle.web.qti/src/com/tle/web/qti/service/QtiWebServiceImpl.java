@@ -32,6 +32,39 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.tle.annotation.NonNullByDefault;
+import com.tle.annotation.Nullable;
+import com.tle.beans.Institution;
+import com.tle.beans.item.attachments.CustomAttachment;
+import com.tle.common.PathUtils;
+import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.qti.entity.QtiAssessmentResult;
+import com.tle.common.qti.entity.QtiAssessmentTest;
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.usermanagement.user.UserState;
+import com.tle.core.guice.Bind;
+import com.tle.core.qti.QtiConstants;
+import com.tle.core.qti.beans.QtiTestDetails;
+import com.tle.core.qti.service.QtiAssessmentResultService;
+import com.tle.core.qti.service.QtiAssessmentTestService;
+import com.tle.core.qti.service.QtiService;
+import com.tle.core.services.user.UserSessionService;
+import com.tle.web.lti.LtiData;
+import com.tle.web.lti.LtiData.LisData;
+import com.tle.web.lti.service.LtiService;
+import com.tle.web.lti.usermanagement.LtiUserState;
+import com.tle.web.qti.viewer.QtiViewerConstants;
+import com.tle.web.sections.SectionInfo;
+import com.tle.web.viewable.ViewableItem;
+import com.tle.web.viewurl.ViewItemResource;
+import com.tle.web.viewurl.ViewItemUrlFactory;
+import com.tle.web.viewurl.ViewableResource;
+
 import uk.ac.ed.ph.jqtiplus.exception.QtiParseException;
 import uk.ac.ed.ph.jqtiplus.node.item.AssessmentItem;
 import uk.ac.ed.ph.jqtiplus.node.result.AssessmentResult;
@@ -55,39 +88,6 @@ import uk.ac.ed.ph.jqtiplus.types.Identifier;
 import uk.ac.ed.ph.jqtiplus.types.ResponseData;
 import uk.ac.ed.ph.jqtiplus.types.StringResponseData;
 import uk.ac.ed.ph.jqtiplus.value.Value;
-
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.tle.annotation.NonNullByDefault;
-import com.tle.annotation.Nullable;
-import com.tle.beans.Institution;
-import com.tle.beans.filesystem.FileHandle;
-import com.tle.beans.item.attachments.CustomAttachment;
-import com.tle.common.PathUtils;
-import com.tle.common.qti.entity.QtiAssessmentResult;
-import com.tle.common.qti.entity.QtiAssessmentTest;
-import com.tle.core.guice.Bind;
-import com.tle.core.qti.QtiConstants;
-import com.tle.core.qti.beans.QtiTestDetails;
-import com.tle.core.qti.service.QtiAssessmentResultService;
-import com.tle.core.qti.service.QtiAssessmentTestService;
-import com.tle.core.qti.service.QtiService;
-import com.tle.core.services.user.UserSessionService;
-import com.tle.core.user.CurrentInstitution;
-import com.tle.core.user.CurrentUser;
-import com.tle.core.user.UserState;
-import com.tle.web.lti.LtiData;
-import com.tle.web.lti.LtiData.LisData;
-import com.tle.web.lti.service.LtiService;
-import com.tle.web.lti.usermanagement.LtiUserState;
-import com.tle.web.qti.viewer.QtiViewerConstants;
-import com.tle.web.sections.SectionInfo;
-import com.tle.web.viewable.ViewableItem;
-import com.tle.web.viewurl.ViewItemResource;
-import com.tle.web.viewurl.ViewItemUrlFactory;
-import com.tle.web.viewurl.ViewableResource;
 
 /**
  * Ties together LTI service and QtiService
@@ -114,7 +114,6 @@ public class QtiWebServiceImpl implements QtiWebService
 	private LtiService ltiService;
 	@Inject
 	private UserSessionService sessionService;
-
 	@Inject
 	private ViewItemUrlFactory itemUrls;
 
@@ -344,8 +343,8 @@ public class QtiWebServiceImpl implements QtiWebService
 		return null;
 	}
 
-	private void setActiveAssessmentItem(TestSessionController testSessionController,
-		TestSessionState testSessionState, @Nullable TestPlanNode testPlanNode)
+	private void setActiveAssessmentItem(TestSessionController testSessionController, TestSessionState testSessionState,
+		@Nullable TestPlanNode testPlanNode)
 	{
 		final TestPlan testPlan = testSessionState.getTestPlan();
 		final TestPlanNodeKey currentItemKey = testSessionState.getCurrentItemKey();
@@ -382,8 +381,8 @@ public class QtiWebServiceImpl implements QtiWebService
 
 	private TestPlanNode findRelativeQuestion(TestSessionState testSessionState, int direction)
 	{
-		final TestPlanNode currentTestPartNode = testSessionState.getTestPlan().getNode(
-			testSessionState.getCurrentTestPartKey());
+		final TestPlanNode currentTestPartNode = testSessionState.getTestPlan()
+			.getNode(testSessionState.getCurrentTestPartKey());
 
 		/* Find next item */
 		final TestPlan testPlan = testSessionState.getTestPlan();
@@ -408,8 +407,8 @@ public class QtiWebServiceImpl implements QtiWebService
 			}
 			else
 			{
-				nextItemRefNode = currentItemIndex + 1 < itemsInTestPart.size() ? itemsInTestPart
-					.get(currentItemIndex + 1) : itemsInTestPart.get(0);
+				nextItemRefNode = currentItemIndex + 1 < itemsInTestPart.size()
+					? itemsInTestPart.get(currentItemIndex + 1) : itemsInTestPart.get(0);
 			}
 		}
 		return nextItemRefNode;
@@ -438,8 +437,8 @@ public class QtiWebServiceImpl implements QtiWebService
 				{
 					throw new RuntimeException("Bad response identifier encoded in parameter  " + name, e);
 				}
-				final String[] responseValues = request.getParameterValues(QtiViewerConstants.CONTROL_PREFIX
-					+ responseIdentifierString);
+				final String[] responseValues = request
+					.getParameterValues(QtiViewerConstants.CONTROL_PREFIX + responseIdentifierString);
 
 				if( responseValues != null )
 				{

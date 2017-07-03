@@ -20,7 +20,7 @@ import java.util.Map;
 
 import com.dytech.edge.common.Constants;
 import com.tle.core.services.user.UserService;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.sections.BookmarkModifier;
 import com.tle.web.sections.SectionInfo;
 

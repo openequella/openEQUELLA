@@ -16,7 +16,7 @@
 
 package com.tle.web.errors;
 
-import com.dytech.edge.exceptions.NotFoundException;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.core.guice.Bind;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.sections.SectionInfo;

@@ -3,8 +3,9 @@
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.common.applet" />
-		<import plugin-id="com.tle.core.entity.services" />
+		<import plugin-id="com.tle.core.services" />
 		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.core.institution.convert" />
 		<import plugin-id="com.tle.core.settings" />
 		<import plugin-id="com.tle.mycontent" />
 		<import plugin-id="com.tle.web.appletcommon" />
@@ -20,7 +21,11 @@
 		<import plugin-id="com.tle.web.services" />
 		<import plugin-id="jdom:jdom" />
 		<import plugin-id="commons-lang:commons-lang" />
-
+		<import plugin-id="com.tle.core.security.convert" />
+		<import plugin-id="com.tle.core.item.standard" />
+		<import plugin-id="com.tle.core.filesystem" />
+		<import plugin-id="com.tle.core.filesystem.staging" />
+		<import plugin-id="com.tle.common.quota" />
 	</requires>
 	<runtime>
 		<library type="code" path="classes/" id="core">
@@ -48,19 +53,19 @@
 		<parameter id="order" value="1000" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="itemxmlmigration" id="myResourceConverter">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="itemxmlmigration" id="myResourceConverter">
 		<parameter id="id" value="com.tle.web.myresource.converter.MyResourceConverter" />
 		<parameter id="bean" value="bean:com.tle.web.myresource.converter.MyResourceConverter" />
 		<parameter id="date" value="1970-01-07" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="xmlmigration" id="myResourceSchemaMigrator">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="myResourceSchemaMigrator">
 		<parameter id="id" value="com.tle.web.myresource.converter.MyResourceSchemaMigrator" />
 		<parameter id="bean" value="bean:com.tle.web.myresource.converter.MyResourceSchemaMigrator" />
 		<parameter id="date" value="1970-01-13" />
 	</extension>
 
-	<extension plugin-id="com.tle.core.entity.services" point-id="postreadmigration" id="myResourceACLMigrator">
+	<extension plugin-id="com.tle.core.institution.convert" point-id="postreadmigration" id="myResourceACLMigrator">
 		<parameter id="id" value="com.tle.web.myresource.converter.MyResourceACLMigrator" />
 		<parameter id="bean" value="bean:com.tle.web.myresource.converter.MyResourceACLMigrator" />
 		<parameter id="forconverter" value="acls" />

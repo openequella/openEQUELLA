@@ -40,15 +40,15 @@ import com.tle.common.workflow.node.WorkflowItem;
 import com.tle.common.workflow.node.WorkflowItem.AutoAction;
 import com.tle.common.workflow.node.WorkflowItem.MoveLive;
 import com.tle.common.workflow.node.WorkflowNode;
-import com.tle.core.dao.WorkflowDao;
-import com.tle.core.events.ItemOperationEvent;
+import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.guice.BindFactory;
+import com.tle.core.item.event.ItemOperationEvent;
+import com.tle.core.item.standard.filter.workflow.ResetFilter;
 import com.tle.core.plugins.ClassBeanLocator;
-import com.tle.core.services.entity.AbstractEntityService;
-import com.tle.core.services.entity.WorkflowService;
-import com.tle.core.services.entity.impl.WorkflowServiceImpl.CheckForStepsLocator;
+import com.tle.core.workflow.dao.WorkflowDao;
 import com.tle.core.workflow.event.WorkflowChangeEvent;
-import com.tle.core.workflow.filters.ResetFilter;
+import com.tle.core.workflow.service.WorkflowService;
+import com.tle.core.workflow.standard.service.impl.WorkflowStandardServiceImpl.CheckForStepsLocator;
 import com.tle.web.api.baseentity.serializer.AbstractBaseEntityEditor;
 import com.tle.web.api.workflow.interfaces.beans.WorkflowBean;
 import com.tle.web.api.workflow.interfaces.beans.WorkflowNodeBean;
@@ -212,8 +212,8 @@ public class WorkflowEditorImpl extends AbstractBaseEntityEditor<Workflow, Workf
 				winode.setActionDays(nodeBean.getActionDays());
 				winode.setUserPath(nodeBean.getUserPath());
 				winode.setDueDatePath(nodeBean.getDueDatePath());
-				winode.setDescription(getBundle(null,
-					getStrings(nodeBean.getDescriptionStrings(), nodeBean.getDescription())));
+				winode.setDescription(
+					getBundle(null, getStrings(nodeBean.getDescriptionStrings(), nodeBean.getDescription())));
 
 				if( editing )
 				{

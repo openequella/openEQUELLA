@@ -319,9 +319,8 @@ public class TleShadingPathResolver extends StandardPathResolver
 
 		for( Library lib : filterCollection(descr.getLibraries(), fragment) )
 		{
-			if( lib.isCodeLibrary()
-				&& (lib.getPath().toLowerCase(Locale.getDefault()).endsWith(".jar") || lib.getPath()
-					.toLowerCase(Locale.getDefault()).endsWith(".zip")) )
+			if( lib.isCodeLibrary() && (lib.getPath().toLowerCase(Locale.getDefault()).endsWith(".jar")
+				|| lib.getPath().toLowerCase(Locale.getDefault()).endsWith(".zip")) )
 			{
 				return Boolean.TRUE;
 			}
@@ -1065,7 +1064,8 @@ final class ShadowDataController
 			log.debug("URL found in meta-data, UID=" + uid + ", source=" + source + ", storedURL=" + url);
 		}
 		URL storedSource = ShadingUtil.buildURL(shadowFolderUrl, url);
-		if( !storedSource.equals(source) )
+		// Per Sonar, comparing URLs directly causes lookup of the hosts, which we don't want.
+		if( !storedSource.toString().equals(source.toString()) )
 		{
 			if( log.isDebugEnabled() )
 			{

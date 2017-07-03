@@ -23,7 +23,7 @@ import javax.inject.Singleton;
 
 import com.dytech.devlib.PropBagEx;
 import com.google.common.base.Strings;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.AttachmentType;

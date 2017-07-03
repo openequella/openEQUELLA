@@ -30,18 +30,22 @@ import com.thoughtworks.xstream.XStream;
 import com.tle.beans.Institution;
 import com.tle.beans.item.Item;
 import com.tle.common.NameValue;
+import com.tle.common.beans.xml.IdOnlyConverter;
+import com.tle.common.filesystem.handle.BucketFile;
+import com.tle.common.filesystem.handle.SubTemporaryFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.common.qti.entity.QtiAssessmentItem;
 import com.tle.common.qti.entity.QtiAssessmentItemRef;
 import com.tle.common.qti.entity.QtiAssessmentResult;
 import com.tle.common.qti.entity.QtiAssessmentTest;
 import com.tle.common.qti.entity.QtiItemResult;
 import com.tle.common.qti.entity.QtiItemVariable;
-import com.tle.core.filesystem.BucketFile;
-import com.tle.core.filesystem.SubTemporaryFile;
-import com.tle.core.filesystem.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.BundleNameValue;
 import com.tle.core.institution.convert.AbstractConverter;
 import com.tle.core.institution.convert.ConverterParams;
+import com.tle.core.institution.convert.service.InstitutionImportService.ConvertType;
+import com.tle.core.institution.convert.service.impl.InstitutionImportServiceImpl.ConverterTasks;
 import com.tle.core.qti.converter.initialiser.QtiObjectInitialiserCallback;
 import com.tle.core.qti.converter.xstream.QtiAssessmentItemRefXmlConverter;
 import com.tle.core.qti.converter.xstream.QtiAssessmentItemXmlConverter;
@@ -51,10 +55,6 @@ import com.tle.core.qti.dao.QtiAssessmentItemRefDao;
 import com.tle.core.qti.dao.QtiAssessmentResultDao;
 import com.tle.core.qti.dao.QtiAssessmentTestDao;
 import com.tle.core.qti.dao.QtiItemResultDao;
-import com.tle.core.services.InstitutionImportService.ConvertType;
-import com.tle.core.services.entity.IdOnlyConverter;
-import com.tle.core.services.impl.InstitutionImportServiceImpl.ConverterTasks;
-import com.tle.web.i18n.BundleNameValue;
 
 /**
  * @author Aaron
@@ -115,7 +115,7 @@ public class QtiImportExportConverter extends AbstractConverter<Object>
 		throws IOException
 	{
 		// Questions are independent of tests
-		final XStream xstream = xmlHelper.createXStream();
+		final XStream xstream = xmlHelper.createXStream(getClass().getClassLoader());
 
 		// Export questions
 		final Iterator<QtiAssessmentItem> questions = assessmentItemDao.getIterator();
@@ -145,7 +145,7 @@ public class QtiImportExportConverter extends AbstractConverter<Object>
 			xmlHelper.writeXmlFile(bucketFolder, test.getId() + ".xml", test, xstream);
 		}
 
-		final XStream resultXstream = xmlHelper.createXStream();
+		final XStream resultXstream = xmlHelper.createXStream(getClass().getClassLoader());
 		resultXstream.registerConverter(new QtiAssessmentItemRefXmlConverter(assessmentItemRefDao));
 		resultXstream.registerConverter(new QtiAssessmentTestXmlConverter(assessmentTestDao));
 
@@ -180,7 +180,7 @@ public class QtiImportExportConverter extends AbstractConverter<Object>
 		throws IOException
 	{
 		// Questions independent of tests
-		final XStream xstream = xmlHelper.createXStream();
+		final XStream xstream = xmlHelper.createXStream(getClass().getClassLoader());
 
 		final SubTemporaryFile allQuestionsImportFolder = getQuestionFolder(staging);
 		for( String entry : xmlHelper.getXmlFileList(allQuestionsImportFolder) )
@@ -220,7 +220,7 @@ public class QtiImportExportConverter extends AbstractConverter<Object>
 			assessmentTestDao.clear();
 		}
 
-		final XStream resultXstream = xmlHelper.createXStream();
+		final XStream resultXstream = xmlHelper.createXStream(getClass().getClassLoader());
 		resultXstream.registerConverter(new QtiAssessmentItemRefXmlConverter(assessmentItemRefDao));
 		resultXstream.registerConverter(new QtiAssessmentTestXmlConverter(assessmentTestDao));
 

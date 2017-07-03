@@ -20,7 +20,7 @@ import java.util.Collection;
 
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.handle.StagingFile;
 
 /**
  * @author Aaron

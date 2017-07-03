@@ -18,9 +18,9 @@ package com.tle.core.workflow.thumbnail;
 
 import javax.inject.Inject;
 
-import com.tle.core.filesystem.StagingFile;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.guice.Bind;
-import com.tle.core.workflow.operations.AbstractWorkflowOperation;
+import com.tle.core.item.operations.AbstractWorkflowOperation;
 import com.tle.core.workflow.thumbnail.service.ThumbnailService;
 
 /**

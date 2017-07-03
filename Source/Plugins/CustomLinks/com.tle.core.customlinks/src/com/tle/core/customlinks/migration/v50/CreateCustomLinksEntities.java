@@ -22,7 +22,6 @@ import com.tle.beans.Institution;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.LanguageString;
-import com.tle.beans.entity.itemdef.ItemdefBlobs;
 import com.tle.common.customlinks.entity.CustomLink;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.impl.HibernateCreationFilter;
@@ -36,7 +35,6 @@ import com.tle.core.migration.MigrationInfo;
 @SuppressWarnings("nls")
 public class CreateCustomLinksEntities extends AbstractCreateMigration
 {
-
 	@Override
 	protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper)
 	{
@@ -47,7 +45,7 @@ public class CreateCustomLinksEntities extends AbstractCreateMigration
 	protected Class<?>[] getDomainClasses()
 	{
 		return new Class<?>[]{CustomLink.class, BaseEntity.class, LanguageBundle.class, Institution.class,
-				LanguageString.class, ItemdefBlobs.class, BaseEntity.Attribute.class};
+				LanguageString.class, BaseEntity.Attribute.class};
 	}
 
 	@Override

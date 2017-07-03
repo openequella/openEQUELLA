@@ -16,9 +16,9 @@
 
 package com.tle.web.controls.mypages;
 
+import com.tle.core.item.operations.WorkflowOperation;
+import com.tle.core.item.standard.operations.DuringSaveOperation;
 import com.tle.core.plugins.FactoryMethodLocator;
-import com.tle.core.workflow.operations.DuringSaveOperation;
-import com.tle.core.workflow.operations.WorkflowOperation;
 import com.tle.web.controls.mypages.EnsureItemUrls.EnsureFactory;
 import com.tle.web.wizard.WizardState;
 

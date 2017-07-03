@@ -1,3 +1,7 @@
+* {
+	word-wrap:break-word;
+}
+
 @font-face {
 	font-family: 'PTSansRegular';
 	src: url('../fonts/PTS55F-webfont.eot');

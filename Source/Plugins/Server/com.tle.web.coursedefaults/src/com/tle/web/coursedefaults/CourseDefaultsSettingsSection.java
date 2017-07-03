@@ -23,11 +23,11 @@ import javax.inject.Inject;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
-import com.tle.beans.system.CourseDefaultsSettings;
 import com.tle.common.Check;
+import com.tle.common.settings.standard.CourseDefaultsSettings;
 import com.tle.common.util.TleDate;
 import com.tle.common.util.UtcDate;
-import com.tle.core.services.config.ConfigurationService;
+import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxGenerator;
@@ -81,7 +81,7 @@ public class CourseDefaultsSettingsSection
 	@Component
 	@PlugKey("settings.clear.button")
 	private Button clearButton;
-	@Component
+	@Component(stateful = false)
 	@PlugKey("portionrestrictions.checkbox")
 	private Checkbox portionRestrictions;
 
@@ -104,8 +104,8 @@ public class CourseDefaultsSettingsSection
 	public void registered(String id, SectionTree tree)
 	{
 		super.registered(id, tree);
-		final JSHandler updateClear = new OverrideHandler(ajax.getAjaxUpdateDomFunction(tree, this,
-			events.getEventHandler("showClear"), CLEAR_DIV));
+		final JSHandler updateClear = new OverrideHandler(
+			ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("showClear"), CLEAR_DIV));
 
 		startDate.setEventHandler(JSHandler.EVENT_CHANGE, updateClear);
 		endDate.setEventHandler(JSHandler.EVENT_CHANGE, updateClear);
@@ -120,10 +120,11 @@ public class CourseDefaultsSettingsSection
 	protected TemplateResult setupTemplate(RenderEventContext info)
 	{
 		securityProvider.checkAuthorised();
-		CourseDefaultsSettings settings = getCourseDefaultsSettings();
 		if( !getModel(info).isLoaded() )
 		{
+			CourseDefaultsSettings settings = getCourseDefaultsSettings();
 			portionRestrictions.setChecked(info, settings.isPortionRestrictionsEnabled());
+
 			Date start = null;
 			try
 			{
@@ -239,8 +240,8 @@ public class CourseDefaultsSettingsSection
 		String dateAsString = null;
 		try
 		{
-			dateAsString = CourseDefaultsSettings.formatDateToPlainString(controlDate == null ? null : controlDate
-				.toDate());
+			dateAsString = CourseDefaultsSettings
+				.formatDateToPlainString(controlDate == null ? null : controlDate.toDate());
 		}
 		catch( IllegalArgumentException iae )
 		{

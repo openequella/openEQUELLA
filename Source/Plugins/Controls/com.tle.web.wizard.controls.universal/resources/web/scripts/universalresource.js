@@ -37,6 +37,6 @@ function setupPickResourcesType(list, nextButton)
 		} 
 	});
 
-	$('div.modal-footer input[value]="next"').attr("tabIndex", $tds.length + 1);
+	$('div.modal-footer input[value="next"]').attr("tabIndex", $tds.length + 1);
 	$tds.first().click();
 }

@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.tle.annotation.Nullable;
-import com.tle.beans.filesystem.FileHandle;
+import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.util.ims.beans.IMSManifest;
 
 public interface IMSService

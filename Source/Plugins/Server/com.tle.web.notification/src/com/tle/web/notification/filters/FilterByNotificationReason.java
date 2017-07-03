@@ -23,7 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.tle.common.Check;
 import com.tle.core.notification.NotificationService;
-import com.tle.core.notification.indexer.NotificationIndex;
+import com.tle.core.notification.standard.indexer.NotificationIndex;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.notification.WebNotificationExtension;

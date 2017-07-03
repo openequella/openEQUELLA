@@ -21,7 +21,7 @@ import java.util.Collections;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
-import com.tle.web.i18n.BundleCache;
+import com.tle.core.i18n.BundleCache;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.TextUtils;
 

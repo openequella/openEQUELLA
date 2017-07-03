@@ -26,10 +26,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.tle.beans.Institution;
-import com.tle.core.progress.ListProgressCallback;
+import com.tle.common.beans.progress.ListProgressCallback;
+import com.tle.common.usermanagement.user.AuthenticatedThread;
 import com.tle.core.services.UrlService;
 import com.tle.core.services.user.UserSessionService;
-import com.tle.core.user.AuthenticatedThread;
 import com.tle.web.core.servlet.ProgressServlet;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;

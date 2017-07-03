@@ -32,7 +32,7 @@ libraryDependencies ++= Seq(
   /** "com.kaltura" % "kalturaClient" % "3.2.1", */
   "com.microsoft.sqlserver" % "mssql-jdbc" % "6.1.0.jre8",
   "com.miglayout" % "miglayout-swing" % "4.2",
-  "com.ning" % "async-http-client" % "1.7.8",
+  "com.ning" % "async-http-client" % "1.9.31",
   "com.rometools" % "rome" % "1.7.2",
   "com.wordnik" % "swagger-annotations" % "1.3.12",
   "com.wordnik" % "swagger-core_2.11" % "1.3.12" excludeAll (
@@ -156,7 +156,7 @@ libraryDependencies ++= Seq(
   //  "org.dspace.oclc" % "oclc-srw" % "1.0.20080328",
   "org.omegat" % "jmyspell-core" % "1.0.0-beta-2",
   "org.eclipse.jetty" % "jetty-util" % "8.1.7.v20120910",
-  "org.freemarker" % "freemarker" % "2.3.18",
+  "org.freemarker" % "freemarker" % "2.3.23",
   "org.hurl" % "hurl" % "1.1",
   "org.javassist" % "javassist" % "3.18.2-GA",
   "org.jboss.resteasy" % "resteasy-jackson-provider" % "3.0.10.Final",

@@ -17,7 +17,7 @@
 package com.tle.web.api.baseentity.serializer;
 
 import com.dytech.edge.common.LockedException;
-import com.dytech.edge.exceptions.InvalidDataException;
+import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.entity.BaseEntity;

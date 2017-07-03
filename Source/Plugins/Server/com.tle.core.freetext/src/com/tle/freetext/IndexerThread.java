@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 
 import com.tle.beans.item.ItemIdKey;
+import com.tle.core.freetext.indexer.IndexingExtension;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.RunAsInstitution;
 

@@ -22,7 +22,7 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.core.favourites.service.BookmarkService;
 import com.tle.core.guice.Bind;
-import com.tle.core.user.CurrentUser;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.favourites.FavouritesDialog;
 import com.tle.web.favourites.actions.AddToFavouritesSection.AddToFavouritesModel;
 import com.tle.web.sections.SectionInfo;

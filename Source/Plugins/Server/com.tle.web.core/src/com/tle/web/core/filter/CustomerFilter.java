@@ -32,7 +32,7 @@ import com.tle.core.filesystem.CustomisationFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.FileSystemService;
-import com.tle.core.user.CurrentInstitution;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.web.dispatcher.AbstractWebFilter;
 import com.tle.web.dispatcher.FilterResult;
 import com.tle.web.stream.ContentStreamWriter;
