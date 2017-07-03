@@ -154,6 +154,11 @@ public class IntegrationSection extends AbstractPrototypeSection<IntegrationSect
 			IntegrationImpl integration = new IntegrationImpl(data, integrationServiceForData);
 			info.setAttribute(IntegrationInterface.class, integration);
 			InnerLayout.addLayoutSelector(info, integration.createLayoutSelector(info));
+
+			if( data.isForSelection() )
+			{
+				integrationService.checkIntegrationAllowed();
+			}
 		}
 	}
 }

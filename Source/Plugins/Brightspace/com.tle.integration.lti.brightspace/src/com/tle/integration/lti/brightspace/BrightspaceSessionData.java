@@ -106,4 +106,10 @@ public class BrightspaceSessionData implements IntegrationSessionData
 	{
 		this.connectorUuid = connectorUuid;
 	}
+
+	@Override
+	public boolean isForSelection()
+	{
+		return true;
+	}
 }

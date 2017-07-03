@@ -62,7 +62,7 @@ public class SingleSignonAction extends AbstractPrototypeSection<SingleSignonFor
 
 		final GenericIntegrationData data = new GenericIntegrationData(formData.getTemplate(), formData.getReturnurl(),
 			formData.getCancelurl(), formData.getReturnprefix(), info.getRequest().getHeader("Referer"),
-			formData.getAction());
+			formData.getAction(), true);
 		data.setCourseInfoCode(integrationService.getCourseInfoCode(formData.getCourseId(), formData.getCourseCode()));
 
 		// If the caller hasn't specified the action, enforce the fits-all

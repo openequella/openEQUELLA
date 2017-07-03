@@ -176,4 +176,10 @@ public class CanvasSessionData implements IntegrationSessionData
 	{
 		return ltiMessageType;
 	}
+
+	@Override
+	public boolean isForSelection()
+	{
+		return true;
+	}
 }

@@ -122,4 +122,10 @@ public class BlackBoardSessionData implements IntegrationSessionData
 	{
 		this.username = username;
 	}
+
+	@Override
+	public boolean isForSelection()
+	{
+		return true;
+	}
 }

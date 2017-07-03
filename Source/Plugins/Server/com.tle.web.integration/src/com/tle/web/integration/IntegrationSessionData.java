@@ -21,4 +21,6 @@ import java.io.Serializable;
 public interface IntegrationSessionData extends Serializable
 {
 	String getIntegrationType();
+
+	boolean isForSelection();
 }

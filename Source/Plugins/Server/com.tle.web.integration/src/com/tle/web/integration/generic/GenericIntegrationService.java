@@ -135,7 +135,7 @@ public class GenericIntegrationService
 	@Override
 	public GenericIntegrationData createDataForViewing(SectionInfo info)
 	{
-		return new GenericIntegrationData("view", null, null, null, null, null);
+		return new GenericIntegrationData("view", null, null, null, null, null, false);
 	}
 
 	public void forwardToLms(SectionInfo info, SelectionSession session, GenericIntegrationData data, IItem<?> item,
@@ -245,10 +245,11 @@ public class GenericIntegrationService
 		private final String prefix;
 		private final String action;
 		private final String template;
+		private final boolean forSelection;
 		private String courseInfoCode;
 
 		public GenericIntegrationData(String template, String callbackUrl, String cancelUrl, String prefix,
-			String referrer, String action)
+			String referrer, String action, boolean forSelection)
 		{
 			this.template = template;
 			this.callbackURL = dodgyFixUrl(callbackUrl);
@@ -256,6 +257,7 @@ public class GenericIntegrationService
 			this.prefix = prefix;
 			this.referrer = referrer;
 			this.action = action;
+			this.forSelection = forSelection;
 		}
 
 		/**
@@ -325,6 +327,12 @@ public class GenericIntegrationService
 		public String getTemplateName()
 		{
 			return template;
+		}
+
+		@Override
+		public boolean isForSelection()
+		{
+			return forSelection;
 		}
 	}
 
