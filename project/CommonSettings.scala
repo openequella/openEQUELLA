@@ -14,6 +14,7 @@ object CommonSettings extends AutoPlugin {
     lazy val oracleDriverJar = settingKey[Option[File]]("The oracle driver jar")
     lazy val buildConfig = settingKey[Config]("The build configuration settings")
     lazy val prepareDevConfig = taskKey[Unit]("Prepare the dev learningedge-config folder")
+    lazy val writeSourceZip = taskKey[File]("Write out a zip containing all sources")
 
     lazy val platformCommon = LocalProject("com_tle_platform_common")
     lazy val platformSwing = LocalProject("com_tle_platform_swing")

@@ -2,6 +2,7 @@
 <plugin id="com.tle.webstart.admin" version="1">
 	<requires>
 		<import plugin-id="com.pearson.equella:httpinvoker" exported="true" optional="true" />
+		<import plugin-id="com.tle.common.usermanagement" />
 		<import plugin-id="com.tle.platform.common" />
 		<import plugin-id="com.tle.platform.equella" />
 		<import plugin-id="com.tle.platform.swing" />

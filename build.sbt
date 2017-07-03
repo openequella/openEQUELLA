@@ -78,10 +78,11 @@ versionProperties in ThisBuild := {
 }
 
 updateLicenses := {
+  val ourOrg = organization.value
   val serverReport = (updateLicenses in equellaserver).value
   val plugsinReports = updateLicenses.all(ScopeFilter(inAggregates(allPlugins))).value
   val allLicenses = (plugsinReports.flatMap(_.licenses) ++ serverReport.licenses)
-    .groupBy(_.module).values.map(_.head).filterNot(_.module.organization == "org.apereo.equella")
+    .groupBy(_.module).values.map(_.head).filterNot(_.module.organization == ourOrg)
   LicenseReport(allLicenses.toSeq, serverReport.orig)
 }
 

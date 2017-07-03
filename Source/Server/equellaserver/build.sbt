@@ -271,7 +271,8 @@ collectJars := {
   IO.copy((managedClasspath in Compile).value.map(af => (af.data, destDir / af.data.getName)))
 }
 
-runnerTasks(LocalProject("allPlugins"))
+lazy val allPlugins = LocalProject("allPlugins")
+runnerTasks(allPlugins)
 
 upgradeZip := {
   val log = streams.value.log
@@ -287,5 +288,18 @@ upgradeZip := {
   val pluginJars = writeJars.value.plugins.map(t => (t._1, s"plugins/plugins/${t._2}-$plugVer.jar"))
   log.info(s"Creating upgrade zip ${outZip.absolutePath}")
   IO.zip(zipFiles ++ pluginJars, outZip)
+  outZip
+}
+
+lazy val sourcesForZip = Def.task {
+  val baseJavaSrc = (javaSource in Compile).value
+  (baseJavaSrc ** "*.java").pair(rebase(baseJavaSrc, ""))
+}
+
+writeSourceZip := {
+  val outZip = target.value / "equella-sources.zip"
+  val allSrcs = sourcesForZip.all(ScopeFilter(inAggregates(allPlugins))).value.flatten
+  sLog.value.info(s"Zipping all sources into $outZip")
+  IO.zip(allSrcs, outZip)
   outZip
 }
