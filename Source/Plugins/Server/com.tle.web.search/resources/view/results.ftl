@@ -7,7 +7,7 @@
 		<#if m.canonicalUrl??>
 			<input type="hidden" id="searchUrl" value="${m.canonicalUrl}">
 		</#if>
-		
+
 		<#if m.showResults>
 			<div class="searchresults-header">
 				<#if m.showResultSelection>
@@ -17,22 +17,18 @@
 				</#if>
 				<#if m.resultsAvailable>
 					<div id="searchresults-stats">${m.resultsText}</div>
-				</#if><div id="divsearch-status" style="display:none;"><#if m.resultsAvailable>Available<#else>NA</#if></div>
-				
+				</#if>
 			</div>
 		</#if>
 	</@a.div>
-	
-	
-	<#if m.resultsAvailable>
-		<div id="divaction-buttons" style="display:block;"><@render m.actions/></div>
-	<#else>
-		<div id="divaction-buttons" style="display:none;"><@render m.actions/></div>
+
+	<#if m.showResults>
+		<@render m.actions/>
 	</#if>
-		
+
 	<@a.div id="searchresults-cont">
 		<@render s.cssInclude/>
-		
+
 		<#if m.showResults>
 			<@a.div id="searchresults" class="searchresults area">
 				<#if m.resultsAvailable>
@@ -42,7 +38,7 @@
 					<#if m.errored>
 						<div class="searchError">
 							<h3>${m.errorTitle}</h3>
-			
+
 							<#if m.errorMessageLabels??>
 								<p>
 									<#list m.errorMessageLabels as errorLabel>

@@ -39,7 +39,6 @@ import com.tle.web.sections.standard.model.Option;
 
 @SuppressWarnings("nls")
 @Bind
-@Singleton
 public class BulkWorkflowReassignTaskOperation extends AbstractSelectUserSection<AbstractSelectUserSection.Model>
 	implements
 		BulkOperationExtension

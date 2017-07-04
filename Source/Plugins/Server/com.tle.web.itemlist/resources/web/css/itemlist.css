@@ -70,6 +70,11 @@ html.wait {
 	line-height: 13px;
 }
 
+.itemresult.hilighted .itemresult-content {
+    margin: 0;
+    width: 459px;
+}
+
 .itemresult.hilighted .itemresult-meta {
 	margin-bottom: 0;
 }
@@ -85,7 +90,7 @@ html.wait {
 .itemresult.hilighted .itemresult-content,.itemresult.selected .itemresult-content
 	{
 	margin: 0;
-	width: 700px;
+	width: 459px;
 }
 
 .page-layout-menu-full .itemresult.hilighted .itemresult-content {

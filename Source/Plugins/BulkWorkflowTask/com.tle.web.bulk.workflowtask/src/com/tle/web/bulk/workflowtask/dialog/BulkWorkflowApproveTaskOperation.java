@@ -25,7 +25,6 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.model.Option;
 
 @Bind
-@Singleton
 public class BulkWorkflowApproveTaskOperation extends AbstractBulkApproveRejectSection
 {
 	private static final String BULK_APPROVE_VAL = "approvetasks";

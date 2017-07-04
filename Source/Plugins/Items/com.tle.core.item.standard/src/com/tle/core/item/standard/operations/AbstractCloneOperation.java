@@ -42,7 +42,6 @@ public abstract class AbstractCloneOperation extends AbstractStandardWorkflowOpe
 	public static final String PRE_CLONE_EXTENSION = "preClone";
 	public static final String POST_CLONE_EXTENSION = "postClone";
 
-	@Inject
 	private InitialiserService initialiserService;
 	@Inject
 	private StagingService stagingService;
@@ -272,5 +271,11 @@ public abstract class AbstractCloneOperation extends AbstractStandardWorkflowOpe
 		fileProcessorTracker = new PluginTracker<CloneFileProcessingExtension>(pluginService,
 			"com.tle.core.item.standard", "cloneFileProcessor", "id");
 		fileProcessorTracker.setBeanKey("bean");
+	}
+
+	@Inject
+	public void setInitialiserService(InitialiserService initialiserService) {
+		this.initialiserService = initialiserService;
+		this.cloner = initialiserService.createCloner(getClass().getClassLoader());
 	}
 }

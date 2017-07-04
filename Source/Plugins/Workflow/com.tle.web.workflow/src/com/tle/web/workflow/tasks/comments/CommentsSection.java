@@ -43,6 +43,7 @@ import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.events.ReadyToRespondListener;
 import com.tle.web.sections.events.RenderEventContext;
+import com.tle.web.sections.events.js.BookmarkAndModify;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.events.js.SubmitValuesHandler;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
@@ -226,7 +227,16 @@ public class CommentsSection extends AbstractPrototypeSection<CommentsSection.Mo
 			throw e;
 		}
 
-		if (true) throw new Error("FIXME - filedrop");
+		fileDrop.setAjaxUploadUrl(context, new BookmarkAndModify(context, ajax.getModifier("dndUpload")));
+//		fileDrop.setAjaxMethod(context, ajax.getAjaxFunction("dndUpload"));
+//		fileDrop.setRemoveFileMethod(context, ajax.getAjaxFunction("removeUploadedFile"));
+//		fileDrop.setMaxFiles(context, -1);
+//		fileDrop.setUploadFinishedCallback(context, DONE_UPLOAD);
+//		Collection<String> banned = configService.getProperties(new QuotaSettings()).getBannedExtensions();
+//		fileDrop.setBanned(context, banned);
+//		fileDrop.setShowAsButton(context, true);
+
+//		if (true) throw new Error("FIXME - filedrop");
 
 		ItemTaskId itemTaskId = currentTaskSection.getCurrentState(context).getItemTaskId();
 		viewCommentsSection.setMessages(context, workflowService.getMessages(itemTaskId));
