@@ -9,10 +9,10 @@ import com.tle.webtests.pageobject.AbstractPage;
 
 public class ScheduledTasksPage extends AbstractPage<ScheduledTasksPage>
 {
-	@FindBy(linkText = "com.tle.core.workflow.daily.CheckReviewTask")
+	@FindBy(linkText = "Check Review")
 	WebElement checkReviewLink;
 
-	@FindBy(linkText = "com.tle.core.workflow.daily.NotifyOfNewItemsTask")
+	@FindBy(linkText = "Notify Of New Items")
 	WebElement notifyNewTasksLink;
 
 	@FindBy(linkText = "com.tle.core.payment.storefront.task.CheckUpdatedPurchasedItemsTask")
@@ -21,7 +21,7 @@ public class ScheduledTasksPage extends AbstractPage<ScheduledTasksPage>
 	@FindBy(linkText = "com.tle.core.payment.storefront.task.CheckCurrentOrdersTask")
 	WebElement checkOrdersTaskLink;
 
-	@FindBy(linkText = "com.tle.core.workflow.daily.CheckModerationTask")
+	@FindBy(linkText = "Check Moderation")
 	WebElement checkModerationLink;
 
 	@FindBy(linkText = "Blackboard Connector Synchronisation")
