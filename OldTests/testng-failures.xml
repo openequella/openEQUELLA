@@ -1,42 +1,9 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="Failures" parallel="instances" data-provider-thread-count="4" thread-count="4" configfailurepolicy="continue">
     <test name="Failing tests">
-        <!-- <packages>
-            <package name="com.tle.webtests.test.contribute.controls" />
-            <package name="com.tle.webtests.test.contribute.controls.attachments" />
-        </packages> -->
         <classes>
-            <!--<class name="com.tle.webtests.test.webservices.rest.FileApiTest"/>-->
-            <!--<class name="com.tle.webtests.test.webservices.rest.ItemApiContributeTest"/>-->
-            <!--<class name="com.tle.webtests.test.webservices.rest.DynaCollectionApiTest" />-->
-            <!--<class name="com.tle.webtests.test.webservices.rest.SchemaApiTest" />-->
-            <!--<class name="com.tle.webtests.test.webservices.rest.ItemApiQuickContributeTest"/>-->
-            <!--<class name="com.tle.webtests.bugs.OAuthTest"/>-->
-            <!--<class name="com.tle.webtests.test.webservices.rest.NotificationsApiTest"/>-->
-            <!--<class name="com.tle.webtests.test.webservices.rest.ItemApiActionsTest" />-->
-            <!--<class name="com.tle.webtests.test.webservices.soap.Soap51Test" />-->
-            <!--<class name="com.tle.webtests.test.webservices.rest.ItemApiViewTest" />-->
             <class name="com.tle.webtests.test.webservices.OAIEndpointTest"/>
             <class name="com.tle.webtests.test.webservices.soap.Soap51Test"/>
-            <class name="com.tle.webtests.test.cal.CALBookActivationTest"/>
-            <class name="com.tle.webtests.test.myresources.MyResourcesControlsTest"/>
-            <class name="com.tle.webtests.test.myresources.favourites.FavouritesInIntegrationTest"/>
-            <class name="com.tle.webtests.test.admin.CreditsTest"/>
-            <class name="com.tle.webtests.test.contribute.WizardBreadcrumbs"/>
-            <class name="com.tle.webtests.test.contribute.controls.asc.AdvancedScriptControlTests"/>
-            <class name="com.tle.webtests.test.viewing.actions.ItemExportTest"/>
-            <class name="com.tle.webtests.test.contribute.controls.asc.ScriptedDisplayTemplateTest"/>
-            <class name="com.tle.webtests.test.admin.settings.MailSettingsTest"/>
-            <class name="com.tle.webtests.test.webservices.SRWTest"/>
-            <!--<class name="com.tle.webtests.ldaptests.DynamicMetadataACLTest"/>-->
-            <!--<class name="com.tle.webtests.ldaptests.LDAPTest"/>-->
         </classes>
-            <!--<class name="com.tle.webtests.test.contribute.controls.attachments.FileAttachmentControlTest" />-->
-            <!--<class name="com.tle.webtests.test.contribute.controls.attachments.AttachmentControlTest" />-->
-            <!--&lt;!&ndash;<class name="com.tle.webtests.test.contribute.controls.PackageAndNavigationTest" />&ndash;&gt;-->
-            <!--&lt;!&ndash;<class name="com.tle.webtests.test.searching.SearchSettingsTest" />&ndash;&gt;-->
-            <!--&lt;!&ndash;<class name="com.tle.webtests.test.contribute.controls.TaxonomyControlsTest" />&ndash;&gt;-->
-            <!--&lt;!&ndash;<class name="com.tle.webtests.test.viewing.ItemSummaryTest" />&ndash;&gt;-->
-        <!--</classes>-->
     </test>
 </suite>
