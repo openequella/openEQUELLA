@@ -1,5 +1,7 @@
 package com.tle.webtests.pageobject.userscripts;
 
+import com.tle.webtests.pageobject.ExpectWaiter;
+import com.tle.webtests.pageobject.ExpectedConditions2;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
@@ -25,6 +27,8 @@ public class EditUserScriptPage extends AbstractEditEntityPage<EditUserScriptPag
 	private WebElement editorContainer;
 	@FindBy(xpath = "//*[@id='syntax-div']/pre/span")
 	private WebElement syntaxCheckResult;
+	@FindBy(id="{editorSectionId}_freemarkerlinkDiv")
+	private WebElement scriptHelp;
 
 	protected EditUserScriptPage(ShowUserScriptsPage showUserScriptsPage)
 	{
@@ -51,7 +55,8 @@ public class EditUserScriptPage extends AbstractEditEntityPage<EditUserScriptPag
 
 	public void pickScriptType(String type)
 	{
-		WaitingPageObject<EditUserScriptPage> ajaxUpdate = updateWaiter(editorContainer);
+		WaitingPageObject<EditUserScriptPage> ajaxUpdate = ExpectWaiter.waiter(
+				ExpectedConditions2.ajaxUpdateExpect(editorAjaxDiv, type.equals("executable") ? moduleNameField : scriptHelp), this);
 		new EquellaSelect(getContext(), scriptTypeList).selectByValue(type);
 		ajaxUpdate.get();
 	}
