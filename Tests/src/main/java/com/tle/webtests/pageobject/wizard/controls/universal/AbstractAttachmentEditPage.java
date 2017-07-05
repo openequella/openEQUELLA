@@ -29,7 +29,7 @@ public abstract class AbstractAttachmentEditPage<T extends AbstractAttachmentDia
 	public UniversalControl save()
 	{
 		String newName = getName();
-		return save(newName, false);
+		return save(newName, false, false);
 	}
 
 	/**
@@ -38,25 +38,25 @@ public abstract class AbstractAttachmentEditPage<T extends AbstractAttachmentDia
 	 * @param disabled Will the attachment show as "hidden from summary"?
 	 * @return
 	 */
-	protected UniversalControl save(String newName, boolean disabled)
+	protected UniversalControl save(String newName, boolean hidden, boolean disabled)
 	{
-		if( disabled )
+		if( hidden )
 		{
 			newName += " (hidden from summary view)";
 		}
 		// If there is an attachment with the same name already there then we
 		// need to wait for it to go stale (ie gone)
+		WaitingPageObject<UniversalControl> waiter;
 		if( control.hasResource(newName) )
 		{
-			WaitingPageObject<UniversalControl> goneWaiter = control.attachGoneWaiter(newName);
-			saveButton.click();
-			goneWaiter.get();
+			waiter = control.attachGoneWaiter(newName);
 		}
 		else
 		{
-			saveButton.click();
+			waiter = control.attachNameWaiter(newName, disabled);
 		}
-		return control.attachNameWaiter(newName, disabled).get();
+		saveButton.click();
+		return waiter.get();
 	}
 
 	@SuppressWarnings("unchecked")

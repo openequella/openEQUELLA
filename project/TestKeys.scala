@@ -13,5 +13,6 @@ object TestKeys extends AutoPlugin {
     lazy val buildConfig = settingKey[Config]("The build config options")
     lazy val setupForTests = taskKey[Unit]("Setup the EQUELLA server for tests")
     lazy val coverageReport = taskKey[Unit]("Generate coverage report")
+    lazy val sourceZip = taskKey[Option[File]]("The EQUELLA sources zip")
   }
 }

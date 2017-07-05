@@ -47,7 +47,7 @@ installDir := baseDirectory.value / "equella-install"
 
 installOptions := {
   val jacocoJar = update.value.select(module = moduleFilter("org.jacoco", "org.jacoco.agent"),
-   artifact = artifactFilter(classifier = "runtime")).head
+    artifact = artifactFilter(classifier = "runtime")).head
   val ic = buildConfig.value.getConfig("install")
   InstallOptions(target.value / installerDir,
     installDir.value, file(sys.props("java.home")),
@@ -55,18 +55,38 @@ installOptions := {
     jacoco = Some(JacocoAgent(jacocoJar, target.value / "jacoco.exec")))
 }
 
-installerZip := {
-  if (buildConfig.value.hasPath("install.zip")) Some(file(buildConfig.value.getString("install.zip"))) else None
+def optPath(bc: Config, p: String) = if (bc.hasPath(p)) Some(file(bc.getString(p))) else None
+
+installerZip := optPath(buildConfig.value, "install.zip")
+
+sourceZip := optPath(buildConfig.value, "install.sourcezip")
+
+lazy val relevantClasses: Seq[String] => Boolean = {
+  case Seq("com", "tle", "admin", _*) => false
+  case Seq("com", "dytech", "edge", "admin", _*) => false
+  case Seq("com", "dytech", "gui", _*) => false
+  case Seq("com", "blackboard", _*) => false
+  case Seq("com", "tle", "core", "connectors", "blackboard", "webservice", _*) => false
+  case _ => true
 }
 
 coverageReport := {
   val io = installOptions.value
   val allClasses = target.value / "all_classes"
-  (io.installDir / "plugins" ** "*.jar").get.foreach { jar =>
-    IO.unzip(jar, allClasses, filter = "classes/*")
+  IO.delete(allClasses)
+  val classFilter = new NameFilter {
+    def accept(name: String): Boolean = if (name.startsWith("classes/"))
+      relevantClasses.apply(name.substring("classes/".length).split("/"))
+    else false
   }
+  (io.installDir / "plugins" ** "*.jar").get.foreach { jar =>
+    IO.unzip(jar, allClasses, filter = classFilter)
+  }
+  val srcZip = sourceZip.value
+  val allSrcs = target.value / "all_srcs"
+  srcZip.foreach(z => IO.unzip(z, allSrcs))
   CoverageReporter.createReport(io.jacoco.map(_.outFile).get, allClasses,
-    "Coverage", target.value / "coverage-report", target.value)
+    "Coverage", target.value / "coverage-report", allSrcs)
 }
 
 installEquella := {
