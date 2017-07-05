@@ -49,7 +49,7 @@ public class ZipAttachmentEditPage extends AbstractFileAttachmentEditPage<ZipAtt
 		String name = getName();
 		if( !attachZipFile.isSelected() )
 		{
-			return save(name, true, true);
+			return save(name, true, false);
 		}
 		return save(name, false, false);
 	}
