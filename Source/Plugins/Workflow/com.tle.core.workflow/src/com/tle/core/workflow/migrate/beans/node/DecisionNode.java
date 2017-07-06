@@ -15,7 +15,7 @@ import com.tle.beans.entity.LanguageBundle;
 @Entity(name = "WorkflowDecision")
 @AccessType("field")
 @DiscriminatorValue("d")
-public class FakeDecisionNode extends FakeWorkflowNode
+public class DecisionNode extends WorkflowNode
 {
 	private static final long serialVersionUID = 1;
 
@@ -24,13 +24,13 @@ public class FakeDecisionNode extends FakeWorkflowNode
 	@Column(length = 40)
 	private String collectionUuid;
 
-	public FakeDecisionNode(LanguageBundle name)
+	public DecisionNode(LanguageBundle name)
 	{
 		super(name);
 		script = ""; //$NON-NLS-1$
 	}
 
-	public FakeDecisionNode()
+	public DecisionNode()
 	{
 		this(null);
 	}

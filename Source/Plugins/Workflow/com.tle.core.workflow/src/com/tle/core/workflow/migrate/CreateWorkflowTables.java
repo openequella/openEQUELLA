@@ -30,14 +30,14 @@ import com.tle.core.migration.AbstractHibernateSchemaMigration;
 import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
 import com.tle.core.plugins.impl.PluginServiceImpl;
-import com.tle.core.workflow.migrate.beans.FakeWorkflow;
-import com.tle.core.workflow.migrate.beans.FakeWorkflowItemStatus;
-import com.tle.core.workflow.migrate.beans.FakeWorkflowNodeStatus;
-import com.tle.core.workflow.migrate.beans.node.FakeDecisionNode;
-import com.tle.core.workflow.migrate.beans.node.FakeParallelNode;
-import com.tle.core.workflow.migrate.beans.node.FakeSerialNode;
-import com.tle.core.workflow.migrate.beans.node.FakeWorkflowItem;
-import com.tle.core.workflow.migrate.beans.node.FakeWorkflowNode;
+import com.tle.core.workflow.migrate.beans.Workflow;
+import com.tle.core.workflow.migrate.beans.WorkflowItemStatus;
+import com.tle.core.workflow.migrate.beans.WorkflowNodeStatus;
+import com.tle.core.workflow.migrate.beans.node.DecisionNode;
+import com.tle.core.workflow.migrate.beans.node.ParallelNode;
+import com.tle.core.workflow.migrate.beans.node.SerialNode;
+import com.tle.core.workflow.migrate.beans.node.WorkflowItem;
+import com.tle.core.workflow.migrate.beans.node.WorkflowNode;
 import com.tle.core.xml.service.XmlService;
 
 @Bind
@@ -67,14 +67,14 @@ public class CreateWorkflowTables extends AbstractHibernateSchemaMigration
 		xstream.aliasPackage("com.tle.beans.entity.workflow", "com.tle.common.old.workflow");
 
 		MigrateWorkflow migrator = new MigrateWorkflow();
-		Map<Long, Map<String, FakeWorkflowNode>> workflowMap = new HashMap<Long, Map<String, FakeWorkflowNode>>();
+		Map<Long, Map<String, WorkflowNode>> workflowMap = new HashMap<Long, Map<String, WorkflowNode>>();
 		Query allWorkflows = session.createQuery("from Workflow");
-		List<FakeWorkflow> workflows = allWorkflows.list();
-		for( FakeWorkflow workflow : workflows )
+		List<Workflow> workflows = allWorkflows.list();
+		for( Workflow workflow : workflows )
 		{
 
-			List<FakeWorkflowNode> newNodes = migrator.convertNodes((WorkflowTreeNode) xstream.fromXML(workflow.root));
-			for( FakeWorkflowNode newNode : newNodes )
+			List<WorkflowNode> newNodes = migrator.convertNodes((WorkflowTreeNode) xstream.fromXML(workflow.root));
+			for( WorkflowNode newNode : newNodes )
 			{
 				newNode.setWorkflow(workflow);
 				session.save(newNode);
@@ -87,27 +87,27 @@ public class CreateWorkflowTables extends AbstractHibernateSchemaMigration
 
 		int badModStatus = 0;
 		Query allStatuses = session.createQuery("from WorkflowNodeStatus");
-		List<FakeWorkflowNodeStatus> statuses = allStatuses.list();
-		for( FakeWorkflowNodeStatus status : statuses )
+		List<WorkflowNodeStatus> statuses = allStatuses.list();
+		for( WorkflowNodeStatus status : statuses )
 		{
 			String nodeId = status.nodeId;
 			Query statusQuery = session.createQuery("select s from ModerationStatus s join s.statuses st where st = ?");
 			statusQuery.setParameter(0, status);
-			FakeModerationStatus modStatus = (FakeModerationStatus) statusQuery.uniqueResult();
+			ModerationStatus modStatus = (ModerationStatus) statusQuery.uniqueResult();
 			if( modStatus != null )
 			{
 				FakeItem item = modStatus.item;
 				if( item != null )
 				{
-					Map<String, FakeWorkflowNode> map = workflowMap.get(item.itemDefinition.workflowId);
-					FakeWorkflowNode linkedNode = map != null ? map.get(nodeId) : null;
+					Map<String, WorkflowNode> map = workflowMap.get(item.itemDefinition.workflowId);
+					WorkflowNode linkedNode = map != null ? map.get(nodeId) : null;
 					if( linkedNode != null )
 					{
 						status.setNode(linkedNode);
 						status.setModStatus(modStatus);
-						if( status instanceof FakeWorkflowItemStatus )
+						if( status instanceof WorkflowItemStatus)
 						{
-							FakeWorkflowItemStatus itemStatus = (FakeWorkflowItemStatus) status;
+							WorkflowItemStatus itemStatus = (WorkflowItemStatus) status;
 							itemStatus.setAcceptedUsers((Set<String>) xstream.fromXML(itemStatus.oldAccepted));
 						}
 						session.save(status);
@@ -172,10 +172,10 @@ public class CreateWorkflowTables extends AbstractHibernateSchemaMigration
 	@Override
 	protected Class<?>[] getDomainClasses()
 	{
-		return new Class<?>[]{FakeWorkflow.class, FakeWorkflowNodeStatus.class, FakeWorkflowItemStatus.class,
-				Institution.class, LanguageBundle.class, LanguageString.class, FakeWorkflowItem.class,
-				FakeDecisionNode.class, FakeSerialNode.class, FakeParallelNode.class, OldWorkflowGroups.class,
-				FakeItem.class, FakeModerationStatus.class, FakeItemDefinition.class, FakeWorkflowNode.class};
+		return new Class<?>[]{Workflow.class, WorkflowNodeStatus.class, WorkflowItemStatus.class,
+				Institution.class, LanguageBundle.class, LanguageString.class, WorkflowItem.class,
+				DecisionNode.class, SerialNode.class, ParallelNode.class, OldWorkflowGroups.class,
+				FakeItem.class, ModerationStatus.class, FakeItemDefinition.class, WorkflowNode.class};
 	}
 
 	@Override
@@ -208,7 +208,7 @@ public class CreateWorkflowTables extends AbstractHibernateSchemaMigration
 		@Id
 		long id;
 		@OneToOne
-		FakeModerationStatus moderation;
+		ModerationStatus moderation;
 		@ManyToOne
 		FakeItemDefinition itemDefinition;
 	}

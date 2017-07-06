@@ -8,23 +8,23 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.tle.common.Check;
-import com.tle.core.workflow.migrate.beans.node.FakeDecisionNode;
-import com.tle.core.workflow.migrate.beans.node.FakeParallelNode;
-import com.tle.core.workflow.migrate.beans.node.FakeSerialNode;
-import com.tle.core.workflow.migrate.beans.node.FakeWorkflowItem;
-import com.tle.core.workflow.migrate.beans.node.FakeWorkflowNode;
+import com.tle.core.workflow.migrate.beans.node.DecisionNode;
+import com.tle.core.workflow.migrate.beans.node.ParallelNode;
+import com.tle.core.workflow.migrate.beans.node.SerialNode;
+import com.tle.core.workflow.migrate.beans.node.WorkflowItem;
+import com.tle.core.workflow.migrate.beans.node.WorkflowNode;
 
 public class MigrateWorkflow
 {
-	public List<FakeWorkflowNode> convertNodes(com.tle.common.old.workflow.node.WorkflowTreeNode root)
+	public List<WorkflowNode> convertNodes(com.tle.common.old.workflow.node.WorkflowTreeNode root)
 	{
-		List<FakeWorkflowNode> nodes = new ArrayList<FakeWorkflowNode>();
+		List<WorkflowNode> nodes = new ArrayList<WorkflowNode>();
 		convertOne(root, null, nodes);
 		return nodes;
 	}
 
-	private void convertOne(com.tle.common.old.workflow.node.WorkflowNode node, FakeWorkflowNode parent,
-		List<FakeWorkflowNode> nodes)
+	private void convertOne(com.tle.common.old.workflow.node.WorkflowNode node, WorkflowNode parent,
+		List<WorkflowNode> nodes)
 	{
 		switch( node.getType() )
 		{
@@ -32,10 +32,10 @@ public class MigrateWorkflow
 				convertItem((com.tle.common.old.workflow.node.WorkflowItem) node, parent, nodes);
 				break;
 			case com.tle.common.old.workflow.node.WorkflowNode.SERIAL_TYPE:
-				convertTree(new FakeSerialNode(), (com.tle.common.old.workflow.node.WorkflowTreeNode) node, parent, nodes);
+				convertTree(new SerialNode(), (com.tle.common.old.workflow.node.WorkflowTreeNode) node, parent, nodes);
 				break;
 			case com.tle.common.old.workflow.node.WorkflowNode.PARALLEL_TYPE:
-				convertTree(new FakeParallelNode(), (com.tle.common.old.workflow.node.ParallelNode) node, parent, nodes);
+				convertTree(new ParallelNode(), (com.tle.common.old.workflow.node.ParallelNode) node, parent, nodes);
 				break;
 			case com.tle.common.old.workflow.node.WorkflowNode.DECISION_TYPE:
 				convertDecision((com.tle.common.old.workflow.node.DecisionNode) node, parent, nodes);
@@ -48,17 +48,17 @@ public class MigrateWorkflow
 
 	}
 
-	private void convertDecision(com.tle.common.old.workflow.node.DecisionNode node, FakeWorkflowNode parent,
-		List<FakeWorkflowNode> nodes)
+	private void convertDecision(com.tle.common.old.workflow.node.DecisionNode node, WorkflowNode parent,
+		List<WorkflowNode> nodes)
 	{
-		FakeDecisionNode newNode = new FakeDecisionNode();
+		DecisionNode newNode = new DecisionNode();
 		newNode.setCollectionUuid(null);
 		newNode.setScript(node.getScript());
 		convertTree(newNode, node, parent, nodes);
 	}
 
-	private void convertTree(FakeWorkflowNode newNode, com.tle.common.old.workflow.node.WorkflowTreeNode node,
-		FakeWorkflowNode parent, List<FakeWorkflowNode> nodes)
+	private void convertTree(WorkflowNode newNode, com.tle.common.old.workflow.node.WorkflowTreeNode node,
+							 WorkflowNode parent, List<WorkflowNode> nodes)
 	{
 		newNode.setRejectPoint(node.isRejectPoint());
 		convertNode(newNode, node, parent, nodes);
@@ -68,10 +68,10 @@ public class MigrateWorkflow
 		}
 	}
 
-	private void convertItem(com.tle.common.old.workflow.node.WorkflowItem item, FakeWorkflowNode parent,
-		List<FakeWorkflowNode> nodes)
+	private void convertItem(com.tle.common.old.workflow.node.WorkflowItem item, WorkflowNode parent,
+		List<WorkflowNode> nodes)
 	{
-		FakeWorkflowItem newItem = new FakeWorkflowItem();
+		WorkflowItem newItem = new WorkflowItem();
 		newItem.setUsers(newSet(item.getUsers()));
 		newItem.setGroups(newSet(item.getGroups()));
 		newItem.setRoles(newSet(item.getRoles()));
@@ -102,8 +102,8 @@ public class MigrateWorkflow
 		return set;
 	}
 
-	private void convertNode(FakeWorkflowNode newNode, com.tle.common.old.workflow.node.WorkflowNode node,
-		FakeWorkflowNode parent, List<FakeWorkflowNode> nodes)
+	private void convertNode(WorkflowNode newNode, com.tle.common.old.workflow.node.WorkflowNode node,
+							 WorkflowNode parent, List<WorkflowNode> nodes)
 	{
 		String uuid = node.getId();
 		if( Check.isEmpty(uuid) )

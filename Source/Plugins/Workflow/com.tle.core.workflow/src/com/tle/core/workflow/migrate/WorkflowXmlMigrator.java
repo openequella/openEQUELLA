@@ -17,7 +17,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.InstitutionInfo;
 import com.tle.core.institution.convert.XmlMigrator;
-import com.tle.core.workflow.migrate.beans.node.FakeWorkflowNode;
+import com.tle.core.workflow.migrate.beans.node.WorkflowNode;
 import com.tle.core.xml.service.XmlService;
 
 @Bind
@@ -72,7 +72,7 @@ public class WorkflowXmlMigrator extends XmlMigrator
 			workflow.setNodeName(Workflow.class.getName());
 			workflow.deleteNode("root");
 			workflow.deleteNode("allGroups");
-			List<com.tle.core.workflow.migrate.beans.node.FakeWorkflowNode> newNodes = migrate
+			List<WorkflowNode> newNodes = migrate
 				.convertNodes(oldWorkflow.getRoot());
 			workflow.appendChildren("", new PropBagEx(xstream.toXML(new NodeHolder(newNodes))));
 			xmlHelper.writeFromPropBagEx(folder, entry, workflow);
@@ -81,14 +81,14 @@ public class WorkflowXmlMigrator extends XmlMigrator
 
 	public static class NodeHolder
 	{
-		private final Set<FakeWorkflowNode> nodes;
+		private final Set<WorkflowNode> nodes;
 
-		public NodeHolder(List<FakeWorkflowNode> newNodes)
+		public NodeHolder(List<WorkflowNode> newNodes)
 		{
-			nodes = new HashSet<FakeWorkflowNode>(newNodes);
+			nodes = new HashSet<WorkflowNode>(newNodes);
 		}
 
-		public Set<FakeWorkflowNode> getNodes()
+		public Set<WorkflowNode> getNodes()
 		{
 			return nodes;
 		}

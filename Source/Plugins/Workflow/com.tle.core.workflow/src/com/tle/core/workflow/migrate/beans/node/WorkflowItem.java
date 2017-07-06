@@ -23,7 +23,7 @@ import com.tle.beans.entity.LanguageBundle;
 @Entity(name = "WorkflowItem")
 @AccessType("field")
 @DiscriminatorValue("t")
-public class FakeWorkflowItem extends FakeWorkflowNode
+public class WorkflowItem extends WorkflowNode
 {
 	private static final long serialVersionUID = 1;
 
@@ -67,13 +67,13 @@ public class FakeWorkflowItem extends FakeWorkflowNode
 	@Column(length = 40)
 	private String userSchemaUuid;
 
-	public FakeWorkflowItem(final LanguageBundle name)
+	public WorkflowItem(final LanguageBundle name)
 	{
 		super(name);
 		escalationdays = 0;
 	}
 
-	public FakeWorkflowItem()
+	public WorkflowItem()
 	{
 		this(null);
 	}

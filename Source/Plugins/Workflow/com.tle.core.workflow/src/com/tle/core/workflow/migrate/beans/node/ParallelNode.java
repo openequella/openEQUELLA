@@ -13,16 +13,16 @@ import com.tle.beans.entity.LanguageBundle;
 @Entity(name = "WorkflowParallel")
 @AccessType("field")
 @DiscriminatorValue("p")
-public class FakeParallelNode extends FakeWorkflowNode
+public class ParallelNode extends WorkflowNode
 {
 	private static final long serialVersionUID = 1;
 
-	public FakeParallelNode(LanguageBundle name)
+	public ParallelNode(LanguageBundle name)
 	{
 		super(name);
 	}
 
-	public FakeParallelNode()
+	public ParallelNode()
 	{
 		super();
 	}

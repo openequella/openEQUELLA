@@ -20,15 +20,15 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.AccessType;
 
 import com.tle.beans.IdCloneable;
-import com.tle.core.workflow.migrate.FakeModerationStatus;
-import com.tle.core.workflow.migrate.beans.node.FakeWorkflowNode;
+import com.tle.core.workflow.migrate.ModerationStatus;
+import com.tle.core.workflow.migrate.beans.node.WorkflowNode;
 
 @Entity(name = "WorkflowNodeStatus")
 @AccessType("field")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(discriminatorType = DiscriminatorType.STRING, name = "acttype")
 @DiscriminatorValue("node")
-public class FakeWorkflowNodeStatus implements Serializable, IdCloneable
+public class WorkflowNodeStatus implements Serializable, IdCloneable
 {
 	private static final long serialVersionUID = 1L;
 
@@ -39,22 +39,22 @@ public class FakeWorkflowNodeStatus implements Serializable, IdCloneable
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	@ManyToOne
-	private FakeModerationStatus modStatus;
+	private ModerationStatus modStatus;
 	@ManyToOne
 	@JoinColumn(name = "wnode_id")
-	private FakeWorkflowNode node;
+	private WorkflowNode node;
 	private char status;
 
 	// To delete
 	public String nodeId;
 	public int type;
 
-	public FakeWorkflowNodeStatus()
+	public WorkflowNodeStatus()
 	{
 		super();
 	}
 
-	public FakeWorkflowNodeStatus(FakeWorkflowNode node)
+	public WorkflowNodeStatus(WorkflowNode node)
 	{
 		this.node = node;
 	}
@@ -81,22 +81,22 @@ public class FakeWorkflowNodeStatus implements Serializable, IdCloneable
 		this.id = id;
 	}
 
-	public FakeWorkflowNode getNode()
+	public WorkflowNode getNode()
 	{
 		return node;
 	}
 
-	public void setNode(FakeWorkflowNode node)
+	public void setNode(WorkflowNode node)
 	{
 		this.node = node;
 	}
 
-	public FakeModerationStatus getModStatus()
+	public ModerationStatus getModStatus()
 	{
 		return modStatus;
 	}
 
-	public void setModStatus(FakeModerationStatus modStatus)
+	public void setModStatus(ModerationStatus modStatus)
 	{
 		this.modStatus = modStatus;
 	}

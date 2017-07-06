@@ -33,14 +33,14 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import com.tle.beans.IdCloneable;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.common.DoNotSimplify;
-import com.tle.core.workflow.migrate.beans.FakeWorkflow;
+import com.tle.core.workflow.migrate.beans.Workflow;
 
 @Entity(name = "WorkflowNode")
 @AccessType("field")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.CHAR)
 @DiscriminatorValue("n")
-public abstract class FakeWorkflowNode implements IdCloneable, Serializable
+public abstract class WorkflowNode implements IdCloneable, Serializable
 {
 	private static final long serialVersionUID = 1;
 
@@ -65,28 +65,28 @@ public abstract class FakeWorkflowNode implements IdCloneable, Serializable
 	@ManyToOne
 	@JoinColumn(nullable = false)
 	@Index(name = "workflowNodeWorkflow")
-	protected FakeWorkflow workflow;
+	protected Workflow workflow;
 
 	@ManyToOne
 	@DoNotSimplify
 	@Index(name = "workflowNodeParent")
-	protected FakeWorkflowNode parent;
+	protected WorkflowNode parent;
 	private int childIndex;
 
 	@Transient
 	@XStreamOmitField
-	private transient List<FakeWorkflowNode> children;
+	private transient List<WorkflowNode> children;
 
-	public FakeWorkflowNode()
+	public WorkflowNode()
 	{
 	}
 
-	public void setChildren(List<FakeWorkflowNode> children)
+	public void setChildren(List<WorkflowNode> children)
 	{
 		this.children = children;
 	}
 
-	public FakeWorkflowNode(LanguageBundle name)
+	public WorkflowNode(LanguageBundle name)
 	{
 		this();
 		this.name = name;
@@ -95,12 +95,12 @@ public abstract class FakeWorkflowNode implements IdCloneable, Serializable
 
 	public abstract char getType();
 
-	public void setParent(FakeWorkflowNode parent)
+	public void setParent(WorkflowNode parent)
 	{
 		this.parent = parent;
 	}
 
-	public FakeWorkflowNode getParent()
+	public WorkflowNode getParent()
 	{
 		return parent;
 	}
@@ -149,7 +149,7 @@ public abstract class FakeWorkflowNode implements IdCloneable, Serializable
 		{
 			return false;
 		}
-		final FakeWorkflowNode other = (FakeWorkflowNode) obj;
+		final WorkflowNode other = (WorkflowNode) obj;
 		if( uuid == null )
 		{
 			if( other.uuid != null )
@@ -198,12 +198,12 @@ public abstract class FakeWorkflowNode implements IdCloneable, Serializable
 
 	public abstract boolean canHaveSiblingRejectPoints();
 
-	public FakeWorkflow getWorkflow()
+	public Workflow getWorkflow()
 	{
 		return workflow;
 	}
 
-	public void setWorkflow(FakeWorkflow workflow)
+	public void setWorkflow(Workflow workflow)
 	{
 		this.workflow = workflow;
 	}
@@ -213,21 +213,21 @@ public abstract class FakeWorkflowNode implements IdCloneable, Serializable
 		return childIndex;
 	}
 
-	public FakeWorkflowNode getChild(int index)
+	public WorkflowNode getChild(int index)
 	{
 		return getChildren().get(index);
 	}
 
-	public void addChild(FakeWorkflowNode child)
+	public void addChild(WorkflowNode child)
 	{
-		List<FakeWorkflowNode> childrenList = getChildren();
+		List<WorkflowNode> childrenList = getChildren();
 		child.childIndex = childrenList.size();
 		childrenList.add(child);
 	}
 
-	public void addChild(int index, FakeWorkflowNode child)
+	public void addChild(int index, WorkflowNode child)
 	{
-		List<FakeWorkflowNode> childrenList = getChildren();
+		List<WorkflowNode> childrenList = getChildren();
 		childrenList.add(index, child);
 		while( index < childrenList.size() )
 		{
@@ -237,7 +237,7 @@ public abstract class FakeWorkflowNode implements IdCloneable, Serializable
 
 	}
 
-	public void removeChild(FakeWorkflowNode child)
+	public void removeChild(WorkflowNode child)
 	{
 		int index = children.indexOf(child);
 		if( index >= 0 )
@@ -251,12 +251,12 @@ public abstract class FakeWorkflowNode implements IdCloneable, Serializable
 		}
 	}
 
-	public int indexOfChild(FakeWorkflowNode child)
+	public int indexOfChild(WorkflowNode child)
 	{
 		return getChildren().indexOf(child);
 	}
 
-	public Iterator<FakeWorkflowNode> iterateChildren()
+	public Iterator<WorkflowNode> iterateChildren()
 	{
 		return getChildren().iterator();
 	}
@@ -266,9 +266,9 @@ public abstract class FakeWorkflowNode implements IdCloneable, Serializable
 		return getChildren().size();
 	}
 
-	public void setChild(FakeWorkflowNode node)
+	public void setChild(WorkflowNode node)
 	{
-		List<FakeWorkflowNode> childrenList = getChildren();
+		List<WorkflowNode> childrenList = getChildren();
 		while( childrenList.size() <= node.childIndex )
 		{
 			childrenList.add(null);
@@ -281,11 +281,11 @@ public abstract class FakeWorkflowNode implements IdCloneable, Serializable
 		this.childIndex = childIndex;
 	}
 
-	public List<FakeWorkflowNode> getChildren()
+	public List<WorkflowNode> getChildren()
 	{
 		if( children == null )
 		{
-			children = new ArrayList<FakeWorkflowNode>();
+			children = new ArrayList<WorkflowNode>();
 		}
 		return children;
 	}

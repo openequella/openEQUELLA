@@ -17,12 +17,12 @@ import javax.persistence.Lob;
 
 import org.hibernate.annotations.AccessType;
 
-import com.tle.core.workflow.migrate.beans.node.FakeWorkflowNode;
+import com.tle.core.workflow.migrate.beans.node.WorkflowNode;
 
 @Entity(name = "WorkflowItemStatus")
 @AccessType("field")
 @DiscriminatorValue("task")
-public class FakeWorkflowItemStatus extends FakeWorkflowNodeStatus
+public class WorkflowItemStatus extends WorkflowNodeStatus
 {
 	private static final long serialVersionUID = 1L;
 
@@ -40,12 +40,12 @@ public class FakeWorkflowItemStatus extends FakeWorkflowNodeStatus
 	@Column(name = "acceptedUsers")
 	public String oldAccepted;
 
-	public FakeWorkflowItemStatus()
+	public WorkflowItemStatus()
 	{
 		super();
 	}
 
-	public FakeWorkflowItemStatus(FakeWorkflowNode node)
+	public WorkflowItemStatus(WorkflowNode node)
 	{
 		super(node);
 	}

@@ -13,16 +13,16 @@ import com.tle.beans.entity.LanguageBundle;
 @Entity(name = "WorkflowSerial")
 @AccessType("field")
 @DiscriminatorValue("s")
-public class FakeSerialNode extends FakeWorkflowNode
+public class SerialNode extends WorkflowNode
 {
 	private static final long serialVersionUID = 1;
 
-	public FakeSerialNode(LanguageBundle name)
+	public SerialNode(LanguageBundle name)
 	{
 		super(name);
 	}
 
-	public FakeSerialNode()
+	public SerialNode()
 	{
 		super();
 	}

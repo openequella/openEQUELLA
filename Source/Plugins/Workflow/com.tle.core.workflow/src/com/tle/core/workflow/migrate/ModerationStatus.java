@@ -12,11 +12,11 @@ import javax.persistence.OneToOne;
 import org.hibernate.annotations.AccessType;
 
 import com.tle.core.workflow.migrate.CreateWorkflowTables.FakeItem;
-import com.tle.core.workflow.migrate.beans.FakeWorkflowNodeStatus;
+import com.tle.core.workflow.migrate.beans.WorkflowNodeStatus;
 
 @Entity(name = "ModerationStatus")
 @AccessType("field")
-public class FakeModerationStatus
+public class ModerationStatus
 {
 	@Id
 	long id;
@@ -25,5 +25,5 @@ public class FakeModerationStatus
 	Boolean needsReset;
 	Boolean deletedModerating;
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	Set<FakeWorkflowNodeStatus> statuses;
+	Set<WorkflowNodeStatus> statuses;
 }

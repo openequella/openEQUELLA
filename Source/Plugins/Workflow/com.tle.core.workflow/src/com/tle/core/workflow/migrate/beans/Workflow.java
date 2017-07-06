@@ -12,11 +12,11 @@ import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.AccessType;
 
-import com.tle.core.workflow.migrate.beans.node.FakeWorkflowNode;
+import com.tle.core.workflow.migrate.beans.node.WorkflowNode;
 
 @Entity(name = "Workflow")
 @AccessType("field")
-public class FakeWorkflow
+public class Workflow
 {
 	private boolean movelive;
 
@@ -27,9 +27,9 @@ public class FakeWorkflow
 	public String root;
 
 	@OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL)
-	private Set<FakeWorkflowNode> nodes;
+	private Set<WorkflowNode> nodes;
 
-	public FakeWorkflow()
+	public Workflow()
 	{
 		super();
 	}
@@ -44,20 +44,20 @@ public class FakeWorkflow
 		this.movelive = movelive;
 	}
 
-	public Set<FakeWorkflowNode> getNodes()
+	public Set<WorkflowNode> getNodes()
 	{
 		return nodes;
 	}
 
-	public void setNodes(Set<FakeWorkflowNode> nodes)
+	public void setNodes(Set<WorkflowNode> nodes)
 	{
 		this.nodes = nodes;
 	}
 
-	public Map<String, FakeWorkflowNode> getAllTasksAsMap()
+	public Map<String, WorkflowNode> getAllTasksAsMap()
 	{
-		Map<String, FakeWorkflowNode> allNodes = new HashMap<String, FakeWorkflowNode>();
-		for( FakeWorkflowNode node : nodes )
+		Map<String, WorkflowNode> allNodes = new HashMap<String, WorkflowNode>();
+		for( WorkflowNode node : nodes )
 		{
 			allNodes.put(node.getUuid(), node);
 		}
