@@ -56,13 +56,16 @@ public final class AcceptOperation extends SpecificTaskOperation // NOSONAR
 		status.update();
 		updateModeration();
 
-		try
+		if (messageUuid != null)
 		{
-			fileSystemService.commitFiles(new StagingFile(messageUuid), new WorkflowMessageFile(messageUuid));
-		}
-		catch( IOException ex )
-		{
-			throw Throwables.propagate(ex);
+			try
+			{
+				fileSystemService.commitFiles(new StagingFile(messageUuid), new WorkflowMessageFile(messageUuid));
+			}
+			catch (IOException ex)
+			{
+				throw Throwables.propagate(ex);
+			}
 		}
 
 		return true;

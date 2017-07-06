@@ -88,15 +88,17 @@ public final class RejectOperation extends SpecificTaskOperation // NOSONAR
 		}
 		updateModeration();
 
-		try
+		if (messageUuid != null)
 		{
-			fileSystemService.commitFiles(new StagingFile(messageUuid), new WorkflowMessageFile(messageUuid));
+			try
+			{
+				fileSystemService.commitFiles(new StagingFile(messageUuid), new WorkflowMessageFile(messageUuid));
+			}
+			catch (IOException ex)
+			{
+				throw Throwables.propagate(ex);
+			}
 		}
-		catch( IOException ex )
-		{
-			throw Throwables.propagate(ex);
-		}
-
 		return true;
 	}
 }

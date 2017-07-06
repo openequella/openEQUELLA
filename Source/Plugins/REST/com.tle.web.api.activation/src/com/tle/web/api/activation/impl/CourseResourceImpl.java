@@ -106,12 +106,7 @@ public class CourseResourceImpl extends AbstractBaseEntityResource<CourseInfo, B
 		if( courseCode != null )
 		{
 			final CourseInfo courseSameCode = courseService.getByCode(courseCode);
-			if( isNew )
-			{
-				throw new InvalidDataException(new ValidationError("code",
-					CurrentLocale.get("com.tle.web.api.activation.course.edit.validation.codeinuse", courseCode)));
-			}
-			else if( courseSameCode != null && !uuid.equals(courseSameCode.getUuid()) )
+			if( courseSameCode != null && (isNew || !uuid.equals(courseSameCode.getUuid())) )
 			{
 				throw new InvalidDataException(new ValidationError("code",
 					CurrentLocale.get("com.tle.web.api.activation.course.edit.validation.codeinuse", courseCode)));

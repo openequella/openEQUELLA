@@ -46,7 +46,7 @@ function resizeContent()
 	var par = findParentWithAHeight(cd);
 	if( par )
 	{
-		var cdh = par.height() - tb.outerHeight({margin: true});
+		var cdh = par.height() - tb.outerHeight(true);
 		if( cdh > 0 )
 		{
 			cd.height(cdh);

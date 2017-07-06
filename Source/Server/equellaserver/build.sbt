@@ -221,7 +221,8 @@ excludeDependencies ++= Seq(
   "org.codehaus.jackson" % "jackson-core-asl",
   "org.codehaus.jackson" % "jackson-jaxrs",
   "org.codehaus.jackson" % "jackson-mapper-asl",
-  "org.codehaus.jackson" % "jackson-xc"
+  "org.codehaus.jackson" % "jackson-xc",
+  "org.apache.geronimo.specs" % "geronimo-javamail_1.4_spec"
 )
 
 unmanagedJars in Compile ++= oracleDriverJar.value.toSeq.classpath
@@ -250,7 +251,6 @@ assemblyMergeStrategy in assembly := {
   case PathList("javax", "servlet", "jsp", _*) => MergeStrategy.first
   case PathList("javax", "annotation", _*) => MergeStrategy.first
   case PathList("org", "w3c", "dom", _*) => MergeStrategy.first
-  case PathList("javax", "mail", _*) => MergeStrategy.first
   case "META-INF/mailcap" => MergeStrategy.first
   case "META-INF/mimetypes.default" => MergeStrategy.first
   case "META-INF/javamail.charset.map" => MergeStrategy.first

@@ -312,18 +312,6 @@ public class SoapServiceImpl implements SoapService50
 	{
 		final ItemId itemId = getItemId(itemUuid, itemVersion);
 		itemStandardService.delete(itemId, false, true, true);
-		final StatusOperation statop = workflowFactory.status();
-		itemService.operation(itemId, statop);
-
-		final boolean purge = statop.getStatus().getStatusName().equals(ItemStatus.DELETED);
-		if( purge )
-		{
-			itemService.operation(itemId, workflowFactory.purge(true));
-		}
-		else
-		{
-			itemService.operation(itemId, workflowFactory.delete(), workflowFactory.save());
-		}
 	}
 
 	@Override
