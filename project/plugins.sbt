@@ -2,6 +2,10 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-license-report" % "1.2.0")
 
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "2.0.0")
 
+addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "5.1.0")
+
+addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
+
 libraryDependencies ++= Seq(
   "org.jdom" % "jdom2" % "2.0.6",
   "com.typesafe" % "config" % "1.3.1",
