@@ -23,12 +23,15 @@ import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.jdom2.Document;
+import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
 import com.dytech.edge.common.Constants;
@@ -75,6 +78,11 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
+import org.jdom2.input.sax.XMLReaderJDOMFactory;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.XMLReader;
 
 /**
  * @author aholland
@@ -137,7 +145,8 @@ public class RssPortletRenderer extends PortletContentRenderer<RssPortletRendere
 				}
 			}
 
-			final Document doc = new SAXBuilder().build(cacheStream);
+			SAXBuilder saxBuilder = createBuilder();
+			final Document doc = saxBuilder.build(cacheStream);
 
 			if( doc.getRootElement().getChildren("tooBig").size() > 0 )
 			{
@@ -239,6 +248,36 @@ public class RssPortletRenderer extends PortletContentRenderer<RssPortletRendere
 		{
 			Closeables.close(cacheStream, false);
 		}
+	}
+
+	private SAXBuilder createBuilder()
+	{
+		return new SAXBuilder(new XMLReaderJDOMFactory()
+		{
+			@Override
+			public XMLReader createXMLReader() throws JDOMException
+			{
+				SAXParserFactory fac = SAXParserFactory.newInstance();
+				// All JDOM parsers are namespace aware.
+				fac.setNamespaceAware(true);
+				fac.setValidating(false);
+				try
+				{
+					fac.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+					return fac.newSAXParser().getXMLReader();
+				}
+				catch (ParserConfigurationException | SAXException e)
+				{
+					throw new RuntimeException(e);
+				}
+			}
+
+			@Override
+			public boolean isValidating()
+			{
+				return false;
+			}
+		}, null, null);
 	}
 
 	@Override
