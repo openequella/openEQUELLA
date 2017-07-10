@@ -23,12 +23,23 @@ import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import com.google.common.collect.Sets;
 import com.tle.client.PluginClassResolver;
 
 public class PluginAwareObjectInputStream extends ObjectInputStream
 {
 	private List<ClassLoader> loaders = new ArrayList<ClassLoader>();
+	private Set<String> banned = Sets.newHashSet(
+			"org.apache.commons.collections.functors.InvokerTransformer", "org.apache.commons.collections4.functors.InvokerTransformer",
+		"org.apache.commons.collections.functors.InstantiateTransformer",
+		"org.apache.commons.collections4.functors.InstantiateTransformer",
+		"org.codehaus.groovy.runtime.ConvertedClosure",
+		"org.codehaus.groovy.runtime.MethodClosure",
+		"org.springframework.beans.factory.ObjectFactory",
+		"com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl"
+	);
 
 	public PluginAwareObjectInputStream(InputStream stream) throws IOException
 	{
@@ -38,6 +49,10 @@ public class PluginAwareObjectInputStream extends ObjectInputStream
 	@Override
 	protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException
 	{
+		if (banned.contains(desc.getName()))
+		{
+			throw new RuntimeException("Class is banned: "+desc.getName());
+		}
 		int loaderNum = readByte();
 		ClassLoader loader;
 		if( loaderNum == 0 )
