@@ -17,10 +17,7 @@
 package com.tle.common;
 
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -144,13 +141,13 @@ public class URLUtils
 	{
 		try
 		{
-			new URL(url);
+			URI uri = new URI(url);
+			return uri.getAuthority() != null;
 		}
-		catch( MalformedURLException mal )
+		catch( URISyntaxException mal )
 		{
 			return false;
 		}
-		return true;
 	}
 
 	@SuppressWarnings("nls")
