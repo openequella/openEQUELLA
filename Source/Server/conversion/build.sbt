@@ -8,7 +8,7 @@ libraryDependencies ++= Seq(
 excludeDependencies += "commons-logging" % "commons-logging"
 assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
 assemblyMergeStrategy in assembly := {
-  case "META-INF/cxf/bus-extensions.txt" => MergeStrategy.first
+  case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.first
   case x =>
     val oldStrategy = (assemblyMergeStrategy in assembly).value
     oldStrategy(x)

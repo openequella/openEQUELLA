@@ -244,20 +244,21 @@ mainClass in assembly := Some("com.tle.core.equella.runner.EQUELLAServer")
 fullClasspath in assembly := (fullClasspath in Compile).value
 
 assemblyMergeStrategy in assembly := {
-  case "META-INF/axiom.xml" => MergeStrategy.first
+  case PathList("META-INF", "axiom.xml") => MergeStrategy.first
   case PathList("javax", "wsdl", _*) => MergeStrategy.last
   case PathList("com", "ibm", "wsdl", _*) => MergeStrategy.first
   case PathList("org", "apache", "regexp", _*) => MergeStrategy.first
   case PathList("javax", "servlet", "jsp", _*) => MergeStrategy.first
   case PathList("javax", "annotation", _*) => MergeStrategy.first
   case PathList("org", "w3c", "dom", _*) => MergeStrategy.first
-  case "META-INF/mailcap" => MergeStrategy.first
-  case "META-INF/mimetypes.default" => MergeStrategy.first
-  case "META-INF/javamail.charset.map" => MergeStrategy.first
+  case PathList("META-INF", "mailcap") => MergeStrategy.first
+  case PathList("META-INF", "mimetypes.default") => MergeStrategy.first
+  case PathList("META-INF", "javamail.charset.map") => MergeStrategy.first
   case PathList("javax", "activation", _*) => MergeStrategy.first
   case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first
   case PathList("junit", _*) => MergeStrategy.discard
   case PathList("javax", "xml", _*) => MergeStrategy.discard
+  case PathList("org", "apache", "axis2", "transport", "http", "util", "ComplexPart.class") => MergeStrategy.first
   case x =>
     val oldStrategy = (assemblyMergeStrategy in assembly).value
     oldStrategy(x)
