@@ -22,7 +22,7 @@ import java.io.StringWriter;
 import java.util.Enumeration;
 import java.util.Map;
 
-import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.collect.Maps;
 import com.google.common.io.CharStreams;
+import com.google.inject.Inject;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
 import com.tle.common.i18n.CurrentLocale;
@@ -66,11 +67,19 @@ public class HttpProxyServlet extends HttpServlet
 	private HttpService httpService;
 	@Inject
 	private ConfigurationService configService;
+	@Inject(optional = true)
+	@Named("httpProxyServlet.enabled")
+	private boolean enabled;
 
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void service(HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException
 	{
+		if (!enabled)
+		{
+			resp.sendError(404);
+			return;
+		}
 		if( CurrentUser.isGuest() )
 		{
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN,

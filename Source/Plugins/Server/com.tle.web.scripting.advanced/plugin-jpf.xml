@@ -26,7 +26,9 @@
 		<library type="resources" path="resources/" id="resources" />
 	</runtime>
 
-	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules" />
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.web.scripting.advanced.guice.AscGuiceModule" />
+	</extension>
 
 	<extension plugin-id="com.tle.core.scripting" point-id="scriptObjects" id="advancedScriptObjects">
 		<parameter id="id" value="advancedScriptObjects" />
