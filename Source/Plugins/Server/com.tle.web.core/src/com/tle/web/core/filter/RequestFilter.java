@@ -18,11 +18,13 @@ package com.tle.web.core.filter;
 
 import java.io.IOException;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.inject.Inject;
 import com.tle.core.guice.Bind;
 import com.tle.web.dispatcher.FilterResult;
 
@@ -33,6 +35,10 @@ import com.tle.web.dispatcher.FilterResult;
 @Singleton
 public class RequestFilter extends OncePerRequestFilter
 {
+	@Inject(optional = true)
+	@Named("strictTransportSecurity.maxage")
+	private int stsMaxAge = -1;
+
 	@SuppressWarnings("nls")
 	@Override
 	protected FilterResult doFilterInternal(HttpServletRequest request, HttpServletResponse response)
@@ -52,6 +58,10 @@ public class RequestFilter extends OncePerRequestFilter
 		else
 		{
 			response.setHeader("X-XSS-Protection", "1; mode=block");
+		}
+		if (stsMaxAge != -1)
+		{
+			response.setHeader("Strict-Transport-Security", "max-age="+stsMaxAge+"; includeSubDomains");
 		}
 		return new FilterResult(response);
 	}
