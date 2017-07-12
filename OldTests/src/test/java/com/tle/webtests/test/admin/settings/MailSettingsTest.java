@@ -19,7 +19,7 @@ public class MailSettingsTest extends AbstractSessionTest
 {
 	// https://mailtrap.io/inboxes/115472/messages
 	private static final String MAIL_ADDRESS = "@equella.com";
-	private static final String MAIL_SERVER = "mailtrap.io";
+	private static final String MAIL_SERVER = "mailtrap.io:2525";
 	private static final String MAIL_USERNAME = "aa3f9947e6ffe5";
 	private static final String MAIL_PASSWORD = "2a447edbb38dc6";
 	private static final String MAIL_INBOX_ID = "115472";
