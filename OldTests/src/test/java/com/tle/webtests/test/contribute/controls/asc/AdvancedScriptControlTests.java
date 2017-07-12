@@ -417,7 +417,7 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest
 	 * 
 	 * @throws MalformedURLException
 	 */
-	@Test
+	@Test(enabled = false)
 	public void testRedirectionServlet() throws MalformedURLException
 	{
 		String itemName = context.getFullName("dtec14515");
