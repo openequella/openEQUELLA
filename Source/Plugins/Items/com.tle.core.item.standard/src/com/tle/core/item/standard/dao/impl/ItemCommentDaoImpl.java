@@ -48,9 +48,14 @@ public class ItemCommentDaoImpl extends GenericDaoImpl<Comment, Long> implements
 			@Override
 			public Object doInHibernate(Session session)
 			{
-				return session.getNamedQuery("getAverageRatingForItem").setParameter("uuid", itemId.getUuid())
-					.setParameter("version", itemId.getVersion()).setParameter("institution", CurrentInstitution.get())
-					.uniqueResult();
+				Object res = session.getNamedQuery("getAverageRatingForItem").setParameter("uuid", itemId.getUuid())
+						.setParameter("version", itemId.getVersion()).setParameter("institution", CurrentInstitution.get())
+						.uniqueResult();
+				if (res == null)
+				{
+					res = 0F;
+				}
+				return res;
 			}
 		});
 	}
