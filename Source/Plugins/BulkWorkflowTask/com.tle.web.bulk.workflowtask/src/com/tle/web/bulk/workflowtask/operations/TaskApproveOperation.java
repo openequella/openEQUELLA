@@ -22,15 +22,13 @@ import com.tle.core.item.standard.workflow.nodes.TaskStatus;
 public class TaskApproveOperation extends AbstractBulkTaskOperation
 {
 	private final String message;
-	private final String stagingFolderUuid;
 	private final boolean acceptAllUsers;
 
 	@AssistedInject
 	public TaskApproveOperation(@Assisted("message") String message,
-		@Assisted("stagingFolderUuid") String stagingFolderUuid, @Assisted("acceptAllUsers") boolean acceptAllUsers)
+		@Assisted("acceptAllUsers") boolean acceptAllUsers)
 	{
 		this.message = message;
-		this.stagingFolderUuid = stagingFolderUuid;
 		this.acceptAllUsers = acceptAllUsers;
 	}
 
@@ -58,21 +56,11 @@ public class TaskApproveOperation extends AbstractBulkTaskOperation
 		getModerationStatus().setLastAction(params.getDateNow());
 		HistoryEvent approved = createHistory(Type.approved);
 		setStepFromTask(approved, taskId.getTaskId());
-		String messageUuid = UUID.randomUUID().toString();
-		StagingFile stagingFolder = new StagingFile(stagingFolderUuid);
 
 		if( !Check.isEmpty(message) )
 		{
 			approved.setComment(message);
-			try
-			{
-				fileSystemService.saveFiles(stagingFolder, new WorkflowMessageFile(messageUuid));
-			}
-			catch( IOException e )
-			{
-				throw Throwables.propagate(e);
-			}
-			addMessage(taskId.getTaskId(), WorkflowMessage.TYPE_ACCEPT, message, messageUuid);
+			addMessage(taskId.getTaskId(), WorkflowMessage.TYPE_ACCEPT, message, null);
 		}
 
 		status.update();

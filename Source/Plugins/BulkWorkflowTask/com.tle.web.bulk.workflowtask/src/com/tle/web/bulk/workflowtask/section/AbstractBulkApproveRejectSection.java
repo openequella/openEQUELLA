@@ -30,6 +30,7 @@ import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.events.RenderEventContext;
+import com.tle.web.sections.events.js.BookmarkAndModify;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.jquery.Jq;
 import com.tle.web.sections.js.JSCallAndReference;
@@ -72,12 +73,6 @@ public abstract class AbstractBulkApproveRejectSection
 
 	@Component
 	private TextField commentField;
-	@Component(name = "fd")
-	@PlugKey("upload")
-	private FileDrop fileDrop;
-	@Component
-	@PlugKey("uploadfile")
-	private Button uploadButton;
 
 	@TreeLookup
 	private TaskResultsDialog taskResultsDialog;
@@ -92,66 +87,10 @@ public abstract class AbstractBulkApproveRejectSection
 	private static final ExternallyDefinedFunction VALIDATOR = new ExternallyDefinedFunction(JS_CLASS,
 		"validateMessage", 2);
 
-	class DndUploadResponse
-	{
-		public String stagingUuid;
-		public String stagingFileUrl;
-
-		public DndUploadResponse(String stagingUuid, String stagingFileUrl)
-		{
-			this.stagingUuid = stagingUuid;
-			this.stagingFileUrl = stagingFileUrl;
-		}
-
-	}
-
-	@AjaxMethod
-	public DndUploadResponse dndUpload(SectionInfo info, String uploadId, String filename) throws IOException
-	{
-		BulkApproveRejectModel model = getModel(info);
-		String stagingFolderUuid = model.getStagingFolderUuid();
-
-		String fn = "";
-		if( !Check.isEmpty(filename) )
-		{
-			fn = filename.toLowerCase();
-		}
-		InputStream stream = fileDrop.getInputStream(info);
-
-		StagingFile staging = new StagingFile(stagingFolderUuid);
-
-		// overwrite existing file
-		if( fileSystemService.fileExists(staging, fn) )
-		{
-			fileSystemService.removeFile(staging, fn);
-		}
-		fileSystemService.write(staging, fn, stream, false);
-		String url = instituionService
-			.institutionalise(PathUtils.urlPath("workflow/message/$/", stagingFolderUuid, fn));
-		return new DndUploadResponse(stagingFolderUuid, url);
-	}
-
-	@AjaxMethod
-	public boolean removeUploadedFile(SectionInfo info, String filename)
-	{
-		StagingFile staging = new StagingFile(getModel(info).getStagingFolderUuid());
-		fileSystemService.removeFile(staging, filename);
-		return true;
-	}
-
 	@Override
 	public SectionResult renderHtml(RenderEventContext context) throws Exception
 	{
 		BulkApproveRejectModel model = getModel(context);
-
-		if (true) throw new Error("FIXME - fileDrop");
-
-		String stagingFolderUuid = model.getStagingFolderUuid();
-		if( stagingFolderUuid == null )
-		{
-			stagingFolderUuid = stagingService.createStagingArea().getUuid();
-			model.setStagingFolderUuid(stagingFolderUuid);
-		}
 
 		getDialog().getOkButton().getState(context).getHandler("click")
 			.addValidator(new FunctionCallValidator(VALIDATOR, Jq.$(commentField), LABEL_MANDATORY_MESSAGE.getText()));
@@ -262,23 +201,11 @@ public abstract class AbstractBulkApproveRejectSection
 		return taskResultsDialog;
 	}
 
-	public FileDrop getFileDrop()
-	{
-		return fileDrop;
-	}
-
-	public Button getUploadButton()
-	{
-		return uploadButton;
-	}
-
 	public static class BulkApproveRejectModel
 	{
 		private String title;
 		private String subTitle;
 		private boolean mandatoryMessage;
-		@Bookmarked
-		private String stagingFolderUuid;
 		private boolean mustHaveMessage;
 
 		public boolean isMandatoryMessage()
@@ -309,16 +236,6 @@ public abstract class AbstractBulkApproveRejectSection
 		public void setSubTitle(String subTitle)
 		{
 			this.subTitle = subTitle;
-		}
-
-		public String getStagingFolderUuid()
-		{
-			return stagingFolderUuid;
-		}
-
-		public void setStagingFolderUuid(String stagingFolderUuid)
-		{
-			this.stagingFolderUuid = stagingFolderUuid;
 		}
 
 		public boolean isMustHaveMessage()

@@ -239,15 +239,6 @@ public class CommentsSection extends AbstractPrototypeSection<CommentsSection.Mo
 
 		fileDrop.setAjaxUploadUrl(context, new BookmarkAndModify(context, ajax.getModifier("dndUpload")));
 		fileDrop.setValidateFile(context, validateFile);
-//		fileDrop.setAjaxMethod(context, ajax.getAjaxFunction("dndUpload"));
-//		fileDrop.setRemoveFileMethod(context, ajax.getAjaxFunction("removeUploadedFile"));
-//		fileDrop.setMaxFiles(context, -1);
-//		fileDrop.setUploadFinishedCallback(context, DONE_UPLOAD);
-//		Collection<String> banned = configService.getProperties(new QuotaSettings()).getBannedExtensions();
-//		fileDrop.setBanned(context, banned);
-//		fileDrop.setShowAsButton(context, true);
-
-//		if (true) throw new Error("FIXME - filedrop");
 
 		ItemTaskId itemTaskId = currentTaskSection.getCurrentState(context).getItemTaskId();
 		viewCommentsSection.setMessages(context, workflowService.getMessages(itemTaskId));

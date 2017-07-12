@@ -10,10 +10,10 @@ import com.tle.web.bulk.workflowtask.operations.TaskRejectOperation;
 public interface BulkWorkflowTaskOperationFactory
 {
 	TaskApproveOperation approve(@Assisted("message") String message,
-		@Assisted("stagingFolderUuid") String stagingFolderUuid, @Assisted("acceptAllUsers") boolean acceptAllUsers);
+		@Assisted("acceptAllUsers") boolean acceptAllUsers);
 
 	TaskRejectOperation reject(@Assisted("message") String message,
-		@Assisted("stagingFolderUuid") String stagingFolderUuid, @Assisted("rejectAllUsers") boolean rejectAllUsers);
+		@Assisted("rejectAllUsers") boolean rejectAllUsers);
 
 	TaskReassignModeratorOperation changeModeratorAssign(@Assisted("toUser") String toUser);
 }

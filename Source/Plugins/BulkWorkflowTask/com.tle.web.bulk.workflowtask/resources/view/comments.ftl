@@ -10,10 +10,6 @@
 <#if m.mustHaveMessage><p class="mandatory">${b.key('error.musthavemessage')}</p></#if>
 
 <@textarea section=s.commentField/>
-<div id="uploaded"></div>
-<@filedrop section=s.fileDrop id="workflowmessagednd">
-	<@button section=s.uploadButton />
-</@filedrop>
 
 <#if m.mandatoryMessage>
 <script type="text/javascript">

@@ -24,15 +24,13 @@ import com.tle.core.notification.beans.Notification;
 public class TaskRejectOperation extends AbstractBulkTaskOperation
 {
 	private final String message;
-	private final String stagingFolderUuid;
 	// private final boolean rejectAllUsers;
 
 	@AssistedInject
 	public TaskRejectOperation(@Assisted("message") String message,
-		@Assisted("stagingFolderUuid") String stagingFolderUuid, @Assisted("rejectAllUsers") boolean rejectAllUsers)
+		@Assisted("rejectAllUsers") boolean rejectAllUsers)
 	{
 		this.message = message;
-		this.stagingFolderUuid = stagingFolderUuid;
 		//this.rejectAllUsers = rejectAllUsers;
 	}
 
@@ -51,19 +49,7 @@ public class TaskRejectOperation extends AbstractBulkTaskOperation
 
 		if( status != null )
 		{
-			String messageUuid = UUID.randomUUID().toString();
-			StagingFile stagingFolder = new StagingFile(stagingFolderUuid);
-
-			try
-			{
-				fileSystemService.saveFiles(stagingFolder, new WorkflowMessageFile(messageUuid));
-			}
-			catch( IOException ex )
-			{
-				throw Throwables.propagate(ex);
-			}
-
-			addMessage(taskId.getTaskId(), WorkflowMessage.TYPE_REJECT, message, messageUuid);
+			addMessage(taskId.getTaskId(), WorkflowMessage.TYPE_REJECT, message, null);
 
 			WorkflowItemStatus bean = (WorkflowItemStatus) status.getBean();
 			WorkflowItem workflowItem = (WorkflowItem) status.getWorkflowNode();

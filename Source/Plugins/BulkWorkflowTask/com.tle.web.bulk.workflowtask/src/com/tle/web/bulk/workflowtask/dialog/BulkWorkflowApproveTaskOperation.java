@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.tle.annotation.Nullable;
 import com.tle.core.guice.Bind;
 import com.tle.core.guice.BindFactory;
 import com.tle.core.item.operations.WorkflowOperation;
@@ -40,7 +41,6 @@ public class BulkWorkflowApproveTaskOperation extends AbstractBulkApproveRejectS
 	public interface ApproveOperationExecutorFactory
 	{
 		ApproveExecutor create(@Assisted("message") String message,
-			@Assisted("stagingFolderUuid") String stagingFolderUuid,
 			@Assisted("acceptAllUsers") boolean acceptAllUsers);
 	}
 
@@ -54,7 +54,6 @@ public class BulkWorkflowApproveTaskOperation extends AbstractBulkApproveRejectS
 	{
 		private static final long serialVersionUID = 1L;
 		private final String message;
-		private final String stagingFolderUuid;
 
 		private final boolean acceptAllUsers;
 
@@ -65,17 +64,16 @@ public class BulkWorkflowApproveTaskOperation extends AbstractBulkApproveRejectS
 
 		@Inject
 		public ApproveExecutor(@Assisted("message") String message,
-			@Assisted("stagingFolderUuid") String stagingFolderUuid, @Assisted("acceptAllUsers") boolean acceptAllUsers)
+							   @Assisted("acceptAllUsers") boolean acceptAllUsers)
 		{
 			this.message = message;
-			this.stagingFolderUuid = stagingFolderUuid;
 			this.acceptAllUsers = acceptAllUsers;
 		}
 
 		@Override
 		public WorkflowOperation[] getOperations()
 		{
-			return new WorkflowOperation[]{approveOperationFactory.approve(message, stagingFolderUuid, acceptAllUsers),
+			return new WorkflowOperation[]{approveOperationFactory.approve(message, acceptAllUsers),
 					workflowFactory.save()};
 		}
 
@@ -111,7 +109,7 @@ public class BulkWorkflowApproveTaskOperation extends AbstractBulkApproveRejectS
 	public BeanLocator<ApproveExecutor> getExecutor(SectionInfo info, String operationId)
 	{
 		return new FactoryMethodLocator<ApproveExecutor>(ApproveOperationExecutorFactory.class, "create",
-			getComment(info), getModel(info).getStagingFolderUuid(), !isOnMyTaskPage(info));
+			getComment(info), !isOnMyTaskPage(info));
 	}
 
 	@Override
