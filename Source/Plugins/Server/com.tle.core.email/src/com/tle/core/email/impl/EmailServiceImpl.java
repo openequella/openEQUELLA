@@ -126,6 +126,12 @@ public class EmailServiceImpl implements EmailService
 				throw new RuntimeException(
 					"Incorrect mail settings - No server set on institution: " + CurrentInstitution.get().getName());
 			}
+			int ind = server.indexOf(':');
+			if (ind != -1)
+			{
+				props.put("mail.smtp.port", server.substring(ind+1));
+				server = server.substring(0, ind);
+			}
 			props.put(HOST_PROP, server);
 			props.put(FROM_PROP, senderEmail);
 			props.put(PROTO_PROP, SMTP);
