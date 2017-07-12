@@ -32,9 +32,8 @@ public class WorkflowAssignmentTest extends AbstractCleanupTest{
 		//Assigned to same user
 		TaskListPage taskList = new TaskListPage(context).load();
 		ModerationView mv = taskList.exactQuery(itemFullName).moderate(itemFullName);
-		assertFalse(mv.isAssignedToMe());
+		assertTrue(mv.isAssignedToMe());
 		
-		mv.assignToMe();
 		mv.accept(); //4
 		
 		taskList = new TaskListPage(context).load();

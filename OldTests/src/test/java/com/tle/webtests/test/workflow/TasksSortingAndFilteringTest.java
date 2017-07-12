@@ -97,16 +97,7 @@ public class TasksSortingAndFilteringTest extends AbstractCleanupTest
 		filterListPage.setModOnly(true);
 		filterListPage.setWithinCollection("Simple 3 Step");
 
-		temp = false;
-		try
-		{
-			filterListPage.filterByWorkflow("3 Step Workflow");
-		}
-		catch( NoSuchElementException e )
-		{
-			temp = true;
-		}
-		assertTrue(temp, "Filter by workflow showed when it shouldn't");
+		filterListPage.filterByWorkflow("3 Step Workflow");
 
 		filterListPage.setWithinAll();
 		filterListPage.filterByWorkflow("3 Step Workflow");
