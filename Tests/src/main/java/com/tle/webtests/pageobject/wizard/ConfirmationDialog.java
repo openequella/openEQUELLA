@@ -6,6 +6,9 @@ import org.openqa.selenium.NoSuchElementException;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class ConfirmationDialog extends AbstractPage<ConfirmationDialog>
 {
@@ -51,14 +54,8 @@ public class ConfirmationDialog extends AbstractPage<ConfirmationDialog>
 
 	private void confirm(ConfirmButton cb)
 	{
-		try
-		{
-			driver.findElement(By.id(cb.getId())).click();
-		}
-		catch( NoSuchElementException nse )
-		{
-			throw new RuntimeException("Unable to find wizard save dialog button: " + cb.getId(), nse);
-		}
+		WebElement confirmButton = getWaiter().until(ExpectedConditions.elementToBeClickable(By.id(cb.getId())));
+		confirmButton.click();
 	}
 
 	public SummaryPage submit()

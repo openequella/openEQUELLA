@@ -1,9 +1,12 @@
 package com.tle.webtests.pageobject.institution;
 
+import com.tle.webtests.pageobject.ExpectedConditions2;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.tle.webtests.framework.PageContext;
@@ -12,8 +15,13 @@ import com.tle.webtests.pageobject.WaitingPageObject;
 
 public class StatusPage<T extends InstitutionTabInterface> extends AbstractPage<StatusPage<T>>
 {
-	@FindBy(id = "returnLink")
-	private WebElement returnLink;
+	private By returnLinkBy = By.id("returnLink");
+
+	private WebElement getReturnLink()
+	{
+		return driver.findElement(returnLinkBy);
+	}
+
 	@FindBy(id = "error-div")
 	private WebElement errorText;
 	@FindBy(id = "error-list")
@@ -37,33 +45,21 @@ public class StatusPage<T extends InstitutionTabInterface> extends AbstractPage<
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return returnLink;
+		return getReturnLink();
 	}
 
 	public boolean waitForFinish()
 	{
-		WebElement finishedBy = waiter.until(new ExpectedCondition<WebElement>()
-		{
-			@Override
-			public WebElement apply(WebDriver arg0)
-			{
-				if( errorText.isDisplayed() )
-				{
-					return errorText;
-				}
-				if( returnLink.isDisplayed() )
-				{
-					return returnLink;
-				}
-				return null;
-			}
-		});
-		return finishedBy == returnLink;
+		waiter.until(ExpectedConditions.or(
+			ExpectedConditions.elementToBeClickable(returnLinkBy),
+			ExpectedConditions.visibilityOfElementLocated(By.id("error-div"))
+		));
+		return !driver.findElements(returnLinkBy).isEmpty();
 	}
 
 	public T back()
 	{
-		returnLink.click();
+		getReturnLink().click();
 		return tab.get();
 	}
 

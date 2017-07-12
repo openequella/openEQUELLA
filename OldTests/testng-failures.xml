@@ -1,9 +1,12 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="Failures" parallel="instances" data-provider-thread-count="4" thread-count="4" configfailurepolicy="continue">
+<suite name="Failures" parallel="none" data-provider-thread-count="4" thread-count="4" configfailurepolicy="continue">
     <test name="Failing tests">
-        <classes>
-            <class name="com.tle.webtests.test.webservices.OAIEndpointTest"/>
-            <class name="com.tle.webtests.test.webservices.soap.Soap51Test"/>
-        </classes>
+        <packages>
+            <package name="com.tle.webtests.test.importexport" />
+        </packages>
+        <!--<classes>-->
+            <!--<class name="com.tle.webtests.test.webservices.OAIEndpointTest"/>-->
+            <!--<class name="com.tle.webtests.test.webservices.soap.Soap51Test"/>-->
+        <!--</classes>-->
     </test>
 </suite>
