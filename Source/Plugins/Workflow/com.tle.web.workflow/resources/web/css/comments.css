@@ -13,29 +13,6 @@
 .workflowcomments #uploaded a {
 	text-decoration: underline;
 }
-
-.workflowcomments .filedrop {
-	border: 0;
-	min-height: inherit;
-	margin: 0;
-	
-}
-.settingRow.dndUploadRow, .settingRow.dndUploadRow .settingField {
-	padding-top:0;
-	margin-top:0;
-	padding-bottom:0;
-	margin-bottom:0;
-}
-
-.workflowcomments .filedrop .dndicon {
-	height: auto;
-	width: auto;
-	background: none;
-	margin-top: 0;
-}
-.workflowcomments .filedrop p {
-	display: none;
-}
 .comment-username {
 	color: #f6a03d;
 	background: url(../images/user-big.png) 0 0 no-repeat;
@@ -69,7 +46,48 @@
 	background: #ffefef;
 }
 
+.file-progress
+{
+    float: right;
+    width: 200px;
+}
+
 .comment.approval
 {
 	background: #eefeee;
+}
+
+.progressbar
+{
+	width: 200px;
+	height: 14px;
+	border: 1px solid #AAA;
+	float: left;
+	margin: 0 10px 0 0;
+
+	-moz-border-radius: 3px;
+	-o-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
+.progressbarOuter
+{
+	background-color: #FFFFFF;
+}
+
+.progressbarInner
+{
+	height: 14px;
+	background: #80D2EE !important;
+}
+
+.progresstextOuter
+{
+	color: #000000;
+}
+
+.progresstextInner
+{
+	color: #FFFFFF;
 }

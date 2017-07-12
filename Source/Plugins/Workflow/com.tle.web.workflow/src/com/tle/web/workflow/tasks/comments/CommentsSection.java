@@ -36,6 +36,7 @@ import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.ajax.AjaxGenerator;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
 import com.tle.web.sections.ajax.handler.AjaxMethod;
+import com.tle.web.sections.ajax.handler.UpdateDomFunction;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
@@ -47,10 +48,14 @@ import com.tle.web.sections.events.js.BookmarkAndModify;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.events.js.SubmitValuesHandler;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
+import com.tle.web.sections.jquery.libraries.JQueryProgression;
+import com.tle.web.sections.js.JSAssignable;
 import com.tle.web.sections.js.JSCallAndReference;
+import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
+import com.tle.web.sections.js.generic.function.PartiallyApply;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.TextLabel;
@@ -75,6 +80,8 @@ public class CommentsSection extends AbstractPrototypeSection<CommentsSection.Mo
 		HtmlRenderer,
 		ReadyToRespondListener
 {
+	private JSAssignable validateFile;
+
 	public enum CommentType
 	{
 		REJECT, COMMENT, SHOW, ACCEPT
@@ -152,9 +159,9 @@ public class CommentsSection extends AbstractPrototypeSection<CommentsSection.Mo
 	private static final PluginResourceHelper URL_HELPER = ResourcesService.getResourceHelper(CommentsSection.class);
 	private static final IncludeFile INCLUDE = new IncludeFile(URL_HELPER.url("scripts/comments.js"));
 	private static final JSCallAndReference WORKFLOW_COMMENTS_CLASS = new ExternallyDefinedFunction("WorkflowComments",
-		INCLUDE);
-	private static final ExternallyDefinedFunction DONE_UPLOAD = new ExternallyDefinedFunction(WORKFLOW_COMMENTS_CLASS,
-		"dndUploadFinishedCallback", 0);
+		INCLUDE, JQueryProgression.PRERENDER);
+	private static final ExternallyDefinedFunction VALIDATE_FILE = new ExternallyDefinedFunction(WORKFLOW_COMMENTS_CLASS,
+		"validateFile", 2);
 	private static final ExternallyDefinedFunction removeStagingFile = new ExternallyDefinedFunction(
 		WORKFLOW_COMMENTS_CLASS, "removeStagingFile", 3);
 
@@ -169,6 +176,9 @@ public class CommentsSection extends AbstractPrototypeSection<CommentsSection.Mo
 		closeButton.setClickHandler(cancelHandler);
 		rejectSteps.setListModel(new StepListModel());
 		rejectSteps.setDisplayed(false);
+		UpdateDomFunction updateProgressArea = ajax.getAjaxUpdateDomFunction(tree, this, null,
+				ajax.getEffectFunction(AjaxGenerator.EffectType.REPLACE_IN_PLACE), "uploaded");
+		validateFile = Js.functionValue(Js.call(VALIDATE_FILE, PartiallyApply.partial(updateProgressArea, 0)));
 	}
 
 	/**
@@ -228,6 +238,7 @@ public class CommentsSection extends AbstractPrototypeSection<CommentsSection.Mo
 		}
 
 		fileDrop.setAjaxUploadUrl(context, new BookmarkAndModify(context, ajax.getModifier("dndUpload")));
+		fileDrop.setValidateFile(context, validateFile);
 //		fileDrop.setAjaxMethod(context, ajax.getAjaxFunction("dndUpload"));
 //		fileDrop.setRemoveFileMethod(context, ajax.getAjaxFunction("removeUploadedFile"));
 //		fileDrop.setMaxFiles(context, -1);
@@ -324,10 +335,11 @@ public class CommentsSection extends AbstractPrototypeSection<CommentsSection.Mo
 	}
 
 	@AjaxMethod
-	public DndUploadResponse dndUpload(SectionInfo info, String uploadId, String filename) throws IOException
+	public DndUploadResponse dndUpload(SectionInfo info) throws IOException
 	{
 		Model model = getModel(info);
 		String stagingFolderUuid = model.getStagingFolderUuid();
+		String filename = fileDrop.getFilename(info);
 
 		String fn = "";
 		if( !Check.isEmpty(filename) )

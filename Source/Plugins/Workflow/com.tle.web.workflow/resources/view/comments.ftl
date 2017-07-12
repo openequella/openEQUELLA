@@ -1,5 +1,6 @@
 <#include "/com.tle.web.freemarker@/macro/sections.ftl"/>
 <#include "/com.tle.web.sections.standard@/textarea.ftl"/>
+<#import "/com.tle.web.sections.standard@/ajax.ftl" as a/>
 <#include "/com.tle.web.sections.standard@/filedrop.ftl"/>
 <#include "/com.tle.web.sections.equella@/component/button.ftl"/>
 <#include "/com.tle.web.sections.equella@/macro/settings.ftl"/>
@@ -16,13 +17,13 @@
 			</@setting>
 			<#if m.displayUploadButton>
 				<@setting label="" rowStyle="dndUploadRow">
-					<div id="uploaded">
-					<#list m.stagingFiles as f>
-						<li id="sf_${f?index}"><@render m.stagingFiles[f?index] /> <@render m.deleteFiles[f?index] /></li>
-					<#else>
-					</#list>
-					</div>
-					<@filedrop section=s.fileDrop id="workflowmessagednd"><@button section=s.uploadButton /></@filedrop>
+					<@a.div id="uploaded">
+                        <#list m.stagingFiles as f>
+                            <li id="sf_${f?index}"><@render m.stagingFiles[f?index] /> <@render m.deleteFiles[f?index] /></li>
+                        </#list>
+					</@a.div>
+					<div id="current-uploads"></div>
+					<@filedrop section=s.fileDrop id="workflowmessagednd"/>
 				</@setting>
 			</#if>
 			<#if s.rejectSteps.isDisplayed(_info)>

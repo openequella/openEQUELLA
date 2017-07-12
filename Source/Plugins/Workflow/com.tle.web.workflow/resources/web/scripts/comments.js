@@ -9,23 +9,31 @@ var WorkflowComments = {
 			$('#' + itemhtmlid).remove();
 		}, filename);
 	},
-	dndUploadFinishedCallback : function(file, ajaxResponse, removeCb)
-	{
-		var fileUrl = ajaxResponse.stagingFileUrl;
-		WorkflowComments.internalId++;
-		var suffix = file.fileIndex + '-' + WorkflowComments.internalId + "-" + Math.random().toString(36).slice(-5);
-		var itemhtmlid = 'wfmFile-li-' + suffix;
-		var linkid = 'wfmFile-action-delete-' + suffix;
-		$("#uploaded").append(
-				"<li id='" + itemhtmlid + "'><a target='_blank' href='" + fileUrl + "'>" + file.name + "</a> "
-						+ WorkflowComments.getDeleteButton(linkid) + "</li>");
-		$("#" + linkid).click(function(e)
-		{
-			removeCb(function()
-			{
-				$('#' + itemhtmlid).remove()
-			}, file.name);
-			return false;
-		});
+	validateFile: function (done) {
+	    return function (f, xhr) {
+            var $parediv = $("#current-uploads");
+            var $progress = $('<div id="upload" class="progressbar"><div class="progress-bar-inner"/></div>');
+            var $fullUpload = $("<div/>");
+            var $fname = $("<span/>").text(f.name);
+            var $progspan = $('<span class="file-progress"/>');
+            $progress.appendTo($progspan);
+            $fullUpload.append($fname);
+            $fullUpload.append($progspan);
+            $parediv.append($fullUpload);
+	        xhr.onreadystatechange = function() {
+                if (this.readyState == this.DONE) {
+                    if (this.onreadystatechange) {
+                        xhr.onreadystatechange = null;
+                        $fullUpload.remove();
+                        done();
+                    }
+                }
+            }
+            xhr.upload.addEventListener("progress", function(e) {
+                var percent = 100 * (e.loaded / e.total);
+                $progress.progression({Current:percent, AnimateTimeOut : 600});
+            });
+	        return true;
+	    }
 	}
 };
