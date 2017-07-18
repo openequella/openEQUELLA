@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.FileInfo;
@@ -93,4 +94,8 @@ public interface LERepository
 	void updateMetadataMapping();
 
 	Object getThreadLock();
+
+	boolean registerFilename(UUID id, String filename);
+
+	void unregisterFilename(UUID id);
 }

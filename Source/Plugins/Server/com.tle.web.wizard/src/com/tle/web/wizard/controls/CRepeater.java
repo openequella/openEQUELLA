@@ -30,6 +30,7 @@ import com.tle.core.wizard.WizardPageException;
 import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.core.wizard.controls.WizardPage;
 import com.tle.web.sections.SectionInfo;
+import com.tle.web.sections.result.util.KeyLabel;
 
 /**
  * @author jmaginnis
@@ -152,7 +153,7 @@ public class CRepeater extends GroupsCtrl
 			{
 				key += "one"; //$NON-NLS-1$
 			}
-			setInvalid(true, LangUtils.createTempLangugageBundle(key, min));
+			setInvalid(true, new KeyLabel(key, min));
 		}
 		super.validate();
 	}

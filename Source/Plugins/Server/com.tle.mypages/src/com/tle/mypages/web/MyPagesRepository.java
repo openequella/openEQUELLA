@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -242,5 +243,17 @@ public class MyPagesRepository implements LERepository
 	public Object getThreadLock()
 	{
 		return new Object();
+	}
+
+	@Override
+	public boolean registerFilename(UUID id, String filename)
+	{
+		return true;
+	}
+
+	@Override
+	public void unregisterFilename(UUID id)
+	{
+
 	}
 }

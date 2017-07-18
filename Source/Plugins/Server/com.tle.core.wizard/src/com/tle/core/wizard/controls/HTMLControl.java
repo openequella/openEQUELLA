@@ -27,6 +27,7 @@ import com.tle.beans.entity.LanguageBundle;
 import com.tle.common.NameValue;
 import com.tle.core.freetext.queries.BaseQuery;
 import com.tle.core.wizard.LERepository;
+import com.tle.web.sections.render.Label;
 
 @NonNullByDefault
 public interface HTMLControl
@@ -57,7 +58,7 @@ public interface HTMLControl
 
 	String getFormName();
 
-	void setInvalid(boolean yes, LanguageBundle msg);
+	void setInvalid(boolean yes, Label msg);
 
 	@Nullable
 	BaseQuery getPowerSearchQuery();
@@ -93,7 +94,7 @@ public interface HTMLControl
 	WizardControl getControlBean();
 
 	@Nullable
-	LanguageBundle getMessage();
+	Label getMessage();
 
 	String getDescription();
 

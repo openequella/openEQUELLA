@@ -168,7 +168,7 @@ public class PluginFreemarkerFactory extends AbstractFreemarkerFactory implement
 	}
 
 	@Override
-	public FreemarkerSectionResult createResultWithModel(String template, Object... nameValues)
+	public FreemarkerSectionResult createResultWithModelMap(String template, Object... nameValues)
 	{
 		Map<Object, Object> nvs = Maps.newHashMap();
 		if( nameValues.length % 2 == 1 )

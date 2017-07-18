@@ -146,7 +146,7 @@ public class GroupsCtrl extends OptionCtrl
 		control.validate();
 		if( control.isViewable() && (control.isInvalid() || (control.isEmpty() && control.isMandatory())) )
 		{
-			setInvalid(true, (LanguageBundle) null);
+			setInvalid(true, null);
 			return;
 		}
 	}

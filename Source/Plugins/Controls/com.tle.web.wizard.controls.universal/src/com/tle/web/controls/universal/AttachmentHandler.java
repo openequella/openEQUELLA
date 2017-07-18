@@ -181,12 +181,4 @@ public interface AttachmentHandler
 	 */
 	boolean show();
 
-	/**
-	 * Get the attachment type for the attachment being handled. Used by viewer
-	 * list
-	 * 
-	 * @param info TODO
-	 * @return the mime type of the current attachment.
-	 */
-	String getMimeType(SectionInfo info);
 }

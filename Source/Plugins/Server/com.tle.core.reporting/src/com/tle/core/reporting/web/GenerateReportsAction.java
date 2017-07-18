@@ -260,7 +260,7 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 
 				LabelRenderer description = new LabelRenderer(new BundleLabel(report.getDescription(), bundleCache));
 
-				reportTableState.addRow(viewFactory.createResultWithModel("reporting/reportListReport.ftl", "name",
+				reportTableState.addRow(viewFactory.createResultWithModelMap("reporting/reportListReport.ftl", "name",
 					name, "description", description));
 			}
 

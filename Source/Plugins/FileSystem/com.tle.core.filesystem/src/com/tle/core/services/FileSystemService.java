@@ -216,6 +216,8 @@ public interface FileSystemService extends RemoteFileSystemService
 
 	FileInfo unzipFile(FileHandle handle, String zipfile, String outpath) throws IOException;
 
+	ZipProgress unzipWithProgress(FileHandle handle, String zipFile, String targetPath) throws IOException;
+
 	/**
 	 * @param handle
 	 * @param filename

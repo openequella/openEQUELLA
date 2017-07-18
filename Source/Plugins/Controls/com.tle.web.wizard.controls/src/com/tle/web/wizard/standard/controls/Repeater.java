@@ -48,6 +48,8 @@ import com.tle.web.sections.js.generic.expression.FunctionCallExpression;
 import com.tle.web.sections.js.generic.expression.ObjectExpression;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
+import com.tle.web.sections.render.Label;
+import com.tle.web.sections.render.LabelRenderer;
 import com.tle.web.sections.result.util.IconLabel;
 import com.tle.web.sections.result.util.IconLabel.Icon;
 import com.tle.web.sections.standard.Link;
@@ -429,13 +431,15 @@ public class Repeater extends GroupWebControl<Repeater.RepeaterModel>
 		{
 			super(result);
 			this.added = result != null ? new AjaxCaptureResult(result.getHtml().get(divId)) : null;
-			this.message = CurrentLocale.get(Repeater.this.getMessage(), "");
+			Label message = Repeater.this.getMessage();
+			this.message = message != null ? message.getText() : null;
 			this.disabled = addButton.isDisabled(info);
 		}
 
 		public RepeaterUpdate(SectionInfo info)
 		{
-			this.message = CurrentLocale.get(Repeater.this.getMessage(), "");
+			Label message = Repeater.this.getMessage();
+			this.message = message != null ? message.getText() : null;
 			this.disabled = addButton.isDisabled(info);
 		}
 

@@ -5,6 +5,7 @@
 		<import plugin-id="com.tle.common.scripting" />
 		<import plugin-id="com.tle.common.wizard" exported="true" />
 		<import plugin-id="com.tle.core.guice" />
+		<import plugin-id="com.tle.web.sections" />
 		<import plugin-id="com.tle.core.scripting" />
 		<import plugin-id="com.tle.core.freetext" />
 		<import plugin-id="org.jvnet.hudson:xstream" />

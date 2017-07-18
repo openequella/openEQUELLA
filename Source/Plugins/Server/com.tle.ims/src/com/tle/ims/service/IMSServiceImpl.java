@@ -61,13 +61,6 @@ public class IMSServiceImpl implements IMSService
 	private FileSystemService fileSystemService;
 
 	@Override
-	public InputStream retrieveIMSPackage(FileHandle handle, String imsPackageName) throws IOException
-	{
-		File zipFile = getIMSFile(handle, imsPackageName);
-		return getInputStream(zipFile);
-	}
-
-	@Override
 	public void ensureIMSPackage(FileHandle handle, String imsPackageName) throws IOException
 	{
 		getIMSFile(handle, imsPackageName);
@@ -207,50 +200,11 @@ public class IMSServiceImpl implements IMSService
 		throw new RuntimeApplicationException("IMS manifest is invalid, or does not exist");
 	}
 
-	/**
-	 * Retrieve the description for an IMS package.
-	 * 
-	 * @param uuid The uuid of the item
-	 * @param type The file system the item is stored in, ie, Constants.FSYS_*
-	 * @param version The version of the item
-	 * @param packageExtractedFolder the name of the ims package
-	 * @ejb.interface-method
-	 */
-	@Override
-	public String getImsRightsDescription(FileHandle handle, String packageExtractedFolder)
-	{
-		File newManifest = ensureCombinedManifest(handle, packageExtractedFolder);
-
-		if( newManifest.exists() )
-		{
-			try( FileInputStream finp = new FileInputStream(newManifest) )
-			{
-				return IMSUtilities.getRightsDescriptionFromManifest(new UnicodeReader(finp, "UTF-8"));
-			}
-			catch( Exception e )
-			{
-				LOGGER.error("Error getting IMS title", e);
-				return "Unknown package";
-			}
-		}
-		LOGGER.info("Non-existent manifest (" + newManifest.getName() + ") requested for " + handle.getAbsolutePath());
-		return "Unknown package";
-	}
-
 	private File ensureCombinedManifest(FileHandle handle, String packageExtractedFolder)
 	{
-		String filepath = PathUtils.filePath(FileSystemConstants.IMS_FOLDER, IMSUtilities.IMS_MANIFEST);
+		String filepath = PathUtils.filePath(packageExtractedFolder, IMSUtilities.IMS_MANIFEST_COMBINED);
 		// Check if combined manifest file exists.
 		File newManifest = getFile(handle, filepath);
-		// Inelegant HACK to cover the possibility we are looking for a SCORM
-		// Package in the _SCORM directory. IMS_MANIFEST name as the fileName is
-		// still appropriate.
-		if( !newManifest.exists() )
-		{
-			newManifest = getFile(handle,
-				PathUtils.filePath(FileSystemService.SCORM_FOLDER, IMSUtilities.IMS_MANIFEST));
-		}
-
 		File origManifest = getFile(handle, PathUtils.filePath(packageExtractedFolder, IMSUtilities.IMS_MANIFEST));
 
 		// Generate the manifest if need be

@@ -32,6 +32,8 @@ import javax.inject.Provider;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.wizard.beans.DRMPage;
 import com.google.common.base.Throwables;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.assistedinject.Assisted;
@@ -113,6 +115,7 @@ public class WizardState implements WizardStateInterface
 	private transient Deque<Pair<String, Integer>> pathOverrides;
 	private transient List<WebWizardPage> pages;
 	private transient WorkflowStatus workflowStatus;
+	private BiMap<UUID, String> registeredFilenames = HashBiMap.create();
 
 	@AssistedInject
 	public WizardState(@Assisted Operation operation)
@@ -583,5 +586,10 @@ public class WizardState implements WizardStateInterface
 	private Object readResolve() throws ObjectStreamException
 	{
 		return provider.get();
+	}
+
+	public BiMap<UUID, String> getRegisteredFilenames()
+	{
+		return registeredFilenames;
 	}
 }

@@ -8,3 +8,18 @@
 	width: 320px;
 	height: 50px;
 }
+
+#zipArea .progress-bar
+{
+	height: 14px;
+	border: 1px solid #AAA;
+	margin: 0 10px 0 0;
+
+	border-radius: 3px;
+}
+
+#zipArea .progressbarInner
+{
+	height: 14px;
+	background: #80D2EE !important;
+}

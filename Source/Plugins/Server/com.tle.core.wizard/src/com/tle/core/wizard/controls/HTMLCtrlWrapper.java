@@ -26,6 +26,7 @@ import com.tle.beans.entity.LanguageBundle;
 import com.tle.common.NameValue;
 import com.tle.core.freetext.queries.BaseQuery;
 import com.tle.core.wizard.LERepository;
+import com.tle.web.sections.render.Label;
 
 @NonNullByDefault
 public class HTMLCtrlWrapper implements HTMLControl
@@ -131,7 +132,7 @@ public class HTMLCtrlWrapper implements HTMLControl
 	}
 
 	@Override
-	public void setInvalid(boolean yes, LanguageBundle msg)
+	public void setInvalid(boolean yes, Label msg)
 	{
 		control.setInvalid(yes, msg);
 	}
@@ -233,7 +234,7 @@ public class HTMLCtrlWrapper implements HTMLControl
 	}
 
 	@Override
-	public LanguageBundle getMessage()
+	public Label getMessage()
 	{
 		return control.getMessage();
 	}

@@ -174,7 +174,7 @@ public class AdminTab extends AbstractInstitutionTab<AdminTab.AdminTabModel>
 			tagState.setStyle("display: none;");
 			tagState.addClass("insturl");
 			SpanRenderer instUrlTag = new SpanRenderer(tagState, institution.getUrl());
-			final TableCell badgeCell = new TableCell(viewFactory.createResultWithModel("tab/badgeCell.ftl", "name",
+			final TableCell badgeCell = new TableCell(viewFactory.createResultWithModelMap("tab/badgeCell.ftl", "name",
 				institution.getName(), "badgeUrl", institutionSection.getBadgeUrl(context, id)), instUrlTag);
 			badgeCell.addClass("badge-row");
 			badgeCell.setSortData(institution.getName());

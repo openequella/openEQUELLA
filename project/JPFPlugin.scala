@@ -17,8 +17,7 @@ object JPFPlugin extends AutoPlugin {
   import autoImport._
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
-    autoScalaLibrary := false,
-    managedScalaInstance := false,
+    scalaVersion := "2.11.7",
     javacOptions ++= Seq("-source", "1.8"),
     jpfCodeDirs := Seq((classDirectory in Compile).value),
     resourceDirectory in Compile := baseDirectory.value / "resources",
@@ -27,12 +26,9 @@ object JPFPlugin extends AutoPlugin {
       jpfLibraryJars.value.files, baseDirectory.value.getParentFile.getName),
     jpfLibraryJars := Seq(),
     managedClasspath in Compile ++= jpfLibraryJars.value,
-    compileOrder := CompileOrder.JavaThenScala,
     javaSource in Compile := baseDirectory.value / "src",
     javaSource in Test := baseDirectory.value / "test",
-
-    unmanagedSourceDirectories in Compile := (javaSource in Compile).value :: Nil,
-    unmanagedSourceDirectories in Test := (javaSource in Test).value :: Nil,
+    scalaSource in Compile := baseDirectory.value / "scalasrc",
     updateOptions := updateOptions.value.withCachedResolution(true)
   )
 }

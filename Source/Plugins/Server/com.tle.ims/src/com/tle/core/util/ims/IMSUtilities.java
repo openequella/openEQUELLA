@@ -55,6 +55,7 @@ public final class IMSUtilities
 {
 	public static final String KEY_EXPAND_IMS_PACKAGE = "EXPAND_IMS_PACKAGE";
 	public static final String IMS_MANIFEST = "imsmanifest.xml";
+	public static final String IMS_MANIFEST_COMBINED = "imsmanifest-combined.xml";
 
 	private IMSUtilities()
 	{

@@ -86,7 +86,7 @@
 	</extension>
 	
 	<extension plugin-id="com.tle.web.wizard.controls.universal" point-id="packageAttachmentHandler" id="metsHandler">
-		<parameter id="class" value="bean:com.tle.mets.packagehandler.MetsPackageAttachmentHandler" />
+		<parameter id="class" value="bean:com.tle.mets.packagehandler.MetsPackageAttachmentHandlerNew" />
 		<parameter id="type" value="METS" />
 	</extension>
 </plugin>

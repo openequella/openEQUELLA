@@ -17,7 +17,7 @@
 	
 	
 </@render>
-	<p class="ctrlinvalidmessage"><#if controlinvalid>${b.bundle(c.message)}</#if></p>
+	<p class="ctrlinvalidmessage"><#if controlinvalid>${c.message}</#if></p>
 <#if c.groupLabelNeeded>
 	<@render c.fieldsetTag> <!--</@render>-->
 <#else>

@@ -15,9 +15,7 @@
 		<div class="clear"></div>
 	</div>	
 	<@div id="uploads">
-        <#if m.uploads?size gt 0>
-            <br>
-
+	    <div class="uploadsprogress">
             <#list m.uploads as upload>
                 <div class="file-upload">
                     <span class="file-name"><strong>${upload.filename?html}</strong></span>
@@ -32,8 +30,7 @@
                     <p class="ctrlinvalidmessage">${upload.problemLabel}</p>
                 </#if>
             </#list>
-            <br>
-        </#if>
+        </div>
 
         <#-- need to find a way to focus this without it screwing up the styling -->
         <@file section=s.fileUpload renderBar=false class="focus" />
