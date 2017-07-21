@@ -42,7 +42,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.jnlp.ServiceManager;
 import javax.swing.BorderFactory;
@@ -75,8 +77,8 @@ import com.tle.client.ListCookieHandler;
 import com.tle.common.util.BlindSSLSocketFactory;
 import com.tle.core.plugins.PluginAwareObjectInputStream;
 import com.tle.core.plugins.PluginAwareObjectOutputStream;
-import com.tle.core.remoting.RemoteLoginService;
 import com.tle.core.remoting.RemotePluginDownloadService;
+import com.tle.core.remoting.SessionLogin;
 
 @SuppressWarnings("nls")
 public class ClientLauncher extends JFrame implements ActionListener, WindowListener, MouseListener
@@ -374,8 +376,11 @@ public class ClientLauncher extends JFrame implements ActionListener, WindowList
 				lch.setIgnoreCookieOverrideAttempts(true);
 				CookieHandler.setDefault(lch);
 
-				RemoteLoginService loginService = createInvoker(RemoteLoginService.class, endpointUrl);
-				loginService.login(server.getUsername(), server.getPassword());
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("username", server.getUsername());
+				params.put("password", server.getPassword());
+				SessionLogin.postLogin(endpointUrl, params);
+				
 				PluginServiceImpl pluginService = new PluginServiceImpl(endpointUrl, Version.load(getClass())
 					.getCommit(), createInvoker(RemotePluginDownloadService.class, endpointUrl));
 				pluginService.registerPlugins();

@@ -211,4 +211,9 @@
 		<parameter id="bean" value="bean:com.tle.web.core.filter.SystemUserStateHook" />
 		<parameter id="order" value="100" />
 	</extension>
+
+	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="sessionServlet">
+		<parameter id="bean" value="bean:com.tle.web.core.servlet.SessionServlet" />
+		<parameter id="url-pattern" value="/session" />
+	</extension>
 </plugin>
