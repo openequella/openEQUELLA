@@ -1,6 +1,6 @@
 # EQUELLA Selenium Tests
 
-Install SBT and one of the drivers for Chrome or Firefox -
+Install SBT and one of the drivers for Chrome or Firefox (make sure the appropriate Browser is installed) -
 [chromedriver](https://sites.google.com/a/chromium.org/chromedriver/) or [geckodriver](https://github.com/mozilla/geckodriver/releases).
 
 Copy the `config/resources/application.conf.example` to `config/resources/application.conf` and
@@ -43,10 +43,11 @@ The EQUELLA you are testing must be start with the following properties set:
 -Dequella.dev=true -Dequella.autotest=true
 ```
 
-If you install using the sbt tasks in this project those properties will be setup automatically in the `equellaserver-config.sh`
-file for you.
+If you install using the sbt tasks in this project those properties will be setup automatically in the `equellaserver-config.sh` file for you.
 
-In order to run the tests you first need the test institutions which you can install with:
+Login into the Equella Server Admin pages and perform the initial configuration and DB initialization (the Equella instance should be ready to import an institution now).
+
+In order to run the tests you first need the test institutions which you can install with the following command:
 ```bash
 sbt setupForTests
 ```
@@ -73,11 +74,13 @@ The sbt output gives you the results of the ScalaCheck tests and you can read th
 
 ## Installing from installer zip
 
-You can install a local EQUELLA from an installer zip file if you point to it at `equella-installer-6.4.zip`:
-
+You can install a local EQUELLA from an installer zip file if you point to it at `equella-installer-6.4.zip` in application.conf:
 
 ```conf
-install.zip = ${HOME}"/equella/Equella/Installer/target/equella-installer-6.4.zip"
+install {
+  zip = ${HOME}"/equella/Equella/Installer/target/equella-installer-6.4.zip"
+  ...
+}
 ```
 
 Run the installer with:
@@ -86,8 +89,9 @@ Run the installer with:
 sbt installEquella
 ```
 
-By default it will install with an admin url of `http://localhost:8080`.
+By default:
+* It will configure an admin url of `http://localhost:8080`.
+* It will be installed inside the `equella-install` folder. 
+* It will be configured for the Postgres DB `equellatests` at `localhost:5432`, expected a username / password of `equellatests` / `password`.  These details can be changed as desired.
 
-It will be installed inside the `equella-install` folder. You can run the services scripts
-inside the `manager` folder or you can run the `startEquella` and `stopEquella` sbt tasks.
-
+You can run the services scripts inside the `manager` folder of `equella-install` or you can run the `startEquella` and `stopEquella` sbt tasks.
