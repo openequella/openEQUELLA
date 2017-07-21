@@ -23,6 +23,7 @@ Install purescript, bower and pulp:
 ```bash
 npm install -g purescript bower pulp
 ```
+_Note:_ If you get an error message saying one (or more) of the packages failed to install, check you nodejs and npm versions.  For example, the default repos for Ubuntu (on 2017-07-21) have a bit older nodejs and npm versions, and the install failed.  Upgrading to node.js v6.11.1 and npm v3.10.10 and running with Administrator privileges allowed the install to succeed.  One possible upgrade path is to use a PPA.
 
 Compile and run the support server:
 ```bash
