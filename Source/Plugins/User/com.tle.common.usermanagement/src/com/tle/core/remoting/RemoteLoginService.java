@@ -21,10 +21,6 @@ package com.tle.core.remoting;
  */
 public interface RemoteLoginService
 {
-	void login(String username, String password);
-
-	void loginWithToken(String token);
-
 	String getLoggedInUserId();
 
 	void logout();

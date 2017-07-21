@@ -23,7 +23,9 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,8 +40,8 @@ import com.tle.client.harness.HarnessInterface;
 import com.tle.common.Check;
 import com.tle.core.plugins.PluginAwareObjectInputStream;
 import com.tle.core.plugins.PluginAwareObjectOutputStream;
-import com.tle.core.remoting.RemoteLoginService;
 import com.tle.core.remoting.RemotePluginDownloadService;
+import com.tle.core.remoting.SessionLogin;
 
 @SuppressWarnings("nls")
 public final class Bootstrap
@@ -60,8 +62,9 @@ public final class Bootstrap
 			String token = new String(new Base64().decode(System.getProperty(TOKEN_PARAMETER)), "UTF-8");
 			URL endpointUrl = new URL(System.getProperty(ENDPOINT_PARAMETER));
 			Locale locale = parseLocale(System.getProperty(LOCALE_PARAMETER));
-			RemoteLoginService loginService = createInvoker(RemoteLoginService.class, endpointUrl);
-			loginService.loginWithToken(token);
+			Map<String, String> params = new HashMap<>();
+			params.put("token", token);
+			SessionLogin.postLogin(endpointUrl, params);
 			PluginServiceImpl pluginService = new PluginServiceImpl(endpointUrl, Version.load(Bootstrap.class)
 				.getCommit(), createInvoker(RemotePluginDownloadService.class, endpointUrl));
 			pluginService.registerPlugins();

@@ -53,16 +53,6 @@ public class LoginService
 		service.keepAlive();
 	}
 
-	public void login(String username, String password)
-	{
-		service.login(username, password);
-	}
-
-	public void loginWithToken(String token)
-	{
-		service.loginWithToken(token);
-	}
-
 	public void logout()
 	{
 		service.logout();

@@ -28,6 +28,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tle.common.usermanagement.user.UserState;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter;
 import org.springframework.remoting.support.RemoteInvocation;
@@ -40,7 +41,6 @@ import com.tle.core.plugins.PluginAwareObjectInputStream;
 import com.tle.core.plugins.PluginAwareObjectOutputStream;
 import com.tle.core.services.LoggingService;
 import com.tle.common.usermanagement.user.CurrentUser;
-import com.tle.exceptions.InvalidSessionException;
 
 @Bind
 public class RemoteInterceptor extends HttpInvokerServiceExporter
@@ -83,6 +83,12 @@ public class RemoteInterceptor extends HttpInvokerServiceExporter
 	public void handleRequest(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException, IOException
 	{
+		UserState userState = CurrentUser.getUserState();
+		if (userState.isGuest())
+		{
+			response.sendError(401, "Have to be logged in first");
+			return;
+		}
 		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 		if( enableRequestCapturing )
 		{
@@ -125,17 +131,6 @@ public class RemoteInterceptor extends HttpInvokerServiceExporter
 		}
 	}
 
-	@SuppressWarnings("nls")
-	protected void checkAuthentication(RemoteInvocation invocation, final Object targetObject)
-	{
-		if( !allowGuests && CurrentUser.isGuest() )
-		{
-			logger.error("The user is not logged in: trying to invoke " + targetObject.getClass().getName() + "::"
-				+ invocation.getMethodName());
-			throw new InvalidSessionException("User is not logged in");
-		}
-	}
-
 	@Override
 	protected ObjectInputStream createObjectInputStream(InputStream is) throws IOException
 	{
@@ -147,8 +142,6 @@ public class RemoteInterceptor extends HttpInvokerServiceExporter
 		throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
 	{
 		Throwable unwrapped = null;
-
-		checkAuthentication(invocation, targetObject);
 		try
 		{
 			Object rval = super.invoke(invocation, targetObject);

@@ -41,18 +41,6 @@ public class LoginServiceImpl implements RemoteLoginService
 	}
 
 	@Override
-	public void login(String username, String password)
-	{
-		userService.login(username, password, getDetails(), true);
-	}
-
-	@Override
-	public void loginWithToken(String token)
-	{
-		userService.loginWithToken(token, getDetails(), true);
-	}
-
-	@Override
 	public String getLoggedInUserId()
 	{
 		return CurrentUser.getUserID();
