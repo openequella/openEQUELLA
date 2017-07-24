@@ -7,9 +7,7 @@ import sbt._
 object CoverageReporter {
 
 
-  def createReport(execFile: File, allClasses: File, title: String, outDir: File, sourceDir: File) = {
-    val loader = new ExecFileLoader()
-    loader.load(execFile)
+  def createReport(loader: ExecFileLoader, allClasses: File, title: String, outDir: File, sourceDir: File) = {
     val coverageBuilder = new CoverageBuilder
     val analyzer = new Analyzer(loader.getExecutionDataStore, coverageBuilder)
     analyzer.analyzeAll(allClasses)

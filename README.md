@@ -38,19 +38,8 @@ java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
 
 ## Setting up for tests
 
-The EQUELLA you are testing must be start with the following properties set:
-```
--Dequella.dev=true -Dequella.autotest=true
-```
-
-If you install using the sbt tasks in this project those properties will be setup automatically in the `equellaserver-config.sh` file for you.
-
-Login into the Equella Server Admin pages and perform the initial configuration and DB initialization (the Equella instance should be ready to import an institution now).
-
-In order to run the tests you first need the test institutions which you can install with the following command:
-```bash
-sbt setupForTests
-```
+The target of your testing can either be a dev install, a standard install or an installation
+created by these autotests.
 
 **NOTE**
 
@@ -58,23 +47,26 @@ If you use a pre-existing install of Equella, it's important to note the autotes
 delete and re-create a set of institutions, one of which is the standard default institution 'vanilla'.
 **Don't ever run the tests on a production system!**
 
+### Local or dev installation
 
-## Running all tests
+The EQUELLA you are testing must have some java VM options set in `manager/equellaserver-config.sh JAVA_OPTS`) to properly enable autotesting:
+```
+-Dequella.dev=true -Dequella.autotest=true
+```
+If you will be creating coverage reports you will also need to add the jacoco coverage agent:
 
-The tests are seperated into two projects, one which is ScalaCheck property
-tests (`Tests`) and the other are TestNG based (`OldTests`):
+```
+-javaagent:{jacocojarpath}=output=tcpserver
+```
+You can get the path to use by running from the SBT command line:
 
-```bash
-sbt Tests/test OldTests/test
+```sbt
+show coverageJar
 ```
 
-The sbt output gives you the results of the ScalaCheck tests and you can read the HTML TestNG report at:
-`OldTests/target/testng/index.html`
+### Installing from installer zip
 
-
-## Installing from installer zip
-
-You can install a local EQUELLA from an installer zip file if you point to it at `equella-installer-6.4.zip` in application.conf:
+You can install a local EQUELLA from an installer zip file if you point to it at `equella-installer-6.5.zip` in application.conf:
 
 ```conf
 install {
@@ -91,7 +83,62 @@ sbt installEquella
 
 By default:
 * It will configure an admin url of `http://localhost:8080`.
-* It will be installed inside the `equella-install` folder. 
+* It will be installed inside the `equella-install` folder.
+* The options for autotesting and coverage will be configured already.
 * It will be configured for the Postgres DB `equellatests` at `localhost:5432`, expected a username / password of `equellatests` / `password`.  These details can be changed as desired.
 
 You can run the services scripts inside the `manager` folder of `equella-install` or you can run the `startEquella` and `stopEquella` sbt tasks.
+
+### Install configuration and test institution importing
+
+You can run an SBT task to configure the install options:
+
+```bash
+sbt configureInstall
+```
+This will set the server administration password and initialise the default schema.
+If you have already done this step manually on your own install just make sure that the server admin password is set to the same thing
+as `server.password` is set to.
+
+In order to run the tests you first need the test institutions which you can install with the following command:
+```bash
+sbt setupForTests
+```
+
+## Running all tests
+
+The tests are seperated into two projects, one which is ScalaCheck property
+tests (`Tests`) and the other are TestNG based (`OldTests`):
+
+```bash
+sbt Tests/test OldTests/test
+```
+
+The sbt output gives you the results of the ScalaCheck tests and you can read the HTML TestNG report at:
+`OldTests/target/testng/index.html`
+
+## Creating a coverage report
+
+Provided your installation was setup correct for jacoco coverage data collecting, you can create a HTML
+report of the code coverage.
+
+You can optionally provide a source zip location which can provide the report with the ability to click through to the source code
+and examine the coverage at the source level. First you must create the source zip using EQUELLA's SBT build:
+
+```bash
+sbt writeSourceZip
+```
+
+This will print out the path to the written zip file and you can place that in your autotest `application.conf`:
+
+```conf
+install.sourcezip = ${HOME}"/equella/Equella/Source/Server/equellaserver/target/equella-sources.zip"
+```
+
+To create the actual report you must run:
+
+```bash
+sbt coverageReport
+```
+
+It will create the report at `target/coverage-report/index.html`.

@@ -1,4 +1,6 @@
 import com.typesafe.config.{Config, ConfigFactory}
+import org.jacoco.core.tools.{ExecDumpClient, ExecFileLoader}
+
 import scala.collection.JavaConversions._
 
 name := "equella-autotests"
@@ -9,7 +11,7 @@ scalaVersion := "2.12.2"
 
 libraryDependencies += "org.jacoco" % "org.jacoco.agent" % "0.7.9" classifier "runtime"
 
-lazy val installerDir = "equella-installer-6.4"
+lazy val installerDir = "equella-installer-6.5"
 
 lazy val common = Seq(
   resolvers += "Local EQUELLA deps" at IO.toURI(file(Path.userHome.absolutePath) / "/equella-deps").toString
@@ -46,13 +48,13 @@ buildConfig in ThisBuild := {
 installDir := baseDirectory.value / "equella-install"
 
 installOptions := {
-  val jacocoJar = update.value.select(module = moduleFilter("org.jacoco", "org.jacoco.agent"),
-    artifact = artifactFilter(classifier = "runtime")).head
-  val ic = buildConfig.value.getConfig("install")
+  val bc = buildConfig.value
+  val ic = bc.getConfig("install")
+  val jacoco = Option(ic.getString("jacoco")).filter(_.nonEmpty).map(o => JacocoAgent(coverageJar.value, o))
   InstallOptions(target.value / installerDir,
     installDir.value, file(sys.props("java.home")),
     url = ic.getString("url"), hostname = ic.getString("hostname"), port = ic.getInt("port"),
-    jacoco = Some(JacocoAgent(jacocoJar, target.value / "jacoco.exec")))
+    jacoco = jacoco)
 }
 
 def optPath(bc: Config, p: String) = if (bc.hasPath(p)) Some(file(bc.getString(p))) else None
@@ -70,8 +72,26 @@ lazy val relevantClasses: Seq[String] => Boolean = {
   case _ => true
 }
 
+coverageJar := {
+  update.value.select(module = moduleFilter("org.jacoco", "org.jacoco.agent"),
+    artifact = artifactFilter(classifier = "runtime")).head
+}
+
+coverageLoader := {
+  val cc = buildConfig.value.getConfig("coverage")
+  optPath(cc, "file").map { f =>
+    val l = new ExecFileLoader()
+    l.load(f)
+    l
+  }.getOrElse {
+    val client = new ExecDumpClient()
+    client.dump(cc.getString("hostname"), cc.getInt("port"))
+  }
+}
+
 coverageReport := {
   val io = installOptions.value
+  val execLoader = coverageLoader.value
   val allClasses = target.value / "all_classes"
   IO.delete(allClasses)
   val classFilter = new NameFilter {
@@ -85,7 +105,15 @@ coverageReport := {
   val srcZip = sourceZip.value
   val allSrcs = target.value / "all_srcs"
   srcZip.foreach(z => IO.unzip(z, allSrcs))
-  CoverageReporter.createReport(io.jacoco.map(_.outFile).get, allClasses,
+  def host = "localhost"
+  def port = 6300
+
+  def getExecLoader: ExecFileLoader = {
+    val client = new ExecDumpClient()
+    client.dump(host, port)
+  }
+
+  CoverageReporter.createReport(execLoader, allClasses,
     "Coverage", target.value / "coverage-report", allSrcs)
 }
 

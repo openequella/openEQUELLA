@@ -23,10 +23,12 @@ libraryDependencies ++= Seq(
 unmanagedBase in Compile := baseDirectory.value / "lib/adminjars"
 
 testOptions in Test := Seq(
-  Tests.Argument(TestFrameworks.ScalaCheck, "-s", "1"),
-  Tests.Setup( () => setupForTests.value )
+  Tests.Argument(TestFrameworks.ScalaCheck, "-s", "1")
 )
 
 parallelExecution in Test := buildConfig.value.getBoolean("tests.parallel")
 
 setupForTests := (runMain in Test).toTask(" equellatests.SetupForTests").value
+
+configureInstall := (runMain in Test).toTask(" equellatests.InstallFirstTime").value
+

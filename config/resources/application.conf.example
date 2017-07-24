@@ -13,17 +13,20 @@ webdriver {
 }
 
 tests {
-  install = false
 //  suitenames = ["testng.xml"]
 }
 
 //install {
-//  zip = ${HOME}"/equella/Equella/Installer/target/equella-installer-6.4.zip"
+//  zip = ${HOME}"/equella/Equella/Installer/target/equella-installer-6.5.zip"
 //  hostname = "boorah"
 //  url = "http://boorah:8080/"
+//  jacoco = "output=tcpserver"
 //}
 //
 //proxy {
 ////  host = "localhost"
 ////  port = 8888
+//}
+//coverage {
+//  address = "localhost:6300"
 //}

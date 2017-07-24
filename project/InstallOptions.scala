@@ -2,8 +2,8 @@ import sbt._
 
 import scala.xml.XML
 
-case class JacocoAgent(jar: File, outFile: File) {
-  def opts = s"-javaagent:${jar.absolutePath}=destfile=${outFile.absolutePath}"
+case class JacocoAgent(jar: File, jacocoOpts: String) {
+  def opts = s"-javaagent:${jar.absolutePath}=$jacocoOpts"
 }
 
 case class InstallOptions(baseInstall: File, installDir: File, jvmHome: File, url: String, hostname: String,

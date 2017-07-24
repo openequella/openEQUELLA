@@ -41,8 +41,9 @@ script:
 - cd IntegTester/ps ; npm install ; bower install ; npm run build
 - cd $TRAVIS_BUILD_DIR ; sbt IntegTester/assembly
 - java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
-- sbt -Dwebdriver.gecko.driver=$TRAVIS_BUILD_DIR/geckodriver -Dwebdriver.firefox.logfile=/dev/null -Dconfig.file=travis.conf installEquella startEquella Tests/test
-- sbt -Dwebdriver.gecko.driver=$TRAVIS_BUILD_DIR/geckodriver -Dwebdriver.firefox.logfile=/dev/null -Dconfig.file=travis.conf stopEquella coverageReport
+- sbt -Dwebdriver.gecko.driver=$TRAVIS_BUILD_DIR/geckodriver -Dwebdriver.firefox.logfile=/dev/null -Dconfig.file=travis.conf installEquella startEquella
+- sbt -Dwebdriver.gecko.driver=$TRAVIS_BUILD_DIR/geckodriver -Dwebdriver.firefox.logfile=/dev/null -Dconfig.file=travis.conf configureInstall setupForTests Tests/test
+- sbt -Dwebdriver.gecko.driver=$TRAVIS_BUILD_DIR/geckodriver -Dwebdriver.firefox.logfile=/dev/null -Dconfig.file=travis.conf coverageReport
 after_script:
 - artifacts upload --target-paths artifacts/$TRAVIS_BUILD_NUMBER/logs/ equella-install/logs/
 - artifacts upload --target-paths artifacts/$TRAVIS_BUILD_NUMBER/coverage-report/ target/coverage-report/
