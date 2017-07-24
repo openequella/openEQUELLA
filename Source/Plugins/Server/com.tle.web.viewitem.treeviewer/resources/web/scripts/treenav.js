@@ -263,6 +263,11 @@ function resizeCols(resize, hideBar) {
 	$('#pv-content-right-inner').height(h - barSize - msie - 3);
 	$('#content1 iframe').height(h - barSize - msie);
 
+	var $navButtons = $('#pv-content-left .btn-group');
+	// 10 is 5 padding top and bottom
+	var navButtonsSize = ($navButtons.length ? $navButtons.height() + 10 : 0);
+	var logoSize = 90;
+	$('#treeWrapper').height($('#pv-content-left').height() - navButtonsSize - logoSize);
 }
 
 function positionDivider(resize, hideBar) {
