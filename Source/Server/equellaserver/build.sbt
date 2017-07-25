@@ -286,13 +286,13 @@ upgradeZip := {
     (assembly in LocalProject("conversion")).value -> "conversion-service.jar",
     (versionProperties in LocalProject("equella")).value -> "version.properties"
   )
-  val pluginJars = writeJars.value.plugins.map(t => (t._1, s"plugins/plugins/${t._2}-$plugVer.jar"))
+  val pluginJars = writeJars.value.map(t => (t.file, s"plugins/${t.group}/${t.pluginId}-$plugVer.jar"))
   log.info(s"Creating upgrade zip ${outZip.absolutePath}")
   IO.zip(zipFiles ++ pluginJars, outZip)
   outZip
 }
 
-lazy val sourcesForZip = Def.task {
+lazy val sourcesForZip = Def.task[Seq[(File, String)]] {
   val baseJavaSrc = (javaSource in Compile).value
   (baseJavaSrc ** "*.java").pair(rebase(baseJavaSrc, ""))
 }
