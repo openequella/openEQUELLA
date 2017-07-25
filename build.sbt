@@ -1,5 +1,7 @@
 import com.typesafe.config.{Config, ConfigFactory}
 import org.jacoco.core.tools.{ExecDumpClient, ExecFileLoader}
+import org.jdom2.input.SAXBuilder
+import org.jdom2.input.sax.XMLReaders
 
 import scala.collection.JavaConversions._
 
@@ -89,6 +91,13 @@ coverageLoader := {
   }
 }
 
+val saxBuilder = {
+  val sb = new SAXBuilder(XMLReaders.NONVALIDATING)
+  sb.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+  sb.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+  sb
+}
+
 coverageReport := {
   val io = installOptions.value
   val execLoader = coverageLoader.value
@@ -97,24 +106,22 @@ coverageReport := {
   val classFilter = new NameFilter {
     def accept(name: String): Boolean = if (name.startsWith("classes/"))
       relevantClasses.apply(name.substring("classes/".length).split("/"))
-    else false
+    else name == "plugin-jpf.xml"
   }
-  (io.installDir / "plugins" ** "*.jar").get.foreach { jar =>
-    IO.unzip(jar, allClasses, filter = classFilter)
+  val allPlugins = (io.installDir / "plugins" ** "*.jar").get.flatMap { jar =>
+    val clzDir = allClasses / jar.getName
+    val files = IO.unzip(jar, clzDir, filter = classFilter)
+    val jpf = saxBuilder.build(clzDir / "plugin-jpf.xml")
+    val pluginId = jpf.getRootElement.getAttributeValue("id")
+    if (files.size > 2)
+      Some((jar.getParentFile.getName, CoveragePlugin(clzDir, pluginId)))
+    else None
   }
+
   val srcZip = sourceZip.value
   val allSrcs = target.value / "all_srcs"
   srcZip.foreach(z => IO.unzip(z, allSrcs))
-  def host = "localhost"
-  def port = 6300
-
-  def getExecLoader: ExecFileLoader = {
-    val client = new ExecDumpClient()
-    client.dump(host, port)
-  }
-
-  CoverageReporter.createReport(execLoader, allClasses,
-    "Coverage", target.value / "coverage-report", allSrcs)
+  CoverageReporter.createReport(execLoader, allPlugins.groupBy(_._1).mapValues(_.map(_._2)).toSeq, target.value / "coverage-report", allSrcs)
 }
 
 installEquella := {
