@@ -47,16 +47,20 @@ buildConfig in ThisBuild := {
   ConfigFactory.load(ConfigFactory.parseFile(file(configFile)).withFallback(defaultConfig))
 }
 
-installDir := baseDirectory.value / "equella-install"
+lazy val installConfig = Def.setting[Config] { buildConfig.value.getConfig("install") }
+
+installDir := optPath(installConfig.value, "basedir").getOrElse(baseDirectory.value / "equella-install")
 
 installOptions := {
-  val bc = buildConfig.value
-  val ic = bc.getConfig("install")
+  val ic = installConfig.value
   val jacoco = Option(ic.getString("jacoco")).filter(_.nonEmpty).map(o => JacocoAgent(coverageJar.value, o))
+  val db = ic.getConfig("db")
   InstallOptions(target.value / installerDir,
     installDir.value, file(sys.props("java.home")),
     url = ic.getString("url"), hostname = ic.getString("hostname"), port = ic.getInt("port"),
-    jacoco = jacoco)
+    jacoco = jacoco, dbtype = db.getString("type"), dbname = db.getString("name"),
+    dbport = db.getInt("port"), dbhost = db.getString("host"), dbuser = db.getString("user"),
+    dbpassword = db.getString("password"))
 }
 
 def optPath(bc: Config, p: String) = if (bc.hasPath(p)) Some(file(bc.getString(p))) else None

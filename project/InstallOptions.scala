@@ -7,7 +7,8 @@ case class JacocoAgent(jar: File, jacocoOpts: String) {
 }
 
 case class InstallOptions(baseInstall: File, installDir: File, jvmHome: File, url: String, hostname: String,
-                          port: Int, jacoco: Option[JacocoAgent]) {
+                          port: Int, jacoco: Option[JacocoAgent],
+                          dbtype: String, dbhost: String, dbport: Int, dbname: String, dbuser: String, dbpassword: String) {
   def writeXML(xmlFile: File) = {
     val optXml = <commands>
       <installer>
@@ -28,12 +29,12 @@ case class InstallOptions(baseInstall: File, installDir: File, jvmHome: File, ur
         <jdk>{jvmHome.absolutePath}</jdk>
       </java>
       <datasource>
-        <dbtype>postgresql</dbtype>
-        <host>localhost</host>
-        <port>5432</port>
-        <database>equellatests</database>
-        <username>equellatests</username>
-        <password>password</password>
+        <dbtype>{dbtype}</dbtype>
+        <host>{dbhost}</host>
+        <port>{dbport}</port>
+        <database>{dbname}</database>
+        <username>{dbuser}</username>
+        <password>{dbpassword}</password>
         <idtype>:</idtype>
       </datasource>
       <webserver>
