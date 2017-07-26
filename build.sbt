@@ -47,7 +47,9 @@ buildConfig in ThisBuild := {
   ConfigFactory.load(ConfigFactory.parseFile(file(configFile)).withFallback(defaultConfig))
 }
 
-lazy val installConfig = Def.setting[Config] { buildConfig.value.getConfig("install") }
+lazy val installConfig = Def.setting[Config] {
+  buildConfig.value.getConfig("install")
+}
 
 installDir := optPath(installConfig.value, "basedir").getOrElse(baseDirectory.value / "equella-install")
 
@@ -83,16 +85,28 @@ coverageJar := {
     artifact = artifactFilter(classifier = "runtime")).head
 }
 
+dumpCoverage := {
+  val f = target.value / "jacoco.exec"
+  sLog.value.info(s"Dumping coverage data to ${f.absolutePath}")
+  coverageLoader.value.save(f, false)
+  f
+}
+
 coverageLoader := {
+  val log = sLog.value
   val cc = buildConfig.value.getConfig("coverage")
-  optPath(cc, "file").map { f =>
-    val l = new ExecFileLoader()
+  val l = new ExecFileLoader()
+  optPath(cc, "file").filter(_.canRead).foreach { f =>
+    log.info(s"Loading coverage data from ${f.absolutePath}")
     l.load(f)
-    l
-  }.getOrElse {
-    val client = new ExecDumpClient()
-    client.dump(cc.getString("hostname"), cc.getInt("port"))
   }
+  cc.getStringList("hosts").foreach { h =>
+    val ind = h.indexOf(':')
+    val (hname, port) = if (ind == -1) (h, 6300) else (h.substring(0, ind), h.substring(ind + 1).toInt)
+    log.info(s"Collecting coverage from $h")
+    CoverageReporter.dumpCoverage(l, hname, port)
+  }
+  l
 }
 
 val saxBuilder = {
@@ -103,7 +117,9 @@ val saxBuilder = {
 }
 
 coverageReport := {
+  val log = sLog.value
   val io = installOptions.value
+  val cc = buildConfig.value.getConfig("coverage")
   val execLoader = coverageLoader.value
   val allClasses = target.value / "all_classes"
   IO.delete(allClasses)
@@ -125,7 +141,9 @@ coverageReport := {
   val srcZip = sourceZip.value
   val allSrcs = target.value / "all_srcs"
   srcZip.foreach(z => IO.unzip(z, allSrcs))
-  CoverageReporter.createReport(execLoader, allPlugins.groupBy(_._1).mapValues(_.map(_._2)).toSeq, target.value / "coverage-report", allSrcs)
+  val coverageDir = optPath(cc, "reportdir").getOrElse(target.value / "coverage-report")
+  log.info(s"Creating coverage report at ${coverageDir.absolutePath}")
+  CoverageReporter.createReport(execLoader, allPlugins.groupBy(_._1).mapValues(_.map(_._2)).toSeq, coverageDir, allSrcs)
 }
 
 installEquella := {
@@ -157,3 +175,13 @@ startEquella := serviceCommand(installOptions.value, "start")
 stopEquella := serviceCommand(installOptions.value, "stop")
 
 aggregate in test := false
+
+/*
+Steps to clusterize install
+Change freetext path to local dir - mandatory config
+Change logs path in learningedge-log4j.properties
+Set LOGS_HOME in equellaserver-config.sh
+Set EQUELLASERVER_HOME in equellaserver-config.sh
+Remove java.io.tmpdir property from equellaserver-config.sh
+Make sure LOGS_HOME dir exists
+ */

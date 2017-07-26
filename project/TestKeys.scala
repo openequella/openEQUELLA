@@ -18,5 +18,6 @@ object TestKeys extends AutoPlugin {
     lazy val sourceZip = taskKey[Option[File]]("The EQUELLA sources zip")
     lazy val coverageLoader = taskKey[ExecFileLoader]("The coverage data loader")
     lazy val coverageJar = taskKey[File]("The jacoco agent jar")
+    lazy val dumpCoverage = taskKey[File]("Dump coverage data to file")
   }
 }
