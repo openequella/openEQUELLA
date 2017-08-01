@@ -80,8 +80,6 @@ import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
 import org.jdom2.input.sax.XMLReaderJDOMFactory;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
 /**
@@ -153,8 +151,8 @@ public class RssPortletRenderer extends PortletContentRenderer<RssPortletRendere
 				return tooBig();
 			}
 			String titleOnly = portlet.getAttribute(RssPortletEditorSection.KEY_TITLEONLY);
-			final boolean showDescription = !(titleOnly != null && titleOnly
-				.equals(RssPortletEditorSection.KEY_TITLEONLY));
+			final boolean showDescription = !(titleOnly != null
+				&& titleOnly.equals(RssPortletEditorSection.KEY_TITLEONLY));
 			final WireFeed feed = new WireFeedInput().build(doc);
 
 			final List<RssEntry> displayEntries = new ArrayList<RssEntry>();
@@ -162,11 +160,11 @@ public class RssPortletRenderer extends PortletContentRenderer<RssPortletRendere
 			{
 				Channel channel = (Channel) feed;
 
-				model.setTitle(createEntry(channel.getTitle(), channel.getDescription(), channel.getLink(),
-					channel.getPubDate()));
+				model.setTitle(
+					createEntry(channel.getTitle(), channel.getDescription(), channel.getLink(), channel.getPubDate()));
 
-				int maxCounter = (model.isShowMore() ? portalSettings.getMaxRssResults() : Integer.parseInt(portlet
-					.getAttribute(RssPortletEditorSection.KEY_RESULTCOUNT)));
+				int maxCounter = (model.isShowMore() ? portalSettings.getMaxRssResults()
+					: Integer.parseInt(portlet.getAttribute(RssPortletEditorSection.KEY_RESULTCOUNT)));
 
 				List<Item> items = channel.getItems();
 				for( Item item : items )
@@ -232,8 +230,8 @@ public class RssPortletRenderer extends PortletContentRenderer<RssPortletRendere
 				+ portalSettings.getMaxRssByteSize() + " bytes");
 			// cache a placeholder so that we don't attempt to keep downloading
 			// massive feeds!
-			fileService.write(rssCache, PortalStandardConstants.FEED_CACHE_FILE, new StringReader(
-				"<rss><tooBig>1</tooBig></rss>"), false);
+			fileService.write(rssCache, PortalStandardConstants.FEED_CACHE_FILE,
+				new StringReader("<rss><tooBig>1</tooBig></rss>"), false);
 
 			return tooBig();
 		}
@@ -298,8 +296,8 @@ public class RssPortletRenderer extends PortletContentRenderer<RssPortletRendere
 		final TextLabel label = new TextLabel(title, true);
 		linkState.setLabel(label);
 		linkState.setTarget("_blank");
-		return new RssEntry(new LinkRenderer(linkState), description, date != null ? JQueryTimeAgo.timeAgoTag(date)
-			: null);
+		return new RssEntry(new LinkRenderer(linkState), description,
+			date != null ? JQueryTimeAgo.timeAgoTag(date) : null);
 	}
 
 	@EventHandlerMethod
