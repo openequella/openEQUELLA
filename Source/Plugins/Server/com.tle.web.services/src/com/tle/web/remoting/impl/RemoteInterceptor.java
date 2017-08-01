@@ -62,7 +62,6 @@ public class RemoteInterceptor extends HttpInvokerServiceExporter
 
 	@SuppressWarnings("hiding")
 	private Logger logger;
-	private boolean allowGuests;
 
 	private boolean enableRequestCapturing;
 
@@ -167,14 +166,6 @@ public class RemoteInterceptor extends HttpInvokerServiceExporter
 			logger.error("Error invoking " + invocation.getMethodName(), unwrapped);
 			throw e;
 		}
-	}
-
-	/**
-	 * Invokable by Spring framework.
-	 */
-	public void setAllowGuests(boolean allowGuests)
-	{
-		this.allowGuests = allowGuests;
 	}
 
 	public void setEnableRequestCapturing(boolean enableRequestCapturing)

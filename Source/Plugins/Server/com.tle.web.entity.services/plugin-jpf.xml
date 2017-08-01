@@ -85,7 +85,6 @@
 	<extension plugin-id="com.tle.web.services" point-id="invoker" id="loginService">
 		<parameter id="class" value="com.tle.core.remoting.RemoteLoginService" />
 		<parameter id="bean" value="bean:com.tle.web.remoting.impl.LoginServiceImpl" />
-		<parameter id="allowGuests" value="true" />
 		<parameter id="enableRequestCapturing" value="true" />
 	</extension>
 
