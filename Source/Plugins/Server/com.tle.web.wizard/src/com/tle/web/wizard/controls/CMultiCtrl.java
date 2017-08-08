@@ -39,8 +39,11 @@ public class CMultiCtrl extends MultipleCtrl
 {
 	private static final long serialVersionUID = 1L;
 
+	private static final String VALUE_SEP = "⛐"; // Unicode 26D0
+	private static final String NAME_SEP = " / ";
+
 	protected List<NameValue> namesValues = new ArrayList<NameValue>();
-	private String separator = " / "; //$NON-NLS-1$
+	private String separator = NAME_SEP;
 
 	public CMultiCtrl(WizardPage page, int controlNumber, int nestingLevel, WizardControl controlBean)
 		throws WizardPageException
@@ -91,7 +94,7 @@ public class CMultiCtrl extends MultipleCtrl
 				if( !first )
 				{
 					sbufName.append(separator);
-					sbufValue.append('|');
+					sbufValue.append(VALUE_SEP);
 				}
 				else
 				{
@@ -129,7 +132,7 @@ public class CMultiCtrl extends MultipleCtrl
 				sbufName.setLength(0);
 				sbufValue.setLength(0);
 				boolean first = true;
-				String[] colvals = element.split("\\|", -1); //$NON-NLS-1$
+				String[] colvals = element.split(VALUE_SEP, -1); //$NON-NLS-1$
 				for( int j = 0; j < colvals.length; j++ )
 				{
 					HTMLControl ctrl = controls.get(j);
@@ -140,7 +143,7 @@ public class CMultiCtrl extends MultipleCtrl
 					if( !first )
 					{
 						sbufName.append(separator);
-						sbufValue.append('|');
+						sbufValue.append(VALUE_SEP);
 					}
 					else
 					{
@@ -161,7 +164,7 @@ public class CMultiCtrl extends MultipleCtrl
 
 		for( NameValue nameValue : namesValues )
 		{
-			String[] colvals = nameValue.getValue().split("\\|", -1); //$NON-NLS-1$
+			String[] colvals = nameValue.getValue().split(VALUE_SEP, -1); //$NON-NLS-1$
 			for( int j = 0; j < colvals.length; j++ )
 			{
 				HTMLControl ctrl = controls.get(j);

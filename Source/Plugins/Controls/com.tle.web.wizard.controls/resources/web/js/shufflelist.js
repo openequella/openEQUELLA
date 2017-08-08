@@ -32,7 +32,7 @@
 					if(addListItem(value))
 					{
 						control.val('');
-						addOption(multi.list, value, value);
+						addOption(multi.list, value, encodeURIComponent(value));
 					}
 				}
 				else

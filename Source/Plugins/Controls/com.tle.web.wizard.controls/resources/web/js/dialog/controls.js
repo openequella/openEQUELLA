@@ -12,9 +12,9 @@ function getValues(multi)
 		}
 		if (i > 0)
 		{
-			fullvalue += "|";
+			fullvalue += "⛐";
 		}
-		fullvalue += escape(Utf8.encode(value));
+		fullvalue += encodeURIComponent(value);
 	}
 
 	return fullvalue;
@@ -24,10 +24,10 @@ function setValues(multi, valuesStr)
 {
 	var controls = multi.controls;
 	var ncont = controls.length;
-	var values = valuesStr.split("|");
+	var values = valuesStr.split("⛐");
 	for ( var i = 0; i < ncont; i++)
 	{
-		controls[i].edit(unescape(Utf8.decode(values[i])));
+		controls[i].edit(decodeURIComponent(values[i]));
 	}
 }
 
