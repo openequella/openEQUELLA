@@ -42,7 +42,6 @@
 				<doc-text>The bean which will implement the interface.</doc-text>
 			</doc>
 		</parameter-def>
-		<parameter-def id="allowGuests" type="boolean" multiplicity="none-or-one" />
 		<parameter-def id="enableRequestCapturing" type="boolean" multiplicity="none-or-one" />
 	</extension-point>
 

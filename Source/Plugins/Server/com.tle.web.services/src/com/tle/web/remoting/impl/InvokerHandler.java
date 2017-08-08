@@ -40,7 +40,6 @@ public class InvokerHandler extends AbstractRemoteHandler<Object>
 		Class<?> serviceInterface = tracker.getClassForName(extension, extension.getParameter("class").valueAsString());
 		interceptor.setServiceInterface(serviceInterface);
 		interceptor.setService(handlerBean);
-		interceptor.setAllowGuests(tracker.isParamTrue(extension, "allowGuests", false));
 		interceptor.setEnableRequestCapturing(tracker.isParamTrue(extension, "enableRequestCapturing", false));
 		interceptor.setBeanClassLoader(handlerBean.getClass().getClassLoader());
 		interceptor.afterPropertiesSet();
