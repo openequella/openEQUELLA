@@ -145,7 +145,8 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
       val errorCallback = PartiallyApply.partial(getReloadFunction(true, events.getEventHandler("illegalFile")), 2)
       val doneCallback = PartiallyApply.partial(getReloadFunction(true, events.getEventHandler("finishedUpload")), 1)
       val startedUpload = PartiallyApply.partial(WebFileUploads.ADD_ATTACHMENT_FUNC, 2, id, cancelFunc)
-      Js.functionValue(Js.call(WebFileUploads.VALIDATE_FUNC, controlSettings.getMaxFileSize.asInstanceOf[Object],
+      Js.functionValue(Js.call(WebFileUploads.VALIDATE_FUNC,
+        (if (controlSettings.isRestrictFileSize) controlSettings.getMaxFileSize else 0).asInstanceOf[Object],
         controlSettings.getMimeTypes, errorCallback, startedUpload, doneCallback))
     }
 

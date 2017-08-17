@@ -212,7 +212,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
       val doneCallback = PartiallyApply.partial(events.getSubmitValuesFunction("finishedUpload"), 1)
       val startedUpload = PartiallyApply.partial(WebFileUploads.ADD_UPLOAD_FUNC, 2, id, cancelFunc)
       Js.functionValue(Js.call(WebFileUploads.VALIDATE_FUNC,
-        controlSettings.getMaxFileSize.asInstanceOf[Object], controlSettings.getMimeTypes, errorCallback, startedUpload, doneCallback))
+        (if (controlSettings.isRestrictFileSize) controlSettings.getMaxFileSize else 0).asInstanceOf[Object], controlSettings.getMimeTypes, errorCallback, startedUpload, doneCallback))
     }
     val _resultsCallback = new PassThroughFunction("r" + id, events.getSubmitValuesFunction("selectionsMade"))
 
