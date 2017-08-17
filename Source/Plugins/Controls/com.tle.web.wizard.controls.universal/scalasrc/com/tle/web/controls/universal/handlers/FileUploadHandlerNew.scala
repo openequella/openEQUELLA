@@ -202,7 +202,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
     val canScrapbook = myContentService.isMyContentContributionAllowed
     val state: FileUploadState = new FileUploadState
-    val stagingContext = new FileStagingContext(repo.getStagingid, repo.getItem.getItemId, fileSystemService, thumbnailService,
+    val stagingContext = new FileStagingContext(Option(repo.getStagingid), repo.getItem.getItemId, fileSystemService, thumbnailService,
       videoService, mimeTypeService, controlState.getRepository)
     val controlSettings = new FileUploadSettings(controlState.getControlConfiguration)
     val cancelFunc = ajax.getAjaxUpdateDomFunction(tree, FileUploadHandlerNew.this, events.getEventHandler("removeUpload"),

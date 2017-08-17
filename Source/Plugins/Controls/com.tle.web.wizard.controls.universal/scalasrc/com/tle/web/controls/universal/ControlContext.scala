@@ -63,13 +63,14 @@ object FileStagingContext {
   val tikaMimes = Set("application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 }
 
-class FileStagingContext(stgId: String, itemId: ItemId, fileSystemService: FileSystemService, thumbnailService: ThumbnailService,
+class FileStagingContext(stgId: Option[String], itemId: ItemId, fileSystemService: FileSystemService, thumbnailService: ThumbnailService,
                          videoService: VideoService, mimeTypeService: MimeTypeService, repo: WebRepository) extends StagingContext {
   def unzip(srcZip: String, target: String) : ZipProgress = {
     fileSystemService.unzipWithProgress(stgFile, srcZip, target)
   }
 
-  val stgFile = new StagingFile(stgId)
+  lazy val stgFile = stgId.map(new StagingFile(_)).get
+
   def moveFile(from: String, to: String): Unit = fileSystemService.move(stgFile, from, to)
 
   def listRootFilenames(): Set[String] = fileSystemService.enumerate(stgFile, "", null).map(_.getName.toLowerCase()).toSet

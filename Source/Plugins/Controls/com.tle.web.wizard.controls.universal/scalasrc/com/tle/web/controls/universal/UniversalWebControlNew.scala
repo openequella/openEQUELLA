@@ -154,7 +154,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
 
     class UniversalRenderModel(info: SectionInfo) extends WebControlModel {
       def getId = id
-      def isShowFileUpload = fileSettingsO.isDefined
+      def isShowFileUpload = fileSettingsO.isDefined && repo.isEditable
       val isCanAdd = {
         val uploadedAttachments = getAttachments.size
         (definition.isMultipleSelection || attachmentsTable.getSelectionsModel.getSelections(info).isEmpty) &&
@@ -189,7 +189,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
 
     def mimeTypeForFilename(name: String): String = mimeTypeService.getMimeTypeForFilename(name)
 
-    val stagingContext = new FileStagingContext(repo.getStagingid, repo.getItem.getItemId, fileSystemService,
+    val stagingContext = new FileStagingContext(Option(repo.getStagingid), repo.getItem.getItemId, fileSystemService,
       thumbnailService, videoService, mimeTypeService, repository)
 
     def viewFactory: FreemarkerFactory = wizardViewFactory
