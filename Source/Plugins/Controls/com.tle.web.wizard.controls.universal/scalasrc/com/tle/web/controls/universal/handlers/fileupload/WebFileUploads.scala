@@ -2,7 +2,7 @@ package com.tle.web.controls.universal.handlers.fileupload
 
 import java.io.{FilterInputStream, InputStream}
 import java.time.Instant
-import java.util.UUID
+import java.util.{Collections, UUID}
 import java.util.concurrent.atomic.AtomicReference
 
 import com.dytech.edge.exceptions.BannedFileException
@@ -14,6 +14,8 @@ import com.tle.web.controls.universal.handlers.fileupload.packages.PackageFileCr
 import com.tle.web.controls.universal.{ControlContext, StagingContext}
 import com.tle.web.resources.ResourcesService
 import com.tle.web.sections.SectionInfo
+import com.tle.web.sections.js.{JSAssignable, JSExpression}
+import com.tle.web.sections.js.generic.Js
 import com.tle.web.sections.js.generic.function.{ExternallyDefinedFunction, IncludeFile}
 import com.tle.web.sections.render._
 import com.tle.web.sections.result.util.KeyLabel
@@ -264,4 +266,9 @@ object WebFileUploads {
     lower.endsWith(".html") || lower.endsWith(".htm")
   }
 
+  def validateFunc(controlSettings: FileUploadSettings, errorCallback: JSExpression,
+                   startedUpload: JSExpression, doneCallback: JSExpression) : JSAssignable = {
+    Js.functionValue(Js.call(VALIDATE_FUNC, (if (controlSettings.isRestrictFileSize) controlSettings.getMaxFileSize else 0).asInstanceOf[Object],
+      if (controlSettings.isRestrictByMime) controlSettings.getMimeTypes else Collections.emptyList(), errorCallback, startedUpload, doneCallback))
+  }
 }
