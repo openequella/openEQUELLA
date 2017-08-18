@@ -1,6 +1,6 @@
 package equellatests.pages.wizard
 
-import equellatests.domain.TestFile
+import equellatests.domain.{TestFile, ValidFilename}
 import equellatests.pages.BrowserPage
 import org.openqa.selenium.{By, WebElement}
 import org.openqa.selenium.support.ui.{ExpectedCondition, ExpectedConditions}
@@ -20,8 +20,12 @@ class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends Browse
     }
   }
 
-  def uploadInline[A](tf: TestFile, after: ExpectedCondition[A]) : A = {
-    elemForId("_fileUpload_file").sendKeys(TestFile.realFile(tf).getAbsolutePath)
+  def errorExpectation(msg: String) = {
+    ExpectedConditions.visibilityOfNestedElementsLocatedBy(pageBy, By.xpath(s"//p[@class='ctrlinvalidmessage' and text() = ${quoteXPath(msg)}]"))
+  }
+
+  def uploadInline[A](tf: TestFile, actualFilename: String, after: ExpectedCondition[A]) : A = {
+    elemForId("_fileUpload_file").sendKeys(TestFile.realFile(tf, actualFilename).getAbsolutePath)
     waitFor(after)
   }
 

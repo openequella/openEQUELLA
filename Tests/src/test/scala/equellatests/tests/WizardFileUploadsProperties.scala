@@ -1,32 +1,27 @@
 package equellatests.tests
 
-import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Paths}
 import java.util.UUID
 
-import org.scalacheck.Gen.Parameters
-import org.scalacheck.{Gen, Prop, Properties, Test}
-import Prop._
-import com.tle.webtests.framework.{PageContext, TestConfig}
 import equellatests._
 import equellatests.domain._
-import equellatests.pages.{HomePage, LoginPage}
+import equellatests.instgen.fiveo._
 import equellatests.pages.wizard._
 import equellatests.tests.WizardFileUploadsProperties.{collectDetails, compareDetails}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
-import io.circe.parser._
-import org.openqa.selenium.WebDriver
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.scalacheck.Arbitrary.arbitrary
-import equellatests.instgen.fiveo._
+import org.scalacheck.Prop._
+import org.scalacheck.{Gen, Prop, Test}
 
-case class FileUploadControl(logon: TestLogon, items: Seq[Item], currentPage: Location)
+case class FileUploadControl(logon: TestLogon, items: Seq[Item], currentPage: Location, testFailures: Boolean)
 
 case class StateAndCommands(initialState: FileUploadControl, commands: List[FileUploadCommand]) extends TestCase with LogonTestCase {
   type State = FileUploadControl
   type Browser = SimpleSeleniumBrowser
+
   def createInital = SimpleSeleniumBrowser
+
   def logon = initialState.logon
 }
 
@@ -45,41 +40,56 @@ object FileUploadCommand {
   implicit val fileUpDecoder: Decoder[FileUploadCommand] = deriveDecoder
 }
 
-case class CreateItem(name: String) extends UnitCommand with FileUploadCommand {
+case class CreateItem(name: String, wizard: String) extends UnitCommand with FileUploadCommand {
   def postCondition(state: FileUploadControl, success: Boolean): Prop = success
 
   def run(sut: Browser, state: FileUploadControl): Unit = {
-    sut.page = new ContributePage(sut.page.ctx).load().openWizard("Navigation and Attachments")
+    sut.page = new ContributePage(sut.page.ctx).load().openWizard(wizard)
+
   }
 
-  def nextState(state: FileUploadControl): FileUploadControl = state.copy(currentPage = Page1(Item(None, name, Seq.empty)))
+  def nextState(state: FileUploadControl): FileUploadControl = state.copy(currentPage = Page1(Item(None, name, Seq.empty),
+    wizard match {
+      case "Navigation and Attachments" => Seq(
+        FileUniversalControl(2, canRestrict = true, canSuppress = false, defaultSuppressed = false),
+        FileUniversalControl(3, canRestrict = true, canSuppress = false, defaultSuppressed = false, maximumAttachments = 1)
+      )
+      case "Attachment mimetype restriction collection" => Seq(
+        FileUniversalControl(2, canRestrict = true, canSuppress = false, defaultSuppressed = false, maximumAttachments = 1,
+          mimeTypes = Some(Set("image/jpeg")))
+      )
+    }
+  ))
 }
 
-case class UploadInlineFile(tf: TestFile, control: FileUniversalControl, id: UUID) extends UnitCommand with FileUploadCommand {
+case class UploadInlineFile(tf: TestFile, filename: String, control: FileUniversalControl, id: UUID, failed: Boolean) extends UnitCommand with FileUploadCommand {
   def run(sut: Browser, state: FileUploadControl): Unit = {
     sut.page match {
       case page1: WizardPageTab =>
         val ctrl = page1.universalControl(control.num)
-        val expectedDescription = tf.packageName.getOrElse(tf.filename)
-        val w = ExpectedConditions.and(ctrl.updatedExpectation(), ctrl.attachNameWaiter(expectedDescription, false))
-        ctrl.uploadInline(tf, w)
+        val expectedDescription = tf.packageName.getOrElse(filename)
+        val failure = control.illegalReason.lift(tf).map(_(filename))
+        val w = ExpectedConditions.and(ctrl.updatedExpectation(), failure.map(ctrl.errorExpectation)
+          .getOrElse(ctrl.attachNameWaiter(expectedDescription, false)))
+        ctrl.uploadInline(tf, filename, w)
     }
   }
 
   def nextState(state: FileUploadControl): FileUploadControl = state.currentPage match {
-    case Page1(item) =>
-      val desc = tf.packageName.getOrElse(tf.filename)
-      val attach = Attachment(id, control, desc, restricted = false, suppressThumb = control.defaultSuppressed, tf)
-      state.copy(currentPage = Page1(item.addAttachment(attach)))
-  }
+      case p1@Page1(item, _) if !failed =>
+        val desc = tf.packageName.getOrElse(filename)
+        val attach = Attachment(id, control, filename, desc, restricted = false, suppressThumb = control.defaultSuppressed, tf)
+        state.copy(currentPage = p1.copy(editingItem = item.addAttachment(attach)))
+      case _ => state
+    }
 
 }
 
 case class StartEditingAttachment(attachUuid: UUID) extends VerifyCommand with FileUploadCommand {
   type BrowserResult = Option[AttachmentDetails]
 
-  def currentAttachment(state: FileUploadControl) : Attachment = state.currentPage match {
-    case Page1(item) => item.attachmentForId(attachUuid)
+  def currentAttachment(state: FileUploadControl): Attachment = state.currentPage match {
+    case Page1(item, _) => item.attachmentForId(attachUuid)
   }
 
   def run(sut: Browser, state: FileUploadControl): Option[AttachmentDetails] = {
@@ -96,8 +106,8 @@ case class StartEditingAttachment(attachUuid: UUID) extends VerifyCommand with F
   }
 
   def nextState(state: FileUploadControl): FileUploadControl = state.currentPage match {
-    case Page1(item) => val a = item.attachmentForId(attachUuid)
-      state.copy(currentPage = AttachmentDetailsPage(a, a, a.control, Page1(item)))
+    case p1@Page1(item, _) => val a = item.attachmentForId(attachUuid)
+      state.copy(currentPage = AttachmentDetailsPage(a, a, a.control, p1))
   }
 
   def postCondition(state: FileUploadControl, result: Option[AttachmentDetails]): Prop = {
@@ -161,7 +171,7 @@ object Location {
 
 case object LoginPageLoc extends Location
 
-case class Page1(editingItem: Item) extends Location
+case class Page1(editingItem: Item, controls: Seq[FileUniversalControl]) extends Location
 
 object Page1 {
   implicit val p1Enc: Encoder[Page1] = deriveEncoder
@@ -176,7 +186,16 @@ object AttachmentDetailsPage {
 }
 
 case class FileUniversalControl(num: Int, canRestrict: Boolean, canSuppress: Boolean, defaultSuppressed: Boolean, noUnzip: Boolean = false,
-                                maximumAttachments: Int = Int.MaxValue)
+                                maximumAttachments: Int = Int.MaxValue, mimeTypes: Option[Set[String]] = None) {
+
+  def testFileGen(invalid: Boolean): Gen[TestFile] = Gen.oneOf(TestFile.testFiles.filter(tf => illegalReason.isDefinedAt(tf) == invalid))
+
+  def illegalReason : PartialFunction[TestFile, String => String] = {
+    case tf if TestFile.bannedExt(tf.extension) => fn => s"$fn: File upload cancelled.  File extension has been banned"
+    case tf if mimeTypes.fold(false)(!_.apply(StandardMimeTypes.extMimeMapping(tf.extension))) => fn => s"""This control is restricted to certain file types. "$fn" is not allowed to be uploaded."""
+  }
+
+}
 
 
 object FileUniversalControl {
@@ -184,11 +203,11 @@ object FileUniversalControl {
   implicit val ucDecoder: Decoder[FileUniversalControl] = deriveDecoder
 }
 
-case class Attachment(id: UUID, control: FileUniversalControl, description: String, restricted: Boolean, suppressThumb: Boolean, file: TestFile,
-                      viewer: Option[String] = None) {
+case class Attachment(id: UUID, control: FileUniversalControl, filename: String, description: String, restricted: Boolean,
+                      suppressThumb: Boolean, file: TestFile, viewer: Option[String] = None) {
   def nameInTable: String = if (restricted) description + " (hidden from summary view)" else description
 
-  lazy val details = StandardMimeTypes.commonDetailsForFile(file, description)
+  lazy val details = StandardMimeTypes.commonDetailsForFile(file, filename, description)
 
   def ispackage = file.ispackage
 
@@ -242,10 +261,11 @@ case class ThumbSettingEdit(ns: Boolean) extends AttachmentEdit {
   def label: String = s"Changing suppressThumb to $ns"
 }
 
-case class ViewerEdit(viewer: Option[String]) extends AttachmentEdit
-{
+case class ViewerEdit(viewer: Option[String]) extends AttachmentEdit {
   def edit = _.copy(viewer = viewer)
+
   def run = _.viewer = viewer
+
   def label = s"Changing viewer to $viewer"
 }
 
@@ -265,6 +285,10 @@ object Item {
 object FileUploadControl {
   implicit val fucEncoder: Encoder[FileUploadControl] = deriveEncoder
   implicit val fucDecoder: Decoder[FileUploadControl] = deriveDecoder
+
+  val wizards = Seq("Navigation and Attachments",
+    "Attachment mimetype restriction collection")
+
 }
 
 
@@ -274,22 +298,17 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
   val testCaseDecoder = Decoder.apply
   val testCaseEncoder = Encoder.apply
 
-  def genAllCommands: Gen[StateAndCommands] = {
+  def genAllCommands(testFailures: Boolean): Gen[StateAndCommands] = {
     def genNext(left: Int, s: FileUploadControl, curList: List[FileUploadCommand]): Gen[List[FileUploadCommand]] = {
       if (left == 0) curList else genCommand(s).flatMap(com => genNext(left - 1, com.nextState(s), com :: curList))
     }
 
     for {
-      is <- genInitialState
+      is <- genInitialState(testFailures)
       commandsLeft <- Gen.size
       cl <- genNext(commandsLeft, is, Nil)
     } yield StateAndCommands(is, cl.reverse)
   }
-
-  val allTypesControl = Seq(
-    FileUniversalControl(2, canRestrict = true, canSuppress = false, defaultSuppressed = false),
-    FileUniversalControl(3, canRestrict = true, canSuppress = false, defaultSuppressed = false, maximumAttachments = 1)
-  )
 
   def editForAttachment(a: Attachment, uc: FileUniversalControl): Gen[AttachmentEdit] = Gen.oneOf(Seq(
     Some(arbitrary[ValidDescription].map(vd => DescriptionEdit(vd.desc))),
@@ -303,25 +322,32 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
   ).flatten).flatMap(identity)
 
 
-  def genInitialState: Gen[FileUploadControl] = for {
+  def genInitialState(testFailures: Boolean): Gen[FileUploadControl] = for {
     tl <- arbitrary[TestLogon]
-  } yield FileUploadControl(tl, Seq.empty, LoginPageLoc)
+  } yield FileUploadControl(tl, Seq.empty, LoginPageLoc, testFailures)
 
   def genCommand(state: FileUploadControl): Gen[FileUploadCommand] = {
     state.currentPage match {
       case LoginPageLoc =>
         for {
           name <- arbitrary[UniqueRandomWord]
-        } yield CreateItem(name.word)
-      case p1@Page1(item) =>
+          wizard <- Gen.oneOf(FileUploadControl.wizards)
+        } yield CreateItem(name.word, wizard)
+      case p1@Page1(item, ctrls) =>
 
-        val newAttachment = for {
-          tf <- arbitrary[TestFile].suchThat(tf => !TestFile.bannedExt(tf.extension))
-          fuc <- Gen.oneOf(allTypesControl.filter(fuc => item.attachments.count(_.control == fuc) < fuc.maximumAttachments))
-        } yield UploadInlineFile(tf, fuc, UUID.randomUUID())
+        val addableCtrls = ctrls.filter(fuc => item.attachments.count(_.control == fuc) < fuc.maximumAttachments)
 
-        if (item.attachments.isEmpty) newAttachment else {
-          Gen.frequency(1 -> newAttachment, 5 -> Gen.oneOf(item.attachments).map(a => StartEditingAttachment(a.id)))
+        def newAttachment = for {
+          fuc <- Gen.oneOf(addableCtrls)
+          tf <- fuc.testFileGen(state.testFailures)
+          vfn <- arbitrary[ValidFilename]
+          actualFilename = s"${vfn.filename}.${tf.extension}"
+        } yield UploadInlineFile(tf, actualFilename, fuc, UUID.randomUUID(), state.testFailures)
+
+        def editAttachment = Gen.oneOf(item.attachments).map(a => StartEditingAttachment(a.id))
+        if (item.attachments.isEmpty) newAttachment else
+        if (addableCtrls.isEmpty) editAttachment else {
+          Gen.frequency(1 -> newAttachment, 5 -> editAttachment)
         }
       case adp@AttachmentDetailsPage(a, edited, uc, page1) => if (a != edited) Gen.oneOf(CloseEditDialog, SaveAttachment) else {
         editForAttachment(edited, uc).map(ae => EditAttachmentDetails(ae))
@@ -347,7 +373,9 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
 
   override def overrideParameters(p: Test.Parameters): Test.Parameters = p.withMinSize(5).withMaxSize(10)
 
-  property("no restrictions") = statefulProp(genAllCommands)
+  property("test valid uploads") = statefulProp(genAllCommands(false))
+
+  property("test invalid uploads") = statefulProp(genAllCommands(true))
 
 
 }

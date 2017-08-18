@@ -10,8 +10,8 @@ import Arbitrary._
 import TestFile._
 import io.circe.generic.semiauto._
 
-case class TestFile(filename: String, realFilename: String) {
-  def extension: String = PathUtils.extension(filename)
+case class TestFile(realFilename: String) {
+  def extension: String = PathUtils.extension(realFilename)
 
   lazy val packageDetails: Option[(String, String)] = packageMap.get(realFilename)
   lazy val extraDetails: Iterable[(String, String)] = additionalMeta(realFilename)
@@ -32,7 +32,7 @@ object TestFile {
   val baseDir = Paths.get(getClass.getResource("/com/tle/webtests/test/files/").toURI).toFile
   lazy val tmpDir = Files.createTempDirectory("fupload")
 
-  lazy val filenames = baseDir.listFiles().toSeq.filter(_.isFile).map(_.getName)
+  lazy val testFiles = baseDir.listFiles().toSeq.filter(_.isFile).map(f => TestFile(f.getName))
 
   val imsPackageType = "IMS Package"
   val qtiTestType = "QTI Test"
@@ -66,22 +66,10 @@ object TestFile {
 
 
 
-  def realFile(tf: TestFile) : File = {
-    val targetPath = tmpDir.resolve(tf.filename)
+  def realFile(tf: TestFile, actualFilename: String) : File = {
+    val targetPath = tmpDir.resolve(actualFilename)
     Files.copy(Paths.get(tf.file.toURI), targetPath)
     targetPath.toFile
   }
 
-  def testFile(filename: Gen[String]): Gen[TestFile] = {
-    for {
-      f <- filename
-      fn <- arbitrary[ValidFilename]
-    } yield {
-      TestFile(fn.filename+"."+PathUtils.extension(f), f)
-    }
-  }
-
-  val packageTestFile = testFile(Gen.oneOf(packageMap.keys.toSeq))
-
-  implicit val arbitraryTestFile = Arbitrary(testFile(Gen.oneOf(filenames)))
 }
