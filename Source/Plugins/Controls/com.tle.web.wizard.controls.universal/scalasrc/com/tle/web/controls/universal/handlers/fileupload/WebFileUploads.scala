@@ -77,8 +77,8 @@ object WebFileUploads {
   }
 
   def validateBeforeUpload(mimeType: String, size: Long, fileSettings: FileUploadSettings): Option[IllegalFileReason] = {
-    if (fileSettings.isRestrictByMime && fileSettings.getMimeTypes.asScala.toSet.contains(mimeType))
-      Some(BannedType)
+    if (fileSettings.isRestrictByMime && !fileSettings.getMimeTypes.asScala.toSet.contains(mimeType))
+      Some(WrongType)
     else if (fileSettings.isRestrictFileSize && size > fileSettings.getMaxFileSize) Some(FileTooBig)
     else None
   }
