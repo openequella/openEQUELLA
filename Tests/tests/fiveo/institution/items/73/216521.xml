@@ -49,10 +49,6 @@
           <string>2010-09</string>
         </entry>
         <entry>
-          <string>thumbUrl</string>
-          <string>http://bks5.books.google.com/books?id=GxWQnD02RvAC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;edge=curl&amp;imgtk=AFLRE70KiiegWd7R13Bip1hdDRULTkvtXYbzhdpFGBRt3rhNRTaHyi0-A_SQngPc9uTudfmhRPJ88wOgu30H4Q9SVGc9q0zzZ8a-YmQCWJ79_1kZ8caJzNU&amp;source=gbs_gdata</string>
-        </entry>
-        <entry>
           <string>url</string>
           <string>http://books.google.com/books?id=GxWQnD02RvAC&amp;ie=ISO-8859-1&amp;source=gbs_gdata</string>
         </entry>

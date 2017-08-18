@@ -2,22 +2,23 @@ import com.typesafe.config.{Config, ConfigFactory}
 import org.jacoco.core.tools.{ExecDumpClient, ExecFileLoader}
 import org.jdom2.input.SAXBuilder
 import org.jdom2.input.sax.XMLReaders
+import sbt.Keys.{scalaVersion, version}
 
 import scala.collection.JavaConversions._
 
 name := "equella-autotests"
-
-version := "1.0"
-
-scalaVersion := "2.12.2"
 
 libraryDependencies += "org.jacoco" % "org.jacoco.agent" % "0.7.9" classifier "runtime"
 
 lazy val installerDir = "equella-installer-6.5"
 
 lazy val common = Seq(
-  resolvers += "Local EQUELLA deps" at IO.toURI(file(Path.userHome.absolutePath) / "/equella-deps").toString
+  resolvers += "Local EQUELLA deps" at IO.toURI(file(Path.userHome.absolutePath) / "/equella-deps").toString,
+  scalaVersion := "2.12.3",
+  version := "1.0"
 )
+
+common
 
 lazy val platform = (project in file("Platform/Plugins/com.tle.platform.common")).settings(common).settings(
   javaSource in Compile := baseDirectory.value / "src",
@@ -33,7 +34,7 @@ lazy val platform = (project in file("Platform/Plugins/com.tle.platform.common")
   )
 )
 
-lazy val config = (project in file("config")).settings(resourceDirectory in Compile := baseDirectory.value / "resources")
+lazy val config = (project in file("config")).settings(resourceDirectory in Compile := baseDirectory.value / "resources").settings(common)
 
 lazy val Tests = (project in file("Tests")).settings(common).dependsOn(platform, config)
 

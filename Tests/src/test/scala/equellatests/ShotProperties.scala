@@ -11,7 +11,7 @@ import scala.util.{Success, Try}
 abstract class ShotProperties(name: String) extends Properties(name) {
 
   def withLogon[A](logon: TestLogon)(f: PageContext => Prop): Prop = {
-    val testConfig = new TestConfig(logon.inst.baseFolder, false)
+    val testConfig = new TestConfig(GlobalConfig.baseFolderForInst(logon.inst), false)
     withBrowserDriver(testConfig) { driver =>
       val context = new PageContext(driver, testConfig, testConfig.getInstitutionUrl)
 

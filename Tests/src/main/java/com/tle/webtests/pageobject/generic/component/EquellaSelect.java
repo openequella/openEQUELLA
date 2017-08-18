@@ -80,9 +80,14 @@ public class EquellaSelect extends AbstractPage<EquellaSelect>
 		}
 	}
 
+	public List<WebElement> getOptionElements()
+	{
+		return origSelect.findElements(By.xpath(".//option"));
+	}
+
 	public String getSelectedValue()
 	{
-		List<WebElement> options = origSelect.findElements(By.xpath(".//option"));
+		List<WebElement> options = getOptionElements();
 		String value = null;
 		for( WebElement opt : options )
 		{

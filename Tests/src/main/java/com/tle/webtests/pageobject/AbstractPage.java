@@ -1,9 +1,12 @@
 package com.tle.webtests.pageobject;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -247,23 +250,11 @@ public abstract class AbstractPage<T extends PageObject> implements PageObject, 
 
 	public static String getPathFromUrl(URL file)
 	{
-		if( !file.getProtocol().equals("file") )
-		{
-			throw new Error("Must be a file: url! - " + file);
-		}
 		try
 		{
-			String part = file.getFile();
-			String os = System.getProperty("os.name").toLowerCase();
-			if( os.indexOf("windows") >= 0 && part.startsWith("/") )
-			{
-				part = part.substring(1);
-				part = part.replaceAll("/", Matcher.quoteReplacement("\\"));
-			}
-
-			return URLDecoder.decode(part.replace("+", "%2b"), "UTF-8");
+			return Paths.get(file.toURI()).toAbsolutePath().toString();
 		}
-		catch( UnsupportedEncodingException e )
+		catch (URISyntaxException e)
 		{
 			throw new RuntimeException(e);
 		}

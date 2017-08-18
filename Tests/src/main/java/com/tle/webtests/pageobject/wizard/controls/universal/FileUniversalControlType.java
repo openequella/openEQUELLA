@@ -34,7 +34,7 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 	private WebElement fileUpload;
 	@FindBy(xpath = "id('{wizid}_dialog')//div[contains(@class,'fileHandler')]")
 	private WebElement mainDiv;
-	@FindBy(id = "uploads")
+	@FindBy(xpath = "id('uploads')/div[contains(@class, 'uploadsprogress')]")
 	private WebElement uploadsDiv;
 	@FindBy(id = "{wizid}_dialog")
 	private WebElement dialog;
@@ -146,7 +146,7 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 		return ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath));
 	}
 
-	public ZipAttachmentEditPage uploadZip(URL fileUrl)
+	public FileAttachmentEditPage uploadZip(URL fileUrl)
 	{
 		return uploadZip(getPathFromUrl(fileUrl));
 	}
@@ -156,16 +156,15 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 		return uploadZipAsFile(getPathFromUrl(fileUrl));
 	}
 
-	private ZipAttachmentEditPage uploadZip(String filename)
+	private FileAttachmentEditPage uploadZip(String filename)
 	{
-		ZipOptionsPage zipOptions = upload(filename, zipOptionsPage());
-		return zipOptions.unzip().selectAll();
+		FileAttachmentEditPage upload = upload(filename, fileEditor());
+		return upload.unzip().selectAll();
 	}
 
 	private FileAttachmentEditPage uploadZipAsFile(String filename)
 	{
-		ZipOptionsPage zipOptions = upload(filename, zipOptionsPage());
-		return zipOptions.normalFile();
+		return upload(filename, fileEditor());
 	}
 
 	public PackageAttachmentEditPage uploadPackage(URL url)
@@ -236,22 +235,12 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 		return new PackageAttachmentEditPage(control);
 	}
 
-	public ZipOptionsPage zipOptionsPage()
-	{
-		return new ZipOptionsPage(this);
-	}
-
-	public ZipAttachmentEditPage zipEditor()
-	{
-		return new ZipAttachmentEditPage(control);
-	}
-
 	public UniversalControl getControl()
 	{
 		return control;
 	}
 
-	public ZipAttachmentEditPage uploadZip(File file)
+	public FileAttachmentEditPage uploadZip(File file)
 	{
 		return uploadZip(file.getAbsolutePath());
 	}

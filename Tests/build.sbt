@@ -1,3 +1,11 @@
+val circeVersion = "0.8.0"
+
+libraryDependencies ++= Seq(
+  "io.circe" %% "circe-core",
+  "io.circe" %% "circe-generic",
+  "io.circe" %% "circe-parser"
+).map(_ % circeVersion)
+
 libraryDependencies ++= Seq(
   "org.seleniumhq.selenium" % "selenium-java" % "3.4.0",
   "org.easytesting" % "fest-util" % "1.2.5",
@@ -17,7 +25,7 @@ libraryDependencies ++= Seq(
   "org.jvnet.hudson" % "xstream" % "1.3.1-hudson-8",
   "com.typesafe" % "config" % "1.3.1",
   "org.slf4j" % "slf4j-simple" % "1.7.5",
-  "org.scalacheck" %% "scalacheck" % "1.13.4" % Test
+  "org.scalacheck" %% "scalacheck" % "1.13.5" % Test
 )
 
 unmanagedBase in Compile := baseDirectory.value / "lib/adminjars"

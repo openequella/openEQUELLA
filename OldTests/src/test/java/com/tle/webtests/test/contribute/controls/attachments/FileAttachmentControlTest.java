@@ -26,7 +26,6 @@ import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 import com.tle.webtests.pageobject.wizard.controls.universal.FileAttachmentEditPage;
 import com.tle.webtests.pageobject.wizard.controls.universal.FileUniversalControlType;
 import com.tle.webtests.pageobject.wizard.controls.universal.WebPagesUniversalControlType;
-import com.tle.webtests.pageobject.wizard.controls.universal.ZipAttachmentEditPage;
 import com.tle.webtests.test.AbstractCleanupAutoTest;
 import com.tle.webtests.test.files.Attachments;
 
@@ -260,8 +259,8 @@ public class FileAttachmentControlTest extends AbstractCleanupAutoTest
 		assertTrue(item.attachments().attachmentExists("google2.jpg"));
 
 		wizard = item.adminTab().edit();
-		ZipAttachmentEditPage file = control.editResource(fileType.zipEditor(), "google.zip");
-		file.setAttachZip(false).save();
+		FileAttachmentEditPage file = control.editResource(fileType.fileEditor(), "google.zip");
+		file.setAttachZip(false).save(true);
 		item = wizard.saveNoConfirm();
 		assertFalse(item.attachments().attachmentExists("google.zip"));
 		assertTrue(item.attachments().attachmentExists("google1.jpg"));

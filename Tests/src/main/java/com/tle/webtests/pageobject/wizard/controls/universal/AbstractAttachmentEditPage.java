@@ -23,6 +23,12 @@ public abstract class AbstractAttachmentEditPage<T extends AbstractAttachmentDia
 		return getNameField().getAttribute("value");
 	}
 
+	public void setName(String name)
+	{
+		getNameField().clear();
+		getNameField().sendKeys(name);
+	}
+
 	protected abstract WebElement getNameField();
 
 	@Override

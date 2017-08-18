@@ -166,8 +166,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest
 		SummaryPage item = wizard.save().publish();
 
 		wizard = item.edit();
-		control.editResource(file.zipEditor(), "google.zip");
-		file.zipEditor().select(1).save();
+		control.editResource(file.fileEditor(), "google.zip").select(1).save();
 		wizard.saveNoConfirm();
 
 		AttachmentsPage attachments = item.attachments();

@@ -87,7 +87,7 @@ public class ItemExportTest extends AbstractCleanupAutoTest
 		assertTrue(metsExtracted.exists());
 		metsXml = new PropBagEx(metsExtracted);
 		assertEquals(metsXml.getAttributesForNode("structMap/div").get("LABEL"), IMS_PACKAGE_ITEM);
-		assertEquals(metsXml.nodeCount("fileSec/fileGrp/file"), 17);
+		assertEquals(metsXml.nodeCount("fileSec/fileGrp/file"), 18);
 
 		// re-upload the mets package
 		WizardPageTab wizard = new ContributePage(context).load().openWizard("Navigation and Attachments");

@@ -7,5 +7,9 @@ public interface AttachmentEditPage extends PageObject
 {
 	String getName();
 
+	void setName(String name);
+
 	UniversalControl save();
+
+	UniversalControl close();
 }
