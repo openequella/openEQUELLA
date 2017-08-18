@@ -50,7 +50,7 @@ public class CheckStepOperation extends TaskOperation
 			{
 				WorkflowNodeStatus bean = nodeStatus.getBean();
 				char type = bean.getNode().getType();
-				if( type == WorkflowNode.ITEM_TYPE )
+				if( type == WorkflowNode.ITEM_TYPE || type == WorkflowNode.SCRIPT_TYPE)
 				{
 					updated |= update(node);
 				}

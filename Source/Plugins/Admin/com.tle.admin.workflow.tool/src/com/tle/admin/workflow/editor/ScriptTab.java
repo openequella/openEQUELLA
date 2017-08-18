@@ -153,14 +153,17 @@ public class ScriptTab extends JPanel implements FocusListener, CaretListener
 	public void save(ScriptNode item)
 	{
 		LanguageBundle nameBundle = name.save();
-		Map<String, LanguageString> strings = nameBundle.getStrings();
-		for( Entry<String, LanguageString> entry : strings.entrySet() )
+		if (nameBundle != null)
 		{
-			LanguageString currentString = entry.getValue();
-			if( currentString.getText().length() > 100 )
+			Map<String, LanguageString> strings = nameBundle.getStrings();
+			for (Entry<String, LanguageString> entry : strings.entrySet())
 			{
-				currentString.setText(currentString.getText().substring(0, 100));
-				strings.put(entry.getKey(), currentString);
+				LanguageString currentString = entry.getValue();
+				if (currentString.getText().length() > 100)
+				{
+					currentString.setText(currentString.getText().substring(0, 100));
+					strings.put(entry.getKey(), currentString);
+				}
 			}
 		}
 		item.setName(nameBundle);

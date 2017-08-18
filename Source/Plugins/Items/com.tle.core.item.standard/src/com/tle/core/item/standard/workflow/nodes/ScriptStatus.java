@@ -22,6 +22,7 @@ public class ScriptStatus extends AbstractNodeStatus
 	private static final Logger LOGGER = Logger.getLogger(ScriptStatus.class);
 
 	private final ScriptEvaluator scriptEvaluator;
+	private ScriptNode scriptNode;
 
 	public ScriptStatus(WorkflowNodeStatus bean, TaskOperation op, ScriptEvaluator scriptEvaluator)
 	{
@@ -29,83 +30,42 @@ public class ScriptStatus extends AbstractNodeStatus
 		this.scriptEvaluator = scriptEvaluator;
 	}
 
-	private WorkflowNode findNextNode()
+	@Override
+	public void setWorkflowNode(WorkflowNode node)
 	{
-		boolean returnNext = false;
-		for( WorkflowNode workflowNode : node.getParent().getChildren() )
-		{
-			if( returnNext )
-			{
-				return workflowNode;
-			}
-
-			if( workflowNode == node )
-			{
-				returnNext = true;
-			}
-		}
-		return null;
+		super.setWorkflowNode(node);
+		this.scriptNode = (ScriptNode) node;
 	}
 
-	@Override
 	public boolean update()
 	{
-		if( bean.getStatus() == WorkflowNodeStatus.COMPLETE )
-		{
-			WorkflowNode next = findNextNode();
-			if( next != null )
-			{
-				op.enter(next);
-				return false;
-			}
-		}
-		return true;
-	}
-
-	@Override
-	public void enter()
-	{
-		bean.setStatus(WorkflowNodeStatus.INCOMPLETE);
-
-		final ScriptNode scriptNode = (ScriptNode) node;
-		if( scriptNode.getMovelive() == MoveLive.ARRIVAL )
-		{
-			op.makeLive(false);
-		}
-
-		boolean scriptError = false;
+		ScriptException se = null;
 		if( !Check.isEmpty(scriptNode.getScript()) )
 		{
 			ScriptContext context = op.createScriptContext(null);
 			try
 			{
 				scriptEvaluator.executeScript(scriptNode.getScript(), CurrentLocale.get(scriptNode.getName()), context,
-					true);
+						true);
 			}
 			catch( ScriptException je )
 			{
-				scriptError = true;
-				op.createScriptErrorHistory(String.valueOf(node.getUuid()));
-				if( scriptNode.isNotifyOnError() )
-				{
-					Set<String> userToNotify = op.getUsersToNotifyOnScriptError(scriptNode);
-					op.addNotifications(getTaskKey(), userToNotify, Notification.REASON_SCRIPT_ERROR, false);
-				}
-
-				LOGGER.error("Script error at workflow script task : " + CurrentLocale.get(scriptNode.getName()), je);
-
-				if( !scriptNode.isProceedNext() )
-				{
-					return;
-				}
+				se = je;
 			}
 		}
-
-		if( scriptNode.getMovelive() == MoveLive.ACCEPTED )
+		if (se != null)
 		{
-			op.makeLive(false);
+			op.createScriptErrorHistory(String.valueOf(node.getUuid()));
+			if( scriptNode.isNotifyOnError() )
+			{
+				Set<String> userToNotify = op.getUsersToNotifyOnScriptError(scriptNode);
+				op.addNotifications(getTaskKey(), userToNotify, Notification.REASON_SCRIPT_ERROR, false);
+			}
+
+			LOGGER.error("Script error at workflow script task : " + CurrentLocale.get(scriptNode.getName()), se);
+			return false;
 		}
-		if( !scriptError )
+		else
 		{
 			if( scriptNode.isNotifyOnCompletion() )
 			{
@@ -113,16 +73,30 @@ public class ScriptStatus extends AbstractNodeStatus
 				op.addNotifications(getTaskKey(), userToNotify, Notification.REASON_SCRIPT_EXECUTED, false);
 			}
 			op.createScriptCompleteHistory(String.valueOf(node.getUuid()));
+			return finished();
 		}
-
-		bean.setStatus(WorkflowNodeStatus.COMPLETE);
-		update();
 	}
 
 	@Override
 	public boolean finished()
 	{
+		clear();
+		if( scriptNode.getMovelive() == MoveLive.ACCEPTED )
+		{
+			op.makeLive(false);
+		}
 		return super.finished();
+	}
+
+	@Override
+	public void enter()
+	{
+		bean.setStatus(WorkflowNodeStatus.INCOMPLETE);
+		if( scriptNode.getMovelive() == MoveLive.ARRIVAL )
+		{
+			op.makeLive(false);
+		}
+		update();
 	}
 
 	private ItemTaskId getTaskKey()
