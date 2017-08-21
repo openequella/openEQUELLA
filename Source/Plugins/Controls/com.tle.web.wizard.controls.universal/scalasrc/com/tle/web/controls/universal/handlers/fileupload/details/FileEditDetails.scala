@@ -200,7 +200,7 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
 
     def mkNodeChildren(path: String): ObjectExpression =
       new ObjectExpression("folder", false.asInstanceOf[Object],
-        "children", pa(path).filter(!_.isFolder).map(_.id).asJavaCollection)
+        "children", pa.getOrElse(path, Seq.empty).filter(!_.isFolder).map(_.id).asJavaCollection)
 
     val map = new ObjectExpression("ROOT", mkNodeChildren(""))
     m._files.filter(_.isFolder).foreach { e =>

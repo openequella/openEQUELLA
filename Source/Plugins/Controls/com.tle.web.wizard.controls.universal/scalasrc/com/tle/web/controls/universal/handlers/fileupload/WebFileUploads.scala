@@ -195,7 +195,7 @@ object WebFileUploads {
   }, filename)
 
   def deleteAttachment(ctx: ControlContext, a: Attachment): AttachmentDelete = a match {
-    case fa: FileAttachment => AttachmentDelete(Iterable(fa), _.delete(fa.getFilename))
+    case fa: FileAttachment => AttachmentDelete(Iterable(fa), stg => if (!isSelectedInAZip(fa)) stg.delete(fa.getFilename))
     case za: ZipAttachment => AttachmentDelete(a +: findAttachments(ctx.repo, isSelectedInZip(za)), { stg =>
       stg.delete(zipPath(za.getUrl))
       stg.delete(za.getUrl)
@@ -249,6 +249,11 @@ object WebFileUploads {
   def zipAttachment(attachment: IAttachment): Option[ZipAttachment] = attachment match {
     case za: ZipAttachment => Some(za)
     case _ => None
+  }
+
+  def isSelectedInAZip(a: IAttachment): Boolean = a match {
+    case fa: FileAttachment => fa.getData(ZipAttachment.KEY_ZIP_ATTACHMENT_UUID) != null
+    case _ => false
   }
 
   def isSelectedInZip(za: ZipAttachment)(a: IAttachment): Boolean = a match {
