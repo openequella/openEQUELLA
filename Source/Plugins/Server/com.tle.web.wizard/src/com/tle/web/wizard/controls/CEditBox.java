@@ -23,6 +23,7 @@ import com.dytech.edge.wizard.beans.control.WizardControlItem;
 import com.tle.common.Check;
 import com.tle.common.i18n.LangUtils;
 import com.tle.core.wizard.controls.WizardPage;
+import com.tle.web.sections.result.util.KeyLabel;
 
 /**
  * Provides a data model for edit box controls.
@@ -76,7 +77,7 @@ public class CEditBox extends EditableCtrl
 				!forceUnique);
 
 			setInvalid(forceUnique && !isUnique && !isInvalid(),
-				LangUtils.createTempLangugageBundle("wizard.controls.editbox.uniqueerror")); //$NON-NLS-1$
+				new KeyLabel("wizard.controls.editbox.uniqueerror")); //$NON-NLS-1$
 		}
 
 		if( forceNumber && !isInvalid() )
@@ -94,7 +95,7 @@ public class CEditBox extends EditableCtrl
 			{
 				invalid = true;
 			}
-			setInvalid(invalid, LangUtils.createTempLangugageBundle("wizard.controls.editbox.integererror")); //$NON-NLS-1$
+			setInvalid(invalid, new KeyLabel("wizard.controls.editbox.integererror")); //$NON-NLS-1$
 		}
 	}
 

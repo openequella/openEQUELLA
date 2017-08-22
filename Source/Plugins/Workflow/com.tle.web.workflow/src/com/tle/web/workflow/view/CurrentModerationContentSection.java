@@ -149,7 +149,7 @@ public class CurrentModerationContentSection
 
 			moderatorsTableState
 				.addRow(new BundleLabel(step.getDisplayName(), bundleCache),
-					viewFactory.createResultWithModel("moderatorscolumn.ftl", "moderatorsLabel", moderatorsLabel,
+					viewFactory.createResultWithModelMap("moderatorscolumn.ftl", "moderatorsLabel", moderatorsLabel,
 						"moderatorList", moderatorList, "commentLink", commentLink),
 				dateRendererFactory.createDateRenderer(step.getStatus().getStarted(), true))
 				.setSortData(null, null, step.getStatus().getStarted());

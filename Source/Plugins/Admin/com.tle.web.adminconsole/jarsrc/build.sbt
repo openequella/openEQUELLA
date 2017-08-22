@@ -9,6 +9,9 @@ libraryDependencies ++= Seq(
   "com.miglayout" % "miglayout-swing" % "4.2",
   xstreamDep
 )
+
+scalaVersion := "2.11.7"
+
 excludeDependencies += "commons-logging" % "commons-logging"
 assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
 assemblyMergeStrategy in assembly := {

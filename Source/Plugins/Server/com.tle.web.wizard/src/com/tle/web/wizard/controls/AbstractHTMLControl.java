@@ -43,6 +43,9 @@ import com.tle.core.freetext.queries.NodeInQuery;
 import com.tle.core.wizard.LERepository;
 import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.core.wizard.controls.WizardPage;
+import com.tle.web.sections.render.Label;
+import com.tle.web.sections.result.util.BundleLabel;
+import com.tle.web.sections.result.util.KeyLabel;
 
 /**
  * Represents the common elements of all controls.
@@ -75,7 +78,7 @@ public abstract class AbstractHTMLControl implements Serializable, HTMLControl
 	protected WizardControl controlBean;
 	private final int controlNumber;
 	private final int nestingLevel;
-	private LanguageBundle invalidMessage;
+	private Label invalidMessage;
 
 	private static final String FORM_KEY = "key";
 	private static final String FORM_VALUE = "value";
@@ -246,7 +249,7 @@ public abstract class AbstractHTMLControl implements Serializable, HTMLControl
 	}
 
 	@Override
-	public LanguageBundle getMessage()
+	public Label getMessage()
 	{
 		if( wizardPage != null )
 		{
@@ -281,14 +284,14 @@ public abstract class AbstractHTMLControl implements Serializable, HTMLControl
 		return formName;
 	}
 
-	public LanguageBundle getInvalidMessage()
+	public Label getInvalidMessage()
 	{
 		return invalidMessage;
 	}
 
-	public LanguageBundle getEmptyMessage()
+	public Label getEmptyMessage()
 	{
-		return LangUtils.createTempLangugageBundle("wizard.controls.empty");
+		return new KeyLabel("wizard.controls.empty");
 	}
 
 	public static String ent(String szStr)
@@ -343,13 +346,8 @@ public abstract class AbstractHTMLControl implements Serializable, HTMLControl
 		return invalid;
 	}
 
-	public void setInvalid(boolean invalid, String message)
-	{
-		setInvalid(invalid, LangUtils.createTextTempLangugageBundle(message));
-	}
-
 	@Override
-	public void setInvalid(boolean invalid, LanguageBundle message)
+	public void setInvalid(boolean invalid, Label message)
 	{
 		this.invalid = invalid;
 		invalidMessage = message;

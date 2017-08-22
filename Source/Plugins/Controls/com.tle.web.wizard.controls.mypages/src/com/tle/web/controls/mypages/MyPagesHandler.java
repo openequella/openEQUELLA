@@ -480,10 +480,4 @@ public class MyPagesHandler extends AbstractAttachmentHandler<MyPagesHandler.MyP
 			this.myPages = myPages;
 		}
 	}
-
-	@Override
-	public String getMimeType(SectionInfo info)
-	{
-		return "text/html";
-	}
 }

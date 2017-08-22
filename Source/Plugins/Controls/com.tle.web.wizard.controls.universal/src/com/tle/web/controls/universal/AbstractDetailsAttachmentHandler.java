@@ -106,6 +106,15 @@ public abstract class AbstractDetailsAttachmentHandler<M extends AbstractDetails
 	@Inject
 	private AttachmentResourceService attachmentResourceService;
 
+	/**
+	 * Get the attachment type for the attachment being handled. Used by viewer
+	 * list
+	 *
+	 * @param info TODO
+	 * @return the mime type of the current attachment.
+	 */
+	protected abstract String getMimeType(SectionInfo info);
+
 	@Override
 	public void registered(String id, SectionTree tree)
 	{

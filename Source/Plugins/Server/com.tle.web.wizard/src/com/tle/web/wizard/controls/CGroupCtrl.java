@@ -31,6 +31,8 @@ import com.tle.common.i18n.LangUtils;
 import com.tle.core.wizard.WizardPageException;
 import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.core.wizard.controls.WizardPage;
+import com.tle.web.sections.render.Label;
+import com.tle.web.sections.result.util.KeyLabel;
 
 /**
  * Provides a data model for group controls.
@@ -149,9 +151,9 @@ public class CGroupCtrl extends GroupsCtrl
 	}
 
 	@Override
-	public LanguageBundle getEmptyMessage()
+	public Label getEmptyMessage()
 	{
-		return LangUtils.createTempLangugageBundle("wizard.controls.groups.please"); //$NON-NLS-1$
+		return new KeyLabel("wizard.controls.groups.please"); //$NON-NLS-1$
 	}
 
 	public String getCheckType()

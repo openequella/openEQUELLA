@@ -19,18 +19,13 @@ package com.tle.web.wizard.impl;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.collect.BiMap;
+import com.tle.web.sections.render.TextLabel;
 import org.apache.log4j.Logger;
 
 import com.dytech.devlib.PropBagEx;
@@ -535,7 +530,7 @@ public class WebRepository implements LERepository
 		state.setQuotaExceededException(e);
 		if( e != null )
 		{
-			action.setInvalid(true, LangUtils.createTextTempLangugageBundle(e.getMessage()));
+			action.setInvalid(true, new TextLabel(e.getMessage()));
 		}
 	}
 
@@ -644,5 +639,23 @@ public class WebRepository implements LERepository
 	public Object getThreadLock()
 	{
 		return wizardService.getThreadLock();
+	}
+
+	@Override
+	public synchronized boolean registerFilename(UUID id, String filename)
+	{
+		BiMap<String, UUID> inverse = state.getRegisteredFilenames().inverse();
+		if (inverse.containsKey(filename))
+		{
+			return inverse.get(filename).equals(id);
+		}
+		inverse.put(filename, id);
+		return true;
+	}
+
+	@Override
+	public synchronized void unregisterFilename(UUID id)
+	{
+		state.getRegisteredFilenames().remove(id);
 	}
 }

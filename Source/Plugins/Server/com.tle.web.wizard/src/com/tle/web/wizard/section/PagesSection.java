@@ -232,7 +232,7 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel> impleme
 			if( control.isViewable() && control.getMessage() != null && (control.isMandatory() || control.isInvalid()) )
 			{
 				errorList.add(new KeyLabel(KEY_RECEIPT_CAUSE, new TextLabel(control.getTitle()),
-					new BundleLabel(control.getMessage(), bundleCache)));
+					control.getMessage()));
 			}
 		}
 		model.setErrors(errorList);

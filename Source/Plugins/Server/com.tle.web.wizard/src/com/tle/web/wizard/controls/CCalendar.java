@@ -19,6 +19,7 @@ package com.tle.web.wizard.controls;
 import java.text.ParseException;
 import java.util.TimeZone;
 
+import com.tle.web.sections.result.util.KeyLabel;
 import org.apache.log4j.Logger;
 
 import com.dytech.devlib.PropBagEx;
@@ -115,7 +116,7 @@ public class CCalendar extends EditableCtrl
 
 		if( dateTo != null && dateFrom != null && dateFrom.compareTo(dateTo) > 0 )
 		{
-			setInvalid(true, LangUtils.createTempLangugageBundle("wizard.controls.calendar.after"));
+			setInvalid(true, new KeyLabel("wizard.controls.calendar.after"));
 		}
 	}
 
@@ -161,7 +162,7 @@ public class CCalendar extends EditableCtrl
 		}
 		catch( Exception e )
 		{
-			setInvalid(true, LangUtils.createTempLangugageBundle("wizard.controls.calendar.parsingerror"));
+			setInvalid(true, new KeyLabel("wizard.controls.calendar.parsingerror"));
 		}
 	}
 

@@ -37,6 +37,7 @@ import com.tle.common.i18n.LangUtils;
 import com.tle.core.freetext.queries.BaseQuery;
 import com.tle.core.wizard.WizardPageException;
 import com.tle.core.wizard.controls.WizardPage;
+import com.tle.web.sections.result.util.KeyLabel;
 
 /**
  * Provides a data model for shuffle list controls.
@@ -86,7 +87,7 @@ public class CShuffleList extends CMultiCtrl
 				valuesReadonly, !forceUnique);
 
 			setInvalid(forceUnique && !isUnique && !isInvalid(),
-				LangUtils.createTempLangugageBundle("wizard.controls.editbox.uniqueerror")); //$NON-NLS-1$
+				new KeyLabel("wizard.controls.editbox.uniqueerror")); //$NON-NLS-1$
 		}
 	}
 

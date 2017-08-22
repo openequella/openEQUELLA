@@ -20,20 +20,18 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import com.tle.core.services.ZipProgress;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -870,6 +868,88 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
 	public FileInfo unzipFile(FileHandle handle, String zipfile, String outpath) throws IOException
 	{
 		return unzipFile(handle, zipfile, outpath, null);
+	}
+
+	private static class ZipFileArchiveExtractor extends ArchiveProgress implements ArchiveExtractor {
+		private final Enumeration<? extends ZipEntry> entries;
+		private final ZipFile zipFile;
+		private InputStream stream;
+		private volatile int upto;
+		private volatile boolean finished;
+
+		public ZipFileArchiveExtractor(ZipFile zipFile)
+		{
+			super(zipFile.size());
+			this.zipFile = zipFile;
+			entries = zipFile.entries();
+		}
+
+		@Override
+		public ArchiveEntry getNextEntry() throws IOException
+		{
+			if (entries.hasMoreElements())
+			{
+				ZipEntry zipEntry = entries.nextElement();
+				stream = zipFile.getInputStream(zipEntry);
+				return new ArchiveEntry(zipEntry.getName().replace('\\', '/'), zipEntry.isDirectory(), zipEntry.getSize());
+			}
+			else return null;
+		}
+
+		@Override
+		public InputStream getStream()
+		{
+			return stream;
+		}
+
+		@Override
+		public void nextEntry(String entryPath)
+		{
+			upto++;
+		}
+	}
+
+	@Override
+	public ZipProgress unzipWithProgress(FileHandle handle, String zipPath, String targetPath) throws IOException
+	{
+		File zipFile = getFile(handle, zipPath);
+		ZipFile zip = new ZipFile(zipFile);
+		ZipFileArchiveExtractor zipFileExtractor = new ZipFileArchiveExtractor(zip);
+		new Thread(() ->
+		{
+            try
+            {
+                extract(zipFileExtractor, getFile(handle, targetPath), zipFileExtractor);
+            }
+            catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+            finally
+            {
+                zipFileExtractor.finished = true;
+            }
+        }).start();
+		return new ZipProgress()
+		{
+			@Override
+			public int getTotalFiles()
+			{
+				return (int) zipFileExtractor.getEntryCount();
+			}
+
+			@Override
+			public int getCurrentFile()
+			{
+				return zipFileExtractor.upto;
+			}
+
+			@Override
+			public boolean isFinished()
+			{
+				return zipFileExtractor.finished;
+			}
+		};
 	}
 
 	@Override

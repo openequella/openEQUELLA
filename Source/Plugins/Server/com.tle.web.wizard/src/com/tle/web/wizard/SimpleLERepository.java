@@ -17,10 +17,7 @@
 package com.tle.web.wizard;
 
 import java.io.InputStream;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 import javax.inject.Inject;
 
@@ -267,5 +264,17 @@ public class SimpleLERepository implements LERepository
 	public Object getThreadLock()
 	{
 		return new Object();
+	}
+
+	@Override
+	public boolean registerFilename(UUID id, String filename)
+	{
+		return true;
+	}
+
+	@Override
+	public void unregisterFilename(UUID id)
+	{
+
 	}
 }

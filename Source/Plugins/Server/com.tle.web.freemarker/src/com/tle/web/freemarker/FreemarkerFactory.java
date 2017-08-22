@@ -32,7 +32,7 @@ public interface FreemarkerFactory
 
 	SectionRenderable createResultWithModel(String template, Object model);
 
-	SectionRenderable createResultWithModel(String template, Object... nameValues);
+	SectionRenderable createResultWithModelMap(String template, Object... nameValues);
 
 	NamedSectionResult createNamedResult(String name, String template, SectionId sectionId);
 

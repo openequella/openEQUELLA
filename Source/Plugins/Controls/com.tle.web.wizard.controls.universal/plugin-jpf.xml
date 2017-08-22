@@ -60,7 +60,7 @@
 	</extension>
 
 	<extension plugin-id="com.tle.web.wizard" point-id="webControl" id="universal">
-		<parameter id="class" value="bean:com.tle.web.controls.universal.UniversalWebControl" />
+		<parameter id="class" value="bean:com.tle.web.controls.universal.UniversalWebControlNew" />
 		<parameter id="type" value="universal" />
 	</extension>
 
@@ -70,17 +70,17 @@
 	</extension>
 
 	<extension plugin-id="com.tle.web.wizard.controls.universal" point-id="universalResourceHandler" id="fileHandler">
-		<parameter id="class" value="bean:com.tle.web.controls.universal.handlers.FileUploadHandler" />
+		<parameter id="class" value="bean:com.tle.web.controls.universal.handlers.FileUploadHandlerNew" />
 		<parameter id="order" value="100" />
 	</extension>
 	
 	<extension plugin-id="com.tle.web.wizard.controls.universal" point-id="packageAttachmentHandler" id="imsHandler">
-		<parameter id="class" value="bean:com.tle.web.controls.universal.handlers.fileupload.packages.IMSPackageAttachmentHandler" />
+		<parameter id="class" value="object:com.tle.web.controls.universal.handlers.fileupload.packages.IMSPackageExtension" />
 		<parameter id="type" value="IMS" />
 	</extension>
 
 	<extension plugin-id="com.tle.web.wizard.controls.universal" point-id="packageAttachmentHandler" id="scormHandler">
-		<parameter id="class" value="bean:com.tle.web.controls.universal.handlers.fileupload.packages.ScormPackageAttachmentHandler" />
+		<parameter id="class" value="object:com.tle.web.controls.universal.handlers.fileupload.packages.ScormPackageExtension" />
 		<parameter id="type" value="SCORM" />
 	</extension>
 

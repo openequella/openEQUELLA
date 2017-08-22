@@ -32,13 +32,6 @@ public interface IMSService
 	 */
 	String getImsTitle(FileHandle handle, String packageName);
 
-	/**
-	 * Retrieve the rights description for an IMS package.
-	 */
-	String getImsRightsDescription(FileHandle handle, String packageName) throws IOException;
-
-	InputStream retrieveIMSPackage(FileHandle handle, String packageExtractedFolder) throws IOException;
-
 	void ensureIMSPackage(FileHandle handle, String packageExtractedFolder) throws IOException;
 
 	/**

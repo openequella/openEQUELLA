@@ -61,7 +61,7 @@
 	</extension>
 	
 	<extension plugin-id="com.tle.web.wizard.controls.universal" point-id="packageAttachmentHandler" id="qtitestHandler">
-		<parameter id="class" value="bean:com.tle.web.qti.packagehandler.QtiPackageAttachmentHandler" />
+		<parameter id="class" value="bean:com.tle.web.qti.packagehandler.QtiPackageAttachmentHandlerNew" />
 		<parameter id="type" value="QTITEST" />
 	</extension>
 		

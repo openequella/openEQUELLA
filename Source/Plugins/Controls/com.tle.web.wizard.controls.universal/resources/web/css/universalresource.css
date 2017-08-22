@@ -166,3 +166,99 @@ img.warningimg
 {
 	vertical-align: middle;
 }
+
+.uploadsprogress .progress-bar
+{
+	width: 200px;
+	height: 14px;
+	border: 1px solid #AAA;
+	float: left;
+	margin: 0 10px 0 0;
+	
+	-moz-border-radius: 3px;
+	-o-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
+.uploadsprogress .progressbarOuter
+{
+	background-color: #FFFFFF;
+}
+
+.uploadsprogress .progressbarInner
+{
+	height: 14px;
+	background: #80D2EE !important;
+}
+
+.uploadsprogress .progresstextOuter
+{
+	color: #000000;
+}
+
+.uploadsprogress .progresstextInner
+{
+	color: #FFFFFF;
+}
+
+.uploadsprogress .file-upload
+{
+	margin: 10px 0;
+	clear: both;
+}
+
+.uploadsprogress .file-upload .file-name
+{
+	width: 400px;
+	overflow: hidden;
+}
+
+.uploadsprogress .file-upload-progress
+{
+	float: right;
+	width: 300px;
+}
+
+.uploadsprogress .file-upload-problem
+{
+	background-color: #FF0000;
+}
+
+
+.uploadsprogress .progress-bar-inner
+{
+	height: 14px;
+	background: #80D2EE;
+}
+
+.uploadsprogress .progress-bar-inner.complete 
+{
+	background: #47E368;
+	width: 100%;
+}
+
+.uploadsprogress .progress-bar + A 
+{
+	float: right;
+}
+
+.universalresources .progress-bar
+{
+	width: 200px;
+	height: 14px;
+	border: 1px solid #AAA;
+	margin: 0 10px 0 0;
+
+	-moz-border-radius: 3px;
+	-o-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	float: right;
+}
+
+.universalresources .progressbarInner
+{
+	height: 14px;
+	background: #80D2EE !important;
+}

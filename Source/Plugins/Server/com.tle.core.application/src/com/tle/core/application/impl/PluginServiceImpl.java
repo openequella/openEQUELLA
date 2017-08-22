@@ -16,6 +16,7 @@
 
 package com.tle.core.application.impl;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -86,7 +87,20 @@ public class PluginServiceImpl extends AbstractPluginService implements PrivateP
 				}
 				return bean;
 			}
-
+			if (clazzName.startsWith("object:"))
+			{
+				try
+				{
+					Class<?> clazz = pluginManager.getPluginClassLoader(plugin).loadClass(clazzName.substring(7) + "$");
+					Field module$ = clazz.getField("MODULE$");
+					return module$.get(null);
+				}
+				catch (IllegalAccessException|NoSuchFieldException|ClassNotFoundException e)
+				{
+					LOGGER.error("Error creating object '" + clazzName + "' in " + plugin.getId(), e);
+					throw new RuntimeException(e);
+				}
+			}
 			return instantiatePluginClass(plugin, clazzName);
 		}
 		catch( RuntimeException re )

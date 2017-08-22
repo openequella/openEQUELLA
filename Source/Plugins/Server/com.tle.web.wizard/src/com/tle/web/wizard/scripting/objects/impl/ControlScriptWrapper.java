@@ -20,6 +20,7 @@ import com.dytech.edge.wizard.beans.control.EditBox;
 import com.tle.common.i18n.LangUtils;
 import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.core.wizard.controls.WizardPage;
+import com.tle.web.sections.render.TextLabel;
 import com.tle.web.wizard.scripting.objects.ControlScriptObject;
 
 /**
@@ -89,7 +90,7 @@ public class ControlScriptWrapper implements ControlScriptObject
 	@Override
 	public void setInvalid(boolean invalid, String message)
 	{
-		control.setInvalid(invalid, LangUtils.createTextTempLangugageBundle(message));
+		control.setInvalid(invalid, new TextLabel(message));
 	}
 
 	@Override
