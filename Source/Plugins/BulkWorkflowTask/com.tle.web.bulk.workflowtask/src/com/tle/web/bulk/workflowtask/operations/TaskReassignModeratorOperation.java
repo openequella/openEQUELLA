@@ -37,24 +37,23 @@ public final class TaskReassignModeratorOperation extends AbstractBulkTaskOperat
 		Set<String> usersToModerate = status.getUsersToModerate(this);
 		if( usersToModerate.contains(toUser) )
 		{
-			status.setAssignedTo(toUser);
-
-			ItemId itemId = getItemId();
-			ItemKey itemKey = new ItemId(itemId.getUuid(), itemId.getVersion());
-			notificationService.addNotification(itemKey, Notification.REASON_REASSIGN, toUser, false);
-			ModerationStatus moderation = getItem().getModeration();
-			if( moderation != null && moderation.getRejectedBy() == null )
+			String oldUser = status.getAssignedTo();
+			if (toUser.equals(oldUser))
 			{
-				moderation.setRejectedBy(toUser);
+				return false;
 			}
-
+			status.setAssignedTo(toUser);
 			String collectionUuid = getItem().getItemDefinition().getUuid();
-			if( !notificationPreferencesService.getOptedOutCollectionsForUser(toUser).contains(collectionUuid) )
+			if (oldUser != null)
 			{
-				notificationService.addNotification(itemId, Notification.REASON_REASSIGN, toUser, false);
+				notificationService.removeForUserAndKey(getTaskId(), oldUser, Notification.REASON_REASSIGN);
 				getParams().setNotificationsAdded(true);
 			}
-
+			if( !notificationPreferencesService.getOptedOutCollectionsForUser(toUser).contains(collectionUuid) )
+			{
+				notificationService.addNotification(getTaskId(), Notification.REASON_REASSIGN, toUser, false);
+				getParams().setNotificationsAdded(true);
+			}
 			return true;
 		}
 

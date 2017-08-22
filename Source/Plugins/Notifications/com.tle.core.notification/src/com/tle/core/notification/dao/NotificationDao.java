@@ -62,4 +62,8 @@ public interface NotificationDao extends GenericInstitutionalDao<Notification, L
 
 	int deleteUnindexed(String user, Collection<String> reasons, String attemptId);
 
+	int markProcessedById(String user, Collection<Long> notifications, String attemptId);
+
+	int deleteUnindexedById(String user, Collection<Long> notifications, String attemptId);
+
 }

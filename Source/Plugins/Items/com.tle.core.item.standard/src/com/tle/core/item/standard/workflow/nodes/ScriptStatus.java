@@ -78,6 +78,13 @@ public class ScriptStatus extends AbstractNodeStatus
 	}
 
 	@Override
+	public void clear()
+	{
+		super.clear();
+		op.removeNotificationsForKey(getTaskKey(), Notification.REASON_SCRIPT_ERROR);
+	}
+
+	@Override
 	public boolean finished()
 	{
 		clear();

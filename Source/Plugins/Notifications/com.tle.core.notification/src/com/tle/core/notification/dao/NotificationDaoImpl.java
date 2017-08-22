@@ -35,6 +35,7 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
 	// Sonar likes us to avoid repeated literal strings ...
 	private static final String ATTEMPT = "attempt";
 	private static final String REASONS = "reasons";
+	private static final String NOTEID = "noteid";
 	private static final String USER = "user";
 	private static final String INST = "inst";
 	private static final String ITEMID = "itemid";
@@ -317,10 +318,6 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
 			@Override
 			public Object doInHibernate(Session session)
 			{
-				if( Check.isEmpty(reasons) )
-				{
-					return Integer.valueOf(0);
-				}
 				Query query = session.createQuery("update Notification set processed = true "
 					+ "where institution = :inst and userTo = :user and processed = false "
 					+ "and reason in (:reasons) and attemptId = :attempt");
@@ -346,16 +343,64 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
 			@Override
 			public Object doInHibernate(Session session)
 			{
-				if( Check.isEmpty(reasons) )
-				{
-					return Integer.valueOf(0);
-				}
 				Query query = session.createQuery(
 					"delete from Notification " + "where institution = :inst and userTo = :user and processed = false "
 						+ "and reason in (:reasons) and attemptId = :attempt");
 
 				query.setParameter(ATTEMPT, attemptId);
 				query.setParameterList(REASONS, reasons);
+				query.setParameter(USER, user);
+				query.setParameter(INST, CurrentInstitution.get());
+				return query.executeUpdate();
+			}
+		});
+	}
+
+
+	@Override
+	@Transactional(propagation = Propagation.MANDATORY)
+	public int markProcessedById(final String user, final Collection<Long> notifications, final String attemptId)
+	{
+		if( notifications.isEmpty() )
+		{
+			return 0;
+		}
+		return (Integer) getHibernateTemplate().execute(new HibernateCallback()
+		{
+			@Override
+			public Object doInHibernate(Session session)
+			{
+				Query query = session.createQuery("update Notification set processed = true "
+						+ "where institution = :inst and userTo = :user and processed = false "
+						+ "and id in (:noteid) and attemptId = :attempt");
+				query.setParameter(ATTEMPT, attemptId);
+				query.setParameterList(NOTEID, notifications);
+				query.setParameter(USER, user);
+				query.setParameter(INST, CurrentInstitution.get());
+				return query.executeUpdate();
+			}
+		});
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.MANDATORY)
+	public int deleteUnindexedById(final String user, final Collection<Long> notifications, final String attemptId)
+	{
+		if( notifications.isEmpty() )
+		{
+			return 0;
+		}
+		return (Integer) getHibernateTemplate().execute(new HibernateCallback()
+		{
+			@Override
+			public Object doInHibernate(Session session)
+			{
+				Query query = session.createQuery(
+						"delete from Notification " + "where institution = :inst and userTo = :user and processed = false "
+								+ "and id in (:noteid) and attemptId = :attempt");
+
+				query.setParameter(ATTEMPT, attemptId);
+				query.setParameterList(NOTEID, notifications);
 				query.setParameter(USER, user);
 				query.setParameter(INST, CurrentInstitution.get());
 				return query.executeUpdate();
