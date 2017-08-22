@@ -30,11 +30,15 @@ public class ParallelStatus extends AbstractNodeStatus
 			{
 				updated = true;
 				op.enter(child);
+				childStatuses = op.getChildStatuses(node);
 			}
 		}
-		if( allComplete(childStatuses) )
+		if (bean.getStatus() == WorkflowNodeStatus.INCOMPLETE)
 		{
-			updated |= finished();
+			if (allComplete(childStatuses))
+			{
+				updated |= finished();
+			}
 		}
 		return updated;
 	}
@@ -43,12 +47,6 @@ public class ParallelStatus extends AbstractNodeStatus
 	public void enter()
 	{
 		bean.setStatus(WorkflowNodeStatus.INCOMPLETE);
-		ParallelNode parnode = (ParallelNode) node;
-		int num = parnode.numberOfChildren();
-		for( int i = 0; i < num; i++ )
-		{
-			WorkflowNode child = parnode.getChild(i);
-			op.enter(child);
-		}
+		update();
 	}
 }

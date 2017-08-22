@@ -503,6 +503,7 @@ public class WorkflowServiceImpl extends AbstractEntityServiceImpl<EntityEditing
 			scriptNode.setDescription(editBundle(scriptNode.getDescription(), newScriptNode.getDescription()));
 			scriptNode.setMovelive(newScriptNode.getMovelive());
 			scriptNode.setProceedNext(newScriptNode.isProceedNext());
+			boolean changed = !Objects.equals(newScriptNode.getScript(), scriptNode.getScript());
 			scriptNode.setScript(newScriptNode.getScript());
 			scriptNode.setNotifyOnCompletion(newScriptNode.isNotifyOnCompletion());
 			scriptNode.setNotifyOnError(newScriptNode.isNotifyOnError());
@@ -510,6 +511,10 @@ public class WorkflowServiceImpl extends AbstractEntityServiceImpl<EntityEditing
 			editSet(scriptNode.getGroupsNotifyOnCompletion(), newScriptNode.getGroupsNotifyOnCompletion());
 			editSet(scriptNode.getUsersNotifyOnError(), newScriptNode.getUsersNotifyOnError());
 			editSet(scriptNode.getGroupsNotifyOnError(), newScriptNode.getGroupsNotifyOnError());
+			if (changed)
+			{
+				changedNodes.add(scriptNode);
+			}
 		}
 	}
 
