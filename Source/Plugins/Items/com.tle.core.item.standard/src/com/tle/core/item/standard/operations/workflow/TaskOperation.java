@@ -144,8 +144,11 @@ public abstract class TaskOperation extends AbstractStandardWorkflowOperation
 
 	public void resetWorkflow()
 	{
-		Workflow workflow = getWorkflow();
+		resetWithWorkflow(getWorkflow());
+	}
 
+	public void resetWithWorkflow(Workflow workflow)
+	{
 		removeModerationNotifications();
 
 		ModerationStatus status = getModerationStatus();
