@@ -14,6 +14,7 @@ public class WorkflowRemoveOperation extends TaskOperation
 	{
 		createHistory(HistoryEvent.Type.workflowremoved);
 		resetWithWorkflow(null);
+		updateModeration();
 		return true;
 	}
 
