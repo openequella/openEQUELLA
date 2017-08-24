@@ -927,7 +927,16 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
             }
             finally
             {
-                zipFileExtractor.finished = true;
+				try
+				{
+					zip.close();
+				}
+				catch (IOException e)
+				{
+
+				}
+				
+				zipFileExtractor.finished = true;
             }
         }).start();
 		return new ZipProgress()
