@@ -64,12 +64,12 @@ class TaskNotifications extends FilterableNotification with NotificationLookup w
   case class TaskNoteModel(lul: LazyUserLookup)(val note: Notification, val item: Item) extends TaskNotification {
     val status = Option(workflowService.getIncompleteStatus(itemTaskId))
     val currentTask: Option[WorkflowItem] = workflowItem(taskId)
-    val autoAction: Option[Label] = currentTask.flatMap { workflowItem =>
+    val getAutoAction = currentTask.flatMap { workflowItem =>
       Option(workflowItem.getAutoAction).collect {
         case AutoAction.ACCEPT => LABEL_AUTOACCEPT
         case AutoAction.REJECT => LABEL_AUTOREJECT
       }.map { l => new KeyLabel(KEY_AUTOMSG, l, new PluralKeyLabel(KEY_AUTODAYS, workflowItem.getActionDays)) }
-    }
+    }.orNull
     val causeStep = status.flatMap(wis => Option(wis.getCause)).filter(_.getNode.getParent != null)
     val causeAccepted = causeStep.map(_.getStatus == WorkflowNodeStatus.COMPLETE)
 
