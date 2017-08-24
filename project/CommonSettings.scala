@@ -31,7 +31,7 @@ object CommonSettings extends AutoPlugin {
   override def projectSettings = Seq(
     organization := "org.apereo.equella",
     javacOptions ++= Seq("-source", "1.8"),
-    compileOrder := CompileOrder.JavaThenScala,
+    compileOrder := CompileOrder.Mixed,
     headerLicense := Some(HeaderLicense.ALv2("2017", "Apereo")),
     resolvers ++= Seq(
       "Local EQUELLA deps" at IO.toURI(file(Path.userHome.absolutePath) / "/equella-deps").toString,
