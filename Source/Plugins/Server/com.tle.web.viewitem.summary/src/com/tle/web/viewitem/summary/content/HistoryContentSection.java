@@ -340,7 +340,7 @@ public class HistoryContentSection extends AbstractContentSection<HistoryContent
 					label = s("contributed");
 					break;
 				case taskMove:
-					label = s("move", atStepName, getStepName(event.getTostep(), event.getToStepName(), refMap));
+					label = s("move", getStepName(event.getTostep(), event.getToStepName(), refMap));
 					break;
 
 				default:

@@ -3,14 +3,7 @@
  */
 package com.tle.core.item.standard.operations.workflow;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import javax.inject.Inject;
 
@@ -142,21 +135,21 @@ public abstract class TaskOperation extends AbstractStandardWorkflowOperation
 		event.setStep(id);
 	}
 
-	public void resetWorkflow()
-	{
-		resetWithWorkflow(getWorkflow());
-	}
-
-	public void resetWithWorkflow(Workflow workflow)
+	public void clearAllStatuses()
 	{
 		removeModerationNotifications();
-
 		ModerationStatus status = getModerationStatus();
 		status.setNeedsReset(false);
 		status.getStatuses().clear();
 		params.clearAllStatuses();
-
 		exitTasksForItem();
+	}
+
+	public void resetWorkflow()
+	{
+		Workflow workflow = getWorkflow();
+		clearAllStatuses();
+		ModerationStatus status = getModerationStatus();
 		if( workflow != null )
 		{
 			HistoryEvent history = createHistory(Type.resetworkflow);
@@ -249,6 +242,49 @@ public abstract class TaskOperation extends AbstractStandardWorkflowOperation
 		return nodestat;
 	}
 
+	public Map<String, NodeStatus> initStatusMap(Collection<WorkflowNodeStatus> statuses)
+	{
+		params.clearAllStatuses();
+		Map<String, NodeStatus> statusMap = params.getStatusMap();
+		if( statuses != null )
+		{
+			for( WorkflowNodeStatus stat : statuses )
+			{
+				if( stat.getStatus() != WorkflowNodeStatus.ARCHIVED )
+				{
+					addWrappedStatus(statusMap, stat);
+				}
+			}
+
+			Workflow workflow;
+			try
+			{
+				workflow = getWorkflow();
+			}
+			catch( Exception e )
+			{
+				throw new WorkflowException(e);
+			}
+			WorkflowNode root = workflow.getRoot();
+			List<NodeStatus> created = new ArrayList<NodeStatus>();
+			recurseStatuses(root, created);
+			for( NodeStatus statuscreated : created )
+			{
+				statuscreated.update();
+			}
+			Iterator<NodeStatus> statVals = statusMap.values().iterator();
+			while( statVals.hasNext() )
+			{
+				NodeStatus statbean = statVals.next();
+				if( statbean.getWorkflowNode() == null )
+				{
+					statVals.remove();
+				}
+			}
+		}
+		return statusMap;
+	}
+
 	public Map<String, NodeStatus> getStatusMap()
 	{
 		Map<String, NodeStatus> statusMap = params.getStatusMap();
@@ -257,45 +293,7 @@ public abstract class TaskOperation extends AbstractStandardWorkflowOperation
 			ModerationStatus status = getModerationStatus();
 			if( status != null )
 			{
-				params.clearAllStatuses();
-				statusMap = params.getStatusMap();
-				Set<WorkflowNodeStatus> statuses = status.getStatuses();
-				if( statuses != null )
-				{
-					for( WorkflowNodeStatus stat : statuses )
-					{
-						if( stat.getStatus() != WorkflowNodeStatus.ARCHIVED )
-						{
-							addWrappedStatus(statusMap, stat);
-						}
-					}
-
-					Workflow workflow;
-					try
-					{
-						workflow = getWorkflow();
-					}
-					catch( Exception e )
-					{
-						throw new WorkflowException(e);
-					}
-					WorkflowNode root = workflow.getRoot();
-					List<NodeStatus> created = new ArrayList<NodeStatus>();
-					recurseStatuses(root, created);
-					for( NodeStatus statuscreated : created )
-					{
-						statuscreated.update();
-					}
-					Iterator<NodeStatus> statVals = statusMap.values().iterator();
-					while( statVals.hasNext() )
-					{
-						NodeStatus statbean = statVals.next();
-						if( statbean.getWorkflowNode() == null )
-						{
-							statVals.remove();
-						}
-					}
-				}
+				return initStatusMap(status.getStatuses());
 			}
 		}
 		return statusMap;

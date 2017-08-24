@@ -13,7 +13,8 @@ public class WorkflowRemoveOperation extends TaskOperation
 	public boolean execute()
 	{
 		createHistory(HistoryEvent.Type.workflowremoved);
-		resetWithWorkflow(null);
+		clearAllStatuses();
+		makeLive(true);
 		updateModeration();
 		return true;
 	}
