@@ -381,7 +381,7 @@ public class ClientLauncher extends JFrame implements ActionListener, WindowList
 				params.put("password", server.getPassword());
 				SessionLogin.postLogin(endpointUrl, params);
 				
-				PluginServiceImpl pluginService = new PluginServiceImpl(endpointUrl, Version.load(getClass())
+				PluginServiceImpl pluginService = new PluginServiceImpl(endpointUrl, Version.load()
 					.getCommit(), createInvoker(RemotePluginDownloadService.class, endpointUrl));
 				pluginService.registerPlugins();
 				HarnessInterface client = (HarnessInterface) pluginService.getBean("com.tle.admin.common",

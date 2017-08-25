@@ -34,19 +34,7 @@ public final class Version
 
 	public static Version load()
 	{
-		return load((Class<?>) null);
-	}
-
-	public static Version load(Class<?> klass)
-	{
-		String f = "version.properties";
-		if( klass == null )
-		{
-			klass = Version.class;
-			f = '/' + f;
-		}
-
-		try( InputStream in = klass.getResourceAsStream(f) )
+		try( InputStream in = Version.class.getResourceAsStream("/version.properties") )
 		{
 			Properties p = null;
 			if( in != null )

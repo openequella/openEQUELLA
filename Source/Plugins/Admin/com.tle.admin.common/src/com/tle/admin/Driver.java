@@ -90,7 +90,7 @@ public final class Driver
 		loggedInUserID = session.getLoginService().getLoggedInUserId();
 		institutionName = clientService.getParameter(AbstractAppletLauncher.PARAMETER_PREFIX + "INSTITUTIONNAME");
 
-		version = Version.load(Driver.class);
+		version = Version.load();
 
 		if( pluginService == null )
 		{

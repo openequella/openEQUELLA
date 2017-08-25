@@ -20,7 +20,7 @@ import com.dytech.edge.common.Version;
 
 public final class ApplicationVersion
 {
-	private final static Version version = Version.load(ApplicationVersion.class);
+	private final static Version version = Version.load();
 
 	private ApplicationVersion()
 	{

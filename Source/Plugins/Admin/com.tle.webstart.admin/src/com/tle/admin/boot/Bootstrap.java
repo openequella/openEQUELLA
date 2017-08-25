@@ -65,7 +65,7 @@ public final class Bootstrap
 			Map<String, String> params = new HashMap<>();
 			params.put("token", token);
 			SessionLogin.postLogin(endpointUrl, params);
-			PluginServiceImpl pluginService = new PluginServiceImpl(endpointUrl, Version.load(Bootstrap.class)
+			PluginServiceImpl pluginService = new PluginServiceImpl(endpointUrl, Version.load()
 				.getCommit(), createInvoker(RemotePluginDownloadService.class, endpointUrl));
 			pluginService.registerPlugins();
 			HarnessInterface client = (HarnessInterface) pluginService.getBean("com.tle.admin.common",
