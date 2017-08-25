@@ -57,6 +57,7 @@ import com.tle.mets.importerexporters.AttachmentAdder;
 import com.tle.mets.importerexporters.MetsAttachmentImporterExporter;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.wizard.PackageTreeBuilder;
+import com.tle.web.wizard.PackageTreeBuilder.PackageInfo;
 
 import edu.harvard.hul.ois.mets.BinData;
 import edu.harvard.hul.ois.mets.Div;

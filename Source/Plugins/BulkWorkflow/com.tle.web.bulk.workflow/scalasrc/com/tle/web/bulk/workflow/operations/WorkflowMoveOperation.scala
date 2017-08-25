@@ -1,5 +1,6 @@
 package com.tle.web.bulk.workflow.operations
 
+import java.util.Date
 import javax.inject.Inject
 
 import com.google.inject.assistedinject.{Assisted, AssistedInject}
@@ -18,7 +19,7 @@ import com.tle.exceptions.AccessDeniedException
 import scala.collection.JavaConverters._
 
 @SecureInModeration
-class WorkflowMoveOperation @AssistedInject()(@Assisted("msg") val msg: String, @Assisted("toStep") @Nullable val toStep: String) extends TaskOperation {
+class WorkflowMoveOperation @AssistedInject()(@Assisted("msg") val msg: String, @Assisted("toStep") val toStep: String) extends TaskOperation {
 
   @Inject var aclService: TLEAclManager = _
 
@@ -31,23 +32,43 @@ class WorkflowMoveOperation @AssistedInject()(@Assisted("msg") val msg: String, 
     clearAllStatuses()
 
     val nodeSeq = getWorkflow.getNodes.asScala.toSeq
+
+    def requiresSiblingCompletion(wn: WorkflowNode) = wn.getType != WorkflowNode.PARALLEL_TYPE
+
     val parentMap = nodeSeq.groupBy(n => Option(n.getParent))
-    nodeSeq.find(_.getUuid == toStep).foreach { wn =>
-      def addParentStatuses(child: WorkflowNode): List[WorkflowNodeStatus] = {
-        val pareOp = Option(child.getParent)
-        val prvIndex = child.getChildIndex - 1
-        val otherStatuses = if (prvIndex < 0) pareOp.toList.flatMap(addParentStatuses)
-        else parentMap.get(pareOp).flatMap(_.find(_.getChildIndex == prvIndex)).toList.flatMap(addParentStatuses)
-        val newStatus = child.getType match {
-          case WorkflowNode.ITEM_TYPE => new WorkflowItemStatus(child, null)
-          case _ => new WorkflowNodeStatus(child)
-        }
-        val complete = pareOp.exists(_.getType == WorkflowNode.SERIAL_TYPE) && child != wn
-        newStatus.setStatus(if (complete) WorkflowNodeStatus.COMPLETE else WorkflowNodeStatus.INCOMPLETE)
-        newStatus :: otherStatuses
+
+    def newStatus(completed: Boolean)(n: WorkflowNode) = {
+      val ns = n.getType match {
+        case WorkflowNode.ITEM_TYPE => val wis = new WorkflowItemStatus(n, null)
+          wis.setStarted(params.getDateNow)
+          wis
+        case _ => new WorkflowNodeStatus(n)
       }
+      ns.setStatus(if (completed) WorkflowNodeStatus.COMPLETE else WorkflowNodeStatus.INCOMPLETE)
+      ns
+    }
+
+    nodeSeq.find(_.getUuid == toStep).foreach { wn =>
+
+      def completePreviousSiblings(child: WorkflowNode): Seq[WorkflowNodeStatus] = (for {
+        parent <- Option(child.getParent).filter(requiresSiblingCompletion)
+        children <- parentMap.get(Some(parent))
+      } yield {
+        children.filter(_.getChildIndex < child.getChildIndex).map(newStatus(true))
+      }).getOrElse(Seq.empty)
+
+      def addParentStatuses(child: WorkflowNode): Seq[WorkflowNodeStatus] = {
+        (completePreviousSiblings(child) :+ newStatus(false)(child)) ++
+          Option(child.getParent).toSeq.flatMap(addParentStatuses)
+      }
+
       val newStatuses = addParentStatuses(wn)
       initStatusMap(newStatuses.asJava)
+      newStatuses.foreach { wns =>
+        if (wns.getStatus == WorkflowNodeStatus.INCOMPLETE && !wns.getNode.isLeafNode) {
+          update(wns.getNode)
+        }
+      }
       enter(wn)
       val h = createHistory(HistoryEvent.Type.taskMove)
       setToStepFromTask(h, toStep)
