@@ -11,7 +11,7 @@ import com.tle.web.controls.universal.handlers.fileupload._
 import com.tle.web.controls.universal.handlers.fileupload.packages.IMSPackageExtension.{commitFiles, standardPackageDetails, unzipPackage}
 import com.tle.web.sections.SectionInfo
 import com.tle.web.sections.render.Label
-import com.tle.web.wizard.PackageTreeBuilder.PackageInfo
+import com.tle.web.wizard.PackageInfo
 
 import scala.collection.JavaConverters._
 

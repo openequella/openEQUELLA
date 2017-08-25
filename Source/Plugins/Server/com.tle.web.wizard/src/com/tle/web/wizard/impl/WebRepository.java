@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.util.*;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 import com.google.common.collect.BiMap;
 import com.tle.web.sections.render.TextLabel;
@@ -55,7 +54,6 @@ import com.tle.common.Pair;
 import com.tle.common.filesystem.handle.ConversionFile;
 import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.common.i18n.LangUtils;
 import com.tle.common.quota.exception.QuotaExceededException;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.guice.Bind;
@@ -74,7 +72,7 @@ import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.wizard.PackageTreeBuilder;
-import com.tle.web.wizard.PackageTreeBuilder.PackageInfo;
+import com.tle.web.wizard.PackageInfo;
 import com.tle.web.wizard.WizardMetadataMapper;
 import com.tle.web.wizard.WizardService;
 import com.tle.web.wizard.WizardState;

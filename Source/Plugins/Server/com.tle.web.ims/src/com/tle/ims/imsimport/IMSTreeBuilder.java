@@ -26,6 +26,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.web.wizard.PackageInfo;
 import org.apache.log4j.Logger;
 
 import com.google.common.base.Throwables;
@@ -69,7 +70,7 @@ public class IMSTreeBuilder implements PackageTreeBuilder
 
 	@Override
 	public PackageInfo createTree(Item item, FileHandle staging, String packageExtractedFolder,
-		String originalPackagePath, String packageName, boolean expand)
+								  String originalPackagePath, String packageName, boolean expand)
 	{
 		LOGGER.debug("Start IMS tree builder");
 
