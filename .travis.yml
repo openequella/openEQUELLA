@@ -26,7 +26,7 @@ before_install:
 - npm install -g pulp
 install:
 - wget https://s3.amazonaws.com/doolse-subba/equella-deps.zip
-- wget https://s3.amazonaws.com/doolse-subba/equella-installer-6.4.zip
+- wget https://s3.amazonaws.com/doolse-subba/equella_artifacts/latest/equella-installer-6.5.zip
 - unzip equella-deps.zip -d $HOME
 - wget https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
 - wget https://github.com/mozilla/geckodriver/releases/download/v0.17.0/geckodriver-v0.17.0-linux64.tar.gz
