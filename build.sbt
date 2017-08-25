@@ -117,10 +117,15 @@ val saxBuilder = {
   sb
 }
 
+sourceDirectory in coverageReport := target.value / "all_srcs"
+target in coverageReport := {
+  val cc = buildConfig.value.getConfig("coverage")
+  optPath(cc, "reportdir").getOrElse(target.value / "coverage-report")
+}
+
 coverageReport := {
   val log = sLog.value
   val io = installOptions.value
-  val cc = buildConfig.value.getConfig("coverage")
   val execLoader = coverageLoader.value
   val allClasses = target.value / "all_classes"
   IO.delete(allClasses)
@@ -140,9 +145,9 @@ coverageReport := {
   }
 
   val srcZip = sourceZip.value
-  val allSrcs = target.value / "all_srcs"
+  val allSrcs = (sourceDirectory in coverageReport).value
   srcZip.foreach(z => IO.unzip(z, allSrcs))
-  val coverageDir = optPath(cc, "reportdir").getOrElse(target.value / "coverage-report")
+  val coverageDir = (target in coverageReport).value
   log.info(s"Creating coverage report at ${coverageDir.absolutePath}")
   CoverageReporter.createReport(execLoader, allPlugins.groupBy(_._1).mapValues(_.map(_._2)).toSeq, coverageDir, allSrcs)
 }
@@ -176,6 +181,19 @@ startEquella := serviceCommand(installOptions.value, "start")
 stopEquella := serviceCommand(installOptions.value, "stop")
 
 aggregate in test := false
+
+collectArtifacts := {
+  val results = target.value / "test-artifacts.zip"
+  def allFiles(files: Seq[File]): Traversable[(File, String)] = {
+    files.flatMap(f => (f ** "*").pair(rebase(f, f.getName)))
+  }
+  val logsDir = installDir.value / "logs"
+  val scReportDir = (target in LocalProject("Tests")).value / "test-reports"
+
+  sLog.value.info(s"Collecting test artifacts into ${results.absolutePath}")
+  IO.zip(allFiles(Seq(logsDir, scReportDir, (target in coverageReport).value)), results)
+  results
+}
 
 /*
 Steps to clusterize install

@@ -19,5 +19,6 @@ object TestKeys extends AutoPlugin {
     lazy val coverageLoader = taskKey[ExecFileLoader]("The coverage data loader")
     lazy val coverageJar = taskKey[File]("The jacoco agent jar")
     lazy val dumpCoverage = taskKey[File]("Dump coverage data to file")
+    lazy val collectArtifacts = taskKey[File]("Collect testing artifacts into zip file")
   }
 }
