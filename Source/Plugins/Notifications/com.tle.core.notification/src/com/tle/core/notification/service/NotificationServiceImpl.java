@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
@@ -19,24 +18,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.core.notification.EmailKey;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.exception.ConstraintViolationException;
 import org.java.plugin.registry.Extension;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import com.tle.beans.Institution;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
 import com.tle.common.Check;
 import com.tle.common.NamedThreadFactory;
 import com.tle.common.beans.exception.NotFoundException;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.email.EmailResult;
@@ -189,7 +185,7 @@ public class NotificationServiceImpl implements NotificationService
 
 	public void emailTask(final boolean batched)
 	{
-		final Date notAfter = new Date(System.currentTimeMillis() - RETRY_MILLIS);
+		final Date notBefore = new Date(System.currentTimeMillis() - RETRY_MILLIS);
 		final Date processTime = new Date();
 		final String attemptId = UUID.randomUUID().toString();
 		final ExecutorCompletionService<EmailResult<EmailKey>> completionService = new ExecutorCompletionService<EmailResult<EmailKey>>(
@@ -204,7 +200,7 @@ public class NotificationServiceImpl implements NotificationService
 				public Void call()
 				{
 
-					while( processFirstUser(notAfter, processTime, completionService, emailCounter, attemptId,
+					while( processFirstUser(notBefore, processTime, completionService, emailCounter, attemptId,
 						batched) )
 					{
 						Future<EmailResult<EmailKey>> result;
@@ -237,7 +233,7 @@ public class NotificationServiceImpl implements NotificationService
 		{
 			final EmailResult<EmailKey> emailResult = result.get();
 			final EmailKey key = emailResult.getKey();
-			runAs.executeAsSystem(key.getInstitution(), new Callable<Void>()
+			runAs.executeAsSystem(key.institution(), new Callable<Void>()
 			{
 				@Override
 				public Void call()
@@ -249,7 +245,7 @@ public class NotificationServiceImpl implements NotificationService
 					}
 					else
 					{
-						UserBean user = key.getUser();
+						UserBean user = key.user();
 						LOGGER.error(
 							"Error sending mail to " + user.getEmailAddress() + " (" + user.getUsername() + ") ",
 							error);
@@ -267,10 +263,7 @@ public class NotificationServiceImpl implements NotificationService
 	@Transactional
 	protected void markProcessed(EmailKey key)
 	{
-		String user = key.getUser().getUniqueID();
-		String attemptId = key.getAttemptId();
-		dao.markProcessed(user, key.getReasons(), attemptId);
-		dao.deleteUnindexed(user, key.getDeletes(), attemptId);
+		key.successCallback();
 	}
 
 	@Transactional
@@ -285,12 +278,12 @@ public class NotificationServiceImpl implements NotificationService
 			Institution institution = institutionService.getInstitution(userToNotify.getInstId());
 			try
 			{
-				Callable<EmailResult<EmailKey>> emailer = runAsUser.execute(institution, user,
-					new UserEmailer(user, batched, processTime, attemptId));
-				if( emailer != null )
+				Iterable<Callable<EmailResult<EmailKey>>> emailer = runAsUser.execute(institution, user,
+					new NotificationEmailer(batched, processTime, attemptId, dao, emailService));
+				for (Callable<EmailResult<EmailKey>> em : emailer)
 				{
 					emailCounter.incrementAndGet();
-					completionService.submit(emailer);
+					completionService.submit(em);
 				}
 			}
 			catch( UserException ue )
@@ -319,103 +312,6 @@ public class NotificationServiceImpl implements NotificationService
 		return userToNotify != null;
 	}
 
-	public class UserEmailer implements Callable<Callable<EmailResult<EmailKey>>>
-	{
-		private boolean batched;
-		private String user;
-		private Date processDate;
-		private String attemptId;
-
-		public UserEmailer(String user, boolean batched, Date processDate, String attemptId)
-		{
-			this.user = user;
-			this.batched = batched;
-			this.processDate = processDate;
-			this.attemptId = attemptId;
-		}
-
-		@Override
-		public Callable<EmailResult<EmailKey>> call()
-		{
-			Callable<EmailResult<EmailKey>> emailer = null;
-			dao.updateLastAttempt(user, batched, processDate, attemptId);
-			Map<String, Integer> reasonCounts = dao.getReasonCounts(user, attemptId);
-			List<String> processed = Lists.newArrayList();
-			List<String> deletes = Lists.newArrayList();
-			UserBean actualUser = CurrentUser.getUserState().getUserBean();
-			if( !Check.isEmpty(actualUser.getEmailAddress()) )
-			{
-				final Set<NotificationExtension> emailers = Sets.newIdentityHashSet();
-				List<String> processedReasons = Lists.newArrayList();
-				List<String> deletedReasons = Lists.newArrayList();
-				List<String> allowedReasons = Lists.newArrayList();
-				int notificationCount = 0;
-				for( Entry<String, Integer> reasonCount : reasonCounts.entrySet() )
-				{
-					String reason = reasonCount.getKey();
-					NotificationExtension extension = getExtensionForType(reason);
-					boolean indexed = extension.isIndexed(reason);
-					emailers.add(extension);
-					allowedReasons.add(reason);
-					(indexed ? processedReasons : deletedReasons).add(reason);
-					notificationCount += reasonCount.getValue();
-				}
-				List<Notification> notifications = dao.getNewestNotificationsForUser(MAX_EMAIL_NOTIFICATIONS, user,
-					allowedReasons, attemptId);
-				final StringBuilder message = new StringBuilder();
-				final ListMultimap<String, Notification> typeMap = ArrayListMultimap.create();
-				for( Notification notification : notifications )
-				{
-					typeMap.put(notification.getReason(), notification);
-				}
-				message.append(CurrentLocale.get(keyPrefix + "email.header", actualUser.getFirstName(),
-					actualUser.getLastName(), actualUser.getUsername()));
-
-				int failteredNotificationCount = 0;
-				if( !emailers.isEmpty() )
-				{
-					for( NotificationExtension ext : emailers )
-					{
-						String emailText = ext.emailText(typeMap);
-						message.append(emailText);
-						failteredNotificationCount += ext.countNotification(typeMap);
-					}
-
-					if( notificationCount > notifications.size() )
-					{
-						message.append(CurrentLocale.get(keyPrefix + "email.more", notifications.size()));
-					}
-
-					if( emailService.hasMailSettings() && failteredNotificationCount > 0 )
-					{
-						emailer = emailService.createEmailer(CurrentLocale.get(keyPrefix + "email.subject"),
-							Collections.singletonList(actualUser.getEmailAddress()), message.toString(),
-							new EmailKey(actualUser, CurrentInstitution.get(), attemptId, processedReasons,
-								deletedReasons, batched));
-					}
-				}
-			}
-			else
-			{
-				for( String reason : reasonCounts.keySet() )
-				{
-					NotificationExtension extension = getExtensionForType(reason);
-					if( !extension.isIndexed(reason) )
-					{
-						deletes.add(reason);
-					}
-					else
-					{
-						processed.add(reason);
-					}
-				}
-			}
-			dao.deleteUnindexed(user, deletes, attemptId);
-			dao.markProcessed(user, processed, attemptId);
-			return emailer;
-		}
-	}
-
 	@Override
 	public void processEmails()
 	{
@@ -434,57 +330,6 @@ public class NotificationServiceImpl implements NotificationService
 	{
 		return new BeanClusteredTask(NotificationService.class.getName() + '-' + batched, NotificationService.class,
 			"emailTask", batched);
-	}
-
-	public static class EmailKey
-	{
-		private final UserBean user;
-		private final Institution institution;
-		private final String attemptId;
-		private final Collection<String> reasons;
-		private final Collection<String> deletes;
-		private final boolean batched;
-
-		public EmailKey(UserBean user, Institution institution, String attemptId, Collection<String> reasons,
-			Collection<String> deletes, boolean batched)
-		{
-			this.user = user;
-			this.institution = institution;
-			this.attemptId = attemptId;
-			this.reasons = reasons;
-			this.deletes = deletes;
-			this.batched = batched;
-		}
-
-		public Institution getInstitution()
-		{
-			return institution;
-		}
-
-		public UserBean getUser()
-		{
-			return user;
-		}
-
-		public Collection<String> getReasons()
-		{
-			return reasons;
-		}
-
-		public Collection<String> getDeletes()
-		{
-			return deletes;
-		}
-
-		public boolean isBatched()
-		{
-			return batched;
-		}
-
-		public String getAttemptId()
-		{
-			return attemptId;
-		}
 	}
 
 	@Inject
