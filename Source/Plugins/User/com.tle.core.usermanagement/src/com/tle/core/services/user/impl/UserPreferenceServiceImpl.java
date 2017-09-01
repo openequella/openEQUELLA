@@ -1,9 +1,6 @@
 package com.tle.core.services.user.impl;
 
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -236,6 +233,20 @@ public class UserPreferenceServiceImpl implements UserPreferenceService, UserCha
 		Criterion c1 = Restrictions.eq("key.preferenceID", key);
 		Criterion c2 = Restrictions.eq("key.institution", CurrentInstitution.get().getDatabaseId());
 		for( UserPreference pref : userPreferencesDao.findAllByCriteria(c1, c2) )
+		{
+			prefMap.put(pref.getKey().getUserID(), pref.getData());
+		}
+		return prefMap;
+	}
+
+	@Override
+	public Map<String, String> getPreferenceForUsers(String key, Collection<String> users)
+	{
+		Map<String, String> prefMap = Maps.newHashMap();
+		Criterion c1 = Restrictions.eq("key.preferenceID", key);
+		Criterion c2 = Restrictions.eq("key.institution", CurrentInstitution.get().getDatabaseId());
+		Criterion c3 = Restrictions.in("key.userID", users);
+		for( UserPreference pref : userPreferencesDao.findAllByCriteria(c1, c2, c3) )
 		{
 			prefMap.put(pref.getKey().getUserID(), pref.getData());
 		}

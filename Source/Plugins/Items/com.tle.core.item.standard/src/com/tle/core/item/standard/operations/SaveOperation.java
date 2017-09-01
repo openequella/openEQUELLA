@@ -36,10 +36,12 @@ import com.tle.core.item.operations.ItemOperationParams;
 import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.service.ItemLockingService;
 import com.tle.core.item.standard.FilterFactory;
+import com.tle.core.item.standard.NotifyMyLive;
 import com.tle.core.item.standard.operations.workflow.InsecureArchiveOperation;
 import com.tle.core.notification.beans.Notification;
 import com.tle.core.quota.service.QuotaService;
 import com.tle.core.security.TLEAclManager;
+import com.tle.core.services.user.UserPreferenceService;
 import com.tle.exceptions.AccessDeniedException;
 
 public class SaveOperation extends AbstractStandardWorkflowOperation implements DeleteHandler
@@ -71,6 +73,8 @@ public class SaveOperation extends AbstractStandardWorkflowOperation implements 
 	private TLEAclManager aclManager;
 	@Inject
 	private FilterFactory filterFactory;
+	@Inject
+	private UserPreferenceService userPreferenceService;
 	@Inject
 	private Provider<InsecureArchiveOperation> archiveProvider;
 
@@ -119,6 +123,10 @@ public class SaveOperation extends AbstractStandardWorkflowOperation implements 
 			if( wentlive )
 			{
 				addNotifications(item.getItemId(), item.getNotifications(), Notification.REASON_WENTLIVE, true);
+				if (getWorkflow() != null)
+				{
+					NotifyMyLive.notifyOwners(this, userPreferenceService);
+				}
 
 				if( dao.getLatestLiveVersion(item.getUuid()) > item.getVersion() )
 				{

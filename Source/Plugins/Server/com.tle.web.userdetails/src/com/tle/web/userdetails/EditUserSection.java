@@ -181,6 +181,9 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 	@Component(name = "wtd")
 	private CollectionsList workflowItemDefs;
 
+	@Component(name = "mli")
+	private Checkbox myLiveItems;
+
 	// i18n screen
 	@Component(name = "ll")
 	protected SingleSelectionList<NameValue> languageList;
@@ -247,7 +250,7 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 					timeZones.setSelectedStringValue(context, zoneId);
 				}
 			}
-
+			myLiveItems.setChecked(context, "true".equals(userPrefs.getPreference(UserPreferenceService.NOTIFY_MYLIVE)));
 			model.setSetUpForm(false);
 		}
 		// Date format
@@ -465,6 +468,8 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 
 		String dateformat = dateFormats.getSelectedValueAsString(context);
 		userPrefs.setDateFormat(dateformat);
+
+		userPrefs.setPreference(UserPreferenceService.NOTIFY_MYLIVE, Boolean.toString(myLiveItems.isChecked(context)));
 
 		sessionService.removeAttribute(WebConstants.KEY_TIMEZONE);
 		sessionService.removeAttribute(WebConstants.KEY_LOCALE);
@@ -711,4 +716,8 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
 		return dateFormats;
 	}
 
+	public Checkbox getMyLiveItems()
+	{
+		return myLiveItems;
+	}
 }
