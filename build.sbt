@@ -1,5 +1,6 @@
 import java.util.Properties
 
+import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.sbt.license.LicenseReport
 
 import scala.collection.JavaConverters._
@@ -42,7 +43,7 @@ lazy val Installer = (project in file("Installer")).settings(legacyPaths).depend
 
 lazy val equella = (project in file(".")).enablePlugins(JPFScanPlugin, JarSignerPlugin, GitVersioning)
   .aggregate(equellaserver, allPlugins, adminTool, Installer,
-  UpgradeManager, conversion, UpgradeInstallation, learningedge_config)
+    UpgradeManager, conversion, UpgradeInstallation, learningedge_config)
 
 buildConfig in ThisBuild := Common.buildConfig
 
@@ -70,9 +71,9 @@ versionProperties in ThisBuild := {
   val props = new Properties
   props.putAll(
     Map("version.mm" -> eqVersion.majorMinor,
-        "version.mmr" -> s"${eqVersion.majorMinor}.r${eqVersion.commits}",
-        "version.display" -> s"${eqVersion.majorMinor}-${eqVersion.releaseType}",
-        "version.commit" -> eqVersion.sha).asJava)
+      "version.mmr" -> s"${eqVersion.majorMinor}.r${eqVersion.commits}",
+      "version.display" -> s"${eqVersion.majorMinor}-${eqVersion.releaseType}",
+      "version.commit" -> eqVersion.sha).asJava)
   val f = target.value / "version.properties"
   IO.write(props, "version", f)
   f
@@ -85,6 +86,27 @@ updateLicenses := {
   val allLicenses = (plugsinReports.flatMap(_.licenses) ++ serverReport.licenses)
     .groupBy(_.module).values.map(_.head).filterNot(_.module.organization == ourOrg)
   LicenseReport(allLicenses.toSeq, serverReport.orig)
+}
+
+writeLanguagePack := {
+  IO.withTemporaryDirectory { dir =>
+    val allProps = langStrings.all(ScopeFilter(inAggregates(allPlugins, includeRoot = false))).value
+      .flatten.groupBy(ls => (ls.group, ls.xml))
+      .map { case ((g, xml), lss) =>
+        val fname = g + (if (xml) ".xml" else ".properties")
+        val f = dir / fname
+        val p = new SortedProperties()
+        lss.foreach( ls => p.putAll(ls.strings.asJava))
+        Using.fileOutputStream()(f) { os =>
+          if (xml) p.storeToXML(os, "") else p.store(os, "")
+        }
+        (f, fname)
+      }
+    val outZip = target.value / "reference-language-pack.zip"
+    sLog.value.info(s"Writing ${outZip.absolutePath}")
+    IO.zip(allProps, outZip)
+    outZip
+  }
 }
 
 aggregate in dumpLicenseReport := false

@@ -1,6 +1,6 @@
 import com.typesafe.config.Config
+import de.heikoseeberger.sbtheader.HeaderPlugin
 import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport._
-import de.heikoseeberger.sbtheader._
 import sbt.Keys._
 import sbt._
 import sbt.plugins.JvmPlugin
@@ -15,6 +15,8 @@ object CommonSettings extends AutoPlugin {
     lazy val buildConfig = settingKey[Config]("The build configuration settings")
     lazy val prepareDevConfig = taskKey[Unit]("Prepare the dev learningedge-config folder")
     lazy val writeSourceZip = taskKey[File]("Write out a zip containing all sources")
+    lazy val langStrings = taskKey[Seq[LangStrings]]("Fully qualified language strings")
+    lazy val writeLanguagePack = taskKey[File]("Write the default language pack")
 
     lazy val platformCommon = LocalProject("com_tle_platform_common")
     lazy val platformSwing = LocalProject("com_tle_platform_swing")

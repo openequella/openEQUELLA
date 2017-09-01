@@ -1,6 +1,8 @@
 import sbt.Keys._
 import sbt._
 import sbt.plugins.JvmPlugin
+import CommonSettings.autoImport._
+import scala.collection.JavaConverters._
 
 object JPFPlugin extends AutoPlugin {
   override def trigger: PluginTrigger = noTrigger
@@ -29,6 +31,18 @@ object JPFPlugin extends AutoPlugin {
     javaSource in Compile := baseDirectory.value / "src",
     javaSource in Test := baseDirectory.value / "test",
     scalaSource in Compile := baseDirectory.value / "scalasrc",
-    updateOptions := updateOptions.value.withCachedResolution(true)
+    updateOptions := updateOptions.value.withCachedResolution(true),
+    langStrings := {
+      val doc = Common.saxBuilder.build(jpfRuntime.value.manifest)
+      val rootElem = doc.getRootElement
+      val pfx = rootElem.getAttributeValue("id")+"."
+      rootElem.getChildren("extension").asScala.collect {
+        case e if "com.tle.common.i18n" == e.getAttributeValue("plugin-id") && "bundle" == e.getAttributeValue("point-id") =>
+          val paramMap = e.getChildren("parameter").asScala.map(e => (e.getAttributeValue("id"), e.getAttributeValue("value"))).toMap
+          val fp = paramMap("file")
+          val group = paramMap.getOrElse("group", "resource-centre")
+          Common.loadLangProperties((resourceDirectory in Compile).value / fp, pfx, group)
+      }
+    }
   )
 }
