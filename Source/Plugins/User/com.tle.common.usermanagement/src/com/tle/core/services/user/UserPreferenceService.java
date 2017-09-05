@@ -1,9 +1,6 @@
 package com.tle.core.services.user;
 
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,6 +17,7 @@ public interface UserPreferenceService
 	String DATEFORMAT = "dateformat";
 	String RECENT_SELECTIONS = "recent.selections";
 	String SEARCH_WITHIN_ATTACHMENT = "search.within.attachment";
+	String NOTIFY_MYLIVE = "notify.mylive";
 
 	boolean isHideLoginNotice();
 
@@ -54,6 +52,8 @@ public interface UserPreferenceService
 	String getPreferenceForUser(String userId, String key);
 
 	Map<String, String> getPreferenceForAllUsers(String key);
+
+	Map<String, String> getPreferenceForUsers(String key, Collection<String> users);
 
 	boolean isSearchAttachment();
 

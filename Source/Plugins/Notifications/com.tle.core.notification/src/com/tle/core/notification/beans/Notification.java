@@ -35,6 +35,7 @@ public class Notification
 	public static final String REASON_SCRIPT_ERROR = "error";
 	public static final String REASON_SCRIPT_EXECUTED = "executed";
 	public static final String REASON_REASSIGN = "reassign";
+	public static final String REASON_MYLIVE = "mylive";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

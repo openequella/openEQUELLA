@@ -111,6 +111,7 @@
 	<extension plugin-id="com.tle.core.notification" point-id="notificationExtension" id="stdNotifications">
 		<parameter id="type" value="wentlive" />
 		<parameter id="type" value="wentliv2" />
+		<parameter id="type" value="mylive" />
 		<parameter id="bean" value="bean:com.tle.web.workflow.notification.StandardNotifications" />
 	</extension>
 
