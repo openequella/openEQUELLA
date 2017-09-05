@@ -3,7 +3,6 @@ package com.tle.web.workflow.tasks.comments;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -17,7 +16,6 @@ import com.tle.common.Check;
 import com.tle.common.PathUtils;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.common.filesystem.handle.StagingFile;
-import com.tle.common.quota.settings.QuotaSettings;
 import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.i18n.BundleCache;
 import com.tle.core.i18n.BundleNameValue;
@@ -322,7 +320,6 @@ public class CommentsSection extends AbstractPrototypeSection<CommentsSection.Mo
 			this.stagingUuid = stagingUuid;
 			this.stagingFileUrl = stagingFileUrl;
 		}
-
 	}
 
 	@AjaxMethod
