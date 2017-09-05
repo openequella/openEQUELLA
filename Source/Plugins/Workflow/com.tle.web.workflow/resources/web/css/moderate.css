@@ -1,22 +1,18 @@
 #moderate {
 	width: 921px;
 	float: left;
-	background: url(../images/bg-moderate.png) 0 0 repeat-x;
-	background-color: #202123;
+	background-color: #F1F1F1;
 	border-top: 1px solid #53565b;
 	border-right: 1px solid #53565b;
 	border-left: 1px solid #53565b;
 	border-bottom: none;
 	padding: 15px 15px;
-	color: #fbfbfb;
+	color: #4B4842;
+
+	font-size: 14px;
 }
 
-#moderate .content-left {
-	width: 678px;
-}
-
-#moderate a,#moderate .red {
-	color: #ff7f09;
+#moderate a {
 	text-decoration: none;
 }
 
@@ -24,81 +20,36 @@
 	text-decoration: underline;
 }
 
-#moderate h3 {
-	padding: 6px 0 6px 40px;
-	background: url(../images/icons/warning-large.png) 0 center no-repeat;
-	font-size: 18px;
-	font-weight: normal;
+#moderate .task-name {
+	float: left;
 }
 
-#moderate p {
+#moderate #moderate-controls {
+	float: right;
+}
+
+#moderate-controls a+a, #moderate-controls a+span, #moderate-controls span+a {
+	margin-left: 2em;
+}
+
+#moderate .task-description {
 	font-size: 12px;
 	line-height: 1.5;
-	margin: 12px 0;
+	margin: 4px 0;
 }
 
-#moderate .small {
-	font-size: 10px;
+#moderate .comments-label {
+	font-size: 12px;
+	margin-top: 1em;
 }
 
-#moderate .comments {
-	padding: 0 0 0 22px;
-	background: url(../images/icons/comment_alt.png) 0 center no-repeat;
+#moderate .details {
+	font-size: 12px;
 }
 
-#moderate-reject {
-	width: 109px;
-	height: 28px;
-	padding: 0 0 0 32px;
-	border: none;
-	font-size: 13px;
-	font-weight: bold;
-	text-align: left;
-	background: url(../images/moderate-reject.ltr.png) 0 0 no-repeat;
-	margin: 40px 0 0 0;
-	text-shadow: 0 1px 1px #fff;
-	-moz-text-shadow: 0 1px 1px #fff;
-	-webkit-text-shadow: 0 1px 1px #fff;
-}
-
-#moderate-reject:hover, #moderate-reject:focus {
-	background-position: 0 -28px;
-}
-
-#moderate-reject[disabled] {
-	background-position: 0 -56px;
-	cursor: default;
-}
-
-#moderate-approve {
-	width: 109px;
-	height: 28px;
-	padding: 0 32px 0 0;
-	border: none;
-	font-size: 13px;
-	font-weight: bold;
-	text-align: right;
-	background: url(../images/moderate-approve.ltr.png) 0 0 no-repeat;
-	margin: 40px 0 0 3px;
-	text-shadow: 0 1px 1px #fff;
-	-moz-text-shadow: 0 1px 1px #fff;
-	-webkit-text-shadow: 0 1px 1px #fff;
-}
-
-#moderate-approve:hover, #moderate-approve:focus {
-	background-position: 0 -28px;
-}
-
-#moderate-approve[disabled] {
-	background-position: 0 -56px;
-	cursor: default;
-}
-
-#moderate-controls {
-	clear: both;
-	padding: 15px 0 0 0;
-	text-transform: uppercase;
-	text-align: center;
+#moderate .detail {
+	padding-top: 2px;
+	padding-bottom: 2px;
 }
 
 #moderate-allmods
@@ -114,8 +65,10 @@
 	padding-left: 2.5em;
 }
 
-#mod_right_box {
-     width: 223px;
+.detail-label {
+	display: inline-block;
+	width: 200px;
+	font-weight: bold;
 }
 
 .moddialog-list
@@ -132,4 +85,39 @@
 #comments-dialog .comments-middle
 {
 	padding-right: 5px;
+}
+
+#moderation-comments {
+	margin-top: 8px;
+	max-height: 120px;
+	overflow-y: auto;
+}
+
+#moderation-comments .moderation-comment {
+	min-height: 30px;
+	margin-top: 8px;
+	margin-left: 4px;
+	margin-right: 4px;
+	padding: 8px;
+	border: 1px solid #C0C0C0;
+	background-color: #FFFFFF;
+}
+
+#moderation-comments .moderation-comment .moderation-comment-message {
+	margin-top: 8px;
+}
+
+#moderation-comments .moderation-comment .moderation-comment-attachments {
+	list-style: none;
+	margin-top: 8px;
+}
+
+#moderation-comments .moderation-comment .moderation-comment-attachments li {
+	padding-left: 8px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+
+#moderation-comments .moderation-comment.approval {
+	background-color: #F0FFF0;
 }
