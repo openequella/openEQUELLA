@@ -12,9 +12,23 @@ import NotificationLangStrings._
 import scala.collection.JavaConverters._
 
 
+trait NotificationGroup
+{
+  def headerLabel(user: UserBean, total: Int): Label
+  def subjectLabel: Label
+  def templateName: String
+}
+
+case class StdNotificationGroup(templateName: String, reason: String) extends NotificationGroup
+{
+  def headerLabel(user: UserBean, total: Int): Label = NotificationLangStrings.header(user, reason, total)
+
+  def subjectLabel: Label = NotificationLangStrings.subject(reason)
+}
+
 trait NotificationModel
 {
-  def group: String = note.getReason
+  def group: NotificationGroup
   def note: Notification
 }
 
@@ -30,15 +44,13 @@ trait TemplatedNotification {
     def getNotifications = notifications.asJava
   }
 
-  def templateName: String
-
   def emails(user: UserBean, notifications: Iterable[Notification], totals: Map[String, Int]): Iterable[NotificationEmail] = {
     toFreemarkerModel(notifications).groupBy(_.group).map {
-      case (reason, notes) =>
+      case (group, notes) =>
         val writer = new StringWriter()
-        viewFactory.render(viewFactory.createResultWithModel(templateName,
-          new StandardEmailModel(header(user, reason, notes.size), notes)), writer)
-        NotificationEmail(subject(reason), writer.toString, notes.map(_.note))
+        viewFactory.render(viewFactory.createResultWithModel(group.templateName,
+          new StandardEmailModel(group.headerLabel(user, notes.size), notes)), writer)
+        NotificationEmail(group.subjectLabel.getText, writer.toString, notes.map(_.note))
     }
   }
 

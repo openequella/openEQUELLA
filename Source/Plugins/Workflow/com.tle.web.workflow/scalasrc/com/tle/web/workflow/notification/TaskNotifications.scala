@@ -61,9 +61,11 @@ class TaskNotifications extends FilterableNotification with NotificationLookup w
 
   val msgTypes = Set(WorkflowMessage.TYPE_ACCEPT, WorkflowMessage.TYPE_REJECT, WorkflowMessage.TYPE_SUBMIT)
 
-  case class TaskNoteModel(lul: LazyUserLookup)(val note: Notification, val item: Item) extends TaskNotification {
+  case class TaskNoteModel(lul: LazyUserLookup)(val note: Notification, val item: Item) extends TaskNotification with OwnerLookup {
     val status = Option(workflowService.getIncompleteStatus(itemTaskId))
-    val currentTask: Option[WorkflowItem] = workflowItem(taskId)
+    val currentTask: Option[WorkflowItem] = workflowItem(taskId).collect {
+      case wi: WorkflowItem => wi
+    }
     val getAutoAction = currentTask.flatMap { workflowItem =>
       Option(workflowItem.getAutoAction).collect {
         case AutoAction.ACCEPT => LABEL_AUTOACCEPT
@@ -83,12 +85,18 @@ class TaskNotifications extends FilterableNotification with NotificationLookup w
 
     def getDueDate = status.map(_.getDateDue).orNull
 
-    override def group = note.getReason match {
-      case Notification.REASON_MODERATE => causeAccepted.map(if (_) "taskaccepted" else "taskrejected").getOrElse("taskother")
-      case o => o
+    override def group = {
+      val reason = note.getReason match {
+        case Notification.REASON_MODERATE => causeAccepted.map(if (_) "taskaccepted" else "taskrejected").getOrElse("taskother")
+        case o => o
+      }
+      val template = note.getReason match {
+        case "overdue" => "notification-overdue.ftl"
+        case _ => "notification-tasks.ftl"
+      }
+      StdNotificationGroup(template, reason)
     }
   }
-  override def templateName: String = "notification-tasks.ftl"
 
   def toFreemarkerModel(notes: Iterable[Notification]) = createDataIgnore(notes, TaskNoteModel(new LazyUserLookup(userService)))
 }

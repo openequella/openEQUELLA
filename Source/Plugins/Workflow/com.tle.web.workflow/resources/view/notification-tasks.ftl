@@ -15,4 +15,3 @@ ${msg.label} ${b.key('email.msgformat',[msg.message, msg.by])}
 </#list>
 
 </#list>
-
