@@ -17,9 +17,8 @@ class BadURLNotifications extends FilterableNotification with TemplatedNotificat
   case class BadURLModel(note: Notification, item: Item) extends ItemNotification
   {
     lazy val getUrls = item.getReferencedUrls.asScala.filterNot(_.isSuccess).asJava
+    def group = StdNotificationGroup("notification-badurl.ftl", note.getReason)
   }
 
   def toFreemarkerModel(notes: Iterable[Notification]) = createDataIgnore(notes, BadURLModel)
-
-  def templateName = "notification-badurl.ftl"
 }

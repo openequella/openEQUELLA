@@ -19,9 +19,8 @@ import scala.collection.JavaConverters._
 class StandardNotifications extends FilterableNotification with TemplatedNotification with NotificationLookup {
 
   type N = ItemNotification
-  override def templateName: String = "notification-item.ftl"
 
-  def toFreemarkerModel(notes: Iterable[Notification]) = createItemNotifications(notes)
+  def toFreemarkerModel(notes: Iterable[Notification]) = createItemNotifications("notification-item.ftl", notes)
 }
 
 
