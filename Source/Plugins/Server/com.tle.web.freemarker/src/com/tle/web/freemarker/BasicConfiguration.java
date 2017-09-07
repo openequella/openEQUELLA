@@ -16,13 +16,12 @@
 
 package com.tle.web.freemarker;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.inject.Singleton;
 
 import com.tle.core.guice.Bind;
 import com.tle.web.DebugSettings;
 
+import freemarker.cache.NullCacheStorage;
 import freemarker.template.Configuration;
 
 @SuppressWarnings("nls")
@@ -36,6 +35,8 @@ public class BasicConfiguration extends Configuration
 		setTimeFormat("short");
 		setDateTimeFormat("long_short");
 		setLocalizedLookup(false);
-		setTemplateUpdateDelay(DebugSettings.isDebuggingMode() ? 0 : (int) TimeUnit.DAYS.toSeconds(1));
+		if (DebugSettings.isDebuggingMode()) {
+			setCacheStorage(new NullCacheStorage());
+		}
 	}
 }

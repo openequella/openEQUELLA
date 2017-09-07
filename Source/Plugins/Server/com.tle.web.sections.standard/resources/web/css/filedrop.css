@@ -1,20 +1,11 @@
 .filedrop {
 	border: 3px dotted #CCC;
-	min-height: 128px;
-	padding: 0;
+	padding-top: 45px;
+	padding-bottom: 45px;
 	margin: 1em 0;
-}
-
-.filedrop p {
 	text-align: center;
-	font-size: 20px;
-}
-
-.dndicon {
-	height:80px;
-	width: 100%;
-	background:url("../images/dnd.png") center no-repeat;
-	margin-top: 1em;
+    cursor: pointer;
+    color: rgb(130, 130, 130);
 }
 
 .filedrop-file {

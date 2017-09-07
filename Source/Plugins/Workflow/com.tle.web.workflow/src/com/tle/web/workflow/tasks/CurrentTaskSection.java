@@ -1,30 +1,34 @@
 package com.tle.web.workflow.tasks;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import javax.inject.Inject;
 
+import com.dytech.edge.common.Constants;
+import com.google.common.collect.Lists;
 import com.tle.beans.item.ItemTaskId;
 import com.tle.beans.workflow.WorkflowStep;
+import com.tle.common.PathUtils;
+import com.tle.common.filesystem.FileEntry;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.workflow.WorkflowMessage;
+import com.tle.core.filesystem.WorkflowMessageFile;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.i18n.BundleCache;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.core.services.FileSystemService;
 import com.tle.core.services.item.FreetextSearchResults;
 import com.tle.core.services.item.TaskResult;
 import com.tle.core.services.user.UserSessionService;
+import com.tle.core.workflow.service.WorkflowService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.search.event.FreetextSearchEvent;
-import com.tle.web.sections.MutableSectionInfo;
-import com.tle.web.sections.SectionId;
-import com.tle.web.sections.SectionInfo;
-import com.tle.web.sections.SectionResult;
-import com.tle.web.sections.SectionTree;
+import com.tle.web.sections.*;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
@@ -33,20 +37,15 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.layout.OneColumnLayout;
 import com.tle.web.sections.equella.receipt.ReceiptService;
 import com.tle.web.sections.equella.render.Bootstrap;
-import com.tle.web.sections.equella.render.EquellaButtonExtension;
+import com.tle.web.sections.equella.render.JQueryTimeAgo;
 import com.tle.web.sections.equella.utils.UserLinkSection;
 import com.tle.web.sections.equella.utils.UserLinkService;
 import com.tle.web.sections.events.BeforeEventsListener;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
-import com.tle.web.sections.render.CombinedRenderer;
-import com.tle.web.sections.render.CombinedTemplateResult;
-import com.tle.web.sections.render.FallbackTemplateResult;
-import com.tle.web.sections.render.GenericTemplateResult;
-import com.tle.web.sections.render.HtmlRenderer;
-import com.tle.web.sections.render.Label;
-import com.tle.web.sections.render.SectionRenderable;
+import com.tle.web.sections.js.generic.OverrideHandler;
+import com.tle.web.sections.render.*;
 import com.tle.web.sections.result.util.BundleLabel;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.Button;
@@ -54,8 +53,10 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.model.DialogState;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.fancybox.FancyBoxDialogRenderer;
+import com.tle.web.workflow.tasks.comments.CommentRow;
 import com.tle.web.workflow.tasks.comments.CommentsSection;
 import com.tle.web.workflow.tasks.comments.CommentsSection.CommentType;
+import com.tle.web.workflow.tasks.dialog.CommentDialog;
 
 public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSection.TasksModel>
 	implements
@@ -78,8 +79,6 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 	private static String KEY_LISTOF;
 	@PlugKey("moderate.selected.listof")
 	private static String KEY_TASK_LISTOF;
-	@PlugKey("moderate.showcomments")
-	private static String KEY_SHOWCOMMENTS;
 
 	private static final int MAX_MODS = 3;
 	private static final int NAV_PREV = -1;
@@ -108,13 +107,13 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 	private ItemOperationFactory workflowFactory;
 	@Inject
 	private UserSessionService session;
+	@Inject
+	private WorkflowService workflowService;
+	@Inject
+	private FileSystemService fileSystemService;
+	@Inject
+	private InstitutionService institutionService;
 
-	@Component
-	@PlugKey("moderate.reject")
-	private Button rejectButton;
-	@Component
-	@PlugKey("moderate.approve")
-	private Button approveButton;
 	@Component
 	@PlugKey("moderate.next")
 	private Button nextButton;
@@ -127,9 +126,6 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 	@Component
 	@PlugKey("moderate.postcomment")
 	private Button postButton;
-	@Component
-	@PlugKey("moderate.showcomment")
-	private Button showButton;
 	@Component
 	@PlugKey("moderate.showallmods")
 	private Button showAllModsButton;
@@ -150,18 +146,19 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 	public void registered(String id, SectionTree tree)
 	{
 		super.registered(id, tree);
-		approveButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
-		rejectButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
-		approveButton.setClickHandler(events.getNamedHandler("comment", CommentType.ACCEPT));
-		showButton.setClickHandler(events.getNamedHandler("comment", CommentType.SHOW));
-		rejectButton.setClickHandler(events.getNamedHandler("comment", CommentType.REJECT));
-		postButton.setClickHandler(events.getNamedHandler("comment", CommentType.COMMENT));
+
 		nextButton.setClickHandler(events.getNamedHandler("nav", NAV_NEXT));
 		prevButton.setClickHandler(events.getNamedHandler("nav", NAV_PREV));
 		listButton.setClickHandler(events.getNamedHandler("nav", NAV_TASKLIST).setValidate(false));
 		assignButton.setClickHandler(events.getNamedHandler("assign"));
 		showAllModsButton.setDisplayed(false);
 		userLinkSection = userLinkService.register(tree, id);
+	}
+
+	@Override
+	public void treeFinished(String id, SectionTree tree)
+	{
+		super.treeFinished(id, tree);
 	}
 
 	@EventHandlerMethod
@@ -175,9 +172,9 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 	}
 
 	@EventHandlerMethod
-	public void comment(SectionInfo info, CommentType type)
+	public void comment(SectionInfo info)
 	{
-		commentsSection.doComment(info, type);
+		commentsSection.doComment(info, CommentType.COMMENT);
 	}
 
 	private void refreshState(SectionInfo info)
@@ -348,8 +345,11 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 
 	@Override
 	@SuppressWarnings("nls")
-	public SectionResult renderHtml(RenderEventContext context)
+	public SectionResult renderHtml(RenderEventContext context) throws Exception
 	{
+		CommentDialog commentDialog = context.lookupSection(CommentDialog.class);
+		postButton.setClickHandler(context, new OverrideHandler(commentDialog.getOpenFunction()));
+
 		TasksModel model = getModel(context);
 		TaskListState taskState = model.getTaskState();
 		int index = taskState.getIndex();
@@ -358,8 +358,6 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 		{
 			prevButton.disable(context);
 			nextButton.disable(context);
-			approveButton.disable(context);
-			rejectButton.disable(context);
 		}
 		else
 		{
@@ -382,6 +380,7 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 		setupModeratorList(context);
 		setupAssigned(context);
 		int commentSize = taskState.getCommentCount();
+		/*
 		if( commentSize != 1 )
 		{
 			showButton.setLabel(context, new KeyLabel(KEY_SHOWCOMMENTS, commentSize));
@@ -389,7 +388,7 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 		if( commentSize == 0 )
 		{
 			showButton.disable(context);
-		}
+		}*/
 		if( taskListSize != 1 )
 		{
 			if( selectedTaskList != null )
@@ -405,6 +404,71 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 		WorkflowStep currentStep = taskState.getCurrentStep();
 		model.setTaskName(new BundleLabel(currentStep.getName(), bundleCache));
 		model.setTaskDescription(new BundleLabel(currentStep.getDescription(), bundleCache));
+
+
+		List<CommentRow> commentList = Lists.newArrayList();
+		// getMessages or getCommentsForTask??
+		Collection<WorkflowMessage> messages = workflowService.getMessages(taskState.getItemTaskId());
+		//int numComments = messages.size();
+		//model.setCommentHeading(new PluralKeyLabel(KEY_COMMENTS, numComments));
+
+		for( WorkflowMessage workflowMessage : messages )
+		{
+			String uuid = workflowMessage.getUuid();
+
+			WorkflowMessageFile pf = new WorkflowMessageFile(uuid);
+			FileEntry[] files = fileSystemService.enumerate(pf, Constants.BLANK, null);
+			List<HtmlLinkState> attachments = Lists.newArrayList();
+			for( FileEntry f : files )
+			{
+				HtmlLinkState link = new HtmlLinkState(new Bookmark()
+				{
+					@Override
+					public String getHref()
+					{
+						String url = institutionService
+								.institutionalise(PathUtils.urlPath("workflow/message", uuid, f.getName()));
+						return url;
+					}
+				});
+				link.setLabel(new TextLabel(f.getName()));
+				attachments.add(link);
+			}
+
+			Date date = workflowMessage.getDate();
+			String extraClass = "";
+			String user = workflowMessage.getUser();
+			char type = workflowMessage.getType();
+			if( type == WorkflowMessage.TYPE_REJECT )
+			{
+				extraClass = "rejection";
+			}
+			else if( type == WorkflowMessage.TYPE_ACCEPT )
+			{
+				extraClass = "approval";
+			}
+			// If this is being rendered immediately after adding a new comment,
+			// we won't know (or care) what taskName applies, because the
+			// comEvent.node isn't rendered
+			BundleLabel taskName = workflowMessage.getNode() != null
+					? new BundleLabel(workflowMessage.getNode().getNode().getName(), bundleCache) : null;
+			HtmlLinkState userLink = userLinkSection.createLink(context, user);
+			CommentRow modrow = new CommentRow(workflowMessage.getMessage(), attachments, userLink, taskName, date,
+					JQueryTimeAgo.timeAgoTag(date), extraClass);
+			commentList.add(modrow);
+		}
+		Collections.sort(commentList, new Comparator<CommentRow>()
+		{
+			@Override
+			public int compare(CommentRow r1, CommentRow r2)
+			{
+				long t1 = r1.getDate().getTime();
+				long t2 = r2.getDate().getTime();
+				return t1 < t2 ? 1 : (t1 == t2 ? 0 : -1);
+			}
+		});
+		model.setComments(commentList);
+
 
 		Label receipt = receiptService.getReceipt();
 		if( receipt != null )
@@ -485,6 +549,7 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 		private Label taskDescription;
 		private Label taskName;
 		private String receipt;
+		private List<CommentRow> comments;
 
 		public Label getTaskName()
 		{
@@ -590,16 +655,16 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 		{
 			return receipt;
 		}
-	}
 
-	public Button getRejectButton()
-	{
-		return rejectButton;
-	}
+		public List<CommentRow> getComments()
+		{
+			return comments;
+		}
 
-	public Button getApproveButton()
-	{
-		return approveButton;
+		public void setComments(List<CommentRow> comments)
+		{
+			this.comments = comments;
+		}
 	}
 
 	public void setupState(SectionInfo info, TaskListState state)
@@ -652,9 +717,9 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 		return showAllModsButton;
 	}
 
-	public Button getShowButton()
+	/*public Button getShowButton()
 	{
 		return showButton;
-	}
+	}*/
 
 }

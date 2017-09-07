@@ -6,13 +6,6 @@
 	margin: 10px 0;
 }
 
-.workflowcomments #uploaded li {
-	list-style:none;
-}
-
-.workflowcomments #uploaded a {
-	text-decoration: underline;
-}
 .comment-username {
 	color: #f6a03d;
 	background: url(../images/user-big.png) 0 0 no-repeat;
@@ -31,6 +24,14 @@
 }
 
 .comment-form textarea {
+	width: 100%;
+}
+
+.comment-form .settingContainer > .settingRow:first-child {
+	padding-top: 0;
+}
+/*
+.comment-form textarea {
 	border: 1px solid #8f8b7f;
 	width: 100%;
 	padding: 0;
@@ -39,7 +40,7 @@
 	border-radius: 0;
 	-moz-border-radius: 0;
 	-webkit-border-radius: 0;
-}
+}*/
 
 .comment.rejection
 {

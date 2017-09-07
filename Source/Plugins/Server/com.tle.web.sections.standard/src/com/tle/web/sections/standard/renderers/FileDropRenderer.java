@@ -16,7 +16,6 @@
 
 package com.tle.web.sections.standard.renderers;
 
-import com.google.common.base.Strings;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
@@ -24,17 +23,15 @@ import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.SectionsRuntimeException;
 import com.tle.web.sections.events.PreRenderContext;
-import com.tle.web.sections.jquery.Jq;
 import com.tle.web.sections.jquery.libraries.JQueryProgression;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.JSStatements;
 import com.tle.web.sections.js.generic.Js;
-import com.tle.web.sections.js.generic.expression.ElementByIdExpression;
-import com.tle.web.sections.js.generic.expression.ElementIdExpression;
 import com.tle.web.sections.js.generic.expression.ObjectExpression;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
-import com.tle.web.sections.render.*;
+import com.tle.web.sections.render.CssInclude;
+import com.tle.web.sections.render.TagRenderer;
 import com.tle.web.sections.standard.model.HtmlFileDropState;
 
 import java.io.IOException;
@@ -62,23 +59,22 @@ public class FileDropRenderer extends TagRenderer
 	}
 
 	@Override
-	protected void prepareFirstAttributes(SectionWriter writer, Map<String, String> attrs) throws IOException {
+	protected void prepareFirstAttributes(SectionWriter writer, Map<String, String> attrs) throws IOException
+	{
 		super.prepareFirstAttributes(writer, attrs);
 		addClass(attrs, "filedrop");
 	}
 
 	@Override
-	protected void writeMiddle(SectionWriter writer) throws IOException {
-		writer.writeTag("div", "class", "dndicon");
-		writer.endTag("div");
-		writer.writeTag("p");
+	protected void writeMiddle(SectionWriter writer) throws IOException
+	{
 		writer.writeText(CurrentLocale.get(KEY_DND));
-		writer.endTag("p");
 		super.writeMiddle(writer);
 	}
 
 	@Override
-	protected void writeEnd(SectionWriter writer) throws IOException {
+	protected void writeEnd(SectionWriter writer) throws IOException
+	{
 		super.writeEnd(writer);
 
 		writer.writeTag("input", "style", "display: none;", "type", "file", "id",

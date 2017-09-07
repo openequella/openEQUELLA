@@ -3,13 +3,18 @@
  */
 package com.tle.core.item.standard.operations.workflow;
 
+import com.google.common.base.Throwables;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.HistoryEvent;
 import com.tle.beans.item.HistoryEvent.Type;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.workflow.WorkflowMessage;
+import com.tle.core.filesystem.WorkflowMessageFile;
 import com.tle.core.security.impl.SecureInModeration;
+
+import java.io.IOException;
 
 /**
  * @author jmaginnis
@@ -39,6 +44,19 @@ public final class WorkflowCommentOperation extends SpecificTaskOperation // NOS
 		setStepFromTask(comment);
 		addMessage(WorkflowMessage.TYPE_COMMENT, msg, messageUuid);
 		getModerationStatus().setLastAction(params.getDateNow());
+
+		if (messageUuid != null)
+		{
+			try
+			{
+				fileSystemService.commitFiles(new StagingFile(messageUuid), new WorkflowMessageFile(messageUuid));
+			}
+			catch (IOException ex)
+			{
+				throw Throwables.propagate(ex);
+			}
+		}
+
 		return true;
 	}
 }

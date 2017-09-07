@@ -30,9 +30,15 @@ public class SessionLogin
 		{
 			wr.write(postBytes);
 		}
-		if( conn.getResponseCode() != 200 )
+
+		int code = conn.getResponseCode();
+		if( code == 403 || code == 401 )
 		{
 			throw new BadCredentialsException("Bad credentials");
+		}
+		else if (code != 200)
+		{
+			throw new RuntimeException("Error launching console: " + code);
 		}
 	}
 }
