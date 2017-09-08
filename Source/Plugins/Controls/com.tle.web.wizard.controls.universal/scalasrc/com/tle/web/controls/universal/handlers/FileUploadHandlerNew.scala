@@ -397,22 +397,27 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
     def createNew(info: SectionInfo, uuid: Option[UUID]): Unit = {
       if (getModel(info).isEditDetails) {
         val editState = getEditState
-        val u = uuid.getOrElse(UUID.randomUUID())
+        val u = uuid.getOrElse(UUID.randomUUID()).toString
         val _a = editState.a
-        _a.setUuid(u.toString)
+        _a.setUuid(u)
         editState.commit
         val (a,_) = editState.page.editAttachment(info, _a, this)
         controlState.addAttachment(info, a)
-        controlState.addMetadataUuid(info, u.toString)
+        if (uuid.isEmpty) {
+          controlState.addMetadataUuid(info, u)
+        }
       }
       else {
-        allValidatedUploads.foreach { vu =>
+        allValidatedUploads.zipWithIndex.foreach { case (vu,i) =>
           val c = WebFileUploads.attachmentCreatorForUpload(info, this, vu)
           val a = c.create(stagingContext)
-          val u = UUID.randomUUID().toString
+          val repUuid = uuid.filter(_ => i == 0)
+          val u = repUuid.getOrElse(UUID.randomUUID()).toString
           a.setUuid(u)
           controlState.addAttachment(info, a)
-          controlState.addMetadataUuid(info, u)
+          if (repUuid.isEmpty) {
+            controlState.addMetadataUuid(info, u)
+          }
         }
       }
     }
