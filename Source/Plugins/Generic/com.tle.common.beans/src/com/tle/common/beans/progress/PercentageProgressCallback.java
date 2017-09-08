@@ -9,7 +9,6 @@ public class PercentageProgressCallback implements ProgressCallback
 
 	private long totalSize = 0;
 	private long bytesRead = 0;
-	private int percent = 0;
 	private boolean finished;
 	private String forwardUrl;
 	private String errorMessage;
@@ -122,11 +121,6 @@ public class PercentageProgressCallback implements ProgressCallback
 
 	public int getPercent()
 	{
-		return percent;
-	}
-
-	public void setPercent(int percent)
-	{
-		this.percent = percent;
+		return (int) ((bytesRead / (double) totalSize) * 100.0D);
 	}
 }
