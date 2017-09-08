@@ -352,6 +352,7 @@ public abstract class TaskOperation extends AbstractStandardWorkflowOperation
 		Set<WorkflowNodeStatus> oldStatuses = status.getStatuses();
 		if( clearAll )
 		{
+			workflowService.cleanupMessageFiles(oldStatuses);
 			oldStatuses.clear();
 		}
 		else

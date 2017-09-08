@@ -9,11 +9,7 @@ import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemTaskId;
-import com.tle.common.workflow.RemoteWorkflowService;
-import com.tle.common.workflow.TaskModerator;
-import com.tle.common.workflow.Workflow;
-import com.tle.common.workflow.WorkflowItemStatus;
-import com.tle.common.workflow.WorkflowMessage;
+import com.tle.common.workflow.*;
 import com.tle.common.workflow.node.ScriptNode;
 import com.tle.common.workflow.node.WorkflowItem;
 import com.tle.core.entity.EntityEditingBean;
@@ -43,6 +39,8 @@ public interface WorkflowService extends AbstractEntityService<EntityEditingBean
 	int getMessageCount(ItemKey itemKey);
 
 	boolean cleanupMessageFiles(ItemKey itemKey);
+
+	void cleanupMessageFiles(Collection<WorkflowNodeStatus> statuses);
 
 	List<WorkflowMessage> getMessages(ItemKey itemKey);
 

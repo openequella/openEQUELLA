@@ -690,16 +690,26 @@ public class WorkflowServiceImpl extends AbstractEntityServiceImpl<EntityEditing
 	@Override
 	public boolean cleanupMessageFiles(ItemKey itemKey)
 	{
-		List<WorkflowMessage> messages = this.getMessages(itemKey);
-		for( WorkflowMessage msg : messages )
-		{
-			String messageUuid = msg.getUuid();
-			WorkflowMessageFile handle = new WorkflowMessageFile(messageUuid);
-			fileSystemService.removeFile(handle);
-		}
+		cleanFilesForMessages(getMessages(itemKey));
 		return true;
 	}
 
+	private void cleanFilesForMessages(Collection<WorkflowMessage> messages)
+	{
+		for( WorkflowMessage msg : messages )
+		{
+			fileSystemService.removeFile(new WorkflowMessageFile(msg.getUuid()));
+		}
+	}
+
+	@Override
+	public void cleanupMessageFiles(Collection<WorkflowNodeStatus> statuses)
+	{
+		for ( WorkflowNodeStatus status: statuses)
+		{
+			cleanFilesForMessages(status.getComments());
+		}
+	}
 
 	@Override
 	@Inject
