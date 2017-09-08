@@ -1,6 +1,5 @@
 package com.tle.common.security;
 
-import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_CATALOGUES;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_COLLECTIONS;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_CONNECTORS;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_COURSE_INFO;
@@ -16,21 +15,14 @@ import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_KALTURAS;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_LTI_CONSUMERS;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_MANAGING;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_OAUTH_CLIENTS;
-import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_PAYMENT_GATEWAYS;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_PORTLETS;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_POWER_SEARCHES;
-import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_REGIONS;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_REPORTS;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_SCHEMAS;
-import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_STOREFRONTS;
-import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_STORES;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_SYSTEM_SETTINGS;
-import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_TAX;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_TAXONOMIES;
-import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_TIERS;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_USER_SCRIPTS;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_WORKFLOWS;
-import static com.tle.common.security.SecurityConstants.PRIORITY_CATALOGUE;
 import static com.tle.common.security.SecurityConstants.PRIORITY_COLLECTION;
 import static com.tle.common.security.SecurityConstants.PRIORITY_CONNECTOR;
 import static com.tle.common.security.SecurityConstants.PRIORITY_COURSE_INFO;
@@ -54,18 +46,12 @@ import static com.tle.common.security.SecurityConstants.PRIORITY_LTI_CONSUMER;
 import static com.tle.common.security.SecurityConstants.PRIORITY_MANAGING;
 import static com.tle.common.security.SecurityConstants.PRIORITY_OAUTH_CLIENT;
 import static com.tle.common.security.SecurityConstants.PRIORITY_OBJECT_INSTANCE;
-import static com.tle.common.security.SecurityConstants.PRIORITY_PAYMENT_GATEWAY;
 import static com.tle.common.security.SecurityConstants.PRIORITY_PORTLET;
 import static com.tle.common.security.SecurityConstants.PRIORITY_POWER_SEARCH;
-import static com.tle.common.security.SecurityConstants.PRIORITY_REGION;
 import static com.tle.common.security.SecurityConstants.PRIORITY_REPORT;
 import static com.tle.common.security.SecurityConstants.PRIORITY_SCHEMA;
-import static com.tle.common.security.SecurityConstants.PRIORITY_STORE;
-import static com.tle.common.security.SecurityConstants.PRIORITY_STOREFRONT;
 import static com.tle.common.security.SecurityConstants.PRIORITY_SYSTEM_SETTING;
-import static com.tle.common.security.SecurityConstants.PRIORITY_TAX;
 import static com.tle.common.security.SecurityConstants.PRIORITY_TAXONOMY;
-import static com.tle.common.security.SecurityConstants.PRIORITY_TIER;
 import static com.tle.common.security.SecurityConstants.PRIORITY_USER_SCRIPTS;
 import static com.tle.common.security.SecurityConstants.PRIORITY_WORKFLOW;
 import static com.tle.common.security.SecurityConstants.PRIORITY_WORKFLOW_TASK;
@@ -115,27 +101,6 @@ public final class PrivilegeTree
 
 		// Connectors HAX
 		ALL_CONNECTORS(true, PRIORITY_ALL_CONNECTORS), CONNECTOR(false, PRIORITY_CONNECTOR),
-
-		// Regions HAX
-		ALL_REGIONS(true, PRIORITY_ALL_REGIONS), REGION(false, PRIORITY_REGION),
-
-		// Catalogues HAX
-		ALL_CATALOGUES(true, PRIORITY_ALL_CATALOGUES), CATALOGUE(false, PRIORITY_CATALOGUE),
-
-		// PAYMENT_GATEWAY HAX
-		ALL_PAYMENT_GATEWAYS(true, PRIORITY_ALL_PAYMENT_GATEWAYS), PAYMENT_GATEWAY(false, PRIORITY_PAYMENT_GATEWAY),
-
-		// Tiers HAX
-		ALL_TIERS(true, PRIORITY_ALL_TIERS), TIER(false, PRIORITY_TIER),
-
-		// StoreFront HAX
-		ALL_STOREFRONTS(true, PRIORITY_ALL_STOREFRONTS), STOREFRONT(false, PRIORITY_STOREFRONT),
-
-		// Tax HAX
-		ALL_TAX(true, PRIORITY_ALL_TAX), TAX(false, PRIORITY_TAX),
-
-		// Store
-		ALL_STORES(true, PRIORITY_ALL_STORES), STORE(false, PRIORITY_STORE),
 
 		// Kaltura HAX
 		ALL_KALTURAS(true, PRIORITY_ALL_KALTURAS), KALTURA(false, PRIORITY_KALTURA),
@@ -340,13 +305,6 @@ public final class PrivilegeTree
 		item.registerPrivilege("FIND_USES_ITEM");
 		item.registerPrivilege("EXPORT_TO_LMS_ITEM");
 
-		// Payment TODO: plugin
-		item.registerPrivilege("SET_TIERS_FOR_ITEM");
-		item.registerPrivilege("VIEW_TIERS_FOR_ITEM");
-		item.registerPrivilege("VIEW_SALES_FOR_ITEM");
-
-		item.registerPrivilege("VIEW_PURCHASE_DETAILS_FOR_ITEM");
-
 		mapping.put(Node.ITEM, item);
 
 		// Schemas
@@ -481,34 +439,6 @@ public final class PrivilegeTree
 		PrivilegeNode htmlEditorPluginss = buildBasic(Node.HTMLEDITOR_PLUGIN, Node.ALL_HTMLEDITOR_PLUGINS,
 			"HTMLEDITOR_PLUGIN");
 
-		// Regions
-		PrivilegeNode regions = buildBasic(Node.REGION, Node.ALL_REGIONS, "REGION");
-
-		// Catalogues
-		PrivilegeNode catalogues = buildBasic(Node.CATALOGUE, Node.ALL_CATALOGUES, "CATALOGUE");
-		catalogues.registerPrivilege("MANAGE_CATALOGUE");
-		PrivilegeNode catalogue = catalogues.getChildren().get(0);
-		catalogue.registerPrivilege("MANAGE_CATALOGUE");
-
-		// Payment Gatewyas
-		PrivilegeNode paymentGateways = buildBasic(Node.PAYMENT_GATEWAY, Node.ALL_PAYMENT_GATEWAYS, "PAYMENT_GATEWAY");
-
-		// Tiers
-		PrivilegeNode tiers = buildBasic(Node.TIER, Node.ALL_TIERS, "TIER");
-
-		// Store fronts
-		PrivilegeNode storefronts = buildBasic(Node.STOREFRONT, Node.ALL_STOREFRONTS, "STOREFRONT");
-
-		// Stores
-		PrivilegeNode stores = buildBasic(Node.STORE, Node.ALL_STORES, "STORE");
-		stores.registerPrivilege("BROWSE_STORE");
-		PrivilegeNode storeChildren = stores.getChildren().get(0);
-		storeChildren.registerPrivilege("ACCESS_SHOPPING_CART");
-		storeChildren.registerPrivilege("BROWSE_STORE");
-
-		// Taxes
-		PrivilegeNode taxes = buildBasic(Node.TAX, Node.ALL_TAX, "TAX");
-
 		// User scripts
 		PrivilegeNode userScripts = buildBasic(Node.USER_SCRIPTS, Node.ALL_USER_SCRIPTS, "USER_SCRIPTS");
 
@@ -567,14 +497,7 @@ public final class PrivilegeTree
 		instChildren.add(connectors);
 		instChildren.add(oauthClients);
 		instChildren.add(htmlEditorPluginss);
-		instChildren.add(regions);
-		instChildren.add(catalogues);
-		instChildren.add(tiers);
-		instChildren.add(paymentGateways);
-		instChildren.add(storefronts);
-		instChildren.add(stores);
 		instChildren.add(kalturas);
-		instChildren.add(taxes);
 		instChildren.add(userScripts);
 		instChildren.add(echos);
 		instChildren.add(externalTools);

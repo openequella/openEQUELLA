@@ -118,21 +118,6 @@ public final class SecurityConstants
 	public static final int PRIORITY_ALL_SCHEMAS = 1825;
 	public static final int PRIORITY_SCHEMA = 1800;
 
-	public static final int PRIORITY_ALL_TAX = 1795;
-	public static final int PRIORITY_TAX = 1790;
-	public static final int PRIORITY_ALL_STORES = 1778;
-	public static final int PRIORITY_STORE = 1776;
-	public static final int PRIORITY_ALL_STOREFRONTS = 1775;
-	public static final int PRIORITY_STOREFRONT = 1770;
-	public static final int PRIORITY_ALL_PAYMENT_GATEWAYS = 1765;
-	public static final int PRIORITY_PAYMENT_GATEWAY = 1760;
-	public static final int PRIORITY_ALL_TIERS = 1755;
-	public static final int PRIORITY_TIER = 1750;
-	public static final int PRIORITY_ALL_CATALOGUES = 1745;
-	public static final int PRIORITY_CATALOGUE = 1740;
-	public static final int PRIORITY_ALL_REGIONS = 1735;
-	public static final int PRIORITY_REGION = 1730;
-
 	public static final int PRIORITY_ALL_WORKFLOWS = 1725;
 	public static final int PRIORITY_WORKFLOW = 1700;
 	public static final int PRIORITY_WORKFLOW_TASK = 1600;
