@@ -120,28 +120,29 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel> impleme
 		PagesModel model = getModel(info);
 
 		int renderedPage = model.getCurrentPage();
-		if( renderedPage != -1 )
+		if (renderedPage == -1)
 		{
-			final WebWizardPage page = getPage(info, renderedPage, false, true);
-			if( model.isSubmit() )
+			renderedPage = 0;
+		}
+		final WebWizardPage page = getPage(info, renderedPage, false, model.getCurrentPage() != -1);
+		if( model.isSubmit() )
+		{
+			info.queueEvent(new AbstractDirectEvent(SectionEvent.PRIORITY_AFTER_EVENTS, getSectionId())
 			{
-				info.queueEvent(new AbstractDirectEvent(SectionEvent.PRIORITY_AFTER_EVENTS, getSectionId())
+				@Override
+				public void fireDirect(SectionId sectionId, SectionInfo info) throws Exception
 				{
-					@Override
-					public void fireDirect(SectionId sectionId, SectionInfo info) throws Exception
+					final LERepository repository = page.getRepository();
+					synchronized( repository.getThreadLock() )
 					{
-						final LERepository repository = page.getRepository();
-						synchronized( repository.getThreadLock() )
-						{
-							page.saveToDocument(info);
-							page.setSubmitted(true);
-							itemHelper.updateItemFromXml(state.getItemPack());
-							wizardService.checkPages(state);
-							wizardService.updateSession(info, state);
-						}
+						page.saveToDocument(info);
+						page.setSubmitted(true);
+						itemHelper.updateItemFromXml(state.getItemPack());
+						wizardService.checkPages(state);
+						wizardService.updateSession(info, state);
 					}
-				});
-			}
+				}
+			});
 		}
 	}
 
