@@ -245,6 +245,12 @@ class AddCommentOperation extends AbstractWorkflowOperation
 class UpdateAverageRatingOperation extends AbstractWorkflowOperation
 {
 	@Override
+	public boolean isReadOnly()
+	{
+		return false;
+	}
+
+	@Override
 	public boolean execute()
 	{
 		final Item item = getItem();

@@ -615,8 +615,12 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
 				query.setParameter("uuid", itemKey.getUuid());
 				query.setParameter("version", itemKey.getVersion());
 				query.setParameter("i", CurrentInstitution.get());
-				query.setReadOnly(readOnly);
-				return query.uniqueResult();
+				Item item = (Item) query.uniqueResult();
+				if (item != null)
+				{
+					session.setReadOnly(item, readOnly);
+				}
+				return item;
 			}
 		});
 	}
