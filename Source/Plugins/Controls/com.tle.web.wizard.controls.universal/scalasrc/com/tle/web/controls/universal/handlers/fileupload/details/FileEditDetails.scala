@@ -7,7 +7,7 @@ import com.tle.beans.item.attachments.{Attachment, FileAttachment, ZipAttachment
 import com.tle.common.{Check, NameValue}
 import com.tle.common.collection.AttachmentConfigConstants
 import com.tle.common.filesystem.FileEntry
-import com.tle.web.controls.universal.handlers.fileupload.WebFileUploads
+import com.tle.web.controls.universal.handlers.fileupload.{AttachmentDelete, WebFileUploads}
 import com.tle.web.controls.universal.handlers.fileupload.details.FileEditDetails._
 import com.tle.web.controls.universal.{AbstractScalaSection, ControlContext, RenderHelper}
 import com.tle.web.freemarker.FreemarkerFactory
@@ -223,7 +223,7 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
     suppressThumbnails.setChecked(info, WebFileUploads.isSuppressThumbnail(et))
   }
 
-  def editAttachment(info: SectionInfo, _a: Attachment, ctx: ControlContext): Attachment = {
+  def editAttachment(info: SectionInfo, _a: Attachment, ctx: ControlContext): (Attachment, Option[AttachmentDelete]) = {
 
     def copyExtra(src: Attachment, dest: Attachment): Unit = {
       dest.setUuid(src.getUuid)
@@ -232,18 +232,19 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
       dest.setThumbnail(src.getThumbnail)
     }
     val unzipped = zipHandler.unzipped
-    val a = (_a, unzipped) match {
+    val (a, delete) = (_a, unzipped) match {
       case (fa: FileAttachment, true) =>
         val za = new ZipAttachment
         copyExtra(fa, za)
         za.setUrl(fa.getFilename)
-        za
+        (za, None)
       case (za: ZipAttachment, false) =>
         val fa = new FileAttachment
         fa.setFilename(za.getUrl)
         copyExtra(za, fa)
-        fa
-      case _ => _a
+
+        (fa, Some(AttachmentDelete(ctx.controlState.getAttachments.asScala.filter(WebFileUploads.isSelectedInZip(za)), _ => ())))
+      case _ => (_a, None)
     }
     if (unzipped)
     {
@@ -287,7 +288,7 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
         a.setThumbnail(if (suppressed) WebFileUploads.SUPPRESS_THUMB_VALUE else ctx.stagingContext.thumbRequest(a.getUrl))
       }
     }
-    a
+    (a, delete)
   }
 
   def prependParent(parent: String, filename: String, sep: String = "/") : String =

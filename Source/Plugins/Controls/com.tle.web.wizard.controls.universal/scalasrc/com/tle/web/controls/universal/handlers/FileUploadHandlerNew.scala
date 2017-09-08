@@ -381,11 +381,16 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
     def editAttachment(info: SectionInfo, attachment: Attachment): Unit = {
       val editState = getEditState
       editState.commit
-      val newAttach = detailsEditorForAttachment(attachment).editAttachment(info, attachment, this)
+      val (newAttach, delattach) = detailsEditorForAttachment(attachment).editAttachment(info, attachment, this)
       if (newAttach ne attachment) {
         val a = controlState.getRepository.getAttachments
         a.removeAttachment(attachment)
         a.addAttachment(newAttach)
+      }
+      delattach.foreach { ad =>
+        controlState.removeAttachments(info, ad.attachments.asJavaCollection)
+        ad.attachments.foreach(a => controlState.removeMetadataUuid(info, a.getUuid))
+        ad.deleteFiles(stagingContext)
       }
     }
 
@@ -396,7 +401,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
         val _a = editState.a
         _a.setUuid(u.toString)
         editState.commit
-        val a = editState.page.editAttachment(info, _a, this)
+        val (a,_) = editState.page.editAttachment(info, _a, this)
         controlState.addAttachment(info, a)
         controlState.addMetadataUuid(info, u.toString)
       }

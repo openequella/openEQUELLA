@@ -5,7 +5,7 @@ import com.tle.common.NameValue
 import com.tle.common.collection.AttachmentConfigConstants
 import com.tle.common.filesystem.FileSystemConstants
 import com.tle.core.plugins.PluginTracker
-import com.tle.web.controls.universal.handlers.fileupload.WebFileUploads
+import com.tle.web.controls.universal.handlers.fileupload.{AttachmentDelete, WebFileUploads}
 import com.tle.web.controls.universal.{AbstractScalaSection, ControlContext, RenderHelper}
 import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.freemarker.annotations.ViewFactory
@@ -26,7 +26,7 @@ object PackageEditDetails {
 
 import PackageEditDetails._
 
-class PackageEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, viewerHandler : ViewerHandler,
+class PackageEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, viewerHandler: ViewerHandler,
                          showRestrict: Boolean, val editingAttachment: SectionInfo => Attachment)
   extends AbstractScalaSection with RenderHelper with DetailsPage {
 
@@ -113,28 +113,27 @@ class PackageEditDetails(parentId: String, tree: SectionTree, ctx: ControlContex
     viewers.setSelectedStringValue(info, et.getViewer)
   }
 
-  def editAttachment(info: SectionInfo, a: Attachment, ctx: ControlContext): Attachment = {
+  def editAttachment(info: SectionInfo, a: Attachment, ctx: ControlContext): (Attachment, Option[AttachmentDelete]) = {
     a.setDescription(displayName.getValue(info))
     if (showRestrict) {
       a.setRestricted(restrictCheckbox.isChecked(info))
     }
     a.setViewer(viewers.getSelectedValueAsString(info))
-    a match {
-      case ims: ImsAttachment =>
-        val newExpand = expandButtons.getSelectedValue(info) == ExpandType.EXPAND
-        if (newExpand != ims.isExpand) {
-          ims.setExpand(newExpand)
-          if (newExpand) {
-            val packageFilename = ims.getUrl
-            ctx.repo.createPackageNavigation(info, packageFilename,
-              FileSystemConstants.IMS_FOLDER + '/' + packageFilename, packageFilename, true)
-          } else {
-            ctx.controlState.removeAttachments(info, WebFileUploads.imsResources(ctx.repo).asJavaCollection)
-          }
+    val newExpand = expandButtons.getSelectedValue(info) == ExpandType.EXPAND
+    val ad: Option[AttachmentDelete] = a match {
+      case ims: ImsAttachment if newExpand != ims.isExpand =>
+        ims.setExpand(newExpand)
+        if (newExpand) {
+          val packageFilename = ims.getUrl
+          ctx.repo.createPackageNavigation(info, packageFilename,
+            FileSystemConstants.IMS_FOLDER + '/' + packageFilename, packageFilename, true)
+          None
+        } else {
+          Some(AttachmentDelete(WebFileUploads.imsResources(ctx.repo), _ => ()))
         }
-      case _ => ()
+      case _ => None
     }
-    a
+    (a, ad)
   }
 
 
