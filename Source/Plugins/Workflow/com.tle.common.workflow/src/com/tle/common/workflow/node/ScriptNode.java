@@ -55,7 +55,8 @@ public class ScriptNode extends WorkflowTreeNode
 	private Set<String> groupsNotifyOnError;
 
 	private boolean notifyOnCompletion;
-	private boolean notifyOnError;
+	@Column(name="notifyOnError")
+	private boolean _notifyOnError;
 
 	public ScriptNode(final LanguageBundle name)
 	{
@@ -138,16 +139,6 @@ public class ScriptNode extends WorkflowTreeNode
 	public void setNotifyOnCompletion(boolean notifyOnCompletion)
 	{
 		this.notifyOnCompletion = notifyOnCompletion;
-	}
-
-	public boolean isNotifyOnError()
-	{
-		return notifyOnError;
-	}
-
-	public void setNotifyOnError(boolean notifyOnError)
-	{
-		this.notifyOnError = notifyOnError;
 	}
 
 	public Set<String> getUsersNotifyOnCompletion()

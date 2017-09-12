@@ -56,11 +56,8 @@ public class ScriptStatus extends AbstractNodeStatus
 		if (se != null)
 		{
 			op.createScriptErrorHistory(String.valueOf(node.getUuid()));
-			if( scriptNode.isNotifyOnError() )
-			{
-				Set<String> userToNotify = op.getUsersToNotifyOnScriptError(scriptNode);
-				op.addNotifications(getTaskKey(), userToNotify, Notification.REASON_SCRIPT_ERROR, false);
-			}
+			Set<String> userToNotify = op.getUsersToNotifyOnScriptError(scriptNode);
+			op.addNotifications(getTaskKey(), userToNotify, Notification.REASON_SCRIPT_ERROR, false);
 
 			LOGGER.error("Script error at workflow script task : " + CurrentLocale.get(scriptNode.getName()), se);
 			return false;

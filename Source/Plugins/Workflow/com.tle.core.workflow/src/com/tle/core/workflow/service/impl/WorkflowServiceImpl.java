@@ -506,7 +506,6 @@ public class WorkflowServiceImpl extends AbstractEntityServiceImpl<EntityEditing
 			boolean changed = !Objects.equals(newScriptNode.getScript(), scriptNode.getScript());
 			scriptNode.setScript(newScriptNode.getScript());
 			scriptNode.setNotifyOnCompletion(newScriptNode.isNotifyOnCompletion());
-			scriptNode.setNotifyOnError(newScriptNode.isNotifyOnError());
 			editSet(scriptNode.getUsersNotifyOnCompletion(), newScriptNode.getUsersNotifyOnCompletion());
 			editSet(scriptNode.getGroupsNotifyOnCompletion(), newScriptNode.getGroupsNotifyOnCompletion());
 			editSet(scriptNode.getUsersNotifyOnError(), newScriptNode.getUsersNotifyOnError());

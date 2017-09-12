@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import com.dytech.gui.ChangeDetector;
 import com.dytech.gui.TableLayout;
@@ -24,12 +24,12 @@ import com.tle.common.recipientselector.MultipleFinderControl;
 import com.tle.common.recipientselector.RecipientFilter;
 import com.tle.common.workflow.node.ScriptNode;
 import com.tle.core.remoting.RemoteUserService;
+import sun.plugin.dom.css.Rect;
 
 public class NotificationsTab extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 	private GroupBox notifyOnCompletionGroupBox;
-	private GroupBox notifyOnErrorGroupBox;
 
 	private MultipleFinderControl notifyOnCompletionFinder;
 	private MultipleFinderControl notifyOnErrorFinder;
@@ -49,17 +49,19 @@ public class NotificationsTab extends JPanel
 		notifyOnCompletionGroupBox.add(notifyOnCompletionFinder);
 
 		notifyOnErrorFinder = new MultipleFinderControl(userService, RecipientFilter.USERS, RecipientFilter.GROUPS);
-		notifyOnErrorGroupBox = GroupBox.withCheckBox(CurrentLocale.get(keyPfx + "error.groupbox"), false);
-		notifyOnErrorGroupBox.getInnerPanel().setLayout(new GridLayout(1, 1));
-		notifyOnErrorGroupBox.add(notifyOnErrorFinder);
 
 		final int[] rows = {TableLayout.FILL, TableLayout.FILL,};
 		final int[] cols = {TableLayout.FILL,};
 		setLayout(new TableLayout(rows, cols));
 		setBorder(AppletGuiUtils.DEFAULT_BORDER);
 
-		add(notifyOnCompletionGroupBox, new Rectangle(0, 0, 1, 1));
-		add(notifyOnErrorGroupBox, new Rectangle(0, 1, 1, 1));
+		JPanel errorPanel = new JPanel();
+		JLabel errorLabel = new JLabel(CurrentLocale.get(keyPfx + "error.label"));
+		errorPanel.setLayout(new TableLayout(new int[]{errorLabel.getPreferredSize().height, TableLayout.FILL}, new int[] {TableLayout.FILL}));
+		errorPanel.add(errorLabel, new Rectangle(0,0,1,1));
+		errorPanel.add(notifyOnErrorFinder, new Rectangle(0, 1, 1,1));
+		add(errorPanel, new Rectangle(0, 0, 1, 1));
+		add(notifyOnCompletionGroupBox, new Rectangle(0, 1, 1, 1));
 	}
 
 	private void setupChangeDetector(ChangeDetector changeDetector)
@@ -71,7 +73,6 @@ public class NotificationsTab extends JPanel
 	public void load(ScriptNode node)
 	{
 		notifyOnCompletionGroupBox.setSelected(node.isNotifyOnCompletion());
-		notifyOnErrorGroupBox.setSelected(node.isNotifyOnError());
 
 		List<String> notifyOnCompletionList = new ArrayList<String>();
 		if( node.getUsersNotifyOnCompletion() != null )
@@ -120,7 +121,6 @@ public class NotificationsTab extends JPanel
 		node.setUsersNotifyOnError(null);
 		node.setGroupsNotifyOnError(null);
 		node.setNotifyOnCompletion(false);
-		node.setNotifyOnError(false);
 
 		if( notifyOnCompletionGroupBox.isSelected() )
 		{
@@ -158,40 +158,36 @@ public class NotificationsTab extends JPanel
 			node.setGroupsNotifyOnCompletion(groups);
 		}
 
-		if( notifyOnErrorGroupBox.isSelected() )
+		Set<String> users = new HashSet<String>();
+		Set<String> groups = new HashSet<String>();
+
+		for( String result : notifyOnErrorFinder.save() )
 		{
-			Set<String> users = new HashSet<String>();
-			Set<String> groups = new HashSet<String>();
-
-			for( String result : notifyOnErrorFinder.save() )
+			String value = getRecipientValue(result);
+			switch( getRecipientType(result) )
 			{
-				String value = getRecipientValue(result);
-				switch( getRecipientType(result) )
-				{
-					case USER:
-						users.add(value);
-						break;
-					case GROUP:
-						groups.add(value);
-						break;
-					default:
-						throw new IllegalStateException("We should never reach here");
-				}
+				case USER:
+					users.add(value);
+					break;
+				case GROUP:
+					groups.add(value);
+					break;
+				default:
+					throw new IllegalStateException("We should never reach here");
 			}
-
-			if( users.isEmpty() )
-			{
-				users = null;
-			}
-
-			if( groups.isEmpty() )
-			{
-				groups = null;
-			}
-
-			node.setNotifyOnError(true);
-			node.setUsersNotifyOnError(users);
-			node.setGroupsNotifyOnError(groups);
 		}
+
+		if( users.isEmpty() )
+		{
+			users = null;
+		}
+
+		if( groups.isEmpty() )
+		{
+			groups = null;
+		}
+
+		node.setUsersNotifyOnError(users);
+		node.setGroupsNotifyOnError(groups);
 	}
 }

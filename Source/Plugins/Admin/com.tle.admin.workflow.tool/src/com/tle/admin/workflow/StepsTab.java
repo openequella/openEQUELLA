@@ -167,7 +167,7 @@ public class StepsTab extends BaseEntityTab<Workflow> implements AbstractDetails
 							.get("com.tle.admin.workflow.script.scripteditor.nofificationstab.completion.notify.nobody"));
 				}
 
-				if( scriptNode.isNotifyOnError() && !scriptNode.isNotifyNoErrorSpecified() )
+				if( !scriptNode.isNotifyNoErrorSpecified() )
 				{
 					tree.setSelectionPath(new TreePath(model.getPathToRoot(scriptNode)));
 					throw new EditorException(
