@@ -58,6 +58,7 @@
 		<parameter id="class" value="com.tle.web.workflow.guice.CurrentTaskModule" />
 		<parameter id="class" value="com.tle.web.workflow.guice.TaskSearchModule" />
 		<parameter id="class" value="com.tle.web.workflow.guice.ManageTaskSearchModule" />
+		<parameter id="class" value="com.tle.web.workflow.guice.StaticServices" />
 	</extension>
 
 	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">

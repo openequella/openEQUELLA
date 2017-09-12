@@ -37,6 +37,7 @@ import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.result.util.BundleLabel;
 import com.tle.web.sections.result.util.PluralKeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
+import com.tle.web.workflow.servlet.WorkflowMessageServlet;
 
 @Bind
 public class ViewCommentsSection extends AbstractPrototypeSection<ViewCommentsSection.Model> implements HtmlRenderer
@@ -94,9 +95,7 @@ public class ViewCommentsSection extends AbstractPrototypeSection<ViewCommentsSe
 					@Override
 					public String getHref()
 					{
-						String url = instituionService
-							.institutionalise(PathUtils.urlPath("workflow/message", uuid, f.getName()));
-						return url;
+						return WorkflowMessageServlet.stagingUrl(uuid, f.getName());
 					}
 				});
 				link.setLabel(new TextLabel(f.getName()));

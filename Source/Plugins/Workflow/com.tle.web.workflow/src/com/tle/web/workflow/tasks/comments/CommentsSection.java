@@ -71,6 +71,7 @@ import com.tle.web.sections.standard.model.NameValueOption;
 import com.tle.web.sections.standard.model.Option;
 import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.template.Decorations;
+import com.tle.web.workflow.servlet.WorkflowMessageServlet;
 import com.tle.web.workflow.tasks.CurrentTaskSection;
 
 @NonNullByDefault
@@ -216,9 +217,8 @@ public class CommentsSection extends AbstractPrototypeSection<CommentsSection.Mo
 			for( FileEntry fileEntry : fileEntries )
 			{
 				String filename = fileEntry.getName();
-				String urlPath = PathUtils.urlPath("workflow/message/$/", stagingFolderUuid, filename);
-				HtmlLinkState link = new HtmlLinkState(new TextLabel(filename),
-					new SimpleBookmark(instituionService.institutionalise(urlPath)));
+				String fileUrl = WorkflowMessageServlet.stagingUrl(stagingFolderUuid, filename);
+				HtmlLinkState link = new HtmlLinkState(new TextLabel(filename), new SimpleBookmark(fileUrl));
 				lists.add(link);
 				HtmlLinkState removeBtn = new HtmlLinkState(new TextLabel(""));
 				removeBtn.addClass("unselect");
@@ -348,8 +348,7 @@ public class CommentsSection extends AbstractPrototypeSection<CommentsSection.Mo
 		}
 		fileSystemService.write(staging, fn, stream, false);
 		model.setMandatory(true);
-		String url = instituionService
-			.institutionalise(PathUtils.urlPath("workflow/message/$/", stagingFolderUuid, fn));
+		String url = WorkflowMessageServlet.stagingUrl(stagingFolderUuid, fn);
 		return new DndUploadResponse(stagingFolderUuid, url);
 	}
 

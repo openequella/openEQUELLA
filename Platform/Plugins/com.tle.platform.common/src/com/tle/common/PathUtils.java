@@ -33,7 +33,7 @@ public abstract class PathUtils
 
 	public static String urlPath(String... urlBits)
 	{
-		return filePath(urlBits);
+		return URLUtils.urlEncode(filePath(urlBits), false);
 	}
 
 	/**
