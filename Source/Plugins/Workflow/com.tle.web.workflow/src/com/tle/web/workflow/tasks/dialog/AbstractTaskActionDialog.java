@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.common.Check;
-import com.tle.common.PathUtils;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.filesystem.staging.service.StagingService;
@@ -23,11 +22,11 @@ import com.tle.web.sections.ajax.handler.UpdateDomFunction;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.annotation.PlugKey;
-import com.tle.web.sections.equella.dialog.EquellaDialog;
+import com.tle.web.sections.equella.dialog.AbstractOkayableDialog;
 import com.tle.web.sections.equella.render.ButtonRenderer;
+import com.tle.web.sections.events.ReadyToRespondListener;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.js.BookmarkAndModify;
-import com.tle.web.sections.events.js.JSHandler;
 import com.tle.web.sections.jquery.libraries.JQueryProgression;
 import com.tle.web.sections.js.JSAssignable;
 import com.tle.web.sections.js.JSCallAndReference;
@@ -35,16 +34,8 @@ import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.JSExpression;
 import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.OverrideHandler;
-import com.tle.web.sections.js.generic.ReloadHandler;
-import com.tle.web.sections.js.generic.expression.RuntimeExpression;
-import com.tle.web.sections.js.generic.expression.ScriptVariable;
-import com.tle.web.sections.js.generic.expression.StringExpression;
-import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
-import com.tle.web.sections.js.generic.function.IncludeFile;
-import com.tle.web.sections.js.generic.function.PartiallyApply;
-import com.tle.web.sections.js.generic.function.SimpleFunction;
-import com.tle.web.sections.js.generic.statement.ReloadStatement;
-import com.tle.web.sections.js.generic.statement.StatementBlock;
+import com.tle.web.sections.js.generic.StatementHandler;
+import com.tle.web.sections.js.generic.function.*;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.TextLabel;
@@ -57,7 +48,6 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.workflow.servlet.WorkflowMessageServlet;
 import com.tle.web.workflow.tasks.CurrentTaskSection;
-import com.tle.web.workflow.tasks.comments.CommentsSection;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -67,7 +57,7 @@ import java.util.Collection;
 import java.util.List;
 
 @NonNullByDefault
-public abstract class AbstractTaskActionDialog<M extends AbstractTaskActionDialog.AbstractTaskActionDialogModel> extends EquellaDialog<M>
+public abstract class AbstractTaskActionDialog<M extends AbstractTaskActionDialog.AbstractTaskActionDialogModel> extends AbstractOkayableDialog<M> implements ReadyToRespondListener
 {
 	private static final PluginResourceHelper URL_HELPER = ResourcesService.getResourceHelper(AbstractTaskActionDialog.class);
 	private static final IncludeFile INCLUDE = new IncludeFile(URL_HELPER.url("scripts/comments.js"));
@@ -75,21 +65,18 @@ public abstract class AbstractTaskActionDialog<M extends AbstractTaskActionDialo
 			INCLUDE, JQueryProgression.PRERENDER);
 	private static final ExternallyDefinedFunction VALIDATE_FILE = new ExternallyDefinedFunction(WORKFLOW_COMMENTS_CLASS,
 			"validateFile", 2);
-	private static final ExternallyDefinedFunction REMOVE_STAGING_FILE = new ExternallyDefinedFunction(
-			WORKFLOW_COMMENTS_CLASS, "removeStagingFile", 3);
 
 	private JSAssignable validateFile;
-	private JSExpression stagingUuidExpression;
 
 	@Inject
 	protected FileSystemService fileSystemService;
 	@Inject
 	protected StagingService stagingService;
-	@Inject
-	protected InstitutionService instituionService;
 
 	@PlugKey("command.taskaction.attachedfiles")
 	private static Label LABEL_ATTACHED_FILES;
+	@PlugKey("command.taskaction.mustmessage")
+	private static Label LABEL_MUST_MESSAGE;
 
 	@Component
 	private TextField commentField;
@@ -99,14 +86,14 @@ public abstract class AbstractTaskActionDialog<M extends AbstractTaskActionDialo
 	@Component(name = "u")
 	@PlugKey("command.taskaction.uploadfile")
 	private Button uploadButton;
-	@Component(name = "o")
-	private Button okButton;
 	@Component(name = "c")
 	@PlugKey("command.taskaction.cancel")
 	private Button cancelButton;
 
 	@ViewFactory
 	protected FreemarkerFactory viewFactory;
+	private JSCallable successCallable;
+	private UpdateDomFunction removeCallback;
 
 	protected AbstractTaskActionDialog()
 	{
@@ -117,18 +104,12 @@ public abstract class AbstractTaskActionDialog<M extends AbstractTaskActionDialo
 
 	protected abstract Label getButtonLabel();
 
-	protected abstract CommentsSection.CommentType getActionType();
+	protected abstract CurrentTaskSection.CommentType getActionType();
 
 	public abstract Label getPostCommentHeading();
 
-
-	protected Button getSaveButton()
-	{
-		return okButton;
-	}
-
 	@Nullable
-	protected JSExpression getWorkflowStepExpression()
+	protected String getWorkflowStepTarget(SectionInfo info)
 	{
 		return null;
 	}
@@ -152,15 +133,27 @@ public abstract class AbstractTaskActionDialog<M extends AbstractTaskActionDialo
 		return "taskactiondialog";
 	}
 
+	@Override
+	public void readyToRespond(SectionInfo info, boolean redirect)
+	{
+		super.readyToRespond(info, redirect);
+		M model = getModel(info);
+		if (model.isShowing())
+		{
+			String stagingFolderUuid = model.getStagingFolderUuid();
+			if (stagingFolderUuid == null)
+			{
+				stagingFolderUuid = stagingService.createStagingArea().getUuid();
+				model.setStagingFolderUuid(stagingFolderUuid);
+			}
+		}
+	}
+
+
 	protected void setupModelForRender(RenderContext context)
 	{
 		M model = getModel(context);
 		String stagingFolderUuid = model.getStagingFolderUuid();
-		if( stagingFolderUuid == null )
-		{
-			stagingFolderUuid = stagingService.createStagingArea().getUuid();
-			model.setStagingFolderUuid(stagingFolderUuid);
-		}
 
 		try
 		{
@@ -177,10 +170,7 @@ public abstract class AbstractTaskActionDialog<M extends AbstractTaskActionDialo
 				lists.add(link);
 				HtmlLinkState removeBtn = new HtmlLinkState(new TextLabel(""));
 				removeBtn.addClass("unselect");
-				String htmlLiId = "sf_" + index;
-				OverrideHandler removeJsHandler = new OverrideHandler(REMOVE_STAGING_FILE,
-						ajaxEvents.getAjaxFunction("removeUploadedFile"), filename, htmlLiId);
-				removeBtn.setClickHandler(removeJsHandler);
+				removeBtn.setClickHandler(new OverrideHandler(removeCallback, filename));
 				deleteFiles.add(removeBtn);
 				index++;
 			}
@@ -196,42 +186,72 @@ public abstract class AbstractTaskActionDialog<M extends AbstractTaskActionDialo
 		fileDrop.setValidateFile(context, validateFile);
 	}
 
+//	@EventHandlerMethod
+//	public void ok(SectionInfo info, String comment, String stagingUuid, String workflowStep)
+//	{
+//		doSaveAction(info, comment, stagingUuid, workflowStep);
+//	}
+//
+//	protected void doSaveAction(SectionInfo info, String comment, String stagingUuid, String workflowStep)
+//	{
+//		StagingFile stagingFolder = new StagingFile(stagingUuid);
+//		long countFiles = fileSystemService.countFiles(stagingFolder, null);
+//
+//		// when approving with attached files, comment msg cannot be empty
+//		/*
+//		boolean acceptedWithFiles = Check.isEmpty(comment) && countFiles > 1;
+//		if( acceptedWithFiles )
+//		{
+//			model.setErrorMessage(LABEL_ENTERMSG_WITHFILES);
+//			info.preventGET();
+//			return;
+//		}*/
+//
+//		CurrentTaskSection currentTaskSection = info.lookupSection(CurrentTaskSection.class);
+//		if( !currentTaskSection.doComment(info, getActionType(), workflowStep, comment, stagingUuid) )
+//		{
+//			//commentField.setValue(info, null);
+//			closeDialog(info, new ReloadHandler());
+//		}
+//	}
+
 	@EventHandlerMethod
-	public void ok(SectionInfo info, String comment, String stagingUuid, String workflowStep)
+	public void ok(SectionInfo info)
 	{
-		doSaveAction(info, comment, stagingUuid, workflowStep);
-	}
-
-	protected void doSaveAction(SectionInfo info, String comment, String stagingUuid, String workflowStep)
-	{
-		StagingFile stagingFolder = new StagingFile(stagingUuid);
-		long countFiles = fileSystemService.countFiles(stagingFolder, null);
-
-		// when approving with attached files, comment msg cannot be empty
-		/*
-		boolean acceptedWithFiles = Check.isEmpty(comment) && countFiles > 1;
-		if( acceptedWithFiles )
+		M model = getModel(info);
+		String stagingUuid = model.getStagingFolderUuid();
+		Label errorMessage = validate(info);
+		if (errorMessage == null)
 		{
-			model.setErrorMessage(LABEL_ENTERMSG_WITHFILES);
-			info.preventGET();
-			return;
-		}*/
-
-		CurrentTaskSection currentTaskSection = info.lookupSection(CurrentTaskSection.class);
-		if( !currentTaskSection.doComment(info, getActionType(), workflowStep, comment, stagingUuid) )
-		{
-			//commentField.setValue(info, null);
-			closeDialog(info, new ReloadHandler());
+			CurrentTaskSection currentTaskSection = info.lookupSection(CurrentTaskSection.class);
+			currentTaskSection.doComment(info, getActionType(), getWorkflowStepTarget(info), commentField.getValue(info), stagingUuid);
+			closeDialog(info, successCallable, getActionType());
 		}
+		else
+		{
+			info.preventGET();
+			model.setErrorMessage(errorMessage);
+		}
+
+	}
+
+	protected abstract Label validate(SectionInfo info);
+
+	protected Label validateHasMessage(SectionInfo info)
+	{
+		if (Check.isEmpty(commentField.getValue(info).trim()))
+		{
+			return LABEL_MUST_MESSAGE;
+		}
+		return null;
 	}
 
 	@EventHandlerMethod
-	public void cancel(SectionInfo info, String stagingUuid)
+	public void cancelled(SectionInfo info)
 	{
-		StagingFile temp = new StagingFile(stagingUuid);
-		fileSystemService.removeFile(temp);
-		//SectionUtils.clearModel(info, this);
-		//closeDialog(info, new ReloadHandler());
+		StagingFile temp = new StagingFile(getModel(info).getStagingFolderUuid());
+		stagingService.removeStagingArea(temp, true);
+		closeDialog(info);
 	}
 
 	@AjaxMethod
@@ -260,61 +280,36 @@ public abstract class AbstractTaskActionDialog<M extends AbstractTaskActionDialo
 		return new DndUploadResponse(stagingFolderUuid, url);
 	}
 
-	@AjaxMethod
-	public boolean removeUploadedFile(SectionInfo info, String filename) throws IOException
+	@EventHandlerMethod
+	public void removeUploadedFile(SectionInfo info, String filename) throws IOException
 	{
 		StagingFile staging = new StagingFile(getModel(info).getStagingFolderUuid());
 		fileSystemService.removeFile(staging, filename);
-		return true;
 	}
 
-	protected JSHandler getSaveHandler()
+	@Override
+	protected Label getOkLabel()
 	{
-		final JSCallable commandExec = addParentCallable(events.getSubmitValuesFunction("ok"));
-		final ScriptVariable stagingUuid = new ScriptVariable("stagingUuid");
-		final ScriptVariable comment = new ScriptVariable("comment");
-		final ScriptVariable workflowStep = new ScriptVariable("workflowStep");
-		final SimpleFunction execFunc = new SimpleFunction("ok", this,
-				StatementBlock.get(Js.call_s(commandExec, comment, stagingUuid), Js.call_s(getCloseFunction())), comment, stagingUuid);
-		return new OverrideHandler(execFunc, commentField.createGetExpression(), stagingUuidExpression, getWorkflowStepExpression());
-	}
-
-	protected JSHandler getCancelHandler()
-	{
-		final JSCallable commandExec = //addParentCallable(
-				events.getSubmitValuesFunction("cancel");
-		//);
-		final ScriptVariable stagingUuid = new ScriptVariable("stagingUuid");
-		final SimpleFunction execFunc = new SimpleFunction("cancel", this,
-				StatementBlock.get(Js.call_s(commandExec, stagingUuid), Js.call_s(getCloseFunction()), new ReloadStatement()), stagingUuid);
-		return new OverrideHandler(execFunc, stagingUuidExpression);
+		return getButtonLabel();
 	}
 
 	@Override
 	public void treeFinished(String id, SectionTree tree)
 	{
-		stagingUuidExpression = new RuntimeExpression(){
+		setOkHandler(events.getSubmitValuesHandler("ok"));
+		setCancelHandler(new StatementHandler(Js.call_s(new RuntimeFunction()
+		{
 			@Override
-			protected JSExpression createExpression(RenderContext info)
+			protected JSCallable createFunction(RenderContext info)
 			{
-				final M model = getModel(info);
-				String stagingFolderUuid = model.getStagingFolderUuid();
-				if( stagingFolderUuid == null )
-				{
-					stagingFolderUuid = stagingService.createStagingArea().getUuid();
-					model.setStagingFolderUuid(stagingFolderUuid);
-				}
-				return new StringExpression(stagingFolderUuid);
+				return new PassThroughFunction("cl", events.getSubmitValuesFunction("cancelled"));
 			}
-		};
+		})));
 
-		okButton.setClickHandler(getSaveHandler());
-		okButton.setComponentAttribute(ButtonRenderer.ButtonType.class, getButtonType());
-		okButton.setLabel(getButtonLabel());
-
-		cancelButton.setClickHandler(getCancelHandler());
-
+		cancelButton.setClickHandler(events.getSubmitValuesHandler("cancelled"));
 		UpdateDomFunction updateProgressArea = ajaxEvents.getAjaxUpdateDomFunction(tree, this, null,
+				ajaxEvents.getEffectFunction(AjaxGenerator.EffectType.REPLACE_IN_PLACE), "uploaded");
+		removeCallback = ajaxEvents.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("removeUploadedFile"),
 				ajaxEvents.getEffectFunction(AjaxGenerator.EffectType.REPLACE_IN_PLACE), "uploaded");
 		validateFile = Js.functionValue(Js.call(VALIDATE_FILE, PartiallyApply.partial(updateProgressArea, 0)));
 
@@ -331,9 +326,14 @@ public abstract class AbstractTaskActionDialog<M extends AbstractTaskActionDialo
 	protected Collection<Button> collectFooterActions(RenderContext context)
 	{
 		List<Button> buttons = new ArrayList<>();
-		buttons.add(getSaveButton());
+		buttons.add(getOk());
 		buttons.add(cancelButton);
 		return buttons;
+	}
+
+	public void setSuccessCallable(JSCallable successCallable)
+	{
+		this.successCallable = addParentCallable(successCallable);
 	}
 
 	public static class DndUploadResponse

@@ -80,11 +80,6 @@ public class WizardModule extends SectionsModule
 		node.child(PagesSection.class);
 		node.child(DuplicateDataSection.class);
 		node.innerChild(SaveDialog.class);
-
-		node.innerChild(ApproveDialog.class);
-		node.innerChild(RejectDialog.class);
-		node.innerChild(CommentDialog.class);
-
 		return node;
 	}
 

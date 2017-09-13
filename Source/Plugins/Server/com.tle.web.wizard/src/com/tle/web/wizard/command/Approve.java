@@ -11,7 +11,6 @@ import com.tle.web.wizard.section.WizardSectionInfo;
 import com.tle.web.workflow.tasks.dialog.ApproveDialog;
 import com.tle.web.workflow.tasks.CurrentTaskSection;
 import com.tle.web.workflow.tasks.TaskListState;
-import com.tle.web.workflow.tasks.comments.CommentsSection;
 
 public class Approve extends WizardCommand
 {
@@ -42,8 +41,7 @@ public class Approve extends WizardCommand
 		TaskListState tls = (currentTaskSection == null ? null : currentTaskSection.getCurrentState(info));
 		if (tls != null)
 		{
-			CommentsSection commentsSection = info.lookupSection(CommentsSection.class);
-			return !tls.isEditing() && (commentsSection == null || !commentsSection.isCommenting(info));
+			return !tls.isEditing();
 		}
 		return false;
 	}

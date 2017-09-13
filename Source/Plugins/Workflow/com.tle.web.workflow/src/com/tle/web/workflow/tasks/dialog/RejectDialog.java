@@ -3,6 +3,7 @@ package com.tle.web.workflow.tasks.dialog;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.workflow.WorkflowStep;
+import com.tle.core.guice.Bind;
 import com.tle.core.i18n.BundleCache;
 import com.tle.core.i18n.BundleNameValue;
 import com.tle.web.sections.SectionInfo;
@@ -19,7 +20,6 @@ import com.tle.web.sections.standard.model.LabelOption;
 import com.tle.web.sections.standard.model.NameValueOption;
 import com.tle.web.sections.standard.model.Option;
 import com.tle.web.workflow.tasks.CurrentTaskSection;
-import com.tle.web.workflow.tasks.comments.CommentsSection;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -27,6 +27,7 @@ import java.util.List;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
+@Bind
 public class RejectDialog extends AbstractTaskActionDialog<AbstractTaskActionDialog.AbstractTaskActionDialogModel>
 {
 	@Inject
@@ -48,9 +49,9 @@ public class RejectDialog extends AbstractTaskActionDialog<AbstractTaskActionDia
 
 	@Nullable
 	@Override
-	protected JSExpression getWorkflowStepExpression()
+	protected String getWorkflowStepTarget(SectionInfo info)
 	{
-		return rejectSteps.createGetExpression();
+		return rejectSteps.getSelectedValueAsString(info);
 	}
 
 	@Override
@@ -72,9 +73,9 @@ public class RejectDialog extends AbstractTaskActionDialog<AbstractTaskActionDia
 	}
 
 	@Override
-	protected CommentsSection.CommentType getActionType()
+	protected CurrentTaskSection.CommentType getActionType()
 	{
-		return CommentsSection.CommentType.REJECT;
+		return CurrentTaskSection.CommentType.REJECT;
 	}
 
 	@Override
@@ -128,4 +129,11 @@ public class RejectDialog extends AbstractTaskActionDialog<AbstractTaskActionDia
 					new BundleNameValue(obj.getDisplayName(), obj.getUuid(), bundleCache), obj);
 		}
 	}
+
+	@Override
+	protected Label validate(SectionInfo info)
+	{
+		return validateHasMessage(info);
+	}
+
 }

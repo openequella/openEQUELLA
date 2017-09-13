@@ -4,11 +4,6 @@ var WorkflowComments = {
 	{
 		return "<a id='" + linkid + "' href='javascript:void(0)' class='unselect'> </a>";
 	},
-	removeStagingFile: function(removeCb, filename, itemhtmlid) {
-		removeCb(function() {
-			$('#' + itemhtmlid).remove();
-		}, filename);
-	},
 	validateFile: function (done) {
 	    return function (f, xhr) {
             var $parediv = $("#current-uploads");

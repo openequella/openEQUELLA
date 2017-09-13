@@ -21,10 +21,14 @@
 
 	<@filedrop section=s.fileDrop />
 
+
 	<div id="current-uploads"></div>
 
 	<!--<h3>${b.key('comments.uploaded')}</h3>-->
 	<@a.div id="uploaded" class="uploaded-container">
+        <#if m.errorMessage??>
+            <div class="errorMsg">${m.errorMessage}</div>
+        </#if>
 		<div class="uploaded">
 			<#list m.stagingFiles as f>
 				<div id="sf_${f?index}" class="file-upload">

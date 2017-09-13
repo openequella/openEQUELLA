@@ -55,9 +55,9 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.fancybox.FancyBoxDialogRenderer;
 import com.tle.web.workflow.servlet.WorkflowMessageServlet;
 import com.tle.web.workflow.tasks.comments.CommentRow;
-import com.tle.web.workflow.tasks.comments.CommentsSection;
-import com.tle.web.workflow.tasks.comments.CommentsSection.CommentType;
+import com.tle.web.workflow.tasks.dialog.ApproveDialog;
 import com.tle.web.workflow.tasks.dialog.CommentDialog;
+import com.tle.web.workflow.tasks.dialog.RejectDialog;
 
 public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSection.TasksModel>
 	implements
@@ -80,6 +80,18 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 	private static String KEY_LISTOF;
 	@PlugKey("moderate.selected.listof")
 	private static String KEY_TASK_LISTOF;
+
+	@Component
+	@Inject
+	private ApproveDialog approveDialog;
+
+	@Component
+	@Inject
+	private RejectDialog rejectDialog;
+
+	@Component
+	@Inject
+	private CommentDialog commentDialog;
 
 	private static final int MAX_MODS = 3;
 	private static final int NAV_PREV = -1;
@@ -133,8 +145,10 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 	@Component
 	private Button assignButton;
 
-	@TreeLookup
-	private CommentsSection commentsSection;
+	public enum CommentType
+	{
+		REJECT, COMMENT, SHOW, ACCEPT
+	}
 
 	@Override
 	public String getDefaultPropertyName()
@@ -148,6 +162,9 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 	{
 		super.registered(id, tree);
 
+		approveDialog.setSuccessCallable(events.getSubmitValuesFunction("success"));
+		rejectDialog.setSuccessCallable(events.getSubmitValuesFunction("success"));
+		commentDialog.setSuccessCallable(events.getSubmitValuesFunction("success"));
 		nextButton.setClickHandler(events.getNamedHandler("nav", NAV_NEXT));
 		prevButton.setClickHandler(events.getNamedHandler("nav", NAV_PREV));
 		listButton.setClickHandler(events.getNamedHandler("nav", NAV_TASKLIST).setValidate(false));
@@ -163,6 +180,43 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 	}
 
 	@EventHandlerMethod
+	public void success(SectionInfo info, CommentType commentType) throws Exception
+	{
+		Label receipt = null;
+		switch (commentType)
+		{
+			case ACCEPT:
+				receipt = ACCEPT_RECEIPT;
+				break;
+			case REJECT:
+				receipt = REJECT_RECEIPT;
+				break;
+			case COMMENT:
+				break;
+		}
+		if (receipt != null)
+		{
+			receiptService.setReceipt(receipt);
+			TaskListState taskState = getModel(info).getTaskState();
+			int index = taskState.getIndex();
+			List<ItemTaskId> selectedTaskList = session.getAttribute(KEY_SELECTED_TASKS);
+			if( selectedTaskList != null )
+			{
+				if( selectedTaskList.size() == 1 || (index + 1) == selectedTaskList.size() )
+				{
+					session.removeAttribute(KEY_SELECTED_TASKS);
+					nav(info, NAV_TASKLIST);
+					return;
+				}
+
+				nav(info, 1);
+				return;
+			}
+			nav(info, NAV_TASKLIST);
+		}
+	}
+
+	@EventHandlerMethod
 	public void assign(SectionInfo info) throws Exception
 	{
 		TasksModel model = getModel(info);
@@ -170,12 +224,6 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 		itemService.operation(taskState.getItemTaskId(), workflowFactory.assign(taskState.getTaskId()),
 			workflowFactory.save());
 		refreshState(info);
-	}
-
-	@EventHandlerMethod
-	public void comment(SectionInfo info)
-	{
-		commentsSection.doComment(info, CommentType.COMMENT);
 	}
 
 	private void refreshState(SectionInfo info)
@@ -194,27 +242,22 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 	 * @param messageUuid
 	 * @return Returns true if a redirect happens
 	 */
-	public boolean doComment(SectionInfo info, CommentType commentType, String step, String comment, String messageUuid)
+	public void doComment(SectionInfo info, CommentType commentType, String step, String comment, String messageUuid)
 	{
 		TasksModel model = getModel(info);
 		TaskListState taskState = model.getTaskState();
 		String taskId = taskState.getTaskId();
-		Label receipt = null;
-		boolean taskList = true;
 		WorkflowOperation op = null;
 		switch( commentType )
 		{
 			case ACCEPT:
 				op = workflowFactory.accept(taskId, comment, messageUuid);
-				receipt = ACCEPT_RECEIPT;
 				break;
 			case REJECT:
 				op = workflowFactory.reject(taskId, comment, step, messageUuid);
-				receipt = REJECT_RECEIPT;
 				break;
 			case COMMENT:
 				op = workflowFactory.comment(taskId, comment, messageUuid);
-				taskList = false;
 				break;
 
 			default:
@@ -222,55 +265,30 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 				break;
 		}
 		itemService.operation(taskState.getItemTaskId(), op, workflowFactory.save());
-
-		if( taskList )
-		{
-			receiptService.setReceipt(receipt);
-
-			int index = taskState.getIndex();
-			List<ItemTaskId> selectedTaskList = session.getAttribute(KEY_SELECTED_TASKS);
-			if( selectedTaskList != null )
-			{
-				if( selectedTaskList.size() == 1 || (index + 1) == selectedTaskList.size() )
-				{
-					session.removeAttribute(KEY_SELECTED_TASKS);
-					return nav(info, NAV_TASKLIST);
-				}
-
-				return nav(info, 1);
-			}
-			return nav(info, NAV_TASKLIST);
-		}
-		else
-		{
-			refreshState(info);
-		}
-		return false;
 	}
 
 	@EventHandlerMethod
-	public boolean nav(SectionInfo info, int dir)
+	public void nav(SectionInfo info, int dir)
 	{
 		if( dir == NAV_TASKLIST )
 		{
 			info.forwardAsBookmark(RootTaskListSection.createForward(info));
-			return true;
 		}
 		else
 		{
 			try
 			{
-				return tryNavigation(info, dir);
+				tryNavigation(info, dir);
 			}
 			catch( NotModeratingStepException nmse )
 			{
-				return tryNavigation(info, dir);
+				tryNavigation(info, dir);
 			}
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean tryNavigation(SectionInfo info, int dir)
+	private void tryNavigation(SectionInfo info, int dir)
 	{
 		TasksModel model = getModel(info);
 		TaskListState taskState = model.getTaskState();
@@ -295,7 +313,7 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 			if( totalResults == 0 )
 			{
 				info.forwardAsBookmark(forward);
-				return true;
+				return;
 			}
 			if( searchResults.getCount() == 0 )
 			{
@@ -305,14 +323,14 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 				if( totalResults == 0 )
 				{
 					info.forwardAsBookmark(forward);
-					return true;
+					return;
 				}
 			}
 			TaskResult taskResult = searchResults.getResultData(0);
 			ItemTaskId itemTaskId = new ItemTaskId(taskResult.getItemIdKey(), taskResult.getTaskId());
 			moderationService.moderate(info, ModerationService.VIEW_METADATA, itemTaskId, newIndex, totalResults);
 		}
-		return false;
+		return;
 	}
 
 	@SuppressWarnings("nls")
@@ -355,7 +373,7 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 		TaskListState taskState = model.getTaskState();
 		int index = taskState.getIndex();
 		int taskListSize = taskState.getListSize();
-		if( taskState.isEditing() || commentsSection.isCommenting(context) )
+		if( taskState.isEditing() )
 		{
 			prevButton.disable(context);
 			nextButton.disable(context);

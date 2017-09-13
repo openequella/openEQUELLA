@@ -2,14 +2,17 @@ package com.tle.web.workflow.tasks.dialog;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
+import com.tle.core.guice.Bind;
+import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.render.ButtonRenderer;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.render.Label;
-import com.tle.web.workflow.tasks.comments.CommentsSection;
+import com.tle.web.workflow.tasks.CurrentTaskSection;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
+@Bind
 public class CommentDialog extends AbstractTaskActionDialog<AbstractTaskActionDialog.AbstractTaskActionDialogModel>
 {
 	@PlugKey("command.taskaction.comment")
@@ -38,9 +41,9 @@ public class CommentDialog extends AbstractTaskActionDialog<AbstractTaskActionDi
 	}
 
 	@Override
-	protected CommentsSection.CommentType getActionType()
+	protected CurrentTaskSection.CommentType getActionType()
 	{
-		return CommentsSection.CommentType.COMMENT;
+		return CurrentTaskSection.CommentType.COMMENT;
 	}
 
 	@Nullable
@@ -54,5 +57,11 @@ public class CommentDialog extends AbstractTaskActionDialog<AbstractTaskActionDi
 	public Label getPostCommentHeading()
 	{
 		return LABEL_ENTERMSG;
+	}
+
+	@Override
+	protected Label validate(SectionInfo info)
+	{
+		return validateHasMessage(info);
 	}
 }

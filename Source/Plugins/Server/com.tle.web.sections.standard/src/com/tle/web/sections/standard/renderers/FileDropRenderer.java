@@ -27,6 +27,8 @@ import com.tle.web.sections.jquery.libraries.JQueryProgression;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.JSStatements;
 import com.tle.web.sections.js.generic.Js;
+import com.tle.web.sections.js.generic.expression.ElementByIdExpression;
+import com.tle.web.sections.js.generic.expression.ElementValueExpression;
 import com.tle.web.sections.js.generic.expression.ObjectExpression;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
@@ -99,7 +101,7 @@ public class FileDropRenderer extends TagRenderer
 			throw new SectionsRuntimeException("Must set an ajax upload url for filedrop");
 		}
 		oe.put("maxFiles", dropState.getMaxFiles());
-		final JSStatements initDnd = Js.call_s(SETUP, oe, this);
+		final JSStatements initDnd = Js.call_s(SETUP, oe, new ElementByIdExpression(this));
 		info.addReadyStatements(initDnd);
 	}
 }

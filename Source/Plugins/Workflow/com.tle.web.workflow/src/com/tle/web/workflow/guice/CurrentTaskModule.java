@@ -19,7 +19,6 @@ package com.tle.web.workflow.guice;
 import com.google.inject.name.Names;
 import com.tle.web.sections.equella.guice.SectionsModule;
 import com.tle.web.workflow.tasks.CurrentTaskSection;
-import com.tle.web.workflow.tasks.comments.CommentsSection;
 
 public class CurrentTaskModule extends SectionsModule
 {
@@ -32,6 +31,6 @@ public class CurrentTaskModule extends SectionsModule
 
 	private NodeProvider currentTaskTree()
 	{
-		return node(CurrentTaskSection.class).child(CommentsSection.class);
+		return node(CurrentTaskSection.class);
 	}
 }

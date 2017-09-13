@@ -37,3 +37,9 @@
 	box-sizing: border-box;
 }
 
+.errorMsg {
+    color: red;
+    text-align: center;
+    font-size: 20px;
+    line-height: 24px;
+}
