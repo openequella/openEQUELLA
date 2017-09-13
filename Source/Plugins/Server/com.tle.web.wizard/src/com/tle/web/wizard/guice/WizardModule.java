@@ -29,14 +29,7 @@ import com.tle.web.sections.equella.guice.SectionsModule;
 import com.tle.web.viewitem.summary.sidebar.LockedByGroupSection;
 import com.tle.web.wizard.PackageTreeBuilder;
 import com.tle.web.wizard.WizardState;
-import com.tle.web.wizard.command.Cancel;
-import com.tle.web.wizard.command.EditInWizard;
-import com.tle.web.wizard.command.Preview;
-import com.tle.web.wizard.command.Save;
-import com.tle.web.wizard.command.SaveAndContinue;
-import com.tle.web.wizard.command.SaveDialog;
-import com.tle.web.wizard.command.SelectThumbnail;
-import com.tle.web.wizard.command.ViewSummary;
+import com.tle.web.wizard.command.*;
 import com.tle.web.wizard.impl.WizardCommand;
 import com.tle.web.wizard.render.WizardExtendedFactory;
 import com.tle.web.wizard.section.DuplicateDataSection;
@@ -45,6 +38,9 @@ import com.tle.web.wizard.section.PreviewSection;
 import com.tle.web.wizard.section.RootWizardSection;
 import com.tle.web.wizard.section.SelectThumbnailSection;
 import com.tle.web.wizard.section.WizardBodySection;
+import com.tle.web.workflow.tasks.dialog.ApproveDialog;
+import com.tle.web.workflow.tasks.dialog.CommentDialog;
+import com.tle.web.workflow.tasks.dialog.RejectDialog;
 
 @SuppressWarnings("nls")
 public class WizardModule extends SectionsModule
@@ -59,7 +55,7 @@ public class WizardModule extends SectionsModule
 		bind(Object.class).annotatedWith(Names.named("/access/runwizard")).toProvider(rootNode);
 
 		ListProvider<WizardCommand> commands = new ListProvider<WizardCommand>(binder(),
-			ImmutableList.of(EditInWizard.class, ViewSummary.class, SaveAndContinue.class, Preview.class, Save.class,
+			ImmutableList.of(EditInWizard.class, ViewSummary.class, Approve.class, Reject.class, SaveAndContinue.class, Preview.class, Save.class,
 				Cancel.class, SelectThumbnail.class));
 		ListProvider<SectionId> additional = new ListProvider<SectionId>(binder());
 		additional.add(LockedByGroupSection.class);

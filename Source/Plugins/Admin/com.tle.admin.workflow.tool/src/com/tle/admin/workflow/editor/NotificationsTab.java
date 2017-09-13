@@ -24,7 +24,6 @@ import com.tle.common.recipientselector.MultipleFinderControl;
 import com.tle.common.recipientselector.RecipientFilter;
 import com.tle.common.workflow.node.ScriptNode;
 import com.tle.core.remoting.RemoteUserService;
-import sun.plugin.dom.css.Rect;
 
 public class NotificationsTab extends JPanel
 {

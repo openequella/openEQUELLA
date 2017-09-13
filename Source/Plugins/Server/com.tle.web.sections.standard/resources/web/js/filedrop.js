@@ -1,7 +1,7 @@
 
 function setupFileDrop(options, filedrag)
 {
-    var $file = $('#'+filedrag.id+"_file")
+    var $file = $('#'+filedrag.id+"_file");
     $(filedrag).bind('click', function(e) {
         $file.click();
     });

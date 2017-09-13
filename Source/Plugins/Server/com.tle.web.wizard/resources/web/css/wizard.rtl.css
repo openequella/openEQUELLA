@@ -27,10 +27,6 @@
 	background-image: url("../images/button-edit.rtl.png");
 }
 
-#wizard-major-actions .action-button.view {
-	background-image: url("../../com.tle.web.workflow/images/button-rhs-view.rtl.png");
-}
-
 #wizard-actions {
 	text-align: left;
 }

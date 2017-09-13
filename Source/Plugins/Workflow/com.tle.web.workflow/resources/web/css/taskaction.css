@@ -1,0 +1,45 @@
+.taskactiondialog .modal-content {
+    height: 400px;
+}
+
+.taskactiondialog .modal-content-inner {
+	min-height: 384px;
+}
+
+.taskactiondialog .file-upload {
+	padding: 10px 4px;
+	clear: both;
+}
+
+.taskactiondialog .file-upload:hover {
+	background-color: rgb(230, 230, 230);
+}
+
+.taskactiondialog .file-upload .file-name {
+	width: 600px;
+	overflow: hidden;
+}
+
+.taskactiondialog .file-upload-cancel {
+	float: right;
+	width: 20px;
+}
+
+.taskactiondialog .file-upload-problem {
+	background-color: #FF0000;
+}
+
+.taskactiondialog .comment-entry,
+.taskactiondialog .reject-steps,
+.taskactiondialog .newListSelected,
+.taskactiondialog .newList {
+	width: 100% !important;
+	box-sizing: border-box;
+}
+
+.errorMsg {
+    color: red;
+    text-align: center;
+    font-size: 20px;
+    line-height: 24px;
+}

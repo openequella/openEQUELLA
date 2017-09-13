@@ -4,17 +4,12 @@ var WorkflowComments = {
 	{
 		return "<a id='" + linkid + "' href='javascript:void(0)' class='unselect'> </a>";
 	},
-	removeStagingFile: function(removeCb, filename, itemhtmlid) {
-		removeCb(function() {
-			$('#' + itemhtmlid).remove();
-		}, filename);
-	},
 	validateFile: function (done) {
 	    return function (f, xhr) {
             var $parediv = $("#current-uploads");
             var $progress = $('<div id="upload" class="progressbar"><div class="progress-bar-inner"/></div>');
-            var $fullUpload = $("<div/>");
-            var $fname = $("<span/>").text(f.name);
+            var $fullUpload = $('<div class="file-upload" />');
+            var $fname = $('<span class="file-name" />').text(f.name);
             var $progspan = $('<span class="file-progress"/>');
             $progress.appendTo($progspan);
             $fullUpload.append($fname);
