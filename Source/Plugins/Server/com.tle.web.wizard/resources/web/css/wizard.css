@@ -68,10 +68,6 @@
 	background-image: url("../images/button-edit.ltr.png");
 }
 
-#wizard-major-actions .action-button.view {
-	background-image: url("../../com.tle.web.workflow/images/button-rhs-view.ltr.png");
-}
-
 #wizard-actions {
     text-align: right;
     margin: 10px 0px;  

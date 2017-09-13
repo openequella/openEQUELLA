@@ -121,3 +121,16 @@
 #moderation-comments .moderation-comment.approval {
 	background-color: #F0FFF0;
 }
+
+#wizard-major-actions .action-button.view {
+	background-image: url("../images/button-rhs-view.ltr.png");
+}
+
+#wizard-major-actions .action-button.moderate-approve {
+	background-image: url("../images/moderate-approve.ltr.png");
+}
+
+#wizard-major-actions .action-button.moderate-reject {
+	background-image: url("../images/moderate-reject.ltr.png");
+}
+

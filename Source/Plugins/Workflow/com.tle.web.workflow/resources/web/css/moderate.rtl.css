@@ -1,18 +1,5 @@
 @import url("moderate.css");
 
-#moderate-approve {
-	background: url(../images/moderate-approve.rtl.png);
-	padding: 0 0 0 32px;
-	margin: 40px 3px 0 0;
-	text-align: left;
-}
-	
-#moderate-reject {
-	padding: 0 32px 0;
-	text-align: right;
-	background: url(../images/moderate-reject.rtl.png);
-}
-
 #moderate h3 {
 	padding: 6px 0 6px 0;
 	font-weight: normal;
@@ -22,4 +9,16 @@
 padding: 0 22px 0 0;
 background: url(../images/icons/comment_alt.png) right center no-repeat;
 
+}
+
+#wizard-major-actions .action-button.view {
+	background-image: url("../images/button-rhs-view.rtl.png");
+}
+
+#wizard-major-actions .action-button.moderate-approve {
+	background-image: url("../images/moderate-approve.rtl.png");
+}
+
+#wizard-major-actions .action-button.moderate-reject {
+	background-image: url("../images/moderate-reject.rtl.png");
 }

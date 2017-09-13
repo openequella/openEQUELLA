@@ -53,6 +53,7 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.model.DialogState;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.fancybox.FancyBoxDialogRenderer;
+import com.tle.web.workflow.servlet.WorkflowMessageServlet;
 import com.tle.web.workflow.tasks.comments.CommentRow;
 import com.tle.web.workflow.tasks.comments.CommentsSection;
 import com.tle.web.workflow.tasks.comments.CommentsSection.CommentType;
@@ -426,9 +427,7 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 					@Override
 					public String getHref()
 					{
-						String url = institutionService
-								.institutionalise(PathUtils.urlPath("workflow/message", uuid, f.getName()));
-						return url;
+						return WorkflowMessageServlet.messageUrl(uuid, f.getName());
 					}
 				});
 				link.setLabel(new TextLabel(f.getName()));

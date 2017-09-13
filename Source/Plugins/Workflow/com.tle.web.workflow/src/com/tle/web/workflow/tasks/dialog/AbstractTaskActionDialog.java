@@ -55,6 +55,7 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
+import com.tle.web.workflow.servlet.WorkflowMessageServlet;
 import com.tle.web.workflow.tasks.CurrentTaskSection;
 import com.tle.web.workflow.tasks.comments.CommentsSection;
 
@@ -170,9 +171,8 @@ public abstract class AbstractTaskActionDialog<M extends AbstractTaskActionDialo
 			for( FileEntry fileEntry : fileEntries )
 			{
 				String filename = fileEntry.getName();
-				String urlPath = PathUtils.urlPath("workflow/message/$/", stagingFolderUuid, filename);
 				HtmlLinkState link = new HtmlLinkState(new TextLabel(filename),
-						new SimpleBookmark(instituionService.institutionalise(urlPath)));
+						new SimpleBookmark(WorkflowMessageServlet.stagingUrl(stagingFolderUuid, filename)));
 				link.setTarget("_blank");
 				lists.add(link);
 				HtmlLinkState removeBtn = new HtmlLinkState(new TextLabel(""));
@@ -256,8 +256,7 @@ public abstract class AbstractTaskActionDialog<M extends AbstractTaskActionDialo
 			fileSystemService.removeFile(staging, fn);
 		}
 		fileSystemService.write(staging, fn, stream, false);
-		String url = instituionService
-				.institutionalise(PathUtils.urlPath("workflow/message/$/", stagingFolderUuid, fn));
+		String url = WorkflowMessageServlet.stagingUrl(stagingFolderUuid, fn);
 		return new DndUploadResponse(stagingFolderUuid, url);
 	}
 
