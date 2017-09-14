@@ -246,6 +246,8 @@ object WebFileUploads {
 
   def zipPath(fn: String) : String = s"_zips/$fn"
 
+  def removeZipPath(fn: String) : String = fn.substring(6)
+
   def zipAttachment(attachment: IAttachment): Option[ZipAttachment] = attachment match {
     case za: ZipAttachment => Some(za)
     case _ => None

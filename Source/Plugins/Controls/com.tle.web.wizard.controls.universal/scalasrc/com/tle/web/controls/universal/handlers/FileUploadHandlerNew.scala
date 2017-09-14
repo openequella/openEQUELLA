@@ -514,7 +514,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
       val eds = getEditState
       val zipFolder = eds.a match {
         case fa: FileAttachment => eds.commitUnzipPaths.get._1
-        case za: ZipAttachment => za.getUrl
+        case za: ZipAttachment => WebFileUploads.removeZipPath(za.getUrl)
       }
       fileSystemService.enumerateTree(stagingContext.stgFile, zipFolder, null).getFiles.asScala
     }
@@ -549,7 +549,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
     def selectedAttachments: Map[String, Attachment] = getEditState.a match {
       case za: ZipAttachment =>
-        val fnPrefixLen = za.getUrl.length + 1
+        val fnPrefixLen = WebFileUploads.removeZipPath(za.getUrl).length + 1
         WebFileUploads.findAttachments(repo, WebFileUploads.isSelectedInZip(za)).map {
           a => (a.getUrl.substring(fnPrefixLen), a)
         }.toMap

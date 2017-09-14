@@ -236,11 +236,11 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
       case (fa: FileAttachment, true) =>
         val za = new ZipAttachment
         copyExtra(fa, za)
-        za.setUrl(fa.getFilename)
+        za.setUrl(WebFileUploads.zipPath(fa.getFilename))
         (za, None)
       case (za: ZipAttachment, false) =>
         val fa = new FileAttachment
-        fa.setFilename(za.getUrl)
+        fa.setFilename(WebFileUploads.removeZipPath(za.getUrl))
         copyExtra(za, fa)
 
         (fa, Some(AttachmentDelete(ctx.controlState.getAttachments.asScala.filter(WebFileUploads.isSelectedInZip(za)), _ => ())))
@@ -256,7 +256,7 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
       val cs = ctx.controlState
       add.foreach { fn =>
         val fa = new FileAttachment
-        val fullpath = a.getUrl+"/"+fn
+        val fullpath = WebFileUploads.removeZipPath(a.getUrl)+"/"+fn
         fa.setUuid(UUID.randomUUID().toString)
         fa.setData(ZipAttachment.KEY_ZIP_ATTACHMENT_UUID, a.getUuid)
         fa.setFilename(fullpath)
