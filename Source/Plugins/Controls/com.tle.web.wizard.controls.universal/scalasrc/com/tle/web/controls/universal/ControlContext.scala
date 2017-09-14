@@ -35,7 +35,7 @@ trait StagingContext
 
   def thumbRequest(filePath: String): String
 
-  def gatherAdditionalMetadata(filePath: String): Iterable[(String, String)]
+  def gatherAdditionalMetadata(filePath: String): Iterable[(String, AnyRef)]
 
   def unzip(srcZip: String, target: String) : ZipProgress
 
@@ -90,7 +90,7 @@ class FileStagingContext(stgId: Option[String], itemId: ItemId, fileSystemServic
   }
 
 
-  def gatherAdditionalMetadata(filepath: String): Iterable[(String, String)] = {
+  def gatherAdditionalMetadata(filepath: String): Iterable[(String, AnyRef)] = {
     (if (tikaMimes(mimeTypeService.getMimeTypeForFilename(filepath)) && fileSystemService.fileExists(stgFile, filepath)) {
       Try(fileSystemService.read(stgFile, filepath)).flatMap { inp =>
         val tried = Try {
@@ -105,6 +105,7 @@ class FileStagingContext(stgId: Option[String], itemId: ItemId, fileSystemServic
         tried
       }.toOption.map { m =>
         tikaMapping.flatMap {
+          case (HttpHeaders.LAST_MODIFIED, "lastmodified") => Option(m.getDate(HttpHeaders.LAST_MODIFIED)).map(("lastmodified", _))
           case (f: Property, ef) => Option(m.get(f)).map((ef, _))
           case (f: String, ef) => Option(m.get(f)).map((ef, _))
         }

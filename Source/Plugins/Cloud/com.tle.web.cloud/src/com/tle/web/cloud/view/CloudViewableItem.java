@@ -89,7 +89,7 @@ public class CloudViewableItem implements ViewableItem<CloudItem>
 	@Override
 	public String getItemdir()
 	{
-		return PathUtils.urlPath("cloud", getItemId().toString());
+		return PathUtils.filePath("cloud", getItemId().toString());
 	}
 
 	@Override

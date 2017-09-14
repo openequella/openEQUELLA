@@ -13,8 +13,8 @@ object WorkflowMessageServlet {
   val basePath = "workflow/message/"
 
   def messageUrl(msgUuid: String, filename: String): String =
-    institutionService.institutionalise(PathUtils.urlPath(basePath, msgUuid, filename))
+    institutionService.institutionalise(PathUtils.urlEncodedPath(basePath, msgUuid, filename))
 
   def stagingUrl(stagingUuid: String, filename: String): String =
-    institutionService.institutionalise(PathUtils.urlPath(basePath, "$", stagingUuid, filename))
+    institutionService.institutionalise(PathUtils.urlEncodedPath(basePath, "$", stagingUuid, filename))
 }
