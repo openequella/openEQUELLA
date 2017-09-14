@@ -13,7 +13,7 @@ object StandardFileCreate {
       fa.setDescription(uploaded.description)
       fa.setMd5sum(uploaded.fileInfo.getMd5CheckSum)
       fa.setSize(uploaded.fileInfo.getLength)
-      if (suppressThumb) fa.setThumbnail(WebFileUploads.SUPPRESS_THUMB_VALUE)
+      fa.setThumbnail(if (suppressThumb) WebFileUploads.SUPPRESS_THUMB_VALUE else stg.thumbRequest(uploaded.originalFilename))
       stg.gatherAdditionalMetadata(uploaded.originalFilename).foreach { a =>
         fa.setData(a._1, a._2)
       }
