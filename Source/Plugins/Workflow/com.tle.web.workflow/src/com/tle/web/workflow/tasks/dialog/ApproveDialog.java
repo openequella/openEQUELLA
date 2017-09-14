@@ -69,7 +69,7 @@ public class ApproveDialog extends AbstractTaskActionDialog<AbstractTaskActionDi
 		String stagingUuid = model.getStagingFolderUuid();
 		StagingFile stagingFolder = new StagingFile(stagingUuid);
 		long countFiles = fileSystemService.countFiles(stagingFolder, null);
-		if (countFiles > 0 && Check.isEmpty(getCommentField().getValue(info).trim()))
+		if (countFiles > 1 && Check.isEmpty(getCommentField().getValue(info).trim()))
 		{
 			return LABEL_ENTERMSG_WITHFILES;
 		}
