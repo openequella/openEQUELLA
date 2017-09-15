@@ -81,14 +81,14 @@ class TaskNotifications extends FilterableNotification with NotificationLookup w
   case class TaskGroup(multiple: Boolean, rejected: Boolean, taskName: String) extends NotificationGroup
   {
     def groupName = s"task.${if (multiple) "m" else "s"}${if (rejected) "r" else "a"}"
-    def headerLabel(user: UserBean, total: Int): Label = AppendedLabel.get(
-      NotificationLangStrings.userHeaderLabel(user),
-      new KeyLabel(NotificationLangStrings.pluralKey(NotificationLangStrings.KEY_HEADER+groupName, total), taskName)
-    )
 
     def subjectLabel: Label = new KeyLabel(KEYPFX_EMAIL_SUBJECT+groupName, taskName)
 
     def templateName: String = "notification-tasks.ftl"
+
+    def headerHello(user: UserBean): Label = NotificationLangStrings.userHeaderLabel(user)
+
+    def headerReason(total: Int): Label = new KeyLabel(NotificationLangStrings.pluralKey(NotificationLangStrings.KEY_HEADER+groupName, total), taskName)
   }
 
   case class TaskNoteModel(lul: LazyUserLookup)(val note: Notification, val item: Item) extends TaskNotification with OwnerLookup {

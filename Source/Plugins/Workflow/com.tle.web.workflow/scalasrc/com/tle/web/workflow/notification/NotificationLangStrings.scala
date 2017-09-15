@@ -22,7 +22,6 @@ object NotificationLangStrings
   val KEY_TASK_MISSING = r.key("task.missing")
 
   def subject(reason: String) : Label = new KeyLabel(KEYPFX_EMAIL_SUBJECT+reason)
-  def header(user: UserBean, reason: String, total: Int) : Label = AppendedLabel.get(userHeaderLabel(user), headerLabel(reason, total))
   def headerLabel(reason: String, total: Int) : Label = new PluralKeyLabel(KEY_HEADER + reason, total)
   def userHeaderLabel(user: UserBean) : Label = new KeyLabel(KEY_USER_HEADER, user.getFirstName, user.getLastName, user.getUsername)
   def somethingBy(something: Label, by: Label) = new KeyLabel(KEY_MSG_FRMT, something, by)

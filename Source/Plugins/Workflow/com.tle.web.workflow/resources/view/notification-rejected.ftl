@@ -1,11 +1,13 @@
-${m.header}
+<#include "emailhelper.ftl">
+<@stdHeader/>
 
 <#list m.notifications as i>
-${b.key('email.itemname')} ${i.itemName}
-${b.key('email.itemlink')} ${i.link.href}
-${b.key('email.rejectedby')} ${i.rejectedBy}
-${b.key('email.rejecttask')} ${i.rejectedTask}
-${b.key('email.msg.r')} ${i.rejectedMessage}
-${b.key('email.modhistory')} ${i.link.href}?is.summaryId=hc
- 
+<table>
+<@row b.key('email.itemlink')><@itemLink i/></@row>
+<@row b.key('email.rejectedby')>${i.rejectedBy}</@row>
+<@row b.key('email.rejecttask')>${i.rejectedTask}</@row>
+<@row b.key('email.msg.r')> ${i.rejectedMessage}</@row>
+<tr><td><a href="${i.link.href}?is.summaryId=hc">${b.key('email.modhistory')}</a></td></tr>
+</table>
 </#list>
+<@stdFooter/>

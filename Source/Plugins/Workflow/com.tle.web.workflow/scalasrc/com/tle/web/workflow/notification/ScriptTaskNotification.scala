@@ -14,12 +14,11 @@ case class ScriptTaskGroup(reason: String, taskName: String) extends Notificatio
 {
   override def templateName: String = "notification-script.ftl"
 
-  def headerLabel(user: UserBean, total: Int): Label = AppendedLabel.get(
-    NotificationLangStrings.userHeaderLabel(user),
-    new KeyLabel(NotificationLangStrings.pluralKey(NotificationLangStrings.KEY_HEADER+reason, total), taskName)
-  )
-
   def subjectLabel: Label = new KeyLabel(KEYPFX_EMAIL_SUBJECT+reason, taskName)
+
+  def headerHello(user: UserBean) = NotificationLangStrings.userHeaderLabel(user)
+
+  def headerReason(total: Int) = new KeyLabel(NotificationLangStrings.pluralKey(NotificationLangStrings.KEY_HEADER+reason, total), taskName)
 }
 
 @Bind

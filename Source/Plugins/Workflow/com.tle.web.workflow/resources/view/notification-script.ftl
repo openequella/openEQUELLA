@@ -1,5 +1,8 @@
-${m.header}
-
+<#include "emailhelper.ftl">
+<@stdHeader/>
+<p>
 <#list m.notifications as i>
-${i.itemName}
+<@itemLink i/><br>
 </#list>
+</p>
+<@stdFooter/>
