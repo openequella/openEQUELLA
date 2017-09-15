@@ -23,7 +23,7 @@ import com.tle.core.hibernate.dao.GenericDao;
 
 public interface URLCheckerDao extends GenericDao<ReferencedURL, Long>
 {
-	ReferencedURL retrieveOrCreate(String url, boolean httpUrl, boolean forImport);
+	ReferencedURL retrieveOrCreate(String url, boolean httpUrl, boolean forImport, boolean persist);
 
 	Collection<ReferencedURL> getRecheckingBatch(long startId, int batchSize);
 

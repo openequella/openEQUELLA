@@ -59,7 +59,7 @@ public class URLCheckerDaoImpl extends GenericDaoImpl<ReferencedURL, Long> imple
 
 	@Override
 	@Transactional
-	public ReferencedURL retrieveOrCreate(final String url, final boolean httpUrl, final boolean forImport)
+	public ReferencedURL retrieveOrCreate(final String url, final boolean httpUrl, final boolean forImport, boolean persist)
 	{
 		ReferencedURL rurl = (ReferencedURL) getHibernateTemplate().execute(new HibernateCallback()
 		{
@@ -68,26 +68,26 @@ public class URLCheckerDaoImpl extends GenericDaoImpl<ReferencedURL, Long> imple
 			{
 				if( forImport )
 				{
-					ReferencedURL rurl = loadOrCreate(session, url, httpUrl, forImport);
+					ReferencedURL rurl = loadOrCreate(session, url, httpUrl, forImport, persist);
 					ReferencedURL clone = cloneReferencedURL(rurl);
 					session.evict(clone);
 					return clone;
 				}
-				return loadOrCreate(session, url, httpUrl, forImport);
+				return loadOrCreate(session, url, httpUrl, forImport, persist);
 			}
 		});
 
 		return rurl;
 	}
 
-	private ReferencedURL loadOrCreate(Session session, String url, boolean httpUrl, boolean forImport)
+	private ReferencedURL loadOrCreate(Session session, String url, boolean httpUrl, boolean forImport, boolean persist)
 	{
 		// We do this double-check to avoid calling the global
 		// ReferencedUrl task if we can help it.
 		ReferencedURL rurl = getFromDb(session, url);
 		if( rurl == null )
 		{
-			if( httpUrl && !forImport )
+			if( httpUrl && !forImport && persist)
 			{
 				taskService.postSynchronousMessage(getTaskId(),
 					new CreateUrlMessage(url, CurrentInstitution.get().getUniqueId()), MSGTIMEOUT);
@@ -107,7 +107,10 @@ public class URLCheckerDaoImpl extends GenericDaoImpl<ReferencedURL, Long> imple
 				rurl.setLastIndexed(epoch);
 				try
 				{
-					session.save(rurl);
+					if (persist)
+					{
+						session.save(rurl);
+					}
 				}
 				catch( ConstraintViolationException ex )
 				{

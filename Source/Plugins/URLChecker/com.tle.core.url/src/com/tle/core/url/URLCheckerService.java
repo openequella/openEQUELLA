@@ -153,7 +153,7 @@ public class URLCheckerService
 			// ignore
 		}
 
-		final ReferencedURL rurl = dao.retrieveOrCreate(url, httpUrl, mode == URLCheckMode.IMPORT);
+		final ReferencedURL rurl = dao.retrieveOrCreate(url, httpUrl, mode == URLCheckMode.IMPORT, mode != URLCheckMode.RECORDS_ONLY);
 
 		if( !httpUrl )
 		{
