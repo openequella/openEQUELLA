@@ -14,6 +14,7 @@ object JarSignerPlugin extends AutoPlugin {
     lazy val keyAlias = settingKey[String]("The key alias")
     lazy val keyPassword = settingKey[Option[String]]("The key password")
     lazy val jarSigner = taskKey[(File, File) => Unit]("The jarsigner task")
+    lazy val tsaUrl = taskKey[Option[String]]("The tsa url")
   }
 
   import autoImport._
@@ -37,6 +38,10 @@ object JarSignerPlugin extends AutoPlugin {
       val c = buildConfig.value
       if (c.hasPath("signer.keyPassword")) Some(c.getString("signer.keyPassword")) else None
     },
+    (tsaUrl in ThisBuild) := {
+      val c = buildConfig.value
+      if (c.hasPath("signer.tsaUrl")) Some(c.getString("signer.tsaUrl")) else None
+    },
     (jarSigner in ThisBuild) := {
       (inJar, outJar) =>
         val log = sLog.value
@@ -58,12 +63,17 @@ object JarSignerPlugin extends AutoPlugin {
         }
         outJar.getParentFile.mkdirs()
         val ops = Seq(
-          SignJar.keyStore(keyFile.toURI.toURL),
-          SignJar.storePassword(spasswd),
-          SignJar.signedJar(outJar)
-        ) ++ kpasswd.map(SignJar.keyPassword)
-        SignJar.sign(inJar, alias, ops) {
-          (cmd, ops) => (cmd +: ops) !
+          "jarsigner", "-keystore", keyFile.toURI.toString,
+          "-storepass", spasswd,
+          "-signedjar", outJar.absolutePath
+        ) ++ kpasswd.map(kp => List("-keypass", kp)).getOrElse(Nil) ++
+          tsaUrl.value.map(u => List("-tsa", u)).getOrElse(Nil) ++
+          List(inJar.absolutePath, alias)
+        log.info(s"Signing jar ${inJar.absolutePath} to ${outJar.absolutePath}")
+        val exResult = (ops !)
+        if (exResult != 0)
+        {
+          sys.error(s"jarsigner exited with code $exResult")
         }
     }
   )
