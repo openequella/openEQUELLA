@@ -18,7 +18,7 @@
 
 </#if>
 <@row b.key('email.currenttask')>${t.taskName}</@row>
-<@taskLink/>
+<@taskLink t/>
 <#if t.dueDate??>
 <@row b.key('email.taskdue')>${t.dueDate()?date?string.medium} <#if t.autoAction??>${t.autoAction}</#if></@row>
 </#if>
