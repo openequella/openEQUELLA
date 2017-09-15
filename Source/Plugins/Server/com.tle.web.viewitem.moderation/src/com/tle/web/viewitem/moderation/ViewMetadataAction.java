@@ -19,6 +19,8 @@ package com.tle.web.viewitem.moderation;
 import javax.inject.Inject;
 
 import com.tle.core.guice.Bind;
+import com.tle.web.freemarker.FreemarkerFactory;
+import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
@@ -34,16 +36,25 @@ import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.viewitem.section.AbstractParentViewItemSection;
+import com.tle.web.workflow.tasks.CurrentTaskSection;
 import com.tle.web.workflow.tasks.ModerationService;
+import com.tle.web.workflow.tasks.dialog.ApproveDialog;
+import com.tle.web.workflow.tasks.dialog.RejectDialog;
 
 @Bind
 public class ViewMetadataAction extends AbstractParentViewItemSection<Object>
 {
 	@Component
 	@PlugKey("action.name")
-	private Button button;
-	@PlugURL("css/moderationsummary.css")
-	private static String CSS;
+	private Button metadataButton;
+
+	@Component
+	@PlugKey("approve.name")
+	private Button approveButton;
+
+	@Component
+	@PlugKey("reject.name")
+	private Button rejectButton;
 
 	@EventFactory
 	protected EventGenerator events;
@@ -56,11 +67,10 @@ public class ViewMetadataAction extends AbstractParentViewItemSection<Object>
 	public void registered(String id, SectionTree tree)
 	{
 		super.registered(id, tree);
-		button.setClickHandler(events.getNamedHandler("execute"));
-		button.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
-		button.setStyleClass("viewMetadata");
-		button.addPrerenderables(CssInclude.include(CSS).hasRtl().make());
-
+		metadataButton.setClickHandler(events.getNamedHandler("execute"));
+		metadataButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
+		approveButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
+		rejectButton.setDefaultRenderer(EquellaButtonExtension.ACTION_BUTTON);
 	}
 
 	@Override
@@ -76,12 +86,29 @@ public class ViewMetadataAction extends AbstractParentViewItemSection<Object>
 		{
 			return null;
 		}
-		return SectionUtils.renderSectionResult(context, button);
+		approveButton.setClickHandler(context, context.lookupSection(ApproveDialog.class).getOpenFunction());
+		rejectButton.setClickHandler(context, context.lookupSection(RejectDialog.class).getOpenFunction());
+		return viewFactory.createResult("modbuttons.ftl", this);
 	}
 
 	@EventHandlerMethod
 	public void execute(SectionInfo info) throws Exception
 	{
 		moderationService.viewMetadata(info);
+	}
+
+	public Button getMetadataButton()
+	{
+		return metadataButton;
+	}
+
+	public Button getApproveButton()
+	{
+		return approveButton;
+	}
+
+	public Button getRejectButton()
+	{
+		return rejectButton;
 	}
 }

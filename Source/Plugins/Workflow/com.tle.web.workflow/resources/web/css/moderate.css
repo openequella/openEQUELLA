@@ -26,6 +26,7 @@
 
 #moderate #moderate-controls {
 	float: right;
+	margin-top: 10px;
 }
 
 #moderate-controls a+a, #moderate-controls a+span, #moderate-controls span+a {

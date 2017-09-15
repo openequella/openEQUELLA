@@ -17,7 +17,9 @@
 		<library type="resources" path="resources/" id="resources" />
 	</runtime>
 
-	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules" />
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+		<parameter id="class" value="com.tle.web.sections.equella.guice.EquellaModule" />
+	</extension>
 
 	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
 		<parameter id="group" value="resource-centre" />

@@ -1,3 +1,11 @@
-.viewMetadata {
+.action-button.viewMetadata {
 	background-image: url("../../com.tle.web.workflow/images/button-rhs-view.ltr.png");
+}
+
+.action-button.approve {
+	background-image: url("../images/moderate-approve.ltr-sml.png");
+}
+
+.action-button.reject {
+	background-image: url("../images/moderate-reject.ltr-sml.png");
 }

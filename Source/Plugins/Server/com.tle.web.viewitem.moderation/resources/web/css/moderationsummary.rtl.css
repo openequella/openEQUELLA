@@ -1,5 +1,11 @@
-@import url("moderationsummary.css");
-
-.viewMetadata {
+.action-button.viewMetadata {
 	background-image: url("../../com.tle.web.workflow/images/button-rhs-view.rtl.png");
+}
+
+.action-button.approve {
+	background-image: url("../images/moderate-approve.rtl-sml.png");
+}
+
+.action-button.reject {
+	background-image: url("../images/moderate-reject.rtl-sml.png");
 }
