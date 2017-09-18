@@ -33,8 +33,9 @@ public class WizardConfigTest extends AbstractSessionTest
 		wizardPage.editbox(1, "Wizard Config Test");
 
 		// Check pages are text
-		assertTrue(wizardPage.hasPage("Name", false) && wizardPage.hasPage("Description", false)
-			&& wizardPage.hasPage("Attachments", false));
+		assertTrue(wizardPage.hasPage("Name *", false));
+		assertTrue(wizardPage.hasPage("Description", false));
+		assertTrue(wizardPage.hasPage("Attachments", false));
 
 		// Check button text Next and Prev
 		assertEquals(wizardPage.getNextButtonText(), "Next");

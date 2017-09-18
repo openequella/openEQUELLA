@@ -1,5 +1,8 @@
 package com.tle.webtests.pageobject.tasklist;
 
+import com.tle.webtests.pageobject.wizard.ApproveMessagePage;
+import com.tle.webtests.pageobject.wizard.CommentMessagePage;
+import com.tle.webtests.pageobject.wizard.RejectMessagePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -11,14 +14,12 @@ import com.tle.webtests.pageobject.wizard.ModerationMessagePage;
 
 public class ModerationView extends AbstractPage<ModerationView>
 {
-	@FindBy(id = "moderate-reject")
+	@FindBy(className = "moderate-reject")
 	private WebElement rejectButton;
-	@FindBy(id = "moderate-approve")
+	@FindBy(className = "moderate-approve")
 	private WebElement approveButton;
 	@FindBy(id = "_tasks_assignButton")
 	private WebElement assignLink;
-	@FindBy(id = "_tasks_showButton")
-	private WebElement commentsLink;
 	@FindBy(id = "_tasks_listButton")
 	private WebElement taskNavigationLink;
 	@FindBy(id = "_tasks_nextButton")
@@ -36,7 +37,7 @@ public class ModerationView extends AbstractPage<ModerationView>
 	public ModerationMessagePage reject()
 	{
 		rejectButton.click();
-		return new ModerationMessagePage(context).get();
+		return new RejectMessagePage(context).get();
 	}
 
 	public void accept()
@@ -47,7 +48,7 @@ public class ModerationView extends AbstractPage<ModerationView>
 	public ModerationMessagePage acceptToMessagePage()
 	{
 		approveButton.click();
-		return new ModerationMessagePage(context).get();
+		return new ApproveMessagePage(context).get();
 	}
 
 	public ModerationView assignToMe()
@@ -63,8 +64,6 @@ public class ModerationView extends AbstractPage<ModerationView>
 
 	public ModerationCommentsPage moderationComments()
 	{
-
-		commentsLink.click();
 		return new ModerationCommentsPage(context).get();
 	}
 
@@ -112,7 +111,7 @@ public class ModerationView extends AbstractPage<ModerationView>
 	public ModerationMessagePage postComment()
 	{
 		postCommentLink.click();
-		return new ModerationMessagePage(context).get();
+		return new CommentMessagePage(context).get();
 	}
 
 	private String xpathForComment(String comment)

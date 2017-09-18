@@ -1,5 +1,6 @@
 package com.tle.webtests.pageobject.wizard;
 
+import com.tle.webtests.pageobject.WaitingPageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -9,22 +10,31 @@ import com.tle.webtests.pageobject.ReceiptPage;
 import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import com.tle.webtests.pageobject.tasklist.ModerationView;
 import com.tle.webtests.pageobject.tasklist.TaskListPage;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
-public class ModerationMessagePage extends AbstractWizardTab<ModerationMessagePage>
+public abstract class ModerationMessagePage<M extends AbstractWizardTab<M>> extends AbstractWizardTab<M>
 {
-	@FindBy(id = "_tasksc_commentField")
+	@FindBy(id = "{pfx}_commentField")
 	private WebElement messageField;
-	@FindBy(id = "_tasksc_rejectSteps")
+	@FindBy(id = "{pfx}_rejectSteps")
 	private WebElement stepList;
-	@FindBy(id = "_tasksc_submitButton")
+	@FindBy(id = "{pfx}_ok")
 	private WebElement okButton;
-	@FindBy(id = "_tasksc_cancelButton")
+	@FindBy(id = "{pfx}_c")
 	private WebElement cancelButton;
 
 	public ModerationMessagePage(PageContext context)
 	{
-		super(context, By.id("_tasksc_commentField"));
+		super(context);
 	}
+
+	@Override
+	protected WebElement findLoadedElement()
+	{
+		return messageField;
+	}
+
+	public abstract String getPfx();
 
 	public TaskListPage rejectWithMessage(String message, String toStep)
 	{
@@ -46,12 +56,16 @@ public class ModerationMessagePage extends AbstractWizardTab<ModerationMessagePa
 		return ReceiptPage.waiter("Successfully approved previous task", new TaskListPage(context)).get();
 	}
 
-	public ModerationMessagePage addModerationComment(String message)
+	public ModerationView addModerationComment(String message)
 	{
 		messageField.clear();
 		messageField.sendKeys(message);
+
+		ModerationView moderationView = new ModerationView(context);
+		moderationView.checkLoaded();
+		WaitingPageObject<ModerationView> modViewWaiter = moderationView.updateWaiter();
 		okButton.click();
-		return new ModerationMessagePage(context).get();
+		return modViewWaiter.get();
 	}
 
 	public ModerationView cancel()

@@ -20,7 +20,7 @@ public class ModerationCommentsPage extends AbstractPage<ModerationCommentsPage>
 		{
 			return "//div[@class='comment' and count(div[@class='comment-content']) = 0]";
 		}
-		return "//div[@class[contains(.,'comment')] and contains(div[@class='comment-content'],'" + comment + "')]";
+		return "//div[contains(@class,'comment') and div[@class='comment-content']/p/text() = "+quoteXPath(comment)+"]";
 	}
 
 	public boolean containsComment(String comment)

@@ -59,7 +59,7 @@ public class ModerationProgressTest extends AbstractCleanupTest
 		logon("simplemoderator", "``````");
 		TaskListPage tlp = new TaskListPage(context).load();
 		ModerationView mv = tlp.exactQuery(itemName).moderate(itemName);
-		mv.postComment().addModerationComment("Moderation Comment").cancel(); // cancel
+		mv.postComment().addModerationComment("Moderation Comment"); // cancel
 																				// to
 																				// get
 																				// out

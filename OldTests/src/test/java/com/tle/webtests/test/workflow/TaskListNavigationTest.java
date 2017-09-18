@@ -15,6 +15,10 @@ import com.tle.webtests.test.AbstractCleanupTest;
 @TestInstitution("workflow")
 public class TaskListNavigationTest extends AbstractCleanupTest
 {
+	private String taskInfoMsg(int x, int y)
+	{
+		return x+" of "+y+" tasks";
+	}
 	@Test
 	public void taskListNavigation()
 	{
@@ -32,19 +36,19 @@ public class TaskListNavigationTest extends AbstractCleanupTest
 		TaskListPage tlp = new TaskListPage(context).load();
 		tlp.setSort("name");
 		ModerationView mv = tlp.exactQuery(namePrefix).moderate(context.getFullName("Item 1"));
-		assertEquals(mv.getTaskNavigationInfo(), "1 OF 3 TASKS");
+		assertEquals(mv.getTaskNavigationInfo(), taskInfoMsg(1, 3));
 		mv.accept();
 		tlp = new TaskListPage(context).load();
 		mv = tlp.exactQuery(namePrefix).moderate(context.getFullName("Item 2"));
-		assertEquals(mv.getTaskNavigationInfo(), "1 OF 2 TASKS");
+		assertEquals(mv.getTaskNavigationInfo(), taskInfoMsg(1,2));
 		mv = mv.navigateNext();
-		assertEquals(mv.getTaskNavigationInfo(), "2 OF 2 TASKS");
+		assertEquals(mv.getTaskNavigationInfo(), taskInfoMsg(2,2));
 		mv = mv.navigatePrev();
-		assertEquals(mv.getTaskNavigationInfo(), "1 OF 2 TASKS");
+		assertEquals(mv.getTaskNavigationInfo(), taskInfoMsg(1, 2));
 		mv.accept();
 		tlp = new TaskListPage(context).load();
 		mv = tlp.exactQuery(namePrefix).moderate(context.getFullName("Item 3"));
-		assertEquals(mv.getTaskNavigationInfo(), "TASK LIST");
+		assertEquals(mv.getTaskNavigationInfo(), "Task list");
 		assertTrue(mv.navigationDisabled());
 	}
 }

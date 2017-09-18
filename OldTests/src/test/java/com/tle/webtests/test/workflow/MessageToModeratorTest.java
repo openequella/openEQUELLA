@@ -106,9 +106,9 @@ public class MessageToModeratorTest extends AbstractCleanupTest
 		ModerationCommentsPage mcp = mv.moderationComments();
 
 		//Check colours (div classes)
-		assertTrue(mcp.getCommentClass(moderationComment).equalsIgnoreCase("comment "));
-		assertTrue(mcp.getCommentClass(approvalComment).equalsIgnoreCase("comment approval"));
-		assertTrue(mcp.getCommentClass(rejectionComment).equalsIgnoreCase("comment rejection"));
+		assertEquals(mcp.getCommentClass(moderationComment).toLowerCase(), "comment ");
+		assertEquals(mcp.getCommentClass(approvalComment).toLowerCase(), "comment approval");
+		assertEquals(mcp.getCommentClass(rejectionComment).toLowerCase(), "comment rejection");
 
 		logout();
 		return true;
