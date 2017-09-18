@@ -136,4 +136,10 @@ public class RejectDialog extends AbstractTaskActionDialog<AbstractTaskActionDia
 		return validateHasMessage(info);
 	}
 
+	@Override
+	public boolean isMandatoryMessage()
+	{
+		return true;
+	}
+
 }

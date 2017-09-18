@@ -76,4 +76,10 @@ public class ApproveDialog extends AbstractTaskActionDialog<AbstractTaskActionDi
 		return null;
 	}
 
+	@Override
+	public boolean isMandatoryMessage()
+	{
+		return false;
+	}
+
 }

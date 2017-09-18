@@ -416,4 +416,6 @@ public abstract class AbstractTaskActionDialog<M extends AbstractTaskActionDialo
 	{
 		return LABEL_ATTACHED_FILES;
 	}
+
+	public abstract boolean isMandatoryMessage();
 }

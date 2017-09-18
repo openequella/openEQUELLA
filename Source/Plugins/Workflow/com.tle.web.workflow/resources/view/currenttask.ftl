@@ -43,44 +43,28 @@
 			<div>
 				<#list m.comments as comment>
 					<div class="comment ${comment.extraClass}">
-						<div class="comment-username">
-							<@render comment.user/>
+						<div class="comment-avatar"></div>
+						<div class="comment-content">
+							<span class="comment-username"><@render comment.user/></span>
 							<@render section=comment.dateRenderer class="comment-date"/>
+                            <#if comment.taskname??>
+                                <div class="comment-task">${b.key('comments.taskname')}: ${comment.taskName}</div>
+                            </#if>
+                            <#if comment.message??>
+                                <div class="comment-content">
+                                    <p>${comment.message?html?replace("\n", "<br>")}</p>
+                                </div>
+                            </#if>
+                            <#if comment.attachments??>
+                            <ul>
+                            <#list comment.attachments as filelink>
+                                <li><@render filelink/></li>
+                            </#list>
+                            </ul>
+                            </#if>
 						</div>
-						<#if comment.taskname??>
-							<div class="comment-task">${b.key('comments.taskname')}: ${comment.taskName}</div>
-						</#if>
-						<#if comment.message??>
-							<div class="comment-content">
-								<p>${comment.message?html?replace("\n", "<br>")}</p>
-							</div>
-						</#if>
-						<#if comment.attachments??>
-						<ul>
-						<#list comment.attachments as filelink>
-							<li><@render filelink/></li>
-						</#list>
-						</ul>
-						</#if>
 					</div>
 				</#list>
-
-				<#--
-				<#list m.comments as comment>
-					<div class="moderation-comment ${comment.extraClass}">
-						<div class="moderate-label"><@render comment.user /> (<@render comment.dateRenderer />)</div>
-						<div class="moderation-comment-message">${comment.message}</div>
-
-						<#if comment.attachments?size gt 0>
-						<ul class="moderation-comment-attachments">
-							<#list comment.attachments as attachment>
-								<li><@render attachment /></li>
-							</#list>
-						</ul>
-						</#if>
-					</div>
-				</#list>
-				-->
 			</div>
 		</div>
 	</#if>

@@ -8,27 +8,30 @@
 <@css path="taskaction.css" />
 
 <div class="comment-form">
-	<h3>${s.postCommentHeading}</h3>
+	<h3>${s.postCommentHeading} <#if s.mandatoryMessage><span class="mandatory">*</span></#if></h3>
 
 	<@textarea section=s.commentField class="comment-entry" rows=3 />
 
+	<div class="errorMsg">
+        <#if m.errorMessage??>
+            ${m.errorMessage}
+        </#if>
+    </div>
+
 	<#if s.rejectSteps??>
-		<h3>${b.key('comments.steps')}</h3>
-		<@render section=s.rejectSteps class="reject-steps" />
+	    <div class="rejectTo">
+            <h3 class="noTopMargin">${b.key('comments.steps')}</h3>
+            <@render section=s.rejectSteps class="reject-steps" />
+        </div>
 	</#if>
 
-	<h3>${s.attachedFilesLabel}</h3>
+	<h3 class="noTopMargin">${s.attachedFilesLabel}</h3>
 
 	<@filedrop section=s.fileDrop />
 
-
 	<div id="current-uploads"></div>
 
-	<!--<h3>${b.key('comments.uploaded')}</h3>-->
 	<@a.div id="uploaded" class="uploaded-container">
-        <#if m.errorMessage??>
-            <div class="errorMsg">${m.errorMessage}</div>
-        </#if>
 		<div class="uploaded">
 			<#list m.stagingFiles as f>
 				<div id="sf_${f?index}" class="file-upload">

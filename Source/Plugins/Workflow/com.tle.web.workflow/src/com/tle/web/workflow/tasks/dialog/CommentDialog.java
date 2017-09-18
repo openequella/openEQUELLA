@@ -64,4 +64,10 @@ public class CommentDialog extends AbstractTaskActionDialog<AbstractTaskActionDi
 	{
 		return validateHasMessage(info);
 	}
+
+	@Override
+	public boolean isMandatoryMessage()
+	{
+		return true;
+	}
 }

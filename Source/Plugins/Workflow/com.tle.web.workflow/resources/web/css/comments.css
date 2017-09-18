@@ -1,15 +1,19 @@
 .comment {
-	padding: 10px 17px;
-	border: 1px solid #8f8b7f;
+	padding: 8px 10px;
 	background: #fefefe;
-	position: relative;
+	display: flex;
 	margin: 10px 0;
+}
+
+.comment-avatar
+{
+	background: url(../images/user-big.png) 0 0 no-repeat;
+    height: 50px;
+    width: 30px;
 }
 
 .comment-username {
 	color: #f6a03d;
-	background: url(../images/user-big.png) 0 0 no-repeat;
-	padding: 5px 80px 5px 30px;
 	font-size: 17px;
 }
 

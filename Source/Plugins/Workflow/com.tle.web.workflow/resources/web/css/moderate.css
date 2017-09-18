@@ -1,11 +1,8 @@
 #moderate {
-	width: 921px;
+	width: 923px;
 	float: left;
 	background-color: #F1F1F1;
-	border-top: 1px solid #53565b;
-	border-right: 1px solid #53565b;
-	border-left: 1px solid #53565b;
-	border-bottom: none;
+	border: none;
 	padding: 15px 15px;
 	color: #4B4842;
 
@@ -68,7 +65,7 @@
 
 .detail-label {
 	display: inline-block;
-	width: 200px;
+	width: 100px;
 	font-weight: bold;
 }
 
