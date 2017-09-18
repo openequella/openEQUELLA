@@ -3,6 +3,7 @@ package com.tle.web.workflow.tasks;
 import java.io.IOException;
 import java.util.List;
 
+import com.tle.common.usermanagement.user.CurrentUser;
 import org.apache.lucene.search.FieldComparator;
 import org.apache.lucene.search.FieldComparatorSource;
 
@@ -93,10 +94,10 @@ public class TaskSortSection extends AbstractSortOptionsSection<FreetextSearchEv
 		{
 
 			@Override
-			public FieldComparator<String> newComparator(final String fieldName, final int numHits, final int sortPos,
+			public FieldComparator<Integer> newComparator(final String fieldName, final int numHits, final int sortPos,
 				boolean reversed) throws IOException
 			{
-				return new CustomLuceneSortComparator(numHits, fieldName);
+				return new CustomLuceneSortComparator(numHits, fieldName, CurrentUser.getUserID());
 			}
 		};
 	}

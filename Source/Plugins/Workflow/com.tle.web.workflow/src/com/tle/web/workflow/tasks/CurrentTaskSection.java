@@ -308,7 +308,7 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 			forward.processEvent(event);
 			DefaultSearch search = event.getFinalSearch();
 
-			FreetextSearchResults<TaskResult> searchResults = freetextService.search(search, newIndex, 2);
+			FreetextSearchResults<TaskResult> searchResults = freetextService.search(search, newIndex, 1);
 			int totalResults = searchResults.getAvailable();
 			if( totalResults == 0 )
 			{
@@ -318,7 +318,7 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 			if( searchResults.getCount() == 0 )
 			{
 				newIndex = totalResults - 1;
-				searchResults = freetextService.search(search, newIndex, 2);
+				searchResults = freetextService.search(search, newIndex, 1);
 				totalResults = searchResults.getAvailable();
 				if( totalResults == 0 )
 				{
