@@ -38,9 +38,6 @@ import com.tle.web.wizard.section.PreviewSection;
 import com.tle.web.wizard.section.RootWizardSection;
 import com.tle.web.wizard.section.SelectThumbnailSection;
 import com.tle.web.wizard.section.WizardBodySection;
-import com.tle.web.workflow.tasks.dialog.ApproveDialog;
-import com.tle.web.workflow.tasks.dialog.CommentDialog;
-import com.tle.web.workflow.tasks.dialog.RejectDialog;
 
 @SuppressWarnings("nls")
 public class WizardModule extends SectionsModule
