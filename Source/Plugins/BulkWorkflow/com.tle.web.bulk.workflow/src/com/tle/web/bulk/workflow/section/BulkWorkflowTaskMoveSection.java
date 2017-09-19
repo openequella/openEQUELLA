@@ -57,16 +57,11 @@ public class BulkWorkflowTaskMoveSection
 
 	public class TaskListModel extends DynamicHtmlListModel<WorkflowNode>
 	{
-		public TaskListModel()
-		{
-			setSort(true);
-		}
-
 		@Override
 		protected Iterable<WorkflowNode> populateModel(SectionInfo info)
 		{
 			Workflow workflow = getModel(info).getWorkflow();
-			return workflow != null ? workflow.getAllWorkflowTasks().values() : null;
+			return workflow != null ? workflow.getAllWorkflowTasks(workflow.getRoot()).values() : null;
 		}
 
 		@Override

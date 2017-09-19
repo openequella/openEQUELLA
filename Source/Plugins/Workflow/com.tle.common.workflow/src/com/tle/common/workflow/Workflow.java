@@ -1,23 +1,14 @@
 package com.tle.common.workflow;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.AccessType;
-
+import com.google.common.base.Function;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.common.workflow.node.WorkflowItem;
 import com.tle.common.workflow.node.WorkflowNode;
 import com.tle.common.workflow.node.WorkflowTreeNode;
+import org.hibernate.annotations.AccessType;
+
+import javax.persistence.*;
+import java.util.*;
 
 @Entity
 @AccessType("field")
@@ -114,22 +105,40 @@ public class Workflow extends BaseEntity
 		return allNodes;
 	}
 
+	public static Map<String, WorkflowNode> getAllWorkflowTasks(WorkflowNode node)
+	{
+		// Use a LinkedHashMap to maintain correct step ordering
+		Map<String, WorkflowNode> results = new LinkedHashMap<>();
+		recurseWorkflowItems(results, node, new Function<WorkflowNode, Boolean>(){
+			@Override
+			public Boolean apply(WorkflowNode node) {
+				return node.getType() == WorkflowNode.ITEM_TYPE || node.getType() == WorkflowNode.SCRIPT_TYPE;
+			}
+		});
+		return results;
+	}
+
 	public static Map<String, WorkflowItem> getAllWorkflowItems(WorkflowNode node)
 	{
 		// Use a LinkedHashMap to maintain correct step ordering
 		Map<String, WorkflowItem> results = new LinkedHashMap<String, WorkflowItem>();
-		recurseWorkflowItems(results, node);
+		recurseWorkflowItems(results, node, new Function<WorkflowNode, Boolean>(){
+			@Override
+			public Boolean apply(WorkflowNode node) {
+				return node instanceof WorkflowItem;
+			}
+		});
 		return results;
 	}
 
 	/**
 	 * @return true if the recursion should stop.
 	 */
-	private static boolean recurseWorkflowItems(Map<String, WorkflowItem> items, WorkflowNode node)
+	private static <T extends WorkflowNode> boolean  recurseWorkflowItems(Map<String, T> items, WorkflowNode node, Function<WorkflowNode, Boolean> includeFunc)
 	{
-		if( node instanceof WorkflowItem )
+		if( includeFunc.apply(node) )
 		{
-			items.put(node.getUuid(), (WorkflowItem) node);
+			items.put(node.getUuid(), (T) node);
 		}
 
 		if( !node.isLeafNode() )
@@ -138,7 +147,7 @@ public class Workflow extends BaseEntity
 			int num = treenode.numberOfChildren();
 			for( int i = 0; i < num; i++ )
 			{
-				boolean stop = recurseWorkflowItems(items, treenode.getChild(i));
+				boolean stop = recurseWorkflowItems(items, treenode.getChild(i), includeFunc);
 				if( stop )
 				{
 					return true;
