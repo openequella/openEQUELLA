@@ -89,6 +89,7 @@
 	margin-top: 8px;
 	max-height: 120px;
 	overflow-y: auto;
+	border: 1px solid lightgrey;
 }
 
 #moderation-comments .moderation-comment {

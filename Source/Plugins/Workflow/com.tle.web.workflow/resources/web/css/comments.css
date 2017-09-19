@@ -2,7 +2,12 @@
 	padding: 8px 10px;
 	background: #fefefe;
 	display: flex;
-	margin: 10px 0;
+	margin: 10px 5px;
+}
+
+.comment a
+{
+    font-size: 12px;
 }
 
 .comment-avatar
@@ -14,7 +19,7 @@
 
 .comment-username {
 	color: #f6a03d;
-	font-size: 17px;
+	font-size: 14px;
 }
 
 .comment-date {
@@ -25,6 +30,11 @@
 
 .comment-content p {
 	margin: 5px 0;
+}
+
+.moderate-label
+{
+    font-size: 17px;
 }
 
 .comment-form textarea {
@@ -48,7 +58,7 @@
 
 .comment.rejection
 {
-	background: #ffefef;
+	background: #ffdfdf;
 }
 
 .file-progress
@@ -59,7 +69,7 @@
 
 .comment.approval
 {
-	background: #eefeee;
+	background: #defede;
 }
 
 .progressbar
