@@ -1,7 +1,10 @@
-${m.header}
+<#include "emailhelper.ftl">
+<@stdHeader/>
 
+<p>
 <#list m.notifications as i>
-${b.key('email.itemname')} ${i.itemName}
-${b.key('email.itemlink')} ${i.link.href}
-
+<@itemLink i/>
 </#list>
+</p>
+<@stdFooter/>
+

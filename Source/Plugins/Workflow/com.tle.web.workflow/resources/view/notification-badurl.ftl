@@ -1,10 +1,14 @@
-${m.header}
+<#include "emailhelper.ftl">
+<@stdHeader/>
 
 <#list m.notifications as i>
-${b.key('email.itemname')} ${i.itemName}
-${b.key('email.itemlink')} ${i.link.href}
+<table>
+<@itemLink i/>
+<@row b.key('email.badurl')>
 <#list i.urls as u>
-${b.key('email.badurl')} ${u}
+<a href="${u}">${u}</a><br>
 </#list>
-
+</@row>
+</table>
 </#list>
+<@stdFooter/>

@@ -1,26 +1,28 @@
-${m.header}
-
+<#include "emailhelper.ftl">
+<@stdHeader/>
 <#list m.notifications as t>
-${b.key('email.itemname')} ${t.itemName}
-${b.key('email.owner')} ${t.owner}
+<table>
+<@row label=b.key('email.itemname')>${t.itemName}</@row>
+<@row label=b.key('email.owner')>${t.owner}</@row>
 
 <#if t.hasCauseInfo>
 <#if t.causeLabel??>
-${t.causeLabel} ${t.causeTask}
+<@row label=t.causeLabel>${t.causeTask}</@row>
 </#if>
 <#list t.messages as msg>
-${msg.label} ${b.key('email.msgformat',[msg.message, msg.by])}
+<@row msg.label>${b.key('email.msgformat',[msg.message, msg.by])}</@row>
 <#if msg.hasFiles>
-${msg.fileLabel} <#list msg.files as f>${f}
-</#list>
+<@row msg.fileLabel><#list msg.files as f>${f}<br></#list></@row>
 </#if>
 </#list>
 
 </#if>
-${b.key('email.currenttask')} ${t.taskName}
-${b.key('email.tasklink')} ${t.taskLink.href}
+<@row b.key('email.currenttask')>${t.taskName}</@row>
+<@taskLink t/>
 <#if t.dueDate??>
-${b.key('email.taskdue')} ${t.dueDate()?date?string.medium} <#if t.autoAction??>${t.autoAction}</#if>
+<@row b.key('email.taskdue')>${t.dueDate()?date?string.medium} <#if t.autoAction??>${t.autoAction}</#if></@row>
 </#if>
 
+</table>
 </#list>
+<@stdFooter/>

@@ -1,9 +1,11 @@
-${m.header}
-
+<#include "emailhelper.ftl">
+<@stdHeader/>
 <#list m.notifications as t>
-${b.key('email.itemname')} ${t.itemName}
-${b.key('email.owner')} ${t.owner}
-${b.key('email.taskname')} ${t.taskName}
-${b.key('email.tasklink')} ${t.taskLink.href}
- 
+<table>
+<@row b.key('email.itemname')>${t.itemName}</@row>
+<@row b.key('email.owner')>${t.owner}</@row>
+<@row b.key('email.taskname')>${t.taskName}</@row>
+<@taskLink t/>
+</table>
 </#list>
+<@stdFooter/>
