@@ -1,7 +1,6 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="org.hibernate" version="1">
 	<requires>
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="dom4j:dom4j" exported="true" />
 		<import plugin-id="org.hibernate:hibernate-core" exported="true" />
 		<import plugin-id="org.hibernate.javax.persistence:hibernate-jpa-2.0-api" exported="true" />
@@ -14,60 +13,4 @@
 
 	<runtime/>
 
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="hibernateLicenceName">
-		<parameter id="thirdPartyName" value="Hibernate" />
-		<parameter id="licenceName" value="LGPL v2.1" />
-		<parameter id="licenceURLInternal" value="lgpl-2.1.txt" />
-		<parameter id="licenceURLExternal" value="http://www.hibernate.org/license" />
-		<parameter id="thirdPartyHome" value="https://www.hibernate.org/" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="postgreSQLLicenceName">
-		<parameter id="thirdPartyName" value="PostgreSQL JDBC Driver" />
-		<parameter id="licenceName" value="BSD Licence" />
-		<parameter id="licenceURLInternal" value="bsd.txt" />
-		<parameter id="licenceURLExternal" value="http://jdbc.postgresql.org/license.html" />
-		<parameter id="thirdPartyHome" value="http://jdbc.postgresql.org/" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="oracleJDBCLicenceName">
-		<parameter id="thirdPartyName" value="Oracle JDBC Driver" />
-		<parameter id="licenceName" value="OTN Dev and Distrib" />
-		<parameter id="licenceURLInternal" value="OTN Development and Distribution License Terms.html" />
-		<parameter id="licenceURLExternal" value="http://www.oracle.com/technology/software/popup-license/distribution-license.html" />
-		<parameter id="thirdPartyHome" value="http://www.oracle.com/technology/software/tech/java/sqlj_jdbc/index.html" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="sqlServerJdbcLicenceName">
-		<parameter id="thirdPartyName" value="Microsoft SQL Server JDBC Driver" />
-		<parameter id="licenceName" value="MS SQL SERVER JDBC DRIVER 2.0" />
-		<parameter id="licenceURLInternal" value="MICROSOFT SQL SERVER JDBC DRIVER 2.0 License Terms.html" />
-		<parameter id="licenceURLExternal"
-			value="http://download.microsoft.com/download/3/C/6/3C6DEF35-C214-4283-A3AD-BD73DED9B95D/SQL_Server_JDBC_Driver_20_EULA.htm" />
-		<parameter id="thirdPartyHome" value="http://www.microsoft.com/" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="antlrLicenceName">
-		<parameter id="thirdPartyName" value="Antlr" />
-		<parameter id="licenceName" value="BSD Licence" />
-		<parameter id="licenceURLInternal" value="bsd.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
-		<parameter id="licenceURLExternal" value="http://www.antlr.org/license.html" />
-		<parameter id="thirdPartyHome" value="http://www.antlr.org/" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="hikariLicenceName">
-		<parameter id="thirdPartyName" value="HikariCP" />
-		<parameter id="licenceName" value="Apache 2.0" />
-		<parameter id="licenceURLInternal" value="apache-2.0.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
-		<parameter id="licenceURLExternal" value="https://github.com/brettwooldridge/HikariCP/blob/dev/LICENSE" />
-		<parameter id="thirdPartyHome" value="https://github.com/brettwooldridge/HikariCP" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="jbossJTALicenceName">
-		<parameter id="thirdPartyName" value="JBoss JTA" />
-		<parameter id="licenceName" value="LGPL v2.1" />
-		<parameter id="licenceURLInternal" value="lgpl-2.1.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
-		<parameter id="licenceURLExternal" value="http://www.gnu.org/copyleft/lesser.html" />
-		<parameter id="thirdPartyHome" value="http://www.jboss.org/" />
-	</extension>
 </plugin>

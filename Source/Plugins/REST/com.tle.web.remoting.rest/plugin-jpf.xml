@@ -2,7 +2,6 @@
 <plugin id="com.tle.web.remoting.rest" version="1">
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.web.core" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.settings" />
@@ -102,21 +101,5 @@
 	<extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="docsResource">
 		<parameter id="class" value="com.tle.web.remoting.rest.docs.DocsResource" />
 		<parameter id="class" value="com.tle.web.remoting.rest.docs.ApiListingResource" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="swaggerLicenceName">
-		<parameter id="thirdPartyName" value="Swagger" />
-		<parameter id="licenceName" value="Apache 2.0" />
-		<parameter id="licenceURLInternal" value="apache-2.0.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
-		<parameter id="licenceURLExternal" value="http://opensource.org/licenses/apache2.0.php" />
-		<parameter id="thirdPartyHome" value="http://swagger.wordnik.com/" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="resteasyLicenceName">
-		<parameter id="thirdPartyName" value="RestEasy" />
-		<parameter id="licenceName" value="LGPL v2.1" />
-		<parameter id="licenceURLInternal" value="lgpl-2.1.txt" />
-		<parameter id="licenceURLExternal" value="http://www.gnu.org/copyleft/lesser.html" />
-		<parameter id="thirdPartyHome" value="http://www.redhat.com/products/jbossenterprisemiddleware/application-platform/" />
 	</extension>
 </plugin>

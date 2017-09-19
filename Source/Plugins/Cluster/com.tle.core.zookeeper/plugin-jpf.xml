@@ -1,7 +1,6 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.core.zookeeper" version="1">
 	<requires>
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.core.application" />
 		<import plugin-id="com.tle.core.config" />
 		<import plugin-id="com.tle.core.guice" />
@@ -36,21 +35,5 @@
 		<parameter id="bean" value="bean:com.tle.core.zookeeper.ZookeeperService" />
 		<parameter id="type" value="initial" />
 		<parameter id="order" value="100" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="zooKeeperLicenceName">
-		<parameter id="thirdPartyName" value="ZooKeeper" />
-		<parameter id="licenceName" value="Apache 2.0" />
-		<parameter id="licenceURLInternal" value="apache-2.0.txt" />
-		<parameter id="licenceURLExternal" value="http://opensource.org/licenses/apache2.0.php" />
-		<parameter id="thirdPartyHome" value="http://zookeeper.apache.org/" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="curatorLicenceName">
-		<parameter id="thirdPartyName" value="Curator" />
-		<parameter id="licenceName" value="Apache 2.0" />
-		<parameter id="licenceURLInternal" value="apache-2.0.txt" />
-		<parameter id="licenceURLExternal" value="http://opensource.org/licenses/apache2.0.php" />
-		<parameter id="thirdPartyHome" value="http://curator.incubator.apache.org/" />
 	</extension>
 </plugin>

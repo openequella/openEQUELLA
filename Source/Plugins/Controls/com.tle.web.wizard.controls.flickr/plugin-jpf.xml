@@ -2,7 +2,6 @@
 <plugin id="com.tle.web.wizard.controls.flickr" version="1">
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.common.wizard.controls.universal" />
 		<import plugin-id="com.tle.core.flickr" />
 		<import plugin-id="com.tle.core.guice" />
@@ -61,13 +60,5 @@
 	<extension plugin-id="com.tle.web.wizard.controls.universal" point-id="universalResourceHandler" id="flickrHandler">
 		<parameter id="class" value="bean:com.tle.web.controls.flickr.FlickrHandler" />
 		<parameter id="order" value="800" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="jsoupLicenceName">
-		<parameter id="thirdPartyName" value="JSoup" />
-		<parameter id="licenceName" value="MIT" />
-		<parameter id="licenceURLInternal" value="mit.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
-		<parameter id="licenceURLExternal" value="http://jsoup.org/license" />
-		<parameter id="thirdPartyHome" value="http://jsoup.org/" />
 	</extension>
 </plugin>

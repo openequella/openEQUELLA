@@ -2,7 +2,6 @@
 <plugin id="com.tle.web.htmleditor.tinymce.addon.tle" version="1">
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.core.events" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.migration" />
@@ -67,14 +66,6 @@
 		<parameter id="listenerClass" value="com.tle.core.mimetypes.MimeTypesUpdatedListener" />
 	</extension>
 
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="tinymceLicenceName">
-		<parameter id="thirdPartyName" value="TinyMCE" />
-		<parameter id="licenceName" value="LGPL v2.1" />
-		<parameter id="licenceURLInternal" value="lgpl-2.1.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
-		<parameter id="licenceURLExternal" value="http://tinymce.moxiecode.com/js/tinymce/jscripts/tiny_mce/license.txt" />
-		<parameter id="thirdPartyHome" value="http://tinymce.moxiecode.com/" />
-	</extension>
-	
 	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="mimeTemplateXmlMigration">
 		<parameter id="id" value="com.tle.web.htmleditor.tinymce.addon.tle.migration.ModifyEmbeddingTemplatesXmlMigration" />
 		<parameter id="bean" value="bean:com.tle.web.htmleditor.tinymce.addon.tle.migration.ModifyEmbeddingTemplatesXmlMigration" />

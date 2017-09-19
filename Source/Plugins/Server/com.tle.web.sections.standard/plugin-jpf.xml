@@ -2,7 +2,6 @@
 <plugin id="com.tle.web.sections.standard" version="1">
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.javascript" exported="true" />
 		<import plugin-id="com.tle.web.freemarker" />
@@ -62,13 +61,5 @@
 		<parameter id="class" value="bean:com.tle.web.sections.ajax.exception.AjaxExceptionHandler" />
 		<parameter id="order" value="0" />
 		<parameter id="exceptionClass" value="com.tle.web.sections.ajax.exception.AjaxException" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="swfObjectLicence">
-		<parameter id="thirdPartyName" value="SWFObject" />
-		<parameter id="thirdPartyHome" value="http://code.google.com/p/swfobject/" />
-		<parameter id="licenceName" value="MIT" />
-		<parameter id="licenceURLInternal" value="mit.txt" />
-		<parameter id="licenceURLExternal" value="http://www.opensource.org/licenses/mit-license.php" />
 	</extension>
 </plugin>

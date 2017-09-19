@@ -2,7 +2,6 @@
 <plugin id="com.tle.web.wizard.controls.itunesu" version="1">
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.common.wizard.controls.universal" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.mimetypes" />
@@ -55,13 +54,5 @@
 	<extension plugin-id="com.tle.web.api.item.equella.serializer" point-id="attachmentEditor" id="editor">
 		<parameter id="class" value="com.tle.web.controls.itunesu.ITunesUAttachmentEditor" />
 		<parameter id="bean" value="bean:com.tle.web.controls.itunesu.ITunesUAttachmentEditor" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="iTunesULicenceName">
-		<parameter id="thirdPartyName" value="iTunesU API" />
-		<parameter id="licenceName" value="BSD Licence" />
-		<parameter id="licenceURLInternal" value="bsd.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
-		<parameter id="licenceURLExternal" value="http://www.opensource.org/licenses/bsd-license.php" />
-		<parameter id="thirdPartyHome" value="http://code.google.com/p/itunesu-api-java/" />
 	</extension>
 </plugin>

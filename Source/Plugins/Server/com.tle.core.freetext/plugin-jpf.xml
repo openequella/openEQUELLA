@@ -4,7 +4,6 @@
 		<import plugin-id="com.tagsoup.core" />
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.common.item" />
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.common.search" />
 		<import plugin-id="com.tle.common.scripting" />
 		<import plugin-id="com.tle.common.usermanagement" />
@@ -101,16 +100,6 @@
 		<parameter id="id" value="com.tle.freetext.ReIndexAllItems" />
 		<parameter id="bean" value="bean:com.tle.core.freetext.migration.ReIndexMigration" />
 		<parameter id="date" value="1970-01-01" />
-	</extension>
-
-	<!-- There's a bag of Apache software modules, but most (except for Apache Lucene) don't have a dedicated plugin-jpf.xml 
-		file. Various 3rd party software licence details will be found in the 'parent' plugin of com.tle.web.licences. -->
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="luceneLicenceName">
-		<parameter id="thirdPartyName" value="Apache Lucene" />
-		<parameter id="licenceName" value="Apache 2.0" />
-		<parameter id="licenceURLInternal" value="apache-2.0.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
-		<parameter id="licenceURLExternal" value="http://www.apache.org/licenses/LICENSE-2.0.html" />
-		<parameter id="thirdPartyHome" value="http://lucene.apache.org/java/docs/" />
 	</extension>
 
 	<extension plugin-id="com.tle.core.freetext" point-id="securityReindexHandler" id="standardReindexer">

@@ -1,15 +1,6 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tagsoup.core" version="1">
 	<requires>
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="org.ccil.cowan.tagsoup:tagsoup" exported="true" />
 	</requires>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="tagSoupLicenceName">
-		<parameter id="thirdPartyName" value="TagSoup" />
-		<parameter id="licenceName" value="Apache 2.0" />
-		<parameter id="licenceURLInternal" value="apache-2.0.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
-		<parameter id="licenceURLExternal" value="http://opensource.org/licenses/apache2.0.php" />
-		<parameter id="thirdPartyHome" value="http://home.ccil.org/~cowan/XML/tagsoup/" />
-	</extension>
 </plugin>

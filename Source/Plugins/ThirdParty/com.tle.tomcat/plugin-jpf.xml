@@ -2,7 +2,6 @@
 <plugin id="com.tle.tomcat" version="1">
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.core.application" />
 		<import plugin-id="com.tle.core.config" />
 		<import plugin-id="com.tle.core.events" />
@@ -42,14 +41,6 @@
 	<extension plugin-id="com.tle.core.events" point-id="applicationEventListener" id="listeners">
 		<parameter id="listener" value="bean:com.tle.tomcat.service.TomcatService" />
 		<parameter id="listenerClass" value="com.tle.tomcat.events.TomcatRestartListener" />
-	</extension>
-	
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="tomcatLicenceName">
-		<parameter id="thirdPartyName" value="Tomcat" />
-		<parameter id="licenceName" value="Apache 2.0" />
-		<parameter id="licenceURLInternal" value="apache-2.0.txt" />
-		<parameter id="licenceURLExternal" value="http://opensource.org/licenses/apache2.0.php" />
-		<parameter id="thirdPartyHome" value="http://tomcat.apache.org/" />
 	</extension>
 	
 	<extension plugin-id="com.tle.core.migration" point-id="migration" id="createTomcatSessionsSchema">

@@ -2,7 +2,6 @@
 <plugin id="com.tle.web.viewitem.treeviewer" version="1">
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.mimetypes" />
 		<import plugin-id="com.tle.core.item" />
@@ -98,14 +97,4 @@
 		<parameter id="class" value="com.tle.web.viewitem.treeviewer.DownloadIMSPackageLink" />
 	</extension>
 
-	<!-- Icon licences -->
-
-	<!-- The return icon on the package header link -->
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="returnIcon">
-		<parameter id="thirdPartyName" value="Aha-Soft" />
-		<parameter id="thirdPartyHome" value="http://www.aha-soft.com/" />
-		<parameter id="licenceName" value="Creative Commons Attribution-Share Alike 3.0 License" />
-		<parameter id="licenceURLInternal" value="" />
-		<parameter id="licenceURLExternal" value="http://creativecommons.org/licenses/by-sa/3.0/legalcode" />
-	</extension>
 </plugin>

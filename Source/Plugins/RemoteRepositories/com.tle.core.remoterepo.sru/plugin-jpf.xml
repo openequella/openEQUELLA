@@ -4,7 +4,6 @@
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.fedsearch" />
 		<import plugin-id="com.tle.core.remoterepo.parser.mods" />
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.common.remoterepo.sru" />
 		<import plugin-id="com.tle.core.remoterepo.srw" />
 		<import plugin-id="com.tle.web.endpoint.srw" /><!-- same endpoint class for SRW/U ...? -->
@@ -19,14 +18,5 @@
 	</runtime>
 
 	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules" />
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="sruLicenceName">
-		<parameter id="thirdPartyName" value="SRU" />
-		<parameter id="licenceName" value="Apache 2.0" />
-		<parameter id="licenceURLInternal" value="apache-2.0.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
-		<parameter id="licenceURLExternal" value="http://www.apache.org/licenses/LICENSE-2.0.html" />
-		<parameter id="thirdPartyHome" value="http://www.oclc.org/research/activities/srw/default.htm" /><!-- same href 
-			for SRW/U -->
-	</extension>
 
 </plugin>

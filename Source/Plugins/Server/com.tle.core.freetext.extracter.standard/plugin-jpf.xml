@@ -4,7 +4,6 @@
 		<import plugin-id="com.tle.common.i18n" />
 		<import plugin-id="com.tle.core.mimetypes" />
 		<import plugin-id="com.tle.core.freetext" />
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="org.apache.tika" />
 		<import plugin-id="xpp3:xpp3_min" />
 		<import plugin-id="com.tle.core.guice" />

@@ -12,7 +12,6 @@
 		<import plugin-id="com.tle.core.zookeeper" />
 		<import plugin-id="com.tle.web.core" />
 		<import plugin-id="com.tle.web.freemarker" />
-		<import plugin-id="com.tle.web.licence" />
 		<import plugin-id="com.tle.web.resources" />
 		<import plugin-id="com.tle.web.sections" />
 		<import plugin-id="com.tle.web.sections.equella" />

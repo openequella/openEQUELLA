@@ -2,7 +2,6 @@
 <plugin id="com.tle.web.sections.equella" version="1" class="com.tle.web.sections.equella.Initialise">
 	<requires>
 		<import plugin-id="com.tle.common.i18n" />
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.common.security" />
 		<import plugin-id="com.tle.core.accessibility" />
 		<import plugin-id="com.tle.core.activation" />
@@ -295,32 +294,6 @@
 		<parameter id="modelClass" value="java.util.Date" />
 		<parameter id="modelClass" value="java.sql.Timestamp" />
 		<parameter id="class" value="bean:com.tle.web.sections.equella.freemarker.DateTemplateModelProvider" />
-	</extension>
-
-	<!-- The filter icon on the zebra table filter box -->
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="filterIcon">
-		<parameter id="thirdPartyName" value="Android Icons" />
-		<parameter id="thirdPartyHome" value="http://www.androidicons.com" />
-		<parameter id="licenceName" value="Creative Commons Attribution 3.0 Unported" />
-		<parameter id="licenceURLInternal" value="cc-by-3.0.txt" />
-		<parameter id="licenceURLExternal" value="http://creativecommons.org/licenses/by/3.0/legalcode" />
-	</extension>
-
-	<!-- icon for the change password button -->
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="changePasswordIcon">
-		<parameter id="thirdPartyName" value="Farm-fresh Web Icons" />
-		<parameter id="thirdPartyHome" value="http://www.fatcow.com/free-icons" />
-		<parameter id="licenceName" value="Creative Commons (Attribution 3.0 United States)" />
-		<parameter id="licenceURLInternal" value="cc-by-3.0.txt" />
-		<parameter id="licenceURLExternal" value="http://creativecommons.org/licenses/by/3.0/us/" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="bootstrapLicence">
-		<parameter id="thirdPartyName" value="Bootstrap" />
-		<parameter id="thirdPartyHome" value="http://twitter.github.com/bootstrap/" />
-		<parameter id="licenceName" value="Apache 2.0" />
-		<parameter id="licenceURLInternal" value="apache-2.0.txt" />
-		<parameter id="licenceURLExternal" value="http://www.apache.org/licenses/LICENSE-2.0.html" />
 	</extension>
 
 	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="sectionsServlet">

@@ -1,7 +1,6 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.web.core" version="1">
 	<requires>
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.common.search" />
 		<import plugin-id="com.tle.common.entity" />
 		<import plugin-id="com.tle.core.events" />
@@ -192,14 +191,6 @@
 
 	<extension plugin-id="com.tle.web.core" point-id="webSessionListener" id="sessionListener">
 		<parameter id="bean" value="bean:com.tle.web.core.listener.UserSessionDestructionListener" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="oaiCatLicenceName">
-		<parameter id="thirdPartyName" value="OAICat" />
-		<parameter id="licenceName" value="Apache 2.0" />
-		<parameter id="licenceURLInternal" value="apache-2.0.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
-		<parameter id="licenceURLExternal" value="http://www.apache.org/licenses/LICENSE-2.0.html" />
-		<parameter id="thirdPartyHome" value="http://www.oclc.org/research/activities/oaicat/default.htm" />
 	</extension>
 
 	<extension plugin-id="com.tle.web.core" point-id="userStateHook" id="tokenUserStateHook">

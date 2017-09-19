@@ -1,33 +1,8 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="org.apache.tika" version="1">
 	<requires>
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="dom4j:dom4j" />
 		<import plugin-id="org.apache.tika:tika-core" exported="true" />
 		<import plugin-id="org.apache.tika:tika-parsers" exported="true" />
 	</requires>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="apacheTika">
-		<parameter id="thirdPartyName" value="Apache Tika" />
-		<parameter id="licenceName" value="Apache 2.0" />
-		<parameter id="licenceURLInternal" value="apache-2.0.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
-		<parameter id="licenceURLExternal" value="http://www.apache.org/licenses/LICENSE-2.0" />
-		<parameter id="thirdPartyHome" value="http://tika.apache.org/" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="pdfBoxLicenceName">
-		<parameter id="thirdPartyName" value="Apache PDF Box" />
-		<parameter id="licenceName" value="Apache 2.0" />
-		<parameter id="licenceURLInternal" value="apache-2.0.txt" />
-		<parameter id="licenceURLExternal" value="http://www.apache.org/licenses/LICENSE-2.0" />
-		<parameter id="thirdPartyHome" value="http://pdfbox.apache.org/" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="poiLicenceName">
-		<parameter id="thirdPartyName" value="Apache POI" />
-		<parameter id="licenceName" value="Apache 2.0" />
-		<parameter id="licenceURLInternal" value="apache-2.0.txt" />
-		<parameter id="licenceURLExternal" value="http://www.apache.org/licenses/LICENSE-2.0" />
-		<parameter id="thirdPartyHome" value="http://poi.apache.org/" />
-	</extension>
 </plugin>

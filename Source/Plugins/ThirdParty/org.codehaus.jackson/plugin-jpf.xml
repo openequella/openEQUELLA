@@ -1,18 +1,9 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="org.codehaus.jackson" version="1">
 	<requires>
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider" exported="true" />
 		<import plugin-id="com.fasterxml.jackson.core:jackson-databind" exported="true" />
 		<import plugin-id="com.fasterxml.jackson.core:jackson-core" exported="true" />
 		<import plugin-id="com.fasterxml.jackson.core:jackson-annotations" exported="true" />
 	</requires>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="jacksonLicenceName">
-		<parameter id="thirdPartyName" value="Jackson" />
-		<parameter id="licenceName" value="Apache 2.0" />
-		<parameter id="licenceURLInternal" value="apache-2.0.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
-		<parameter id="licenceURLExternal" value="http://opensource.org/licenses/apache2.0.php" />
-		<parameter id="thirdPartyHome" value="http://jackson.codehaus.org/" />
-	</extension>
 </plugin>

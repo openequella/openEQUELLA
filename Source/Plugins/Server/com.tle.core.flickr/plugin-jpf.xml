@@ -1,7 +1,6 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.core.flickr" version="1">
 	<requires>
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.platform.common" />
 		<import plugin-id="com.flickr4java:flickr4java" exported="true" />
@@ -14,12 +13,4 @@
 	</runtime>
 
 	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules" />
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="aetrionFlickrapiLicenceName">
-		<parameter id="thirdPartyName" value="Aetrion LLC" />
-		<parameter id="licenceName" value="flickrapi_1.2" />
-		<parameter id="licenceURLInternal" value="LICENSE_Aetrion_4Flickrapi.txt" />
-		<parameter id="licenceURLExternal" value="http://flickrj.cvs.sourceforge.net/viewvc/flickrj/api/LICENSE.txt" />
-		<parameter id="thirdPartyHome" value="http://flickrj.sourceforge.net/" />
-	</extension>
 </plugin>

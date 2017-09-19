@@ -13,7 +13,6 @@
 		<import plugin-id="com.tle.core.migration" />
 		<import plugin-id="net.sf.json-lib:json-lib" />
 		
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.web.searching" />
 		<import plugin-id="com.tle.core.filesystem" />
 		<import plugin-id="com.tle.core.institution.convert" />
@@ -55,14 +54,6 @@
 	<extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="htmlFiveMimeTypeAndPlayerMigrationXml">
 		<parameter id="id" value="com.tle.web.viewitem.htmlfiveviewer.migrationHtmlFiveMimeTypeAndPlayerMigrationXml" />
 		<parameter id="bean" value="bean:com.tle.web.viewitem.htmlfiveviewer.migration.HtmlFiveMimeTypeAndPlayerMigrationXml" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="videoJSLicence">
-		<parameter id="thirdPartyName" value="Video.js" />
-		<parameter id="licenceName" value="Apache 2.0" />
-		<parameter id="licenceURLInternal" value="apache-2.0.txt" /><!-- relative to com.tle.web.licence/resources/web/documentation -->
-		<parameter id="licenceURLExternal" value="http://www.apache.org/licenses/LICENSE-2.0" />
-		<parameter id="thirdPartyHome" value="http://www.videojs.com/" />
 	</extension>
 
 	<extension plugin-id="com.tle.web.searching" point-id="videoPreviewRenderer" id="htmlFivePreviewRenderer">

@@ -22,7 +22,6 @@ import com.tle.common.usermanagement.user.UserState;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.DebugSettings;
 import com.tle.web.institution.section.ShowInstitutionsSection;
-import com.tle.web.licence.LicenceSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
@@ -62,8 +61,6 @@ public class InstitutionSection extends AbstractPrototypeSection<InstitutionSect
 	private FileSystemService fileSystemService;
 
 	@Inject
-	private LicenceSection licenceSection;
-	@Inject
 	private ShowInstitutionsSection showInstitutionsSection;
 	@Inject
 	private LogonMigrateSection logonMigrateSection;
@@ -96,11 +93,6 @@ public class InstitutionSection extends AbstractPrototypeSection<InstitutionSect
 			d.setMenuMode(MenuMode.HIDDEN);
 			model.setAdmin(true);
 			return renderSection(context, logonMigrateSection);
-		}
-		if( model.isCredits() )
-		{
-			d.setMenuMode(MenuMode.HIDDEN);
-			return renderSection(context, licenceSection);
 		}
 		if( !model.isAdmin() )
 		{
@@ -185,7 +177,6 @@ public class InstitutionSection extends AbstractPrototypeSection<InstitutionSect
 	{
 		super.registered(id, tree);
 		tree.registerInnerSection(showInstitutionsSection, id);
-		tree.registerInnerSection(licenceSection, id);
 		tree.registerInnerSection(logonMigrateSection, id);
 		tabInterfaces = new CollectInterfaceHandler<Tabable>(Tabable.class);
 		tree.addRegistrationHandler(tabInterfaces);

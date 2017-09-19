@@ -11,7 +11,6 @@
 		<import plugin-id="com.tle.web.viewurl" />
 		<import plugin-id="com.tle.core.mimetypes" />
 		<import plugin-id="com.tle.web.sections.equella" />
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="edu.harvard.hul:mets" exported="true" />
 		<import plugin-id="com.tle.ims" />
 		<import plugin-id="com.tle.core.institution" />
@@ -55,14 +54,6 @@
 		<parameter id="id" value="metsExport" />
 		<parameter id="class" value="bean:com.tle.mets.export.MetsExporter" />
 		<parameter id="order" value="2000" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="metsLicenceName">
-		<parameter id="thirdPartyName" value="METS Java Toolkit" />
-		<parameter id="licenceName" value="LGPL v2.1" />
-		<parameter id="licenceURLInternal" value="lgpl-2.1.txt" />
-		<parameter id="licenceURLExternal" value="http://hul.harvard.edu/mets/download.html" />
-		<parameter id="thirdPartyHome" value="http://hul.harvard.edu/mets/" />
 	</extension>
 
 	<extension plugin-id="com.tle.mets" point-id="exporterimporter" id="custommetsexporter">

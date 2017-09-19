@@ -16,7 +16,6 @@
 		<import plugin-id="com.tle.web.wizard" />
 		<import plugin-id="com.tle.web.viewitem" />
 		<import plugin-id="net.oauth.core:oauth" />
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.core.usermanagement" />
 		<import plugin-id="com.tle.ims" />
 		<import plugin-id="com.tle.core.institution.convert" />
@@ -75,21 +74,5 @@
 		<parameter id="class" value="bean:com.tle.web.qti.viewer.QtiPlayViewerSection" />
 		<parameter id="path" value="/viewitem/viewitem" />
 		<parameter id="parentid" value="" />
-	</extension>
-	
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="mathJaxLicenceName">
-		<parameter id="thirdPartyName" value="MathJax" />
-		<parameter id="licenceName" value="Apache 2.0" />
-		<parameter id="licenceURLInternal" value="apache-2.0.txt" />
-		<parameter id="licenceURLExternal" value="http://commons.apache.org/license.html" />
-		<parameter id="thirdPartyHome" value="http://www.mathjax.org/" />
-	</extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="jQTIPlusLicenceName">
-		<parameter id="thirdPartyName" value="JQTI+" />
-		<parameter id="licenceName" value="Modified BSD" />
-		<parameter id="licenceURLInternal" value="modifiedBSD.txt" />
-		<parameter id="licenceURLExternal" value="http://opensource.org/licenses/BSD-3-Clause/" />
-		<parameter id="thirdPartyHome" value="https://webapps.ph.ed.ac.uk/qtiworks/" />
 	</extension>
 </plugin>

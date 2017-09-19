@@ -3,7 +3,6 @@
 	<requires>
 		<import plugin-id="com.tle.platform.common" />
 		<import plugin-id="com.tle.common.i18n" />
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.common.wizard.controls.universal" />
 		<import plugin-id="com.tle.core.externaltools" />
 		<import plugin-id="com.tle.core.guice" />

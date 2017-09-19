@@ -6,7 +6,6 @@
 		<import plugin-id="com.tle.core.guice" />
 		<import plugin-id="com.tle.core.fedsearch" exported="true" />
 		<import plugin-id="com.tle.core.remoterepo.parser.mods" exported="true" />
-		<import plugin-id="com.tle.common.licences" />
 		<import plugin-id="com.tle.common.remoterepo.z3950" exported="true" />
 		<import plugin-id="org.jafer:z3950" />
 		<import plugin-id="com.tle.web.resources" />
@@ -38,12 +37,4 @@
 	 	<parameter id="bean" value="bean:com.tle.core.remoterepo.z3950.migration.AddAdvancedFieldsColumnMigration" />
 	 	<parameter id="date" value="2014-12-17" />
 	 </extension>
-
-	<extension plugin-id="com.tle.common.licences" point-id="licenceExtension" id="jaferz39.50LicenceName">
-		<parameter id="thirdPartyName" value="Jafer Z39.50 Client" />
-		<parameter id="licenceName" value="LGPL v2.1" />
-		<parameter id="licenceURLInternal" value="lgpl-2.1.txt" />
-		<parameter id="licenceURLExternal" value="http://www.jafer.org/downloads/client/readme.html" />
-		<parameter id="thirdPartyHome" value="http://www.jafer.org/" />
-	</extension>
 </plugin>
