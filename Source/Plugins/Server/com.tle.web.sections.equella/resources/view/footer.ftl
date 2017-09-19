@@ -12,12 +12,6 @@
 				</#if>
 
 				<@bundlekey "footer.link.home"/> <#if m.displayLinks><@bundlekey "footer.link.community"/> </#if>
-
-				<#if m.withinInstitution>
-					<@bundlekey "footer.link.credits"/>
-				<#else>
-					<@bundlekey "footer.link.instcredits"/>
-				</#if>
 			</div>
 
 			<div id="socialmedia">
