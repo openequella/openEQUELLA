@@ -11,6 +11,7 @@ before_install:
 install:
   - aws s3 --region us-east-1 cp s3://doolse-subba/equella-deps.zip $HOME
   - unzip $HOME/equella-deps.zip -d $HOME
+  - git fetch --unshallow
 script:
   - sbt test installerZip
 after_success:
