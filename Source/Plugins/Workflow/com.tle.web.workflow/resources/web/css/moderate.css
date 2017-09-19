@@ -92,35 +92,6 @@
 	border: 1px solid lightgrey;
 }
 
-#moderation-comments .moderation-comment {
-	min-height: 30px;
-	margin-top: 8px;
-	margin-left: 4px;
-	margin-right: 4px;
-	padding: 8px;
-	border: 1px solid #C0C0C0;
-	background-color: #FFFFFF;
-}
-
-#moderation-comments .moderation-comment .moderation-comment-message {
-	margin-top: 8px;
-}
-
-#moderation-comments .moderation-comment .moderation-comment-attachments {
-	list-style: none;
-	margin-top: 8px;
-}
-
-#moderation-comments .moderation-comment .moderation-comment-attachments li {
-	padding-left: 8px;
-	padding-top: 4px;
-	padding-bottom: 4px;
-}
-
-#moderation-comments .moderation-comment.approval {
-	background-color: #F0FFF0;
-}
-
 #wizard-major-actions .action-button.view {
 	background-image: url("../images/button-rhs-view.ltr.png");
 }
@@ -133,3 +104,7 @@
 	background-image: url("../images/moderate-reject.ltr.png");
 }
 
+.moderate-label
+{
+    font-size: 17px;
+}

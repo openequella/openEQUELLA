@@ -33,6 +33,7 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.Label;
+import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.result.util.BundleLabel;
 import com.tle.web.sections.result.util.PluralKeyLabel;
@@ -76,69 +77,11 @@ public class ViewCommentsSection extends AbstractPrototypeSection<ViewCommentsSe
 	public SectionResult renderHtml(RenderEventContext context) throws IOException
 	{
 		Model model = getModel(context);
-		List<CommentRow> commentList = Lists.newArrayList();
 		Collection<WorkflowMessage> messages = model.getMessages();
 		int numComments = messages.size();
 		model.setCommentHeading(new PluralKeyLabel(KEY_COMMENTS, numComments));
+		model.setComments(ModCommentRender.render(context, viewFactory, userLinkSection, fileSystemService, messages));
 
-		for( WorkflowMessage workflowMessage : messages )
-		{
-			String uuid = workflowMessage.getUuid();
-
-			WorkflowMessageFile pf = new WorkflowMessageFile(uuid);
-			FileEntry[] files = fileSystemService.enumerate(pf, Constants.BLANK, null);
-			List<HtmlLinkState> attachments = Lists.newArrayList();
-			for( FileEntry f : files )
-			{
-				HtmlLinkState link = new HtmlLinkState(new Bookmark()
-				{
-					@Override
-					public String getHref()
-					{
-						return WorkflowMessageServlet.stagingUrl(uuid, f.getName());
-					}
-				});
-				link.setLabel(new TextLabel(f.getName()));
-				attachments.add(link);
-			}
-
-			Date date = workflowMessage.getDate();
-			String extraClass = "";
-			String user = workflowMessage.getUser();
-			char type = workflowMessage.getType();
-			if( type == WorkflowMessage.TYPE_REJECT )
-			{
-				extraClass = "rejection";
-			}
-			else if( type == WorkflowMessage.TYPE_ACCEPT )
-			{
-				extraClass = "approval";
-			}
-			// If this is being rendered immediately after adding a new comment,
-			// we won't know (or care) what taskName applies, because the
-			// comEvent.node isn't rendered
-			BundleLabel taskName = workflowMessage.getNode() != null
-				? new BundleLabel(workflowMessage.getNode().getNode().getName(), bundleCache) : null;
-			HtmlLinkState userLink = userLinkSection.createLink(context, user);
-			CommentRow modrow = new CommentRow(workflowMessage.getMessage(), attachments, userLink, taskName, date,
-				JQueryTimeAgo.timeAgoTag(date), extraClass);
-			commentList.add(modrow);
-		}
-		Collections.sort(commentList, new Comparator<CommentRow>()
-		{
-			@Override
-			public int compare(CommentRow r1, CommentRow r2)
-			{
-				long t1 = r1.getDate().getTime();
-				long t2 = r2.getDate().getTime();
-				return t1 < t2 ? -1 : (t1 == t2 ? 0 : 1);
-			}
-		});
-		model.setComments(commentList);
-		if( commentList.isEmpty() )
-		{
-			return null;
-		}
 		return viewFactory.createResult("viewcomments.ftl", this);
 	}
 
@@ -151,7 +94,7 @@ public class ViewCommentsSection extends AbstractPrototypeSection<ViewCommentsSe
 	{
 		private Label commentHeading;
 		private Collection<WorkflowMessage> messages;
-		private List<CommentRow> comments;
+		private SectionRenderable comments;
 
 		public Label getCommentHeading()
 		{
@@ -173,12 +116,12 @@ public class ViewCommentsSection extends AbstractPrototypeSection<ViewCommentsSe
 			this.messages = messages;
 		}
 
-		public List<CommentRow> getComments()
+		public SectionRenderable getComments()
 		{
 			return comments;
 		}
 
-		public void setComments(List<CommentRow> comments)
+		public void setComments(SectionRenderable comments)
 		{
 			this.comments = comments;
 		}

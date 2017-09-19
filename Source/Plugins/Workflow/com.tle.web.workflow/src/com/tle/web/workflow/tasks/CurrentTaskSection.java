@@ -8,7 +8,6 @@ import com.dytech.edge.common.Constants;
 import com.google.common.collect.Lists;
 import com.tle.beans.item.ItemTaskId;
 import com.tle.beans.workflow.WorkflowStep;
-import com.tle.common.PathUtils;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.usermanagement.user.CurrentUser;
@@ -32,7 +31,6 @@ import com.tle.web.sections.*;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
-import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.layout.OneColumnLayout;
 import com.tle.web.sections.equella.receipt.ReceiptService;
@@ -54,7 +52,7 @@ import com.tle.web.sections.standard.dialog.model.DialogState;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.fancybox.FancyBoxDialogRenderer;
 import com.tle.web.workflow.servlet.WorkflowMessageServlet;
-import com.tle.web.workflow.tasks.comments.CommentRow;
+import com.tle.web.workflow.tasks.comments.ModCommentRender;
 import com.tle.web.workflow.tasks.dialog.ApproveDialog;
 import com.tle.web.workflow.tasks.dialog.CommentDialog;
 import com.tle.web.workflow.tasks.dialog.RejectDialog;
@@ -425,68 +423,12 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 		model.setTaskDescription(new BundleLabel(currentStep.getDescription(), bundleCache));
 
 
-		List<CommentRow> commentList = Lists.newArrayList();
 		// getMessages or getCommentsForTask??
 		Collection<WorkflowMessage> messages = workflowService.getMessages(taskState.getItemTaskId());
 		//int numComments = messages.size();
 		//model.setCommentHeading(new PluralKeyLabel(KEY_COMMENTS, numComments));
-
-		for( WorkflowMessage workflowMessage : messages )
-		{
-			String uuid = workflowMessage.getUuid();
-
-			WorkflowMessageFile pf = new WorkflowMessageFile(uuid);
-			FileEntry[] files = fileSystemService.enumerate(pf, Constants.BLANK, null);
-			List<HtmlLinkState> attachments = Lists.newArrayList();
-			for( FileEntry f : files )
-			{
-				HtmlLinkState link = new HtmlLinkState(new Bookmark()
-				{
-					@Override
-					public String getHref()
-					{
-						return WorkflowMessageServlet.messageUrl(uuid, f.getName());
-					}
-				});
-				link.setLabel(new TextLabel(f.getName()));
-				attachments.add(link);
-			}
-
-			Date date = workflowMessage.getDate();
-			String extraClass = "";
-			String user = workflowMessage.getUser();
-			char type = workflowMessage.getType();
-			if( type == WorkflowMessage.TYPE_REJECT )
-			{
-				extraClass = "rejection";
-			}
-			else if( type == WorkflowMessage.TYPE_ACCEPT )
-			{
-				extraClass = "approval";
-			}
-			// If this is being rendered immediately after adding a new comment,
-			// we won't know (or care) what taskName applies, because the
-			// comEvent.node isn't rendered
-			BundleLabel taskName = workflowMessage.getNode() != null
-					? new BundleLabel(workflowMessage.getNode().getNode().getName(), bundleCache) : null;
-			HtmlLinkState userLink = userLinkSection.createLink(context, user);
-			CommentRow modrow = new CommentRow(workflowMessage.getMessage(), attachments, userLink, taskName, date,
-					JQueryTimeAgo.timeAgoTag(date), extraClass);
-			commentList.add(modrow);
-		}
-		Collections.sort(commentList, new Comparator<CommentRow>()
-		{
-			@Override
-			public int compare(CommentRow r1, CommentRow r2)
-			{
-				long t1 = r1.getDate().getTime();
-				long t2 = r2.getDate().getTime();
-				return t1 < t2 ? 1 : (t1 == t2 ? 0 : -1);
-			}
-		});
-		model.setComments(commentList);
-
-
+		model.setCommentsSize(messages.size());
+		model.setComments(ModCommentRender.render(context, viewFactory, userLinkSection, fileSystemService, messages));
 		Label receipt = receiptService.getReceipt();
 		if( receipt != null )
 		{
@@ -566,7 +508,8 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 		private Label taskDescription;
 		private Label taskName;
 		private String receipt;
-		private List<CommentRow> comments;
+		private SectionRenderable comments;
+		private int commentsSize;
 
 		public Label getTaskName()
 		{
@@ -673,14 +616,24 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 			return receipt;
 		}
 
-		public List<CommentRow> getComments()
+		public SectionRenderable getComments()
 		{
 			return comments;
 		}
 
-		public void setComments(List<CommentRow> comments)
+		public void setComments(SectionRenderable comments)
 		{
 			this.comments = comments;
+		}
+
+		public void setCommentsSize(int size)
+		{
+			this.commentsSize = size;
+		}
+
+		public int getCommentsSize()
+		{
+			return commentsSize;
 		}
 	}
 

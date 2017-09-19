@@ -3,7 +3,6 @@
 <#include "/com.tle.web.sections.equella@/macro/receipt.ftl">
 
 <@css path="moderate.css" hasRtl=true/>
-<@css path="comments.css" hasRtl=true/>
 
 <div id="moderate" class="area content">
 
@@ -35,37 +34,12 @@
 	</div>
 
 	<div class="comments-label">
-		<span class="moderate-label">${b.key('moderate.showcomments', m.comments?size)}</span> (<@link s.postButton/>)
+		<span class="moderate-label">${b.key('moderate.showcomments', m.commentsSize)}</span> (<@link s.postButton/>)
 	</div>
 
-	<#if m.comments?size gt 0>
+	<#if m.comments??>
 		<div id="moderation-comments">
-			<div>
-				<#list m.comments as comment>
-					<div class="comment ${comment.extraClass}">
-						<div class="comment-avatar"></div>
-						<div class="comment-content">
-							<span class="comment-username"><@render comment.user/></span>
-							<@render section=comment.dateRenderer class="comment-date"/>
-                            <#if comment.taskname??>
-                                <div class="comment-task">${b.key('comments.taskname')}: ${comment.taskName}</div>
-                            </#if>
-                            <#if comment.message??>
-                                <div class="comment-content">
-                                    <p>${comment.message?html?replace("\n", "<br>")}</p>
-                                </div>
-                            </#if>
-                            <#if comment.attachments??>
-                            <ul>
-                            <#list comment.attachments as filelink>
-                                <li><@render filelink/></li>
-                            </#list>
-                            </ul>
-                            </#if>
-						</div>
-					</div>
-				</#list>
-			</div>
+		    <@render m.comments/>
 		</div>
 	</#if>
 
