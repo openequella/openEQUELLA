@@ -51,7 +51,7 @@ delete and re-create a set of institutions, one of which is the standard default
 
 The EQUELLA you are testing must have some java VM options set in `manager/equellaserver-config.sh JAVA_OPTS`) to properly enable autotesting:
 ```
--Dequella.dev=true -Dequella.autotest=true
+-Dequella.devmode=true -Dequella.autotest=true
 ```
 If you will be creating coverage reports you will also need to add the jacoco coverage agent:
 

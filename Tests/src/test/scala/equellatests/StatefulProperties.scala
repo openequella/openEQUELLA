@@ -7,7 +7,6 @@ import com.tle.webtests.framework.{PageContext, ScreenshotTaker, TestConfig}
 import equellatests.TestCase.{CommandT, TestCaseT}
 import equellatests.domain._
 import equellatests.pages.{BrowserPage, HomePage, LoginPage}
-import equellatests.tests.StateAndCommands
 import io.circe.{Decoder, Encoder, Json}
 import io.circe.parser.parse
 import io.circe.syntax._
