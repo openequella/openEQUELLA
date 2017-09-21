@@ -1,5 +1,5 @@
 <#macro row label><#t>
-<tr><td style="font-weight:bold; padding-right: 10px;">${label}</td><td><#nested></td></tr>
+<tr><td style="font-weight:bold; padding-right: 10px; vertical-align: top;">${label}</td><td><#nested></td></tr>
 </#macro>
 
 <#macro stdHeader>
@@ -18,4 +18,10 @@
 
 <#macro taskLink n>
 <tr><td><a href="${n.taskLink.href}">${b.key('email.tasklink')}</a></td></tr>
+</#macro>
+
+<#macro table>
+<table style="margin-bottom:10px;">
+<#nested>
+</table>
 </#macro>
