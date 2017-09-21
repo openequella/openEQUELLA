@@ -11,7 +11,7 @@
 					<br>
 				</#if>
 
-				<@bundlekey "footer.link.home"/> <#if m.displayLinks><@bundlekey "footer.link.community"/> </#if>
+				<@bundlekey "footer.link.home"/> <#if m.displayLinks>| <@bundlekey "footer.link.community"/> </#if>
 			</div>
 
 			<div id="socialmedia">
