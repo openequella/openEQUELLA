@@ -11,7 +11,61 @@ import org.openqa.selenium.support.ui.ExpectedConditions
 import org.scalacheck.Prop._
 import org.scalacheck.{Gen, Prop}
 
-case class TestState(logon: TestLogon, items: Seq[Item], currentPage: Location, testFailures: Boolean)
+case class FileUniversalControl(num: Int, canRestrict: Boolean, canSuppress: Boolean, defaultSuppressed: Boolean, noUnzip: Boolean = false,
+                                maximumAttachments: Int = Int.MaxValue, mimeTypes: Option[Set[String]] = None) {
+
+  def illegalReason: PartialFunction[TestFile, String => String] = {
+    case tf if TestFile.bannedExt(tf.extension) => fn => s"$fn: File upload cancelled.  File extension has been banned"
+    case tf if mimeTypes.fold(false)(!_.apply(StandardMimeTypes.extMimeMapping(tf.extension))) => fn => s"""This control is restricted to certain file types. "$fn" is not allowed to be uploaded."""
+  }
+
+}
+
+
+object FileUniversalControl {
+  implicit val ucEncoder: Encoder[FileUniversalControl] = deriveEncoder
+  implicit val ucDecoder: Decoder[FileUniversalControl] = deriveDecoder
+}
+
+case class Attachment(id: UUID, control: FileUniversalControl, filename: String, description: String, restricted: Boolean,
+                      suppressThumb: Boolean, file: TestFile, viewer: Option[String] = None, verified: Boolean = false) {
+  def nameInTable: String = if (restricted) description + " (hidden from summary view)" else description
+
+  lazy val details = StandardMimeTypes.commonDetailsForFile(file, filename, description)
+
+  def ispackage = file.ispackage
+
+  def viewerOptions: Option[Set[String]] = Option(StandardMimeTypes.viewersForFile(file)).filter(_.size > 1)
+}
+
+object Attachment {
+  implicit val attachEncoder: Encoder[Attachment] = deriveEncoder
+  implicit val attachDecoder: Decoder[Attachment] = deriveDecoder
+}
+
+case class Item(itemId: Option[ItemId], name: String, wizard: String, attachments: Seq[Attachment]) {
+  def attachmentForId(attachUuid: UUID): Attachment = attachments.find(_.id == attachUuid).get
+
+  def addAttachment(a: Attachment): Item = copy(attachments = attachments :+ a)
+
+  def updateAttachment(a: Attachment): Item = copy(attachments = attachments.updated(attachments.indexWhere(_.id == a.id), a))
+}
+
+object Item {
+  implicit val itemEncoder: Encoder[Item] = deriveEncoder
+  implicit val itemDecoder: Decoder[Item] = deriveDecoder
+}
+
+case class TestState(logon: TestLogon, savedItem: Option[Item], currentPage: Location)
+
+object TestState {
+  implicit val fucEncoder: Encoder[TestState] = deriveEncoder
+  implicit val fucDecoder: Decoder[TestState] = deriveDecoder
+
+  val wizards = Seq("Navigation and Attachments",
+    "Attachment mimetype restriction collection")
+
+}
 
 case class FileUploadTestCase(initialState: TestState, commands: List[FileUploadCommand]) extends TestCase with LogonTestCase {
   type State = TestState
@@ -38,25 +92,11 @@ object FileUploadCommand {
 }
 
 case class CreateItem(name: String, wizard: String) extends UnitCommand with FileUploadCommand {
-  def postCondition(state: TestState, success: Boolean): Prop = success
 
-  def run(sut: Browser, state: TestState): Unit = {
+  def run(sut: Browser, state: TestState): Unit =
     sut.page = new ContributePage(sut.page.ctx).load().openWizard(wizard)
 
-  }
-
-  def nextState(state: TestState): TestState = state.copy(currentPage = Page1(Item(None, name, Seq.empty),
-    wizard match {
-      case "Navigation and Attachments" => Seq(
-        FileUniversalControl(2, canRestrict = true, canSuppress = false, defaultSuppressed = false),
-        FileUniversalControl(3, canRestrict = true, canSuppress = false, defaultSuppressed = false, maximumAttachments = 1)
-      )
-      case "Attachment mimetype restriction collection" => Seq(
-        FileUniversalControl(2, canRestrict = true, canSuppress = false, defaultSuppressed = false, maximumAttachments = 1,
-          mimeTypes = Some(Set("image/jpeg")))
-      )
-    }
-  ))
+  def nextState(state: TestState): TestState = state.copy(currentPage = Page1(Item(None, name, wizard, Seq.empty)))
 }
 
 case class UploadInlineFile(tf: TestFile, filename: String, control: FileUniversalControl, id: UUID, failed: Boolean) extends UnitCommand with FileUploadCommand {
@@ -73,7 +113,7 @@ case class UploadInlineFile(tf: TestFile, filename: String, control: FileUnivers
   }
 
   def nextState(state: TestState): TestState = state.currentPage match {
-    case p1@Page1(item, _) if !failed =>
+    case p1@Page1(item) if !failed =>
       val desc = tf.packageName.getOrElse(filename)
       val attach = Attachment(id, control, filename, desc, restricted = false, suppressThumb = control.defaultSuppressed, tf)
       state.copy(currentPage = p1.copy(editingItem = item.addAttachment(attach)))
@@ -86,7 +126,7 @@ case class StartEditingAttachment(attachUuid: UUID) extends VerifyCommand with F
   type BrowserResult = Option[AttachmentDetails]
 
   def currentAttachment(state: TestState): Attachment = state.currentPage match {
-    case Page1(item, _) => item.attachmentForId(attachUuid)
+    case Page1(item) => item.attachmentForId(attachUuid)
   }
 
   def run(sut: Browser, state: TestState): Option[AttachmentDetails] = {
@@ -103,7 +143,7 @@ case class StartEditingAttachment(attachUuid: UUID) extends VerifyCommand with F
   }
 
   def nextState(state: TestState): TestState = state.currentPage match {
-    case p1@Page1(item, _) => val a = item.attachmentForId(attachUuid)
+    case p1@Page1(item) => val a = item.attachmentForId(attachUuid)
       state.copy(currentPage = AttachmentDetailsPage(a, a, a.control, p1))
   }
 
@@ -162,6 +202,16 @@ case object SaveAttachment extends UnitCommand with FileUploadCommand {
   }
 }
 
+case object SaveItem extends UnitCommand with FileUploadCommand {
+  override def run(b: SimpleSeleniumBrowser, state: TestState): Unit = b.page = b.page match {
+    case page1: WizardPageTab =>
+      page1.save()
+  }
+
+  override def nextState(state: TestState): TestState = state.currentPage match {
+    case Page1(item) => state.copy(savedItem = Some(item))
+  }
+}
 
 sealed trait Location
 
@@ -172,7 +222,7 @@ object Location {
 
 case object LoginPageLoc extends Location
 
-case class Page1(editingItem: Item, controls: Seq[FileUniversalControl]) extends Location
+case class Page1(editingItem: Item) extends Location
 
 object Page1 {
   implicit val p1Enc: Encoder[Page1] = deriveEncoder
@@ -188,40 +238,6 @@ object AttachmentDetailsPage {
   def collectDetails(a: AttachmentEditPage): AttachmentDetails =
     AttachmentDetails(a.description, a.restricted, a.suppressThumb, a.details().toSet, a.viewerOptions)
 
-}
-
-case class FileUniversalControl(num: Int, canRestrict: Boolean, canSuppress: Boolean, defaultSuppressed: Boolean, noUnzip: Boolean = false,
-                                maximumAttachments: Int = Int.MaxValue, mimeTypes: Option[Set[String]] = None) {
-
-  def testFileGen(invalid: Boolean): Gen[TestFile] = Gen.oneOf(TestFile.testFiles.filter(tf => illegalReason.isDefinedAt(tf) == invalid))
-
-  def illegalReason: PartialFunction[TestFile, String => String] = {
-    case tf if TestFile.bannedExt(tf.extension) => fn => s"$fn: File upload cancelled.  File extension has been banned"
-    case tf if mimeTypes.fold(false)(!_.apply(StandardMimeTypes.extMimeMapping(tf.extension))) => fn => s"""This control is restricted to certain file types. "$fn" is not allowed to be uploaded."""
-  }
-
-}
-
-
-object FileUniversalControl {
-  implicit val ucEncoder: Encoder[FileUniversalControl] = deriveEncoder
-  implicit val ucDecoder: Decoder[FileUniversalControl] = deriveDecoder
-}
-
-case class Attachment(id: UUID, control: FileUniversalControl, filename: String, description: String, restricted: Boolean,
-                      suppressThumb: Boolean, file: TestFile, viewer: Option[String] = None) {
-  def nameInTable: String = if (restricted) description + " (hidden from summary view)" else description
-
-  lazy val details = StandardMimeTypes.commonDetailsForFile(file, filename, description)
-
-  def ispackage = file.ispackage
-
-  def viewerOptions: Option[Set[String]] = Option(StandardMimeTypes.viewersForFile(file)).filter(_.size > 1)
-}
-
-object Attachment {
-  implicit val attachEncoder: Encoder[Attachment] = deriveEncoder
-  implicit val attachDecoder: Decoder[Attachment] = deriveDecoder
 }
 
 case class AttachmentDetails(description: String, restricted: Option[Boolean], suppressThumb: Option[Boolean],
@@ -274,24 +290,3 @@ case class ViewerEdit(viewer: Option[String]) extends AttachmentEdit {
   def label = s"Changing viewer to $viewer"
 }
 
-case class Item(itemId: Option[ItemId], name: String, attachments: Seq[Attachment]) {
-  def attachmentForId(attachUuid: UUID): Attachment = attachments.find(_.id == attachUuid).get
-
-  def addAttachment(a: Attachment): Item = copy(attachments = attachments :+ a)
-
-  def updateAttachment(a: Attachment): Item = copy(attachments = attachments.updated(attachments.indexWhere(_.id == a.id), a))
-}
-
-object Item {
-  implicit val itemEncoder: Encoder[Item] = deriveEncoder
-  implicit val itemDecoder: Decoder[Item] = deriveDecoder
-}
-
-object TestState {
-  implicit val fucEncoder: Encoder[TestState] = deriveEncoder
-  implicit val fucDecoder: Decoder[TestState] = deriveDecoder
-
-  val wizards = Seq("Navigation and Attachments",
-    "Attachment mimetype restriction collection")
-
-}
