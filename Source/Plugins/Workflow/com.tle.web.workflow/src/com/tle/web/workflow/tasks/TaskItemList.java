@@ -19,6 +19,7 @@ import com.tle.web.itemlist.item.AbstractItemList;
 import com.tle.web.search.event.FreetextSearchResultEvent;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
+import com.tle.web.sections.ajax.AjaxRenderContext;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.annotations.TreeLookup;
@@ -31,7 +32,9 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.js.BookmarkAndModify;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.events.js.SubmitValuesHandler;
+import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.OverrideHandler;
+import com.tle.web.sections.js.generic.SimpleElementId;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.IconLabel.Icon;
 import com.tle.web.sections.result.util.PluralKeyLabel;
@@ -44,6 +47,8 @@ public class TaskItemList extends AbstractItemList<TaskItemListEntry, TaskItemLi
 	implements
 		SearchResultsListener<FreetextSearchResultEvent>
 {
+	public static final String DIV_PFX = "tl_";
+
 	@Inject
 	private ModerationService taskListService;
 	@PlugKey("tasklist.moderate")
@@ -67,15 +72,27 @@ public class TaskItemList extends AbstractItemList<TaskItemListEntry, TaskItemLi
 	private ViewCommentsDialog commentsDialog;
 	@Inject
 	private UserSessionService session;
+	@Inject
+	private WorkflowService workflowService;
 
 	@TreeLookup
 	private ModerateSelectedButton selectionSection;
+	private JSCallable selectCall;
+	private JSCallable removeCall;
 
 	@Override
 	public void registered(String id, SectionTree tree)
 	{
 		tree.registerInnerSection(commentsDialog, id);
 		super.registered(id, tree);
+	}
+
+	@Override
+	public void treeFinished(String id, SectionTree tree)
+	{
+		super.treeFinished(id, tree);
+		selectCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("selectTask"));
+		removeCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("unSelectTask"));
 	}
 
 	@SuppressWarnings("nls")
@@ -184,37 +201,32 @@ public class TaskItemList extends AbstractItemList<TaskItemListEntry, TaskItemLi
 			new OverrideHandler(commentsDialog.getOpenFunction(), itemTaskId));
 	}
 
-	public ButtonRenderer getSelectButton(SectionInfo info, ItemTaskId itemTaskId)
-	{
-		HtmlLinkState link = new HtmlLinkState(LABEL_SELECT,
-			new OverrideHandler(events.getNamedHandler("selectTask", itemTaskId)));
-		if( selectionSection.isSelected(info, itemTaskId) )
-		{
-			link = new HtmlLinkState(LABEL_UNSELECT,
-				new OverrideHandler(events.getNamedHandler("unSelectTask", itemTaskId)));
-			return new ButtonRenderer(link).showAs(ButtonType.UNSELECT);
-		}
-		return new ButtonRenderer(link).showAs(ButtonType.SELECT);
-	}
-
 	@EventHandlerMethod
 	public void selectTask(SectionInfo info, ItemTaskId itemTaskId)
 	{
 		selectionSection.addSelection(info, itemTaskId);
+		addAjaxDiv(info, itemTaskId);
 	}
 
 	@EventHandlerMethod
 	public void unSelectTask(SectionInfo info, ItemTaskId itemTaskId)
 	{
 		selectionSection.removeSelection(info, itemTaskId);
+		addAjaxDiv(info, itemTaskId);
+	}
+
+	private void addAjaxDiv(SectionInfo info, ItemTaskId itemId)
+	{
+		AjaxRenderContext renderContext = info.getAttributeForClass(AjaxRenderContext.class);
+		if( renderContext != null )
+		{
+			renderContext.addAjaxDivs(DIV_PFX + itemId.toString());
+		}
 	}
 
 	@Bind
 	public static class TaskItemListEntry extends AbstractTaskListEntry
 	{
-		@Inject
-		private WorkflowService workflowService;
-
 		private int offset;
 		private TaskItemList taskItemList;
 
@@ -223,25 +235,6 @@ public class TaskItemList extends AbstractItemList<TaskItemListEntry, TaskItemLi
 		{
 			return new HtmlLinkState(getTitleLabel(), new BookmarkAndModify(info,
 				taskItemList.getModerateHandler(info, this, ModerationService.VIEW_SUMMARY).getModifier()));
-		}
-
-		@Override
-		protected void setupMetadata(RenderContext context)
-		{
-			super.setupMetadata(context);
-			ItemTaskId itemTaskId = getItemTaskId();
-			addRatingMetadata(new HtmlLinkState(LABEL_PROGRESS,
-				taskItemList.getModerateHandler(info, this, ModerationService.VIEW_PROGRESS)));
-			List<WorkflowMessage> comments = workflowService.getCommentsForTask(itemTaskId);
-			if( !comments.isEmpty() )
-			{
-				addRatingMetadata(taskItemList.getCommentLink(info, itemTaskId, comments.size()));
-			}
-
-			HtmlLinkState state = new HtmlLinkState(LABEL_MODERATE,
-				taskItemList.getModerateHandler(info, this, ModerationService.VIEW_METADATA));
-			addRatingAction(taskItemList.getSelectButton(context, itemTaskId),
-				new ButtonRenderer(state).setTrait(ButtonTrait.SUCCESS).setIcon(Icon.THUMBS_UP));
 		}
 
 		public void setup(TaskItemList taskItemList, int offset)
@@ -256,4 +249,37 @@ public class TaskItemList extends AbstractItemList<TaskItemListEntry, TaskItemLi
 		}
 	}
 
+	@Override
+	protected void customiseListEntries(RenderContext context, List<TaskItemListEntry> entries) {
+		super.customiseListEntries(context, entries);
+		for (TaskItemListEntry entry : entries)
+		{
+			entry.getTag().setElementId(new SimpleElementId(DIV_PFX + entry.getItemTaskId().toString()));
+
+			ItemTaskId itemTaskId = entry.getItemTaskId();
+			entry.addRatingMetadata(new HtmlLinkState(LABEL_PROGRESS, getModerateHandler(context, entry, ModerationService.VIEW_PROGRESS)));
+			List<WorkflowMessage> comments = workflowService.getCommentsForTask(itemTaskId);
+			if( !comments.isEmpty() )
+			{
+				entry.addRatingMetadata(getCommentLink(context, itemTaskId, comments.size()));
+			}
+
+			ButtonRenderer viewMetadata = new ButtonRenderer(new HtmlLinkState(LABEL_MODERATE, getModerateHandler(context, entry, ModerationService.VIEW_METADATA)))
+					.setTrait(ButtonTrait.SUCCESS).setIcon(Icon.THUMBS_UP);
+
+			ButtonRenderer selectButton;
+			if( selectionSection.isSelected(context, itemTaskId) )
+			{
+				entry.setSelected(true);
+				selectButton = new ButtonRenderer(new HtmlLinkState(LABEL_UNSELECT, new OverrideHandler(removeCall, itemTaskId)))
+						.showAs(ButtonType.UNSELECT);
+			}
+			else
+			{
+				selectButton = new ButtonRenderer(new HtmlLinkState(LABEL_SELECT, new OverrideHandler(selectCall, itemTaskId)))
+						.showAs(ButtonType.SELECT);
+			}
+			entry.addRatingAction(selectButton, viewMetadata);
+		}
+	}
 }

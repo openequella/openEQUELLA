@@ -18,6 +18,7 @@ import com.tle.core.workflow.service.WorkflowService;
 import com.tle.web.itemlist.item.AbstractItemList;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
+import com.tle.web.sections.ajax.AjaxRenderContext;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.annotations.TreeLookup;
@@ -27,7 +28,9 @@ import com.tle.web.sections.equella.render.ButtonRenderer.ButtonType;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.js.BookmarkAndModify;
 import com.tle.web.sections.events.js.EventGenerator;
+import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.OverrideHandler;
+import com.tle.web.sections.js.generic.SimpleElementId;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.PluralKeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
@@ -42,6 +45,8 @@ public class TaskManagementItemList
 	extends
 		AbstractItemList<TaskManagementListEntry, AbstractItemList.Model<TaskManagementListEntry>>
 {
+	public static final String DIV_PFX = "tml_";
+
 	@PlugKey("tasklist.moderators")
 	private static String KEY_MODERATORS;
 	@PlugKey("tasklist.comments")
@@ -69,6 +74,8 @@ public class TaskManagementItemList
 	private EventGenerator events;
 	@TreeLookup
 	private TaskSelectionSection selectionSection;
+	private JSCallable removeCall;
+	private JSCallable selectCall;
 
 	@Override
 	public void registered(String id, SectionTree tree)
@@ -77,6 +84,15 @@ public class TaskManagementItemList
 		tree.registerInnerSection(moderatorsDialog, id);
 		tree.registerInnerSection(commentsDialog, id);
 	}
+
+	@Override
+	public void treeFinished(String id, SectionTree tree)
+	{
+		super.treeFinished(id, tree);
+		selectCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("selectTask"));
+		removeCall = selectionSection.getUpdateSelection(tree, events.getEventHandler("unSelectTask"));
+	}
+
 
 	@SuppressWarnings("nls")
 	@Override
@@ -110,30 +126,12 @@ public class TaskManagementItemList
 	@Bind
 	public static class TaskManagementListEntry extends AbstractTaskListEntry
 	{
-		@Inject
-		private WorkflowService workflowService;
-
 		private TaskManagementItemList itemList;
 
 		@Override
 		public HtmlLinkState getTitle()
 		{
 			return itemList.getSummaryLink(info, getTitleLabel(), getItemTaskId(), true);
-		}
-
-		@Override
-		protected void setupMetadata(RenderContext context)
-		{
-			super.setupMetadata(context);
-			ItemTaskId itemTaskId = getItemTaskId();
-			addRatingMetadata(itemList.getSummaryLink(info, LABEL_SUMMARY, itemTaskId, false));
-			addRatingMetadata(itemList.getModeratorLink(info, itemTaskId));
-			List<WorkflowMessage> comments = workflowService.getCommentsForTask(itemTaskId);
-			if( !comments.isEmpty() )
-			{
-				addRatingMetadata(itemList.getCommentLink(info, itemTaskId, comments.size()));
-			}
-			addRatingAction(itemList.getSelectButton(context, itemTaskId));
 		}
 
 		public void setItemList(TaskManagementItemList itemList)
@@ -169,28 +167,58 @@ public class TaskManagementItemList
 			new BookmarkAndModify(info, events.getNamedModifier("summary", ItemId.fromKey(itemTaskId), progress))); //$NON-NLS-1$
 	}
 
-	public ButtonRenderer getSelectButton(SectionInfo info, ItemTaskId itemTaskId)
-	{
-		HtmlLinkState link = new HtmlLinkState(LABEL_SELECT,
-			new OverrideHandler(events.getNamedHandler("selectTask", itemTaskId)));
-		if( selectionSection.isSelected(info, itemTaskId) )
-		{
-			link = new HtmlLinkState(LABEL_UNSELECT,
-				new OverrideHandler(events.getNamedHandler("unSelectTask", itemTaskId)));
-			return new ButtonRenderer(link).showAs(ButtonType.UNSELECT);
-		}
-		return new ButtonRenderer(link).showAs(ButtonType.SELECT);
-	}
-
 	@EventHandlerMethod
 	public void selectTask(SectionInfo info, ItemTaskId itemTaskId)
 	{
 		selectionSection.addSelection(info, itemTaskId);
+		addAjaxDiv(info, itemTaskId);
 	}
 
 	@EventHandlerMethod
 	public void unSelectTask(SectionInfo info, ItemTaskId itemTaskId)
 	{
 		selectionSection.removeSelection(info, itemTaskId);
+		addAjaxDiv(info, itemTaskId);
+	}
+
+	private void addAjaxDiv(SectionInfo info, ItemTaskId itemId)
+	{
+		AjaxRenderContext renderContext = info.getAttributeForClass(AjaxRenderContext.class);
+		if( renderContext != null )
+		{
+			renderContext.addAjaxDivs(DIV_PFX + itemId.toString());
+		}
+	}
+
+
+	@Override
+	protected void customiseListEntries(RenderContext context, List<TaskManagementListEntry> entries) {
+		super.customiseListEntries(context, entries);
+
+		for (TaskManagementListEntry entry : entries)
+		{
+			ItemTaskId itemTaskId = entry.getItemTaskId();
+			entry.getTag().setElementId(new SimpleElementId(DIV_PFX + itemTaskId.toString()));
+			entry.addRatingMetadata(getSummaryLink(context, LABEL_SUMMARY, itemTaskId, false));
+			entry.addRatingMetadata(getModeratorLink(context, itemTaskId));
+			List<WorkflowMessage> comments = workflowService.getCommentsForTask(itemTaskId);
+			if( !comments.isEmpty() )
+			{
+				entry.addRatingMetadata(getCommentLink(context, itemTaskId, comments.size()));
+			}
+			ButtonRenderer selectButton;
+			if( selectionSection.isSelected(context, itemTaskId) )
+			{
+				selectButton = new ButtonRenderer(new HtmlLinkState(LABEL_UNSELECT,
+						new OverrideHandler(removeCall, itemTaskId))).showAs(ButtonType.UNSELECT);
+				entry.setSelected(true);
+			}
+			else
+			{
+				selectButton = new ButtonRenderer(new HtmlLinkState(LABEL_SELECT,
+						new OverrideHandler(selectCall, itemTaskId))).showAs(ButtonType.SELECT);
+			}
+			entry.addRatingAction(selectButton);
+		}
 	}
 }
