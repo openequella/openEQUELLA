@@ -15,8 +15,12 @@ import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.filesystem.WorkflowMessageFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.FileSystemService;
+import com.tle.exceptions.AccessDeniedException;
+import com.tle.web.login.LogonSection;
+import com.tle.web.sections.SectionsController;
 import com.tle.web.stream.ContentStreamWriter;
 import com.tle.web.stream.FileContentStream;
 
@@ -30,6 +34,10 @@ public class WorkflowMessageFileServlet extends HttpServlet
 	private MimeTypeService mimeService;
 	@Inject
 	private ContentStreamWriter contentStreamWriter;
+	@Inject
+	private SectionsController sectionsController;
+	@Inject
+	private InstitutionService institutionService;
 
 	@Override
 	protected final void service(HttpServletRequest request, HttpServletResponse response)
@@ -37,7 +45,15 @@ public class WorkflowMessageFileServlet extends HttpServlet
 	{
 		if( CurrentUser.isGuest() || CurrentInstitution.get() == null )
 		{
-			response.sendError(403);
+			StringBuilder requestUrl = new StringBuilder(
+					institutionService.removeInstitution(request.getRequestURL().toString()));
+			String queryString = request.getQueryString();
+			if (queryString != null)
+			{
+				requestUrl.append('?').append(queryString);
+			}
+			LogonSection.forwardToLogon(sectionsController, request, response, requestUrl.toString(), LogonSection.STANDARD_LOGON_PATH);
+			return;
 		}
 		String path = request.getPathInfo();
 
