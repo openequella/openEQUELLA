@@ -164,7 +164,7 @@ abstract class AbstractTaskActionDialog extends AbstractOkayableDialog[TaskActio
     } else null
   }
 
-  def setSuccessCallable(successCallable : JSCallable) = this.successCallable = successCallable
+  def setSuccessCallable(successCallable : JSCallable) = this.successCallable = addParentCallable(successCallable)
 
 
   @EventHandlerMethod def ok(info: SectionInfo): Unit = {
