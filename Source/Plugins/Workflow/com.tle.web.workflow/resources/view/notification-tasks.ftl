@@ -12,7 +12,7 @@
 <#list t.messages as msg>
 <@row msg.label>${b.key('email.msgformat',[msg.message, msg.by])}</@row>
 <#if msg.hasFiles>
-<@row msg.fileLabel><#list msg.files as f>${f}<br></#list></@row>
+<@row msg.fileLabel><#list msg.files as f><a href="${f.value}">${f.name}</a><br></#list></@row>
 </#if>
 </#list>
 

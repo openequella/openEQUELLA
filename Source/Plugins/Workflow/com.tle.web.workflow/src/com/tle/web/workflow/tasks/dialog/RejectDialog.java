@@ -28,7 +28,7 @@ import java.util.List;
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class RejectDialog extends AbstractTaskActionDialog<AbstractTaskActionDialog.AbstractTaskActionDialogModel>
+public class RejectDialog extends AbstractTaskActionDialog
 {
 	@Inject
 	private BundleCache bundleCache;
@@ -49,7 +49,7 @@ public class RejectDialog extends AbstractTaskActionDialog<AbstractTaskActionDia
 
 	@Nullable
 	@Override
-	protected String getWorkflowStepTarget(SectionInfo info)
+	public String getWorkflowStepTarget(SectionInfo info)
 	{
 		return rejectSteps.getSelectedValueAsString(info);
 	}
@@ -61,19 +61,19 @@ public class RejectDialog extends AbstractTaskActionDialog<AbstractTaskActionDia
 	}
 
 	@Override
-	protected ButtonRenderer.ButtonType getButtonType()
+	public ButtonRenderer.ButtonType getButtonType()
 	{
 		return ButtonRenderer.ButtonType.REJECT;
 	}
 
 	@Override
-	protected Label getButtonLabel()
+	public Label getButtonLabel()
 	{
 		return LABEL_REJECT_BUTTON;
 	}
 
 	@Override
-	protected CurrentTaskSection.CommentType getActionType()
+	public CurrentTaskSection.CommentType getActionType()
 	{
 		return CurrentTaskSection.CommentType.REJECT;
 	}
@@ -131,7 +131,7 @@ public class RejectDialog extends AbstractTaskActionDialog<AbstractTaskActionDia
 	}
 
 	@Override
-	protected Label validate(SectionInfo info)
+	public Label validate(SectionInfo info)
 	{
 		return validateHasMessage(info);
 	}

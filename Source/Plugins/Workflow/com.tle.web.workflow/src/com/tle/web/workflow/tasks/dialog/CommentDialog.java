@@ -13,7 +13,7 @@ import com.tle.web.workflow.tasks.CurrentTaskSection;
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class CommentDialog extends AbstractTaskActionDialog<AbstractTaskActionDialog.AbstractTaskActionDialogModel>
+public class CommentDialog extends AbstractTaskActionDialog
 {
 	@PlugKey("command.taskaction.comment")
 	private static Label LABEL_COMMENT_BUTTON;
@@ -29,19 +29,19 @@ public class CommentDialog extends AbstractTaskActionDialog<AbstractTaskActionDi
 	}
 
 	@Override
-	protected ButtonRenderer.ButtonType getButtonType()
+	public ButtonRenderer.ButtonType getButtonType()
 	{
 		return ButtonRenderer.ButtonType.SAVE;
 	}
 
 	@Override
-	protected Label getButtonLabel()
+	public Label getButtonLabel()
 	{
 		return LABEL_COMMENT_BUTTON;
 	}
 
 	@Override
-	protected CurrentTaskSection.CommentType getActionType()
+	public CurrentTaskSection.CommentType getActionType()
 	{
 		return CurrentTaskSection.CommentType.COMMENT;
 	}
@@ -60,7 +60,7 @@ public class CommentDialog extends AbstractTaskActionDialog<AbstractTaskActionDi
 	}
 
 	@Override
-	protected Label validate(SectionInfo info)
+	public Label validate(SectionInfo info)
 	{
 		return validateHasMessage(info);
 	}

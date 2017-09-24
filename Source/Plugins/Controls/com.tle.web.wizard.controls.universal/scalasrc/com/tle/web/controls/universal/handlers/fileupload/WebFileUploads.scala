@@ -5,6 +5,7 @@ import java.time.Instant
 import java.util.{Collections, UUID}
 import java.util.concurrent.atomic.AtomicReference
 
+import com.dytech.edge.common.FileInfo
 import com.dytech.edge.exceptions.BannedFileException
 import com.tle.beans.item.attachments._
 import com.tle.common.PathUtils
@@ -14,6 +15,7 @@ import com.tle.web.controls.universal.handlers.fileupload.packages.PackageFileCr
 import com.tle.web.controls.universal.{ControlContext, StagingContext}
 import com.tle.web.resources.ResourcesService
 import com.tle.web.sections.SectionInfo
+import com.tle.web.sections.equella.ajaxupload.AjaxUpload
 import com.tle.web.sections.js.{JSAssignable, JSExpression}
 import com.tle.web.sections.js.generic.Js
 import com.tle.web.sections.js.generic.function.{ExternallyDefinedFunction, IncludeFile}
@@ -44,29 +46,18 @@ object WebFileUploads {
 
   private val INCLUDE = new IncludeFile(r.url("scripts/file/fileuploadhandler.js"))
   private val FILE_UPLOAD_HANDLER_CLASS = new ExternallyDefinedFunction("FileUploadHandler", INCLUDE)
-  val VALIDATE_FUNC = new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "validateFile", 5)
   val ADD_ATTACHMENT_FUNC = new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "addAttachmentEntry", 2)
-  val ADD_UPLOAD_FUNC = new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "addUploadEntry", 2)
   val ZIP_PROGRESS_FUNC = new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "setupZipProgress", 2)
 
-  def writeCancellableStream(repo: LERepository, stream: InputStream, filepath: String,
-                             cancelled: AtomicReference[Boolean]): UploadResult = {
-    val str = new FilterInputStream(stream) {
-      def checkCancelled(): Unit = {
-        if (cancelled.get) throw new StreamKilledException
-      }
+  def validateBeforeUpload(mimeType: String, size: Long, fileSettings: FileUploadSettings): Option[IllegalFileReason] = {
+    if (fileSettings.isRestrictByMime && !fileSettings.getMimeTypes.asScala.toSet.contains(mimeType))
+      Some(WrongType)
+    else if (fileSettings.isRestrictFileSize && size > fileSettings.getMaxFileSize) Some(FileTooBig)
+    else None
+  }
 
-      override def read: Int = {
-        checkCancelled()
-        super.read
-      }
-
-      override def read(b: Array[Byte], off: Int, len: Int): Int = {
-        checkCancelled()
-        super.read(b, off, len)
-      }
-    }
-    Try(repo.uploadStream(filepath, str, true)) match {
+  def writeStream(uf: UploadingFile, ctx: ControlContext, stream: InputStream) : UploadResult = {
+    AjaxUpload.writeCancellableStream(s => ctx.repo.uploadStream(uf.uploadPath, s, true), stream, uf.cancel) match {
       case Success(finfo) => Successful(finfo)
       case Failure(t) => t match {
         case k: StreamKilledException => Cancelled
@@ -76,18 +67,11 @@ object WebFileUploads {
     }
   }
 
-  def validateBeforeUpload(mimeType: String, size: Long, fileSettings: FileUploadSettings): Option[IllegalFileReason] = {
-    if (fileSettings.isRestrictByMime && !fileSettings.getMimeTypes.asScala.toSet.contains(mimeType))
-      Some(WrongType)
-    else if (fileSettings.isRestrictFileSize && size > fileSettings.getMaxFileSize) Some(FileTooBig)
-    else None
-  }
-
   def uploadStream(uploadId: UUID, filename: String, description: String, fileSize: Long, mimeType: String, openStream: () => InputStream, ctx: ControlContext) : Boolean = {
     val currentUpload = validateBeforeUpload(mimeType, fileSize, ctx.controlSettings) match {
       case Some(failReason) => FailedUpload(uploadId, Instant.now(), filename, IllegalFile(failReason))
       case None => ctx.state.initialiseUpload(uploadId, filename, description) match {
-        case uf: UploadingFile => writeCancellableStream(ctx.repo, openStream(), uf.uploadPath, uf.cancel) match {
+        case uf: UploadingFile => writeStream(uf, ctx, openStream()) match {
           case Successful(finfo) => uf.success(finfo)
           case result => uf.failed(result)
         }
@@ -275,7 +259,7 @@ object WebFileUploads {
 
   def validateFunc(controlSettings: FileUploadSettings, errorCallback: JSExpression,
                    startedUpload: JSExpression, doneCallback: JSExpression) : JSAssignable = {
-    Js.functionValue(Js.call(VALIDATE_FUNC, (if (controlSettings.isRestrictFileSize) controlSettings.getMaxFileSize else 0).asInstanceOf[Object],
+    Js.functionValue(AjaxUpload.createValidate(if (controlSettings.isRestrictFileSize) controlSettings.getMaxFileSize else 0,
       if (controlSettings.isRestrictByMime) controlSettings.getMimeTypes else Collections.emptyList(), errorCallback, startedUpload, doneCallback))
   }
 }

@@ -15,7 +15,7 @@ import com.tle.web.workflow.tasks.CurrentTaskSection;
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
-public class ApproveDialog extends AbstractTaskActionDialog<AbstractTaskActionDialog.AbstractTaskActionDialogModel>
+public class ApproveDialog extends AbstractTaskActionDialog
 {
 	@PlugKey("command.taskaction.approve")
 	private static Label LABEL_APPROVE_BUTTON;
@@ -33,19 +33,19 @@ public class ApproveDialog extends AbstractTaskActionDialog<AbstractTaskActionDi
 	}
 
 	@Override
-	protected ButtonRenderer.ButtonType getButtonType()
+	public ButtonRenderer.ButtonType getButtonType()
 	{
 		return ButtonRenderer.ButtonType.ACCEPT;
 	}
 
 	@Override
-	protected Label getButtonLabel()
+	public Label getButtonLabel()
 	{
 		return LABEL_APPROVE_BUTTON;
 	}
 
 	@Override
-	protected CurrentTaskSection.CommentType getActionType()
+	public CurrentTaskSection.CommentType getActionType()
 	{
 		return CurrentTaskSection.CommentType.ACCEPT;
 	}
@@ -63,13 +63,13 @@ public class ApproveDialog extends AbstractTaskActionDialog<AbstractTaskActionDi
 		return LABEL_ACCEPTMSG;
 	}
 
-	protected Label validate(SectionInfo info)
+	public Label validate(SectionInfo info)
 	{
-		AbstractTaskActionDialogModel model = getModel(info);
-		String stagingUuid = model.getStagingFolderUuid();
+		TaskActionDialogModel model = getModel(info);
+		String stagingUuid = model.stagingFolderUuid();
 		StagingFile stagingFolder = new StagingFile(stagingUuid);
-		long countFiles = fileSystemService.countFiles(stagingFolder, null);
-		if (countFiles > 1 && Check.isEmpty(getCommentField().getValue(info).trim()))
+		long countFiles = fileSystemService().countFiles(stagingFolder, null);
+		if (countFiles > 1 && Check.isEmpty(_commentField().getValue(info).trim()))
 		{
 			return LABEL_ENTERMSG_WITHFILES;
 		}

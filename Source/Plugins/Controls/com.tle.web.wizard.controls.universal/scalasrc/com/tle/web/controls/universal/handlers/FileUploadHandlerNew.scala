@@ -32,11 +32,13 @@ import com.tle.web.resources.ResourcesService
 import com.tle.web.sections.ajax.AjaxGenerator
 import com.tle.web.sections.ajax.handler.{AjaxFactory, AjaxMethod}
 import com.tle.web.sections.annotations.{Bookmarked, EventHandlerMethod}
+import com.tle.web.sections.equella.ajaxupload.AjaxUpload
 import com.tle.web.sections.equella.annotation.PlugKey
 import com.tle.web.sections.equella.render.UnselectLinkRenderer
 import com.tle.web.sections.events.RenderContext
 import com.tle.web.sections.events.js.BookmarkAndModify
 import com.tle.web.sections.generic.InfoBookmark
+import com.tle.web.sections.jquery.JQuerySelector
 import com.tle.web.sections.js.generic.{Js, StatementHandler}
 import com.tle.web.sections.js.generic.function.{PartiallyApply, PassThroughFunction}
 import com.tle.web.sections.render.{CombinedRenderer, Label, SectionRenderable, TextLabel}
@@ -207,10 +209,11 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
     val controlSettings = new FileUploadSettings(controlState.getControlConfiguration)
     val cancelFunc = ajax.getAjaxUpdateDomFunction(tree, FileUploadHandlerNew.this, events.getEventHandler("removeUpload"),
       ajax.getEffectFunction(AjaxGenerator.EffectType.REPLACE_IN_PLACE), "uploads")
+
     val validateFile = {
       val errorCallback = PartiallyApply.partial(events.getSubmitValuesFunction("illegalFile"), 2)
       val doneCallback = PartiallyApply.partial(events.getSubmitValuesFunction("finishedUpload"), 1)
-      val startedUpload = PartiallyApply.partial(WebFileUploads.ADD_UPLOAD_FUNC, 2, id, cancelFunc)
+      val startedUpload = AjaxUpload.createProgressFunc(new JQuerySelector(JQuerySelector.Type.RAW, "#uploads .uploadsprogress"), cancelFunc)
       WebFileUploads.validateFunc(controlSettings, errorCallback, startedUpload, doneCallback)
     }
     val _resultsCallback = new PassThroughFunction("r" + id, events.getSubmitValuesFunction("selectionsMade"))

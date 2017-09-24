@@ -12,11 +12,11 @@
 
 	<@textarea section=s.commentField class="comment-entry" rows=3 />
 
-	<div class="errorMsg">
+	<@a.div id="comment-error" class="errorMsg">
         <#if m.errorMessage??>
             ${m.errorMessage}
         </#if>
-    </div>
+    </@a.div>
 
 	<#if s.rejectSteps??>
 	    <div class="rejectTo">
@@ -29,20 +29,18 @@
 
 	<@filedrop section=s.fileDrop />
 
-	<div id="current-uploads"></div>
+	<@a.div id="uploads" class="uploaded-container">
+	    <div class="uploadsprogress">
+            <#list m.stagingFiles as f>
+                <div id="sf_${f?index}" class="file-upload">
+                    <span class="file-name"><strong><@render f.link/></strong></span>
 
-	<@a.div id="uploaded" class="uploaded-container">
-		<div class="uploaded">
-			<#list m.stagingFiles as f>
-				<div id="sf_${f?index}" class="file-upload">
-					<span class="file-name"><strong><@render m.stagingFiles[f?index] /></strong></span>
-
-					<span class="file-upload-cancel">
-
-						<@render m.deleteFiles[f?index] />
-					</span>
-				</div>
-			</#list>
-		</div>
+                    <span class="file-upload-progress">
+                        <@render section=f.progressDiv class="progress-bar" />
+                        <@render f.cancel />
+                    </span>
+                </div>
+            </#list>
+        </div>
 	</@a.div>
 </div>

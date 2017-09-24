@@ -4,6 +4,18 @@ var WorkflowComments = {
 	{
 		return "<a id='" + linkid + "' href='javascript:void(0)' class='unselect'> </a>";
 	},
+	addUploadEntry: function(cid, canceller, uid, filename) {
+        var uploadTable = $("#uploads")
+        var newEntry = $('<div class="file-upload"><span class="file-name"></span><span class="file-upload-progress"><div id="u'+uid+
+                            '" class="progress-bar"></div><a class="unselect"></a></span></div>');
+        $(".file-name", newEntry).text(filename);
+        $(".unselect", newEntry).bind('click', function(e) {
+            canceller(uid);
+            return false;
+        });
+        var progressTable = $(".uploadsprogress", uploadTable);
+        newEntry.appendTo(progressTable);
+    },
 	validateFile: function (done) {
 	    return function (f, xhr) {
             var $parediv = $("#current-uploads");

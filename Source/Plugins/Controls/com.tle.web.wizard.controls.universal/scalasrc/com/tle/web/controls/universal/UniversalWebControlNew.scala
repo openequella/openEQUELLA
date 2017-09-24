@@ -104,7 +104,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
 
   @EventHandlerMethod def cancelUpload(info: SectionInfo, uploadId: UUID): Unit =
     ctx.state.uploadForId(uploadId).foreach { cu =>
-      WebFileUploads.cleanupForUpload(ctx, cu)
+      WebFileUploads.cleanupForUpload(ctx, cu).apply(ctx.stagingContext)
       ctx.state.remove(uploadId)
     }
 
@@ -144,7 +144,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
     lazy val validateFile = {
       val errorCallback = PartiallyApply.partial(getReloadFunction(true, events.getEventHandler("illegalFile")), 2)
       val doneCallback = PartiallyApply.partial(getReloadFunction(true, events.getEventHandler("finishedUpload")), 1)
-      val startedUpload = PartiallyApply.partial(WebFileUploads.ADD_ATTACHMENT_FUNC, 2, id, cancelFunc)
+      val startedUpload = PartiallyApply.partial(WebFileUploads.ADD_ATTACHMENT_FUNC, 3, id, cancelFunc)
       WebFileUploads.validateFunc(controlSettings, errorCallback, startedUpload, doneCallback)
     }
 

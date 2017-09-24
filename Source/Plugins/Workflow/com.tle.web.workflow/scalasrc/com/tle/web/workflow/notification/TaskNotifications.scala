@@ -5,6 +5,7 @@ import javax.inject.{Inject, Singleton}
 import com.dytech.devlib.PropBagEx
 import com.dytech.edge.common.Constants
 import com.tle.beans.item.Item
+import com.tle.common.NameValue
 import com.tle.common.usermanagement.user.valuebean.UserBean
 import com.tle.common.workflow.node.WorkflowItem
 import com.tle.common.workflow.node.WorkflowItem.AutoAction
@@ -69,7 +70,7 @@ class TaskNotifications extends FilterableNotification with NotificationLookup w
 
     val uuid = msg.getUuid
     val getFiles = fileSystemService.enumerate(new WorkflowMessageFile(uuid), Constants.BLANK, null).map {
-      fe => WorkflowMessageServlet.messageUrl(uuid, fe.getName)
+      fe => new NameValue(fe.getName, WorkflowMessageServlet.messageUrl(uuid, fe.getName))
     }
     val isHasFiles = getFiles.nonEmpty
 
