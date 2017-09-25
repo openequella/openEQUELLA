@@ -5,21 +5,21 @@ cache:
   directories:
   - "$HOME/.ivy2"
 jdk:
-  - oraclejdk8
+- oraclejdk8
 before_install:
-  - sudo apt-get install awscli
+- sudo apt-get install awscli
 install:
-  - aws s3 --region us-east-1 cp s3://doolse-subba/equella-deps.zip $HOME
-  - unzip $HOME/equella-deps.zip -d $HOME
-  - git fetch --unshallow
+- aws s3 --region us-east-1 cp s3://edalexdev/equella-deps.zip $HOME
+- unzip $HOME/equella-deps.zip -d $HOME
+- git fetch --unshallow
 script:
-  - sbt test installerZip
+- sbt test installerZip
 after_success:
-  - aws s3 --region us-east-1 cp Source/Server/equellaserver/target/tle-upgrade*.zip s3://doolse-subba/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
-  - aws s3 --region us-east-1 cp Installer/target/equella-installer*.zip s3://doolse-subba/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
-  - aws s3 --region us-east-1 cp target/reference-language-pack.zip s3://doolse-subba/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
-  - aws s3 --region us-east-1 cp Installer/target/equella-installer*.zip s3://doolse-subba/equella_artifacts/latest/
+- aws s3 --region us-east-1 cp Source/Server/equellaserver/target/tle-upgrade*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
+- aws s3 --region us-east-1 cp Installer/target/equella-installer*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
+- aws s3 --region us-east-1 cp target/reference-language-pack.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
+- aws s3 --region us-east-1 cp Installer/target/equella-installer*.zip s3://edalexdev/equella_artifacts/latest/
 env:
   global:
-  - secure: i3+DgoTlxfSqkUvO218nGnjZVhJ/1h/+VzoBYEE7I75r707uZAFhR3mEtopN3DPCcDzw4uT1SGtMRS6JF3/u3IGcd0VVc0Y6PQcFsujFMyGNoN71kUv7KWdBMaiAeYd2pcXw8DPXLOd/E7YnjzmngBnlWJOKCXlgIrC+7ljhw+GQEUebjvePG9b/1rfuL24gAJESY+0r5cpeYuYmN782lb0NV8vGOVEbwlha3asMSgh+tjym3cP9AoeVcVGA0f+4Jnz77eFwm15/BRY1f8l8vEsVH+DrfcfHk+0JyehmIwUQsvY+MzXtNP1ivkVflWQi8BNzNrng9BX8Xxt+qBWcS39mwyQC1ppXqonaRs+u5xW/qyms2Ee0Kf6M+NLFUzTGyYP13YmqNpHjcYqgNUvobrL7iqJbikir+euFQvzw2TFfHa6N3A+1gP/VhaNbgyf4G18mcV0ngdMeEMf02SDEkCj06VHdobwMCdGZVBqThEdcLgePmaSEeh80VNZKewCBl95hsFxoOuqndE/b7t328OOnB8Zy4UDR1lbjP2ny2TDdnu85UEGSTdQ+daoMDWGvhiibtMJDtm+LxPQ8PH1O6Jhiq5dkq+IkrCUlcIIP9I2UB+GMEQZfvzLLgcUvErfX/osz+evz6x+qLFyevwSWqRlxTOvnHm25aLOswoTQ50U=
-  - secure: j+mmhPvxEKNAFsdcwA19gSpDxKVKpXgspRkTvybmOL6i7COWQEHSvi8WWA71sh70J8+E/bVleZxbrJ8bAgVluO+X72OKx3gX/kHt7DD9ueNWQ70j4+oAeyhc4m2VTnUM5trgReWX4e7eJCnSj+DS2g/Y2CiExx23oNLdx4lC7wneiB8h/Ru5naOwxIjRkIdw/GA9muoM0VALxqwvONoMbwqMaXfetdbXDskvlXoJlRygSnRJ2NZIJ+RO8yjYtdJ4iGpgZRlQid2/HYAZwgFqFLsePQKyYC8mfJg3ZJPTnVzFgBdfvWdZ/6mrj+NFGGMs2D+7hG23eFnEkueEQcYUBRnc2nigYViI2IzfLv3uvviM8KzXZQ/f2332cWeqEF3NoYpQQfbKKg55iAKv/JeMsxILWDMjERJQPOkd45tmDuRzmZMGbAfBUWOs/XkjZvCa+cIUIVeLV+VvB7VQ9amIMjxX2aeOvYBbvyGCbFr5Kzv+K96YnPAqHPUUdoJwvKXm5DnR8UrEwseV0hyYdesQRxPM01RTM1VdcQhDTS5/uj/KmwyF0Cis5/syLQZ1IJVk6F2pKm233trmsQnBewfJtMzrh4+xtHzM3IRBx6aY9nvJwe3Pypj36AWMKTQq32yzsE0whFJJr1KbH/F/DnHmdCgWqrhs2SPY9vN3ZZ7P+E4=
+  - secure: iTlrOG7Yg5QjL7ZoVYcCyYoF88ib5bzujvI+P18xoO5wTDHFlupR5tqikCeQXRdA1V5hNXE1KFdMVJ2vPkqXjGCX9+iXnleYd2KN/XXIvJJpbsE2oCkVuC51lvJmClDb5mZWUDLGkt+VraQodaKKVUbe/FcefdpJo3QJRg9XivP4ydfl1weWGYD/S10rCj4Qwdg4YPXn8FFZ5caNiYdjy8cV8ZIo1E5eiG3rltStAFaqfOcbir1mLQipnxqy+ZN0dasbxhjLnLF/AWFUcok+lRFgdnZaWW2+fO+0x/Deo/Waohcy91rzcyLyn2oxWVGwvogjPGhNC9RfhXgd2t5Q+APuJq6JR604wVH1XqqMI1E52ryOuzSxPB7I/WM+4kyjMG4pJrZRNZqZAe7RxjT3TCtjp5I4Ff1J48RSATX0joj16GPG60wJaF+SHc83V0zB8WT9qztDafxskhe+hMrbAbDxU4oNgVdITksQsRJDJJvZ2seMqfx8C0518J5l9TfH6k7wYec4PgoOyafhgfqQVL9o3KRymXLcHthirAIinWbNY9N7qzxUe2A/NwKExxNcCfPcfQJfz8jtHp7kRq7AkQx30ohx+0X3PNiT8TiZY2KtEi8jqsrmnz4bAqz8BxArNHZgymR5yGRc2X+IoYaqh3CUgQSJvnjWenO7vNLeTMg=
+  - secure: at4gz7i1hdZ5U2o+Ys71JRPiKlpkwkhSRTkF4SsomO3QrgBHwfVVUmUG3IGqJcc4oe7RwCt8zjqrdjFzv+RZaFlJmHYqTM4BSvLtrqlpWSslWqzdW4Vk69oSzC056HfzIbFPetgOVkMQC5cYNzoNxfBCsE4cdeOTep76Ry+63m77xjwTrAhSQxhho0nlDPx1N/+VVOO6AJT9HXNnaCqchaXjBZl8jUyu6d8stwxDTFDqJl/HD2ZYv0nRhaqCnUwJHt0SEPXzmOkuu9bnoIDHnxL4kqvCpgVRso1atSB91sEM/qmTSzL1IZstNopbOilgOTs3qt7VgIjNopYEtv5GkJg2XFsoLn7JXT3tIryg6MaLWcO9Z5u5BEcvr0wQHx00nJ8BMrMzfa8dL/LN1HE0VvxDXGnK9mWWK8JUuVm9mUjTv9si0TU1b2isIGHD82a32ejojpabV3EVQsGRsgz42CZNE25r+ED9/1S+3y/TJFVkTvXI5iGC+0wHImFXkIpHiG6SYF1ROvTO0n/P6BOOZp8yp2xUELy4XxZx2U2cX98lWlxEpXdNTT4W4K1fs5FbLEqdf5aGeXrGRePrkskVcJtc5mzcH/hvk9PuZ5yCBBovmdQQXrNvRZsDtSSSTZ2MWmU5U1ehgpSmBHla3v9AMGGbmrNx2CWh/gn+Cqk7L64=
