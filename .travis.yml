@@ -1,4 +1,5 @@
 dist: trusty
+sudo: required
 language: scala
 jdk:
 - oraclejdk8
@@ -19,9 +20,7 @@ before_install:
 - wget https://raw.githubusercontent.com/creationix/nvm/v0.31.0/nvm.sh -O ~/.nvm/nvm.sh
 - source ~/.nvm/nvm.sh
 - nvm install 8.1.2
-- npm install -g purescript
-- npm install -g bower
-- npm install -g pulp
+- npm install -g purescript bower pulp
 install:
 - wget https://s3.amazonaws.com/edalexdev/equella-deps.zip
 - wget https://s3.amazonaws.com/edalexdev/equella_artifacts/latest/equella-installer-6.5.zip
