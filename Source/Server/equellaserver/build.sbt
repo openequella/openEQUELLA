@@ -54,8 +54,8 @@ libraryDependencies ++= Seq(
   "commons-io" % "commons-io" % "2.4",
   "commons-lang" % "commons-lang" % "2.6",
   "dom4j" % "dom4j" % "1.6.1",
-  "edu.asu.itunesu" % "itunesu-api-java" % "1.7",
-  "edu.harvard.hul" % "mets" % "1.0",
+  "com.github.equella.legacy" % "itunesu-api-java" % "1.7",
+  "com.github.equella.legacy" % "mets" % "1.0",
   "extendedset" % "extendedset" % "2.2",
   "javax.inject" % "javax.inject" % "1",
   "javax.mail" % "mail" % "1.4.3",
@@ -190,7 +190,7 @@ libraryDependencies ++= Seq(
   "stax" % "stax-api" % "1.0.1",
   "taglibs" % "standard" % "1.1.2",
   "tomcat" % "jsp-api" % "5.5.23",
-  "uk.ac.ed.ph.qtiworks" % "qtiworks-jqtiplus" % "1.0-beta3" excludeAll(
+  "com.github.equella.legacy" % "qtiworks-jqtiplus" % "1.0-beta3" excludeAll(
     ExclusionRule(organization = "org.slf4j"),
     ExclusionRule(organization = "ch.qos.logback"),
     ExclusionRule(organization = "net.sf.saxon")
