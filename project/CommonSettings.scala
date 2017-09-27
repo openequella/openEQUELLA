@@ -37,7 +37,6 @@ object CommonSettings extends AutoPlugin {
     headerLicense := Some(HeaderLicense.ALv2("2017", "Apereo")),
     resolvers ++= Seq(
       "EBI Nexus" at "http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/",
-      "Staging Central" at "https://oss.sonatype.org/content/groups/staging/",
       Resolver.bintrayRepo("omegat-org", "maven")
     ),
     libraryDependencies += "junit" % "junit" % "4.12" % Test
