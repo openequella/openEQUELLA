@@ -54,8 +54,8 @@ libraryDependencies ++= Seq(
   "commons-io" % "commons-io" % "2.4",
   "commons-lang" % "commons-lang" % "2.6",
   "dom4j" % "dom4j" % "1.6.1",
-  "edu.asu.itunesu" % "itunesu-api-java" % "1.7",
-  "edu.harvard.hul" % "mets" % "1.0",
+  "com.github.equella.legacy" % "itunesu-api-java" % "1.7",
+  "com.github.equella.legacy" % "mets" % "1.0",
   "extendedset" % "extendedset" % "2.2",
   "javax.inject" % "javax.inject" % "1",
   "javax.mail" % "mail" % "1.4.3",
@@ -63,8 +63,7 @@ libraryDependencies ++= Seq(
   "javax.xml" % "jaxrpc" % "1.1",
   "jdom" % "jdom" % "1.0",
   "joda-time" % "joda-time" % "2.2",
-  "jpf" % "jpf" % "1.0.7",
-  "jpf" % "jpf-tools" % "1.0.5",
+  "com.github.equella.jpf" % "jpf" % "1.0.7",
   "log4j" % "log4j" % "1.2.17",
   "net.oauth.core" % "oauth" % "20100527",
   "net.oauth.core" % "oauth-provider" % "20100527",
@@ -158,7 +157,7 @@ libraryDependencies ++= Seq(
   "org.omegat" % "jmyspell-core" % "1.0.0-beta-2",
   "org.eclipse.jetty" % "jetty-util" % "8.1.7.v20120910",
   "org.freemarker" % "freemarker" % "2.3.23",
-  "org.hurl" % "hurl" % "1.1",
+  "com.github.equella.legacy" % "hurl" % "1.1",
   "org.javassist" % "javassist" % "3.18.2-GA",
   "org.jboss.resteasy" % "resteasy-jackson-provider" % "3.0.10.Final",
   "org.jboss.resteasy" % "resteasy-jaxrs" % "3.0.10.Final",
@@ -190,7 +189,7 @@ libraryDependencies ++= Seq(
   "stax" % "stax-api" % "1.0.1",
   "taglibs" % "standard" % "1.1.2",
   "tomcat" % "jsp-api" % "5.5.23",
-  "uk.ac.ed.ph.qtiworks" % "qtiworks-jqtiplus" % "1.0-beta3" excludeAll(
+  "com.github.equella.legacy" % "qtiworks-jqtiplus" % "1.0-beta3" excludeAll(
     ExclusionRule(organization = "org.slf4j"),
     ExclusionRule(organization = "ch.qos.logback"),
     ExclusionRule(organization = "net.sf.saxon")

@@ -9,8 +9,6 @@ jdk:
 before_install:
 - sudo apt-get install awscli
 install:
-- aws s3 --region us-east-1 cp s3://edalexdev/equella-deps.zip $HOME
-- unzip $HOME/equella-deps.zip -d $HOME
 - git fetch --unshallow
 script:
 - sbt test installerZip

@@ -1,7 +1,7 @@
 lazy val Z3950 = config("z3950") describedAs("Z3950 jars")
 lazy val CustomCompile = config("compile") extend Z3950
 
-libraryDependencies += "org.jafer" % "z3950" % "1.1" % Z3950
+libraryDependencies += "com.github.equella.legacy" % "z3950" % "1.1" % Z3950
 
 excludeDependencies := Seq(
   "commons-collections" % "commons-collections",
