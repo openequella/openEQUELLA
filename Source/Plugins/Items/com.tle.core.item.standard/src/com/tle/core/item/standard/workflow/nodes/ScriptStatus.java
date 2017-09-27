@@ -60,6 +60,10 @@ public class ScriptStatus extends AbstractNodeStatus
 			op.addNotifications(getTaskKey(), userToNotify, Notification.REASON_SCRIPT_ERROR, false);
 
 			LOGGER.error("Script error at workflow script task : " + CurrentLocale.get(scriptNode.getName()), se);
+			if( scriptNode.isProceedNext() )
+			{
+				return finished();
+			}
 			return false;
 		}
 		else
@@ -69,22 +73,15 @@ public class ScriptStatus extends AbstractNodeStatus
 				Set<String> userToNotify = op.getUsersToNotifyOnScriptCompletion(scriptNode);
 				op.addNotifications(getTaskKey(), userToNotify, Notification.REASON_SCRIPT_EXECUTED, false);
 			}
+			op.removeNotificationsForKey(getTaskKey(), Notification.REASON_SCRIPT_ERROR);
 			op.createScriptCompleteHistory(String.valueOf(node.getUuid()));
 			return finished();
 		}
 	}
 
 	@Override
-	public void clear()
-	{
-		super.clear();
-		op.removeNotificationsForKey(getTaskKey(), Notification.REASON_SCRIPT_ERROR);
-	}
-
-	@Override
 	public boolean finished()
 	{
-		clear();
 		if( scriptNode.getMovelive() == MoveLive.ACCEPTED )
 		{
 			op.makeLive(false);
