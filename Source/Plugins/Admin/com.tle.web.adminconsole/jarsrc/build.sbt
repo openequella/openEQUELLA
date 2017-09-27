@@ -1,5 +1,5 @@
 libraryDependencies ++= Seq(
-  "jpf" % "jpf" % "1.0.7",
+  "com.github.equella.jpf" % "jpf" % "1.0.7",
   "com.google.guava" % "guava" % "18.0",
   "org.slf4j" % "jcl-over-slf4j" % "1.7.5",
   "org.slf4j" % "slf4j-simple" % "1.7.5",
