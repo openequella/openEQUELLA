@@ -13,7 +13,6 @@ libraryDependencies += "org.jacoco" % "org.jacoco.agent" % "0.7.9" classifier "r
 lazy val installerDir = "equella-installer-6.5"
 
 lazy val common = Seq(
-  resolvers += "Local EQUELLA deps" at IO.toURI(file(Path.userHome.absolutePath) / "/equella-deps").toString,
   scalaVersion := "2.12.3",
   version := "1.0"
 )
@@ -25,7 +24,7 @@ lazy val platform = (project in file("Platform/Plugins/com.tle.platform.common")
   javaSource in Test := baseDirectory.value / "test",
   libraryDependencies ++= Seq(
     "org.apache.commons" % "commons-compress" % "1.1",
-    "jpf" % "jpf" % "1.0.7",
+    "com.github.equella.jpf" % "jpf" % "1.0.7",
     "com.google.guava" % "guava" % "18.0",
     "commons-beanutils" % "commons-beanutils" % "1.9.3",
     "org.slf4j" % "slf4j-api" % "1.7.5",

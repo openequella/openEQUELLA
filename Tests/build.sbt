@@ -19,7 +19,7 @@ libraryDependencies ++= Seq(
 //  "org.apache.cxf" % "cxf-bundle" % "2.7.6",
   "axis" % "axis" % "1.4",
   "com.jcraft" % "jsch" % "0.1.54",
-  "jpf" % "jpf-tools" % "1.0.5",
+//  "jpf" % "jpf-tools" % "1.0.5",
   "org.jacoco" % "org.jacoco.report" % "0.7.9",
   "org.dspace" % "oclc-harvester2" % "0.1.12",
   "org.jvnet.hudson" % "xstream" % "1.3.1-hudson-8",

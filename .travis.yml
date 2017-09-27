@@ -22,9 +22,7 @@ before_install:
 - nvm install 8.1.2
 - npm install -g purescript bower pulp
 install:
-- wget https://s3.amazonaws.com/edalexdev/equella-deps.zip
 - wget https://s3.amazonaws.com/edalexdev/equella_artifacts/latest/equella-installer-6.5.zip
-- unzip equella-deps.zip -d $HOME
 - wget https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
 - wget https://github.com/mozilla/geckodriver/releases/download/v0.17.0/geckodriver-v0.17.0-linux64.tar.gz
 - unzip chromedriver_linux64.zip
