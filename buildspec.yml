@@ -1,0 +1,10 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - sbt -Dconfig.file=${HOME}/build.conf -Dsbt.log.noformat=true installerZip
+
+artifacts:
+  files:
+    - Installer/target/equella-installer-6.5.zip
