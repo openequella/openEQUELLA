@@ -11,12 +11,13 @@ before_install:
 install:
 - git fetch --unshallow
 script:
-- sbt test installerZip
+- sbt test installerZip writeLanguagePack
 after_success:
 - aws s3 --region us-east-1 cp Source/Server/equellaserver/target/tle-upgrade*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
 - aws s3 --region us-east-1 cp Installer/target/equella-installer*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
 - aws s3 --region us-east-1 cp target/reference-language-pack.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
-- aws s3 --region us-east-1 cp Installer/target/equella-installer*.zip s3://edalexdev/equella_artifacts/latest/
+- aws s3 --region us-east-1 rm --recursive s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/latest/
+- aws s3 --region us-east-1 cp --recursive s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/ s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/latest/
 env:
   global:
   - secure: iTlrOG7Yg5QjL7ZoVYcCyYoF88ib5bzujvI+P18xoO5wTDHFlupR5tqikCeQXRdA1V5hNXE1KFdMVJ2vPkqXjGCX9+iXnleYd2KN/XXIvJJpbsE2oCkVuC51lvJmClDb5mZWUDLGkt+VraQodaKKVUbe/FcefdpJo3QJRg9XivP4ydfl1weWGYD/S10rCj4Qwdg4YPXn8FFZ5caNiYdjy8cV8ZIo1E5eiG3rltStAFaqfOcbir1mLQipnxqy+ZN0dasbxhjLnLF/AWFUcok+lRFgdnZaWW2+fO+0x/Deo/Waohcy91rzcyLyn2oxWVGwvogjPGhNC9RfhXgd2t5Q+APuJq6JR604wVH1XqqMI1E52ryOuzSxPB7I/WM+4kyjMG4pJrZRNZqZAe7RxjT3TCtjp5I4Ff1J48RSATX0joj16GPG60wJaF+SHc83V0zB8WT9qztDafxskhe+hMrbAbDxU4oNgVdITksQsRJDJJvZ2seMqfx8C0518J5l9TfH6k7wYec4PgoOyafhgfqQVL9o3KRymXLcHthirAIinWbNY9N7qzxUe2A/NwKExxNcCfPcfQJfz8jtHp7kRq7AkQx30ohx+0X3PNiT8TiZY2KtEi8jqsrmnz4bAqz8BxArNHZgymR5yGRc2X+IoYaqh3CUgQSJvnjWenO7vNLeTMg=
