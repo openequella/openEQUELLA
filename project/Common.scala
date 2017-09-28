@@ -18,7 +18,8 @@ object Common {
   }
 
   private val defaultConfig = ConfigFactory.parseFile(file("project/build-defaults.conf"))
-  val buildConfig = ConfigFactory.parseFile(file("build.conf")).withFallback(defaultConfig)
+  private val configFile = sys.props.get("config.file").getOrElse("build.conf")
+  val buildConfig = ConfigFactory.parseFile(file(configFile)).withFallback(defaultConfig)
 
   def loadLangProperties(f: File, prefix: String, group: String) : LangStrings = {
     val p = new Properties()
