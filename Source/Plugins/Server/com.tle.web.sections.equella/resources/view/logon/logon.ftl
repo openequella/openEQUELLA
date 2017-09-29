@@ -15,11 +15,6 @@
 		<p class="warning">${m.error?html}</p>
 	</#if>
 
-	<#if m.licenseInvalid??>
-		<p class="warning">${b.key("logon.licenseinvalid")}</p>
-		<p class="warning">${b.key("logon.licensereason", [m.licenseInvalid])}</p>
-	</#if>
-	
 	<noscript>
 		<p class="warning">${b.key("logon.enablejs")}</p>
 	</noscript>
