@@ -1,10 +1,16 @@
 version: 0.2
 
 phases:
+  pre_build:
+    commands:
+      - setupBuild
   build:
     commands:
-      - sbt -Dconfig.file=${HOME}/build.conf -Dsbt.log.noformat=true installerZip
+      - sbt -Dconfig.file=${HOME}/build.conf -Dsbt.log.noformat=true test installerZip writeLanguagePack
 
 artifacts:
   files:
     - Installer/target/equella-installer-6.5.zip
+    - target/reference-language-pack.zip
+    - target/version.properties
+
