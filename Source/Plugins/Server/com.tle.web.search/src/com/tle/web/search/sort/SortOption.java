@@ -73,6 +73,6 @@ public class SortOption
 
 	public SortField[] createSort()
 	{
-		return new SortField[]{field.clone()};
+		return new SortField[]{field};
 	}
 }

@@ -35,7 +35,7 @@ public abstract class AbstractSearchEvent<E extends AbstractSearchEvent<E>>
 	protected boolean invalid;
 	private boolean excludeKeywords;
 
-	public void setSortFields(SortField... fields)
+	public void setSortFields(boolean reversed, SortField... fields)
 	{
 		throw new UnsupportedOperationException();
 	}

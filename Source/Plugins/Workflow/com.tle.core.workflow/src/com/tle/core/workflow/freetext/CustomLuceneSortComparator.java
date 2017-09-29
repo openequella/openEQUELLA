@@ -2,6 +2,7 @@ package com.tle.core.workflow.freetext;
 
 import java.io.IOException;
 
+import com.tle.common.Check;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.FieldCache;
 import org.apache.lucene.search.FieldComparator;
@@ -32,7 +33,7 @@ public final class CustomLuceneSortComparator extends FieldComparator<Integer>
 
 	public int isCurrentUser(String userId)
 	{
-		return this.userId.equals(userId) ? 0 : 1;
+		return this.userId.equals(userId) ? 0 : !Check.isEmpty(userId) ? 1 : 2;
 	}
 
 	@Override

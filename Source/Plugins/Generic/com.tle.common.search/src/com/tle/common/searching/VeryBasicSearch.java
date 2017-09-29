@@ -98,6 +98,12 @@ public class VeryBasicSearch implements Search, Serializable
 	}
 
 	@Override
+	public boolean isSortReversed()
+	{
+		return false;
+	}
+
+	@Override
 	public String getPrivilege()
 	{
 		return null;

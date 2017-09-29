@@ -1135,8 +1135,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 				}
 				// @formatter:off
 				SortField sortField = fieldComparatorSource != null
-					? new SortField(sortfield.getField(), fieldComparatorSource)
-						: new SortField(sortfield.getField(), type, sortfield.isReverse());
+					? new SortField(sortfield.getField(), fieldComparatorSource, request.isSortReversed())
+						: new SortField(sortfield.getField(), type, sortfield.isReverse() ^ request.isSortReversed());
 				// @formatter:on
 				convFields[i++] = sortField;
 			}

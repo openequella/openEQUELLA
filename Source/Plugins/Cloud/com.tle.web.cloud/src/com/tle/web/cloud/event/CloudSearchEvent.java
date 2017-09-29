@@ -78,8 +78,9 @@ public class CloudSearchEvent extends AbstractSearchEvent<CloudSearchEvent>
 	}
 
 	@Override
-	public void setSortFields(SortField... sort)
+	public void setSortFields(boolean reversed, SortField... sort)
 	{
+		cloudSearch.setSortReversed(reversed);
 		cloudSearch.setSortFields(sort);
 	}
 

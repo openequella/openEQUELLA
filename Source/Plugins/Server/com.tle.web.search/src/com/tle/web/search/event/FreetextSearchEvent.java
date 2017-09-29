@@ -165,9 +165,10 @@ public class FreetextSearchEvent extends AbstractSearchEvent<FreetextSearchEvent
 	}
 
 	@Override
-	public void setSortFields(SortField... sort)
+	public void setSortFields(boolean reversed, SortField... sort)
 	{
 		search.setSortFields(sort);
+		search.setSortReversed(reversed);
 	}
 
 	public void addDateFilter(DateFilter filter)

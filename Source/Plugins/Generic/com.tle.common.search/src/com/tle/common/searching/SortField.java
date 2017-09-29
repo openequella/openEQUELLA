@@ -37,27 +37,30 @@ public class SortField implements Cloneable, Serializable
 
 	private final String field;
 	private final Type type;
-	private boolean reverse;
-	private FieldComparatorSource fieldComparatorSource;
+	private final boolean reverse;
+	private final FieldComparatorSource fieldComparatorSource;
 
 	public SortField(String field, boolean reverse)
 	{
-		this(field, reverse, Type.STRING);
+		this(field, reverse, Type.STRING, null);
 	}
 
 	public SortField(String field, boolean reverse, Type type)
 	{
+		this(field, reverse, type, null);
+	}
+
+	private SortField(String field, boolean reverse, Type type, FieldComparatorSource fieldComparatorSource)
+	{
 		this.field = field;
 		this.reverse = reverse;
 		this.type = type;
+		this.fieldComparatorSource = fieldComparatorSource;
 	}
 
 	public SortField(String field, FieldComparatorSource fieldComparatorSource)
 	{
-		this.field = field;
-		this.fieldComparatorSource = fieldComparatorSource;
-		this.reverse = false;
-		this.type = Type.CUSTOM;
+		this(field, false, Type.CUSTOM, fieldComparatorSource);
 	}
 
 	public String getField()
@@ -75,9 +78,9 @@ public class SortField implements Cloneable, Serializable
 		return type;
 	}
 
-	public void setReverse(boolean reverse)
+	public SortField reversed()
 	{
-		this.reverse = reverse;
+		return new SortField(field, !reverse, type, fieldComparatorSource);
 	}
 
 	public FieldComparatorSource getFieldComparatorSource()

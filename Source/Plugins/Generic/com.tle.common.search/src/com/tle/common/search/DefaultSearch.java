@@ -56,6 +56,7 @@ public class DefaultSearch extends VeryBasicSearch
 	protected List<ItemStatus> notItemStatuses;
 	protected Date[] dateRange;
 	protected SortField[] sortFields;
+	protected boolean sortReversed;
 	protected String privilege = PRIV_DISCOVER_ITEM;
 	protected String privilegePrefix;
 	protected String searchType = "item"; //$NON-NLS-1$
@@ -687,5 +688,15 @@ public class DefaultSearch extends VeryBasicSearch
 			return SortType.DATEMODIFIED;
 		}
 		return SortType.RANK;
+	}
+
+	public boolean isSortReversed()
+	{
+		return sortReversed;
+	}
+
+	public void setSortReversed(boolean sortReverse)
+	{
+		this.sortReversed = sortReverse;
 	}
 }

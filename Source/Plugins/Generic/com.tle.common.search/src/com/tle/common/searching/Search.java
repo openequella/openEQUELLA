@@ -68,6 +68,8 @@ public interface Search
 
 	SortField[] getSortFields();
 
+	boolean isSortReversed();
+
 	Date[] getDateRange();
 
 	String getSearchType();

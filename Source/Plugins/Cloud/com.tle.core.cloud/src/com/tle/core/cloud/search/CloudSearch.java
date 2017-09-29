@@ -27,6 +27,7 @@ import com.tle.common.searching.VeryBasicSearch;
 public class CloudSearch extends VeryBasicSearch
 {
 	private SortField[] sortFields;
+	private boolean sortReversed;
 
 	private String language;
 	private String licence;
@@ -44,6 +45,17 @@ public class CloudSearch extends VeryBasicSearch
 	public void setSortFields(SortField... sortFields)
 	{
 		this.sortFields = sortFields;
+	}
+
+	public void setSortReversed(boolean sortReversed)
+	{
+		this.sortReversed = sortReversed;
+	}
+
+	@Override
+	public boolean isSortReversed()
+	{
+		return sortReversed;
 	}
 
 	public String getLanguage()

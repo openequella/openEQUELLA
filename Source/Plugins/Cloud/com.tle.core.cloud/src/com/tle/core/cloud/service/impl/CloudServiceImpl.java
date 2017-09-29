@@ -162,7 +162,7 @@ public class CloudServiceImpl implements CloudService, ItemResolverExtension
 				final int offset = pcs.getOffset();
 
 				final SortField[] sortType = cloudSearch.getSortFields();
-				final boolean reverse = sortType != null ? sortType[0].isReverse() : false;
+				final boolean reverse = cloudSearch.isSortReversed();
 				final String sort = sortType != null ? sortType[0].getField() : null;
 
 				final String query = cloudSearch.getQuery();

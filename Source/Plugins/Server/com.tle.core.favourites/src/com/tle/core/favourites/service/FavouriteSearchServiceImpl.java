@@ -93,7 +93,7 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
 		Institution institution = CurrentInstitution.get();
 
 		SortField[] sortType = search.getSortFields();
-		boolean reverse = sortType != null ? sortType[0].isReverse() : true;
+		boolean reverse = search.isSortReversed();
 		String sortField = sortType != null ? sortType[0].getField() : DEFAULT_ORDER;
 
 		Date[] dates = search.getDateRange();

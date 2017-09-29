@@ -156,14 +156,7 @@ public abstract class AbstractSortOptionsSection<SE extends AbstractSearchEvent<
 			if( selOpt != null )
 			{
 				SortField[] fields = createSortFromOption(info, selOpt);
-				if( reverse.isChecked(info) )
-				{
-					for( SortField sortField : fields )
-					{
-						sortField.setReverse(!sortField.isReverse());
-					}
-				}
-				event.setSortFields(fields);
+				event.setSortFields(reverse.isChecked(info), fields);
 			}
 		}
 	}

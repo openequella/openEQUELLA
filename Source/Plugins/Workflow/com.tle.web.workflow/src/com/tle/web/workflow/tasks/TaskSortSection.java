@@ -24,8 +24,8 @@ import com.tle.web.sections.render.Label;
 public class TaskSortSection extends AbstractSortOptionsSection<FreetextSearchEvent>
 {
 	private static final SortField DUEDATE_SORT = new SortField(TasksIndexer.FIELD_DUEDATE, false, Type.LONG);
-	private static final SortField ASSIGNEE_SORT = new SortField(FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, false,
-		Type.STRING);
+	private static final SortField ASSIGNEE_SORT = new SortField(FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO,
+			createCurrentUserFirstComparator());
 	private static final SortField WAITING_SORT = new SortField(TasksIndexer.FIELD_STARTED, true, Type.LONG);
 	private static final SortField WORKFLOW_SORT = new SortField(TasksIndexer.FIELD_WORKFLOW, false, Type.STRING);
 
@@ -75,20 +75,12 @@ public class TaskSortSection extends AbstractSortOptionsSection<FreetextSearchEv
 
 	private SortField[] getDefaultSortFields()
 	{
-		SortField prioritySortField = new SortField(TasksIndexer.FIELD_PRIORITY, true, Type.STRING).clone();
-
-		// AssignedTo sort has the custom comparator which always rates
-		// currentUser as above <empty> and others. Lucene's custom comparator
-		// doesn't allow for reverse
-		SortField customisedAssignedToSortField = new SortField(FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO,
-			createCurrentUserFirstComparator()).clone();
-
-		SortField waitingSortField = new SortField(TasksIndexer.FIELD_STARTED, true, Type.LONG).clone();
-
-		return new SortField[]{prioritySortField, customisedAssignedToSortField, waitingSortField};
+		SortField prioritySortField = new SortField(TasksIndexer.FIELD_PRIORITY, true, Type.STRING);
+		SortField waitingSortField = new SortField(TasksIndexer.FIELD_STARTED, true, Type.LONG);
+		return new SortField[]{prioritySortField, ASSIGNEE_SORT, waitingSortField};
 	}
 
-	private FieldComparatorSource createCurrentUserFirstComparator()
+	private static FieldComparatorSource createCurrentUserFirstComparator()
 	{
 		return new FieldComparatorSource()
 		{
