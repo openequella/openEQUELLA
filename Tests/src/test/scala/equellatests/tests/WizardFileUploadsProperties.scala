@@ -20,6 +20,9 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
   val testCaseEncoder = Encoder.apply
   type AttachmentEditGen = (Attachment, FileUniversalControl) => Option[Gen[AttachmentEdit]]
 
+  val wizards = Seq("Navigation and Attachments",
+    "Attachment mimetype restriction collection")
+
   val ctrlsForWizard : Map[String, Seq[FileUniversalControl]] = Map(
     "Navigation and Attachments" -> Seq(
       FileUniversalControl(2, canRestrict = true, canSuppress = false, defaultSuppressed = false),
@@ -53,33 +56,41 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
 
     def genInitialState: Gen[TestState] = for {
       tl <- arbitrary[TestLogon]
-    } yield TestState(tl, None, LoginPageLoc)
+    } yield TestState(tl, None, Set.empty, LoginPageLoc)
 
     def genCommand(state: TestState): Gen[FileUploadCommand] = {
-      state.currentPage match {
-        case LoginPageLoc =>
-          for {
-            name <- arbitrary[UniqueRandomWord]
-            wizard <- Gen.oneOf(TestState.wizards)
-          } yield CreateItem(name.word, wizard)
-        case p1@Page1(item) =>
+      state.savedItem match {
+        case None =>
+          state.currentPage match {
+            case LoginPageLoc =>
+              for {
+                name <- arbitrary[UniqueRandomWord]
+                wizard <- Gen.oneOf(wizards)
+              } yield CreateItem(name.word, wizard)
 
-          val canAddNew = canAddNewAttachment(item)
+            case Page1(item) =>
 
-          def newAttachment = for {
-            (fuc, tf, failure) <- fileGen(item)
-            vfn <- arbitrary[ValidFilename]
-            actualFilename = s"${vfn.filename}.${tf.extension}"
-          } yield UploadInlineFile(tf, actualFilename, fuc, UUID.randomUUID(), failure)
+              val canAddNew = canAddNewAttachment(item)
 
-          def editAttachment = Gen.oneOf(item.attachments).map(a => StartEditingAttachment(a.id))
+              def newAttachment = for {
+                (fuc, tf, failure) <- fileGen(item)
+                vfn <- arbitrary[ValidFilename]
+                actualFilename = s"${vfn.filename}.${tf.extension}"
+              } yield UploadInlineFile(tf, actualFilename, fuc, UUID.randomUUID(), failure)
 
-          if (item.attachments.isEmpty) newAttachment
-          else if (!canAddNew) Gen.frequency(1 -> editAttachment, 1 -> SaveItem)
-          else Gen.frequency(1 -> newAttachment, 5 -> editAttachment, 1 -> SaveItem)
+              def editAttachment = Gen.oneOf(item.attachments).map(a => StartEditingAttachment(a.id))
 
-        case adp@AttachmentDetailsPage(a, edited, uc, page1) => if (a != edited) Gen.oneOf(CloseEditDialog, SaveAttachment) else {
-          editForAttachment(edited, uc).map(ae => EditAttachmentDetails(ae))
+              if (item.attachments.isEmpty) newAttachment
+              else if (!canAddNew) Gen.frequency(1 -> editAttachment, 1 -> SaveItem)
+              else Gen.frequency(1 -> newAttachment, 5 -> editAttachment, 1 -> SaveItem)
+
+            case adp@AttachmentDetailsPage(a, edited, uc, page1) => Gen.frequency(1 -> Gen.oneOf(CloseEditDialog, SaveAttachment), 2 ->
+              editForAttachment(edited, uc).map(ae => EditAttachmentDetails(ae)))
+          }
+        case Some(item) => state.currentPage match {
+          case SummaryPageLoc => EditItem
+          case Page1(item) => Gen.oneOf(item.attachments.filterNot(a => state.verified(a.id))).map(a => StartEditingAttachment(a.id))
+          case AttachmentDetailsPage(a, edited, uc, page1) => CloseEditDialog
         }
       }
     }
@@ -113,7 +124,10 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
 
   override def overrideParameters(p: Test.Parameters): Test.Parameters = p.withMinSize(5).withMaxSize(10)
 
-  def savedAndVerified(s: TestState, cl: List[FileUploadCommand]): Boolean = s.savedItem.isDefined
+  def savedAndVerified(s: TestState, cl: List[FileUploadCommand]): Boolean = (s.savedItem, s.currentPage) match {
+    case (Some(i), Page1(item)) if item.attachments.map(_.id).forall(s.verified) => true
+    case _ => false
+  }
 
   property("edit description") = statefulProp(genAllCommands(savedAndVerified, anyValidAttachment, canAddMore, editDescription))
 

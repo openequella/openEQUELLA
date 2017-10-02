@@ -2,6 +2,7 @@ package equellatests.pages.wizard
 
 import com.tle.webtests.framework.PageContext
 import equellatests.pages.BrowserPage
+import equellatests.pages.viewitem.SummaryPage
 import org.openqa.selenium.By
 
 class WizardSaveConfirmation(val ctx: PageContext) extends BrowserPage {
@@ -9,5 +10,8 @@ class WizardSaveConfirmation(val ctx: PageContext) extends BrowserPage {
 
   def buttonBy(name: String) = By.xpath("//div[@class = 'modal-footer-inner']/button[normalize-space(text()) = "+quoteXPath(name)+"]")
 
-  def publish() = driver.findElement(buttonBy("Publish")).click()
+  def publish() : SummaryPage = {
+    driver.findElement(buttonBy("Publish")).click()
+    new SummaryPage(ctx).get()
+  }
 }

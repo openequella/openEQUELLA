@@ -4,6 +4,7 @@ import java.util.UUID
 
 import equellatests._
 import equellatests.domain.{ItemId, StandardMimeTypes, TestFile, TestLogon}
+import equellatests.pages.viewitem.SummaryPage
 import equellatests.pages.wizard._
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
@@ -15,8 +16,8 @@ case class FileUniversalControl(num: Int, canRestrict: Boolean, canSuppress: Boo
                                 maximumAttachments: Int = Int.MaxValue, mimeTypes: Option[Set[String]] = None) {
 
   def illegalReason: PartialFunction[TestFile, String => String] = {
-    case tf if TestFile.bannedExt(tf.extension) => fn => s"$fn: File upload cancelled.  File extension has been banned"
     case tf if mimeTypes.fold(false)(!_.apply(StandardMimeTypes.extMimeMapping(tf.extension))) => fn => s"""This control is restricted to certain file types. "$fn" is not allowed to be uploaded."""
+    case tf if TestFile.bannedExt(tf.extension) => fn => s"$fn: File upload cancelled.  File extension has been banned"
   }
 
 }
@@ -28,7 +29,7 @@ object FileUniversalControl {
 }
 
 case class Attachment(id: UUID, control: FileUniversalControl, filename: String, description: String, restricted: Boolean,
-                      suppressThumb: Boolean, file: TestFile, viewer: Option[String] = None, verified: Boolean = false) {
+                      suppressThumb: Boolean, file: TestFile, viewer: Option[String] = None) {
   def nameInTable: String = if (restricted) description + " (hidden from summary view)" else description
 
   lazy val details = StandardMimeTypes.commonDetailsForFile(file, filename, description)
@@ -56,14 +57,11 @@ object Item {
   implicit val itemDecoder: Decoder[Item] = deriveDecoder
 }
 
-case class TestState(logon: TestLogon, savedItem: Option[Item], currentPage: Location)
+case class TestState(logon: TestLogon, savedItem: Option[Item], verified: Set[UUID], currentPage: Location)
 
 object TestState {
   implicit val fucEncoder: Encoder[TestState] = deriveEncoder
   implicit val fucDecoder: Decoder[TestState] = deriveDecoder
-
-  val wizards = Seq("Navigation and Attachments",
-    "Attachment mimetype restriction collection")
 
 }
 
@@ -89,6 +87,16 @@ sealed trait FileUploadCommand extends Command {
 object FileUploadCommand {
   implicit val fileUpEncoder: Encoder[FileUploadCommand] = deriveEncoder
   implicit val fileUpDecoder: Decoder[FileUploadCommand] = deriveDecoder
+}
+
+case object EditItem extends UnitCommand with FileUploadCommand {
+  override def run(b: SimpleSeleniumBrowser, state: TestState): Unit = b.page = b.page match {
+    case sp: SummaryPage => sp.edit()
+  }
+
+  override def nextState(state: TestState): TestState = state.savedItem match {
+    case Some(item) => state.copy(currentPage = Page1(item))
+  }
 }
 
 case class CreateItem(name: String, wizard: String) extends UnitCommand with FileUploadCommand {
@@ -144,7 +152,7 @@ case class StartEditingAttachment(attachUuid: UUID) extends VerifyCommand with F
 
   def nextState(state: TestState): TestState = state.currentPage match {
     case p1@Page1(item) => val a = item.attachmentForId(attachUuid)
-      state.copy(currentPage = AttachmentDetailsPage(a, a, a.control, p1))
+      state.copy(currentPage = AttachmentDetailsPage(a, a, a.control, p1), verified = state.verified + a.id)
   }
 
   def postCondition(state: TestState, result: Option[AttachmentDetails]): Prop = {
@@ -175,7 +183,7 @@ case object CloseEditDialog extends UnitCommand with FileUploadCommand {
   }
 
   def nextState(state: TestState): TestState = state.currentPage match {
-    case AttachmentDetailsPage(_, _, _, page1) => state.copy(currentPage = page1)
+    case AttachmentDetailsPage(_, a, _, page1) => state.copy(currentPage = page1)
   }
 }
 
@@ -205,11 +213,11 @@ case object SaveAttachment extends UnitCommand with FileUploadCommand {
 case object SaveItem extends UnitCommand with FileUploadCommand {
   override def run(b: SimpleSeleniumBrowser, state: TestState): Unit = b.page = b.page match {
     case page1: WizardPageTab =>
-      page1.save()
+      page1.save().publish()
   }
 
   override def nextState(state: TestState): TestState = state.currentPage match {
-    case Page1(item) => state.copy(savedItem = Some(item))
+    case Page1(item) => state.copy(savedItem = Some(item), currentPage = SummaryPageLoc, verified = Set.empty)
   }
 }
 
@@ -219,6 +227,8 @@ object Location {
   implicit val locationEnc: Encoder[Location] = deriveEncoder
   implicit val locationDec: Decoder[Location] = deriveDecoder
 }
+
+case object SummaryPageLoc extends Location
 
 case object LoginPageLoc extends Location
 
