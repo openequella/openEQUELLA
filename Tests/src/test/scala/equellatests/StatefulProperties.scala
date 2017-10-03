@@ -4,7 +4,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 
 import com.tle.webtests.framework.{PageContext, ScreenshotTaker, TestConfig}
-import equellatests.TestCase.{CommandT, TestCaseT}
+import equellatests.TestCase.CommandT
 import equellatests.domain._
 import equellatests.pages.{BrowserPage, HomePage, LoginPage}
 import io.circe.{Decoder, Encoder, Json}
@@ -35,10 +35,6 @@ trait TestCase
 }
 
 object TestCase {
-  type TestCaseT[S2, B2] = TestCase {
-    type State = S2
-    type Browser = B2
-  }
   type CommandT[S2, B2] = Command {
     type State = S2
     type Browser = B2
@@ -79,8 +75,7 @@ trait UnitCommand extends Command
   }
 }
 
-trait VerifyCommand extends Command {
-  type BrowserResult
+trait VerifyCommand[BrowserResult] extends Command {
 
   def postCondition(state: State, result: BrowserResult): Prop
   def run(sut: Browser, state: State): BrowserResult

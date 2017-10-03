@@ -1,11 +1,11 @@
 package equellatests.pages.wizard
 
 import com.tle.webtests.framework.PageContext
-import equellatests.pages.BrowserPage
+import equellatests.pages.{BrowserPage, WaitingBrowserPage}
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.{ExpectedCondition, ExpectedConditions}
 
-class WizardPageTab(val ctx: PageContext, val pageNum: Int) extends BrowserPage {
+class WizardPageTab(val ctx: PageContext, val pageNum: Int) extends WaitingBrowserPage {
   def universalControl(ctrlNum: Int) = new UniversalControl(this, ctrlNum)
 
   def save() : WizardSaveConfirmation = {
@@ -16,4 +16,6 @@ class WizardPageTab(val ctx: PageContext, val pageNum: Int) extends BrowserPage 
   val pageBy = By.xpath(s"//input[@name='pages.pg' and @value=${quoteXPath(pageNum.toString)}]")
 
   override def mainExpectation: ExpectedCondition[_] = ExpectedConditions.presenceOfElementLocated(pageBy)
+
+  def ctrl[WC <: WizardControl](f: (WizardPageTab, Int) => WC, num: Int): WC = f(this, num).get()
 }

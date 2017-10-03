@@ -1,8 +1,10 @@
 package equellatests.pages.wizard
 
+import equellatests.pages.{BrowserPage, WaitingBrowserPage}
 import org.openqa.selenium.{By, WebDriver, WebElement}
 
-trait WizardControl {
+trait WizardControl extends WaitingBrowserPage {
+  def ctx = page.ctx
   def page: WizardPageTab
   def driver: WebDriver
   def ctrlNum : Int

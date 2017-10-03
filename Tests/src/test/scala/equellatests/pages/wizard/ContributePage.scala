@@ -1,11 +1,11 @@
 package equellatests.pages.wizard
 
 import com.tle.webtests.framework.PageContext
-import equellatests.pages.BrowserPage
+import equellatests.pages.{BrowserPage, WaitingBrowserPage}
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.{ExpectedCondition, ExpectedConditions, WebDriverWait}
 
-class ContributePage(val ctx: PageContext) extends BrowserPage {
+class ContributePage(val ctx: PageContext) extends WaitingBrowserPage {
 
   val pageBy = By.className("contribution-selection-page")
 
@@ -16,6 +16,6 @@ class ContributePage(val ctx: PageContext) extends BrowserPage {
 
   def openWizard(name: String) : WizardPageTab = {
     pageElement.findElement(By.xpath(".//table[contains(@class, 'zebra')]//a[normalize-space(text())=" + quoteXPath(name) + "]")).click()
-    new WizardPageTab(ctx, 0).get
+    new WizardPageTab(ctx, 0).get()
   }
 }

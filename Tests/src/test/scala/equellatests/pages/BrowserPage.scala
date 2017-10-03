@@ -10,23 +10,14 @@ import scala.util.Try
 trait BrowserPage {
   def ctx: PageContext
   def driver : WebDriver = ctx.getDriver
+  def findElement(by: By): WebElement = driver.findElement(by)
+  def findElementById(id: String): WebElement = findElement(By.id(id))
+  def findElementO(by: By): Option[WebElement] = Try(driver.findElement(by)).toOption
   val waiter = new WebDriverWait(driver, 10, 50L)
   def waitFor[A](c: ExpectedCondition[A]) : A = waiter.until(c)
-  def findElementO(by: By): Option[WebElement] = Try(driver.findElement(by)).toOption
-  def pageBy : By
-  def updatedExpectation(): ExpectedCondition[_] = ExpectedConditions.and(ExpectedConditions.stalenessOf(pageElement), mainExpectation)
-  def pageElement: WebElement = driver.findElement(pageBy)
-  def mainExpectation: ExpectedCondition[_] = ExpectedConditions.visibilityOfElementLocated(pageBy)
-  def pageExpectation: ExpectedCondition[this.type] = new ExpectedCondition[this.type] {
-    def apply(f: WebDriver): BrowserPage.this.type = {
-      waitFor(mainExpectation)
-      BrowserPage.this
-    }
-  }
 
-  def get() : this.type = {
-    waitFor(pageExpectation)
-  }
+  def updatedBy(by: By): ExpectedCondition[_] = ExpectedConditions.and(ExpectedConditions.stalenessOf(findElement(by)),
+    ExpectedConditions.visibilityOfElementLocated(by))
 
   def quoteXPath(input: String): String = {
     val txt = input

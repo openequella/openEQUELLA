@@ -57,7 +57,7 @@ object Item {
   implicit val itemDecoder: Decoder[Item] = deriveDecoder
 }
 
-case class TestState(logon: TestLogon, savedItem: Option[Item], verified: Set[UUID], currentPage: Location)
+case class TestState(logon: TestLogon, savedItem: Option[Item], fileCount: Int, verified: Set[UUID], edited: Set[UUID], currentPage: Location)
 
 object TestState {
   implicit val fucEncoder: Encoder[TestState] = deriveEncoder
@@ -130,8 +130,7 @@ case class UploadInlineFile(tf: TestFile, filename: String, control: FileUnivers
 
 }
 
-case class StartEditingAttachment(attachUuid: UUID) extends VerifyCommand with FileUploadCommand {
-  type BrowserResult = Option[AttachmentDetails]
+case class StartEditingAttachment(attachUuid: UUID) extends VerifyCommand[Option[AttachmentDetails]] with FileUploadCommand {
 
   def currentAttachment(state: TestState): Attachment = state.currentPage match {
     case Page1(item) => item.attachmentForId(attachUuid)
@@ -190,7 +189,8 @@ case object CloseEditDialog extends UnitCommand with FileUploadCommand {
 case class EditAttachmentDetails(changes: AttachmentEdit) extends UnitCommand with FileUploadCommand {
 
   def nextState(state: TestState): TestState = state.currentPage match {
-    case adp: AttachmentDetailsPage => state.copy(currentPage = adp.copy(edited = changes.edit(adp.edited)))
+    case adp: AttachmentDetailsPage => state.copy(currentPage = adp.copy(edited = changes.edit(adp.edited)),
+      edited = state.edited + adp.edited.id, verified = state.verified - adp.edited.id)
   }
 
   def run(sut: Browser, state: TestState): Unit = {
@@ -217,7 +217,7 @@ case object SaveItem extends UnitCommand with FileUploadCommand {
   }
 
   override def nextState(state: TestState): TestState = state.currentPage match {
-    case Page1(item) => state.copy(savedItem = Some(item), currentPage = SummaryPageLoc, verified = Set.empty)
+    case Page1(item) => state.copy(savedItem = Some(item), currentPage = SummaryPageLoc, verified = Set.empty, edited = Set.empty)
   }
 }
 

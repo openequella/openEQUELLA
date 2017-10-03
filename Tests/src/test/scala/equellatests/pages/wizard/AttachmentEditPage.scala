@@ -2,14 +2,14 @@ package equellatests.pages.wizard
 
 import com.tle.webtests.framework.PageContext
 import com.tle.webtests.pageobject.generic.component.EquellaSelect
-import equellatests.pages.BrowserPage
+import equellatests.pages.{BrowserPage, WaitingBrowserPage}
 import org.openqa.selenium.support.pagefactory.ByChained
 import org.openqa.selenium.support.ui.{ExpectedConditions, Select}
 import org.openqa.selenium.{By, WebElement}
 
 import scala.collection.JavaConverters._
 
-sealed trait AttachmentEditPage extends BrowserPage {
+sealed trait AttachmentEditPage extends WaitingBrowserPage {
 
   def uc: UniversalControl
 

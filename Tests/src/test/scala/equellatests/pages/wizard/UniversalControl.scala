@@ -7,7 +7,7 @@ import org.openqa.selenium.support.ui.{ExpectedCondition, ExpectedConditions}
 
 import scala.util.Try
 
-class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends BrowserPage with WizardControl {
+class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends WizardControl {
 
   private def actionLinkBy(action: String) = By.xpath("td[@class='actions']/a[text()=" + quoteXPath(action) + "]")
 
@@ -35,7 +35,6 @@ class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends Browse
     ExpectedConditions.visibilityOfNestedElementsLocatedBy(pageBy, rowDescriptionBy(description, disabled))
   }
 
-  def ctx = page.ctx
   def pageBy = By.id(idFor("universalresources"))
 
 }

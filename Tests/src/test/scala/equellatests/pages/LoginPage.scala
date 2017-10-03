@@ -4,7 +4,7 @@ import com.tle.webtests.framework.PageContext
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedCondition
 
-class LoginPage(val ctx: PageContext) extends BrowserPage {
+class LoginPage(val ctx: PageContext) extends WaitingBrowserPage {
 
   def login(username: String, password: String): HomePage =
     loginWithRedirect(username, password, new HomePage(ctx).pageExpectation)

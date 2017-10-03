@@ -1,11 +1,11 @@
 package equellatests.pages.viewitem
 
 import com.tle.webtests.framework.PageContext
-import equellatests.pages.BrowserPage
+import equellatests.pages.{BrowserPage, WaitingBrowserPage}
 import equellatests.pages.wizard.WizardPageTab
 import org.openqa.selenium.By
 
-class SummaryPage(val ctx: PageContext) extends BrowserPage {
+class SummaryPage(val ctx: PageContext) extends WaitingBrowserPage {
 
   override def pageBy: By = By.xpath("//div[@class='itemsummary-layout']")
 
