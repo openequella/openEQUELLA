@@ -108,15 +108,16 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
     files <- Gen.listOfN(numFiles, fileAndName)
   } yield PostCommentCommand(comment.desc, files)
 
-  val genBlankTestCase = for {
-    logon <- Gen.const(adminLogon)
+  val genBlankTestCase : Gen[WorkflowCommentTestCase] = for {
     itemName <- arbitrary[UniqueRandomWord].map(_.word)
     numComments <- Gen.choose(0, 3)
     comments <- Gen.listOfN(numComments, doComment)
-  } yield WorkflowCommentTestCase(WorkflowCommentState(logon),
+  } yield WorkflowCommentTestCase(WorkflowCommentState(adminLogon),
     List(CreateItemCommand(itemName),
       ModerateItemCommand(itemName)) ++ comments ++ List(VerifyComments)
   )
 
-  property("login") = statefulProp(genBlankTestCase)
+  property("valid comments") = statefulProp(genBlankTestCase)
+  property("failed comments") = ???
+
 }
