@@ -13,7 +13,7 @@ object ReplayTestCase {
     parse(new String(fileContents, StandardCharsets.UTF_8)).flatMap(_.as[FailedTestCase]).flatMap { ftc =>
       val modSymbol = currentMirror.staticModule(ftc.propertiesClass)
       val propInst = currentMirror.reflectModule(modSymbol).instance.asInstanceOf[StatefulProperties]
-      propInst.testCaseDecoder.decodeJson(ftc.testCase).map(tc => propInst.executeProp(tc, false).check)
+      propInst.testCaseDecoder.decodeJson(ftc.testCase).map(tc => propInst.executeProp(tc, replaying = true).check)
     }.fold(throw _, _ => ())
   }
 }

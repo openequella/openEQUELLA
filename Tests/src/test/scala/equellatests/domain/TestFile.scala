@@ -17,8 +17,11 @@ case class TestFile(realFilename: String) {
   lazy val extraDetails: Iterable[(String, String)] = additionalMeta(realFilename)
 
   def packageName: Option[String] = packageDetails.map(_._1).filterNot(_.isEmpty)
-  def ispackage : Boolean = packageDetails.isDefined
-  def packageType : Option[String] = packageDetails.map(_._2)
+
+  def ispackage: Boolean = packageDetails.isDefined
+
+  def packageType: Option[String] = packageDetails.map(_._2)
+
   lazy val file = new File(baseDir, realFilename)
   lazy val fileSize: Long = file.length()
 }
@@ -33,6 +36,8 @@ object TestFile {
   lazy val tmpDir = Files.createTempDirectory("fupload")
 
   lazy val testFiles = baseDir.listFiles().toSeq.filter(_.isFile).map(f => TestFile(f.getName))
+
+  val bannedTestFile : TestFile => Boolean = tf => bannedExt(tf.extension)
 
   val imsPackageType = "IMS Package"
   val qtiTestType = "QTI Test"
@@ -65,11 +70,12 @@ object TestFile {
   ).withDefaultValue(Iterable.empty)
 
 
-
-  def realFile(tf: TestFile, actualFilename: String) : File = {
-    val targetPath = tmpDir.resolve(actualFilename)
-    Files.copy(Paths.get(tf.file.toURI), targetPath)
-    targetPath.toFile
+  def realFile(tf: TestFile, actualFilename: String): File = {
+    if (actualFilename == tf.realFilename) tf.file else {
+      val targetPath = tmpDir.resolve(actualFilename)
+      Files.copy(Paths.get(tf.file.toURI), targetPath)
+      targetPath.toFile
+    }
   }
 
 }

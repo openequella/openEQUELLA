@@ -70,8 +70,9 @@ trait Command {
 trait UnitCommand extends Command
 {
   def run(b: Browser, state: State): Unit
+  def successProp : Prop = true
   def runCommand(b: Browser, state: State): Prop = {
-    Try(run(b, state)).fold(t => Prop.exception(t), _ => true)
+    Try(run(b, state)).fold(t => Prop.exception(t), _ => successProp)
   }
 }
 
@@ -97,18 +98,19 @@ abstract class StatefulProperties(name: String) extends Properties(name: String)
   implicit val testCaseEncoder : Encoder[TC]
 
 
-  def executeProp(testCase: TC, writeCase: Boolean): Prop = {
+  def executeProp(testCase: TC, replaying: Boolean): Prop = {
     val b = testCase.initialBrowser
 
     def nextCommand(s: testCase.State, commands: List[CommandT[testCase.State, testCase.Browser]]): Prop = commands match {
       case Nil => Prop.proved
       case c :: tail => {
+        if (replaying) System.err.println(c.toString)
         c.runCommand(b, s).flatMap { r =>
           if (!r.success) {
             val tc = b.page.ctx.getTestConfig
             val filename = name+"_"+c.dumpFilename
             Try(ScreenshotTaker.takeScreenshot(b.page.driver, tc.getScreenshotFolder, filename , tc.isChromeDriverSet))
-            if (writeCase) {
+            if (!replaying) {
               val testRunFile = tc.getResultsFolder.toPath.resolve(filename + "_test.json")
               val failure = FailedTestCase(getClass.getName, testCase.asJson).asJson
               System.err.println(s"Wrote failed test to ${testRunFile.toAbsolutePath.toString}")
@@ -116,13 +118,21 @@ abstract class StatefulProperties(name: String) extends Properties(name: String)
             }
             Prop(prms => r)
           }
-          else nextCommand(c.nextState(s), tail)
+          else Prop(r) && nextCommand(c.nextState(s), tail)
         }
       }
     }
     nextCommand(testCase.initialState, testCase.commands).map { r => testCase.destroyBrowser(b); r }
   }
 
-  def statefulProp(testCaseGen: Gen[TC]): Prop = forAllNoShrink(testCaseGen)(tc => executeProp(tc, true))
+  def statefulProp(testCaseGen: Gen[TC]): Prop = forAllNoShrink(testCaseGen)(tc => executeProp(tc, false))
+
+  def applyCommands[S](s: S, commands: List[CommandT[S, _]]) : S = {
+    commands.foldLeft(s)((s, c) => c.nextState(s))
+  }
+
+  def generateCommands[S, C <: CommandT[S, _]](s: S, f: S => Gen[List[C]]): Gen[List[C]] = f(s).flatMap {
+    cl => if (cl.isEmpty) Gen.const(Nil) else generateCommands(applyCommands(s, cl), f).map(nl => cl ++ nl)
+  }
 
 }
