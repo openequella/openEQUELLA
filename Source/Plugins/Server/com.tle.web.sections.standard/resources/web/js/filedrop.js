@@ -27,6 +27,7 @@ function setupFileDrop(options, filedrag)
             }
         }
     }
+    filedrag.addEventListener("dragenter", FileDragHover, false);
     filedrag.addEventListener("dragover", FileDragHover, false);
     filedrag.addEventListener("dragleave", FileDragHover, false);
     filedrag.addEventListener("drop", FileSelectHandler, false);
