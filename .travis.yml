@@ -17,14 +17,14 @@ cache:
   - "$HOME/.ivy2"
 before_install:
 - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1400x1024x16"
-- wget https://raw.githubusercontent.com/creationix/nvm/v0.31.0/nvm.sh -O ~/.nvm/nvm.sh
+- curl -o ~/.nvm/nvm.sh https://raw.githubusercontent.com/creationix/nvm/v0.31.0/nvm.sh
 - source ~/.nvm/nvm.sh
 - nvm install 8.1.2
 - npm install -g purescript bower pulp
 install:
-- wget https://s3.amazonaws.com/edalexdev/equella_artifacts/latest/equella-installer-6.5.zip
-- wget https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
-- wget https://github.com/mozilla/geckodriver/releases/download/v0.17.0/geckodriver-v0.17.0-linux64.tar.gz
+- curl -O https://s3.amazonaws.com/edalexdev/equella_artifacts/latest/equella-installer-6.5.zip
+- curl -O https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
+- curl -O https://github.com/mozilla/geckodriver/releases/download/v0.17.0/geckodriver-v0.17.0-linux64.tar.gz
 - unzip chromedriver_linux64.zip
 - tar zxvf geckodriver-v0.17.0-linux64.tar.gz
 - curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
