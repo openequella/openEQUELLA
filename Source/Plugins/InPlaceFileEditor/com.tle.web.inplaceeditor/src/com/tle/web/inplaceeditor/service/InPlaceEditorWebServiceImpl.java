@@ -58,9 +58,9 @@ public class InPlaceEditorWebServiceImpl implements InPlaceEditorWebService
 		.getResourceHelper(InPlaceEditorWebService.class);
 
 	// com.tle.applet.inplaceeditor provides the codebase ...
-	private static String JNLP_URL = resources.plugUrl("com.tle.applet.inplaceeditor", "inplaceEditor.jnlp");
+	private static String JNLP_URL = resources.plugUrl("com.tle.web.inplaceeditor", "inplaceEditor.jnlp");
 
-	private static final String INPLACEEDIT_APPLET_JARBASE_URL = resources.plugUrl("com.tle.applet.inplaceeditor", "");
+	private static final String INPLACEEDIT_APPLET_JARBASE_URL = resources.plugUrl("com.tle.web.inplaceeditor", "");
 	private static final String INPLACEEDIT_APPLET_JAR = "inplaceedit.jar";
 
 	// private static final String INPLACEEDIT_APPLET_JAR_URL =
