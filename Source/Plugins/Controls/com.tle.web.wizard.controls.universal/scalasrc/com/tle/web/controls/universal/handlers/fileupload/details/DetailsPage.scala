@@ -5,7 +5,7 @@ import com.tle.common.Check
 import com.tle.common.filesystem.FileEntry
 import com.tle.core.services.ZipProgress
 import com.tle.web.controls.universal.handlers.fileupload.{AttachmentDelete, WebFileUploads}
-import com.tle.web.controls.universal.{ControlContext, StagingContext}
+import com.tle.web.controls.universal.{ControlContext, DialogRenderOptions, StagingContext}
 import com.tle.web.sections.SectionInfo
 import com.tle.web.sections.events.RenderContext
 import com.tle.web.sections.render.{Label, SectionRenderable}
@@ -19,7 +19,7 @@ trait ZipHandler {
 
   def unzip: ZipProgress
 
-  def removeUnzipped: Unit
+  def removeUnzipped(): Unit
 
   def unzipped: Boolean
 
@@ -30,6 +30,12 @@ trait ViewerHandler {
   def viewableResource(info: SectionInfo): ViewableResource
 
   def viewerListModel: ViewersListModel
+}
+
+trait EditingHandler {
+  def editingArea: String
+
+  def syncEdits(filename: String): Unit
 }
 
 object DetailsPage {
@@ -44,7 +50,7 @@ trait DetailsPage {
 
   def previewable: Boolean
 
-  def renderDetails(context: RenderContext): SectionRenderable
+  def renderDetails(context: RenderContext): (SectionRenderable, DialogRenderOptions => Unit)
 
   def prepareUI(info: SectionInfo): Unit
 

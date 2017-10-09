@@ -3,22 +3,24 @@ package com.tle.web.controls.universal.handlers.fileupload.details
 import java.util
 import java.util.UUID
 
+import com.tle.beans.item.ItemId
 import com.tle.beans.item.attachments.{Attachment, FileAttachment, ZipAttachment}
-import com.tle.common.{Check, NameValue}
-import com.tle.common.collection.AttachmentConfigConstants
 import com.tle.common.filesystem.FileEntry
-import com.tle.web.controls.universal.handlers.fileupload.{AttachmentDelete, WebFileUploads}
+import com.tle.common.{Check, NameValue}
 import com.tle.web.controls.universal.handlers.fileupload.details.FileEditDetails._
-import com.tle.web.controls.universal.{AbstractScalaSection, ControlContext, RenderHelper}
+import com.tle.web.controls.universal.handlers.fileupload.{AttachmentDelete, WebFileUploads}
+import com.tle.web.controls.universal.{AbstractScalaSection, ControlContext, DialogRenderOptions, RenderHelper}
 import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.freemarker.annotations.ViewFactory
+import com.tle.web.inplaceeditor.service.InPlaceEditorWebService
 import com.tle.web.sections.ajax.AjaxGenerator
 import com.tle.web.sections.ajax.handler.{AjaxFactory, AjaxMethod}
 import com.tle.web.sections.annotations.{Bookmarked, EventFactory, EventHandlerMethod}
 import com.tle.web.sections.equella.annotation.PlugKey
 import com.tle.web.sections.events.RenderContext
-import com.tle.web.sections.events.js.EventGenerator
-import com.tle.web.sections.generic.AbstractPrototypeSection
+import com.tle.web.sections.events.js.{EventGenerator, JSHandler}
+import com.tle.web.sections.jquery.JQuerySelector.Type
+import com.tle.web.sections.jquery.Jq
 import com.tle.web.sections.js.generic.expression.{ObjectExpression, ScriptVariable}
 import com.tle.web.sections.js.generic.function.{ExternallyDefinedFunction, IncludeFile}
 import com.tle.web.sections.js.generic.statement.AssignStatement
@@ -31,7 +33,6 @@ import com.tle.web.sections.{SectionInfo, SectionTree}
 
 import scala.beans.BeanProperty
 import scala.collection.JavaConverters._
-import scala.collection.mutable
 
 object FileEditDetails {
   private val CSS_CLASS_FOLDER = "folder"
@@ -42,10 +43,15 @@ object FileEditDetails {
   private val SELECT_FUNCTION = new ExternallyDefinedFunction("zipSelect", INCLUDE)
 
   private val SELECTION_TREE = new ScriptVariable("zipTree")
+
+  private val INPLACE_APPLET_ID = "inplace_applet"
+  private val INPLACE_APPLET_HEIGHT = "50px"
+  private val INPLACE_APPLET_WIDTH = "320px"
 }
 
-class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, zipHandler: ZipHandler,
-                      viewerHandler : ViewerHandler, showRestrict: Boolean, val editingAttachment: SectionInfo => Attachment
+class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, zipHandler: ZipHandler, editingHandler: EditingHandler,
+                      viewerHandler : ViewerHandler, showRestrict: Boolean, val editingAttachment: SectionInfo => Attachment,
+                      inplaceEditorService: InPlaceEditorWebService
                      ) extends AbstractScalaSection with RenderHelper with DetailsPage {
 
   type M = FileEditDetailsModel
@@ -79,6 +85,7 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
   @Component var restrictCheckbox: Checkbox = _
   @Component(name = "st") var suppressThumbnails : Checkbox = _
 
+  var saveClickHandler : JSHandler = _
 
   @EventHandlerMethod def unzipFile(info: SectionInfo): Unit = {
     if (!zipHandler.unzipped) {
@@ -90,8 +97,17 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
   @EventHandlerMethod def removeZip(info: SectionInfo): Unit = {
     val m = getModel(info)
     if (zipHandler.unzipped) {
-      zipHandler.removeUnzipped
+      zipHandler.removeUnzipped()
     }
+  }
+
+  @EventHandlerMethod def editFile(info: SectionInfo, openWith: Boolean): Unit = {
+    val model = getModel(info)
+    model.appletMode = if (openWith) "openwith" else "open"
+  }
+
+  @EventHandlerMethod def inplaceSave(info: SectionInfo): Unit = {
+    ctx.controlState.save(info)
   }
 
   class ZipJson(@BeanProperty val total: Int, @BeanProperty val upto: Int, @BeanProperty val finished: Boolean)
@@ -102,8 +118,19 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
 
   override def getDefaultPropertyName = "fd"
 
+
   override def registered(id: String, tree: SectionTree): Unit = {
     super.registered(id, tree)
+
+    val editFileAjaxFunction = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("editFile"), "editFileAjaxDiv")
+
+    editFileLink.setClickHandler(inplaceEditorService.createOpenHandler(INPLACE_APPLET_ID, false, Js.function(Js.call_s(editFileAjaxFunction, false.asInstanceOf[AnyRef]))))
+    editFileWithLink.setClickHandler(inplaceEditorService.createOpenHandler(INPLACE_APPLET_ID, true, Js.function(Js.call_s(editFileAjaxFunction, true.asInstanceOf[AnyRef]))))
+
+    editFileLink.addReadyStatements(inplaceEditorService.createHideLinksStatements(Jq.$(Type.CLASS, "editLinks"), Jq.$(editFileWithLink)))
+
+    saveClickHandler = inplaceEditorService.createUploadHandler(INPLACE_APPLET_ID, events.getSubmitValuesFunction("inplaceSave"))
+
     executeUnzip.setClickHandler(events.getNamedHandler("unzipFile"))
     removeUnzip.setClickHandler(events.getNamedHandler("removeZip"))
     selectAll.setClickHandler(new OverrideHandler(Js.call_s(SELECT_ALL, true.asInstanceOf[Object])))
@@ -113,10 +140,23 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
       ajax.getEffectFunction(AjaxGenerator.EffectType.REPLACE_IN_PLACE), "zipArea"))
   }
 
+  private def createInplaceApplet(info: SectionInfo) = {
+    val model = getModel(info)
+    val wizardStagingId = new ItemId(ctx.stagingContext.stgFile.getUuid, 0)
+    inplaceEditorService.createAppletFunction(INPLACE_APPLET_ID, wizardStagingId, editingHandler.editingArea, model.inplaceFilepath,
+      model.appletMode == "openwith", "invoker/file.inplaceedit.service", Jq.$(editFileDiv), INPLACE_APPLET_WIDTH, INPLACE_APPLET_HEIGHT)
+  }
+
   def newModel = FileEditDetailsModel.apply
 
   case class FileEditDetailsModel(info: SectionInfo) {
+    @Bookmarked(name="am")
+    var appletMode: String = _
+
     lazy val a = editingAttachment(info)
+
+    def inplaceFilepath = a.getUrl
+
     var validate = false
 
     def getEditTitle = new TextLabel(displayName.getValue(info))
@@ -189,10 +229,11 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
     def getFiles: util.Collection[EntryDisplay] = _files.asJavaCollection
   }
 
-  def renderDetails(context: RenderContext): SectionRenderable = {
+  def renderDetails(context: RenderContext): (SectionRenderable, DialogRenderOptions => Unit) = {
     val m = getModel(context)
     if (m.isUnzipped) prepareFileList(context, m)
-    renderModel("file/file-edit.ftl", m)
+    if (m.appletMode != null) editFileDiv.addReadyStatements(context, createInplaceApplet(context))
+    (renderModel("file/file-edit.ftl", m), _.setSaveClickHandler(saveClickHandler))
   }
 
   def prepareFileList(context: RenderContext, m: FileEditDetailsModel) = {
@@ -288,6 +329,7 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
         a.setThumbnail(if (suppressed) WebFileUploads.SUPPRESS_THUMB_VALUE else ctx.stagingContext.thumbRequest(a.getUrl))
       }
     }
+    editingHandler.syncEdits(a.getUrl)
     (a, delete)
   }
 

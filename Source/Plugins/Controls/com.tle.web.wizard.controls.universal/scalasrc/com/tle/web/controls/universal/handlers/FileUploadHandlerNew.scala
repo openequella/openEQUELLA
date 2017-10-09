@@ -2,21 +2,19 @@ package com.tle.web.controls.universal.handlers
 
 import java.util
 import java.util.{Collections, UUID}
-import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 
-import com.tle.beans.item.{Item, ItemId}
+import com.tle.beans.item.ItemId
 import com.tle.beans.item.attachments._
-import com.tle.common.Check
 import com.tle.common.collection.AttachmentConfigConstants
 import com.tle.common.filesystem.FileEntry
+import com.tle.common.filesystem.handle.StagingFile
 import com.tle.common.i18n.CurrentLocale
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings
+import com.tle.core.filesystem.staging.service.StagingService
 import com.tle.core.guice.Bind
-import com.tle.core.institution.AclService
 import com.tle.core.item.service.{ItemFileService, ItemService}
 import com.tle.core.mimetypes.MimeTypeService
-import com.tle.core.plugins.PluginTracker
 import com.tle.core.security.TLEAclManager
 import com.tle.core.services.{FileSystemService, ZipProgress}
 import com.tle.core.workflow.thumbnail.service.ThumbnailService
@@ -27,6 +25,7 @@ import com.tle.web.controls.universal._
 import com.tle.web.controls.universal.handlers.fileupload._
 import com.tle.web.controls.universal.handlers.fileupload.details._
 import com.tle.web.freemarker.FreemarkerFactory
+import com.tle.web.inplaceeditor.service.InPlaceEditorWebService
 import com.tle.web.myresource.MyResourceConstants
 import com.tle.web.resources.ResourcesService
 import com.tle.web.sections.ajax.AjaxGenerator
@@ -39,14 +38,14 @@ import com.tle.web.sections.events.RenderContext
 import com.tle.web.sections.events.js.BookmarkAndModify
 import com.tle.web.sections.generic.InfoBookmark
 import com.tle.web.sections.jquery.JQuerySelector
-import com.tle.web.sections.js.generic.{Js, StatementHandler}
+import com.tle.web.sections.js.generic.StatementHandler
 import com.tle.web.sections.js.generic.function.{PartiallyApply, PassThroughFunction}
 import com.tle.web.sections.render.{CombinedRenderer, Label, SectionRenderable, TextLabel}
 import com.tle.web.sections.result.util.KeyLabel
+import com.tle.web.sections.standard._
 import com.tle.web.sections.standard.annotations.Component
 import com.tle.web.sections.standard.model.{HtmlComponentState, HtmlLinkState, TableState}
-import com.tle.web.sections.standard._
-import com.tle.web.sections.standard.renderers.{DivRenderer, ImageRenderer, LinkRenderer}
+import com.tle.web.sections.standard.renderers.{DivRenderer, LinkRenderer}
 import com.tle.web.sections.{Bookmark, SectionInfo, SectionTree}
 import com.tle.web.selection.filter.SelectionFilter
 import com.tle.web.selection.{ParentFrameSelectionCallback, SelectedResourceDetails, SelectionService, SelectionSession}
@@ -83,6 +82,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
   var ctx: AfterRegister = _
 
   @Inject var fileSystemService: FileSystemService = _
+  @Inject var stagingService: StagingService = _
   @Inject var itemFileService: ItemFileService = _
   @Inject var mimeTypeService: MimeTypeService = _
   @Inject var myContentService: MyContentService = _
@@ -94,6 +94,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
   @Inject var attachmentResourceService: AttachmentResourceService = _
   @Inject var thumbnailService: ThumbnailService = _
   @Inject var videoService: VideoService = _
+  @Inject var inplaceEditorService: InPlaceEditorWebService = _
 
   @Component var fileUpload: FileUpload = _
   @Component
@@ -200,7 +201,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
 
   class AfterRegister(id: String, tree: SectionTree, val controlState: UniversalControlState)
-    extends ControlContext with RenderHelper with ZipHandler with ViewerHandler {
+    extends ControlContext with RenderHelper with ZipHandler with ViewerHandler with EditingHandler {
 
     val canScrapbook = myContentService.isMyContentContributionAllowed
     val state: FileUploadState = new FileUploadState
@@ -220,7 +221,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
     val showRestrict = hasInstitutionPrivilege(AttachmentConfigConstants.RESTRICT_ATTACHMENTS)
     private def getEditingAttachment(info: SectionInfo) = getEditState.a
-    val fileEditDetails = new FileEditDetails(id, tree, this, this, this, showRestrict, getEditingAttachment)
+    val fileEditDetails = new FileEditDetails(id, tree, this, this, this, this, showRestrict, getEditingAttachment, inplaceEditorService)
     val packageEditDetails = new PackageEditDetails(id, tree, this, this, showRestrict, getEditingAttachment)
     val fileOptions = new FileOptions(id, tree, controlSettings, this, _ => singleUpload, resolvedType)
 
@@ -229,11 +230,12 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
     case class DetailsEditState(a: Attachment, page: DetailsPage,
                                 cleanupFiles: (Attachment, StagingContext) => Unit,
-                                zipAttachment: Boolean,
+                                zipAttachment: Boolean, editingArea: Option[StagingFile] = None,
                                 commitUnzipPaths: Option[(String, String)] = None, zipProgress: Option[ZipProgress] = None) {
 
 
-      def commit: Unit = (a, zipAttachment) match {
+      def removeEditingArea() : Unit = editingArea.foreach(sf => stagingService.removeStagingArea(sf, true))
+      def commit(): Unit = (a, zipAttachment) match {
         case (fa: FileAttachment, true) =>
           stagingContext.moveFile(fa.getFilename, WebFileUploads.zipPath(fa.getFilename))
           commitUnzipPaths.foreach(p => stagingContext.moveFile(p._1, fa.getFilename))
@@ -243,9 +245,13 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
         case _ => commitUnzipPaths.foreach(p => stagingContext.delete(p._1))
       }
 
-      def cancel = {
+
+      def afterCommit(): Unit = removeEditingArea()
+
+      def cancel() : Unit = {
         cleanupFiles(a, stagingContext)
         commitUnzipPaths.foreach(f => stagingContext.delete(f._1))
+        removeEditingArea()
       }
     }
 
@@ -378,12 +384,13 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
     def renderEditing(context: RenderContext): (SectionRenderable, DialogRenderOptions => Unit) = {
       val s = getEditState
-      (s.page.renderDetails(context), _.setShowSave(true))
+      val (r, o) = s.page.renderDetails(context)
+      (r, { (rdo:DialogRenderOptions) => rdo.setShowSave(true); o(rdo) })
     }
 
     def editAttachment(info: SectionInfo, attachment: Attachment): Unit = {
       val editState = getEditState
-      editState.commit
+      editState.commit()
       val (newAttach, delattach) = detailsEditorForAttachment(attachment).editAttachment(info, attachment, this)
       if (newAttach ne attachment) {
         val a = controlState.getRepository.getAttachments
@@ -395,6 +402,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
         ad.attachments.foreach(a => controlState.removeMetadataUuid(info, a.getUuid))
         ad.deleteFiles(stagingContext)
       }
+      editState.afterCommit()
     }
 
     def createNew(info: SectionInfo, uuid: Option[UUID]): Unit = {
@@ -403,12 +411,13 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
         val u = uuid.getOrElse(UUID.randomUUID()).toString
         val _a = editState.a
         _a.setUuid(u)
-        editState.commit
+        editState.commit()
         val (a,_) = editState.page.editAttachment(info, _a, this)
         controlState.addAttachment(info, a)
         if (uuid.isEmpty) {
           controlState.addMetadataUuid(info, u)
         }
+        editState.afterCommit()
       }
       else {
         allValidatedUploads.zipWithIndex.foreach { case (vu,i) =>
@@ -572,6 +581,24 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
     lazy val viewerListModel: ViewersListModel = new ViewersListModel(viewItemService, viewableResource)
 
     def zipProgress: Option[ZipProgress] = getEditState.zipProgress.filter(!_.isFinished)
+
+    def editingArea: String = {
+      val eds = getEditState
+      eds.editingArea.getOrElse {
+        val sf = stagingService.createStagingArea()
+        setEditState(eds.copy(editingArea = Some(sf)))
+        sf
+      }.getUuid
+    }
+
+    def syncEdits(filename: String): Unit = {
+      getEditState.editingArea.foreach {
+        sf => if (fileSystemService.fileExists(sf, filename)) {
+          fileSystemService.move(sf, filename, stagingContext.stgFile, filename)
+        }
+      }
+    }
+
   }
 
 }

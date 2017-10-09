@@ -7,6 +7,7 @@ import javax.inject.Inject
 import com.dytech.edge.wizard.beans.control.CustomControl
 import com.tle.common.wizard.controls.universal.UniversalSettings
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings
+import com.tle.core.filesystem.staging.service.StagingService
 import com.tle.core.guice.Bind
 import com.tle.core.mimetypes.MimeTypeService
 import com.tle.core.services.FileSystemService

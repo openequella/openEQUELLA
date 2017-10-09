@@ -112,6 +112,5 @@ class FileStagingContext(stgId: Option[String], itemId: ItemId, fileSystemServic
       }
     } else None).getOrElse(Iterable.empty)
   }
-
 }
 

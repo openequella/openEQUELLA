@@ -6,7 +6,7 @@ import com.tle.common.collection.AttachmentConfigConstants
 import com.tle.common.filesystem.FileSystemConstants
 import com.tle.core.plugins.PluginTracker
 import com.tle.web.controls.universal.handlers.fileupload.{AttachmentDelete, WebFileUploads}
-import com.tle.web.controls.universal.{AbstractScalaSection, ControlContext, RenderHelper}
+import com.tle.web.controls.universal.{AbstractScalaSection, ControlContext, DialogRenderOptions, RenderHelper}
 import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.freemarker.annotations.ViewFactory
 import com.tle.web.sections.events.RenderContext
@@ -14,6 +14,7 @@ import com.tle.web.sections.generic.AbstractPrototypeSection
 import com.tle.web.sections.render.{SectionRenderable, TextLabel}
 import com.tle.web.sections.result.util.KeyLabel
 import com.tle.web.sections.standard.annotations.Component
+import com.tle.web.sections.standard.dialog.Dialog
 import com.tle.web.sections.standard.model.{LabelOption, SimpleHtmlListModel}
 import com.tle.web.sections.standard.{Checkbox, SingleSelectionList, TextField, model}
 import com.tle.web.sections.{SectionInfo, SectionTree}
@@ -98,8 +99,8 @@ class PackageEditDetails(parentId: String, tree: SectionTree, ctx: ControlContex
     case _ => false
   }
 
-  def renderDetails(context: RenderContext): SectionRenderable = {
-    renderModel("file/file-packageedit.ftl", getModel(context))
+  def renderDetails(context: RenderContext): (SectionRenderable, DialogRenderOptions => Unit) = {
+    (renderModel("file/file-packageedit.ftl", getModel(context)), _ => ())
   }
 
   def prepareUI(info: SectionInfo): Unit = {
