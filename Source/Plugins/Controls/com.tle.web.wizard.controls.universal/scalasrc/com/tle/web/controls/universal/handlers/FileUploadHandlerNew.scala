@@ -512,7 +512,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
         files.asScala.foreach { fa =>
           val u = UUID.randomUUID()
           val fn = WebFileUploads.uniqueName(fa.getFilename, u, this)
-          WebFileUploads.uploadStream(u, fn, CurrentLocale.get(item.getName), fa.getSize, mimeTypeForFilename(fn), () =>
+          WebFileUploads.uploadStream(u, fn, resource.getTitle, fa.getSize, mimeTypeForFilename(fn), () =>
             fileSystemService.read(itemFileService.getItemFile(item), fa.getFilename), this)
         }
       }
