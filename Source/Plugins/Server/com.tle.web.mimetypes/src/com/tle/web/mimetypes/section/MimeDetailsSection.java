@@ -56,9 +56,9 @@ public class MimeDetailsSection extends AbstractPrototypeSection<MimeDetailsSect
 		HtmlRenderer
 {
 	@PlugKey("error.mimetype.empty")
-	private static Label ERROR_MIME_TYPE_EMPTY;
+	private static String ERROR_MIME_TYPE_EMPTY;
 	@PlugKey("error.extensions.length")
-	private static Label ERROR_EXTENSIONS_LENGTH;
+	private static String ERROR_EXTENSIONS_LENGTH;
 
 	@ViewFactory
 	private FreemarkerFactory viewFactory;
@@ -142,7 +142,7 @@ public class MimeDetailsSection extends AbstractPrototypeSection<MimeDetailsSect
 	{
 		if( Check.isEmpty(type.getValue(info)) )
 		{
-			throw new InvalidDataException(new ValidationError("type", ERROR_MIME_TYPE_EMPTY.getText()));
+			throw new InvalidDataException(new ValidationError("type", null, ERROR_MIME_TYPE_EMPTY));
 		}
 		entry.setDescription(description.getValue(info));
 		entry.setType(type.getValue(info));
@@ -152,7 +152,7 @@ public class MimeDetailsSection extends AbstractPrototypeSection<MimeDetailsSect
 		{
 			if( ext.length() >= 20 )
 			{
-				throw new InvalidDataException(new ValidationError("extensions", ERROR_EXTENSIONS_LENGTH.getText()));
+				throw new InvalidDataException(new ValidationError("extensions", null, ERROR_EXTENSIONS_LENGTH));
 			}
 		}
 		entry.setExtensions(extensions.getValues(info));

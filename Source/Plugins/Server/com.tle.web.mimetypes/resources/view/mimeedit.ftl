@@ -10,8 +10,8 @@
 		<div class="mimeEditPage">
 			<#assign title><#if m.editId==0>add<#else>edit</#if>.pagetitle</#assign>
 			<h2>${b.key(title)}</h2>
-			<#if m.errorKey??>
-				<@setting label="" error=b.key("error." + m.errorKey) />
+			<#if m.errorLabel??>
+				<@setting label="" error=m.errorLabel />
 			</#if>
 			<#list s.tabs.tabModel.getVisibleTabs(_info) as tab>
 				<@render tab.renderer/>

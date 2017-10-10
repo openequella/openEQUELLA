@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.NameValue;
 import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.common.beans.exception.ValidationError;
 import com.tle.core.i18n.BundleNameValue;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
@@ -51,6 +52,7 @@ import com.tle.web.sections.registry.handler.CollectInterfaceHandler;
 import com.tle.web.sections.render.GenericTemplateResult;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.Label;
+import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.TabLayout;
 import com.tle.web.sections.standard.annotations.Component;
@@ -147,7 +149,8 @@ public class MimeTypesEditSection extends AbstractPrototypeSection<MimeTypesEdit
 		catch( InvalidDataException ve )
 		{
 			info.preventGET();
-			model.setErrorKey(ve.getMessage());
+			ValidationError firstError = ve.getErrors().get(0);
+			model.setErrorLabel(new KeyLabel(firstError.getKey(), firstError.getMessage()));
 		}
 	}
 

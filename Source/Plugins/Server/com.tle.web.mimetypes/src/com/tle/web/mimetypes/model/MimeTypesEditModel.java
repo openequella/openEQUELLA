@@ -17,6 +17,7 @@
 package com.tle.web.mimetypes.model;
 
 import com.tle.web.sections.annotations.Bookmarked;
+import com.tle.web.sections.render.Label;
 
 /*
  * @author aholland
@@ -27,14 +28,14 @@ public class MimeTypesEditModel
 	private long editId;
 
 	// Render time
-	private String errorKey;
+	private Label errorKey;
 
-	public String getErrorKey()
+	public Label getErrorLabel()
 	{
 		return errorKey;
 	}
 
-	public void setErrorKey(String errorKey)
+	public void setErrorLabel(Label errorKey)
 	{
 		this.errorKey = errorKey;
 	}
