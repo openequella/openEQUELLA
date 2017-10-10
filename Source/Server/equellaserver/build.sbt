@@ -205,6 +205,11 @@ excludeDependencies ++= Seq(
   "javax.servlet" % "servlet-api",
   "org.mortbay.jetty" % "servlet-api",
   "antlr" % "antlr",
+  "stax" % "stax-api",
+  "xml-apis" % "xml-apis",
+  "javax.xml" % "jaxrpc-api",
+  "xerces" % "xercesImpl",
+  "javax.xml.stream" % "stax-api",
   "javax.ws.rs" % "jsr311-api",
   "org.apache.ws.commons" % "XmlSchema",
   "org.apache.ws.commons.schema" % "XmlSchema",
@@ -222,7 +227,8 @@ excludeDependencies ++= Seq(
   "org.codehaus.jackson" % "jackson-jaxrs",
   "org.codehaus.jackson" % "jackson-mapper-asl",
   "org.codehaus.jackson" % "jackson-xc",
-  "org.apache.geronimo.specs" % "geronimo-javamail_1.4_spec"
+  "org.apache.geronimo.specs" % "geronimo-javamail_1.4_spec",
+  "org.apache.geronimo.specs" % "geronimo-stax-api_1.0_spec"
 )
 
 unmanagedJars in Compile ++= oracleDriverJar.value.toSeq.classpath
@@ -257,7 +263,6 @@ assemblyMergeStrategy in assembly := {
   case PathList("javax", "activation", _*) => MergeStrategy.first
   case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first
   case PathList("junit", _*) => MergeStrategy.discard
-  case PathList("javax", "xml", _*) => MergeStrategy.discard
   case PathList("org", "apache", "axis2", "transport", "http", "util", "ComplexPart.class") => MergeStrategy.first
   case x =>
     val oldStrategy = (assemblyMergeStrategy in assembly).value
