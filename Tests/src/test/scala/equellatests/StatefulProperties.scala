@@ -2,6 +2,7 @@ package equellatests
 
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
+import java.util.UUID
 
 import com.tle.webtests.framework.{PageContext, ScreenshotTaker, TestConfig}
 import equellatests.TestCase.CommandT
@@ -23,6 +24,9 @@ trait SeleniumBrowser
 }
 
 case class SimpleSeleniumBrowser(var page: BrowserPage) extends SeleniumBrowser
+{
+  val unique: String = UUID.randomUUID().toString
+}
 
 trait TestCase
 {
