@@ -4,4 +4,8 @@
 target/
 build.conf
 generated.keystore
-
+.classpath
+.settings
+.project
+.cache-main
+.cache-tests

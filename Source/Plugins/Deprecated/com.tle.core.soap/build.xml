@@ -1,3 +1,0 @@
-<project basedir="." default="compile" name="com.tle.core.soap">
-	<import file="../../build/plugins-common-build.xml"/>
-</project>

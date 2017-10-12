@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project name="configManager" basedir="." default="compile">
-	<property name="compile.for.server" value="false" />
-	<import file="../../Plugins/build/plugins-common-build.xml" />
-</project>
