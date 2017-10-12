@@ -1,6 +1,7 @@
 package com.tle.core.notification.standard.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -45,15 +46,10 @@ public class NotificationPreferencesServiceImpl implements NotificationPreferenc
 	}
 
 	@Override
-	public Set<String> getOptedOutCollectionsForUser(String userUuid)
+	public Multimap<String, String> getOptedOutCollectionsForUsers(Collection<String> users)
 	{
-		String prefs = userPreferenceService.getPreferenceForUser(userUuid, OPTEDOUT_ITEMDEFS);
-		if( prefs == null )
-		{
-			return Collections.emptySet();
-		}
-
-		return getCollectionsFromPref(prefs);
+		Map<String, String> prefs = userPreferenceService.getPreferenceForUsers(OPTEDOUT_ITEMDEFS, users);
+		return asMultiMap(prefs);
 	}
 
 	@Override
@@ -66,6 +62,10 @@ public class NotificationPreferencesServiceImpl implements NotificationPreferenc
 	public Multimap<String, String> getWatchedCollectionMap()
 	{
 		Map<String, String> allWatched = userPreferenceService.getPreferenceForAllUsers(WATCHED_ITEMDEFS);
+		return asMultiMap(allWatched);
+	}
+
+	private Multimap<String, String> asMultiMap(Map<String, String> allWatched) {
 		Multimap<String, String> colMap = HashMultimap.create();
 		for( Entry<String, String> entry : allWatched.entrySet() )
 		{

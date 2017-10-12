@@ -1,5 +1,7 @@
 package com.tle.core.notification.standard.service;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Multimap;
@@ -16,7 +18,7 @@ public interface NotificationPreferencesService
 
 	Set<String> getOptedOutCollections();
 
-	Set<String> getOptedOutCollectionsForUser(String userUuid);
+	Multimap<String, String> getOptedOutCollectionsForUsers(Collection<String> userUuid);
 
 	void setWatchedCollections(Set<String> watches);
 

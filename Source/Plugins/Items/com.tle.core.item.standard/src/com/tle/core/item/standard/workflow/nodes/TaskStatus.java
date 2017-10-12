@@ -123,7 +123,7 @@ public class TaskStatus extends AbstractNodeStatus
 		taskbean.setStarted(op.getParams().getDateNow());
 		final WorkflowItem task = (WorkflowItem) node;
 		Set<String> usersToModerate = op.getUsersToModerate(task);
-		op.addNotifications(getTaskKey(), usersToModerate, Notification.REASON_MODERATE,
+		op.addModerationNotifications(getTaskKey(), usersToModerate, Notification.REASON_MODERATE,
 			task.getPriority() <= Priority.LOW.intValue());
 
 		op.enterTask(task);

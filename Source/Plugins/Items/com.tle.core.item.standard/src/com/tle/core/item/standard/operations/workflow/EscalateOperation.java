@@ -55,10 +55,11 @@ public class EscalateOperation extends TaskOperation
 					if( !overdue )
 					{
 						bean.setOverdue(true);
+						
 						Collection<String> users = task.getUsersLeft(this);
 						if( !users.isEmpty() )
 						{
-							addNotifications(new ItemTaskId(getItemKey(), task.getId()), users,
+							addModerationNotifications(new ItemTaskId(getItemKey(), task.getId()), users,
 								Notification.REASON_OVERDUE, true);
 						}
 					}

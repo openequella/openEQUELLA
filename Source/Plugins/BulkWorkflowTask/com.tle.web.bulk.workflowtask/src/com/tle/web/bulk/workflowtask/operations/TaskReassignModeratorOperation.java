@@ -1,18 +1,13 @@
 package com.tle.web.bulk.workflowtask.operations;
 
+import java.util.Collections;
 import java.util.Set;
-
-import javax.inject.Inject;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import com.tle.beans.item.ItemId;
-import com.tle.beans.item.ItemKey;
-import com.tle.beans.item.ModerationStatus;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.item.standard.workflow.nodes.TaskStatus;
 import com.tle.core.notification.beans.Notification;
-import com.tle.core.notification.standard.service.NotificationPreferencesService;
 import com.tle.core.security.impl.SecureInModeration;
 import com.tle.exceptions.AccessDeniedException;
 
@@ -20,9 +15,6 @@ import com.tle.exceptions.AccessDeniedException;
 public final class TaskReassignModeratorOperation extends AbstractBulkTaskOperation
 {
 	private final String toUser;
-
-	@Inject
-	private NotificationPreferencesService notificationPreferencesService;
 
 	@AssistedInject
 	private TaskReassignModeratorOperation(@Assisted("toUser") String toUser)
@@ -43,17 +35,11 @@ public final class TaskReassignModeratorOperation extends AbstractBulkTaskOperat
 				return false;
 			}
 			status.setAssignedTo(toUser);
-			String collectionUuid = getItem().getItemDefinition().getUuid();
 			if (oldUser != null)
 			{
-				notificationService.removeForUserAndKey(getTaskId(), oldUser, Notification.REASON_REASSIGN);
-				getParams().setNotificationsAdded(true);
+				removeNotificationForUserAndKey(getTaskId(), oldUser, Notification.REASON_REASSIGN);
 			}
-			if( !notificationPreferencesService.getOptedOutCollectionsForUser(toUser).contains(collectionUuid) )
-			{
-				notificationService.addNotification(getTaskId(), Notification.REASON_REASSIGN, toUser, false);
-				getParams().setNotificationsAdded(true);
-			}
+			addModerationNotifications(getTaskId(), Collections.singleton(toUser), Notification.REASON_REASSIGN, false);
 			return true;
 		}
 

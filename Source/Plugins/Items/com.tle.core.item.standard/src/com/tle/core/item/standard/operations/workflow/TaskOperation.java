@@ -9,9 +9,11 @@ import javax.inject.Inject;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.exceptions.WorkflowException;
+import com.google.common.collect.Multimap;
 import com.tle.beans.item.HistoryEvent;
 import com.tle.beans.item.HistoryEvent.Type;
 import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ModerationStatus;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.usermanagement.user.CurrentUser;
@@ -32,6 +34,7 @@ import com.tle.core.item.standard.workflow.nodes.ScriptStatus;
 import com.tle.core.item.standard.workflow.nodes.SerialStatus;
 import com.tle.core.item.standard.workflow.nodes.TaskStatus;
 import com.tle.core.notification.beans.Notification;
+import com.tle.core.notification.standard.service.NotificationPreferencesService;
 import com.tle.core.workflow.service.TaskStatisticsService;
 import com.tle.core.workflow.service.WorkflowService;
 
@@ -41,6 +44,8 @@ public abstract class TaskOperation extends AbstractStandardWorkflowOperation
 	protected WorkflowService workflowService;
 	@Inject
 	protected TaskStatisticsService taskStatsService;
+	@Inject
+	private NotificationPreferencesService notificationPrefs;
 
 	public boolean update(WorkflowNode node)
 	{
@@ -423,6 +428,20 @@ public abstract class TaskOperation extends AbstractStandardWorkflowOperation
 		removeNotificationsForItem(getItemId(), Notification.REASON_MODERATE, Notification.REASON_OVERDUE,
 			Notification.REASON_REJECTED);
 	}
+	
+	public void addModerationNotifications(ItemKey itemKey, Collection<String> users, String reason, boolean batched)
+	{
+		String collectionUuid = getItem().getItemDefinition().getUuid();
+		
+		Multimap<String, String> collectionOptOut = notificationPrefs.getOptedOutCollectionsForUsers(users);
+		HashSet<String> userSet = new HashSet<>(users);
+		userSet.removeAll(collectionOptOut.get(collectionUuid));
+		if (!userSet.isEmpty())
+		{
+			addNotifications(itemKey, userSet, reason, batched);
+		}
+	}
+
 
 	public boolean canCurrentUserModerate(WorkflowItem item, WorkflowItemStatus status)
 	{
