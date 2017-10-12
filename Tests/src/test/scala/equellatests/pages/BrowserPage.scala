@@ -1,9 +1,8 @@
 package equellatests.pages
 
 import com.tle.webtests.framework.PageContext
-import equellatests.pages
-import org.openqa.selenium.{By, WebDriver, WebElement}
 import org.openqa.selenium.support.ui.{ExpectedCondition, ExpectedConditions, WebDriverWait}
+import org.openqa.selenium.{By, WebDriver, WebElement}
 
 import scala.util.Try
 

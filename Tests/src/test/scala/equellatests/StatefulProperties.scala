@@ -26,6 +26,7 @@ trait SeleniumBrowser
 case class SimpleSeleniumBrowser(var page: BrowserPage) extends SeleniumBrowser
 {
   val unique: String = UUID.randomUUID().toString
+  def uniquePrefix(s: String) = s"$unique $s"
 }
 
 trait TestCase
@@ -54,7 +55,10 @@ trait LogonTestCase extends TestCase {
     val testConfig = new TestConfig(GlobalConfig.baseFolderForInst(logon.inst), false)
     val driver = TestChecker.withBrowserDriver[WebDriver](testConfig)(identity)
     val context = new PageContext(driver, testConfig, testConfig.getInstitutionUrl)
-    createInital(new LoginPage(context).load().login(logon.username, logon.password))
+    Try(createInital(new LoginPage(context).load().login(logon.username, logon.password))).fold( { t =>
+      driver.quit()
+      throw t
+    }, identity)
   }
 
   def destroyBrowser(sut: Browser): Unit = {
@@ -134,6 +138,9 @@ abstract class StatefulProperties(name: String) extends Properties(name: String)
   def applyCommands[S](s: S, commands: List[CommandT[S, _]]) : S = {
     commands.foldLeft(s)((s, c) => c.nextState(s))
   }
+
+  def generateTestCase[S, C <: CommandT[S, _]](mf: (S, List[C]) => TC, s: S, f: S => Gen[List[C]]): Gen[TC] =
+    generateCommands(s, f).map(mf(s, _))
 
   def generateCommands[S, C <: CommandT[S, _]](s: S, f: S => Gen[List[C]]): Gen[List[C]] = f(s).flatMap {
     cl => if (cl.isEmpty) Gen.const(Nil) else generateCommands(applyCommands(s, cl), f).map(nl => cl ++ nl)
