@@ -1,18 +1,14 @@
 package com.tle.web.bulk.workflowtask.operations;
 
-import com.dytech.edge.exceptions.WorkflowException;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.beans.item.*;
 import com.tle.beans.item.HistoryEvent.Type;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.workflow.WorkflowItemStatus;
 import com.tle.common.workflow.WorkflowMessage;
 import com.tle.common.workflow.node.WorkflowNode;
 import com.tle.core.item.standard.workflow.nodes.TaskStatus;
 import com.tle.core.notification.beans.Notification;
-import com.tle.web.resources.PluginResourceHelper;
-import com.tle.web.resources.ResourcesService;
 
 public class TaskRejectOperation extends AbstractBulkTaskOperation
 {
