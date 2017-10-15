@@ -39,8 +39,7 @@ public class BulkWorkflowRejectTaskOperation extends AbstractBulkApproveRejectSe
 	@BindFactory
 	public interface RejectOperationExecutorFactory
 	{
-		RejectExecutor create(@Assisted("message") String message,
-			@Assisted("rejectAllUsers") boolean rejectAllUsers);
+		RejectExecutor create(@Assisted("message") String message);
 	}
 
 	@Override
@@ -53,7 +52,6 @@ public class BulkWorkflowRejectTaskOperation extends AbstractBulkApproveRejectSe
 	{
 		private static final long serialVersionUID = 1L;
 		private final String message;
-		private final boolean rejectAllUsers;
 
 		@Inject
 		private ItemOperationFactory workflowFactory;
@@ -61,17 +59,15 @@ public class BulkWorkflowRejectTaskOperation extends AbstractBulkApproveRejectSe
 		private BulkWorkflowTaskOperationFactory rejectOperationFactory;
 
 		@Inject
-		public RejectExecutor(@Assisted("message") String message,
-			@Assisted("rejectAllUsers") boolean rejectAllUsers)
+		public RejectExecutor(@Assisted("message") String message)
 		{
 			this.message = message;
-			this.rejectAllUsers = rejectAllUsers;
 		}
 
 		@Override
 		public WorkflowOperation[] getOperations()
 		{
-			return new WorkflowOperation[]{rejectOperationFactory.reject(message, rejectAllUsers),
+			return new WorkflowOperation[]{rejectOperationFactory.reject(message),
 					workflowFactory.save()};
 		}
 
@@ -107,7 +103,7 @@ public class BulkWorkflowRejectTaskOperation extends AbstractBulkApproveRejectSe
 	public BeanLocator<RejectExecutor> getExecutor(SectionInfo info, String operationId)
 	{
 		return new FactoryMethodLocator<RejectExecutor>(RejectOperationExecutorFactory.class, "create",
-			getComment(info), !isOnMyTaskPage(info));
+			getComment(info));
 	}
 
 	@Override

@@ -12,8 +12,7 @@ public interface BulkWorkflowTaskOperationFactory
 	TaskApproveOperation approve(@Assisted("message") String message,
 		@Assisted("acceptAllUsers") boolean acceptAllUsers);
 
-	TaskRejectOperation reject(@Assisted("message") String message,
-		@Assisted("rejectAllUsers") boolean rejectAllUsers);
+	TaskRejectOperation reject(@Assisted("message") String message);
 
 	TaskReassignModeratorOperation changeModeratorAssign(@Assisted("toUser") String toUser);
 }
