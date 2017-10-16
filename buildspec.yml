@@ -7,6 +7,9 @@ phases:
       - npm install
       - bower --allow-root install
       - npm run build
+      - cd $CODEBUILD_SRC_DIR
+      - curl -OL https://s3.amazonaws.com/edalexdev/equella_artifacts/latest/equella-installer-6.5.zip
   build:
     commands:
+      - sbt -Dconfig.file=codebuild.conf -Dsbt.log.noformat=true installEquella startEquella
       - sbt -Dconfig.file=codebuild.conf -Dsbt.log.noformat=true Tests/test
