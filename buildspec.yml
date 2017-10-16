@@ -1,6 +1,11 @@
 version: 0.2
 
 phases:
+  install:
+    commands:
+      - /etc/init.d/postgresql start
+      - su -l -c "psql -c \"CREATE USER equellatests WITH PASSWORD 'password';\"" postgres
+      - su -l -c "psql -c 'CREATE DATABASE equellatests WITH OWNER = equellatests;'" postgres
   pre_build:
     commands:
       - cd IntegTester/ps
@@ -12,4 +17,4 @@ phases:
   build:
     commands:
       - sbt -Dconfig.file=codebuild.conf -Dsbt.log.noformat=true installEquella startEquella
-      - sbt -Dconfig.file=codebuild.conf -Dsbt.log.noformat=true Tests/test
+      - sbt -Dconfig.file=codebuild.conf -Dsbt.log.noformat=true configureInstall setupForTests Tests/test
