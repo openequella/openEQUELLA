@@ -1,5 +1,7 @@
 version: 0.2
-
+env:
+  variables:
+    sbt.log.noformat: true
 phases:
   install:
     commands:
@@ -8,13 +10,23 @@ phases:
       - su -l -c "psql -c 'CREATE DATABASE equellatests WITH OWNER = equellatests;'" postgres
   pre_build:
     commands:
+      - curl -OL https://s3.amazonaws.com/edalexdev/equella_artifacts/latest/equella-installer-6.5.zip
+  build:
+    commands:
       - cd IntegTester/ps
       - npm install
       - bower --allow-root install
       - npm run build
       - cd $CODEBUILD_SRC_DIR
-      - curl -OL https://s3.amazonaws.com/edalexdev/equella_artifacts/latest/equella-installer-6.5.zip
-  build:
+      - sbt IntegTester/assembly
+      - java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
+      - sbt -Dconfig.file=codebuild.conf installEquella startEquella
+      - sbt -Dconfig.file=codebuild.conf configureInstall setupForTests Tests/test
+      - sbt -Dconfig.file=codebuild.conf coverageReport
+  post_build:
     commands:
-      - sbt -Dconfig.file=codebuild.conf -Dsbt.log.noformat=true installEquella startEquella
-      - sbt -Dconfig.file=codebuild.conf -Dsbt.log.noformat=true configureInstall setupForTests OldTests/test Tests/test
+      - sbt -Dconfig.file=codebuild.conf collectArtifacts
+artifacts:
+  files:
+    - target/test-artifacts.zip
+  discard-paths: yes
