@@ -6,6 +6,15 @@ import org.openqa.selenium.{By, WebDriver, WebElement}
 
 import scala.util.Try
 
+object BrowserPage {
+  def quoteXPath(input: String): String = {
+    val txt = input
+    if (txt.indexOf("'") > -1 && txt.indexOf("\"") > -1) "concat('" + txt.replace("'", "', \"'\", '") + "')"
+    else if (txt.indexOf("\"") > -1) "'" + txt + "'"
+    else "\"" + txt + "\""
+  }
+}
+
 trait BrowserPage {
   def ctx: PageContext
   def driver : WebDriver = ctx.getDriver
@@ -18,10 +27,5 @@ trait BrowserPage {
   def updatedBy(by: By): ExpectedCondition[_] = ExpectedConditions.and(ExpectedConditions.stalenessOf(findElement(by)),
     ExpectedConditions.visibilityOfElementLocated(by))
 
-  def quoteXPath(input: String): String = {
-    val txt = input
-    if (txt.indexOf("'") > -1 && txt.indexOf("\"") > -1) "concat('" + txt.replace("'", "', \"'\", '") + "')"
-    else if (txt.indexOf("\"") > -1) "'" + txt + "'"
-    else "\"" + txt + "\""
-  }
+  def quoteXPath(i: String) : String = BrowserPage.quoteXPath(i)
 }

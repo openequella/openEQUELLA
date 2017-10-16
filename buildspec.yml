@@ -1,0 +1,9 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - cd IntegTester/ps ; npm install ; bower install ; npm run build
+  build:
+    commands:
+      - sbt -Dconfig.file=codebuild.conf -Dsbt.log.noformat=true Tests/test

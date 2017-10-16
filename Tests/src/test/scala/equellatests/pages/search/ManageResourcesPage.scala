@@ -10,13 +10,8 @@ import org.openqa.selenium.{By, WebElement}
 class ManageResourcesPage(val ctx:PageContext) extends WaitingBrowserPage with QuerySection with NamedResultList {
 
 
-  case class ManageResourcesResult(resultBy: By) extends BrowserPage with SelectableResult {
-    def moderate(): ModerationView = {
-      elem.findElement(By.xpath(".//button[normalize-space(text()) = 'Moderate']")).click()
-      new ModerationView(ctx).get()
-    }
-
-    override def ctx: PageContext = ManageResourcesPage.this.ctx
+  case class ManageResourcesResult(pageBy: By) extends SelectableResult {
+    override def ctx = ManageResourcesPage.this.ctx
   }
 
   override def pageBy: By = By.xpath("id('header-inner')/div[text()='Manage resources']")

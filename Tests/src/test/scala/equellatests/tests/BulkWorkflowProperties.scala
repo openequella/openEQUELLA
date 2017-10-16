@@ -1,21 +1,21 @@
 package equellatests.tests
 
-import equellatests.TestCase.CommandT
 import equellatests._
-import equellatests.domain.{RandomWords, TestLogon, UniqueRandomWord}
-import equellatests.pages.HomePage
-import io.circe.{Decoder, Encoder}
-import io.circe.generic.auto._
-import io.circe.generic.semiauto._
+import equellatests.domain.{RandomWords, TestLogon}
 import equellatests.instgen.workflow._
-import equellatests.pages.search.ManageResourcesPage
+import equellatests.pages.HomePage
+import equellatests.pages.search.{BulkModerateMessage, ManageTasksPage}
 import equellatests.pages.wizard.{ContributePage, EditBoxControl}
-import equellatests.tests.WorkflowCommentProperties.{doComments, generateCommands, stdComment}
-import org.scalacheck.Arbitrary.arbitrary
-import org.scalacheck.Gen
+import io.circe.generic.semiauto._
+import io.circe.generic.auto._
+import org.scalacheck.{Arbitrary, Gen}
 
 
 object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") {
+
+  sealed trait BulkOp
+  case class Approve(message: String) extends BulkOp
+  case class Reject(message: String) extends BulkOp
 
   case class BulkItem(name: String, currentTask: Option[String], moderating: Boolean)
 
@@ -50,7 +50,7 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") {
 
   case class SelectItems(names: Seq[String]) extends UnitCommand with BulkCommand {
     override def run(b: SimpleSeleniumBrowser, state: BulkState): Unit = b.page = {
-      val mrp = new ManageResourcesPage(b.page.ctx).load()
+      val mrp = new ManageTasksPage(b.page.ctx).load()
       mrp.query = s"+${b.unique}"
       mrp.search()
       names.foreach { n =>
@@ -62,6 +62,27 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") {
     override def nextState(state: BulkState): BulkState = state.copy(selected = names)
   }
 
+  case class PerformOp(op: BulkOp) extends UnitCommand with BulkCommand {
+    override def run(b: SimpleSeleniumBrowser, state: BulkState): Unit = b.page = {
+      b.page match {
+        case mtp: ManageTasksPage =>
+          val bd = mtp.performOperation()
+          val (opName, bmd, msg) = op match {
+            case Approve(m) => ("Approve tasks...", BulkModerateMessage.approveMessage, m)
+            case Reject(m) => ("Reject tasks...", BulkModerateMessage.rejectMessage, m)
+          }
+          bd.selectAction(opName)
+          val msgPage = bd.next(bmd)
+          msgPage.comment = msg
+          bd.execute()
+          bd.cancel()
+          mtp
+      }
+    }
+
+    override def nextState(state: BulkState): BulkState = state
+  }
+
   override type TC = BulkTestCase
   val testCaseDecoder = deriveDecoder
   val testCaseEncoder = deriveEncoder
@@ -71,8 +92,10 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") {
       name <- RandomWords.someWords
     } yield List(BulkCreateItem(name.asString))
     case s if s.selected.isEmpty => for {
-      selections <- Gen.someOf(s.items.map(_.name))
-    } yield List(SelectItems(selections))
+      selections <- Gen.someOf(s.items.map(_.name)).suchThat(_.nonEmpty)
+      msg <- Arbitrary.arbitrary[RandomWords].map(_.asString)
+      op <- Gen.oneOf(Approve(msg), Reject(msg))
+    } yield List(SelectItems(selections), PerformOp(op))
     case _ => List()
   }
 

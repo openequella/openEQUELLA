@@ -1,15 +1,12 @@
 package equellatests.pages.search
 
-import equellatests.pages.BrowserPage
+import equellatests.pages.WaitingBrowserPage
+import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.{By, WebElement}
 
-trait SelectableResult extends BrowserPage {
-  def resultBy : By
-  def elem : WebElement = findElement(resultBy)
-
+trait SelectableResult extends WaitingBrowserPage {
   def select(): Unit = {
-    elem.findElement(By.xpath(".//button[normalize-space(text()) = 'Select']")).click()
-    waitFor(ExpectedConditions.presenceOfNestedElementLocatedBy(resultBy, By.xpath("./div[contains(@class, 'selected')]")))
+    pageElement.findElement(By.xpath(".//button[normalize-space(text()) = 'Select']")).click()
+    waitFor(ExpectedConditions.presenceOfNestedElementLocatedBy(pageBy, By.xpath("./div[contains(@class, 'selected')]")))
   }
 }
