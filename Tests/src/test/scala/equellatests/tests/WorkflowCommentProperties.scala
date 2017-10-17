@@ -80,11 +80,8 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
   } yield (PostCommentCommand(comment.desc, files, msgType, cancel), cancel || !MessageType.moderates(msgType))
 
 
-  def rejectStep(currentTask: String): Gen[Option[String]] = currentTask match {
-    case "Step 2" => Gen.frequency(2 -> Some("Step 1"), 1 -> None)
-    case "Step 3" => Gen.frequency(2 -> Some("Step 2"), 2 -> Some("Step 1"), 1 -> None)
-    case _ => Gen.const(None)
-  }
+  def rejectStep(currentTask: String): Gen[Option[String]] =
+    Gen.oneOf(rejectionTasks3Step(currentTask).map(Option.apply) :+ None)
 
   def doComments(f: WorkflowCommentState => Boolean, doComment: MessageType => Gen[(WorkflowCommentCommand, Boolean)])(state: WorkflowCommentState): Gen[List[WorkflowCommentCommand]] = state.item match {
     case Some(CommentItem(itemName, Some(task), _)) => for {
@@ -105,15 +102,15 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
   override def initialState: WorkflowCommentState = WorkflowCommentState()
 
   statefulProp("comment on workflow steps") {
-    generateCommands(initialState, doComments(_ => false, stdComment))
+    generateCommands(doComments(_ => false, stdComment))
   }
 
   statefulProp("comment with no message") {
-    generateCommands(initialState, doComments(!_.attemptedInvalid, errorComment(NoMessage)))
+    generateCommands(doComments(!_.attemptedInvalid, errorComment(NoMessage)))
   }
 
   statefulProp("upload banned file") {
-    generateCommands(initialState, doComments(!_.attemptedInvalid, errorComment(BannedFile)))
+    generateCommands(doComments(!_.attemptedInvalid, errorComment(BannedFile)))
   }
 
 
@@ -122,11 +119,7 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
     case InvalidCommentCommand(msgType, invalidReason) => s.copy(attemptedInvalid = true)
     case PostCommentCommand(msg, files, msgType, cancel) =>
       def nextTask(current: String) = msgType match {
-        case ApproveMessage => current match {
-          case "Step 1" => Some("Step 2")
-          case "Step 2" => Some("Step 3")
-          case "Step 3" => None
-        }
+        case ApproveMessage => nextTask3Step(current)
         case CommentMessage => Some(current)
         case RejectMessage(task) => task
       }
@@ -191,12 +184,11 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
         val md = msgType match {
           case CommentMessage => mv.postComment()
           case ApproveMessage => mv.approve()
-          case RejectMessage(step) => {
+          case RejectMessage(step) =>
             val rd = mv.reject()
             val stepName = step.getOrElse("Original Contributor")
             rd.rejectStep = stepName
             rd
-          }
         }
         md.message = msg
         files.foreach {
@@ -217,5 +209,4 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
 
   override def logon = adminLogon
 
-  override def createInital = SimpleSeleniumBrowser
 }

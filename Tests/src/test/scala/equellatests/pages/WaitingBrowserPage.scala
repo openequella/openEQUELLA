@@ -15,6 +15,8 @@ trait WaitingBrowserPage extends BrowserPage {
     }
   }
 
+  def exists : Boolean = findElementO(pageBy).isDefined
+
   def get() : this.type = {
     waitFor(pageExpectation)
   }

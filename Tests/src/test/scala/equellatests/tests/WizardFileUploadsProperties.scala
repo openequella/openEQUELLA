@@ -84,7 +84,7 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
 
     for {
       numAttach <- Gen.choose(1, 3)
-      cl <- generateCommands(initialState, s => if (finished(s)) Gen.const(List()) else genCommand(numAttach, s).map(List(_)))
+      cl <- generateCommands(s => if (finished(s)) Gen.const(List()) else genCommand(numAttach, s).map(List(_)))
     } yield cl
   }
 

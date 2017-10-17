@@ -20,6 +20,7 @@ class ManageTasksPage(val ctx:PageContext) extends WaitingBrowserPage with Query
 
 
   case class ManageTaskResult(pageBy: By) extends TaskResult with SelectableResult {
+
     def ctx = ManageTasksPage.this.ctx
   }
 

@@ -16,28 +16,31 @@ import org.scalacheck.{Gen, Prop, Properties}
 
 import scala.util.Try
 
-trait SeleniumBrowser
-{
+trait SeleniumBrowser {
   def page: BrowserPage
 }
 
-object SimpleSeleniumBrowser
-{
+object SimpleSeleniumBrowser {
   val wrongPageProp = Prop.falsified.label("Expected to be on a different page")
-  val wrongState : BrowserPage => (BrowserPage, Prop) =
+  val wrongState: BrowserPage => (BrowserPage, Prop) =
     _ -> wrongPageProp
 }
 
-case class SimpleSeleniumBrowser(var page: BrowserPage) extends SeleniumBrowser
-{
+case class SimpleSeleniumBrowser(var page: BrowserPage) extends SeleniumBrowser {
 
   val unique: String = UUID.randomUUID().toString
+
   def uniquePrefix(s: String) = s"$unique $s"
-  def run(action: => BrowserPage): Prop = withTry(Try(action).map((_, Prop.passed)))
-  def runOnPage(action: PartialFunction[BrowserPage, BrowserPage]): Prop = verifyOnPage(action.andThen((_, Prop.passed)))
-  def withTry(tried: Try[(BrowserPage, Prop)]) : Prop = tried.fold(t => Prop.exception(t), { p => page = p._1; p._2 })
-  def verify(action: => (BrowserPage, Prop)) : Prop = withTry(Try(action))
-  def verifyOnPage(action: PartialFunction[BrowserPage, (BrowserPage, Prop)]) : Prop =
+
+  def run(action: => BrowserPage): Prop = withTry(Try(action).map((_, Prop.proved)))
+
+  def runOnPage(action: PartialFunction[BrowserPage, BrowserPage]): Prop = verifyOnPage(action.andThen((_, Prop.proved)))
+
+  def withTry(tried: Try[(BrowserPage, Prop)]): Prop = tried.fold(t => Prop.exception(t), { p => page = p._1; p._2 })
+
+  def verify(action: => (BrowserPage, Prop)): Prop = withTry(Try(action))
+
+  def verifyOnPage(action: PartialFunction[BrowserPage, (BrowserPage, Prop)]): Prop =
     withTry(Try(action.applyOrElse(page, SimpleSeleniumBrowser.wrongState)))
 
   def verifyOnPageAndState[S](s: S)(action: PartialFunction[(S, BrowserPage), (BrowserPage, Prop)]): Prop =
@@ -47,14 +50,16 @@ case class SimpleSeleniumBrowser(var page: BrowserPage) extends SeleniumBrowser
 
 trait LogonTestCase {
   def logon: TestLogon
+
   type Browser = SimpleSeleniumBrowser
+
   def createInital = SimpleSeleniumBrowser
 
   def createBrowser: Browser = {
     val testConfig = new TestConfig(GlobalConfig.baseFolderForInst(logon.inst), false)
     val driver = TestChecker.withBrowserDriver[WebDriver](testConfig)(identity)
     val context = new PageContext(driver, testConfig, testConfig.getInstitutionUrl)
-    Try(createInital(new LoginPage(context).load().login(logon.username, logon.password))).fold( { t =>
+    Try(createInital(new LoginPage(context).load().login(logon.username, logon.password))).fold({ t =>
       driver.quit()
       throw t
     }, identity)
@@ -67,9 +72,10 @@ trait LogonTestCase {
 }
 
 case class FailedTestCase(shortName: String, propertiesClass: String, testCase: Json)
+
 object FailedTestCase {
-  implicit val ftcEnc : Encoder[FailedTestCase] = deriveEncoder
-  implicit val ftcDec : Decoder[FailedTestCase] = deriveDecoder
+  implicit val ftcEnc: Encoder[FailedTestCase] = deriveEncoder
+  implicit val ftcDec: Decoder[FailedTestCase] = deriveDecoder
 }
 
 abstract class StatefulProperties(name: String) extends Properties(name: String) {
@@ -77,13 +83,17 @@ abstract class StatefulProperties(name: String) extends Properties(name: String)
   type Browser <: SeleniumBrowser
   type State
 
-  implicit val testCaseDecoder : Decoder[Command]
-  implicit val testCaseEncoder : Encoder[Command]
+  implicit val testCaseDecoder: Decoder[Command]
+  implicit val testCaseEncoder: Encoder[Command]
 
-  def initialState : State
-  def createBrowser : Browser
-  def destroyBrowser(b: Browser) : Unit
+  def initialState: State
+
+  def createBrowser: Browser
+
+  def destroyBrowser(b: Browser): Unit
+
   def runCommand(c: Command, s: State): State
+
   def runCommandInBrowser(c: Command, s: State, b: Browser): Prop
 
   def executeProp(shortName: String, allCommands: Seq[Command], replaying: Boolean): Prop = {
@@ -96,8 +106,8 @@ abstract class StatefulProperties(name: String) extends Properties(name: String)
         runCommandInBrowser(c, s, b).flatMap { r =>
           if (!r.success) {
             val tc = b.page.ctx.getTestConfig
-            val filename = name+"_"+shortName.replace(' ', '_')
-            Try(ScreenshotTaker.takeScreenshot(b.page.driver, tc.getScreenshotFolder, filename , tc.isChromeDriverSet))
+            val filename = name + "_" + shortName.replace(' ', '_')
+            Try(ScreenshotTaker.takeScreenshot(b.page.driver, tc.getScreenshotFolder, filename, tc.isChromeDriverSet))
             if (!replaying) {
               val testRunFile = tc.getResultsFolder.toPath.resolve(filename + "_test.json")
               val failure = FailedTestCase(shortName, getClass.getName, allCommands.asJson).asJson
@@ -110,20 +120,23 @@ abstract class StatefulProperties(name: String) extends Properties(name: String)
         }
       }
     }
+
     nextCommand(initialState, allCommands.toList).map { r => destroyBrowser(b); r }
   }
 
   def statefulProp(shortName: String)(testCaseGen: Gen[Seq[Command]]) =
     property(shortName) = forAllNoShrink(testCaseGen)(tc => executeProp(shortName, tc, false))
 
-  def applyCommands(s: State, commands: List[Command]) : State = {
+  def applyCommands(s: State, commands: List[Command]): State = {
     commands.foldLeft(s)((s, c) => runCommand(c, s))
   }
-//
-//  def generateTestCase[S, C <: CommandT[S, _]](mf: (S, List[C]) => TC, s: S, f: S => Gen[List[C]]): Gen[TC] =
-//    generateCommands(s, f).map(mf(s, _))
-//
-  def generateCommands(s: State, f: State => Gen[List[Command]]): Gen[List[Command]] = f(s).flatMap {
-    cl => if (cl.isEmpty) Gen.const(Nil) else generateCommands(applyCommands(s, cl), f).map(nl => cl ++ nl)
+
+  def generateCommands(f: State => Gen[List[Command]]): Gen[List[Command]] = {
+    def gen(s: State) : Gen[List[Command]] = {
+      f(s).flatMap {
+        cl => if (cl.isEmpty) Gen.const(Nil) else gen(applyCommands(s, cl)).map(nl => cl ++ nl)
+      }
+    }
+    gen(initialState)
   }
 }

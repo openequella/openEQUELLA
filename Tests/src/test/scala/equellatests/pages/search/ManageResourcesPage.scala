@@ -10,7 +10,15 @@ import org.openqa.selenium.{By, WebElement}
 class ManageResourcesPage(val ctx:PageContext) extends WaitingBrowserPage with QuerySection with NamedResultList {
 
 
-  case class ManageResourcesResult(pageBy: By) extends SelectableResult {
+  case class ManageResourcesResult(pageBy: By) extends SelectableResult with MetadataResult {
+    def status : String = {
+      val fs = metadataText("Status:")
+      fs.indexOf('|') match {
+        case -1 => fs
+        case i => fs.substring(0, i)
+      }
+    }
+
     override def ctx = ManageResourcesPage.this.ctx
   }
 
