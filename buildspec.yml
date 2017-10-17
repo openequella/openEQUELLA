@@ -1,7 +1,7 @@
 version: 0.2
 env:
   variables:
-    sbt.log.noformat: true
+    autotest.config.file: codebuild.conf
 phases:
   install:
     commands:
@@ -20,12 +20,12 @@ phases:
       - cd $CODEBUILD_SRC_DIR
       - sbt IntegTester/assembly
       - java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
-      - sbt -Dconfig.file=codebuild.conf installEquella startEquella
-      - sbt -Dconfig.file=codebuild.conf configureInstall setupForTests Tests/test
-      - sbt -Dconfig.file=codebuild.conf coverageReport
+      - sbt -no-colors installEquella startEquella
+      - sbt -no-colors configureInstall setupForTests Tests/test
+      - sbt -no-colors coverageReport
   post_build:
     commands:
-      - sbt -Dconfig.file=codebuild.conf collectArtifacts
+      - sbt -Dsbt.log.noformat=true collectArtifacts
 artifacts:
   files:
     - target/test-artifacts.zip
