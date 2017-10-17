@@ -20,12 +20,12 @@ phases:
       - cd $CODEBUILD_SRC_DIR
       - sbt IntegTester/assembly
       - java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
-      - sbt -Dsbt.log.noformat=true installEquella startEquella
-      - sbt -Dsbt.log.noformat=true configureInstall setupForTests Tests/test
-      - sbt -Dsbt.log.noformat=true coverageReport
+      - sbt installEquella startEquella
+      - sbt configureInstall setupForTests Tests/test
+      - sbt coverageReport
   post_build:
     commands:
-      - sbt -Dsbt.log.noformat=true collectArtifacts
+      - sbt collectArtifacts
 artifacts:
   files:
     - target/test-artifacts.zip
