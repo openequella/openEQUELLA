@@ -1,7 +1,7 @@
 version: 0.2
 env:
   variables:
-    AUTOTEST_CONFIG: codebuild.conf
+    AUTOTEST_CONFIG: "codebuild.conf"
 phases:
   install:
     commands:
@@ -10,14 +10,10 @@ phases:
       - su -l -c "psql -c 'CREATE DATABASE equellatests WITH OWNER = equellatests;'" postgres
   pre_build:
     commands:
-      - curl -OL https://s3.amazonaws.com/edalexdev/equella_artifacts/latest/equella-installer-6.5.zip
+      - (cd $HOME && curl -OL https://s3.amazonaws.com/edalexdev/equella_artifacts/latest/equella-installer-6.5.zip)
   build:
     commands:
-      - cd IntegTester/ps
-      - npm install
-      - bower --allow-root install
-      - npm run build
-      - cd $CODEBUILD_SRC_DIR
+      - (cd IntegTester/ps && npm install && bower --allow-root install && npm run build)
       - sbt IntegTester/assembly
       - java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
       - sbt installEquella startEquella
