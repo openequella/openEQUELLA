@@ -18,7 +18,7 @@ trait BulkOperationDialog extends WaitingBrowserPage {
     val exBy = CommonXPath.buttonWithText("Execute")
     waitFor(ExpectedConditions.visibilityOfNestedElementsLocatedBy(pageBy, exBy))
     pageElement.findElement(exBy).click()
-    waitFor(ExpectedConditions.visibilityOfNestedElementsLocatedBy(pageBy, By.xpath(".//p[text() = 'Operations finished']")))
+    waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("id('bss_bulkDialog')//p[text() = 'Operations finished']")))
   }
 
   def cancel() : Parent = {

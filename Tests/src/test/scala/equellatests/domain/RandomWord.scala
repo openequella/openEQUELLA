@@ -1,4 +1,4 @@
-package equellatests
+package equellatests.domain
 
 import org.scalacheck.{Arbitrary, Gen}
 

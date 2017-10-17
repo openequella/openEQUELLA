@@ -4,7 +4,7 @@ import com.tle.webtests.framework.PageContext
 import equellatests.pages.WaitingBrowserPage
 import org.openqa.selenium.By
 
-case class BulkModerateMessage(commendFieldId: String)(val ctx: PageContext) extends WaitingBrowserPage {
+abstract class BulkModerateMessage(commendFieldId: String) extends WaitingBrowserPage {
   override def pageBy = By.id(commendFieldId)
 
   def comment : String = pageElement.getText
@@ -14,7 +14,6 @@ case class BulkModerateMessage(commendFieldId: String)(val ctx: PageContext) ext
   }
 }
 
-object BulkModerateMessage {
-  val approveMessage = BulkModerateMessage("bwato_commentField") _
-  val rejectMessage = BulkModerateMessage("bwrto2_commentField") _
-}
+case class BulkApproveMessage(ctx: PageContext) extends BulkModerateMessage("bwato_commentField")
+
+case class BulkRejectMessage(ctx: PageContext) extends BulkModerateMessage("bwrto2_commentField")

@@ -5,7 +5,7 @@ import com.tle.webtests.pageobject.searching.SearchPage
 import com.tle.webtests.pageobject.wizard.ContributePage
 import equellatests.domain._
 import equellatests.instgen.workflow._
-import equellatests.{RandomWord, ShotProperties}
+import equellatests.ShotProperties
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Prop._
 import org.scalacheck._

@@ -1,17 +1,15 @@
 package equellatests
 
 import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Paths}
+import java.nio.file.Files
 import java.util.UUID
 
 import com.tle.webtests.framework.{PageContext, ScreenshotTaker, TestConfig}
-import equellatests.TestCase.CommandT
 import equellatests.domain._
 import equellatests.pages.{BrowserPage, HomePage, LoginPage}
-import io.circe.{Decoder, Encoder, Json}
-import io.circe.parser.parse
-import io.circe.syntax._
 import io.circe.generic.semiauto._
+import io.circe.syntax._
+import io.circe.{Decoder, Encoder, Json}
 import org.openqa.selenium.WebDriver
 import org.scalacheck.Prop._
 import org.scalacheck.{Gen, Prop, Properties}
@@ -23,35 +21,36 @@ trait SeleniumBrowser
   def page: BrowserPage
 }
 
+object SimpleSeleniumBrowser
+{
+  val wrongPageProp = Prop.falsified.label("Expected to be on a different page")
+  val wrongState : BrowserPage => (BrowserPage, Prop) =
+    _ -> wrongPageProp
+}
+
 case class SimpleSeleniumBrowser(var page: BrowserPage) extends SeleniumBrowser
 {
+
   val unique: String = UUID.randomUUID().toString
   def uniquePrefix(s: String) = s"$unique $s"
+  def run(action: => BrowserPage): Prop = withTry(Try(action).map((_, Prop.passed)))
+  def runOnPage(action: PartialFunction[BrowserPage, BrowserPage]): Prop = verifyOnPage(action.andThen((_, Prop.passed)))
+  def withTry(tried: Try[(BrowserPage, Prop)]) : Prop = tried.fold(t => Prop.exception(t), { p => page = p._1; p._2 })
+  def verify(action: => (BrowserPage, Prop)) : Prop = withTry(Try(action))
+  def verifyOnPage(action: PartialFunction[BrowserPage, (BrowserPage, Prop)]) : Prop =
+    withTry(Try(action.applyOrElse(page, SimpleSeleniumBrowser.wrongState)))
+
+  def verifyOnPageAndState[S](s: S)(action: PartialFunction[(S, BrowserPage), (BrowserPage, Prop)]): Prop =
+    withTry(Try(action.applyOrElse(s -> page, (p: (S, BrowserPage)) => p._2 -> SimpleSeleniumBrowser.wrongPageProp)))
+
 }
 
-trait TestCase
-{
-  type State
-  type Browser <: SeleniumBrowser
-  def initialBrowser: Browser
-  def destroyBrowser(b: Browser)
-  def initialState: State
-  def commands: List[CommandT[State, Browser]]
-}
-
-object TestCase {
-  type CommandT[S2, B2] = Command {
-    type State = S2
-    type Browser = B2
-  }
-}
-
-trait LogonTestCase extends TestCase {
+trait LogonTestCase {
   def logon: TestLogon
-  type Browser <: SeleniumBrowser
-  def createInital: HomePage => Browser
+  type Browser = SimpleSeleniumBrowser
+  def createInital = SimpleSeleniumBrowser
 
-  def initialBrowser: Browser = {
+  def createBrowser: Browser = {
     val testConfig = new TestConfig(GlobalConfig.baseFolderForInst(logon.inst), false)
     val driver = TestChecker.withBrowserDriver[WebDriver](testConfig)(identity)
     val context = new PageContext(driver, testConfig, testConfig.getInstitutionUrl)
@@ -67,83 +66,64 @@ trait LogonTestCase extends TestCase {
 
 }
 
-trait Command {
-  type State
-  type Browser
-  def dumpFilename: String = getClass.toString
-  def runCommand(b: Browser, state: State): Prop
-  def nextState(state: State): State
-}
-
-trait UnitCommand extends Command
-{
-  def run(b: Browser, state: State): Unit
-  def successProp : Prop = true
-  def runCommand(b: Browser, state: State): Prop = {
-    Try(run(b, state)).fold(t => Prop.exception(t), _ => successProp)
-  }
-}
-
-trait VerifyCommand[BrowserResult] extends Command {
-
-  def postCondition(state: State, result: BrowserResult): Prop
-  def run(sut: Browser, state: State): BrowserResult
-  def runCommand(b: Browser, state: State): Prop = {
-    Try(run(b, state)).fold(t => Prop.exception(t), br => postCondition(state, br))
-  }
-}
-
-case class FailedTestCase(propertiesClass: String, testCase: Json)
+case class FailedTestCase(shortName: String, propertiesClass: String, testCase: Json)
 object FailedTestCase {
   implicit val ftcEnc : Encoder[FailedTestCase] = deriveEncoder
   implicit val ftcDec : Decoder[FailedTestCase] = deriveDecoder
 }
 
 abstract class StatefulProperties(name: String) extends Properties(name: String) {
-  type TC <: TestCase
+  type Command
+  type Browser <: SeleniumBrowser
+  type State
 
-  implicit val testCaseDecoder : Decoder[TC]
-  implicit val testCaseEncoder : Encoder[TC]
+  implicit val testCaseDecoder : Decoder[Command]
+  implicit val testCaseEncoder : Encoder[Command]
 
+  def initialState : State
+  def createBrowser : Browser
+  def destroyBrowser(b: Browser) : Unit
+  def runCommand(c: Command, s: State): State
+  def runCommandInBrowser(c: Command, s: State, b: Browser): Prop
 
-  def executeProp(testCase: TC, replaying: Boolean): Prop = {
-    val b = testCase.initialBrowser
+  def executeProp(shortName: String, allCommands: Seq[Command], replaying: Boolean): Prop = {
+    val b = createBrowser
 
-    def nextCommand(s: testCase.State, commands: List[CommandT[testCase.State, testCase.Browser]]): Prop = commands match {
+    def nextCommand(s: State, commands: List[Command]): Prop = commands match {
       case Nil => Prop.proved
       case c :: tail => {
         if (replaying) System.err.println(c.toString)
-        c.runCommand(b, s).flatMap { r =>
+        runCommandInBrowser(c, s, b).flatMap { r =>
           if (!r.success) {
             val tc = b.page.ctx.getTestConfig
-            val filename = name+"_"+c.dumpFilename
+            val filename = name+"_"+shortName.replace(' ', '_')
             Try(ScreenshotTaker.takeScreenshot(b.page.driver, tc.getScreenshotFolder, filename , tc.isChromeDriverSet))
             if (!replaying) {
               val testRunFile = tc.getResultsFolder.toPath.resolve(filename + "_test.json")
-              val failure = FailedTestCase(getClass.getName, testCase.asJson).asJson
+              val failure = FailedTestCase(shortName, getClass.getName, allCommands.asJson).asJson
               System.err.println(s"Wrote failed test to ${testRunFile.toAbsolutePath.toString}")
               Files.write(testRunFile, failure.spaces2.getBytes(StandardCharsets.UTF_8))
             }
             Prop(prms => r)
           }
-          else Prop(r) && nextCommand(c.nextState(s), tail)
+          else Prop(r) && nextCommand(runCommand(c, s), tail)
         }
       }
     }
-    nextCommand(testCase.initialState, testCase.commands).map { r => testCase.destroyBrowser(b); r }
+    nextCommand(initialState, allCommands.toList).map { r => destroyBrowser(b); r }
   }
 
-  def statefulProp(testCaseGen: Gen[TC]): Prop = forAllNoShrink(testCaseGen)(tc => executeProp(tc, false))
+  def statefulProp(shortName: String)(testCaseGen: Gen[Seq[Command]]) =
+    property(shortName) = forAllNoShrink(testCaseGen)(tc => executeProp(shortName, tc, false))
 
-  def applyCommands[S](s: S, commands: List[CommandT[S, _]]) : S = {
-    commands.foldLeft(s)((s, c) => c.nextState(s))
+  def applyCommands(s: State, commands: List[Command]) : State = {
+    commands.foldLeft(s)((s, c) => runCommand(c, s))
   }
-
-  def generateTestCase[S, C <: CommandT[S, _]](mf: (S, List[C]) => TC, s: S, f: S => Gen[List[C]]): Gen[TC] =
-    generateCommands(s, f).map(mf(s, _))
-
-  def generateCommands[S, C <: CommandT[S, _]](s: S, f: S => Gen[List[C]]): Gen[List[C]] = f(s).flatMap {
+//
+//  def generateTestCase[S, C <: CommandT[S, _]](mf: (S, List[C]) => TC, s: S, f: S => Gen[List[C]]): Gen[TC] =
+//    generateCommands(s, f).map(mf(s, _))
+//
+  def generateCommands(s: State, f: State => Gen[List[Command]]): Gen[List[Command]] = f(s).flatMap {
     cl => if (cl.isEmpty) Gen.const(Nil) else generateCommands(applyCommands(s, cl), f).map(nl => cl ++ nl)
   }
-
 }

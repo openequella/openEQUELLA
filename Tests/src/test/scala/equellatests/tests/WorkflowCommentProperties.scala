@@ -15,14 +15,16 @@ import org.scalacheck.{Gen, Prop}
 import org.scalacheck.Prop._
 
 
-object WorkflowCommentProperties extends StatefulProperties("Workflow comments") {
-  override type TC = WorkflowCommentTestCase
+object WorkflowCommentProperties extends StatefulProperties("Workflow comments") with LogonTestCase {
+
+  type State = WorkflowCommentState
+  type Command = WorkflowCommentCommand
 
   case class WorkflowComment(message: String, files: Set[String], commentClass: String)
 
   case class CommentItem(name: String, currentTask: Option[String], comments: Seq[WorkflowComment])
 
-  case class WorkflowCommentState(logon: TestLogon, item: Option[CommentItem] = None,
+  case class WorkflowCommentState(item: Option[CommentItem] = None,
                                   moderating: Boolean = false, attemptedInvalid: Boolean = false)
 
   sealed trait MessageType
@@ -46,153 +48,20 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
 
   case object BannedFile extends InvalidReason
 
-  case class WorkflowCommentTestCase(initialState: WorkflowCommentState, commands: List[WorkflowCommentCommand]) extends LogonTestCase {
-    override type Browser = SimpleSeleniumBrowser
-    override type State = WorkflowCommentState
+  sealed trait WorkflowCommentCommand
 
-    override def logon = initialState.logon
+  case class CreateItemCommand(name: String) extends WorkflowCommentCommand
 
-    override def createInital = SimpleSeleniumBrowser
-  }
+  case class ModerateItemCommand(name: String) extends WorkflowCommentCommand
 
-  sealed trait WorkflowCommentCommand extends Command {
-    type Browser = SimpleSeleniumBrowser
-    type State = WorkflowCommentState
-  }
+  case class InvalidCommentCommand(msgType: MessageType, invalidReason: InvalidReason) extends WorkflowCommentCommand
 
-  case class CreateItemCommand(name: String) extends UnitCommand with WorkflowCommentCommand {
-    override def run(b: Browser, state: State): Unit = b.page = b.page match {
-      case h =>
-        val page = new ContributePage(h.ctx).load().openWizard("Simple 3 Step")
-        page.ctrl(EditBoxControl, 1).value = name
-        page.save().submitForModeration()
-    }
-
-    override def nextState(state: State): State = state.copy(item = Some(CommentItem(name, Some("Step 1"), Seq.empty)))
-  }
-
-  case class ModerateItemCommand(name: String) extends UnitCommand with WorkflowCommentCommand {
-    override def run(b: Browser, state: State): Unit = {
-      b.page = {
-        val tlp = new TaskListPage(b.page.ctx).load()
-        tlp.query = name
-        tlp.search().resultForName(name).moderate()
-      }
-    }
-
-    override def nextState(state: State): State = state
-  }
+  case class PostCommentCommand(msg: String, files: Seq[(TestFile, String)], msgType: MessageType, cancel: Boolean)
+    extends WorkflowCommentCommand
 
 
-  case class InvalidCommentCommand(msgType: MessageType, invalidReason: InvalidReason) extends VerifyCommand[String] with WorkflowCommentCommand {
+  case object VerifyComments extends WorkflowCommentCommand
 
-    override def run(b: SimpleSeleniumBrowser, state: WorkflowCommentState) = {
-      val md = b.page match {
-        case mv: ModerationView =>
-          val md = msgType match {
-            case CommentMessage => mv.postComment()
-            case ApproveMessage => mv.approve()
-            case RejectMessage(_) => mv.reject()
-          }
-          invalidReason match {
-            case NoMessage => msgType match {
-              case ApproveMessage =>
-                TestFile.testFiles.find(TestFile.bannedTestFile.andThen(!_)).foreach { tf =>
-                  md.uploadFile(tf, tf.realFilename)
-                  md.submitError()
-                }
-              case _ => md.submitError()
-            }
-            case BannedFile => TestFile.testFiles.find(TestFile.bannedTestFile).foreach {
-              tf => md.uploadFileError(tf, tf.realFilename)
-            }
-          }
-          md
-      }
-      val errMsg = md.errorMessage
-      b.page = md.cancel()
-      errMsg
-    }
-
-    override def postCondition(state: WorkflowCommentState, result: String) = collect(s"invalid_$invalidReason") {
-      result ?= ((invalidReason,msgType) match {
-        case (NoMessage, ApproveMessage) => "Please enter a message when files attached"
-        case (NoMessage,_) => "You must enter a message"
-        case (BannedFile, _) => "File upload cancelled. File extension has been banned"
-      })
-    }
-
-    override def nextState(state: WorkflowCommentState) = state.copy(attemptedInvalid = true)
-  }
-
-  case class PostCommentCommand(msg: String, files: Seq[(TestFile, String)], msgType: MessageType, cancel: Boolean) extends UnitCommand with WorkflowCommentCommand {
-
-    val moderates = MessageType.moderates(msgType)
-
-    override def run(b: SimpleSeleniumBrowser, state: WorkflowCommentState): Unit = b.page = {
-      b.page match {
-        case mv: ModerationView =>
-          val md = msgType match {
-            case CommentMessage => mv.postComment()
-            case ApproveMessage => mv.approve()
-            case RejectMessage(step) => {
-              val rd = mv.reject()
-              val stepName = step.getOrElse("Original Contributor")
-              rd.rejectStep = stepName
-              rd
-            }
-          }
-          md.message = msg
-          files.foreach {
-            case (tf, fn) => md.uploadFile(tf, fn)
-          }
-          if (cancel) md.cancel()
-          else if (moderates) md.submitModeration() else md.submit()
-      }
-    }
-
-    override def successProp: Prop = classify(cancel, "cancelled") {
-      collect(msgType)(true)
-    }
-
-    override def nextState(state: WorkflowCommentState): WorkflowCommentState = {
-      if (cancel) state
-      else state.item match {
-        case Some(item) =>
-          val commentClass = msgType match {
-            case ApproveMessage => "approval"
-            case RejectMessage(_) => "rejection"
-            case _ => ""
-          }
-          val newComments = WorkflowComment(msg, files.map(_._2).toSet, commentClass) +: item.comments
-          state.copy(item = Some(item.copy(comments = newComments,
-            currentTask = item.currentTask.flatMap(nextTask))), moderating = !moderates)
-      }
-    }
-
-    def nextTask(current: String) = msgType match {
-      case ApproveMessage => current match {
-        case "Step 1" => Some("Step 2")
-        case "Step 2" => Some("Step 3")
-        case "Step 3" => None
-      }
-      case CommentMessage => Some(current)
-      case RejectMessage(task) => task
-    }
-  }
-
-
-  case object VerifyComments extends VerifyCommand[Seq[WorkflowComment]] with WorkflowCommentCommand {
-    override def postCondition(state: WorkflowCommentState, result: Seq[WorkflowComment]) = {
-      Option(result) ?= state.item.map(_.comments)
-    }
-
-    override def run(sut: SimpleSeleniumBrowser, state: WorkflowCommentState) = sut.page match {
-      case mv: ModerationView => mv.allComments().map(mc => WorkflowComment(mc.message, mc.fileNames, mc.commentClass))
-    }
-
-    override def nextState(state: WorkflowCommentState) = state
-  }
 
   val fileAndName = for {
     vfn <- arbitrary[ValidFilename]
@@ -230,21 +99,123 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
     case _ => Gen.const(List.empty)
   }
 
-  val testCaseDecoder = deriveDecoder[WorkflowCommentTestCase]
-  val testCaseEncoder = deriveEncoder[WorkflowCommentTestCase]
+  val testCaseDecoder = deriveDecoder
+  val testCaseEncoder = deriveEncoder
 
-  property("comment on workflow steps") = statefulProp {
-    val initialState = WorkflowCommentState(adminLogon)
-    generateCommands(initialState, doComments(_ => false, stdComment)).map(WorkflowCommentTestCase(initialState, _))
+  override def initialState: WorkflowCommentState = WorkflowCommentState()
+
+  statefulProp("comment on workflow steps") {
+    generateCommands(initialState, doComments(_ => false, stdComment))
   }
 
-  property("comment with no message") = statefulProp {
-    val initialState = WorkflowCommentState(adminLogon)
-    generateCommands(initialState, doComments(!_.attemptedInvalid, errorComment(NoMessage))).map(WorkflowCommentTestCase(initialState, _))
+  statefulProp("comment with no message") {
+    generateCommands(initialState, doComments(!_.attemptedInvalid, errorComment(NoMessage)))
   }
 
-  property("upload banned file") = statefulProp {
-    val initialState = WorkflowCommentState(adminLogon)
-    generateCommands(initialState, doComments(!_.attemptedInvalid, errorComment(BannedFile))).map(WorkflowCommentTestCase(initialState, _))
+  statefulProp("upload banned file") {
+    generateCommands(initialState, doComments(!_.attemptedInvalid, errorComment(BannedFile)))
   }
+
+
+  override def runCommand(c: WorkflowCommentCommand, s: WorkflowCommentState) = c match {
+    case CreateItemCommand(name) => s.copy(item = Some(CommentItem(name, Some("Step 1"), Seq.empty)))
+    case InvalidCommentCommand(msgType, invalidReason) => s.copy(attemptedInvalid = true)
+    case PostCommentCommand(msg, files, msgType, cancel) =>
+      def nextTask(current: String) = msgType match {
+        case ApproveMessage => current match {
+          case "Step 1" => Some("Step 2")
+          case "Step 2" => Some("Step 3")
+          case "Step 3" => None
+        }
+        case CommentMessage => Some(current)
+        case RejectMessage(task) => task
+      }
+
+      if (cancel) s
+      else s.item.map { item =>
+        val commentClass = msgType match {
+          case ApproveMessage => "approval"
+          case RejectMessage(_) => "rejection"
+          case _ => ""
+        }
+        val newComments = WorkflowComment(msg, files.map(_._2).toSet, commentClass) +: item.comments
+        s.copy(item = Some(item.copy(comments = newComments,
+          currentTask = item.currentTask.flatMap(nextTask))), moderating = !MessageType.moderates(msgType))
+      }.getOrElse(s)
+    case ModerateItemCommand(name) => s
+    case VerifyComments => s
+  }
+
+  override def runCommandInBrowser(c: WorkflowCommentCommand, s: WorkflowCommentState, b: SimpleSeleniumBrowser) = c match {
+    case CreateItemCommand(name) => b.run {
+      val page = new ContributePage(b.page.ctx).load().openWizard("Simple 3 Step")
+      page.ctrl(EditBoxControl, 1).value = name
+      page.save().submitForModeration()
+    }
+    case ModerateItemCommand(name) => b.run {
+      val tlp = new TaskListPage(b.page.ctx).load()
+      tlp.query = name
+      tlp.search().resultForName(name).moderate()
+    }
+    case InvalidCommentCommand(msgType, invalidReason) => b.verifyOnPage {
+      case mv: ModerationView =>
+        val md = msgType match {
+          case CommentMessage => mv.postComment()
+          case ApproveMessage => mv.approve()
+          case RejectMessage(_) => mv.reject()
+        }
+        invalidReason match {
+          case NoMessage => msgType match {
+            case ApproveMessage =>
+              TestFile.testFiles.find(TestFile.bannedTestFile.andThen(!_)).foreach { tf =>
+                md.uploadFile(tf, tf.realFilename)
+                md.submitError()
+              }
+            case _ => md.submitError()
+          }
+          case BannedFile => TestFile.testFiles.find(TestFile.bannedTestFile).foreach {
+            tf => md.uploadFileError(tf, tf.realFilename)
+          }
+        }
+        val errMsg = md.errorMessage
+        md.cancel() -> collect(s"invalid_$invalidReason") {
+          errMsg ?= ((invalidReason, msgType) match {
+            case (NoMessage, ApproveMessage) => "Please enter a message when files attached"
+            case (NoMessage, _) => "You must enter a message"
+            case (BannedFile, _) => "File upload cancelled. File extension has been banned"
+          })
+        }
+    }
+    case PostCommentCommand(msg, files, msgType, cancel) => b.verifyOnPage {
+      case mv: ModerationView =>
+        val md = msgType match {
+          case CommentMessage => mv.postComment()
+          case ApproveMessage => mv.approve()
+          case RejectMessage(step) => {
+            val rd = mv.reject()
+            val stepName = step.getOrElse("Original Contributor")
+            rd.rejectStep = stepName
+            rd
+          }
+        }
+        md.message = msg
+        files.foreach {
+          case (tf, fn) => md.uploadFile(tf, fn)
+        }
+        val newpage = if (cancel) md.cancel()
+        else if (MessageType.moderates(msgType)) md.submitModeration() else md.submit()
+        newpage -> classify(cancel, "cancelled") {
+          collect(msgType)(true)
+        }
+    }
+    case VerifyComments => b.verifyOnPage {
+      case mv: ModerationView =>
+        val result = mv.allComments().map(mc => WorkflowComment(mc.message, mc.fileNames, mc.commentClass))
+        (mv, Option(result) ?= s.item.map(_.comments))
+    }
+  }
+
+  override def logon = adminLogon
+
+  override def createInital = SimpleSeleniumBrowser
 }

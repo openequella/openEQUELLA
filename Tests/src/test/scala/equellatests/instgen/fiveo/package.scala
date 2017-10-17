@@ -10,12 +10,8 @@ import org.scalacheck.{Arbitrary, Gen}
 
 package object fiveo {
 
-  val fiveoInst : Gen[TestInst] = GlobalConfig.createTestInst("fiveo")
+  val fiveoInst : TestInst = GlobalConfig.createTestInst("fiveo")
 
-  implicit val logon = Arbitrary {
-    for {
-      i <- fiveoInst
-    }
-    yield TestLogon("AutoTest", "automated", i)
-  }
+  val autoTestLogon = TestLogon("AutoTest", "automated", fiveoInst)
+
 }

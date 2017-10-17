@@ -3,7 +3,10 @@ package equellatests
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 
+import io.circe.Decoder
 import io.circe.parser.parse
+import org.openqa.selenium.remote.Command
+
 import reflect.runtime._
 
 object ReplayTestCase {
@@ -13,7 +16,7 @@ object ReplayTestCase {
     parse(new String(fileContents, StandardCharsets.UTF_8)).flatMap(_.as[FailedTestCase]).flatMap { ftc =>
       val modSymbol = currentMirror.staticModule(ftc.propertiesClass)
       val propInst = currentMirror.reflectModule(modSymbol).instance.asInstanceOf[StatefulProperties]
-      propInst.testCaseDecoder.decodeJson(ftc.testCase).map(tc => propInst.executeProp(tc, replaying = true).check)
+      Decoder.decodeSeq(propInst.testCaseDecoder).decodeJson(ftc.testCase).map(tc => propInst.executeProp(ftc.shortName, tc, replaying = true).check)
     }.fold(throw _, _ => ())
   }
 }
