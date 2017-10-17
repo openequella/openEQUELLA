@@ -44,6 +44,7 @@ val IntegTester = project in file("IntegTester")
 buildConfig in ThisBuild := {
   val defaultConfig = ConfigFactory.parseFile(file("project/build-defaults.conf"))
   val configFile = sys.props.getOrElse("config.file", sys.env.getOrElse("AUTOTEST_CONFIG", "config/resources/application.conf"))
+  sLog.value.info(s"Loading config from: $configFile")
   ConfigFactory.load(ConfigFactory.parseFile(file(configFile)).withFallback(defaultConfig))
 }
 
