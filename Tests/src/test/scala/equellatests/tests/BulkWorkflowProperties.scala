@@ -1,15 +1,15 @@
 package equellatests.tests
 
+import com.tle.webtests.framework.PageContext
 import equellatests._
-import equellatests.domain.{RandomWords, TestLogon}
+import equellatests.domain.{Fairness, RandomWords, Uniqueify}
 import equellatests.instgen.workflow._
-import equellatests.pages.HomePage
 import equellatests.pages.search._
 import equellatests.pages.wizard.{ContributePage, EditBoxControl}
-import io.circe.generic.semiauto._
 import io.circe.generic.auto._
-import org.scalacheck.{Arbitrary, Gen, Prop}
+import io.circe.generic.semiauto._
 import org.scalacheck.Prop._
+import org.scalacheck.{Arbitrary, Gen, Prop}
 
 object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with LogonTestCase {
   type Command = BulkCommand
@@ -17,16 +17,29 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
 
   def logon = adminLogon
 
-  sealed trait BulkOp
+  object BulkOpTypes extends Enumeration {
+    val Approve, Reject, Reassign = Value
+  }
 
-  case class Approve(message: String) extends BulkOp
+  sealed abstract class BulkOp(val typ: BulkOpTypes.Value)
 
-  case class Reject(message: String) extends BulkOp
+  case class Approve(message: String) extends BulkOp(BulkOpTypes.Approve)
 
-  case class BulkItem(name: String, currentTask: Option[String], status: String)
+  case class Reject(message: String) extends BulkOp(BulkOpTypes.Reject)
 
-  case class BulkState(items: Seq[BulkItem], selected: Seq[String]) {
+  case class Reassign(to: String) extends BulkOp(BulkOpTypes.Reassign)
+
+  case class BulkItem(name: String, currentTask: Option[String], status: String, assignedTo: Option[String],
+                      assignedAtStep: Map[String, Option[String]] = Map.empty) {
+    def assignTo(user: Option[String]): BulkItem = currentTask.map {
+      task => copy(assignedTo = user, assignedAtStep = assignedAtStep.updated(task, user))
+    }.getOrElse(this)
+  }
+
+  case class BulkState(items: Seq[BulkItem] = Seq.empty, selected: Seq[String] = Seq.empty,
+                       scenarios: BulkOpTypes.ValueSet = BulkOpTypes.ValueSet.empty) {
     lazy val itemsInModeration = items.filter(_.currentTask.isDefined)
+    lazy val itemNames = items.map(_.name).toSet
   }
 
   sealed trait BulkCommand
@@ -42,49 +55,55 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
   val testCaseDecoder = deriveDecoder
   val testCaseEncoder = deriveEncoder
 
-  def makeCommands(numItems: Int, opf: String => Gen[BulkOp])(state: BulkState): Gen[List[BulkCommand]] = state match {
-    case _ if numItems > state.items.size => for {
-      name <- RandomWords.someWords
-    } yield List(BulkCreateItem(name.asString))
-    case s if s.selected.isEmpty && s.itemsInModeration.nonEmpty => for {
-      numPicks <- Gen.choose(1, s.itemsInModeration.size)
-      selections <- Gen.pick(numPicks, s.itemsInModeration.map(_.name))
-      msg <- Arbitrary.arbitrary[RandomWords].map(_.asString)
-      op <- opf(msg)
-    } yield List(SelectItems(selections), PerformOp(op), VerifyItems)
-    case _ => List()
+  def makeCommands(requiredScenarios: BulkOpTypes.ValueSet): Gen[Seq[BulkCommand]] = for {
+    numItems <- Gen.choose(1, 5)
+    com <- generateCommands {
+      case s if requiredScenarios.subsetOf(s.scenarios) => List()
+      case s if numItems > s.itemsInModeration.size => for {
+        name <- RandomWords.someWords
+      } yield List(BulkCreateItem(Uniqueify.uniquelyNumbered(s.itemNames, name.asString)))
+      case s => for {
+        numPicks <- Gen.choose(1, s.itemsInModeration.size)
+        selections <- Gen.pick(numPicks, s.itemsInModeration.map(_.name))
+        msg <- Arbitrary.arbitrary[RandomWords].map(_.asString)
+        randomUser <- Gen.oneOf("admin", "SimpleModerator")
+        op <- Fairness.favour3to1[BulkOp](Seq(Approve(msg), Reject(msg), Reassign(randomUser)), b => s.scenarios.contains(b.typ))
+      } yield List(SelectItems(selections), PerformOp(op), VerifyItems)
+    }
+  } yield com
+
+
+  val initialState = BulkState()
+
+  statefulProp("all ops work") {
+    makeCommands(BulkOpTypes.values)
   }
 
-  val initialState = BulkState(Seq.empty, Seq.empty)
-
-  statefulProp("approve mostly") {
-    for {
-      numItems <- Gen.choose(1, 5)
-      tc <- generateCommands(makeCommands(numItems, m => Gen.frequency(5 -> Approve(m), 1 -> Reject(m))))
-    } yield tc
-  }
-
-  statefulProp("reject") {
-    for {
-      numItems <- Gen.choose(1, 5)
-      tc <- generateCommands(makeCommands(numItems, m => Gen.const(Reject(m))))
-    } yield tc
+  def processAutoAssign(item: BulkItem, task: Option[String]): Option[String] = {
+    task.flatMap {
+      curTask => workflow3StepBefore(curTask).collectFirst(item.assignedAtStep).flatten
+    }
   }
 
   override def runCommand(c: BulkCommand, s: BulkState) = c match {
     case BulkCreateItem(name) =>
-      val newItem = BulkItem(name, Some("Step 1"), status = "Moderating")
+      val newItem = BulkItem(name, Some("Step 1"), status = "Moderating", assignedTo = Some("admin"))
       s.copy(items = s.items :+ newItem)
     case SelectItems(names) => s.copy(selected = names)
-    case PerformOp(op) => s.copy(selected = Seq.empty, items = s.items.map { i =>
+    case PerformOp(op) => s.copy(selected = Seq.empty, scenarios = s.scenarios + op.typ, items = s.items.map { i =>
       if (s.selected.contains(i.name)) {
         op match {
           case Approve(message) =>
             val nextTask = i.currentTask.flatMap(nextTask3Step)
+            val assignedTo = processAutoAssign(i, nextTask)
             i.copy(currentTask = nextTask, status = if (nextTask.isDefined) "Moderating" else "Live")
+              .assignTo(assignedTo)
           case Reject(message) =>
             val nextTask = i.currentTask.flatMap(t => rejectionTasks3Step(t).headOption)
+            val assignedTo = processAutoAssign(i, nextTask)
             i.copy(currentTask = nextTask, status = if (nextTask.isDefined) "Moderating" else "Rejected")
+              .assignTo(assignedTo)
+          case Reassign(to) => i.assignTo(Some(to))
         }
       } else i
     })
@@ -93,13 +112,13 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
 
   override def runCommandInBrowser(c: BulkCommand, s: BulkState, b: SimpleSeleniumBrowser) = c match {
     case BulkCreateItem(name) => b.run {
-      val page = new ContributePage(b.page.ctx).load().openWizard("Simple 3 Step")
+      val page = new ContributePage(b.page.ctx).load().openWizard("Simple 3 Step with multiple")
       page.ctrl(EditBoxControl, 1).value = b.uniquePrefix(name)
       page.save().submitForModeration()
     }
     case SelectItems(names) => b.run {
       val mrp = new ManageTasksPage(b.page.ctx).load()
-      mrp.query = s"+${b.unique}"
+      mrp.query = b.allUniqueQuery
       mrp.search()
       names.foreach { n =>
         mrp.resultForName(b.uniquePrefix(n)).select()
@@ -109,13 +128,22 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
     case PerformOp(op) => b.runOnPage {
       case mtp: ManageTasksPage =>
         val bd = mtp.performOperation()
-        val (opName, bmd, msg) = op match {
-          case Approve(m) => ("Approve tasks...", BulkApproveMessage, m)
-          case Reject(m) => ("Reject tasks...", BulkRejectMessage, m)
+        def commentOn(bmd: PageContext => BulkModerateMessage, msg: String)(bd: BulkOperationDialog): Unit = {
+          val msgPage = bd.next(bmd)
+          msgPage.comment = msg
+        }
+        def reassignTo(to: String)(bd: BulkOperationDialog): Unit = {
+          val up = bd.next(BulkAssignUserPage)
+          up.search(to)
+          up.selectByUsername(to)
+        }
+        val (opName, opConfig) = op match {
+          case Approve(m) => "Approve tasks..." -> commentOn(BulkApproveMessage, m) _
+          case Reject(m) => "Reject tasks..." -> commentOn(BulkRejectMessage, m) _
+          case Reassign(to) => "Assign/reassign to moderator..." -> reassignTo(to) _
         }
         bd.selectAction(opName)
-        val msgPage = bd.next(bmd)
-        msgPage.comment = msg
+        opConfig(bd)
         bd.execute()
         bd.cancel()
         mtp
@@ -123,17 +151,21 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
     case VerifyItems => b.verify {
       val correctTasks = if (s.itemsInModeration.nonEmpty) {
         val mrp = new ManageTasksPage(b.page.ctx).load()
-        mrp.query = s"+${b.unique}"
+        mrp.query = b.allUniqueQuery
         mrp.search()
         s.items.collect {
-          case BulkItem(n, Some(task), _) => mrp.resultForName(b.uniquePrefix(n)).taskOn ?= task
+          case BulkItem(n, Some(task), _, ato, _) =>
+            val res = mrp.resultForName(b.uniquePrefix(n))
+            val taskOn = res.taskOn
+            val assignedTo = res.assignedTo(adminLogon.fullName).map(nameToUsername)
+            (taskOn ?= task) && (assignedTo ?= ato)
         }
       } else Seq.empty
       val mrsp = new ManageResourcesPage(b.page.ctx).load()
-      mrsp.query = s"+${b.unique}"
+      mrsp.query = b.allUniqueQuery
       mrsp.search()
       val allStatuses = s.items.map {
-        case BulkItem(n, _, status) => mrsp.resultForName(b.uniquePrefix(n)).status ?= status
+        case BulkItem(n, _, status, _, _) => mrsp.resultForName(b.uniquePrefix(n)).status ?= status
       }
       mrsp -> Prop.all(correctTasks ++ allStatuses: _*)
     }

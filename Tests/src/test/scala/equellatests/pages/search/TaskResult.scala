@@ -12,4 +12,9 @@ trait TaskResult extends MetadataResult {
 
   def taskOn: String = metadataText("Task:")
 
+  def assignedTo(me: String) : Option[String] =  metadataText("Assigned to:") match {
+    case "Me" => Some(me)
+    case "Unassigned" => None
+    case o => Some(o)
+  }
 }

@@ -20,14 +20,21 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
   type State = WorkflowCommentState
   type Command = WorkflowCommentCommand
 
-  case class WorkflowComment(message: String, files: Set[String], commentClass: String)
+  object MessageTypes extends Enumeration {
+    val Approve, Comment, Reject = Value
+  }
+
+  case class WorkflowComment(message: String, files: Set[String], typ: MessageTypes.Value)
 
   case class CommentItem(name: String, currentTask: Option[String], comments: Seq[WorkflowComment])
 
-  case class WorkflowCommentState(item: Option[CommentItem] = None,
-                                  moderating: Boolean = false, attemptedInvalid: Boolean = false)
+  case class WorkflowCommentState(items: Seq[CommentItem] = Seq.empty, item: Option[CommentItem] = None,
+                                  moderating: Boolean = false, attemptedInvalid: Boolean = false, commentTypes: MessageTypes.ValueSet =
+                                  MessageTypes.ValueSet.empty) {
+    lazy val itemNames = items.map(_.name).toSet
+  }
 
-  sealed trait MessageType
+  sealed abstract class MessageType(val typ: MessageTypes.Value)
 
   object MessageType {
     def moderates(msg: MessageType): Boolean = msg match {
@@ -36,11 +43,11 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
     }
   }
 
-  case object ApproveMessage extends MessageType
+  case object ApproveMessage extends MessageType(MessageTypes.Approve)
 
-  case object CommentMessage extends MessageType
+  case object CommentMessage extends MessageType(MessageTypes.Comment)
 
-  case class RejectMessage(step: Option[String]) extends MessageType
+  case class RejectMessage(step: Option[String]) extends MessageType(MessageTypes.Reject)
 
   sealed trait InvalidReason
 
@@ -73,26 +80,32 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
   }
 
   def stdComment(msgType: MessageType): Gen[(WorkflowCommentCommand, Boolean)] = for {
-    comment <- arbitrary[ValidDescription]
+    comment <- arbitrary[RandomWords]
     numFiles <- Gen.choose(0, 3)
     files <- Gen.listOfN(numFiles, fileAndName)
     cancel <- Gen.frequency(1 -> true, 4 -> false)
-  } yield (PostCommentCommand(comment.desc, files, msgType, cancel), cancel || !MessageType.moderates(msgType))
+    blankMessage <- Gen.frequency(2 -> false, 1 -> true).map(mb => mb && numFiles == 0 && msgType.typ == MessageTypes.Approve )
+  } yield {
+    val message = if (blankMessage) "" else comment.asString
+    (PostCommentCommand(message, files, msgType, cancel), cancel || !MessageType.moderates(msgType))
+  }
 
 
-  def rejectStep(currentTask: String): Gen[Option[String]] =
-    Gen.oneOf(rejectionTasks3Step(currentTask).map(Option.apply) :+ None)
-
-  def doComments(f: WorkflowCommentState => Boolean, doComment: MessageType => Gen[(WorkflowCommentCommand, Boolean)])(state: WorkflowCommentState): Gen[List[WorkflowCommentCommand]] = state.item match {
-    case Some(CommentItem(itemName, Some(task), _)) => for {
-      msgType <- Gen.frequency(2 -> CommentMessage, 1 -> ApproveMessage, 1 -> rejectStep(task).map(RejectMessage))
-      (pcc, staysModerating) <- doComment(msgType)
-    } yield {
-      if (!state.moderating) List(ModerateItemCommand(itemName), VerifyComments, pcc)
-      else if (staysModerating) List(pcc, VerifyComments)
-      else List(pcc)
-    }
-    case _ if state.item.isEmpty || f(state) => arbitrary[UniqueRandomWord].map { urw => List(CreateItemCommand(urw.word)) }
+  def doComments(f: WorkflowCommentState => Boolean, doComment: MessageType => Gen[(WorkflowCommentCommand, Boolean)])
+                (state: WorkflowCommentState): Gen[List[WorkflowCommentCommand]] = state.item match {
+    case Some(CommentItem(itemName, Some(task), _)) =>
+      for {
+        rejectStep <- Gen.frequency(rejectionTasks3Step(task).map(s => 3 -> Gen.const(Option(s))) :+ (1, Gen.const(None)): _*)
+        msgType <- Fairness.favour3to1[MessageType](Seq(CommentMessage, ApproveMessage, RejectMessage(rejectStep)),
+          t => state.commentTypes.contains(t.typ))
+        (pcc, staysModerating) <- doComment(msgType)
+      } yield {
+        if (!state.moderating) List(ModerateItemCommand(itemName), VerifyComments, pcc)
+        else if (staysModerating) List(pcc, VerifyComments)
+        else List(pcc)
+      }
+    case _ if f(state) =>
+      arbitrary[RandomWords].map { urw => List(CreateItemCommand(Uniqueify.uniquelyNumbered(state.itemNames, urw.asString))) }
     case _ => Gen.const(List.empty)
   }
 
@@ -101,21 +114,11 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
 
   override def initialState: WorkflowCommentState = WorkflowCommentState()
 
-  statefulProp("comment on workflow steps") {
-    generateCommands(doComments(_ => false, stdComment))
-  }
-
-  statefulProp("comment with no message") {
-    generateCommands(doComments(!_.attemptedInvalid, errorComment(NoMessage)))
-  }
-
-  statefulProp("upload banned file") {
-    generateCommands(doComments(!_.attemptedInvalid, errorComment(BannedFile)))
-  }
-
 
   override def runCommand(c: WorkflowCommentCommand, s: WorkflowCommentState) = c match {
-    case CreateItemCommand(name) => s.copy(item = Some(CommentItem(name, Some("Step 1"), Seq.empty)))
+    case CreateItemCommand(name) =>
+      val newItem = CommentItem(name, Some("Step 1"), Seq.empty)
+      s.copy(item = Some(newItem), items = s.items :+ newItem)
     case InvalidCommentCommand(msgType, invalidReason) => s.copy(attemptedInvalid = true)
     case PostCommentCommand(msg, files, msgType, cancel) =>
       def nextTask(current: String) = msgType match {
@@ -126,14 +129,11 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
 
       if (cancel) s
       else s.item.map { item =>
-        val commentClass = msgType match {
-          case ApproveMessage => "approval"
-          case RejectMessage(_) => "rejection"
-          case _ => ""
-        }
-        val newComments = WorkflowComment(msg, files.map(_._2).toSet, commentClass) +: item.comments
+        val newComments = WorkflowComment(msg, files.map(_._2).toSet, msgType.typ) +: item.comments
         s.copy(item = Some(item.copy(comments = newComments,
-          currentTask = item.currentTask.flatMap(nextTask))), moderating = !MessageType.moderates(msgType))
+          currentTask = item.currentTask.flatMap(nextTask))),
+          moderating = !MessageType.moderates(msgType),
+          commentTypes = s.commentTypes + msgType.typ)
       }.getOrElse(s)
     case ModerateItemCommand(name) => s
     case VerifyComments => s
@@ -142,13 +142,14 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
   override def runCommandInBrowser(c: WorkflowCommentCommand, s: WorkflowCommentState, b: SimpleSeleniumBrowser) = c match {
     case CreateItemCommand(name) => b.run {
       val page = new ContributePage(b.page.ctx).load().openWizard("Simple 3 Step")
-      page.ctrl(EditBoxControl, 1).value = name
+      page.ctrl(EditBoxControl, 1).value = b.uniquePrefix(name)
       page.save().submitForModeration()
     }
-    case ModerateItemCommand(name) => b.run {
+    case ModerateItemCommand(n) => b.run {
       val tlp = new TaskListPage(b.page.ctx).load()
-      tlp.query = name
-      tlp.search().resultForName(name).moderate()
+      val realName = b.uniquePrefix(n)
+      tlp.query = s"+$realName"
+      tlp.search().resultForName(realName).moderate()
     }
     case InvalidCommentCommand(msgType, invalidReason) => b.verifyOnPage {
       case mv: ModerationView =>
@@ -202,11 +203,27 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
     }
     case VerifyComments => b.verifyOnPage {
       case mv: ModerationView =>
-        val result = mv.allComments().map(mc => WorkflowComment(mc.message, mc.fileNames, mc.commentClass))
-        (mv, Option(result) ?= s.item.map(_.comments))
+        val result = mv.allComments().map(mc => WorkflowComment(mc.message, mc.fileNames, mc.commentClass match {
+          case "approval" => MessageTypes.Approve
+          case "rejection" => MessageTypes.Reject
+          case _ => MessageTypes.Comment
+        }))
+        (mv, Option(result) ?= s.item.map(_.comments.filter(_.message.nonEmpty)))
     }
   }
 
   override def logon = adminLogon
+
+  statefulProp("comment on workflow steps") {
+    generateCommands(doComments(_.commentTypes != MessageTypes.values, stdComment))
+  }
+
+  statefulProp("comment with no message") {
+    generateCommands(doComments(!_.attemptedInvalid, errorComment(NoMessage)))
+  }
+
+  statefulProp("upload banned file") {
+    generateCommands(doComments(!_.attemptedInvalid, errorComment(BannedFile)))
+  }
 
 }

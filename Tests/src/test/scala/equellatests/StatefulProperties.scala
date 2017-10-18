@@ -1,5 +1,6 @@
 package equellatests
 
+import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.UUID
@@ -28,9 +29,13 @@ object SimpleSeleniumBrowser {
 
 case class SimpleSeleniumBrowser(var page: BrowserPage) extends SeleniumBrowser {
 
-  val unique: String = UUID.randomUUID().toString
+  private val unique: String = UUID.randomUUID().toString
 
   def uniquePrefix(s: String) = s"$unique $s"
+
+  def allUniqueQuery = s"+$unique"
+
+  def uniqueQuery(n: String) = s"""+$unique "$n""""
 
   def run(action: => BrowserPage): Prop = withTry(Try(action).map((_, Prop.proved)))
 
@@ -106,10 +111,10 @@ abstract class StatefulProperties(name: String) extends Properties(name: String)
         runCommandInBrowser(c, s, b).flatMap { r =>
           if (!r.success) {
             val tc = b.page.ctx.getTestConfig
-            val filename = name + "_" + shortName.replace(' ', '_')
+            val filename = (name + " " + shortName).replace(' ', '_')
             Try(ScreenshotTaker.takeScreenshot(b.page.driver, tc.getScreenshotFolder, filename, tc.isChromeDriverSet))
             if (!replaying) {
-              val testRunFile = tc.getResultsFolder.toPath.resolve(filename + "_test.json")
+              val testRunFile = Uniqueify.uniqueFile(tc.getResultsFolder.toPath).apply(filename + "_test.json")
               val failure = FailedTestCase(shortName, getClass.getName, allCommands.asJson).asJson
               System.err.println(s"Wrote failed test to ${testRunFile.toAbsolutePath.toString}")
               Files.write(testRunFile, failure.spaces2.getBytes(StandardCharsets.UTF_8))
