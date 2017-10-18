@@ -14,3 +14,7 @@
 {
 	background-position: right -19px;
 }
+
+.freemarkerPortlet ul {
+    list-style-type: disc;
+}

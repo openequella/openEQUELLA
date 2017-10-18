@@ -1,6 +1,8 @@
 
 .box_content_inner .htmlportlet {
-	overflow: auto;
 	margin: 2px 0;
-	overflow-y: hidden;
+}
+
+.htmlportlet ul {
+    list-style-type: disc;
 }
