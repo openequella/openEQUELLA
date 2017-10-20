@@ -64,6 +64,9 @@ public class ClusterMessagingServiceImpl implements ClusterMessagingService, Sta
 	@Named("messaging.bindAddress")
 	private String bindAddress;
 	@Inject(optional = true)
+	@Named("messaging.useHostname")
+	private boolean useHostname;
+	@Inject(optional = true)
 	@Named("messaging.bindPort")
 	private int bindPort;
 
@@ -196,31 +199,35 @@ public class ClusterMessagingServiceImpl implements ClusterMessagingService, Sta
 
 	private void setupBindAddress()
 	{
-		// Verify the bind address
-		if( Check.isEmpty(bindAddress) )
+		try
 		{
-			List<Pair<NetworkInterface, InetAddress>> inetAddresses = NetworkUtils.getInetAddresses();
-			if( inetAddresses.size() == 1 )
+			// Verify the bind address
+			if( Check.isEmpty(bindAddress) )
 			{
-				bindAddress = inetAddresses.get(0).getSecond().getHostAddress();
+				if (useHostname)
+				{
+					bindAddress = InetAddress.getLocalHost().getHostName();
+				}
+				else
+				{
+					List<Pair<NetworkInterface, InetAddress>> inetAddresses = NetworkUtils.getInetAddresses();
+					if (inetAddresses.size() == 1) {
+						bindAddress = inetAddresses.get(0).getSecond().getHostAddress();
+					} else {
+						throw new RuntimeException("messaging.bindAddress has not been defined in"
+								+ " optional-config.properties, and EQUELLA could not determine a suitable"
+								+ " network interface to bind to.");
+					}
+				}
 			}
 			else
 			{
-				throw new RuntimeException("messaging.bindAddress has not been defined in"
-					+ " optional-config.properties, and EQUELLA could not determine a suitable"
-					+ " network interface to bind to.");
-			}
-		}
-		else
-		{
-			try
-			{
 				bindAddress = InetAddress.getByName(bindAddress).getHostAddress();
 			}
-			catch( UnknownHostException e )
-			{
-				Throwables.propagate(e);
-			}
+		}
+		catch( UnknownHostException e )
+		{
+			Throwables.propagate(e);
 		}
 	}
 

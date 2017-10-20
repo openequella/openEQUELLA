@@ -22,6 +22,7 @@ public class ClusterModule extends AbstractModule
 		{
 			bindProp("messaging.bindAddress");
 			bindInt("messaging.bindPort", 8999);
+			bindBoolean("messaging.useHostname");
 		}
 	}
 
