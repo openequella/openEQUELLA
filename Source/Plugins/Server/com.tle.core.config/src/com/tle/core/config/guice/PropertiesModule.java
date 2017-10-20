@@ -68,6 +68,15 @@ public abstract class PropertiesModule extends AbstractModule
 
 	protected abstract String getFilename();
 
+	private String getPropString(String property)
+	{
+		String envKey = "EQ_"+property.toUpperCase().replace('.', '_');
+		if (System.getenv().containsKey(envKey)) {
+			return System.getenv(envKey);
+		}
+		return (String) properties.get(property);
+	}
+
 	/**
 	 * External callers may be testing for null, so allow null to propagate.
 	 * 
@@ -76,18 +85,19 @@ public abstract class PropertiesModule extends AbstractModule
 	 */
 	protected String getProperty(String property)
 	{
-		String rawString = (String) properties.get(property);
+		String rawString = getPropString(property);
 		return rawString == null ? null : rawString.trim();
 	}
 
 	protected void bindFile(String property)
 	{
-		String value = Strings.nullToEmpty((String) properties.get(property)).trim();
+		String value = Strings.nullToEmpty(getPropString(property)).trim();
 		if( !Check.isEmpty(value) )
 		{
 			bind(File.class).annotatedWith(Names.named(property)).toInstance(new File(value));
 		}
 	}
+
 
 	protected void bindProp(String property)
 	{
@@ -96,7 +106,7 @@ public abstract class PropertiesModule extends AbstractModule
 
 	protected void bindProp(String property, String valueForMissingProperty)
 	{
-		String value = Strings.nullToEmpty((String) properties.get(property)).trim();
+		String value = Strings.nullToEmpty(getPropString(property)).trim();
 		if( Check.isEmpty(value) )
 		{
 			value = valueForMissingProperty;
@@ -109,7 +119,7 @@ public abstract class PropertiesModule extends AbstractModule
 
 	protected void bindInt(String property)
 	{
-		String value = Strings.nullToEmpty((String) properties.get(property)).trim();
+		String value = Strings.nullToEmpty(getPropString(property)).trim();
 		if( !Check.isEmpty(value) )
 		{
 			bind(Integer.class).annotatedWith(Names.named(property)).toInstance(Integer.parseInt(value));
@@ -118,14 +128,14 @@ public abstract class PropertiesModule extends AbstractModule
 
 	protected void bindInt(String property, int valueForMissingProperty)
 	{
-		String value = Strings.nullToEmpty((String) properties.get(property)).trim();
+		String value = Strings.nullToEmpty(getPropString(property)).trim();
 		bind(Integer.class).annotatedWith(Names.named(property)).toInstance(
 			!Check.isEmpty(value) ? Integer.parseInt(value) : valueForMissingProperty);
 	}
 
 	protected void bindLong(String property)
 	{
-		String value = Strings.nullToEmpty((String) properties.get(property)).trim();
+		String value = Strings.nullToEmpty(getPropString(property)).trim();
 		if( !Check.isEmpty(value) )
 		{
 			bind(Long.class).annotatedWith(Names.named(property)).toInstance(Long.parseLong(value));
@@ -134,7 +144,7 @@ public abstract class PropertiesModule extends AbstractModule
 
 	protected void bindBoolean(String property)
 	{
-		String value = Strings.nullToEmpty((String) properties.get(property)).trim();
+		String value = Strings.nullToEmpty(getPropString(property)).trim();
 		if( !Check.isEmpty(value) )
 		{
 			bind(Boolean.class).annotatedWith(Names.named(property)).toInstance(Boolean.parseBoolean(value));
@@ -143,7 +153,7 @@ public abstract class PropertiesModule extends AbstractModule
 
 	protected void bindURL(String property)
 	{
-		String value = Strings.nullToEmpty((String) properties.get(property)).trim();
+		String value = Strings.nullToEmpty(getPropString(property)).trim();
 		if( !Check.isEmpty(value) )
 		{
 			try
@@ -160,7 +170,7 @@ public abstract class PropertiesModule extends AbstractModule
 	@SuppressWarnings("unchecked")
 	protected <T> void bindClass(TypeLiteral<T> key, String property)
 	{
-		String value = Strings.nullToEmpty((String) properties.get(property)).trim();
+		String value = Strings.nullToEmpty(getPropString(property)).trim();
 		if( !Check.isEmpty(value) )
 		{
 			try
@@ -177,7 +187,7 @@ public abstract class PropertiesModule extends AbstractModule
 
 	protected <T> void bindNewInstance(String property, Class<T> type)
 	{
-		String value = Strings.nullToEmpty((String) properties.get(property)).trim();
+		String value = Strings.nullToEmpty(getPropString(property)).trim();
 		if( !Check.isEmpty(value) )
 		{
 			try

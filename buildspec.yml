@@ -13,4 +13,5 @@ artifacts:
     - Installer/target/equella-installer-6.5.zip
     - target/reference-language-pack.zip
     - target/version.properties
+  discard-paths: yes
 
