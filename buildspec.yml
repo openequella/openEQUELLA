@@ -13,5 +13,6 @@ artifacts:
     - Installer/target/equella-installer-6.5.zip
     - target/reference-language-pack.zip
     - target/version.properties
+    - Source/Server/equellaserver/target/tle-upgrade*.zip
   discard-paths: yes
 
