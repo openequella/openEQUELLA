@@ -67,8 +67,8 @@ public class ImportTab extends AbstractInstitutionTab<ImportTab.ImportTabModel>
 	private static final Log LOGGER = LogFactory.getLog(ImportTab.class);
 	private static final String ARCHIVE_FILE = "archive";
 
-	@PlugKey("institutions.import.link.name")
-	private static Label LINK_LABEL;
+	@PlugKey("institution.import.empty.file")
+	private static Label LABEL_EMPTY;
 
 	@Inject
 	private ImportSection importSection;
@@ -240,7 +240,7 @@ public class ImportTab extends AbstractInstitutionTab<ImportTab.ImportTabModel>
 		ImportTabModel model = getModel(context);
 		if( model.isUploaded() && Check.isEmpty(fileUpload.getFilename(context)) )
 		{
-			model.getErrors().put("file", CurrentLocale.get("institutions.import.empty.file"));
+			model.getErrors().put("file", LABEL_EMPTY.getText());
 		}
 
 		if( Check.isEmpty(model.getErrors()) )
@@ -275,12 +275,6 @@ public class ImportTab extends AbstractInstitutionTab<ImportTab.ImportTabModel>
 	protected boolean isTabVisible(SectionInfo info)
 	{
 		return true;
-	}
-
-	@Override
-	public Label getName()
-	{
-		return LINK_LABEL;
 	}
 
 	public FileUpload getFileUpload()
