@@ -67,9 +67,7 @@ public class WizardState implements WizardStateInterface
 	private static final long serialVersionUID = 1;
 
 	@Inject
-	private static Provider<WizardState> provider;
-	@Inject
-	private transient ItemFileService itemFileService;
+	private static ItemFileService itemFileService;
 
 	public enum Operation
 	{
@@ -117,8 +115,7 @@ public class WizardState implements WizardStateInterface
 	private transient WorkflowStatus workflowStatus;
 	private BiMap<UUID, String> registeredFilenames = HashBiMap.create();
 
-	@AssistedInject
-	public WizardState(@Assisted Operation operation)
+	public WizardState(Operation operation)
 	{
 		wizid = UUID.randomUUID().toString();
 		this.operation = operation;
@@ -581,11 +578,6 @@ public class WizardState implements WizardStateInterface
 	public void setThumbnail(String thumbnail)
 	{
 		this.thumbnail = thumbnail;
-	}
-
-	private Object readResolve() throws ObjectStreamException
-	{
-		return provider.get();
 	}
 
 	public BiMap<UUID, String> getRegisteredFilenames()

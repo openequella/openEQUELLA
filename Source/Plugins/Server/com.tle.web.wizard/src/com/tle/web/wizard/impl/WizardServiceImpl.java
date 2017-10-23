@@ -181,8 +181,6 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 	private CloneFactory cloneFactory;
 	@Inject
 	private WizardOperationFactory wizardOpFactory;
-	@Inject
-	private WizardStateFactory wizardStateFactory;
 
 	private PluginTracker<WizardScriptObjectContributor> scriptObjectTracker;
 
@@ -426,7 +424,7 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 	@Override
 	public WizardState loadItem(ItemKey itemkey, boolean bEdit, boolean redraft)
 	{
-		WizardState state = wizardStateFactory.createWizardState(Operation.EDITING);
+		WizardState state =  new WizardState(Operation.EDITING);
 		state.setNewItem(false);
 		state.setMergeDRMDefaults(false);
 		state.setItemId(itemkey);
@@ -552,7 +550,7 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 			ItemKey itemKey = state.getItemId();
 			ItemPack<Item> itemPack = itemService.operation(itemKey, cloneOp, initProvider.get());
 
-			WizardState newState = wizardStateFactory.createWizardState(Operation.CLONING);
+			WizardState newState = new WizardState(Operation.CLONING);
 
 			Collection<DuringSaveOperation> saveOps = cloneOp.getDuringSaveOperation();
 			int i = 0;
@@ -588,7 +586,7 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 	@Override
 	public WizardState moveItem(ItemId itemkey, final String newItemdefUuid, String transform)
 	{
-		WizardState state = wizardStateFactory.createWizardState(Operation.MOVING);
+		WizardState state = new WizardState(Operation.MOVING);
 		state.setNewItem(false);
 		state.setMergeDRMDefaults(false);
 		state.setItemId(itemkey);
@@ -997,7 +995,7 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 			.getWithNoSecurity(itemDefinitionService.identifyByUuid(itemdefUuid));
 		ItemPack<Item> pack = itemService.operation(null, workflowFactory.create(initialXml, definition, staging),
 			initProvider.get());
-		WizardState state = wizardStateFactory.createWizardState(Operation.CREATING);
+		WizardState state = new WizardState(Operation.CREATING);
 		Item item = pack.getItem();
 		item.setItemDefinition(definition);
 		state.setItemPack(pack);
@@ -1526,11 +1524,5 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 	public interface WizardOperationFactory
 	{
 		WizardStateOperation state(WizardState state);
-	}
-
-	@BindFactory
-	public interface WizardStateFactory
-	{
-		WizardState createWizardState(@Assisted Operation operation);
 	}
 }
