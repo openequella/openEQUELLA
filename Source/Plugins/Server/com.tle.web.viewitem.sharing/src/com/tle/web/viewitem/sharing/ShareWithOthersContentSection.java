@@ -66,6 +66,7 @@ import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.js.validators.Confirm;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
+import com.tle.web.sections.result.util.ItemNameLabel;
 import com.tle.web.sections.standard.AbstractTable.Sort;
 import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.SingleSelectionList;
@@ -303,7 +304,7 @@ public class ShareWithOthersContentSection extends AbstractShareWithOthersSectio
 
 		email.append(messageField.getValue(info));
 		email.append("\n\n");
-		email.append(s("item.name", CurrentLocale.get(iinfo.getItem().getName())));
+		email.append(s("item.name", new ItemNameLabel(iinfo.getItem(), bundleCache)));
 		email.append(s("item.link", url));
 		email.append(s("item.version", iinfo.getItem().getVersion()));
 		email.append(s("item.owner", getUser(userService.getInformationForUser(iinfo.getItem().getOwner()))));

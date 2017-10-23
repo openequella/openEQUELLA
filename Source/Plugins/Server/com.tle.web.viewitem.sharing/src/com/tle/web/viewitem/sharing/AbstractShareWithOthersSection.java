@@ -44,10 +44,13 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.component.model.SelectionsTableState;
 import com.tle.web.sections.equella.receipt.ReceiptService;
 import com.tle.web.sections.render.Label;
+import com.tle.web.sections.result.util.ItemNameLabel;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
+import com.tle.web.viewitem.section.ParentViewItemSectionUtils;
 import com.tle.web.viewitem.summary.content.AbstractContentSection;
+import com.tle.web.viewurl.ItemSectionInfo;
 
 @SuppressWarnings("nls")
 public abstract class AbstractShareWithOthersSection
@@ -141,7 +144,9 @@ public abstract class AbstractShareWithOthersSection
 			{
 				List<String> addresses = emailService.parseAddresses(email);
 
-				Future<EmailResult<String>> result = emailService.sendEmail(CurrentLocale.get(EMAIL_SUBJECT), addresses,
+				final ItemSectionInfo iinfo = ParentViewItemSectionUtils.getItemInfo(info);
+				Future<EmailResult<String>> result = emailService.sendEmail(
+						CurrentLocale.get(EMAIL_SUBJECT, new ItemNameLabel(iinfo.getItem(), bundleCache)), addresses,
 					createEmail(info));
 
 				EmailResult<String> emailResult;
