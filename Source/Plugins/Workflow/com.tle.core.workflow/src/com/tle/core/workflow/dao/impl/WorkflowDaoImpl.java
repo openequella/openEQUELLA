@@ -76,13 +76,12 @@ public class WorkflowDaoImpl extends AbstractEntityDaoImpl<Workflow> implements 
 				resetQuery.setParameterList("steps", delNodes);
 				resetQuery.executeUpdate();
 
-				Query deleteUsers = session.createQuery(
-					"from WorkflowItemStatus s where s.modStatus.needsReset = true and exists elements(s.acceptedUsers)");
-				List<WorkflowItemStatus> itemList = deleteUsers.list();
-				for( WorkflowItemStatus task : itemList )
-				{
-					session.delete(task);
-				}
+				// This is SQL
+				Query deleteAccepted = session.createSQLQuery("delete from workflow_node_status_accepted n where n.workflow_node_status_id in "
+						+ "(select n.id from workflow_node_status n inner join moderation_status ms on ms.id = n.mod_status_id where ms.needs_reset = true)");
+				deleteAccepted.executeUpdate();
+				// That was SQL
+
 				Query deleteAffectedNodesQuery = session.createQuery("delete from WorkflowNodeStatus n where n.id in "
 					+ "(select n.id from WorkflowNodeStatus n where n.modStatus.needsReset = true)");
 				deleteAffectedNodesQuery.executeUpdate();
