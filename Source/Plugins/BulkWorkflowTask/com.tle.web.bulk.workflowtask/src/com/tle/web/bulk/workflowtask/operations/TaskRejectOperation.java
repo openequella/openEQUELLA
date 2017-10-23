@@ -23,7 +23,7 @@ public class TaskRejectOperation extends AbstractBulkTaskOperation
 	@Override
 	public boolean execute()
 	{
-		TaskStatus status = init();
+		TaskStatus status = init("REJECT_BULK_TASKS", "MANAGE_WORKFLOW");
 		ItemTaskId taskId = getTaskId();
 
 		ModerationStatus modstatus = getModerationStatus();

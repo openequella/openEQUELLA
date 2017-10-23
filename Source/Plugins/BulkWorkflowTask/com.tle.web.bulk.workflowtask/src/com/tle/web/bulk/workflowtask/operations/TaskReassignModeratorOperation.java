@@ -25,7 +25,7 @@ public final class TaskReassignModeratorOperation extends AbstractBulkTaskOperat
 	@Override
 	public boolean execute()
 	{
-		TaskStatus status = init();
+		TaskStatus status = init("MANAGE_WORKFLOW");
 		Set<String> usersToModerate = status.getUsersToModerate(this);
 		if( usersToModerate.contains(toUser) )
 		{

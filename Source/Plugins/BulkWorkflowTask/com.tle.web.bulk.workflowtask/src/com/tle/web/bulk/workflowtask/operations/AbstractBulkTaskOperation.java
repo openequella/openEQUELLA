@@ -10,6 +10,7 @@ import com.tle.core.item.standard.operations.workflow.TaskOperation;
 import com.tle.core.item.standard.workflow.nodes.TaskStatus;
 import com.tle.core.security.TLEAclManager;
 import com.tle.exceptions.AccessDeniedException;
+import com.tle.exceptions.PrivilegeRequiredException;
 import com.tle.web.bulk.operation.BulkOperationService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
@@ -29,16 +30,15 @@ public abstract class AbstractBulkTaskOperation extends TaskOperation
 		return new ItemTaskId(getItemKey().toString());
 	}
 
-	protected TaskStatus init()
+	protected TaskStatus init(String... privs)
 	{
 		ItemTaskId taskId = getTaskId();
 		Item item = getItem();
 
 		WorkflowNode workflowNode = getWorkflow().getAllNodesAsMap().get(taskId.getTaskId());
-		if( !aclService.checkPrivilege("MANAGE_WORKFLOW", workflowNode.getWorkflow()) )
+		if( aclService.filterNonGrantedPrivileges(workflowNode.getWorkflow(), privs).isEmpty() )
 		{
-			throw new AccessDeniedException(CurrentLocale.get("com.tle.core.services.item.error.nopriv.moderation",
-				"MANAGE_WORKFLOW", CurrentLocale.get(item.getName()), CurrentLocale.get(workflowNode.getName())));
+			throw new PrivilegeRequiredException(privs);
 		}
 
 		//setup the result name for result reporting
