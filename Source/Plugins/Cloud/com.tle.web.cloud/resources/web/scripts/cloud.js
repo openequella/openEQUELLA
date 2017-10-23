@@ -7,7 +7,7 @@ var Cloud =
 			
 			var updateCount = function(data)
 			{
-				if ($span[0] && document.contains($span[0]))
+				if ($span[0] && $.contains(document, $span[0]))
 				{
 					$span.text(data.text);
 				}
