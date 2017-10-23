@@ -138,6 +138,7 @@ public class EditMyContentOperation extends AbstractWorkflowOperation // NOSONAR
 			if( inputStream != null )
 			{
 				fileSystemService.write(staging, filename, inputStream, false);
+				inputStream.close();
 				fattach.setSize(fileSystemService.fileLength(staging, filename));
 				generateThumbnail(fattach, staging, filename);
 
