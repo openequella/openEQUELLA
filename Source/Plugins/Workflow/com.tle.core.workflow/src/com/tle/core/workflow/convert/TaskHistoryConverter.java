@@ -12,6 +12,9 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.DataHolder;
+import com.thoughtworks.xstream.hibernate.converter.HibernateProxyConverter;
+import com.thoughtworks.xstream.hibernate.mapper.HibernateMapper;
+import com.thoughtworks.xstream.mapper.MapperWrapper;
 import com.tle.beans.TaskHistory;
 import com.tle.common.Check;
 import com.tle.common.filesystem.handle.SubTemporaryFile;
@@ -27,6 +30,7 @@ import com.tle.core.services.FileSystemService;
 import com.tle.core.workflow.dao.TaskHistoryDao;
 import com.tle.core.workflow.dao.WorkflowDao;
 import com.tle.core.workflow.migrate.TaskHistoryMigrator;
+import com.tle.core.xml.service.impl.XmlServiceImpl;
 
 @Bind
 @Singleton
@@ -103,7 +107,12 @@ public class TaskHistoryConverter implements ItemExtrasConverter
 	{
 		if( xstream == null )
 		{
-			xstream = xmlHelper.createXStream(getClass().getClassLoader());
+			xstream = new XmlServiceImpl.ExtXStream(getClass().getClassLoader()) {
+				@Override
+				protected MapperWrapper wrapMapper(MapperWrapper next) {
+					return new HibernateMapper(next);
+				}
+			};
 			xstream.registerConverter(new WorkflowNodeConverter());
 		}
 		return xstream;
