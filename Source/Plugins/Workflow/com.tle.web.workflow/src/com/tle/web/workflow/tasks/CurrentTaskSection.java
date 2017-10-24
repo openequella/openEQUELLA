@@ -4,15 +4,11 @@ import java.util.*;
 
 import javax.inject.Inject;
 
-import com.dytech.edge.common.Constants;
-import com.google.common.collect.Lists;
 import com.tle.beans.item.ItemTaskId;
 import com.tle.beans.workflow.WorkflowStep;
-import com.tle.common.filesystem.FileEntry;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.workflow.WorkflowMessage;
-import com.tle.core.filesystem.WorkflowMessageFile;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.i18n.BundleCache;
 import com.tle.core.institution.InstitutionService;
@@ -35,7 +31,6 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.layout.OneColumnLayout;
 import com.tle.web.sections.equella.receipt.ReceiptService;
 import com.tle.web.sections.equella.render.Bootstrap;
-import com.tle.web.sections.equella.render.JQueryTimeAgo;
 import com.tle.web.sections.equella.utils.UserLinkSection;
 import com.tle.web.sections.equella.utils.UserLinkService;
 import com.tle.web.sections.events.BeforeEventsListener;
@@ -51,7 +46,6 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.model.DialogState;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.fancybox.FancyBoxDialogRenderer;
-import com.tle.web.workflow.servlet.WorkflowMessageServlet;
 import com.tle.web.workflow.tasks.comments.ModCommentRender;
 import com.tle.web.workflow.tasks.dialog.ApproveDialog;
 import com.tle.web.workflow.tasks.dialog.CommentDialog;
@@ -388,11 +382,6 @@ public class CurrentTaskSection extends AbstractPrototypeSection<CurrentTaskSect
 			}
 		}
 		List<ItemTaskId> selectedTaskList = session.getAttribute(KEY_SELECTED_TASKS);
-		if( selectedTaskList != null )
-		{
-			prevButton.setDisplayed(context, false);
-			nextButton.setDisplayed(context, false);
-		}
 
 		setupModeratorList(context);
 		setupAssigned(context);
