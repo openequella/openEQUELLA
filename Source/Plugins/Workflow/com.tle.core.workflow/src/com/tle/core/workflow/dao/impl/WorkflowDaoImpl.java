@@ -80,6 +80,9 @@ public class WorkflowDaoImpl extends AbstractEntityDaoImpl<Workflow> implements 
 				Query deleteAccepted = session.createSQLQuery("delete from workflow_node_status_accepted n where n.workflow_node_status_id in "
 						+ "(select n.id from workflow_node_status n inner join moderation_status ms on ms.id = n.mod_status_id where ms.needs_reset = true)");
 				deleteAccepted.executeUpdate();
+				Query deleteMessage = session.createSQLQuery("delete from workflow_message n where n.node_id in "
+						+ "(select n.id from workflow_node_status n inner join moderation_status ms on ms.id = n.mod_status_id where ms.needs_reset = true)");
+				deleteMessage.executeUpdate();
 				// That was SQL
 
 				Query deleteAffectedNodesQuery = session.createQuery("delete from WorkflowNodeStatus n where n.id in "
