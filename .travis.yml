@@ -11,7 +11,7 @@ before_install:
 install:
 - git fetch --unshallow
 script:
-- sbt test installerZip writeLanguagePack
+- sbt headerCheck test installerZip writeLanguagePack
 after_success:
 - aws s3 --region us-east-1 cp Source/Server/equellaserver/target/tle-upgrade*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
 - aws s3 --region us-east-1 cp Installer/target/equella-installer*.zip s3://edalexdev/equella_artifacts/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER/
