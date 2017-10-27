@@ -1,0 +1,60 @@
+<commands>
+<installer>
+  <product>
+    <name>EQUELLA</name>
+    <version>
+      &lt;
+      No Product Version
+      &gt;
+    </version>
+    <company>Apereo</company>
+  </product>
+  <local>/equella-installer-6.5</local>
+  <platform>linux64</platform>
+</installer>
+<install.path>/home/equella/equella</install.path>
+<java>
+  <jdk>/usr/lib/jvm/java-8-openjdk-amd64/jre</jdk>
+</java>
+<datasource>
+  <dbtype>postgresql</dbtype>
+  <host>db</host>
+  <port>5432</port>
+  <database>equella</database>
+  <username>equellauser</username>
+  <password>password</password>
+  <idtype>:</idtype>
+</datasource>
+<webserver>
+  <url>http://localhost:8080/</url>
+  <binding>all</binding>
+  <host>localhost</host>
+  <port>8080</port>
+  <context>/</context>
+  <javaopts>-Xss2m</javaopts>
+</webserver>
+<service>
+  <port>3000</port>
+</service>
+<proxy>
+  <connection>false</connection>
+</proxy>
+<memory>
+  <min>96m</min>
+  <max>512m</max>
+</memory>
+<imagemagick>
+  <path>/usr/bin</path>
+</imagemagick>
+<libav>
+  <path>/usr/bin</path>
+</libav>
+<hashed.admin.password>SHA256:2a0fd3498c35eced0663c523a80125cbfd3fb8d1634ce87c2ccc020b924ac2d9</hashed.admin.password>
+<datastore>
+  <initialise>true</initialise>
+</datastore>
+<tomcat>
+  <path>/home/equella/equella/tomcat</path>
+</tomcat>
+<admin.password>admin</admin.password>
+</commands>

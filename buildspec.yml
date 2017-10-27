@@ -7,7 +7,9 @@ phases:
   build:
     commands:
       - sbt -Dconfig.file=${HOME}/build.conf -Dsbt.log.noformat=true test installerZip writeLanguagePack
-
+  post_build:
+    commands:
+      - publishBuild
 artifacts:
   files:
     - Installer/target/equella-installer-6.5.zip
