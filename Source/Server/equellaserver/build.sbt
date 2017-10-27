@@ -56,7 +56,7 @@ libraryDependencies ++= Seq(
   "dom4j" % "dom4j" % "1.6.1",
   "com.github.equella.legacy" % "itunesu-api-java" % "1.7",
   "com.github.equella.legacy" % "mets" % "1.0",
-  "extendedset" % "extendedset" % "2.2",
+  "com.metamx" % "extendedset" % "1.5.0-mmx",
   "javax.inject" % "javax.inject" % "1",
   "javax.mail" % "mail" % "1.4.3",
   "javax.servlet" % "jstl" % "1.1.2",
