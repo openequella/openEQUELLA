@@ -17,6 +17,7 @@
 package com.tle.web.bulk.workflowtask.dialog;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,10 +28,12 @@ import com.tle.beans.item.ItemPack;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
 import com.tle.core.guice.BindFactory;
+import com.tle.core.institution.AclService;
 import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.plugins.BeanLocator;
 import com.tle.core.plugins.FactoryMethodLocator;
+import com.tle.core.security.TLEAclManager;
 import com.tle.web.bulk.operation.BulkOperationExecutor;
 import com.tle.web.bulk.operation.BulkOperationExtension;
 import com.tle.web.bulk.workflowtask.BulkWorkflowTaskOperationFactory;
@@ -67,6 +70,8 @@ public class BulkWorkflowReassignTaskOperation extends AbstractSelectUserSection
 		ReassignModeratorExecutor reassign(@Assisted("toOwner") String toOwner);
 	}
 
+	@Inject
+	private TLEAclManager aclService;
 	@PlugKey("bulkop.reassignmoderator")
 	private static String LABEL_EXECUTE;
 	@PlugKey("bulkop.reassignmoderator.title")
@@ -135,7 +140,10 @@ public class BulkWorkflowReassignTaskOperation extends AbstractSelectUserSection
 	@Override
 	public void addOptions(SectionInfo info, List<Option<OperationInfo>> options)
 	{
-		options.add(new KeyOption<OperationInfo>(LABEL_EXECUTE, BULK_VALUE, new OperationInfo(this, BULK_VALUE)));
+		if (!aclService.filterNonGrantedPrivileges(Collections.singleton("MANAGE_WORKFLOW"), true).isEmpty())
+		{
+			options.add(new KeyOption<OperationInfo>(LABEL_EXECUTE, BULK_VALUE, new OperationInfo(this, BULK_VALUE)));
+		}
 	}
 
 	@Override
