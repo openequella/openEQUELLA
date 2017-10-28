@@ -29,17 +29,18 @@ import com.dytech.edge.exceptions.WorkflowException;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.annotation.Nullable;
+import com.tle.beans.item.ItemKey;
 import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.beans.item.attachments.ModifiableAttachments;
 import com.tle.core.filesystem.ItemFile;
-import com.tle.core.imagemagick.ImageMagickService;
 import com.tle.core.item.operations.AbstractWorkflowOperation;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.FileSystemService;
 import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.workflow.thumbnail.service.ThumbnailService;
 import com.tle.mycontent.MyContentConstants;
 import com.tle.mycontent.service.MyContentFields;
 
@@ -57,7 +58,7 @@ public class EditMyContentOperation extends AbstractWorkflowOperation // NOSONAR
 	@Inject
 	private FileSystemService fileSystemService;
 	@Inject
-	private ImageMagickService imageMagickService;
+	private ThumbnailService thumbnailService;
 	@Inject
 	private MimeTypeService mimeService;
 
@@ -140,7 +141,10 @@ public class EditMyContentOperation extends AbstractWorkflowOperation // NOSONAR
 				fileSystemService.write(staging, filename, inputStream, false);
 				inputStream.close();
 				fattach.setSize(fileSystemService.fileLength(staging, filename));
-				generateThumbnail(fattach, staging, filename);
+				final String thumbnail = thumbnailService.submitThumbnailRequest(getItemId(), staging, filename, false, true);
+				if( thumbnail != null ) {
+					fattach.setThumbnail(thumbnail);
+				}
 
 				if( oldFilename == null )
 				{
@@ -169,18 +173,4 @@ public class EditMyContentOperation extends AbstractWorkflowOperation // NOSONAR
 			throw new WorkflowException(e);
 		}
 	}
-
-	private void generateThumbnail(FileAttachment fattach, FileHandle staging, String attachFilename)
-	{
-		if( imageMagickService.supported(mimeService.getMimeTypeForFilename(attachFilename)) )
-		{
-			File originalImage = fileSystemService.getExternalFile(staging, attachFilename);
-			String thumbFilename = FileSystemService.THUMBS_FOLDER + '/' + attachFilename
-				+ FileSystemService.THUMBNAIL_EXTENSION;
-			File destImage = fileSystemService.getExternalFile(staging, thumbFilename);
-			imageMagickService.generateStandardThumbnail(originalImage, destImage); //$NON-NLS-1$
-			fattach.setThumbnail(thumbFilename);
-		}
-	}
-
 }
