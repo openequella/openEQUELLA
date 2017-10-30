@@ -40,19 +40,6 @@ the database that you have created for EQUELLA.
 
 The default admin url will be: `http://localhost:8080/`
 
-### Create development JPF manifests
-
-When using the development configuration folder, it points to a directory which is meant to contain
-the JPF manifests for all the plugins but in a special development mode which points 
-to the classes that the IDE will writing to. In order to populate this folder you must run an SBT task:
-
-```bash
-~$ sbt compile writeDevManifests
-```
-
-Any changes to the JPF plugin manifests require that this task be re-run to synchronize the development manifests. 
-In the future this will be part of the server code itself. 
-
 ### Running a dev server
 
 Ensure you have your `Dev/learningedge-config` setup 
@@ -81,6 +68,17 @@ Ensure you have your server running and know it's
 ```
 
 or run `com.tle.client.harness.ClientLauncher` in the `Source/Server/adminTool` project.
+
+
+### Updating plugin library jars for dev mode
+
+When running the server in dev mode, the server runner doesn't have access to the SBT build information, so it
+can't find the jar libraries which some of the plugins require, so an extra SBT task is required to copy the jars
+into a known location for the runner. This task is run by the `prepareDevConfig` task too. 
+
+```bash
+~$ sbt jpfWriteDevJars
+```
 
 ## SBT Notes
 The new build uses SBT (very flexible and has a large set of useful plugins available). You can customize pretty much any aspect of your build process using Scala scripts.

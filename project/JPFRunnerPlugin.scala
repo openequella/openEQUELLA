@@ -18,7 +18,6 @@ object JPFRunnerPlugin extends AutoPlugin {
   override def trigger: PluginTrigger = noTrigger
 
   object autoImport {
-    lazy val writeDevManifests = taskKey[Iterable[ManifestWritten]]("Write dev manifests")
     lazy val writeJars = taskKey[Iterable[ManifestWritten]]("Write JPF jars")
 
     case class ManifestWritten(file: File, pluginId: String, group: String)
@@ -26,22 +25,6 @@ object JPFRunnerPlugin extends AutoPlugin {
     def runnerTasks(aggregate: ProjectReference) = {
       val scope = ScopeFilter(inAggregates(aggregate, includeRoot = false))
       Seq(
-        writeDevManifests := {
-          val allRuntimes = jpfRuntime.all(scope).value
-          val manifests = target.value / "manifests"
-
-          IO.delete(manifests)
-
-          allRuntimes.map { r =>
-            val (pid, plugXml) = writeJPF(r.manifest,
-              r.code.filterNot(isDirectoryEmpty).map(f => JPFLibrary(f.getName, "code", f.toURI.toString, Some("*.class"))) ++
-                r.jars.map(f => JPFLibrary(f.getName, "code", f.toURI.toString, Some("*"))) ++
-                r.resources.filterNot(isDirectoryEmpty).map(f => JPFLibrary(f.getName, "resources", f.toURI.toString, None)))
-            val outMan = manifests / pid / "plugin-jpf.xml"
-            IO.write(outMan, plugXml)
-            ManifestWritten(outMan, pid, r.group)
-          }
-        },
         writeJars := {
           val compileAll = (fullClasspath in Compile).all(scope).value
           val allRuntimes = jpfRuntime.all(scope).value
@@ -77,6 +60,12 @@ object JPFRunnerPlugin extends AutoPlugin {
       ds.close()
       !b
     }.getOrElse(true)
+  }
+
+  def readPluginId(f: File) : String = {
+    val x = saxBuilder.build(f)
+    val root = x.getRootElement
+    root.getAttribute("id").getValue
   }
 
   def writeJPF(f: File, jars: Iterable[JPFLibrary]): (String, String) = {

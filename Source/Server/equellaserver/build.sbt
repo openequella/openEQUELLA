@@ -1,5 +1,14 @@
 scalaVersion := "2.11.7"
 
+javacOptions ++= Seq("-source", "1.8")
+
+resourceDirectory in Compile := baseDirectory.value / "resources"
+
+javaSource in Compile := baseDirectory.value / "src"
+javaSource in Test := baseDirectory.value / "test"
+
+scalaSource in Compile := baseDirectory.value / "scalasrc"
+
 updateOptions := updateOptions.value.withCachedResolution(true)
 
 unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_config")).value
@@ -29,7 +38,6 @@ libraryDependencies ++= Seq(
   "com.google.inject.extensions" % "guice-assistedinject" % "3.0",
   "com.google.inject.extensions" % "guice-spring" % "3.0",
   "com.ibm.icu" % "icu4j" % "4.6.1.1",
-  /** "com.kaltura" % "kalturaClient" % "3.2.1", */
   "com.microsoft.sqlserver" % "mssql-jdbc" % "6.1.0.jre8",
   "com.miglayout" % "miglayout-swing" % "4.2",
   "com.ning" % "async-http-client" % "1.9.31",
@@ -194,7 +202,8 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "ch.qos.logback"),
     ExclusionRule(organization = "net.sf.saxon")
   ),
-  "xml-resolver" % "xml-resolver" % "1.2"
+  "xml-resolver" % "xml-resolver" % "1.2",
+  "org.scala-sbt" %% "io" % "1.1.0"
 )
 
 dependencyOverrides += "javax.mail" % "mail" % "1.4.3"
@@ -234,13 +243,10 @@ excludeDependencies ++= Seq(
 unmanagedJars in Compile ++= oracleDriverJar.value.toSeq.classpath
 
 run := {
-  writeDevManifests.value
   val cp = (fullClasspath in Runtime).value
-  val plug_loc = target.value / "manifests"
   val o = ForkOptions(runJVMOptions = Seq(
     "-cp", Path.makeString(cp.files),
-    "-Dequella.devmode=true", "-Dequella.autotest=true",
-    s"-Dplugins.location=${plug_loc.getAbsolutePath}"
+    "-Dequella.devmode=true", "-Dequella.autotest=true"
   ))
   Fork.java(o, Seq("com.tle.core.equella.runner.EQUELLAServer"))
 }
@@ -269,7 +275,7 @@ assemblyMergeStrategy in assembly := {
     oldStrategy(x)
 }
 
-lazy val collectJars = taskKey[Unit]("Collect jars")
+lazy val collectJars = taskKey[Set[File]]("Collect jars")
 
 collectJars := {
   val destDir = target.value / "jars"

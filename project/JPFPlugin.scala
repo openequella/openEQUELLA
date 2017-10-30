@@ -2,6 +2,8 @@ import sbt.Keys._
 import sbt._
 import sbt.plugins.JvmPlugin
 import CommonSettings.autoImport._
+import JPFRunnerPlugin.readPluginId
+
 import scala.collection.JavaConverters._
 
 object JPFPlugin extends AutoPlugin {
@@ -13,6 +15,7 @@ object JPFPlugin extends AutoPlugin {
     lazy val jpfCodeDirs = settingKey[Seq[File]]("JPF runtime code")
     lazy val jpfResourceDirs = settingKey[Seq[File]]("JPF runtime resources")
     lazy val jpfLibraryJars = taskKey[Classpath]("JPF runtime jars")
+    lazy val jpfWriteDevJars = taskKey[Unit]("Write JPF library jars for dev")
     lazy val jpfRuntime = taskKey[JPFRuntime]("JPF runtime")
   }
 
@@ -32,6 +35,16 @@ object JPFPlugin extends AutoPlugin {
     javaSource in Test := baseDirectory.value / "test",
     scalaSource in Compile := baseDirectory.value / "scalasrc",
     updateOptions := updateOptions.value.withCachedResolution(true),
+    jpfWriteDevJars := {
+      val outBase = target.value / "jpflibs"
+      IO.delete(outBase)
+      val jarFiles = jpfLibraryJars.value.files
+      val log = sLog.value
+      if (jarFiles.nonEmpty) {
+        log.info(s"Writing jpf jars for ${name.value}")
+        IO.copy(jarFiles.pair(flat(outBase)))
+      }
+    },
     langStrings := {
       val doc = Common.saxBuilder.build(jpfRuntime.value.manifest)
       val rootElem = doc.getRootElement

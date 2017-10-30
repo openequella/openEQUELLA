@@ -1,3 +1,0 @@
-<!DOCTYPE plugin-fragment PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
-<plugin-fragment id="org.slf4j:slf4j-log4j12-fragment" version="1" plugin-id="org.slf4j:slf4j-api">
-</plugin-fragment>

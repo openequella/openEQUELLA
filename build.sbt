@@ -18,7 +18,7 @@ val legacyPaths = Seq(
   unmanagedSourceDirectories in Test := (javaSource in Test).value :: Nil
 )
 
-lazy val equellaserver = (project in file("Source/Server/equellaserver")).settings(legacyPaths).enablePlugins(JPFRunnerPlugin)
+lazy val equellaserver = (project in file("Source/Server/equellaserver")).enablePlugins(JPFRunnerPlugin)
 
 lazy val adminTool = (project in file("Source/Server/adminTool")).settings(legacyPaths).dependsOn(
   platformSwing,

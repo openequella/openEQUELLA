@@ -50,12 +50,6 @@ import org.java.plugin.util.IoUtil;
 @SuppressWarnings("nls")
 public class EQUELLAServer
 {
-	private static final Pattern JAR_PATTERN = Pattern.compile("(.*)-\\d+\\.\\d+\\.(\\d+).jar");
-	private static final String PLUGIN_JPF_XML = "plugin-jpf.xml";
-
-	private static final Set<String> BOOTIDS = new HashSet<String>(Arrays.asList("jpf:jpf", "log4j:log4j",
-		"commons-logging:commons-logging", "org.slf4j:slf4j-api"));
-
 	private static final Collection<String> STARTUP_ROLES = Arrays.asList("initial", "core", "web");
 
 	// Same as Constants.UPGRADE_LOCK
@@ -102,6 +96,10 @@ public class EQUELLAServer
 		new EQUELLAServer().startServer();
 	}
 
+	public String getProperty(Properties props, String key, String defValue) {
+		return System.getProperty(key, props.getProperty(key, defValue));
+	}
+
 	public void startServer()
 	{
 		ClassLoader loader = getClass().getClassLoader();
@@ -132,8 +130,10 @@ public class EQUELLAServer
 
 			ExtendedProperties props = new ExtendedProperties();
 			String pathResolver;
-			if( Boolean.getBoolean("equella.devmode") )
+            boolean devMode = Boolean.parseBoolean(getProperty(mandatory, "equella.devmode", "false"));
+            if (devMode)
 			{
+				System.out.println("Started server in dev mode");
 				pathResolver = StandardPathResolver.class.getName();
 			}
 			else
@@ -144,13 +144,19 @@ public class EQUELLAServer
 			props.setProperty("org.java.plugin.standard.StandardPluginLifecycleHandler.probeParentLoaderLast", "false");
 			ObjectFactory objectFactory = ObjectFactory.newInstance(props);
 
-			List<String> folders = Arrays.asList(System.getProperty("plugins.location", mandatory.getProperty("plugins.location")));
+			String pluginLocations = getProperty(mandatory, "plugins.location", null);
+			if (devMode)
+			{
+				System.out.println("Scanning for plugins in "+pluginLocations);
+			}
 			manager = objectFactory.createManager();
 
 			Map<String, TLEPluginLocation> registered = new HashMap<String, TLEPluginLocation>();
-			publishFakes(registered, "commons-logging.xml", "jpf.xml", "log4j.xml", "slf4j-api.xml", "slf4j-log4j.xml");
-			scanPluginFolders(registered, folders, BOOTIDS);
+
+			PluginScanner.scanForPlugins(manager.getRegistry(), registered, pluginLocations, devMode);
+
 			manager.publishPlugins(registered.values().toArray(new PluginLocation[registered.size()]));
+
 			List<Object[]> alreadyRegistered = new ArrayList<Object[]>();
 			for( TLEPluginLocation pluginLocation : registered.values() )
 			{
@@ -172,164 +178,4 @@ public class EQUELLAServer
 		}
 	}
 
-	private void publishFakes(Map<String, TLEPluginLocation> registered, String... filenames) throws JpfException
-	{
-		for( String filename : filenames )
-		{
-			URL resource = getClass().getResource(filename);
-			ManifestInfo manifestInfo = manager.getRegistry().readManifestInfo(resource);
-			registered.put(manifestInfo.getId(), new TLEPluginLocation(manifestInfo, null, resource, resource));
-		}
-	}
-
-	private void scanPluginFolders(Map<String, TLEPluginLocation> registered, Collection<String> pluginFolders,
-		Set<String> disallowedPlugins) throws Exception
-	{
-		for( String folder : pluginFolders )
-		{
-			String[] folders = folder.split(",");
-			for( String folderName : folders )
-			{
-				File file = new File(folderName.trim());
-				if( file.exists() )
-				{
-					scanPluginFolder(file, registered, disallowedPlugins);
-				}
-			}
-		}
-	}
-
-	private void scanPluginFolder(File folder, Map<String, TLEPluginLocation> plugins, Set<String> disallowedPlugins)
-		throws Exception
-	{
-		File[] files = folder.listFiles();
-		if( files == null )
-		{
-			return;
-		}
-
-		for( File file : files )
-		{
-			String filename = file.getName();
-			if( file.isDirectory() )
-			{
-				File manFile = new File(file, PLUGIN_JPF_XML);
-				if( manFile.exists() )
-				{
-					URL context = file.toURI().toURL();
-					URL manUrl = new URL(context, PLUGIN_JPF_XML);
-					ManifestInfo info = manager.getRegistry().readManifestInfo(manUrl);
-					String pluginId = info.getId();
-					if( !disallowedPlugins.contains(pluginId) )
-					{
-						TLEPluginLocation location = new TLEPluginLocation(info, filename, context, manUrl);
-						plugins.put(pluginId, location);
-					}
-				}
-				else
-				{
-					scanPluginFolder(file, plugins, disallowedPlugins);
-				}
-			}
-			else if( filename.endsWith(".jar") )
-			{
-				int version = -1;
-				String pluginId = filename;
-				Matcher matcher = JAR_PATTERN.matcher(filename);
-				if( matcher.matches() )
-				{
-					pluginId = matcher.group(1);
-					version = Integer.parseInt(matcher.group(2));
-				}
-				URL context = new URL("jar", "", file.toURI() + "!/");
-				URL manFile = new URL(context, PLUGIN_JPF_XML);
-				if( IoUtil.isResourceExists(manFile) )
-				{
-					ManifestInfo info = manager.getRegistry().readManifestInfo(manFile);
-					pluginId = info.getId();
-					if( !disallowedPlugins.contains(pluginId) )
-					{
-						TLEPluginLocation location = new TLEPluginLocation(info, filename, context, manFile);
-						location.setVersion(version);
-						TLEPluginLocation prevLocation = plugins.get(pluginId);
-						if( prevLocation == null || prevLocation.getVersion() < version )
-						{
-							plugins.put(pluginId, location);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	public static class TLEPluginLocation implements org.java.plugin.PluginManager.PluginLocation
-	{
-		private final String jar;
-		private final ManifestInfo manifestInfo;
-		private final URL context;
-		private final URL manifest;
-		private int version = -1;
-
-		@Override
-		public boolean equals(Object obj)
-		{
-			if( this == obj )
-			{
-				return true;
-			}
-
-			if( !(obj instanceof TLEPluginLocation) )
-			{
-				return false;
-			}
-
-			return context.toString().equals(((TLEPluginLocation) obj).context.toString());
-		}
-
-		@Override
-		public int hashCode()
-		{
-			return context.toString().hashCode();
-		}
-
-		public TLEPluginLocation(ManifestInfo info, String jar, URL context, URL manifest)
-		{
-			this.manifestInfo = info;
-			this.jar = jar;
-			this.context = context;
-			this.manifest = manifest;
-		}
-
-		public int getVersion()
-		{
-			return version;
-		}
-
-		public String getJar()
-		{
-			return jar;
-		}
-
-		@Override
-		public URL getContextLocation()
-		{
-			return context;
-		}
-
-		@Override
-		public URL getManifestLocation()
-		{
-			return manifest;
-		}
-
-		public void setVersion(int version)
-		{
-			this.version = version;
-		}
-
-		public ManifestInfo getManifestInfo()
-		{
-			return manifestInfo;
-		}
-	}
 }

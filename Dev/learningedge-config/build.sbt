@@ -4,6 +4,8 @@ prepareDevConfig := {
   val bc = buildConfig.value.getConfig("devconfig")
   val javaHome = file(System.getProperty("java.home"))
   val baseDir = baseDirectory.value
+  val srcRoot = baseDir.getParentFile.getParentFile
+  val pluginRoots = Seq(srcRoot / "Source/Plugins", srcRoot / "Platform", srcRoot / "Interface")
   val installerConfig = (baseDirectory in LocalProject("Installer")).value / "data/server/learningedge-config"
   val defaultsDir = baseDirectory.value / "defaults"
   val fromInstaller = Seq(
@@ -16,7 +18,7 @@ prepareDevConfig := {
     "hibernate.properties"
   ).map(f => (defaultsDir / s"$f.default", baseDir / f))
 
-  IO.copy(fromInstaller ++ fromDefaults)
+  IO.copy(fromInstaller ++ fromDefaults, overwrite = false)
 
   val port = bc.getInt("port")
   val hostname = bc.getString("hostname")
@@ -24,10 +26,12 @@ prepareDevConfig := {
   val adminurl = if (bc.hasPath("adminurl")) bc.getString("adminurl") else s"http://$hostname:$port/"
   val mc = new PropertiesConfiguration()
   mc.load(installerConfig / "mandatory-config.properties")
+
   mc.setProperty("freetext.index.location", baseDir / "data/freetext")
   mc.setProperty("filestore.root", baseDir / "data/filestore")
   mc.setProperty("freetext.stopwords.file", installerConfig / "en-stopWords.txt")
-  mc.setProperty("plugins.location", (target in LocalProject("equellaserver")).value / "manifests")
+  mc.setProperty("equella.devmode", "true")
+  mc.setProperty("plugins.location", pluginRoots.mkString(","))
   mc.setProperty("admin.url", adminurl)
   mc.setProperty("java.home", javaHome)
   mc.setProperty("http.port", port)
@@ -42,4 +46,5 @@ prepareDevConfig := {
   log.info(s"Dev configuration with admin url of '$adminurl'")
   log.info(s"ImageMagick binary dir set to '$imPath'")
   log.info(s"Please edit database configuration file at '${(baseDir / "hibernate.properties").absolutePath}'")
+  jpfWriteDevJars.all(ScopeFilter(inAggregates(LocalProject("allPlugins"), includeRoot = false))).value
 }
