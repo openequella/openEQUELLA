@@ -19,6 +19,7 @@ package com.tle.core.hibernate;
 import java.util.Properties;
 import java.util.concurrent.ThreadFactory;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -32,6 +33,8 @@ import com.tle.core.config.guice.PropertiesModule;
 import com.tle.core.guice.Bind;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind(DataSourceService.class)
 @Singleton
@@ -54,6 +57,8 @@ public class DataSourceServiceImpl implements DataSourceService
 	@Named("hibernate.connection.url")
 	private String systemUrl;
 
+	private static Logger LOGGER = LoggerFactory.getLogger(DataSourceService.class);
+
 	private final LoadingCache<SourceKey, DataSourceHolder> dsCache = CacheBuilder.newBuilder().weakValues()
 		.build(CacheLoader.from(new CreateDataSourceFunction()));
 
@@ -63,6 +68,12 @@ public class DataSourceServiceImpl implements DataSourceService
 	public DataSourceServiceImpl() throws Exception
 	{
 		baseConfig = PropertiesModule.getPropertiesCache().get("/hikari.properties");
+	}
+
+	@PostConstruct
+	public void printInfo()
+	{
+		LOGGER.info("System DB URL: "+systemUrl);
 	}
 
 	@Override
