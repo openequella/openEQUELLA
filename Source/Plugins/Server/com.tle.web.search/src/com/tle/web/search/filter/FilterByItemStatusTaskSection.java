@@ -17,6 +17,7 @@
 package com.tle.web.search.filter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.tle.beans.item.ItemStatus;
@@ -25,6 +26,7 @@ import com.tle.web.sections.events.RenderEventContext;
 
 public class FilterByItemStatusTaskSection extends FilterByItemStatusSection
 {
+	private static List<ItemStatus> MOD_STATUSES = Arrays.asList(ItemStatus.LIVE, ItemStatus.MODERATING, ItemStatus.REVIEW);
 	@Override
 	public SectionResult renderHtml(RenderEventContext context)
 	{
@@ -35,14 +37,6 @@ public class FilterByItemStatusTaskSection extends FilterByItemStatusSection
 	@Override
 	protected List<ItemStatus> getStatusList()
 	{
-		List<ItemStatus> status = new ArrayList<ItemStatus>();
-		for( ItemStatus i : ItemStatus.values() )
-		{
-			if( !i.equals(ItemStatus.PERSONAL) )
-			{
-				status.add(i);
-			}
-		}
-		return status;
+		return MOD_STATUSES;
 	}
 }
