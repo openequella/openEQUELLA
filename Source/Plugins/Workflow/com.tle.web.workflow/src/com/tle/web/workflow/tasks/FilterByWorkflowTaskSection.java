@@ -25,6 +25,7 @@ import com.tle.annotation.Nullable;
 import com.tle.common.Check;
 import com.tle.common.workflow.Workflow;
 import com.tle.common.workflow.node.WorkflowItem;
+import com.tle.common.workflow.node.WorkflowNode;
 import com.tle.core.guice.Bind;
 import com.tle.core.i18n.BundleCache;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -53,6 +54,10 @@ import com.tle.web.sections.standard.model.DynamicHtmlListModel;
 import com.tle.web.sections.standard.model.LabelOption;
 import com.tle.web.sections.standard.model.Option;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 @NonNullByDefault
 @Bind
 public class FilterByWorkflowTaskSection extends AbstractPrototypeSection<FilterByWorkflowTaskSection.Model>
@@ -76,7 +81,7 @@ public class FilterByWorkflowTaskSection extends AbstractPrototypeSection<Filter
 	private static Label LABEL_ALL;
 
 	@Component(name = "s", parameter = "task", supported = true)
-	private SingleSelectionList<WorkflowItem> taskList;
+	private SingleSelectionList<WorkflowNode> taskList;
 	@Nullable
 	private JSHandler changeHandler;
 
@@ -113,7 +118,7 @@ public class FilterByWorkflowTaskSection extends AbstractPrototypeSection<Filter
 	{
 		if( hasWorkflowTasks(info) )
 		{
-			WorkflowItem value = taskList.getSelectedValue(info);
+			WorkflowNode value = taskList.getSelectedValue(info);
 			if( value != null && !Check.isEmpty(value.getUuid()) )
 			{
 				event.filterByTerm(false, FreeTextQuery.FIELD_WORKFLOW_TASKID, value.getUuid());
@@ -125,7 +130,7 @@ public class FilterByWorkflowTaskSection extends AbstractPrototypeSection<Filter
 		}
 	}
 
-	public class TaskListModel extends DynamicHtmlListModel<WorkflowItem>
+	public class TaskListModel extends DynamicHtmlListModel<WorkflowNode>
 	{
 		public TaskListModel()
 		{
@@ -133,22 +138,35 @@ public class FilterByWorkflowTaskSection extends AbstractPrototypeSection<Filter
 		}
 
 		@Override
-		protected Iterable<WorkflowItem> populateModel(SectionInfo info)
+		protected Iterable<WorkflowNode> populateModel(SectionInfo info)
 		{
 			Workflow workflow = getWorkflow(info);
-			return workflow != null ? workflow.getAllWorkflowItems().values() : null;
+			if (workflow != null)
+			{
+				Set<WorkflowNode> nodes = workflow.getNodes();
+				List<WorkflowNode> interestingNodes = new ArrayList<>();
+				for (WorkflowNode node : nodes)
+				{
+					if (node.getType() == WorkflowNode.ITEM_TYPE || node.getType() == WorkflowNode.SCRIPT_TYPE)
+					{
+						interestingNodes.add(node);
+					}
+				}
+				return interestingNodes;
+			}
+			return null;
 		}
 
 		@Override
-		protected Option<WorkflowItem> convertToOption(SectionInfo info, WorkflowItem obj)
+		protected Option<WorkflowNode> convertToOption(SectionInfo info, WorkflowNode obj)
 		{
-			return new LabelOption<WorkflowItem>(new BundleLabel(obj.getName(), bundleCache), obj.getUuid(), obj);
+			return new LabelOption<WorkflowNode>(new BundleLabel(obj.getName(), bundleCache), obj.getUuid(), obj);
 		}
 
 		@Override
-		protected Option<WorkflowItem> getTopOption()
+		protected Option<WorkflowNode> getTopOption()
 		{
-			return new LabelOption<WorkflowItem>(LABEL_ALL, Constants.BLANK, null);
+			return new LabelOption<WorkflowNode>(LABEL_ALL, Constants.BLANK, null);
 		}
 	}
 
@@ -175,7 +193,7 @@ public class FilterByWorkflowTaskSection extends AbstractPrototypeSection<Filter
 		return false;
 	}
 
-	public SingleSelectionList<WorkflowItem> getTaskList()
+	public SingleSelectionList<WorkflowNode> getTaskList()
 	{
 		return taskList;
 	}
