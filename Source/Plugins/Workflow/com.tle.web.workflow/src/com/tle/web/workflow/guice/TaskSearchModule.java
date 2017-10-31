@@ -24,6 +24,7 @@ import com.tle.web.search.filter.FilterByMimeTypeSection;
 import com.tle.web.search.filter.FilterByOwnerSection;
 import com.tle.web.search.filter.SimpleResetFiltersQuerySection;
 import com.tle.web.search.guice.AbstractSearchModule;
+import com.tle.web.sections.Section;
 import com.tle.web.workflow.tasks.FilterByAssignment;
 import com.tle.web.workflow.tasks.FilterByWorkflowTaskSection;
 import com.tle.web.workflow.tasks.ModerateSelectedButton;
@@ -62,7 +63,16 @@ public class TaskSearchModule extends AbstractSearchModule
 		node.child(FilterByAssignment.class);
 		node.child(FilterByCollectionSection.class);
 		node.child(WorkflowFromCollectionSection.class);
-		node.child(FilterByWorkflowTaskSection.class);
+		node.child(new NodeProvider(FilterByWorkflowTaskSection.class)
+			{
+				@Override
+				protected void customize(Section section)
+				{
+					FilterByWorkflowTaskSection s = (FilterByWorkflowTaskSection) section;
+					s.setIsMyTasks(true);
+				}
+			}
+		);
 		node.child(FilterByOwnerSection.class);
 		node.child(FilterByDateRangeSection.class);
 		node.child(FilterByMimeTypeSection.class);

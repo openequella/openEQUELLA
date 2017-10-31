@@ -85,6 +85,8 @@ public class FilterByWorkflowTaskSection extends AbstractPrototypeSection<Filter
 	@Nullable
 	private JSHandler changeHandler;
 
+	private boolean isMyTasks;
+
 	@Override
 	public void registered(String id, SectionTree tree)
 	{
@@ -147,7 +149,7 @@ public class FilterByWorkflowTaskSection extends AbstractPrototypeSection<Filter
 				List<WorkflowNode> interestingNodes = new ArrayList<>();
 				for (WorkflowNode node : nodes)
 				{
-					if (node.getType() == WorkflowNode.ITEM_TYPE || node.getType() == WorkflowNode.SCRIPT_TYPE)
+					if (node.getType() == WorkflowNode.ITEM_TYPE || (!isMyTasks && node.getType() == WorkflowNode.SCRIPT_TYPE))
 					{
 						interestingNodes.add(node);
 					}
@@ -230,5 +232,10 @@ public class FilterByWorkflowTaskSection extends AbstractPrototypeSection<Filter
 	{
 		workflowSelection.setWorkflow(info, task.getWorkflow());
 		taskList.setSelectedStringValue(info, task.getUuid());
+	}
+
+	public void setIsMyTasks(boolean isMyTasks)
+	{
+		this.isMyTasks = isMyTasks;
 	}
 }
