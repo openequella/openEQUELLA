@@ -63,13 +63,14 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
       case s if s.itemsInModeration.size < numItems && s.items.size < PageMax => for {
         name <- RandomWords.someWords
       } yield List(BulkCreateItem(Uniqueify.uniquelyNumbered(s.itemNames, name.asString)))
-      case s => for {
+      case s if s.itemsInModeration.size > 1 => for {
         numPicks <- Gen.choose(1, s.itemsInModeration.size)
         selections <- Gen.pick(numPicks, s.itemsInModeration.map(_.name))
         msg <- Arbitrary.arbitrary[RandomWords].map(_.asString)
         randomUser <- Gen.oneOf("admin", "SimpleModerator")
         op <- Fairness.favour3to1[BulkOp](Seq(Approve(msg), Reject(msg), Reassign(randomUser)), b => s.scenarios.contains(b.typ))
       } yield List(SelectItems(selections), PerformOp(op), VerifyItems)
+      case _ => List()
     }
   } yield com
 
