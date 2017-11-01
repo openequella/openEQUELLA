@@ -76,7 +76,7 @@ trait LogonTestCase {
 
 }
 
-case class FailedTestCase(shortName: String, propertiesClass: String, testCase: Json)
+case class FailedTestCase(shortName: String, propertiesClass: String, failedAfter: Int, testCase: Json)
 
 object FailedTestCase {
   implicit val ftcEnc: Encoder[FailedTestCase] = deriveEncoder
@@ -101,32 +101,35 @@ abstract class StatefulProperties(name: String) extends Properties(name: String)
 
   def runCommandInBrowser(c: Command, s: State, b: Browser): Prop
 
-  def executeProp(shortName: String, allCommands: Seq[Command], replaying: Boolean): Prop = {
+  def executeProp(shortName: String, allCommands: Seq[Command], failedAfter: Option[Int]): Prop = {
     val b = createBrowser
 
-    def nextCommand(s: State, commands: List[Command]): Prop = commands match {
+    def nextCommand(s: State, commands: List[Command], previousCommands: Int): Prop = commands match {
       case Nil => Prop.proved
       case c :: tail => {
-        if (replaying) System.err.println(c.toString)
+        failedAfter.foreach { failedAt =>
+          if (failedAt == previousCommands) System.err.println("*** Failed on next command ***")
+          System.err.println(c.toString)
+        }
         runCommandInBrowser(c, s, b).flatMap { r =>
           if (!r.success) {
             val tc = b.page.ctx.getTestConfig
             val filename = (name + " " + shortName).replace(' ', '_')
             Try(ScreenshotTaker.takeScreenshot(b.page.driver, tc.getScreenshotFolder, filename, tc.isChromeDriverSet))
-            if (!replaying) {
+            if (failedAfter.isEmpty) {
               val testRunFile = Uniqueify.uniqueFile(tc.getResultsFolder.toPath).apply(filename + "_test.json")
-              val failure = FailedTestCase(shortName, getClass.getName, allCommands.asJson).asJson
+              val failure = FailedTestCase(shortName, getClass.getName, previousCommands, allCommands.asJson).asJson
               System.err.println(s"Wrote failed test to ${testRunFile.toAbsolutePath.toString}")
               Files.write(testRunFile, failure.spaces2.getBytes(StandardCharsets.UTF_8))
             }
             Prop(prms => r)
           }
-          else Prop(r) && nextCommand(runCommand(c, s), tail)
+          else Prop(r) && nextCommand(runCommand(c, s), tail, previousCommands + 1)
         }
       }
     }
 
-    nextCommand(initialState, allCommands.toList).map { r => destroyBrowser(b); r }
+    nextCommand(initialState, allCommands.toList, 0).map { r => destroyBrowser(b); r }
   }
 
   def statefulProp(shortName: String)(testCaseGen: Gen[Seq[Command]]) =
