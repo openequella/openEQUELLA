@@ -3,6 +3,7 @@ version: 0.2
 phases:
   pre_build:
     commands:
+      - env
       - setupBuild
   build:
     commands:
@@ -16,6 +17,5 @@ artifacts:
     - target/reference-language-pack.zip
     - target/version.properties
     - Source/Server/equellaserver/target/tle-upgrade*.zip
-    - target/test-artifacts.zip
   discard-paths: yes
 
