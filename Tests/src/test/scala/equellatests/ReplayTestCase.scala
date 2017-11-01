@@ -16,7 +16,8 @@ object ReplayTestCase {
     parse(new String(fileContents, StandardCharsets.UTF_8)).flatMap(_.as[FailedTestCase]).flatMap { ftc =>
       val modSymbol = currentMirror.staticModule(ftc.propertiesClass)
       val propInst = currentMirror.reflectModule(modSymbol).instance.asInstanceOf[StatefulProperties]
-      Decoder.decodeSeq(propInst.testCaseDecoder).decodeJson(ftc.testCase).map(tc => propInst.executeProp(ftc.shortName, tc, replaying = true).check)
+      Decoder.decodeSeq(propInst.testCaseDecoder).decodeJson(ftc.testCase).map(tc => propInst.executeProp(ftc.shortName, tc,
+        Some(ftc.failedAfter)).check)
     }.fold(throw _, _ => ())
   }
 }

@@ -133,7 +133,7 @@ abstract class StatefulProperties(name: String) extends Properties(name: String)
   }
 
   def statefulProp(shortName: String)(testCaseGen: Gen[Seq[Command]]) =
-    property(shortName) = forAllNoShrink(testCaseGen)(tc => executeProp(shortName, tc, false))
+    property(shortName) = forAllNoShrink(testCaseGen)(tc => executeProp(shortName, tc, None))
 
   def applyCommands(s: State, commands: List[Command]): State = {
     commands.foldLeft(s)((s, c) => runCommand(c, s))
