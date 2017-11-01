@@ -16,5 +16,6 @@ artifacts:
     - target/reference-language-pack.zip
     - target/version.properties
     - Source/Server/equellaserver/target/tle-upgrade*.zip
+    - target/test-artifacts.zip
   discard-paths: yes
 
