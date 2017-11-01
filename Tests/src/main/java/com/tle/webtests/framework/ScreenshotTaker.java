@@ -71,9 +71,9 @@ public class ScreenshotTaker {
     {
         ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, 0)");
 
-        int totalWidth = ((Long) ((JavascriptExecutor) driver).executeScript("return document.body.scrollWidth"))
+        int totalWidth = ((Long) ((JavascriptExecutor) driver).executeScript("return document.documentElement.scrollWidth"))
                 .intValue();
-        int totalHeight = ((Long) ((JavascriptExecutor) driver).executeScript("return document.body.scrollHeight"))
+        int totalHeight = ((Long) ((JavascriptExecutor) driver).executeScript("return document.documentElement.scrollHeight"))
                 .intValue();
 
         // Get the Size of the Viewport

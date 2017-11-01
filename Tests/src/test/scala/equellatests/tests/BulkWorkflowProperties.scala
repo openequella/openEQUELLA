@@ -15,6 +15,7 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
   type Command = BulkCommand
   type State = BulkState
 
+  val PageMax = 10
   def logon = adminLogon
 
   object BulkOpTypes extends Enumeration {
@@ -59,7 +60,7 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
     numItems <- Gen.choose(1, 5)
     com <- generateCommands {
       case s if requiredScenarios.subsetOf(s.scenarios) => List()
-      case s if numItems > s.itemsInModeration.size => for {
+      case s if s.itemsInModeration.size < numItems && s.items.size < PageMax => for {
         name <- RandomWords.someWords
       } yield List(BulkCreateItem(Uniqueify.uniquelyNumbered(s.itemNames, name.asString)))
       case s => for {
@@ -87,7 +88,7 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
 
   override def runCommand(c: BulkCommand, s: BulkState) = c match {
     case BulkCreateItem(name) =>
-      val newItem = BulkItem(name, Some("Step 1"), status = "Moderating", assignedTo = Some("admin"))
+      val newItem = BulkItem(name, Some("Step 1"), status = "Moderating", assignedTo = None)
       s.copy(items = s.items :+ newItem)
     case SelectItems(names) => s.copy(selected = names)
     case PerformOp(op) => s.copy(selected = Seq.empty, scenarios = s.scenarios + op.typ, items = s.items.map { i =>
@@ -158,7 +159,7 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
             val res = mrp.resultForName(b.uniquePrefix(n))
             val taskOn = res.taskOn
             val assignedTo = res.assignedTo(adminLogon.fullName).map(nameToUsername)
-            (taskOn ?= task) && (assignedTo ?= ato)
+            ((taskOn ?= task) && (assignedTo ?= ato)).label(s"Item: $n")
         }
       } else Seq.empty
       val mrsp = new ManageResourcesPage(b.page.ctx).load()
