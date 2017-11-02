@@ -3717,4 +3717,95 @@
     <aclOrder>0</aclOrder>
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>30398</id>
+    <expression>
+      <id>1812</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>T:929206:aec48627-c688-46a9-862c-93ff4305d1f3</targetObject>
+    <privilege>VIEW_ITEM</privilege>
+    <aggregateOrdering>3600 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>1600</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>30460</id>
+    <expression>
+      <id>1812</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>T:929206:aec48627-c688-46a9-862c-93ff4305d1f3</targetObject>
+    <privilege>MODERATE_ITEM</privilege>
+    <aggregateOrdering>2000 0001 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>1</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>30461</id>
+    <expression>
+      <id>1812</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>T:929206:8593ea21-fcc8-4860-b9ed-903209c5fdf0</targetObject>
+    <privilege>VIEW_ITEM</privilege>
+    <aggregateOrdering>3600 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>1600</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>30462</id>
+    <expression>
+      <id>1812</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>T:929206:8593ea21-fcc8-4860-b9ed-903209c5fdf0</targetObject>
+    <privilege>MODERATE_ITEM</privilege>
+    <aggregateOrdering>2000 0001 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>1</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>30463</id>
+    <expression>
+      <id>1812</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>T:929206:2c1d0625-b65c-4556-a1b9-07ad74abfa6d</targetObject>
+    <privilege>VIEW_ITEM</privilege>
+    <aggregateOrdering>3600 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>1600</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>30464</id>
+    <expression>
+      <id>1812</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>T:929206:2c1d0625-b65c-4556-a1b9-07ad74abfa6d</targetObject>
+    <privilege>MODERATE_ITEM</privilege>
+    <aggregateOrdering>2000 0001 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>1</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>30620</id>
+    <expression>
+      <id>1812</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>B:929206</targetObject>
+    <privilege>MANAGE_WORKFLOW</privilege>
+    <aggregateOrdering>2000 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>0</aclPriority>
+  </com.tle.beans.security.AccessEntry>
 </list>
