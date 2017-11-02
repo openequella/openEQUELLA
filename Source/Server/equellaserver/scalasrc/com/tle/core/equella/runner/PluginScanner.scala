@@ -128,7 +128,7 @@ object PluginScanner {
           (jpf.id, jpf)
         }.toMap
       convertAll(manifestMap, Set.empty, List.empty, manifestMap.keys)._2.foreach { jpf =>
-        pluginMap.put(jpf.id, new TLEPluginLocation(registry.readManifestInfo(jpf.manUrl), "plugin-jpf.xml",
+        pluginMap.put(jpf.id, new TLEPluginLocation(registry.readManifestInfo(jpf.manUrl), jpf.baseFile.getName,
           new URL("jar", "", jpf.baseFile.toURI + "!/"), jpf.manUrl))
       }
     }
