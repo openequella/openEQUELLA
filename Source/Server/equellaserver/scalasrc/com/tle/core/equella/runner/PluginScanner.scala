@@ -43,7 +43,7 @@ object PluginScanner {
 
   case class JPFLibrary(id: String, libType: String, path: String, export: Option[String])
 
-  case class ParsedJPF(baseDir: File, manUrl: URL, id: String, internalDeps: Set[(String, Boolean)],
+  case class ParsedJPF(baseFile: File, manUrl: URL, id: String, internalDeps: Set[(String, Boolean)],
                        externalDeps: Set[(String, Boolean)], adminConsole: Boolean)
 
 
@@ -106,7 +106,7 @@ object PluginScanner {
       IO.delete(manDir)
 
       convertAll(manifestMap, Set.empty, List.empty, manifestMap.keys)._2.foreach { jpf =>
-        val jpfBase = jpf.baseDir
+        val jpfBase = jpf.baseFile
         val classesDir = jpfBase / "target/scala-2.11/classes"
         val codeLibrary = JPFLibrary("code", "code", classesDir.toURI.toString, Some("*"))
         val resourcesDir = Option(jpfBase / "resources").filter(_.isDirectory)
@@ -129,7 +129,7 @@ object PluginScanner {
         }.toMap
       convertAll(manifestMap, Set.empty, List.empty, manifestMap.keys)._2.foreach { jpf =>
         pluginMap.put(jpf.id, new TLEPluginLocation(registry.readManifestInfo(jpf.manUrl), "plugin-jpf.xml",
-          jpf.baseDir.toURI.toURL, jpf.manUrl))
+          new URL("jar", "", jpf.baseFile.toURI + "!/"), jpf.manUrl))
       }
     }
   }
