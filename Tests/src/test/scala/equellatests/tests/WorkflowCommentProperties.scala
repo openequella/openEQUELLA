@@ -8,9 +8,10 @@ import io.circe.{Decoder, Encoder}
 import org.scalacheck.Arbitrary._
 import equellatests.instgen.workflow._
 import equellatests.pages.HomePage
-import equellatests.pages.moderate.ModerationView
-import equellatests.pages.search.TaskListPage
-import equellatests.pages.wizard.{ContributePage, EditBoxControl}
+import equellatests.pages.moderate.TaskListPage
+import equellatests.pages.wizard.ContributePage
+import equellatests.sections.moderate.ModerationView
+import equellatests.sections.wizard.EditBoxControl
 import org.scalacheck.{Gen, Prop}
 import org.scalacheck.Prop._
 

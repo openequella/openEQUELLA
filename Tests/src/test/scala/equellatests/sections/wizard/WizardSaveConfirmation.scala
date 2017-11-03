@@ -1,7 +1,7 @@
-package equellatests.pages.wizard
+package equellatests.sections.wizard
 
 import com.tle.webtests.framework.PageContext
-import equellatests.pages.{BrowserPage, WaitingBrowserPage}
+import equellatests.browserpage.WaitingBrowserPage
 import equellatests.pages.viewitem.SummaryPage
 import org.openqa.selenium.By
 

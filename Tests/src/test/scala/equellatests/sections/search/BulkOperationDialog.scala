@@ -1,8 +1,8 @@
-package equellatests.pages.search
+package equellatests.sections.search
 
 import com.tle.webtests.framework.PageContext
 import com.tle.webtests.pageobject.generic.component.EquellaSelect
-import equellatests.pages.{BrowserPage, CommonXPath, WaitingBrowserPage}
+import equellatests.browserpage.{CommonXPath, WaitingBrowserPage}
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 

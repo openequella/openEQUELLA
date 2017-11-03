@@ -1,21 +1,22 @@
-package equellatests.pages.search
+package equellatests.pages.moderate
 
 import com.tle.webtests.framework.PageContext
-import equellatests.pages.moderate.ModerationView
-import equellatests.pages.{BrowserPage, WaitingBrowserPage}
+import equellatests.browserpage.{CommonXPath, LoadablePage}
+import equellatests.sections.search._
 import org.openqa.selenium.By
 
 
-class ManageTasksPage(val ctx:PageContext) extends WaitingBrowserPage with QuerySection with NamedResultList {
+case class ManageTasksPage(ctx:PageContext) extends LoadablePage with QuerySection with NamedResultList {
 
-  case class ManageTasksBulkOps(ctx: PageContext, parent: ManageTasksPage) extends BulkOperationDialog
+  case class ManageTasksBulkOps(parent: ManageTasksPage) extends BulkOperationDialog
   {
     type Parent = ManageTasksPage
+    def ctx = ManageTasksPage.this.ctx
   }
 
   def performOperation(): BulkOperationDialog = {
     findElement(By.xpath("//input[@value = 'Perform an action']")).click()
-    ManageTasksBulkOps(ctx, this).get()
+    ManageTasksBulkOps(this).get()
   }
 
 
@@ -25,7 +26,7 @@ class ManageTasksPage(val ctx:PageContext) extends WaitingBrowserPage with Query
     def ctx = ManageTasksPage.this.ctx
   }
 
-  override def pageBy: By = By.xpath("id('header-inner')/div[text()='Manage tasks']")
+  override def pageBy: By = CommonXPath.pageTitle("Manage tasks")
 
   def load() = {
     driver.get(ctx.getBaseUrl + "access/managetasks.do")

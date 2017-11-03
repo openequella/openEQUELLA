@@ -1,6 +1,6 @@
-package equellatests.pages.search
+package equellatests.sections.search
 
-import equellatests.pages.WaitingBrowserPage
+import equellatests.browserpage.WaitingBrowserPage
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 

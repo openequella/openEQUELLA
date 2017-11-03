@@ -8,6 +8,7 @@ import equellatests.instgen.fiveo._
 import equellatests.models.wizardfileupload._
 import equellatests.pages.viewitem.SummaryPage
 import equellatests.pages.wizard._
+import equellatests.sections.wizard.{AttachmentEditPage, FileAttachmentEditPage, PackageAttachmentEditPage, WizardPageTab}
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.auto._
 import org.openqa.selenium.support.ui.ExpectedConditions

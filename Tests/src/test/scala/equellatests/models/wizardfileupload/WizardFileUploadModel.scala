@@ -4,6 +4,7 @@ import java.util.UUID
 
 import equellatests.domain.{ItemId, StandardMimeTypes, TestFile}
 import equellatests.pages.wizard._
+import equellatests.sections.wizard.AttachmentEditPage
 
 case class FileUniversalControl(num: Int, canRestrict: Boolean, canSuppress: Boolean, defaultSuppressed: Boolean, noUnzip: Boolean = false,
                                 maximumAttachments: Int = Int.MaxValue, mimeTypes: Option[Set[String]] = None) {

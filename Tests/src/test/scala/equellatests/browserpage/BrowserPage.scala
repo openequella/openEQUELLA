@@ -1,4 +1,4 @@
-package equellatests.pages
+package equellatests.browserpage
 
 import com.tle.webtests.framework.PageContext
 import org.openqa.selenium.support.ui.{ExpectedCondition, ExpectedConditions, WebDriverWait}

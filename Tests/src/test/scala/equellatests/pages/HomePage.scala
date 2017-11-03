@@ -1,8 +1,14 @@
 package equellatests.pages
 
 import com.tle.webtests.framework.PageContext
+import equellatests.browserpage.LoadablePage
 import org.openqa.selenium.By
 
-class HomePage(val ctx: PageContext) extends WaitingBrowserPage {
+case class HomePage(ctx: PageContext) extends LoadablePage {
   val pageBy = By.xpath("//div[@class='dashboard']")
+
+  override def load() = {
+    driver.get(ctx.getBaseUrl + "home.do")
+    get()
+  }
 }

@@ -1,8 +1,8 @@
 package equellatests.pages.viewitem
 
 import com.tle.webtests.framework.PageContext
-import equellatests.pages.{BrowserPage, WaitingBrowserPage}
-import equellatests.pages.wizard.WizardPageTab
+import equellatests.browserpage.WaitingBrowserPage
+import equellatests.sections.wizard.WizardPageTab
 import org.openqa.selenium.By
 
 class SummaryPage(val ctx: PageContext) extends WaitingBrowserPage {

@@ -1,6 +1,6 @@
-package equellatests.pages.search
+package equellatests.sections.search
 
-import equellatests.pages.BrowserPage
+import equellatests.browserpage.BrowserPage
 import org.openqa.selenium.By
 
 trait NamedResultList extends BrowserPage {

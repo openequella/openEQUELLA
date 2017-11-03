@@ -1,6 +1,5 @@
-package equellatests.pages.wizard
+package equellatests.sections.wizard
 
-import equellatests.pages.BrowserPage
 import org.openqa.selenium.By
 
 case class EditBoxControl(val page: WizardPageTab, val ctrlNum: Int) extends WizardControl {

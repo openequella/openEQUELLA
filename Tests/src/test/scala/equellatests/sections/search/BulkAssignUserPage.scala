@@ -1,7 +1,7 @@
-package equellatests.pages.search
+package equellatests.sections.search
 
 import com.tle.webtests.framework.PageContext
-import equellatests.pages.WaitingBrowserPage
+import equellatests.browserpage.WaitingBrowserPage
 import org.openqa.selenium.By
 
 case class BulkAssignUserPage(ctx: PageContext) extends WaitingBrowserPage {

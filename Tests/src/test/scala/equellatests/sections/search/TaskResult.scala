@@ -1,7 +1,7 @@
-package equellatests.pages.search
+package equellatests.sections.search
 
-import equellatests.pages.moderate.ModerationView
-import equellatests.pages.{CommonXPath, WaitingBrowserPage}
+import equellatests.browserpage.CommonXPath
+import equellatests.sections.moderate.ModerationView
 
 trait TaskResult extends MetadataResult {
 

@@ -1,6 +1,6 @@
-package equellatests.pages.wizard
+package equellatests.sections.wizard
 
-import equellatests.pages.{BrowserPage, WaitingBrowserPage}
+import equellatests.browserpage.WaitingBrowserPage
 import org.openqa.selenium.{By, WebDriver, WebElement}
 
 trait WizardControl extends WaitingBrowserPage {

@@ -1,10 +1,10 @@
-package equellatests.pages.moderate
+package equellatests.sections.moderate
 
 import com.tle.webtests.framework.PageContext
 import com.tle.webtests.pageobject.generic.component.EquellaSelect
+import equellatests.browserpage.{BrowserPage, WaitingBrowserPage}
 import equellatests.domain.TestFile
-import equellatests.pages.search.TaskListPage
-import equellatests.pages.{BrowserPage, WaitingBrowserPage}
+import equellatests.pages.moderate.TaskListPage
 import org.openqa.selenium.{By, WebElement}
 import org.openqa.selenium.support.ui.{ExpectedCondition, ExpectedConditions}
 

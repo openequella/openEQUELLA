@@ -4,8 +4,11 @@ import com.tle.webtests.framework.PageContext
 import equellatests._
 import equellatests.domain.{Fairness, RandomWords, Uniqueify}
 import equellatests.instgen.workflow._
+import equellatests.pages.moderate.ManageTasksPage
 import equellatests.pages.search._
-import equellatests.pages.wizard.{ContributePage, EditBoxControl}
+import equellatests.pages.wizard.ContributePage
+import equellatests.sections.search._
+import equellatests.sections.wizard.EditBoxControl
 import io.circe.generic.auto._
 import io.circe.generic.semiauto._
 import org.scalacheck.Prop._

@@ -1,7 +1,6 @@
-package equellatests.pages.search
+package equellatests.sections.search
 
-import com.tle.webtests.framework.PageContext
-import equellatests.pages.{BrowserPage, WaitingBrowserPage}
+import equellatests.browserpage.BrowserPage
 import org.openqa.selenium.support.ui.ExpectedCondition
 import org.openqa.selenium.{By, WebElement}
 

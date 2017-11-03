@@ -1,8 +1,7 @@
-package equellatests.pages.wizard
+package equellatests.sections.wizard
 
-import equellatests.domain.{TestFile, ValidFilename}
-import equellatests.pages.BrowserPage
-import org.openqa.selenium.{By, WebElement}
+import equellatests.domain.TestFile
+import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.{ExpectedCondition, ExpectedConditions}
 
 import scala.util.Try

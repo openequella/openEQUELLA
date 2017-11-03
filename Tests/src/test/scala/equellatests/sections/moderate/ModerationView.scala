@@ -1,7 +1,7 @@
-package equellatests.pages.moderate
+package equellatests.sections.moderate
 
 import com.tle.webtests.framework.PageContext
-import equellatests.pages.WaitingBrowserPage
+import equellatests.browserpage.WaitingBrowserPage
 import org.openqa.selenium.By
 
 import scala.collection.JavaConverters._

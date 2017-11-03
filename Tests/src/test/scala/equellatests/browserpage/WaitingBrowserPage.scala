@@ -1,7 +1,7 @@
-package equellatests.pages
+package equellatests.browserpage
 
+import org.openqa.selenium.support.ui.{ExpectedCondition, ExpectedConditions}
 import org.openqa.selenium.{By, WebDriver, WebElement}
-import org.openqa.selenium.support.ui.{ExpectedCondition, ExpectedConditions, WebDriverWait}
 
 trait WaitingBrowserPage extends BrowserPage {
   def pageBy : By

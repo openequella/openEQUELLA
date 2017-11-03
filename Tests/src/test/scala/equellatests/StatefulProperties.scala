@@ -6,8 +6,9 @@ import java.nio.file.Files
 import java.util.UUID
 
 import com.tle.webtests.framework.{PageContext, ScreenshotTaker, TestConfig}
+import equellatests.browserpage.BrowserPage
 import equellatests.domain._
-import equellatests.pages.{BrowserPage, HomePage, LoginPage}
+import equellatests.pages.{HomePage, LoginPage}
 import io.circe.generic.semiauto._
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json}

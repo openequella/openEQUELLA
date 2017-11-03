@@ -1,10 +1,11 @@
 package equellatests.pages
 
 import com.tle.webtests.framework.PageContext
+import equellatests.browserpage.LoadablePage
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedCondition
 
-class LoginPage(val ctx: PageContext) extends WaitingBrowserPage {
+case class LoginPage(ctx: PageContext) extends LoadablePage {
 
   def login(username: String, password: String): HomePage =
     loginWithRedirect(username, password, new HomePage(ctx).pageExpectation)
