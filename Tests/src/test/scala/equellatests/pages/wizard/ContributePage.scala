@@ -8,7 +8,7 @@ import org.openqa.selenium.By
 case class ContributePage(ctx: PageContext) extends TitledPage("Contribute", "access/contribute.do") {
 
   def openWizard(name: String) : WizardPageTab = {
-    pageElement.findElement(By.xpath(".//table[contains(@class, 'zebra')]//a[normalize-space(text())="
+    findElement(By.xpath(".//table[contains(@class, 'zebra')]//a[normalize-space(text())="
       + quoteXPath(name) + "]")).click()
     new WizardPageTab(ctx, 0).get()
   }

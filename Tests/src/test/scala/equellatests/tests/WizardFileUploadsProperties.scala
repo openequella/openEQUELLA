@@ -27,7 +27,7 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
   type AttachmentEditGen = (Attachment, FileUniversalControl) => Option[Gen[AttachmentEdit]]
 
   val wizards = Seq("Navigation and Attachments",
-    "Attachment mimetype restriction collection")
+    "Attachment mimetype restriction collecti
 
   val ctrlsForWizard: Map[String, Seq[FileUniversalControl]] = Map(
     "Navigation and Attachments" -> Seq(
@@ -185,7 +185,7 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
   override def runCommandInBrowser(c: FileUploadCommand, s: FileUploadState, b: SimpleSeleniumBrowser) = c match {
     case EditItem => b.runOnPage { case sp: SummaryPage => sp.edit() }
     case CreateItem(name, wizard) => b.run {
-      new ContributePage(b.page.ctx).load().openWizard(wizard)
+      ContributePage(b.page.ctx).load().openWizard(wizard)
     }
     case UploadInlineFile(tf, filename, control, id, failed) => b.runOnPage {
       case page1: WizardPageTab =>
