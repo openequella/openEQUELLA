@@ -27,7 +27,7 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
   type AttachmentEditGen = (Attachment, FileUniversalControl) => Option[Gen[AttachmentEdit]]
 
   val wizards = Seq("Navigation and Attachments",
-    "Attachment mimetype restriction collecti
+    "Attachment mimetype restriction collection")
 
   val ctrlsForWizard: Map[String, Seq[FileUniversalControl]] = Map(
     "Navigation and Attachments" -> Seq(
