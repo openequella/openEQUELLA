@@ -296,7 +296,7 @@ public class RootItemFileSection extends AbstractPrototypeSection<RootItemFileSe
 		{
 			checkRestricted = true;
 		}
-		if( viewer != null )
+		else if( viewer != null )
 		{
 			final IAttachment attachment = viewer.getAttachment(info, resource);
 			if( attachment != null && attachment.isRestricted() )

@@ -19,6 +19,7 @@ package com.tle.web.viewitem.viewer;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.beans.item.attachments.IAttachment;
 import com.tle.core.guice.Bind;
 import com.tle.core.mimetypes.MimeTypeConstants;
 import com.tle.core.services.user.UserService;
@@ -29,10 +30,7 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.equella.utils.TokenModifier;
 import com.tle.web.sections.equella.viewers.AbstractResourceViewer;
 import com.tle.web.sections.standard.ComponentFactory;
-import com.tle.web.viewurl.ResourceViewerConfig;
-import com.tle.web.viewurl.ResourceViewerConfigDialog;
-import com.tle.web.viewurl.ViewItemUrl;
-import com.tle.web.viewurl.ViewableResource;
+import com.tle.web.viewurl.*;
 
 @Bind
 @Singleton
@@ -104,5 +102,16 @@ public class FileViewer extends AbstractResourceViewer
 	public boolean supports(SectionInfo info, ViewableResource resource)
 	{
 		return true;
+	}
+
+	@Override
+	public IAttachment getAttachment(SectionInfo info, ViewItemResource resource)
+	{
+		IAttachment attachment = super.getAttachment(info, resource);
+		if (attachment == null)
+		{
+			return resource.getViewableItem().getAttachmentByFilepath(resource.getFilepath());
+		}
+		return attachment;
 	}
 }
