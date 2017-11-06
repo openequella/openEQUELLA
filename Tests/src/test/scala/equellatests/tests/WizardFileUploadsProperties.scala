@@ -24,7 +24,7 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
   val testCaseDecoder = Decoder.apply
   val testCaseEncoder = Encoder.apply
 
-  type AttachmentEditGen = (Attachment, FileUniversalControl) => Option[Gen[AttachmentEdit]]
+  type AttachmentEditGen = (Attachment, FileUniversalControl, Seq[Attachment]) => Option[Gen[AttachmentEdit]]
 
   val wizards = Seq("Navigation and Attachments",
     "Attachment mimetype restriction collection")
@@ -56,8 +56,8 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
                      canAddNewAttachment: Item => Boolean,
                      edits: AttachmentEditGen*): Gen[Seq[FileUploadCommand]] = {
 
-    def editForAttachment(a: Attachment, uc: FileUniversalControl): Gen[AttachmentEdit] =
-      Gen.oneOf(edits.flatMap(_.apply(a, uc))).flatMap(identity)
+    def editForAttachment(a: Attachment, uc: FileUniversalControl, others: Seq[Attachment]): Gen[AttachmentEdit] =
+      Gen.oneOf(edits.flatMap(_.apply(a, uc, others))).flatMap(identity)
 
     def genCommand(fileCount: Int, state: FileUploadState): Gen[FileUploadCommand] = state.currentPage match {
       case LoginPageLoc =>
@@ -80,7 +80,8 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
         Gen.oneOf(item.attachments.filter(a => !state.edited(a.id) || !state.verified(a.id))).map(a => StartEditingAttachment(a.id))
 
       case AttachmentDetailsPage(a, _, _, _) if state.edited(a.id) => Gen.oneOf(CloseEditDialog, SaveAttachment)
-      case AttachmentDetailsPage(a, edited, uc, _) => editForAttachment(edited, uc).map(ae => EditAttachmentDetails(ae))
+      case AttachmentDetailsPage(a, edited, uc, Page1(item)) =>
+        editForAttachment(edited, uc, item.attachments.filterNot(_.id == a.id)).map(ae => EditAttachmentDetails(ae))
     }
 
     for {
@@ -89,17 +90,18 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
     } yield cl
   }
 
-  val editDescription: AttachmentEditGen = (a, uc) =>
-    Some(arbitrary[ValidDescription].map(vd => DescriptionEdit(vd.desc)))
+  val editDescription: AttachmentEditGen = (a, uc, o) =>
+    Some(arbitrary[ValidDescription].map(vd => DescriptionEdit(
+      Uniqueify.uniqueify(ValidDescription.addNumber)(o.contains, vd).desc)))
 
-  val editViewer: AttachmentEditGen = (a, uc) =>
+  val editViewer: AttachmentEditGen = (a, uc, o) =>
     a.viewerOptions.map(ops => Gen.oneOf(ops.toSeq :+ "").map(v => ViewerEdit(Some(v).filterNot(_.isEmpty))))
 
-  val editRestriction: AttachmentEditGen = (a, uc) => if (uc.canRestrict) Some {
+  val editRestriction: AttachmentEditGen = (a, uc, o) => if (uc.canRestrict) Some {
     Gen.const(RestrictionEdit(!a.restricted))
   } else None
 
-  val editThumbSetting: AttachmentEditGen = (a, uc) => if (uc.canSuppress) Some {
+  val editThumbSetting: AttachmentEditGen = (a, uc, o) => if (uc.canSuppress) Some {
     Gen.const(ThumbSettingEdit(!a.suppressThumb))
   } else None
 
