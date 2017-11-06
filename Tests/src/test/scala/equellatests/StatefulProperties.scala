@@ -141,11 +141,17 @@ abstract class StatefulProperties(name: String) extends Properties(name: String)
   }
 
   def generateCommands(f: State => Gen[List[Command]]): Gen[List[Command]] = {
-    def gen(s: State) : Gen[List[Command]] = {
+    def gen(s: State, previous: List[Command]) : Gen[List[Command]] = {
+      if (previous.size > 500) sys.error("Generating too many commands: "+previous)
       f(s).flatMap {
-        cl => if (cl.isEmpty) Gen.const(Nil) else gen(applyCommands(s, cl)).map(nl => cl ++ nl)
+        cl => if (cl.isEmpty) Gen.const(previous) else gen(applyCommands(s, cl), previous ++ cl)
       }
     }
-    gen(initialState)
+    gen(initialState, List.empty)
+  }
+
+  // for type inference
+  def commandsWith[A](f: A)(pf: PartialFunction[A, Gen[List[Command]]]): Gen[List[Command]] = {
+    pf.apply(f)
   }
 }
