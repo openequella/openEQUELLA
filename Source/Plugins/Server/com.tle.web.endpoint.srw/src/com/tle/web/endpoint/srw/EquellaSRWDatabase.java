@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -52,10 +51,7 @@ import com.tle.beans.item.ItemPack;
 import com.tle.common.Utils;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.searching.Search;
-import com.tle.core.guice.Bind;
 
-@Bind
-@Singleton
 public class EquellaSRWDatabase extends SRWDatabase
 {
 	private static final Logger LOGGER = Logger.getLogger(EquellaSRWDatabase.class);
@@ -78,13 +74,13 @@ public class EquellaSRWDatabase extends SRWDatabase
 	static final SchemaInfo DEFAULT_SCHEMA = SCHEMAS.get("tle"); //$NON-NLS-1$
 
 	@Inject
-	private FreeTextService freeTextService;
+	private static FreeTextService freeTextService;
 	@Inject
-	private ItemService itemService;
+	private static ItemService itemService;
 	@Inject
-	private SchemaService schemaService;
+	private static SchemaService schemaService;
 	@Inject
-	private ItemHelper itemHelper;
+	private static ItemHelper itemHelper;
 
 	@Override
 	public String getExtraResponseData(QueryResult result, SearchRetrieveRequestType request)

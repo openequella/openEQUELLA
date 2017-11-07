@@ -16,7 +16,6 @@
 
 package com.tle.web.endpoint.srw;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -33,7 +32,6 @@ public class SRWServletExt extends ORG.oclc.os.SRW.SRWServlet
 	private static final long serialVersionUID = 1L;
 
 	private static final String DB_NAME = "tle"; //$NON-NLS-1$
-
 
 	@Override
 	public void init() throws ServletException
@@ -56,5 +54,4 @@ public class SRWServletExt extends ORG.oclc.os.SRW.SRWServlet
 		srwInfo.getProperties().put("defaultSchema", EquellaSRWDatabase.DEFAULT_SCHEMA.getTleId()); //$NON-NLS-1$
 		srwInfo.getProperties().put("db." + DB_NAME + ".class", EquellaSRWDatabase.class.getName()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
-
 }
