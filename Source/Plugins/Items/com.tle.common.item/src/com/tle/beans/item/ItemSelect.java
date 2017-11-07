@@ -16,6 +16,8 @@
 
 package com.tle.beans.item;
 
+import com.tle.beans.entity.Schema;
+
 import java.util.ArrayList;
 import java.util.List;
 

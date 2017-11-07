@@ -17,6 +17,7 @@
 package com.tle.web.endpoint.srw;
 
 import ORG.oclc.os.SRW.*;
+import com.tle.beans.item.ItemSelect;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.item.service.ItemService;
@@ -94,6 +95,21 @@ public class EquellaSRWDatabase extends SRWDatabase
 	{
 		DefaultSearch search = new DefaultSearch();
 		search.setQuery(query);
+
+		ItemSelect is = new ItemSelect();
+		is.setAttachments(false);
+		is.setBadurls(false);
+		is.setCollaborators(false);
+		is.setDescription(true);
+		is.setDrm(true);
+		is.setHistory(false);
+		is.setItemdef(true);
+		is.setItemXml(true);
+		is.setModeration(true);
+		is.setName(true);
+		is.setSchema(true);
+		search.setSelect(is);
+
 		int startPoint = 1;
 		PositiveInteger startRec = request.getStartRecord();
 		if( startRec != null )
@@ -306,7 +322,10 @@ public class EquellaSRWDatabase extends SRWDatabase
 				if( transformId != null )
 				{
 					final Schema schema = pack.getItem().getItemDefinition().getSchema();
-					s = schemaService.transformForExport(schema.getId(), transformId, xml, true);
+					if (schema != null)
+					{
+						s = schemaService.transformForExport(schema.getId(), transformId, xml, true);
+					}
 				}
 			}
 
