@@ -16,6 +16,7 @@ import org.openqa.selenium.WebDriver
 import org.scalacheck.Prop._
 import org.scalacheck.{Gen, Prop, Properties}
 
+import scala.collection.mutable
 import scala.util.Try
 
 trait SeleniumBrowser {
@@ -31,6 +32,8 @@ object SimpleSeleniumBrowser {
 case class SimpleSeleniumBrowser(var page: BrowserPage) extends SeleniumBrowser {
 
   private val unique: String = UUID.randomUUID().toString
+
+  val uuidMap: mutable.Map[UUID, UUID] = mutable.Map.empty
 
   def uniquePrefix(s: String) = s"$unique $s"
 
@@ -80,8 +83,8 @@ trait LogonTestCase {
 case class FailedTestCase(shortName: String, propertiesClass: String, failedAfter: Int, testCase: Json)
 
 object FailedTestCase {
-  implicit val ftcEnc: Encoder[FailedTestCase] = deriveEncoder
-  implicit val ftcDec: Decoder[FailedTestCase] = deriveDecoder
+  implicit val ftcEnc: Encoder[FailedTestCase] = deriveEncoder[FailedTestCase]
+  implicit val ftcDec: Decoder[FailedTestCase] = deriveDecoder[FailedTestCase]
 }
 
 abstract class StatefulProperties(name: String) extends Properties(name: String) {

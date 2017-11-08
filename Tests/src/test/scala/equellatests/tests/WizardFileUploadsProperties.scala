@@ -7,6 +7,7 @@ import equellatests.domain._
 import equellatests.instgen.fiveo._
 import equellatests.pages.viewitem.SummaryPage
 import equellatests.pages.wizard._
+import equellatests.restapi.{BasicAttachment, ERest, RItems}
 import equellatests.sections.wizard.{AttachmentEditPage, FileAttachmentEditPage, PackageAttachmentEditPage, WizardPageTab}
 import io.circe.generic.auto._
 import io.circe.generic.semiauto._
@@ -20,13 +21,11 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
   type State = FileUploadState
   type Command = FileUploadCommand
 
-  object EditTypes extends Enumeration
-  {
+  object EditTypes extends Enumeration {
     val Description, Viewer, Restriction, Thumb = Value
   }
 
-  object FailureTypes extends Enumeration
-  {
+  object FailureTypes extends Enumeration {
     val Banned, WrongType = Value
   }
 
@@ -34,34 +33,38 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
                                   maximumAttachments: Int = Int.MaxValue, mimeTypes: Option[Set[String]] = None) {
 
 
-    def matchesEdit(ed: EditTypes.Value): Boolean = ed match {
+
+    def fileCanAchieve(scenario: Either[EditTypes.Value, FailureTypes.Value])(tf: TestFile) : Boolean = scenario match {
+      case Left(ed) if failureType(tf).isEmpty => matchesEdit(ed)(tf)
+      case Right(fail) => matchesFailure(fail)(tf)
+      case _ => false
+    }
+
+    def existsAnyFile(f: TestFile => Boolean) : Boolean = TestFile.testFiles.exists(f)
+
+    def filesForScenario(scenario: Either[EditTypes.Value, FailureTypes.Value]) : Seq[TestFile] =
+      TestFile.testFiles.filter(fileCanAchieve(scenario))
+
+    def matchesEdit(ed: EditTypes.Value)(tf: TestFile): Boolean = ed match {
       case EditTypes.Restriction => canRestrict
       case EditTypes.Thumb => canSuppress
       case EditTypes.Description => true
-      case EditTypes.Viewer => true
+      case EditTypes.Viewer => StandardMimeTypes.viewersForFile(tf).size > 1
     }
 
-    def matchesFailure(failure: FailureTypes.Value)(tf: TestFile) : Boolean = failure match {
+    def matchesFailure(failure: FailureTypes.Value)(tf: TestFile): Boolean = failure match {
       case FailureTypes.Banned => TestFile.bannedExt(tf.extension)
       case FailureTypes.WrongType => mimeTypes.exists(!_.contains(StandardMimeTypes.extMimeMapping(tf.extension)))
     }
-
-    def failureType(tf: TestFile): Option[FailureTypes.Value] = FailureTypes.values.find(matchesFailure(_)(tf))
 
     def illegalReason: PartialFunction[TestFile, String => String] = {
       case tf if mimeTypes.fold(false)(!_.apply(StandardMimeTypes.extMimeMapping(tf.extension))) => fn => s"""This control is restricted to certain file types. "$fn" is not allowed to be uploaded."""
       case tf if TestFile.bannedExt(tf.extension) => fn => s"$fn: File upload cancelled.  File extension has been banned"
     }
 
-    def filesForType(ft: Option[FailureTypes.Value]): Seq[TestFile] = {
-      val filterBy = ft.map(f => matchesFailure(f) _).getOrElse((failureType _).andThen(_.isEmpty))
-      TestFile.testFiles.filter(filterBy)
-    }
+    def failureType(tf: TestFile): Option[FailureTypes.Value] = FailureTypes.values.find(matchesFailure(_)(tf))
 
-    val canFailWith  = FailureTypes.values.filter(ft => TestFile.testFiles.exists(matchesFailure(ft)(_)))
 
-    def failureTypes: Seq[Option[FailureTypes.Value]] =
-      canFailWith.toSeq.map(Option(_)) :+ None
   }
 
   case class Attachment(id: UUID, control: FileUniversalControl, filename: String, description: String, restricted: Boolean,
@@ -186,7 +189,7 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
         mimeTypes = Some(Set("image/jpeg")))
     ))
 
-  def ctrlIndex(item: Item, fuc: FileUniversalControl) : Int =
+  def ctrlIndex(item: Item, fuc: FileUniversalControl): Int =
     ctrlsForWizard(item.wizard).indexOf(fuc)
 
   def fucFromIndex(item: Item, index: Int): FileUniversalControl = ctrlsForWizard(item.wizard).apply(index)
@@ -205,86 +208,90 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
     case EditTypes.Thumb => ThumbSettingEdit(!a.suppressThumb)
   }
 
-  def attachmentCanBeEditedBy(editType: EditTypes.Value)(a: Attachment): Boolean = {
-    editType match {
-      case EditTypes.Viewer => a.viewerOptions.exists(_.size > 1)
-      case e => a.control.matchesEdit(e)
-    }
-  }
+  def attachmentCanBeEditedBy(editType: EditTypes.Value)(a: Attachment): Boolean =
+    a.control.matchesEdit(editType)(a.file)
 
   def availableEdits(item: Item): EditTypes.ValueSet = {
     val attachments = item.attachments
     EditTypes.values.filter(e => attachments.exists(attachmentCanBeEditedBy(e)))
   }
 
+  def availableFailures(item: Item): FailureTypes.ValueSet = {
+    FailureTypes.values.filter(ft => ctrlsThatCanAdd(item).exists(fuc => fuc.existsAnyFile(fuc.matchesFailure(ft))))
+  }
+
   def availableEdits(a: Attachment): EditTypes.ValueSet = {
     EditTypes.values.filter(e => attachmentCanBeEditedBy(e)(a))
   }
 
-  def allPossibleFailures(item: Item) : FailureTypes.ValueSet = {
-    val controls = ctrlsForWizard(item.wizard)
-    FailureTypes.values.filter(ft => controls.exists(_.canFailWith(ft)))
+  def possibleFailures(remaining: FailureTypes.ValueSet)(controls: Seq[FileUniversalControl]): FailureTypes.ValueSet = {
+    remaining.filter(ft => controls.exists(c => c.existsAnyFile(c.matchesFailure(ft))))
   }
 
-  def allPossibleEdits(item: Item): EditTypes.ValueSet = {
-    val controls = ctrlsForWizard(item.wizard)
-    EditTypes.values.filter(ed => controls.exists(_.matchesEdit(ed)))
-  }
-
-  def allScenerios(s: FileUploadState): Boolean = s.savedItem match {
-    case Some(item) => s.savedAgain && s.unverified.isEmpty &&
-      ( (allPossibleFailures(item).forall(s.failures) &&
-      allPossibleEdits(item).forall(s.edits)) || !canAddMore(item))
-    case _ => false
+  def possibleEdits(remaining: EditTypes.ValueSet)(controls: Seq[FileUniversalControl]): EditTypes.ValueSet = {
+    remaining.filter(ed => controls.exists(c => c.existsAnyFile(c.matchesEdit(ed))))
   }
 
 
   statefulProp("edit details") {
-    val finishedSet = EditTypes.ValueSet(EditTypes.Restriction, EditTypes.Viewer, EditTypes.Description)
+    val finishedSet = wizards.map(w => possibleEdits(EditTypes.values)(ctrlsForWizard(w))).reduce(_ ++ _)
+    val finishedFailures = wizards.map(w => possibleFailures(FailureTypes.values)(ctrlsForWizard(w))).reduce(_ ++ _)
     generateCommands {
-      s => commandsWith(s.currentPage) {
-        case p if allScenerios(s) => List()
-        case LoginPageLoc =>
-          for {
-            name <- arbitrary[UniqueRandomWord]
-            wizard <- Gen.oneOf(wizards)
-          } yield List(CreateItem(name.word, wizard))
-        case SummaryPageLoc => List(EditItem)
-        case Page1(item) => {
-          val edits = availableEdits(item)
-          val canEditNewThing = (edits -- s.edits).nonEmpty
-          if (canEditNewThing) {
+      s =>
+        val remainingEdits = finishedSet -- s.edits
+        val remainingFailures = finishedFailures -- s.failures
+        if (s.savedItem.isDefined && s.unverified.isEmpty &&
+          remainingEdits.isEmpty && remainingFailures.isEmpty
+        ) List() else commandsWith(s.currentPage) {
+          case LoginPageLoc =>
             for {
-              a <- Gen.oneOf(item.attachments.filter(a => edits.exists(e => attachmentCanBeEditedBy(e)(a))))
-            } yield List(StartEditingAttachment(a.id))
-          }
-          else {
-            val doneAllEdits = allPossibleEdits(item).forall(s.edits)
-            val doneAllErrors = allPossibleFailures(item).forall(s.failures)
-            if (canAddMore(item) && (!doneAllEdits || !doneAllErrors)) {
+              name <- arbitrary[UniqueRandomWord]
+              wizard <- Gen.oneOf(wizards)
+            } yield List(CreateItem(name.word, wizard))
+          case SummaryPageLoc =>
+            if (s.unverified.nonEmpty) List(EditItem) else {
               for {
-                fuc <- Gen.oneOf(ctrlsThatCanAdd(item))
-                failType <- Fairness.favourIncomplete[Option[FailureTypes.Value]](1, 0)(fuc.failureTypes,
-                  ft => ft.map(s.failures).getOrElse(doneAllEdits))
-                tf <- Gen.oneOf(fuc.filesForType(failType))
-                vfn <- arbitrary[ValidFilename]
-                actualFilename = s"${vfn.filename}.${tf.extension}"
-              } yield List(UploadInlineFile(tf, actualFilename, ctrlIndex(item, fuc), UUID.randomUUID(), failType.isDefined))
-            } else if (s.unverified.isEmpty) List(SaveItem) else for {
-              a <- Gen.oneOf(s.unverified.toSeq)
-            } yield List(StartEditingAttachment(a))
+                name <- arbitrary[UniqueRandomWord]
+                wizard <- Gen.oneOf(wizards)
+              } yield List(CreateItem(name.word, wizard))
+            }
+          case Page1(item) =>
+            val edits = availableEdits(item)
+            val failures = availableFailures(item)
+            val newEdits = edits -- s.edits
+            val newFailures = failures -- s.failures
+            if (newEdits.nonEmpty) {
+              for {
+                a <- Gen.oneOf(item.attachments.filter(a => newEdits.exists(e => attachmentCanBeEditedBy(e)(a))))
+              } yield List(StartEditingAttachment(a.id))
+            }
+            else {
+              val addable = ctrlsThatCanAdd(item)
+              val pEdits = possibleEdits(remainingEdits)(addable)
+              val pErrors = possibleFailures(newFailures)(addable)
+              val allScen = pEdits.toSeq.map(Left(_)) ++ pErrors.toSeq.map(Right(_))
+              if (allScen.nonEmpty) {
+                for {
+                  scen <- Gen.oneOf(allScen)
+                  fuc <- Gen.oneOf(addable.filter(c => c.existsAnyFile(c.fileCanAchieve(scen))))
+                  tf <- Gen.oneOf(fuc.filesForScenario(scen))
+                  vfn <- arbitrary[ValidFilename]
+                  actualFilename = s"${vfn.filename}.${tf.extension}"
+                } yield List(UploadInlineFile(tf, actualFilename, ctrlIndex(item, fuc), UUID.randomUUID(), scen.isRight))
+              } else if (s.unverified.isEmpty) List(SaveItem) else for {
+                a <- Gen.oneOf(s.unverified.toSeq)
+              } yield List(StartEditingAttachment(a))
+            }
+          case AttachmentDetailsPage(a, edited, control, Page1(item)) => {
+            val edits = availableEdits(edited)
+            val newEdits = edits -- s.edits
+            if (newEdits.isEmpty) List(SaveAttachment) else
+              for {
+                editType <- Gen.oneOf(newEdits.toSeq)
+                editCommand <- attachmentEditFor(editType, edited, item.attachments.filterNot(_.id == a.id))
+              } yield List(EditAttachmentDetails(editCommand))
           }
         }
-        case AttachmentDetailsPage(a, edited, control, Page1(item)) => {
-          val edits = availableEdits(edited)
-          val newEdits = edits -- s.edits
-          if (newEdits.isEmpty) List(SaveAttachment) else
-          for {
-            editType <- Gen.oneOf(newEdits.toSeq)
-            editCommand <- attachmentEditFor(editType, edited, item.attachments.filterNot(_.id == a.id))
-          } yield List(EditAttachmentDetails(editCommand))
-        }
-      }
     }
   }
 
@@ -297,10 +304,10 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
 
     c match {
       case EditItem => s.savedItem.map(item => s.copy(currentPage = Page1(item))).getOrElse(s)
-      case CreateItem(name, wizard) => s.copy(currentPage = Page1(Item(None, name, wizard, Seq.empty)))
+      case CreateItem(name, wizard) => s.copy(savedItem = None, savedAgain = false, currentPage = Page1(Item(None, name, wizard, Seq.empty)))
 
       case UploadInlineFile(tf, filename, controlIndex, id, failed) => withCurrentPage {
-        case p1@Page1(item)  =>
+        case p1@Page1(item) =>
           val control = fucFromIndex(item, controlIndex)
           if (!failed) {
             val desc = tf.packageName.getOrElse(filename)
@@ -323,8 +330,7 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
         case AttachmentDetailsPage(_, a, _, page1) => s.copy(currentPage = page1.copy(page1.editingItem.updateAttachment(a)))
       }
       case SaveItem => withCurrentPage {
-        case Page1(item) => s.copy(savedItem = Some(item), savedAgain = s.savedItem.isDefined, currentPage = SummaryPageLoc,
-          unverified = item.attachments.map(_.id).toSet, edits = EditTypes.ValueSet.empty)
+        case Page1(item) => s.copy(savedItem = Some(item), savedAgain = s.savedItem.isDefined, currentPage = SummaryPageLoc)
       }
     }
   }
@@ -337,6 +343,15 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
       (ad.details ?= attachment.details) :| "details",
       (ad.viewers ?= attachment.viewerOptions) :| "viewers",
       if (uc.canSuppress && !attachment.ispackage) (ad.suppressThumb ?= Some(attachment.suppressThumb)) :| "thumb supression flag" else Prop(ad.suppressThumb.isEmpty) :| "no suppress flag"
+    )
+  }
+
+  def compareBasicDetails(ba: BasicAttachment, attachment: Attachment) : Prop = {
+    val uc = attachment.control
+    all(
+      (ba.description ?= attachment.description) :| "description",
+      (ba.restricted ?= attachment.restricted) :| "restricted flag",
+      (ba.viewerO ?= attachment.viewer) :| "viewer"
     )
   }
 
@@ -370,9 +385,20 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
     case CloseEditDialog => b.runOnPage { case fae: AttachmentEditPage => fae.close() }
     case EditAttachmentDetails(changes) => b.runOnPage { case aep: AttachmentEditPage => changes.run(aep); aep }
     case SaveAttachment => b.runOnPage { case aep: AttachmentEditPage => aep.save() }
-    case SaveItem => b.verifyOnPageAndState(s.savedItem.isDefined) {
-      case (false, page1: WizardPageTab) => (page1.save().publish(), true)
-      case (true, page1: WizardPageTab) => (page1.saveToSummary(), true)
+    case SaveItem => b.verifyOnPageAndState(s.currentPage) {
+      case (Page1(item), page1: WizardPageTab) =>
+        val summary = if (s.savedItem.isDefined) page1.saveToSummary() else page1.save().publish()
+        val itemId = summary.itemId()
+        val attachDetails = ERest.run(page1.ctx) {
+          for {
+            ritem <- RItems.get(itemId)
+            zippedWith = item.attachments.map(a => (a, ritem.attachments.find(_.description == a.description)))
+          } yield zippedWith.map {
+            case (a, Some(ba)) => compareBasicDetails(ba, a)
+            case (a, _) => Prop.falsified.label(s"Missing attachment: $a")
+          }
+        }
+        (summary, all(attachDetails: _*))
     }
   }
 
