@@ -18,7 +18,7 @@ case class RItem(uuid: UUID, version: Int, name: Option[String], metadata: Strin
 
 sealed trait RAttachment
 
-case class BasicAttachment(description: String, viewer: String, restricted: Boolean) extends RAttachment
+case class BasicAttachment(description: String, viewer: Option[String], restricted: Boolean, thumbnail: Option[String]) extends RAttachment
 {
-  def viewerO : Option[String] = Some(viewer).filterNot(_.isEmpty)
+  def viewerO : Option[String] = viewer.filterNot(_.isEmpty)
 }

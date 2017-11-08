@@ -58,6 +58,6 @@ object ERest
 
   def get[A : Decoder](uri: Uri): ERest[A] = {
     Free.liftF(ERequest(Method.GET, uri, Map.empty, None,
-      resp => jsonOf[IO, A].decode(resp, false).fold(throw _, identity)))
+      resp => jsonDecoder[IO].decode(resp, false).flatMapF(j => IO.pure(j.as[A])).fold(throw _, identity)))
   }
 }

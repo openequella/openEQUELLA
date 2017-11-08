@@ -236,6 +236,10 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
   statefulProp("edit details") {
     val finishedSet = wizards.map(w => possibleEdits(EditTypes.values)(ctrlsForWizard(w))).reduce(_ ++ _)
     val finishedFailures = wizards.map(w => possibleFailures(FailureTypes.values)(ctrlsForWizard(w))).reduce(_ ++ _)
+    def createNewItem = for {
+      name <- arbitrary[UniqueRandomWord]
+      wizard <- Gen.oneOf(wizards)
+    } yield List(CreateItem(name.word, wizard))
     generateCommands {
       s =>
         val remainingEdits = finishedSet -- s.edits
@@ -243,18 +247,8 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
         if (s.savedItem.isDefined && s.unverified.isEmpty &&
           remainingEdits.isEmpty && remainingFailures.isEmpty
         ) List() else commandsWith(s.currentPage) {
-          case LoginPageLoc =>
-            for {
-              name <- arbitrary[UniqueRandomWord]
-              wizard <- Gen.oneOf(wizards)
-            } yield List(CreateItem(name.word, wizard))
-          case SummaryPageLoc =>
-            if (s.unverified.nonEmpty) List(EditItem) else {
-              for {
-                name <- arbitrary[UniqueRandomWord]
-                wizard <- Gen.oneOf(wizards)
-              } yield List(CreateItem(name.word, wizard))
-            }
+          case LoginPageLoc => createNewItem
+          case SummaryPageLoc => if (s.unverified.nonEmpty) List(EditItem) else createNewItem
           case Page1(item) =>
             val edits = availableEdits(item)
             val failures = availableFailures(item)
@@ -351,7 +345,8 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
     all(
       (ba.description ?= attachment.description) :| "description",
       (ba.restricted ?= attachment.restricted) :| "restricted flag",
-      (ba.viewerO ?= attachment.viewer) :| "viewer"
+      (ba.viewerO ?= attachment.viewer) :| "viewer",
+      (if (attachment.suppressThumb) ba.thumbnail ?= Some("none") else Prop.proved) :| "suppressThumb"
     )
   }
 
@@ -392,8 +387,7 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
         val attachDetails = ERest.run(page1.ctx) {
           for {
             ritem <- RItems.get(itemId)
-            zippedWith = item.attachments.map(a => (a, ritem.attachments.find(_.description == a.description)))
-          } yield zippedWith.map {
+          } yield item.attachments.map(a => (a, ritem.attachments.find(_.description == a.description))).map {
             case (a, Some(ba)) => compareBasicDetails(ba, a)
             case (a, _) => Prop.falsified.label(s"Missing attachment: $a")
           }
