@@ -16,15 +16,19 @@
 
 package com.tle.web.endpoint.srw;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import ORG.oclc.os.SRW.SRWServletInfo;
 
 import com.tle.core.guice.Bind;
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
 
 @Bind
 @Singleton
@@ -32,8 +36,8 @@ public class SRWServletExt extends ORG.oclc.os.SRW.SRWServlet
 {
 	private static final long serialVersionUID = 1L;
 
+	private static final Logger LOGGER = Logger.getLogger(SRWServletExt.class);
 	private static final String DB_NAME = "tle"; //$NON-NLS-1$
-
 
 	@Override
 	public void init() throws ServletException
@@ -57,4 +61,22 @@ public class SRWServletExt extends ORG.oclc.os.SRW.SRWServlet
 		srwInfo.getProperties().put("db." + DB_NAME + ".class", EquellaSRWDatabase.class.getName()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
+	@Override
+	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException
+	{
+		ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
+		try
+		{
+			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+			super.service(req, res);
+		}
+		catch (Exception e)
+		{
+			LOGGER.error("Error invoking SRU/SRW servlet", e);
+		}
+		finally
+		{
+			Thread.currentThread().setContextClassLoader(oldLoader);
+		}
+	}
 }

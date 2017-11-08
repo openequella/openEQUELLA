@@ -17,6 +17,7 @@
 package com.tle.web.endpoint.srw;
 
 import ORG.oclc.os.SRW.*;
+import com.tle.beans.item.ItemSelect;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.item.service.ItemService;
@@ -36,7 +37,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -52,10 +52,7 @@ import com.tle.beans.item.ItemPack;
 import com.tle.common.Utils;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.searching.Search;
-import com.tle.core.guice.Bind;
 
-@Bind
-@Singleton
 public class EquellaSRWDatabase extends SRWDatabase
 {
 	private static final Logger LOGGER = Logger.getLogger(EquellaSRWDatabase.class);
@@ -78,13 +75,13 @@ public class EquellaSRWDatabase extends SRWDatabase
 	static final SchemaInfo DEFAULT_SCHEMA = SCHEMAS.get("tle"); //$NON-NLS-1$
 
 	@Inject
-	private FreeTextService freeTextService;
+	private static FreeTextService freeTextService;
 	@Inject
-	private ItemService itemService;
+	private static ItemService itemService;
 	@Inject
-	private SchemaService schemaService;
+	private static SchemaService schemaService;
 	@Inject
-	private ItemHelper itemHelper;
+	private static ItemHelper itemHelper;
 
 	@Override
 	public String getExtraResponseData(QueryResult result, SearchRetrieveRequestType request)
@@ -98,6 +95,21 @@ public class EquellaSRWDatabase extends SRWDatabase
 	{
 		DefaultSearch search = new DefaultSearch();
 		search.setQuery(query);
+
+		ItemSelect is = new ItemSelect();
+		is.setAttachments(false);
+		is.setBadurls(false);
+		is.setCollaborators(false);
+		is.setDescription(true);
+		is.setDrm(true);
+		is.setHistory(false);
+		is.setItemdef(true);
+		is.setItemXml(true);
+		is.setModeration(true);
+		is.setName(true);
+		is.setSchema(true);
+		search.setSelect(is);
+
 		int startPoint = 1;
 		PositiveInteger startRec = request.getStartRecord();
 		if( startRec != null )
@@ -310,7 +322,10 @@ public class EquellaSRWDatabase extends SRWDatabase
 				if( transformId != null )
 				{
 					final Schema schema = pack.getItem().getItemDefinition().getSchema();
-					s = schemaService.transformForExport(schema.getId(), transformId, xml, true);
+					if (schema != null)
+					{
+						s = schemaService.transformForExport(schema.getId(), transformId, xml, true);
+					}
 				}
 			}
 

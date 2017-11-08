@@ -19,7 +19,9 @@
 		<library type="resources" path="resources/" id="resources" />
 	</runtime>
 
-	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules"/>
+	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+        <parameter id="class" value="com.tle.web.endpoint.srw.guice.SRWEndpointModule" />
+    </extension>
 
 	<extension plugin-id="com.tle.web.core" point-id="webServlet" id="srwServlet">
 		<parameter id="bean" value="bean:com.tle.web.endpoint.srw.SRWServletExt" />
