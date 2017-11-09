@@ -20,20 +20,11 @@ import scala.collection.mutable
 import scala.util.Try
 
 trait SeleniumBrowser {
-  def page: BrowserPage
-}
+  var page: BrowserPage
 
-object SimpleSeleniumBrowser {
-  val wrongPageProp = Prop.falsified.label("Expected to be on a different page")
-  val wrongState: BrowserPage => (BrowserPage, Prop) =
-    _ -> wrongPageProp
-}
+  var unique: String = UUID.randomUUID().toString
 
-case class SimpleSeleniumBrowser(var page: BrowserPage) extends SeleniumBrowser {
-
-  private val unique: String = UUID.randomUUID().toString
-
-  val uuidMap: mutable.Map[UUID, UUID] = mutable.Map.empty
+  def resetUnique() : Unit = unique = UUID.randomUUID().toString
 
   def uniquePrefix(s: String) = s"$unique $s"
 
@@ -54,15 +45,22 @@ case class SimpleSeleniumBrowser(var page: BrowserPage) extends SeleniumBrowser 
 
   def verifyOnPageAndState[S](s: S)(action: PartialFunction[(S, BrowserPage), (BrowserPage, Prop)]): Prop =
     withTry(Try(action.applyOrElse(s -> page, (p: (S, BrowserPage)) => p._2 -> SimpleSeleniumBrowser.wrongPageProp)))
-
 }
+
+object SimpleSeleniumBrowser {
+  val wrongPageProp = Prop.falsified.label("Expected to be on a different page")
+  val wrongState: BrowserPage => (BrowserPage, Prop) =
+    _ -> wrongPageProp
+}
+
+case class SimpleSeleniumBrowser(var page: BrowserPage) extends SeleniumBrowser
 
 trait LogonTestCase {
   def logon: TestLogon
 
-  type Browser = SimpleSeleniumBrowser
+  type Browser <: SeleniumBrowser
 
-  def createInital = SimpleSeleniumBrowser
+  def createInital : BrowserPage => Browser
 
   def createBrowser: Browser = {
     val testConfig = new TestConfig(GlobalConfig.baseFolderForInst(logon.inst), false)
@@ -78,6 +76,12 @@ trait LogonTestCase {
     sut.page.driver.quit()
   }
 
+}
+
+trait SimpleTestCase extends LogonTestCase
+{
+  type Browser = SimpleSeleniumBrowser
+  override def createInital: BrowserPage => Browser = SimpleSeleniumBrowser.apply
 }
 
 case class FailedTestCase(shortName: String, propertiesClass: String, failedAfter: Int, testCase: Json)

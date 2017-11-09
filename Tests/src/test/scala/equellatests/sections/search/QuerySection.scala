@@ -1,10 +1,8 @@
 package equellatests.sections.search
 
-import equellatests.browserpage.BrowserPage
-import org.openqa.selenium.support.ui.ExpectedCondition
 import org.openqa.selenium.{By, WebElement}
 
-trait QuerySection extends BrowserPage {
+trait QuerySection extends ResultsUpdatable {
 
   def queryField : WebElement = findElement(By.name("q"))
 
@@ -16,7 +14,7 @@ trait QuerySection extends BrowserPage {
   }
 
   def searchButton : WebElement = findElement(By.id("searchform-search"))
-  def resultsUpdateExpectation : ExpectedCondition[_]
+
   def search(): this.type = {
     val expect = resultsUpdateExpectation
     searchButton.click()

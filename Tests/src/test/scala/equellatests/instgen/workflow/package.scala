@@ -1,5 +1,7 @@
 package equellatests.instgen
 
+import java.util.UUID
+
 import equellatests.GlobalConfig
 import equellatests.domain.TestLogon
 
@@ -28,5 +30,12 @@ package object workflow {
     case "Simple Moderator" => "SimpleModerator"
     case "ad min" => "admin"
   }
+
+  def usernameToId(username: String): String = username match {
+    case "admin" => "83bb1131-e54c-6f1e-e063-9d00597c8d97"
+    case "SimpleModerator" => "d58b8087-7d64-2115-c187-20e5eb890743"
+  }
+
+  val threeStepWMUuid = UUID.fromString("51925f8b-86f9-4078-844f-3f1b3089f16c")
 
 }

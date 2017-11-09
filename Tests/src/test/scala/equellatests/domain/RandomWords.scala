@@ -13,6 +13,9 @@ object RandomWords {
   } yield RandomWords(words)
 
   implicit val arbWords : Arbitrary[RandomWords] = Arbitrary(someWords)
+
+  def withNumberAfter(n: Int, v: RandomWords) : RandomWords = v.copy(v.words :+ s"($n)")
+
 }
 
 case class RandomWords(words:Seq[String]) {

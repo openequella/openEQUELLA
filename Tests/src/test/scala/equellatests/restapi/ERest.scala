@@ -5,12 +5,14 @@ import cats.effect.IO
 import cats.free.Free
 import cats.~>
 import com.tle.webtests.framework.{PageContext, TestConfig}
-import io.circe.{Decoder, Json}
+import io.circe.{Decoder, Encoder, Json}
+import io.circe.syntax._
 import org.asynchttpclient.DefaultAsyncHttpClientConfig
 import org.asynchttpclient.proxy.ProxyServer
 import org.http4s.circe._
 import org.http4s.client.asynchttpclient.AsyncHttpClient
-import org.http4s.{Cookie, Headers, Method, Request, Response, Uri, headers}
+import org.http4s.client.blaze.PooledHttp1Client
+import org.http4s.{Cookie, Headers, Method, Request, Response, Status, Uri, headers}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -18,11 +20,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 sealed trait ERestA[A]
 
 case class ERequest[A](method: Method, uri: Uri, params: Map[String, Seq[String]], body: Option[Json],
-                      f: Response[IO] => IO[A]) extends ERestA[A]
+                       f: Response[IO] => IO[A]) extends ERestA[A]
+case class ERelativeUri(fullUri: Uri, base: Uri) extends ERestA[Option[Uri]]
 
 
-object ERest
-{
+object ERest {
+  val blazeClient = PooledHttp1Client[IO]()
   val configBuilder = new DefaultAsyncHttpClientConfig.Builder(AsyncHttpClient.defaultConfig)
   val client = {
     if (TestConfig.getConfigProps.hasPath("proxy")) {
@@ -45,7 +48,15 @@ object ERest
           val reqUri = ctx.base.resolve(uri).setQueryParams(params)
           val _req = Request[IO](method, reqUri).withHeaders(Headers(headers.Cookie(ctx.cookies)))
           val req = body.map(j => _req.withBody(j)).getOrElse(IO.pure(_req))
-          client.fetch(req)(resp => f(resp))
+          blazeClient.fetch(req)(resp => f(resp))
+        }
+        case ERelativeUri(uri, base) => pageIO { ctx => IO.pure {
+            val basePath = ctx.base.resolve(base).path
+            val fullPath = uri.path
+            if (fullPath.startsWith(basePath)) {
+              Some(Uri.unsafeFromString(fullPath.substring(basePath.length)))
+            } else None
+          }
         }
       }
   }
@@ -56,8 +67,14 @@ object ERest
     er.foldMap(pureCompiler).run(reqctx).unsafeRunSync()
   }
 
-  def get[A : Decoder](uri: Uri): ERest[A] = {
-    Free.liftF(ERequest(Method.GET, uri, Map.empty, None,
-      resp => jsonDecoder[IO].decode(resp, false).flatMapF(j => IO.pure(j.as[A])).fold(throw _, identity)))
+  def get[A: Decoder](uri: Uri, params: Map[String, Seq[String]] = Map.empty): ERest[A] = Free.liftF {
+    ERequest(Method.GET, uri, params, None, resp =>
+      jsonDecoder[IO].decode(resp, false).flatMapF(j => IO.pure(j.as[A])).fold(throw _, identity))
+  }
+
+  def relative(fullUri: Uri, base: Uri): ERest[Option[Uri]] = Free.liftF(ERelativeUri(fullUri, base))
+
+  def postCheckHeaders[A: Encoder](uri: Uri, a: A, params: Map[String, Seq[String]] = Map.empty) : ERest[(Status, Headers)] = Free.liftF {
+    ERequest(Method.POST, uri, params, Some(a.asJson), resp => IO.pure((resp.status, resp.headers)))
   }
 }

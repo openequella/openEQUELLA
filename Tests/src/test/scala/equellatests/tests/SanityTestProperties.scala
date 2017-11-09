@@ -10,11 +10,11 @@ import equellatests.pages.moderate.{ManageTasksPage, TaskListPage}
 import equellatests.pages.{HomePage, RemoteReposPage, ReportsPage}
 import equellatests.pages.search._
 import equellatests.pages.wizard.ContributePage
-import equellatests.{LogonTestCase, StatefulProperties}
+import equellatests.{LogonTestCase, SimpleTestCase, StatefulProperties}
 import io.circe.{Decoder, Encoder}
 import org.scalacheck.{Gen, Prop}
 
-object SanityTestProperties extends StatefulProperties("Sanity test") with LogonTestCase {
+object SanityTestProperties extends StatefulProperties("Sanity test") with SimpleTestCase {
 
 //    /access/browseby.do
 //    /cloud/viewitem.do

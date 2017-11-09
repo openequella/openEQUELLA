@@ -16,7 +16,7 @@ import org.scalacheck.{Gen, Prop}
 import org.scalacheck.Prop._
 
 
-object WorkflowCommentProperties extends StatefulProperties("Workflow comments") with LogonTestCase {
+object WorkflowCommentProperties extends StatefulProperties("Workflow comments") with SimpleTestCase {
 
   type State = WorkflowCommentState
   type Command = WorkflowCommentCommand

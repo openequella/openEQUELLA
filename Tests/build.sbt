@@ -31,6 +31,7 @@ libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-simple" % "1.7.5",
   "org.scalacheck" %% "scalacheck" % "1.13.5" % Test,
   "org.http4s" %% "http4s-async-http-client" % http4sVersion,
+  "org.http4s" %% "http4s-blaze-client" % http4sVersion,
   "org.http4s" %% "http4s-circe" % http4sVersion,
   "org.typelevel" %% "cats-free" % catsVersion
 )

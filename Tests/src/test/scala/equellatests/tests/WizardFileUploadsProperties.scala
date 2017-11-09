@@ -3,6 +3,7 @@ package equellatests.tests
 import java.util.UUID
 
 import equellatests._
+import equellatests.browserpage.BrowserPage
 import equellatests.domain._
 import equellatests.instgen.fiveo._
 import equellatests.pages.viewitem.SummaryPage
@@ -17,7 +18,7 @@ import org.scalacheck.Prop._
 import org.scalacheck.{Gen, Prop}
 
 
-object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploads") with LogonTestCase {
+object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploads") with SimpleTestCase {
   type State = FileUploadState
   type Command = FileUploadCommand
 

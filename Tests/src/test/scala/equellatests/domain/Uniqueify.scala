@@ -16,6 +16,11 @@ object Uniqueify {
     rec(1)
   }
 
+  def uniqueSeq[A](mkUniqueAttempt: (Int,A) => A)(list: Seq[A]): Seq[A] = {
+    val uniqf = uniqueify(mkUniqueAttempt) _
+    list.foldRight(List.empty[A])((a, already) => uniqf(already.contains, a) :: already)
+  }
+
   val uniquelyNumbered = uniqueify(numberAfter) _
 
   def numberAfter(n: Int, v: String) : String =

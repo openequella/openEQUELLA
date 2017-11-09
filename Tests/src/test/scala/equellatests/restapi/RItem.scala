@@ -2,23 +2,84 @@ package equellatests.restapi
 
 import java.util.UUID
 
-import io.circe.{Decoder, Encoder}
+import equellatests.restapi.RNodeStatus.RNodeStatus
+import equellatests.restapi.RStatusNodeType.RStatusNodeType
+import io.circe.{Decoder, Encoder, HCursor}
+import io.circe.generic.auto._
 
 object RStatus extends Enumeration {
   type RStatus = Value
-  val live, moderating = Value
-  implicit val encRStatus : Encoder[RStatus] = Encoder.enumEncoder(RStatus)
-  implicit val decRStatus : Decoder[RStatus] = Decoder.enumDecoder(RStatus)
+  val live, moderating, rejected, draft = Value
+  implicit val encRStatus: Encoder[RStatus] = Encoder.enumEncoder(RStatus)
+  implicit val decRStatus: Decoder[RStatus] = Decoder.enumDecoder(RStatus)
 }
 
 import RStatus._
 
-case class RItem(uuid: UUID, version: Int, name: Option[String], metadata: String, status: RStatus,
-                 attachments: Seq[BasicAttachment])
+case class RCollectionRef(uuid: UUID)
+
+case class RUserRef(id: String)
+
+case class RUserRefO(id: Option[String])
+
+case class RCreateItem(collection: RCollectionRef, metadata: String, attachments: Seq[BasicAttachment] = Seq.empty)
+
+case class RItem(uuid: UUID, version: Int, collection: RCollectionRef, metadata: String, name: Option[String],
+                 status: RStatus, attachments: Seq[BasicAttachment])
 
 sealed trait RAttachment
 
-case class BasicAttachment(description: String, viewer: Option[String], restricted: Boolean, thumbnail: Option[String]) extends RAttachment
-{
-  def viewerO : Option[String] = viewer.filterNot(_.isEmpty)
+case class BasicAttachment(description: String, viewer: Option[String], restricted: Boolean, thumbnail: Option[String]) extends RAttachment {
+  def viewerO: Option[String] = viewer.filterNot(_.isEmpty)
+}
+
+object RNodeStatus extends Enumeration {
+  type RNodeStatus = Value
+  val incomplete, complete = Value
+  implicit val encRStatus: Encoder[RNodeStatus] = Encoder.enumEncoder(RNodeStatus)
+  implicit val decRStatus: Decoder[RNodeStatus] = Decoder.enumDecoder(RNodeStatus)
+}
+
+object RStatusNodeType extends Enumeration {
+  type RStatusNodeType = Value
+  val serial, task = Value
+  implicit val encRStatus: Encoder[RStatusNodeType] = Encoder.enumEncoder(RStatusNodeType)
+  implicit val decRStatus: Decoder[RStatusNodeType] = Decoder.enumDecoder(RStatusNodeType)
+}
+
+
+sealed trait StatusNode {
+  def children: Seq[StatusNode]
+}
+
+case class StandardStatus(uuid: UUID, name: String, status: RNodeStatus, children: Seq[StatusNode],
+                          `type`: RStatusNodeType) extends StatusNode
+
+case class TaskStatus(uuid: UUID, name: String, status: RNodeStatus, children: Seq[StatusNode],
+                      assignedTo: RUserRefO) extends StatusNode
+
+object StatusNode {
+
+  implicit val decStatusNode: Decoder[StatusNode] = new Decoder[StatusNode] {
+    final def apply(c: HCursor): Decoder.Result[StatusNode] = c.downField("type").as[String].flatMap { typ =>
+      typ match {
+        case "task" => c.as[TaskStatus]
+        case o => c.as[StandardStatus]
+      }
+    }
+  }
+}
+
+case class RModeration(status: RStatus, nodes: Option[StatusNode]) {
+  def allNodes: Seq[StatusNode] = {
+    def plusChildren(node: StatusNode): Seq[StatusNode] = {
+      Seq(node) ++ node.children.flatMap(plusChildren)
+    }
+
+    nodes.map(plusChildren).getOrElse(Seq.empty)
+  }
+
+  def firstIncompleteTask : Option[TaskStatus] = allNodes.collectFirst {
+    case ts@TaskStatus(_, _, RNodeStatus.incomplete, _, _) => ts
+  }
 }
