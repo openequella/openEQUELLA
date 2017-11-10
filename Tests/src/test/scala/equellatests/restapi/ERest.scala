@@ -25,14 +25,13 @@ case class ERelativeUri(fullUri: Uri, base: Uri) extends ERestA[Option[Uri]]
 
 
 object ERest {
-  val blazeClient = PooledHttp1Client[IO]()
   val configBuilder = new DefaultAsyncHttpClientConfig.Builder(AsyncHttpClient.defaultConfig)
   val client = {
     if (TestConfig.getConfigProps.hasPath("proxy")) {
       val p = TestConfig.getConfigProps.getConfig("proxy")
       configBuilder.setProxyServer(new ProxyServer.Builder(p.getString("host"), p.getInt("port")))
-    }
-    AsyncHttpClient[IO](configBuilder.build())
+      AsyncHttpClient[IO](configBuilder.build())
+    } else PooledHttp1Client[IO]()
   }
 
   case class ReqContext(base: Uri, cookies: NonEmptyList[Cookie])
