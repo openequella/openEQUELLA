@@ -45,13 +45,13 @@ public class NotificationPortalExtension implements TaskListExtension // NOSONAR
 		Builder<TaskListSubsearch> notificationFilters = ImmutableList.builder();
 		notificationFilters.add(factory.create(NotifcationPortalConstants.ID_ALL, "", false));
 		notificationFilters.add(factory.create("notewentlive", Notification.REASON_WENTLIVE, true));
+		notificationFilters.add(factory.create("notewentlive2", Notification.REASON_WENTLIVE2, true));
+		notificationFilters.add(factory.create("notemylive", Notification.REASON_MYLIVE, true));
 		notificationFilters.add(factory.create("noterejected", Notification.REASON_REJECTED, true));
 		notificationFilters.add(factory.create("notebadurl", Notification.REASON_BADURL, true));
-		notificationFilters.add(factory.create("notewentlive2", Notification.REASON_WENTLIVE2, true));
 		notificationFilters.add(factory.create("noteoverdue", Notification.REASON_OVERDUE, true));
 		notificationFilters.add(factory.create("noteerror", Notification.REASON_SCRIPT_ERROR, true));
 		notificationFilters.add(factory.create("noteexecuted", Notification.REASON_SCRIPT_EXECUTED, true));
-		notificationFilters.add(factory.create("notemylive", Notification.REASON_MYLIVE, true));
 		return notificationFilters.build();
 	}
 }
