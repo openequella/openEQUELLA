@@ -12,7 +12,7 @@ phases:
       - cp codebuild/global.sbt ~/.sbt/0.13/
   pre_build:
     commands:
-      - (cd $HOME && aws s3 cp s3://edalexdev/edalexEquella/equella-installer-6.5.zip .)
+      - (cd $HOME && curl -OL https://s3.amazonaws.com/edalexdev/equella_artifacts/latest/equella-installer-6.5.zip)
   build:
     commands:
       - (cd IntegTester/ps && npm install && bower --allow-root install && npm run build)
