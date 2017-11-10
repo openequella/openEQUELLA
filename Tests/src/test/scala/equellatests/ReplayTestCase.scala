@@ -19,5 +19,6 @@ object ReplayTestCase {
       Decoder.decodeSeq(propInst.testCaseDecoder).decodeJson(ftc.testCase).map(tc => propInst.executeProp(ftc.shortName, tc,
         Some(ftc.failedAfter)).check)
     }.fold(throw _, _ => ())
+    sys.exit()
   }
 }

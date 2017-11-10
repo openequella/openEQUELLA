@@ -338,7 +338,7 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
       (ad.details ?= attachment.details) :| "details",
       (ad.viewers ?= attachment.viewerOptions) :| "viewers",
       if (uc.canSuppress && !attachment.ispackage) (ad.suppressThumb ?= Some(attachment.suppressThumb)) :| "thumb supression flag" else Prop(ad.suppressThumb.isEmpty) :| "no suppress flag"
-    )
+    ).label(attachment.description)
   }
 
   def compareBasicDetails(ba: BasicAttachment, attachment: Attachment) : Prop = {
@@ -348,7 +348,7 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
       (ba.restricted ?= attachment.restricted) :| "restricted flag",
       (ba.viewerO ?= attachment.viewer) :| "viewer",
       (if (attachment.suppressThumb) ba.thumbnail ?= Some("none") else Prop.proved) :| "suppressThumb"
-    )
+    ).label(attachment.description)
   }
 
   override def runCommandInBrowser(c: FileUploadCommand, s: FileUploadState, b: SimpleSeleniumBrowser) = c match {
