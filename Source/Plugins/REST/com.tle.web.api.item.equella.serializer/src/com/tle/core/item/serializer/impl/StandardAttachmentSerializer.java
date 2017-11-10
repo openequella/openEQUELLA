@@ -132,12 +132,6 @@ public class StandardAttachmentSerializer extends AbstractAttachmentSerializer
 			default:
 				break;
 		}
-		if( bean != null )
-		{
-			bean.setThumbnail(attachment.getThumbnail());
-			bean.setRestricted(attachment.isRestricted());
-		}
-
 		return bean;
 	}
 

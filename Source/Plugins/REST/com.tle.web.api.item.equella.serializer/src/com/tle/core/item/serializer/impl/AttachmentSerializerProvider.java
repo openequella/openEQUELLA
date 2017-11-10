@@ -112,7 +112,12 @@ public class AttachmentSerializerProvider implements ItemSerializerProvider, Map
 						throw new RuntimeException("No attachment serializer for type '" + type + "'");
 					}
 					EquellaAttachmentBean attachBean = attachmentSerializer.serialize(attachment);
+					attachBean.setRestricted(attachment.isRestricted());
 					attachBean.setPreview(attachment.isPreview());
+					if (attachBean.getThumbnail() == null)
+					{
+						attachBean.setThumbnail(attachment.getThumbnail());
+					}
 					if( attachBean.getUuid() == null )
 					{
 						attachBean.setUuid(attachment.getUuid());
