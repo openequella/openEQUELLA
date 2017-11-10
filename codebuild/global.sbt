@@ -1,3 +1,3 @@
 concurrentRestrictions in Global := Seq(
-  Tags.limit(Tags.Test, 4)
+  Tags.limit(Tags.Test, 2)
 )
