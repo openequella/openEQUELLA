@@ -8,6 +8,8 @@ phases:
       - /etc/init.d/postgresql start
       - su -l -c "psql -c \"CREATE USER equellatests WITH PASSWORD 'password';\"" postgres
       - su -l -c "psql -c 'CREATE DATABASE equellatests WITH OWNER = equellatests;'" postgres
+      - mkdir -p ~/.sbt/0.13/
+      - cp codebuild/global.sbt ~/.sbt/0.13/
   pre_build:
     commands:
       - (cd $HOME && curl -OL https://s3.amazonaws.com/edalexdev/equella_artifacts/latest/equella-installer-6.5.zip)
@@ -17,7 +19,7 @@ phases:
       - sbt IntegTester/assembly
       - java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
       - sbt installEquella startEquella
-      - sbt configureInstall setupForTests Tests/test
+      - sbt configureInstall setupForTests ${OTHER_TESTS} Tests/test
       - sbt coverageReport
   post_build:
     commands:
