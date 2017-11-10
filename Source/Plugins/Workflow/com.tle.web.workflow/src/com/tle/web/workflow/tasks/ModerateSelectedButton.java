@@ -84,7 +84,7 @@ public class ModerateSelectedButton extends TaskSelectionSection
 	protected boolean showExecuteButton(SectionInfo info)
 	{
 		return !aclService.filterNonGrantedPrivileges(
-			Arrays.asList(new String[]{"APPROVE_BULK_TASKS", "REJECT_BULK_TASKS"}), true).isEmpty();
+			Arrays.asList(new String[]{"APPROVE_BULK_TASKS", "REJECT_BULK_TASKS", "MANAGE_WORKFLOW"}), true).isEmpty();
 	}
 
 	public Button getModerateSelectedButton()
