@@ -11,11 +11,15 @@ case class ResetToTaskConfigPage(ctx: PageContext) extends WaitingBrowserPage {
     sel.selectByVisibleText(task)
   }
 
+  def comment : String = commentField.getText
+
   def comment_=(msg: String) : Unit = {
-    val field = findElementById("bwtmo_commentField")
+    val field = commentField
     field.clear()
     field.sendKeys(msg)
   }
+
+  private def commentField = findElementById("bwtmo_commentField")
 
   override def pageBy = By.xpath("//h3[text()='Resetting to another workflow task']")
 }

@@ -48,7 +48,7 @@ object ERest {
           val reqUri = ctx.base.resolve(uri).setQueryParams(params)
           val _req = Request[IO](method, reqUri).withHeaders(Headers(headers.Cookie(ctx.cookies)))
           val req = body.map(j => _req.withBody(j)).getOrElse(IO.pure(_req))
-          blazeClient.fetch(req)(resp => f(resp))
+          client.fetch(req)(resp => f(resp))
         }
         case ERelativeUri(uri, base) => pageIO { ctx => IO.pure {
             val basePath = ctx.base.resolve(base).path
@@ -75,6 +75,6 @@ object ERest {
   def relative(fullUri: Uri, base: Uri): ERest[Option[Uri]] = Free.liftF(ERelativeUri(fullUri, base))
 
   def postCheckHeaders[A: Encoder](uri: Uri, a: A, params: Map[String, Seq[String]] = Map.empty) : ERest[(Status, Headers)] = Free.liftF {
-    ERequest(Method.POST, uri, params, Some(a.asJson), resp => IO.pure((resp.status, resp.headers)))
+    ERequest(Method.POST, uri, params, Some(a.asJson), resp => resp.body.drain.run.map(_ => (resp.status, resp.headers)))
   }
 }

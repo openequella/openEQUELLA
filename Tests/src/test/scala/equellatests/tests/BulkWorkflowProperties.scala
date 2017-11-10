@@ -132,7 +132,7 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
   override def runCommandInBrowser(c: BulkCommand, s: BulkState, b: BrowserWithNameMapping) = c match {
     case BulkCreateItem(name) => b.run {
       ERest.run(b.page.ctx) {
-        RItems.create(RCreateItem(RCollectionRef(threeStepWMUuid), s"<xml><name>${b.uniquePrefix(name)}</name></xml>")).map {
+        RItems.create(RCreateItem(RCollectionRef(threeStepWMUuid), simpleMetadata(b.uniquePrefix(name)))).map {
           itemId => b.name2id.update(name, itemId)
         }
       }

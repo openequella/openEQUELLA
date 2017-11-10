@@ -36,4 +36,8 @@ object RItems {
       case IdFromUriRegex(uuid, version) => new ItemId(UUID.fromString(uuid), version.toInt)
     }).getOrElse(sys.error("OOPS"))
   }
+
+  def getHistory(i: ItemId): ERest[Seq[RHistoryEvent]] = {
+    ERest.get(itemUri(i) / "history")
+  }
 }

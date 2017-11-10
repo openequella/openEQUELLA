@@ -22,9 +22,11 @@ import scala.util.Try
 trait SeleniumBrowser {
   var page: BrowserPage
 
-  var unique: String = UUID.randomUUID().toString
+  def createUnique: String = UUID.randomUUID().toString.filterNot(_ == '-')
 
-  def resetUnique() : Unit = unique = UUID.randomUUID().toString
+  var unique: String = createUnique
+
+  def resetUnique() : Unit = unique = createUnique
 
   def uniquePrefix(s: String) = s"$unique $s"
 

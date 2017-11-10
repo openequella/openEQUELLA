@@ -2,6 +2,7 @@ package equellatests.restapi
 
 import java.util.UUID
 
+import equellatests.restapi.RHistoryEventType.RHistoryEventType
 import equellatests.restapi.RNodeStatus.RNodeStatus
 import equellatests.restapi.RStatusNodeType.RStatusNodeType
 import io.circe.{Decoder, Encoder, HCursor}
@@ -83,3 +84,14 @@ case class RModeration(status: RStatus, nodes: Option[StatusNode]) {
     case ts@TaskStatus(_, _, RNodeStatus.incomplete, _, _) => ts
   }
 }
+
+object RHistoryEventType extends Enumeration {
+  type RHistoryEventType = Value
+  val taskMove, edit, statechange, resetworkflow = Value
+  implicit val enc: Encoder[RHistoryEventType.Value] = Encoder.enumEncoder(RHistoryEventType)
+  implicit val dec: Decoder[RHistoryEventType.Value] = Decoder.enumDecoder(RHistoryEventType)
+}
+
+case class RHistoryEvent(`type`: RHistoryEventType, user: RUserRef, state: RStatus, step: Option[UUID], stepName: Option[String],
+                         comment: Option[String], toStep: Option[UUID], toStepName: Option[String])
+

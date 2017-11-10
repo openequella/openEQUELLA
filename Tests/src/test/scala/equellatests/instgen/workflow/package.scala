@@ -12,6 +12,9 @@ package object workflow {
   val workflow3StepTasks = Seq("Step 1", "Step 2", "Step 3")
   def workflow3StepBefore(task: String) = workflow3StepTasks.take(workflow3StepTasks.indexOf(task))
 
+
+  def simpleMetadata(name: String) = <xml><name>{name}</name></xml>.toString
+
   def nextTask3Step(current: String) : Option[String] = {
     current match {
       case "Step 1" => Some("Step 2")
