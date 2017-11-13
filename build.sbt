@@ -193,9 +193,10 @@ collectArtifacts := {
   }
   val logsDir = installDir.value / "logs"
   val scReportDir = (target in LocalProject("Tests")).value / "test-reports"
+  val oldReportDir = file((testNGOutputDirectory in OldTests).value)
 
   sLog.value.info(s"Collecting test artifacts into ${results.absolutePath}")
-  IO.zip(allFiles(Seq(logsDir, scReportDir, (target in coverageReport).value)), results)
+  IO.zip(allFiles(Seq(logsDir, scReportDir, oldReportDir, (target in coverageReport).value)), results)
   results
 }
 
