@@ -18,20 +18,17 @@ resolvers += Resolver.url("my-test-repo", url("http://repository.springsource.co
 
 ivyConfigurations := overrideConfigs(BirtOsgi, CustomCompile)(ivyConfigurations.value)
 
-jpfResourceDirs += target.value / "birt_resources"
-
-jpfRuntime := {
-  val runTime = jpfRuntime.value
-  val baseDir = target.value / "birt_resources"
-  IO.delete(baseDir)
+resourceGenerators in Compile += Def.task {
+  val baseDir = (resourceManaged in Compile).value
   val baseBirt = baseDir / "birt"
+  IO.delete(baseBirt)
   val outPlugins = baseBirt / "plugins"
   val ur = update.value
   val pluginJars = Classpaths.managedJars(BirtOsgi, Set("jar"), ur).files.filter(_.getName.endsWith(".jar"))
-  IO.unzip(ur.select(artifact=artifactFilter(extension = "zip")).head, baseBirt)
-  IO.copy(pluginJars.pair(flat(outPlugins), errorIfNone = false))
+  val unzipped = IO.unzip(ur.select(artifact=artifactFilter(extension = "zip")).head, baseBirt)
+  val copied = IO.copy(pluginJars.pair(flat(outPlugins), errorIfNone = false))
   val birtManifest = baseDirectory.value / "birt-MANIFEST.MF"
   val manifestPlugin = outPlugins / "org.eclipse.birt.api.jar"
   IO.zip(Seq(birtManifest -> "META-INF/MANIFEST.MF"), manifestPlugin)
-  runTime
-}
+  unzipped.toSeq ++ copied :+ manifestPlugin
+}.taskValue
