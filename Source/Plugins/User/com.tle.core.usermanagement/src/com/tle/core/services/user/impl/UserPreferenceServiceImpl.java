@@ -262,9 +262,12 @@ public class UserPreferenceServiceImpl implements UserPreferenceService, UserCha
 		Criterion c1 = Restrictions.eq("key.preferenceID", key);
 		Criterion c2 = Restrictions.eq("key.institution", CurrentInstitution.get().getDatabaseId());
 		Criterion c3 = Restrictions.in("key.userID", users);
-		for( UserPreference pref : userPreferencesDao.findAllByCriteria(c1, c2, c3) )
+		if (!users.isEmpty())
 		{
-			prefMap.put(pref.getKey().getUserID(), pref.getData());
+			for (UserPreference pref : userPreferencesDao.findAllByCriteria(c1, c2, c3))
+			{
+				prefMap.put(pref.getKey().getUserID(), pref.getData());
+			}
 		}
 		return prefMap;
 	}
