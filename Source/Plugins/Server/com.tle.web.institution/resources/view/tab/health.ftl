@@ -1,7 +1,18 @@
 <#include "/com.tle.web.freemarker@/macro/sections.ftl">
 <#import "/com.tle.web.sections.standard@/ajax.ftl" as a/>
 
-<div id="institution-admin" class="area">
+<div class="area">
+	<h2>${b.key("version.checklatest")}</h2>
+	<@a.div id="latestVersion">
+	    <#if m.onLatestVersion>
+            ${b.key("version.latest")}
+        <#elseif m.versionInfoUrl??>
+            ${b.key("version.new", [m.versionInfoUrl])}
+        <#else>
+    	    ${b.key("version.checking")}
+	    </#if>
+	</@a.div>
+    <br>
 	<h2>${b.key("clusternodes.health")}</h2>
 	<#if m.cluster>
 		<p>${b.key("clusternodes.ids")}</p>

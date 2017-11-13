@@ -21,7 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import com.dytech.edge.common.Version;
 import com.google.common.collect.Maps;
 import com.tle.beans.Institution;
 import com.tle.common.FileSizeUtils;
@@ -33,18 +35,22 @@ import com.tle.core.healthcheck.listeners.bean.ServiceStatus;
 import com.tle.core.healthcheck.listeners.bean.ServiceStatus.Status;
 import com.tle.core.institution.ClusterInfoService;
 import com.tle.core.quota.service.QuotaService;
+import com.tle.core.services.ApplicationVersion;
 import com.tle.core.services.TaskService;
 import com.tle.core.services.TaskStatus;
+import com.tle.core.services.UrlService;
 import com.tle.core.zookeeper.ZookeeperService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.institution.AbstractInstitutionTab;
+import com.tle.web.institution.InstitutionSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxGenerator;
 import com.tle.web.sections.ajax.AjaxGenerator.EffectType;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
+import com.tle.web.sections.ajax.handler.UpdateDomFunction;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -53,8 +59,10 @@ import com.tle.web.sections.equella.annotation.PluginResourceHandler;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.events.js.JSHandler;
+import com.tle.web.sections.jquery.libraries.JQueryCore;
 import com.tle.web.sections.jquery.libraries.JQueryUICore;
 import com.tle.web.sections.js.JSCallAndReference;
+import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
@@ -80,6 +88,17 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel>
 		PluginResourceHandler.init(HealthTab.class);
 	}
 
+	@Inject
+	@Named("versionserver.url")
+	private String VERSION_SERVER_URL;
+	@PlugURL("js/versioncheck.js")
+	private static String URL_VERSIONCHECK_JS;
+
+	private static Version version = ApplicationVersion.get();
+
+	private static final IncludeFile INCLUDE_FILE = new IncludeFile(URL_VERSIONCHECK_JS, JQueryCore.PRERENDER);
+
+	private static final JSCallable CHECK_VERSION = new ExternallyDefinedFunction("checkVersion", 4, INCLUDE_FILE);
 	@PlugKey("institutions.clusternode.link.name")
 	private static Label LINK_LABEL;
 	@PlugKey("clusternodes.node.id")
@@ -129,6 +148,8 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel>
 		JQueryUICore.PRERENDER);
 
 	@Inject
+	private UrlService urlService;
+	@Inject
 	private ZookeeperService zooKeeperService;
 	@Inject
 	private HealthCheckService healthCheckService;
@@ -157,6 +178,7 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel>
 
 	private JSHandler refreshHandler;
 	private JSHandler usageRefreshHandler;
+	private UpdateDomFunction updateVersionCheck;
 
 	@Override
 	public SectionResult renderHtml(RenderEventContext context) throws Exception
@@ -244,7 +266,8 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel>
 		debugCheck.setChecked(context, zooKeeperService.isClusterDebugging());
 
 		context.getBody().addReadyStatements(refreshHandler, usageRefreshHandler);
-
+		context.getBody().addReadyStatements(CHECK_VERSION, version.getMmr(), version.getCommit(),
+				version.getDisplay(), VERSION_SERVER_URL, urlService.getAdminUrl().toString(), updateVersionCheck);
 		return viewFactory.createResult("tab/health.ftl", context);
 	}
 
@@ -256,6 +279,8 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel>
 		refreshHandler = new OverrideHandler(REFRESH_FUNC, ajax.getAjaxUpdateDomFunction(getTree(), this, null,
 			ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), "table-ajax"), SERVICE_STATUS_UNKNOWN);
 
+		updateVersionCheck = ajax.getAjaxUpdateDomFunction(tree, this, events.getEventHandler("versionResponse"),
+				"latestVersion");
 		usageRefreshHandler = new OverrideHandler(ajax.getAjaxUpdateDomFunction(tree, this,
 			events.getEventHandler("getUsages"), ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), "usagetable"));
 		debugCheck.setLabel(LABEL_DEBUG);
@@ -310,6 +335,20 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel>
 		table.setColumnSorts(Sort.PRIMARY_ASC, Sort.NONE, Sort.NONE);
 
 		return table;
+	}
+
+	@EventHandlerMethod
+	public void versionResponse(SectionInfo info, boolean newer, String infoUrl)
+	{
+		ClusterModel model = getModel(info);
+		if (newer)
+		{
+			model.setVersionInfoUrl(infoUrl);
+		}
+		else
+		{
+			model.setOnLatestVersion(true);
+		}
 	}
 
 	@EventHandlerMethod
@@ -381,6 +420,9 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel>
 	public static class ClusterModel
 	{
 		private boolean isCluster;
+		private String versionInfoUrl;
+		private boolean onLatestVersion;
+
 		private Map<String, String> quotas = Maps.newHashMap();
 		private boolean displayQuotas;
 
@@ -412,6 +454,26 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel>
 		public void setDisplayQuotas(boolean displayQuotas)
 		{
 			this.displayQuotas = displayQuotas;
+		}
+
+		public String getVersionInfoUrl()
+		{
+			return versionInfoUrl;
+		}
+
+		public void setVersionInfoUrl(String versionInfoUrl)
+		{
+			this.versionInfoUrl = versionInfoUrl;
+		}
+
+		public boolean isOnLatestVersion()
+		{
+			return onLatestVersion;
+		}
+
+		public void setOnLatestVersion(boolean onLatestVersion)
+		{
+			this.onLatestVersion = onLatestVersion;
 		}
 	}
 }
