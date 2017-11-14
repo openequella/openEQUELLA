@@ -11,4 +11,6 @@ phases:
   post_build:
     commands:
       - publishBuild
+      - echo "Finished"
+      
 
