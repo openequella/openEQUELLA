@@ -32,6 +32,7 @@ import org.apache.catalina.session.PersistentManager;
 import org.apache.catalina.session.StoreBase;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.descriptor.web.ErrorPage;
@@ -63,6 +64,10 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
 	private static final String BIO_AJP = "org.apache.coyote.ajp.AjpProtocol";
 
 	private static final Log LOGGER = LogFactory.getLog(TomcatServiceImpl.class);
+
+	@Inject(optional = true)
+	@Named("userService.useXForwardedFor")
+	private boolean useXForwardedFor;
 
 	@Inject
 	@Named("http.port")
@@ -122,6 +127,11 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
 			context.setPath("");
 			context.setDocBase(new File(".").getAbsolutePath());
 			context.setUseHttpOnly(false);
+			if (useXForwardedFor) {
+				RemoteIpValve protoValve = new RemoteIpValve();
+				protoValve.setProtocolHeader("X-Forwarded-Proto");
+				context.getPipeline().addValve(protoValve);
+			}
 
 			ContextConfig ctxCfg = new ContextConfig();
 			context.addLifecycleListener(ctxCfg);

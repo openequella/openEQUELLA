@@ -16,6 +16,8 @@
 
 package com.tle.tomcat.guice;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.tle.core.config.guice.MandatoryConfigModule;
 import com.tle.core.config.guice.OptionalConfigModule;
 
@@ -40,6 +42,7 @@ public class TomcatModule extends MandatoryConfigModule
 			bindProp("jvmroute.id");
 			bindBoolean("tomcat.useBio");
 			bindBoolean("sessions.neverPersist");
+			bindBoolean("userService.useXForwardedFor");
 		}
 	}
 }

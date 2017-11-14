@@ -40,7 +40,7 @@ public class InstitutionModule extends OptionalConfigModule
 	protected void configure()
 	{
 		install(new InstSectionModule());
-		bindProp("versionserver.url", "http://localhost:8084/version");
+		bindProp("versionserver.url", "https://version.equella.net/version");
 	}
 
 	public class InstSectionModule extends SectionsModule {
