@@ -51,8 +51,8 @@ import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.users.interfaces.beans.GroupBean;
 import com.tle.web.remoting.rest.service.RestImportExportHelper;
 import com.tle.web.remoting.rest.service.UrlLinkService;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 /**
  * See the interface class for the @Path annotations.

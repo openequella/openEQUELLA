@@ -17,6 +17,7 @@
 package com.tle.web.remoting.rest.docs;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
@@ -25,19 +26,24 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
-import com.wordnik.swagger.annotations.Api;
+import io.swagger.annotations.Api;
+import io.swagger.models.Swagger;
 
 @Bind
 @Path("/resources")
 @Api("/resources")
 @Produces({MediaType.APPLICATION_JSON})
-public class ApiListingResource extends com.wordnik.swagger.jaxrs.listing.ApiListingResource
+public class ApiListingResource extends io.swagger.jaxrs.listing.ApiListingResource
 {
+
 	@Override
-	public Response resourceListing(Application app, ServletConfig sc, HttpHeaders headers, UriInfo uriInfo)
+	protected Swagger process(Application app, ServletContext servletContext, ServletConfig sc, HttpHeaders headers, UriInfo uriInfo)
 	{
-		Response resourceListing = super.resourceListing(app, sc, headers, uriInfo);
-		return resourceListing;
+		String path = CurrentInstitution.get().getUrlAsUrl().getPath();
+		Swagger swags = super.process(app, servletContext, sc, headers, uriInfo);
+		swags.setBasePath(path+"api");
+		return swags;
 	}
 }

@@ -19,7 +19,7 @@ package com.tle.web.api.usermanagement;
 import javax.ws.rs.Path;
 
 import com.tle.web.api.users.interfaces.UserResource;
-import com.wordnik.swagger.annotations.Api;
+import io.swagger.annotations.Api;
 
 /**
  * @author Aaron

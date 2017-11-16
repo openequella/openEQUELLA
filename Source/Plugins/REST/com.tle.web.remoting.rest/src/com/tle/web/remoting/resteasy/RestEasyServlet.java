@@ -16,42 +16,13 @@
 
 package com.tle.web.remoting.resteasy;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
-
-import org.java.plugin.registry.Extension;
-import org.java.plugin.registry.Extension.Parameter;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.spi.ResourceFactory;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.GetRestful;
-
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.interfaces.equella.I18NSerializer;
 import com.tle.common.interfaces.equella.RestStringsModule;
 import com.tle.core.guice.Bind;
@@ -62,14 +33,31 @@ import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.DebugSettings;
-import com.tle.web.remoting.rest.docs.swagger.EQSwaggerConfig;
 import com.tle.web.remoting.rest.resource.InstitutionSecurityFilter;
-import com.wordnik.swagger.config.ConfigFactory;
-import com.wordnik.swagger.config.ScannerFactory;
-import com.wordnik.swagger.core.SwaggerContext$;
-import com.wordnik.swagger.jaxrs.config.DefaultJaxrsScanner;
-import com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader;
-import com.wordnik.swagger.reader.ClassReaders;
+import io.swagger.jaxrs.listing.ApiListingResource;
+import io.swagger.jaxrs.listing.SwaggerSerializers;
+import io.swagger.models.Swagger;
+import org.java.plugin.registry.Extension;
+import org.java.plugin.registry.Extension.Parameter;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.jboss.resteasy.spi.*;
+import org.jboss.resteasy.util.GetRestful;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
+import java.io.IOException;
+import java.util.*;
 
 @Bind
 @Singleton
@@ -86,8 +74,6 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 	private PluginService pluginService;
 	@Inject
 	private ObjectMapperService objectMapperService;
-	@Inject
-	private EQSwaggerConfig eqSwaggerConfig;
 	@Inject
 	private InstitutionSecurityFilter institutionSecurityFilter;
 
@@ -122,12 +108,10 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 		Registry registry = dispatcher.getRegistry();
 		RestEasyApplication application = (RestEasyApplication) dispatcher.getDefaultContextObjects()
 			.get(Application.class);
-		ConfigFactory.setConfig(eqSwaggerConfig);
-		ClassReaders.setReader(new DefaultJaxrsApiReader());
-		ScannerFactory.setScanner(new DefaultJaxrsScanner());
 
 		Set<Class<?>> classes = application.getClasses();
 		ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
+		providerFactory.registerProvider(SwaggerSerializers.class);
 		providerFactory.registerProviderInstance(new JsonContextResolver());
 		providerFactory.registerProvider(DefaultOptionsExceptionMapper.class);
 		providerFactory.registerProvider(RestEasyExceptionMapper.class);
@@ -139,7 +123,6 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 		for( Extension extension : extensions )
 		{
 			String pluginId = extension.getDeclaringPluginDescriptor().getId();
-			SwaggerContext$.MODULE$.registerClassLoader(pluginService.getClassLoader(pluginId));
 			PluginBeanLocator beanLocator = pluginService.getBeanLocator(pluginId);
 			Collection<Parameter> clazzParams = extension.getParameters("class");
 

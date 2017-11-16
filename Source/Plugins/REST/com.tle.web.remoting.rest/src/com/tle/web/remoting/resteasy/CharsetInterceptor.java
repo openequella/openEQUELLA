@@ -24,9 +24,6 @@ import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 
-import com.wordnik.swagger.model.ApiListing;
-import com.wordnik.swagger.model.ResourceListing;
-
 @SuppressWarnings("nls")
 @Provider
 @ServerInterceptor
@@ -52,10 +49,7 @@ public class CharsetInterceptor implements PostProcessInterceptor
 				ct = ((String) contentType).toLowerCase();
 			}
 
-			boolean isNotSwaggerResponse = (response.getGenericType() == null)
-				|| (!response.getGenericType().equals(ResourceListing.class) && !response.getGenericType().equals(
-					ApiListing.class));
-			if( ct.contains("json") && !ct.contains("charset") && isNotSwaggerResponse )
+			if( ct.contains("json") && !ct.contains("charset"))
 			{
 				metadata.putSingle(CONTENT_TYPE_HEADER, ct + "; charset=utf-8");
 			}

@@ -34,9 +34,9 @@ import javax.ws.rs.core.UriInfo;
 
 import com.tle.web.api.item.interfaces.ItemResource;
 import com.tle.web.api.item.interfaces.beans.CommentBean;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 /**
  * EQUELLA specific endpoints beyond those declared in ItemResource.

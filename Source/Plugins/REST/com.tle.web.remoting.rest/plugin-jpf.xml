@@ -81,7 +81,7 @@
 		</parameter>
 		<parameter id="init-param">
 			<parameter id="name" value="resteasy.providers" />
-			<parameter id="value" value="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider,com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider,com.wordnik.swagger.jaxrs.listing.ResourceListingProvider" />
+			<parameter id="value" value="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider,io.swagger.jaxrs.listing.ApiListingResource,io.swagger.jaxrs.listing.SwaggerSerializers" />
 		</parameter>
 		<parameter id="init-param">
 			<parameter id="name" value="javax.ws.rs.Application" />
@@ -90,6 +90,10 @@
 		<parameter id="init-param">
 			<parameter id="name" value="swagger.api.format.string" />
 			<parameter id="value" value="" />
+		</parameter>
+		<parameter id="init-param">
+			<parameter id="name" value="swagger.use.path.based.config" />
+			<parameter id="value" value="true" />
 		</parameter>
 	</extension>
 

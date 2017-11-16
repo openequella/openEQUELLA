@@ -29,9 +29,9 @@ import com.tle.core.events.UserIdChangedEvent;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.events.services.EventService;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @Bind
 @Singleton

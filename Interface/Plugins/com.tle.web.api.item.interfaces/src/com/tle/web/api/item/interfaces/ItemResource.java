@@ -42,9 +42,9 @@ import com.tle.web.api.interfaces.beans.FileListBean;
 import com.tle.web.api.item.interfaces.beans.CommentBean;
 import com.tle.web.api.item.interfaces.beans.HistoryEventBean;
 import com.tle.web.api.item.interfaces.beans.ItemBean;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @SuppressWarnings("nls")
 @Produces({"application/json"})

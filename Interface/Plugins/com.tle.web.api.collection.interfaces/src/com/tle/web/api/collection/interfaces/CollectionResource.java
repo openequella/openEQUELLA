@@ -34,11 +34,11 @@ import com.tle.web.api.collection.interfaces.beans.CollectionBean;
 import com.tle.web.api.interfaces.BaseEntityResource;
 import com.tle.web.api.interfaces.beans.EntityLockBean;
 import com.tle.web.api.interfaces.beans.SearchBean;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Path("collection/")

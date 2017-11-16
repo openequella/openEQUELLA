@@ -19,7 +19,7 @@ package com.tle.web.api.institution;
 import javax.ws.rs.Path;
 
 import com.tle.web.api.users.interfaces.RoleResource;
-import com.wordnik.swagger.annotations.Api;
+import io.swagger.annotations.Api;
 
 /**
  * @author Aaron

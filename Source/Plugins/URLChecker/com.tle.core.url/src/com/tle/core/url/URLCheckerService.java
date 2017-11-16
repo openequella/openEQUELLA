@@ -36,7 +36,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.FutureFallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.ning.http.client.AsyncHandler;
@@ -222,7 +221,7 @@ public class URLCheckerService
 		final ListenableFuture<Pair<ReferencedURL, Boolean>> checkUrlFuture = checkUrl(rurl, true);
 
 		// Map the Pair to just the ReferencedUrl
-		final ListenableFuture<ReferencedURL> mapToRurl = Futures.transform(checkUrlFuture,
+		final ListenableFuture<ReferencedURL> mapToRurl = Futures.transformAsync(checkUrlFuture,
 			new AsyncFunction<Pair<ReferencedURL, Boolean>, ReferencedURL>()
 			{
 				@Override
@@ -236,10 +235,10 @@ public class URLCheckerService
 		// haven't been able to check the URL (eg,
 		// java.nio.UnresolvedAddressException) so return an updated
 		// ReferencedURL based on the old one.
-		return Futures.withFallback(mapToRurl, new FutureFallback<ReferencedURL>()
+		return Futures.catchingAsync(mapToRurl, Throwable.class, new AsyncFunction<Throwable, ReferencedURL>()
 		{
 			@Override
-			public ListenableFuture<ReferencedURL> create(Throwable t)
+			public ListenableFuture<ReferencedURL> apply(Throwable t)
 			{
 				final String url = rurl.getUrl();
 				if( LOGGER.isDebugEnabled() )
@@ -394,7 +393,7 @@ public class URLCheckerService
 				LOGGER.debug("Invalid URL: "+rurl.getUrl());
 				throw new IllegalArgumentException("Invalid URL");
 			}
-			return Futures.transform(
+			return Futures.transformAsync(
 				new AsyncHttpToGuavaAdapter<Pair<ReferencedURL, Boolean>>(
 					client.executeRequest(requestBuilder.build(), handler)),
 				new AsyncFunction<Pair<ReferencedURL, Boolean>, Pair<ReferencedURL, Boolean>>()

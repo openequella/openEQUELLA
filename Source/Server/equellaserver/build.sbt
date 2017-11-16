@@ -15,6 +15,8 @@ unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_co
 
 val jacksonVersion = "2.4.1"
 val axis2Version = "1.6.2"
+val TomcatVersion = "8.5.23"
+val SwaggerVersion = "1.5.16"
 
 libraryDependencies ++= Seq(
   "axis" % "axis" % "1.4",
@@ -42,15 +44,11 @@ libraryDependencies ++= Seq(
   "com.miglayout" % "miglayout-swing" % "4.2",
   "com.ning" % "async-http-client" % "1.9.31",
   "com.rometools" % "rome" % "1.7.2",
-  "com.wordnik" % "swagger-annotations" % "1.3.12",
-  "com.wordnik" % "swagger-core_2.11" % "1.3.12" excludeAll (
-    ExclusionRule(organization = "org.slf4j", name = "slf4j-log4j12")
-    ),
-  "com.wordnik" % "swagger-jaxrs_2.11" % "1.3.12" excludeAll(
-    ExclusionRule(organization = "com.sun.jersey"),
-    ExclusionRule(organization = "javax.servlet", name = "javax.servlet-api"),
-    ExclusionRule(organization = "javax.ws.rs", name = "jsr311-api")
-  ),
+
+  "io.swagger" % "swagger-core" % SwaggerVersion,
+  "io.swagger" % "swagger-annotations" % SwaggerVersion,
+  "io.swagger" % "swagger-jaxrs" % SwaggerVersion,
+
   "com.zaxxer" % "HikariCP" % "2.6.1",
   "commons-beanutils" % "commons-beanutils" % "1.9.3",
   "commons-codec" % "commons-codec" % "1.7",
@@ -138,17 +136,17 @@ libraryDependencies ++= Seq(
   "org.apache.struts" % "struts-taglib" % "1.3.10",
   "org.apache.tika" % "tika-core" % "1.3",
   "org.apache.tika" % "tika-parsers" % "1.3",
-  "org.apache.tomcat" % "tomcat-annotations-api" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-api" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-catalina" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-catalina-ha" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-coyote" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-jsp-api" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-juli" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-servlet-api" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-tribes" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-util" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-util-scan" % "8.0.15",
+  "org.apache.tomcat" % "tomcat-annotations-api" % TomcatVersion,
+  "org.apache.tomcat" % "tomcat-api" % TomcatVersion,
+  "org.apache.tomcat" % "tomcat-catalina" % TomcatVersion,
+  "org.apache.tomcat" % "tomcat-catalina-ha" % TomcatVersion,
+  "org.apache.tomcat" % "tomcat-coyote" % TomcatVersion,
+  "org.apache.tomcat" % "tomcat-jsp-api" % TomcatVersion,
+  "org.apache.tomcat" % "tomcat-juli" % TomcatVersion,
+  "org.apache.tomcat" % "tomcat-servlet-api" % TomcatVersion,
+  "org.apache.tomcat" % "tomcat-tribes" % TomcatVersion,
+  "org.apache.tomcat" % "tomcat-util" % TomcatVersion,
+  "org.apache.tomcat" % "tomcat-util-scan" % TomcatVersion,
   "org.apache.ws.commons.axiom" % "axiom-api" % "1.2.13",
   "org.apache.ws.commons.axiom" % "axiom-impl" % "1.2.13",
   "org.apache.ws.security" % "wss4j" % "1.6.2",
@@ -170,7 +168,6 @@ libraryDependencies ++= Seq(
   "org.jboss.resteasy" % "resteasy-jackson-provider" % "3.0.10.Final",
   "org.jboss.resteasy" % "resteasy-jaxrs" % "3.0.10.Final",
   "org.jboss.resteasy" % "jaxrs-api" % "3.0.10.Final",
-  "org.json4s" % "json4s-jackson_2.11" % "3.2.11",
   "org.jsoup" % "jsoup" % "1.6.1",
   xstreamDep,
   "org.opensaml" % "xmltooling" % "1.3.1" excludeAll (
@@ -178,7 +175,6 @@ libraryDependencies ++= Seq(
     ),
   "org.ow2.asm" % "asm" % "5.0.3",
   postgresDep,
-  "org.scala-lang.modules" % "scala-xml_2.11" % "1.0.5",
   "org.scannotation" % "scannotation" % "1.0.3",
   "org.slf4j" % "jcl-over-slf4j" % "1.7.5",
   "org.slf4j" % "slf4j-api" % "1.7.5",

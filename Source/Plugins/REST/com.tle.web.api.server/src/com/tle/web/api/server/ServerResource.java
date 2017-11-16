@@ -25,8 +25,8 @@ import bean.ServerInfo;
 
 import com.google.inject.Singleton;
 import com.tle.core.guice.Bind;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * @author Seb

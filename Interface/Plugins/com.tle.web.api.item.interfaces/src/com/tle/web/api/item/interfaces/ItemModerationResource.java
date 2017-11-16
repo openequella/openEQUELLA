@@ -22,9 +22,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 import com.tle.web.api.item.interfaces.beans.ItemStatusBean;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @Produces({"application/json"})
 @Path("item/{uuid}/{version}/moderation")

@@ -45,9 +45,9 @@ import com.tle.web.api.collection.DynaCollectionBeanSerializer;
 import com.tle.web.api.collection.beans.DynaCollectionBean;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.remoting.rest.service.UrlLinkService;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 /**
  * @author larry

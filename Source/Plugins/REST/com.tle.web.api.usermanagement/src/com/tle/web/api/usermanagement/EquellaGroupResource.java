@@ -27,9 +27,9 @@ import javax.ws.rs.core.UriInfo;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.users.interfaces.GroupResource;
 import com.tle.web.api.users.interfaces.beans.GroupBean;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 /**
  * @author Aaron

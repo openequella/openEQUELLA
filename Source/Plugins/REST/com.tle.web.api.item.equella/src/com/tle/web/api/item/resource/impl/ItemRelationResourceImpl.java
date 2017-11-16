@@ -44,8 +44,8 @@ import com.tle.web.api.item.ItemLinkService;
 import com.tle.web.api.item.interfaces.beans.ItemBean;
 import com.tle.web.api.item.interfaces.beans.RelationBean;
 import com.tle.web.remoting.rest.service.UrlLinkService;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Bind
 @Produces({"application/json"})
