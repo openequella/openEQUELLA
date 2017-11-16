@@ -21,7 +21,8 @@ import java.time.Instant
 import java.util.{Collections, UUID}
 import java.util.concurrent.atomic.AtomicReference
 
-import com.dytech.edge.common.FileInfo
+import com.dytech.common.GeneralConstants
+import com.dytech.edge.common.{Constants, FileInfo}
 import com.dytech.edge.exceptions.BannedFileException
 import com.tle.beans.item.attachments._
 import com.tle.common.PathUtils
@@ -275,7 +276,7 @@ object WebFileUploads {
 
   def validateFunc(controlSettings: FileUploadSettings, errorCallback: JSExpression,
                    startedUpload: JSExpression, doneCallback: JSExpression) : JSAssignable = {
-    Js.functionValue(AjaxUpload.createValidate(if (controlSettings.isRestrictFileSize) controlSettings.getMaxFileSize else 0,
+    Js.functionValue(AjaxUpload.createValidate(if (controlSettings.isRestrictFileSize) controlSettings.getMaxFileSize * GeneralConstants.BYTES_PER_MEGABYTE else 0,
       if (controlSettings.isRestrictByMime) controlSettings.getMimeTypes else Collections.emptyList(), errorCallback, startedUpload, doneCallback))
   }
 }
