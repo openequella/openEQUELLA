@@ -27,13 +27,11 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
   }
 
   object FailureTypes extends Enumeration {
-    val Banned, WrongType = Value
+    val Banned, WrongType, TooLarge = Value
   }
 
   case class FileUniversalControl(num: Int, canRestrict: Boolean, canSuppress: Boolean, defaultSuppressed: Boolean, noUnzip: Boolean = false,
-                                  maximumAttachments: Int = Int.MaxValue, mimeTypes: Option[Set[String]] = None) {
-
-
+                                  maximumAttachments: Int = Int.MaxValue, mimeTypes: Option[Set[String]] = None, maxFileSizeMB: Option[Int] = None) {
 
     def fileCanAchieve(scenario: Either[EditTypes.Value, FailureTypes.Value])(tf: TestFile) : Boolean = scenario match {
       case Left(ed) if failureType(tf).isEmpty => matchesEdit(ed)(tf)
@@ -56,15 +54,16 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
     def matchesFailure(failure: FailureTypes.Value)(tf: TestFile): Boolean = failure match {
       case FailureTypes.Banned => TestFile.bannedExt(tf.extension)
       case FailureTypes.WrongType => mimeTypes.exists(!_.contains(StandardMimeTypes.extMimeMapping(tf.extension)))
+      case FailureTypes.TooLarge => maxFileSizeMB.exists(_.toLong * 1024L * 1024L < tf.fileSize)
     }
 
     def illegalReason: PartialFunction[TestFile, String => String] = {
+      case tf if matchesFailure(FailureTypes.TooLarge)(tf) => fn => s"This file cannot be uploaded because it is larger than the maximum file size allowed."
       case tf if mimeTypes.fold(false)(!_.apply(StandardMimeTypes.extMimeMapping(tf.extension))) => fn => s"""This control is restricted to certain file types. "$fn" is not allowed to be uploaded."""
       case tf if TestFile.bannedExt(tf.extension) => fn => s"$fn: File upload cancelled.  File extension has been banned"
     }
 
     def failureType(tf: TestFile): Option[FailureTypes.Value] = FailureTypes.values.find(matchesFailure(_)(tf))
-
 
   }
 
@@ -178,7 +177,8 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
   type AttachmentEditGen = (Attachment, FileUniversalControl, Seq[Attachment]) => Option[Gen[AttachmentEdit]]
 
   val wizards = Seq("Navigation and Attachments",
-    "Attachment mimetype restriction collection")
+    "Attachment mimetype restriction collection",
+  "Attachment filesize restriction collection")
 
   val ctrlsForWizard: Map[String, Seq[FileUniversalControl]] = Map(
     "Navigation and Attachments" -> Seq(
@@ -188,6 +188,9 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
     "Attachment mimetype restriction collection" -> Seq(
       FileUniversalControl(2, canRestrict = true, canSuppress = false, defaultSuppressed = false, maximumAttachments = 1,
         mimeTypes = Some(Set("image/jpeg")))
+    ),
+    "Attachment filesize restriction collection" -> Seq(
+      FileUniversalControl(2, canRestrict = true, canSuppress = false, defaultSuppressed = false, maximumAttachments = 1, maxFileSizeMB = Some(1))
     ))
 
   def ctrlIndex(item: Item, fuc: FileUniversalControl): Int =
