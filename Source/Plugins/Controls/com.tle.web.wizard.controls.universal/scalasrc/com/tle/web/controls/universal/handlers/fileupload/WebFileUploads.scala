@@ -276,7 +276,7 @@ object WebFileUploads {
 
   def validateFunc(controlSettings: FileUploadSettings, errorCallback: JSExpression,
                    startedUpload: JSExpression, doneCallback: JSExpression) : JSAssignable = {
-    Js.functionValue(AjaxUpload.createValidate(if (controlSettings.isRestrictFileSize) controlSettings.getMaxFileSize * GeneralConstants.BYTES_PER_MEGABYTE else 0,
+    Js.functionValue(AjaxUpload.createValidate(if (controlSettings.isRestrictFileSize) controlSettings.getMaxFileSize.toLong * GeneralConstants.BYTES_PER_MEGABYTE else 0,
       if (controlSettings.isRestrictByMime) controlSettings.getMimeTypes else Collections.emptyList(), errorCallback, startedUpload, doneCallback))
   }
 }

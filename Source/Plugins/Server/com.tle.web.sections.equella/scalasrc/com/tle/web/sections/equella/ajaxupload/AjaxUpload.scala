@@ -38,7 +38,7 @@ object AjaxUpload {
   private val VALIDATE_FUNC = new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "validateFile", 5)
   private val ADD_UPLOAD_FUNC = new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "addUploadEntry", 4)
 
-  def createValidate(maxSize: Int, mimeTypes: java.util.List[String], errorCallback: JSExpression,
+  def createValidate(maxSize: Long, mimeTypes: java.util.List[String], errorCallback: JSExpression,
                      startedUpload: JSExpression, doneCallback: JSExpression) = Js.call(AjaxUpload.VALIDATE_FUNC,
     maxSize.asInstanceOf[Object], mimeTypes, errorCallback, startedUpload, doneCallback)
 
