@@ -10,8 +10,6 @@ libraryDependencies ++= Seq(
   xstreamDep
 )
 
-scalaVersion := "2.11.7"
-
 excludeDependencies += "commons-logging" % "commons-logging"
 packageOptions in assembly += Package.ManifestAttributes("Permissions" -> "all-permissions")
 assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)

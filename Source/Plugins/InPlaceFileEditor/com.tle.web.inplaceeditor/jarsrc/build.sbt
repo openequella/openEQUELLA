@@ -5,7 +5,6 @@ libraryDependencies ++= Seq(
   "org.springframework" % "spring-web" % "2.5.5",
   "org.springframework" % "spring-aop" % "2.5.5"
 )
-scalaVersion := "2.11.7"
 
 packageOptions in assembly += Package.ManifestAttributes(
   "Application-Name" -> "EQUELLA In-place File Editor",

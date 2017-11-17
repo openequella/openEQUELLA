@@ -34,6 +34,7 @@ object CommonSettings extends AutoPlugin {
   import autoImport._
   override def projectSettings = Seq(
     organization := "com.github.equella",
+    scalaVersion := "2.12.4",
     javacOptions ++= Seq("-source", "1.8"),
     compileOrder := CompileOrder.Mixed,
     headerLicense := Some(HeaderLicense.ALv2("2017", "Apereo")),

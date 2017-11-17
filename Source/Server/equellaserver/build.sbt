@@ -1,5 +1,3 @@
-scalaVersion := "2.11.7"
-
 javacOptions ++= Seq("-source", "1.8")
 
 resourceDirectory in Compile := baseDirectory.value / "resources"

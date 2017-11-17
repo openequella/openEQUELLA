@@ -6,8 +6,6 @@ libraryDependencies ++= Seq(
   "org.springframework" % "spring-aop" % "2.5.5"
 )
 
-scalaVersion := "2.11.7"
-
 dependsOn(platformSwing, LocalProject("com_tle_common_applet"), LocalProject("com_tle_applet_filemanager"))
 
 packageOptions in assembly += Package.ManifestAttributes(

@@ -10,7 +10,6 @@ lazy val learningedge_config = project in file("Dev/learningedge-config")
 lazy val allPlugins = LocalProject("allPlugins")
 
 val legacyPaths = Seq(
-  scalaVersion := "2.11.7",
   javaSource in Compile := baseDirectory.value / "src",
   javaSource in Test := baseDirectory.value / "test",
   unmanagedResourceDirectories in Compile := (baseDirectory.value / "resources") :: Nil,
