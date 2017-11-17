@@ -52,9 +52,9 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
     }
 
     def matchesFailure(failure: FailureTypes.Value)(tf: TestFile): Boolean = failure match {
-      case FailureTypes.Banned => TestFile.bannedExt(tf.extension)
-      case FailureTypes.WrongType => mimeTypes.exists(!_.contains(StandardMimeTypes.extMimeMapping(tf.extension)))
       case FailureTypes.TooLarge => maxFileSizeMB.exists(_.toLong * 1024L * 1024L < tf.fileSize)
+      case FailureTypes.WrongType => mimeTypes.exists(!_.contains(StandardMimeTypes.extMimeMapping(tf.extension)))
+      case FailureTypes.Banned => TestFile.bannedExt(tf.extension)
     }
 
     def illegalReason: PartialFunction[TestFile, String => String] = {
