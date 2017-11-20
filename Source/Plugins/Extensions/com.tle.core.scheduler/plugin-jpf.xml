@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.scheduler" version="1">
+  <extension-point id="scheduledTask">
+    <parameter-def id="id" />
+    <parameter-def id="bean" />
+    <parameter-def id="depends" multiplicity="any" />
+    <parameter-def id="before" multiplicity="any" />
+    <parameter-def id="frequency" type="fixed" custom-data="daily|weekly|hourly" />
+    <parameter-def id="scope" type="fixed" custom-data="server|institution">
+      <doc>
+        <doc-text>Institution scoped tasks will automatically run in the context of the system user for
+					an institution.
+					Server scoped tasks have no existing context. In either case, a hibernate
+					session will exist.</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+</plugin>

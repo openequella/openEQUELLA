@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.services" version="1">
+  <extension-point id="invoker">
+    <parameter-def id="url" type="string" multiplicity="none-or-one">
+      <doc>
+        <doc-text>This is a path which will be matched with getPathInfo() of the servlet.
+					E.g. If the
+					servlet is mapped
+					to
+					/invoker/*, you would need "/something.service" here in order to
+					match
+					"/invoker/something.service". Usually you shouldn't specify this, as the default
+					is to map as the fully
+					qualified name of the class followed by ".service".</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="class" type="string" multiplicity="none-or-one">
+      <doc>
+        <doc-text>The fully qualified name of the interface class which will be published.</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="bean" type="string" multiplicity="one">
+      <doc>
+        <doc-text>The bean which will implement the interface.</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="enableRequestCapturing" type="boolean" multiplicity="none-or-one" />
+  </extension-point>
+</plugin>

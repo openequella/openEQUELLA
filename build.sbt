@@ -1,6 +1,6 @@
 import java.util.Properties
 
-import com.typesafe.config.{Config, ConfigFactory}
+import complete.DefaultParsers._
 import com.typesafe.sbt.license.LicenseReport
 
 import scala.collection.JavaConverters._
@@ -95,7 +95,7 @@ writeLanguagePack := {
         val fname = g + (if (xml) ".xml" else ".properties")
         val f = dir / fname
         val p = new SortedProperties()
-        lss.foreach( ls => p.putAll(ls.strings.asJava))
+        lss.foreach(ls => p.putAll(ls.strings.asJava))
         Using.fileOutputStream()(f) { os =>
           if (xml) p.storeToXML(os, "") else p.store(os, "")
         }
@@ -111,3 +111,26 @@ writeLanguagePack := {
 aggregate in dumpLicenseReport := false
 
 cancelable in Global := true
+
+val pluginAndLibs = Def.task {
+  val bd = baseDirectory.value
+  val jpfLibs = jpfLibraryJars.value
+  (bd, jpfLibs)
+}
+
+mergeJPF := {
+  val adminConsole = false
+  val args = spaceDelimited("<arg>").parsed
+  val _allPluginDirs = pluginAndLibs.all(ScopeFilter(inAggregates(allPlugins, includeRoot = false))).value
+  val extensionsOnly = (baseDirectory.value / "Source/Plugins/Extensions" * "*" / "plugin-jpf.xml").get
+  val allPluginDirs = _allPluginDirs ++ (extensionsOnly.map(f => (f.getParentFile, Seq.empty)))
+  if (args.isEmpty)
+  {
+    val plugins = PluginRefactor.findPluginsToMerge(allPluginDirs, adminConsole = adminConsole)
+    println(s"mergeJPF <ID> ${plugins.mkString(" ")}")
+  } else {
+    val newPlugin = args.head
+    val basePlugin = baseDirectory.value / "Source/Plugins"
+    PluginRefactor.mergePlugins(allPluginDirs, basePlugin, newPlugin, args.tail, adminConsole = adminConsole)
+  }
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.viewitem" version="1">
+  <extension-point id="attachmentSummariser">
+    <parameter-def id="order" type="number" />
+    <parameter-def id="class" />
+  </extension-point>
+  <extension-point id="previewer">
+    <parameter-def id="class" />
+    <parameter-def id="bean" />
+  </extension-point>
+  <extension-point id="itemXslt">
+    <parameter-def id="id" />
+    <parameter-def id="class" />
+  </extension-point>
+  <extension-point id="contentFilter">
+    <parameter-def id="bean" />
+    <parameter-def id="order" multiplicity="none-or-one" type="number" />
+  </extension-point>
+</plugin>

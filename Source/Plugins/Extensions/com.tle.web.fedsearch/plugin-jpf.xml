@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.fedsearch" version="1">
+  <extension-point id="remoteRepoSearch">
+    <parameter-def id="type" type="string" multiplicity="one" />
+    <parameter-def id="class" type="string" multiplicity="one">
+      <doc>
+        <doc-text>extend com.tle.web.remoterepo.AbstractRemoteRepoSearch</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+</plugin>

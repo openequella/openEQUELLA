@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.tools" version="1">
+  <extension-point id="tool">
+    <parameter-def id="displayorder" type="number" multiplicity="one" />
+    <parameter-def id="name" type="string" multiplicity="one" />
+    <parameter-def id="class" type="string" multiplicity="one" />
+    <parameter-def id="privilege" type="string" multiplicity="any" />
+  </extension-point>
+</plugin>

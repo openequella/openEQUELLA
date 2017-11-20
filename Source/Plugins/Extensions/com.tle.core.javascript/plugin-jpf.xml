@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.javascript" version="1">
+  <extension-point id="javascriptLibrary">
+    <parameter-def id="id" type="string" multiplicity="one" />
+    <parameter-def id="class" type="string" multiplicity="one">
+      <doc caption="must implement com.tle.core.javascript.JavascriptLibrary" />
+    </parameter-def>
+  </extension-point>
+</plugin>

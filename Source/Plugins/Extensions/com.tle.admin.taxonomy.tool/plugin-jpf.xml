@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.taxonomy.tool" version="1">
+  <extension-point id="dataSourceChoice">
+    <parameter-def id="nameKey" />
+    <parameter-def id="configPanel" />
+  </extension-point>
+  <extension-point id="predefinedTermDataKey">
+    <parameter-def id="key">
+      <doc>
+        <doc-text>The key string the term data will be referenced by</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="name">
+      <doc>
+        <doc-text>I18N key for text to be displayed instead of the key value in the term data editor</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="description">
+      <doc>
+        <doc-text>I18N key for text to be displayed in the dialog for adding new term data values in the
+					term data editor</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+  <extension-point id="displayType">
+    <parameter-def id="nameKey" />
+    <parameter-def id="configPanel" multiplicity="none-or-one" />
+    <parameter-def id="supportsBrowsing" type="boolean" />
+    <parameter-def id="supportsSearching" type="boolean" />
+  </extension-point>
+</plugin>

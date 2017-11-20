@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.sections.equella" version="1">
+  <extension-point id="breadcrumb">
+    <parameter-def id="type" multiplicity="one" type="string" />
+    <parameter-def id="class" multiplicity="one" type="string">
+      <doc>
+        <doc-text>Must implement BreadcrumbProvider</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+  <extension-point id="loginLink">
+    <parameter-def id="id" multiplicity="one" type="string" />
+    <parameter-def id="bean" multiplicity="one" type="string">
+      <doc>
+        <doc-text>Must implement LoginLink</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="order" multiplicity="one" type="number" />
+  </extension-point>
+  <extension-point id="menuContributor">
+    <parameter-def id="menuContributorClass" />
+    <parameter-def id="enabledFor" type="fixed" custom-data="loggedIn|guest|serverAdmin" multiplicity="one-or-more" />
+  </extension-point>
+  <extension-point id="topbarLink">
+    <parameter-def id="class" />
+    <parameter-def id="order" type="number" />
+  </extension-point>
+  <extension-point id="htmlStyleClass">
+    <parameter-def id="class" type="string">
+      <doc>
+        <doc-text>Must implement HtmlStyleClass</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+</plugin>

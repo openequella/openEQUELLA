@@ -1,17 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.platform.common" version="1">
-	<requires>
-		<import plugin-id="org.slf4j:slf4j-api" exported="true" />
-		<import plugin-id="commons-logging:commons-logging" exported="true" />
-		<import plugin-id="commons-codec:commons-codec" exported="true" />
-		<import plugin-id="com.google.guava:guava" exported="true" />
-		<import plugin-id="commons-beanutils:commons-beanutils" />
-		<import plugin-id="org.apache.commons:commons-compress" />
-		<import plugin-id="jpf:jpf" exported="true" />
-	</requires>
-	<runtime>
-		<library type="code" path="classes/" id="core">
-			<export prefix="*" />
-		</library>
-	</runtime>
+  <requires />
+  <runtime>
+    <library type="code" path="classes/" id="core">
+      <export prefix="*" />
+    </library>
+  </runtime>
 </plugin>

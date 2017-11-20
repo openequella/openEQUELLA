@@ -1,37 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.web.filemanager.applet" version="1">
-	<requires>
-		<import plugin-id="com.tle.core.guice" />
-		<import plugin-id="com.tle.common.i18n" />
-		<import plugin-id="com.tle.common.applet" />
-		<import plugin-id="com.tle.web.resources" />
-		<import plugin-id="com.tle.web.wizard" />
-		<import plugin-id="com.tle.web.viewurl" />
-		<import plugin-id="com.tle.web.appletcommon" />
-		<import plugin-id="com.tle.web.services" />
-
-		<import plugin-id="com.tle.applet.filemanager" />
-		<import plugin-id="com.tle.core.filesystem" />
-		<import plugin-id="com.tle.core.institution" />
-	</requires>
-	<runtime>
-		<library type="code" path="classes/" id="core">
-			<export prefix="*" />
-		</library>
-		<library type="resources" path="resources/" id="resources" />
-	</runtime>
-
-	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules" />
-
-	<extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
-		<parameter id="group" value="file-manager" />
-		<parameter id="file" value="lang/i18n.properties" />
-	</extension>
-
-	<extension plugin-id="com.tle.web.services" point-id="invoker" id="serviceMapping">
-		<parameter id="class" value="com.tle.web.filemanager.common.ServerBackend" />
-		<parameter id="bean" value="bean:com.tle.web.filemanager.server.ServerBackendImpl" />
-	</extension>
-
-
+  <requires>
+    <import plugin-id="com.tle.core.guice" />
+    <import plugin-id="com.tle.common.i18n" />
+    <import plugin-id="com.tle.common.applet" />
+    <import plugin-id="com.tle.web.services" />
+    <import plugin-id="com.equella.base" />
+    <import plugin-id="com.tle.web.wizard" />
+    <import plugin-id="com.tle.web.sections" />
+    <import plugin-id="com.equella.core" />
+  </requires>
+  <runtime>
+    <library type="code" path="classes/" id="core">
+      <export prefix="*" />
+    </library>
+    <library type="resources" path="resources/" id="resources" />
+  </runtime>
+  <extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+    <parameter id="class" value="com.tle.web.wizard.guice.WizardBindBothModule" />
+  </extension>
+  <extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
+    <parameter id="group" value="file-manager" />
+    <parameter id="file" value="lang/i18n.properties" />
+  </extension>
+  <extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings_resource_centre">
+    <parameter id="group" value="resource-centre" />
+    <parameter id="file" value="lang/i18n-resource-centre.properties" />
+  </extension>
+  <extension plugin-id="com.tle.web.services" point-id="invoker" id="serviceMapping">
+    <parameter id="class" value="com.tle.web.filemanager.common.ServerBackend" />
+    <parameter id="bean" value="bean:com.tle.web.filemanager.server.ServerBackendImpl" />
+  </extension>
+  <extension plugin-id="com.tle.web.wizard" point-id="webControl" id="resource">
+    <parameter id="class" value="bean:com.tle.web.controls.filemanager.FileManagerWebControl" />
+    <parameter id="type" value="filemanager" />
+  </extension>
+  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="fileManagerTree">
+    <parameter id="path" value="/access/fileman.do" />
+    <parameter id="root" value="bean:com.tle.web.controls.filemanager.popup.FileManagerSection" />
+  </extension>
 </plugin>

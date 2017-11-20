@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.freetext" version="1">
+  <extension-point id="securityReindexHandler">
+    <parameter-def id="privilege" multiplicity="one-or-more" />
+    <parameter-def id="bean" multiplicity="none-or-one" />
+  </extension-point>
+  <extension-point id="freetextIndex">
+    <parameter-def id="id" multiplicity="one" type="string" />
+    <parameter-def id="class" multiplicity="one" type="string" />
+  </extension-point>
+  <extension-point id="indexingExtension">
+    <parameter-def id="class" multiplicity="one" type="string" />
+  </extension-point>
+  <extension-point id="indexFieldExtension">
+    <parameter-def id="bean" multiplicity="one" />
+  </extension-point>
+</plugin>

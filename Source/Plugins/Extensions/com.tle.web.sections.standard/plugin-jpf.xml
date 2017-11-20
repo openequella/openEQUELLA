@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.sections.standard" version="1">
+  <extension-point id="rendererFactory">
+    <parameter-def id="rendererId" multiplicity="one-or-more" />
+    <parameter-def id="stateClassName" multiplicity="one-or-more" />
+    <parameter-def id="class" multiplicity="none-or-one" />
+    <parameter-def id="renderer" multiplicity="none-or-one" />
+    <parameter-def id="order" type="number" multiplicity="none-or-one" />
+  </extension-point>
+</plugin>

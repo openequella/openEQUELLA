@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.itemlist" version="1">
+  <extension-point id="itemListExtension">
+    <parameter-def id="bean" multiplicity="one" type="string" />
+    <parameter-def id="applies" multiplicity="one-or-more" type="string" />
+    <parameter-def id="not-applies" multiplicity="any" type="string" />
+    <parameter-def id="order" multiplicity="none-or-one" type="number" />
+  </extension-point>
+  <extension-point id="itemListFactoryExtension">
+    <parameter-def id="bean" multiplicity="one" type="string" />
+  </extension-point>
+</plugin>

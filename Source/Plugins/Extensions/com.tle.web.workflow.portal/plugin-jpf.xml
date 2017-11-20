@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.workflow.portal" version="1">
+  <extension-point id="filter">
+    <parameter-def id="bean" type="string" multiplicity="one" />
+    <parameter-def id="order" type="number" multiplicity="none-or-one" />
+  </extension-point>
+</plugin>

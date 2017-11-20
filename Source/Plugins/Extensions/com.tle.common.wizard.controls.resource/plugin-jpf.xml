@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.common.wizard.controls.resource" version="1">
+  <extension-point id="relationTypes">
+    <parameter-def id="nameKey" />
+    <parameter-def id="value" />
+    <parameter-def id="lockMultiSelectToValue" multiplicity="none-or-one" type="boolean" />
+    <parameter-def id="lockSelectTypeToValue" multiplicity="none-or-one" type="fixed" custom-data="ITEMS|ATTACHMENTS|ITEMS_AND_ATTACHMENTS" />
+  </extension-point>
+</plugin>

@@ -1,56 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.core.security" version="1">
-	<requires>
-		<import plugin-id="com.tle.common.activation" />
-		<import plugin-id="com.tle.common.beans" />
-		<import plugin-id="com.tle.common.collection" />
-		<import plugin-id="com.tle.common.entity" />
-		<import plugin-id="com.tle.common.item" />
-		<import plugin-id="com.tle.common.security" exported="true" />
-		<import plugin-id="com.tle.core.guice" />
-		<import plugin-id="com.tle.core.hibernate" />
-		<import plugin-id="com.tle.core.hibernate.equella" exported="true" />
-		<import plugin-id="com.tle.common.institution" />
-		<import plugin-id="com.tle.common.usermanagement" />
-	</requires>
-	<runtime>
-		<library type="code" path="classes/" id="core">
-			<export prefix="*" />
-		</library>
-	</runtime>
-
-	<extension-point id="securityPostProcessor">
-		<parameter-def id="bean" type="string" multiplicity="one" />
-	</extension-point>
-
-	<extension-point id="securityTargetHandler">
-		<parameter-def id="handlesLabellingFor" multiplicity="any" />
-		<parameter-def id="handlesOwnershipFor" multiplicity="any" />
-		<parameter-def id="handlesTransformationOf" multiplicity="any" />
-		<parameter-def id="handler" />
-	</extension-point>
-
-	<extension-point id="privilegeTreeProviders">
-		<parameter-def id="provider" multiplicity="one-or-more" />
-	</extension-point>
-
-	<extension-point id="domainObjectParameter">
-		<parameter-def id="class" type="string" multiplicity="one-or-more" />
-	</extension-point>
-
-	<extension-point id="domainObjectPrivilegeFilter">
-		<parameter-def id="bean" type="string" multiplicity="one" />
-	</extension-point>
-
-	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
-		<parameter id="class" value="com.tle.core.hibernate.guice.TransactionModule" />
-		<parameter id="class" value="com.tle.core.security.guice.SecurityPluginTrackerModule" />
-	</extension>
-	
-	<extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="objects">
-		<parameter id="class" value="com.tle.beans.security.AccessEntry" />
-		<parameter id="class" value="com.tle.beans.security.AccessExpression" />
-		<parameter id="class" value="com.tle.beans.security.ACLEntryMapping" />
-		<parameter id="class" value="com.tle.common.security.TargetListEntry" />
-	</extension>
+  <requires>
+    <import plugin-id="com.tle.core.guice" />
+    <import plugin-id="com.tle.core.hibernate" />
+    <import plugin-id="com.equella.base" exported="true" />
+    <import plugin-id="com.equella.serverbase" />
+  </requires>
+  <runtime>
+    <library type="code" path="classes/" id="core">
+      <export prefix="*" />
+    </library>
+  </runtime>
+  <extension-point id="securityPostProcessor">
+    <parameter-def id="bean" type="string" multiplicity="one" />
+  </extension-point>
+  <extension-point id="securityTargetHandler">
+    <parameter-def id="handlesLabellingFor" multiplicity="any" />
+    <parameter-def id="handlesOwnershipFor" multiplicity="any" />
+    <parameter-def id="handlesTransformationOf" multiplicity="any" />
+    <parameter-def id="handler" />
+  </extension-point>
+  <extension-point id="privilegeTreeProviders">
+    <parameter-def id="provider" multiplicity="one-or-more" />
+  </extension-point>
+  <extension-point id="domainObjectParameter">
+    <parameter-def id="class" type="string" multiplicity="one-or-more" />
+  </extension-point>
+  <extension-point id="domainObjectPrivilegeFilter">
+    <parameter-def id="bean" type="string" multiplicity="one" />
+  </extension-point>
+  <extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+    <parameter id="class" value="com.tle.core.hibernate.guice.TransactionModule" />
+    <parameter id="class" value="com.tle.core.security.guice.SecurityPluginTrackerModule" />
+  </extension>
+  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="objects">
+    <parameter id="class" value="com.tle.beans.security.AccessEntry" />
+    <parameter id="class" value="com.tle.beans.security.AccessExpression" />
+    <parameter id="class" value="com.tle.beans.security.ACLEntryMapping" />
+    <parameter id="class" value="com.tle.common.security.TargetListEntry" />
+  </extension>
 </plugin>

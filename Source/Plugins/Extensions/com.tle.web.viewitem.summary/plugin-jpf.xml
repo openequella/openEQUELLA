@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.viewitem.summary" version="1">
+  <extension-point id="itemExporter">
+    <parameter-def id="id" multiplicity="one" />
+    <parameter-def id="class" multiplicity="one">
+      <doc>
+        <doc-text>Must implement SectionId</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="order" multiplicity="one" type="number" />
+  </extension-point>
+  <extension-point id="summaryTabExtension">
+    <parameter-def id="id" type="string" />
+    <parameter-def id="class" type="string">
+      <doc caption="Must implement DisplaySectionConfiguration" />
+    </parameter-def>
+  </extension-point>
+  <extension-point id="minorAction">
+    <parameter-def id="id" multiplicity="one" />
+    <parameter-def id="class" multiplicity="one">
+      <doc>
+        <doc-text>Must implement GenericMinorActionSection</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="order" multiplicity="one" type="number" />
+  </extension-point>
+  <extension-point id="attachmentViewFilter">
+    <parameter-def id="class" />
+  </extension-point>
+</plugin>

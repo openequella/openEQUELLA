@@ -36,6 +36,8 @@ import com.tle.core.plugins.PluginTracker;
 
 public abstract class PluginTrackerModule extends AbstractModule
 {
+	protected abstract String getPluginId();
+
 	public static class TrackerProvider<T> implements Provider<PluginTracker<T>>
 	{
 		@Inject
@@ -43,12 +45,12 @@ public abstract class PluginTrackerModule extends AbstractModule
 		private String extensionPoint;
 		private String beanParameter;
 		private String idParam;
-		private Class<?> moduleClass;
+		private String pluginId;
 		private Comparator<Extension> comparator;
 
-		public TrackerProvider(Class<?> moduleClass, String extensionPoint, String beanParameter)
+		public TrackerProvider(String pluginId, String extensionPoint, String beanParameter)
 		{
-			this.moduleClass = moduleClass;
+			this.pluginId = pluginId;
 			this.extensionPoint = extensionPoint;
 			this.beanParameter = beanParameter;
 		}
@@ -56,7 +58,7 @@ public abstract class PluginTrackerModule extends AbstractModule
 		@Override
 		public PluginTracker<T> get()
 		{
-			return new PluginTracker<T>(pluginService, moduleClass, extensionPoint, idParam, comparator)
+			return new PluginTracker<T>(pluginService, pluginId, extensionPoint, idParam, comparator)
 				.setBeanKey(beanParameter);
 		}
 
@@ -124,7 +126,7 @@ public abstract class PluginTrackerModule extends AbstractModule
 		String extensionPoint, String beanParameter)
 	{
 		ParameterizedType type = Types.newParameterizedType(PluginTracker.class, typeParam);
-		TrackerProvider<T> trackerProvider = new TrackerProvider<T>(getClass(), extensionPoint, beanParameter);
+		TrackerProvider<T> trackerProvider = new TrackerProvider<T>(getPluginId(), extensionPoint, beanParameter);
 		@SuppressWarnings("unchecked")
 		TypeLiteral<PluginTracker<T>> typeLiteral = (TypeLiteral<PluginTracker<T>>) TypeLiteral.get(type);
 		LinkedBindingBuilder<PluginTracker<T>> bindingBuilder = bind(typeLiteral);

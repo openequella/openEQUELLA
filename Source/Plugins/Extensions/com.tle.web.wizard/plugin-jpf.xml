@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.wizard" version="1">
+  <extension-point id="metadatamapper">
+    <parameter-def id="class" multiplicity="one" />
+  </extension-point>
+  <extension-point id="packagetreebuilder">
+    <parameter-def id="class" multiplicity="one" />
+  </extension-point>
+  <extension-point id="webControl">
+    <parameter-def id="class" />
+    <parameter-def id="type" />
+  </extension-point>
+  <extension-point id="exceptionHandler">
+    <parameter-def id="exceptionClass" />
+    <parameter-def id="bean" />
+  </extension-point>
+  <extension-point id="scriptObjects">
+    <parameter-def id="id" multiplicity="one" />
+    <parameter-def id="class" multiplicity="one">
+      <doc caption="Must implement WizardScriptObjectContributor" />
+    </parameter-def>
+  </extension-point>
+</plugin>

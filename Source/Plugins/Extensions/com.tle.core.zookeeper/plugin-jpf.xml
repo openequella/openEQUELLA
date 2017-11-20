@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.zookeeper" version="1">
+  <extension-point id="appServerExtension">
+    <parameter-def id="bean">
+      <doc>
+        <doc-text>Must implement com.tle.core.zookeeper.AppServerExtension</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="order" type="number" />
+  </extension-point>
+</plugin>

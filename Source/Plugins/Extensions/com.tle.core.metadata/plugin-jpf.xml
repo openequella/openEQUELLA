@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.metadata" version="1">
+  <extension-point id="metadataHandlers">
+    <parameter-def id="bean" multiplicity="one" />
+    <parameter-def id="order" multiplicity="one" type="number" />
+  </extension-point>
+</plugin>

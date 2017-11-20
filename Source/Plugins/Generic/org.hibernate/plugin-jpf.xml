@@ -1,16 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="org.hibernate" version="1">
-	<requires>
-		<import plugin-id="dom4j:dom4j" exported="true" />
-		<import plugin-id="org.hibernate:hibernate-core" exported="true" />
-		<import plugin-id="org.hibernate.javax.persistence:hibernate-jpa-2.0-api" exported="true" />
-		<import plugin-id="javax.transaction:jta" exported="true" />
-		<import plugin-id="org.hibernate:hibernate-validator" exported="true" />
-		<import plugin-id="javax.validation:validation-api" exported="true" />
-		<import plugin-id="org.hibernate:hibernate-validator-annotation-processor" exported="true" />
-		<import plugin-id="com.google.guava:guava" />
-	</requires>
-
-	<runtime/>
-
+  <requires />
+  <runtime />
 </plugin>

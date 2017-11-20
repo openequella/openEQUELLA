@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.workflow" version="1">
+  <extension-point id="subsearch">
+    <parameter-def id="bean" multiplicity="one" />
+  </extension-point>
+  <extension-point id="moderationView">
+    <parameter-def id="id" multiplicity="one-or-more" />
+    <parameter-def id="bean" multiplicity="one" />
+  </extension-point>
+  <extension-point id="bulkExtension">
+    <parameter-def id="bean" multiplicity="one" />
+    <parameter-def id="order" type="number" multiplicity="none-or-one" />
+  </extension-point>
+</plugin>

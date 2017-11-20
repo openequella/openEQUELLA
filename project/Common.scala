@@ -1,9 +1,12 @@
 import java.util.Properties
 
 import com.typesafe.config.{Config, ConfigFactory}
+import org.jdom2.Element
 import org.jdom2.input.SAXBuilder
 import org.jdom2.input.sax.XMLReaders
 import sbt._
+
+import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 
 object Common {
@@ -32,5 +35,21 @@ object Common {
       }
       LangStrings(group, xml, s.toMap)
     }
+  }
+
+  val pluginElemOrder = Seq("doc", "attributes", "requires", "runtime", "extension-point", "extension")
+
+  def insertPluginChildElement(pluginElem: Element, childName: String): Element = {
+
+    val orderNum = pluginElemOrder.indexOf(childName)
+
+    @tailrec
+    def insertionPoint(elems: List[Element], insertIndex: Int): Int = elems match {
+      case elem :: tail if pluginElemOrder.indexOf(elem.getName) < orderNum => insertionPoint(tail, pluginElem.indexOf(elem)+1)
+      case _ => insertIndex
+    }
+    val rt = new Element(childName)
+    pluginElem.addContent(insertionPoint(pluginElem.getChildren.asScala.toList, 0), rt)
+    rt
   }
 }

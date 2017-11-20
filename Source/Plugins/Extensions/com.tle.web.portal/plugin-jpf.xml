@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.portal" version="1">
+  <extension-point id="portletRenderer">
+    <parameter-def id="id" multiplicity="one" type="string" />
+    <parameter-def id="class" multiplicity="one" type="string">
+      <doc>
+        <doc-text>Must implement PortletSection interface. (Usually extend AbstractPortletRenderer)</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="nameKey" multiplicity="one" type="string" />
+    <parameter-def id="descriptionKey" multiplicity="one" type="string" />
+  </extension-point>
+  <extension-point id="portletEditor">
+    <parameter-def id="id" multiplicity="one" type="string" />
+    <parameter-def id="class" multiplicity="one" type="string">
+      <doc>
+        <doc-text>Must implement PortletEditor interface. (Usually extend AbstractPortletEditor)</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+</plugin>

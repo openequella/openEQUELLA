@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.notification" version="1">
+  <extension-point id="notificationExtension">
+    <parameter-def id="type" type="string" multiplicity="one-or-more" />
+    <parameter-def id="bean" type="string" multiplicity="one" />
+  </extension-point>
+</plugin>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.controls" version="1">
+  <extension-point id="control">
+    <parameter-def id="id" type="string" />
+    <parameter-def id="name" type="string" />
+    <parameter-def id="icon" type="string" multiplicity="none-or-one" />
+    <parameter-def id="modelClass" type="string" />
+    <parameter-def id="wrappedClass" type="string" />
+    <parameter-def id="editorClass" type="string" multiplicity="none-or-one" />
+    <parameter-def id="factoryClass" type="string" multiplicity="none-or-one" />
+    <parameter-def id="context" type="fixed" multiplicity="any" custom-data="pages|metadata|multi|page|powersearch|group|ROOT" />
+  </extension-point>
+</plugin>

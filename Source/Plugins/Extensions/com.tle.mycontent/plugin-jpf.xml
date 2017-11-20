@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.mycontent" version="1">
+  <extension-point id="contentHandler">
+    <parameter-def id="id" multiplicity="one" type="string" />
+    <parameter-def id="nameKey" multiplicity="one" />
+    <parameter-def id="contributeBean" multiplicity="one" />
+    <parameter-def id="summariserBean" multiplicity="none-or-one" />
+    <parameter-def id="selectionRendererBean" multiplicity="none-or-one" />
+    <parameter-def id="order" type="number" />
+  </extension-point>
+</plugin>

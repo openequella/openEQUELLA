@@ -77,11 +77,8 @@ object JPFRunnerPlugin extends AutoPlugin {
       if (newchildren.isEmpty) root.removeChild("requires") else r.setContent(newchildren)
     }
     if (jars.nonEmpty) {
-      val rt = Option(root.getChild("runtime")).getOrElse {
-        val rt = new Element("runtime")
-        root.addContent(0, rt)
-        rt
-      }
+
+      val rt = Option(root.getChild("runtime")).getOrElse(insertPluginChildElement(root, "runtime"))
       rt.removeContent()
       jars.foreach { f =>
         val lib = new Element("library")

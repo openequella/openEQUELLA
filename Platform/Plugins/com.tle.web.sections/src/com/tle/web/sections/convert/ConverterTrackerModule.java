@@ -20,6 +20,12 @@ import com.tle.core.guice.PluginTrackerModule;
 
 public class ConverterTrackerModule extends PluginTrackerModule
 {
+	@Override
+	protected String getPluginId()
+	{
+		return "com.tle.web.sections";
+	}
+
 	@SuppressWarnings("nls")
 	@Override
 	protected void configure()

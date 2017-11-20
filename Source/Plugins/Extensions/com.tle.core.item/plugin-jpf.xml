@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.item" version="1">
+  <extension-point id="itemDaoExtension">
+    <parameter-def id="class" multiplicity="one" type="string" />
+    <parameter-def id="order" multiplicity="one" type="number" />
+  </extension-point>
+  <extension-point id="itemIdExtension">
+    <parameter-def id="id" multiplicity="one" type="string" />
+    <parameter-def id="bean" multiplicity="one" type="string" />
+  </extension-point>
+  <extension-point id="itemHelpers">
+    <parameter-def id="bean" multiplicity="one" type="string" />
+    <parameter-def id="order" multiplicity="none-or-one" type="number" />
+    <parameter-def id="display" type="boolean" />
+    <parameter-def id="import" type="boolean" />
+  </extension-point>
+  <extension-point id="itemResolver">
+    <parameter-def id="id" multiplicity="one" />
+    <parameter-def id="bean" multiplicity="one">
+      <doc caption="Must implement com.tle.core.services.item.ItemResolverExtension" />
+    </parameter-def>
+  </extension-point>
+  <extension-point id="operation">
+    <parameter-def id="type" type="string" />
+    <parameter-def id="class" type="string" />
+    <parameter-def id="order" type="number" multiplicity="none-or-one" />
+  </extension-point>
+  <extension-point id="scriptObjects">
+    <parameter-def id="id" multiplicity="one" />
+    <parameter-def id="class" multiplicity="one">
+      <doc caption="Must implement WorkflowScriptObjectContributor" />
+    </parameter-def>
+  </extension-point>
+</plugin>

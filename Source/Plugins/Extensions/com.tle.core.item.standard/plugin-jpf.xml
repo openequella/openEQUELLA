@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.item.standard" version="1">
+  <extension-point id="cloneFileProcessor">
+    <parameter-def id="id" multiplicity="one" />
+    <parameter-def id="bean" multiplicity="one">
+      <doc caption="Must implement com.tle.core.workflow.CloneFileProcessingExtension" />
+    </parameter-def>
+  </extension-point>
+</plugin>

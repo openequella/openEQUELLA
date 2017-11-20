@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.remoting.rest" version="1">
+  <extension-point id="resource">
+    <parameter-def id="class" multiplicity="one-or-more">
+      <parameter-def id="doc-listing" multiplicity="none-or-one" />
+    </parameter-def>
+  </extension-point>
+  <extension-point id="mapperExtension">
+    <parameter-def id="bean" multiplicity="one" />
+  </extension-point>
+</plugin>

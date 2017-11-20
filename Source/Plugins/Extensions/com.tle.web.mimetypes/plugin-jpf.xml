@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.mimetypes" version="1">
+  <extension-point id="editExtension">
+    <parameter-def id="id" multiplicity="one" />
+    <parameter-def id="class" multiplicity="one" />
+    <parameter-def id="order" multiplicity="one" type="number" />
+  </extension-point>
+</plugin>

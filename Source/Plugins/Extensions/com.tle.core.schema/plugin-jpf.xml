@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.schema" version="1">
+  <extension-point id="schemaRefs">
+    <parameter-def id="bean" multiplicity="one" />
+  </extension-point>
+  <extension-point id="schemaSave">
+    <parameter-def id="bean" type="string" multiplicity="one">
+      <doc>
+        <doc-text>Must implement com.tle.core.schema.extension.SchemaSaveExtension</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+</plugin>

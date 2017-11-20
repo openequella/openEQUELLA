@@ -56,7 +56,7 @@ public final class ApplicationStarter
 		}
 		PluginServiceImpl pluginService = new PluginServiceImpl(registered);
 		pluginService.setPluginManager(pluginManager);
-		startupTracker = new PluginTracker<StartupBean>(pluginService, ApplicationStarter.class, "onStartup", null,
+		startupTracker = new PluginTracker<StartupBean>(pluginService, "com.tle.core.application", "onStartup", null,
 			new PluginTracker.ExtensionParamComparator("order", true)).setBeanKey("bean");
 
 		for( String type : types )

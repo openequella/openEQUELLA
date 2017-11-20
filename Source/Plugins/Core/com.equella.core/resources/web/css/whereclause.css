@@ -1,0 +1,74 @@
+.criteria {
+	margin: 20px 0;
+}
+.criteria-list {
+	list-style: none;
+	border: 1px solid #8f8b7e;
+	margin: 0 0 5px 0;
+}
+.criteria-list li {
+	position: relative;
+	padding: 6px 30px 6px 10px !important;
+	margin: 0 !important;
+	font-size: 12px;
+	line-height: 1.2;
+}
+.criteria-list li.odd {
+	background: #f3f1eb !important;
+}
+.criteria-list li.even {
+	background: #fefefe !important;
+}
+.criteria-remove {
+	width: 17px;
+	height: 17px;
+	cursor: pointer;
+	position: absolute;
+	right: 10px;
+	top: 5px;
+	background: url(../images/itemadmin-remove.png) 0 0 no-repeat;
+}
+.criteria-wrapper {
+	border: 1px solid #8f8b7e;
+	padding: 15px;
+	background: #f3f1eb;
+}
+.criteria-1 {
+	padding: 0 0 0 100px;
+	position: relative;
+}
+.criteria .wherevalue {
+	width: 290px;
+}
+
+.criteria .wherepath {
+	width: 210px;
+}
+
+.criteria .addbutton {
+	padding-top: 12px;
+	padding-left: 400px;
+}
+
+.criteria-label {
+	position: absolute;
+	left: 10px;
+	top: 6px;
+	font-size: 12px;
+}
+.criteria-2 {
+	padding: 0 0 0 100px;
+}
+.criteria-1 .newListSelected, .criteria-2 .newListSelected {
+	float: left;
+	margin: 0 5px 0 0;
+}
+
+.criteria .selectedText {
+	padding-bottom: 2px;
+}
+
+.criteria select{
+	width: 90px;
+	
+}

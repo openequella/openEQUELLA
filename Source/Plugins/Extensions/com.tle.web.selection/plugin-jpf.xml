@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.selection" version="1">
+  <extension-point id="selectable">
+    <parameter-def id="id" type="string" multiplicity="one" />
+    <parameter-def id="selectBean" type="string" multiplicity="one" />
+  </extension-point>
+  <extension-point id="selectionReturn">
+    <parameter-def id="id" type="string" />
+    <parameter-def id="class" type="string" />
+  </extension-point>
+  <extension-point id="versionChoiceDecider">
+    <parameter-def id="class" type="string">
+      <doc>
+        <doc-text>Class must implement com.tle.web.selection.section.VersionChoiceDecider</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+  <extension-point id="selectionNavActions">
+    <parameter-def id="type" type="string" multiplicity="one" />
+    <parameter-def id="class" type="string">
+      <doc>
+        <doc-text>Class must implement com.tle.web.selection.SelectionNavAction</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+  <extension-point id="selectableAttachment">
+    <parameter-def id="class" type="string">
+      <doc>
+        <doc-text>Class must implement com.tle.web.selection.SelectableAttachment</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+</plugin>

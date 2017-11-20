@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.events" version="1">
+  <extension-point id="eventExecutor">
+    <parameter-def id="bean" type="string" multiplicity="one" />
+  </extension-point>
+  <extension-point id="applicationEventListener">
+    <parameter-def id="listener" type="string" multiplicity="none-or-one" />
+    <parameter-def id="listenerClass" type="string" multiplicity="one-or-more" />
+  </extension-point>
+</plugin>

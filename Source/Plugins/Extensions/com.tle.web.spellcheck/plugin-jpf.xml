@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.spellcheck" version="1">
+  <extension-point id="dictionary">
+    <parameter-def id="code" type="string" />
+    <parameter-def id="language" type="string" />
+    <parameter-def id="filename" type="string" />
+    <parameter-def id="order" type="number" />
+  </extension-point>
+</plugin>

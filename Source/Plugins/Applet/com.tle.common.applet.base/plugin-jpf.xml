@@ -1,9 +1,0 @@
-<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
-<plugin id="com.tle.common.applet.base" version="1">
-	<requires>
-		<import plugin-id="javax.servlet:servlet-api" />
-		<import plugin-id="jpf:jpf" />
-		<import plugin-id="org.hibernate" />
-		<import plugin-id="org.codehaus.jackson" />
-	</requires>
-</plugin>

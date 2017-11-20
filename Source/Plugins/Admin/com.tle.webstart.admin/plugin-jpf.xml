@@ -1,18 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.webstart.admin" version="1">
-	<requires>
-		<import plugin-id="com.pearson.equella:httpinvoker" exported="true" optional="true" />
-		<import plugin-id="com.tle.common.usermanagement" />
-		<import plugin-id="com.tle.platform.common" />
-		<import plugin-id="com.tle.platform.equella" />
-		<import plugin-id="com.tle.platform.swing" />
-		<import plugin-id="log4j:log4j" />
-	</requires>
-
-	<runtime>
-		<library type="code" path="classes/" id="core">
-			<export prefix="*" />
-		</library>
-		<library type="resources" path="resources/" id="resources" />
-	</runtime>
+  <requires>
+    <import plugin-id="com.tle.platform.common" />
+    <import plugin-id="com.tle.platform.equella" />
+    <import plugin-id="com.tle.platform.swing" />
+    <import plugin-id="com.equella.base" exported="true" />
+  </requires>
+  <runtime>
+    <library type="code" path="classes/" id="core">
+      <export prefix="*" />
+    </library>
+    <library type="resources" path="resources/" id="resources" />
+  </runtime>
 </plugin>

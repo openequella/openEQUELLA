@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.integration" version="1">
+  <extension-point id="integration">
+    <parameter-def id="id" type="string" />
+    <parameter-def id="class" />
+  </extension-point>
+  <extension-point id="integrationSession">
+    <parameter-def id="class" />
+    <parameter-def id="type" multiplicity="one-or-more" />
+  </extension-point>
+  <extension-point id="sso-action">
+    <parameter-def id="name" />
+    <parameter-def id="class" />
+  </extension-point>
+</plugin>

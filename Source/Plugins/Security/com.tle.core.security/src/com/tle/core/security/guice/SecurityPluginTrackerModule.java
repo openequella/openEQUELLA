@@ -24,6 +24,12 @@ import com.tle.core.security.DomainObjectPrivilegeFilterExtension;
 public class SecurityPluginTrackerModule extends PluginTrackerModule
 {
 	@Override
+	protected String getPluginId()
+	{
+		return "com.tle.core.security";
+	}
+
+	@Override
 	protected void configure()
 	{
 		bindTracker(DomainObjectPrivilegeFilterExtension.class, "domainObjectPrivilegeFilter", "bean");

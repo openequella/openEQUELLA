@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.viewurl" version="1">
+  <extension-point id="attachmentResource">
+    <parameter-def id="class" />
+    <parameter-def id="type" multiplicity="one-or-more" />
+    <parameter-def id="order" multiplicity="none-or-one" type="number" />
+  </extension-point>
+  <extension-point id="attachmentTree">
+    <parameter-def id="bean" />
+    <parameter-def id="type" multiplicity="one-or-more" />
+  </extension-point>
+  <extension-point id="resourceViewer">
+    <parameter-def id="id" />
+    <parameter-def id="nameKey" />
+    <parameter-def id="linkKey" multiplicity="none-or-one" type="string" />
+    <parameter-def id="class" />
+    <parameter-def id="order" multiplicity="none-or-one" type="number" />
+  </extension-point>
+  <extension-point id="resourceViewerFilter">
+    <parameter-def id="id" />
+    <parameter-def id="class" />
+  </extension-point>
+  <extension-point id="viewableItemResolver">
+    <parameter-def id="id" />
+    <parameter-def id="bean">
+      <doc>
+        <doc-text>Must implement com.tle.web.viewable.ViewableItemResolverExtension</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+</plugin>

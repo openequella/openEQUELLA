@@ -1,9 +1,0 @@
-<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
-<plugin id="org.codehaus.jackson" version="1">
-	<requires>
-		<import plugin-id="com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider" exported="true" />
-		<import plugin-id="com.fasterxml.jackson.core:jackson-databind" exported="true" />
-		<import plugin-id="com.fasterxml.jackson.core:jackson-core" exported="true" />
-		<import plugin-id="com.fasterxml.jackson.core:jackson-annotations" exported="true" />
-	</requires>
-</plugin>

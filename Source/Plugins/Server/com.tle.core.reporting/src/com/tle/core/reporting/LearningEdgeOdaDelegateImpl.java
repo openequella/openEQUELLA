@@ -41,7 +41,7 @@ public class LearningEdgeOdaDelegateImpl implements LearningEdgeOdaDelegate
 	@Inject
 	public void setPluginService(PluginService pluginService)
 	{
-		delegates = new PluginTracker<QueryDelegate>(pluginService, this.getClass(), "queryDelegate", "id");
+		delegates = new PluginTracker<QueryDelegate>(pluginService, "com.tle.core.reporting", "queryDelegate", "id");
 		delegates.setBeanKey("class");
 	}
 

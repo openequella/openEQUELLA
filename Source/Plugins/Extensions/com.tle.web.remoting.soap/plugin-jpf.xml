@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.remoting.soap" version="1">
+  <extension-point id="endpoint">
+    <parameter-def id="path" multiplicity="one">
+      <doc>
+        <doc-text>This is a path which will be matched with getPathInfo() of the servlet.
+					E.g. If the
+					servlet is mapped to
+					/services/*, you would need "/SoapService50" here in order to
+					match "/services/SoapService50".</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="serviceInterface" multiplicity="none-or-one">
+      <doc>
+        <doc-text>The optional fully qualified name of the interface to publish. If you don't specify
+					this parameter, you
+					should be defining a "virtual" endpoint which is made up of
+					multiple interfaces.</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="bean" multiplicity="none-or-one">
+      <doc>
+        <doc-text>The actual implementation of the interface. If specifying a "virtual"
+					endpoint this should not be supplied.</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="serviceName" multiplicity="none-or-one">
+      <doc>
+        <doc-text>The Service Name to publish in the WSDL. By default it will be the name of the service
+					interface class.
+					Required if defining a "virtual" interface.</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="serviceNamespace" multiplicity="none-or-one">
+      <doc>
+        <doc-text>The Namespace URL to publish in the WSDL. By default this will be generated from the
+					package name of the
+					service interface. Required if defining a "virtual" interface.</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+  <extension-point id="endpoint-interface">
+    <parameter-def id="path" multiplicity="one-or-more">
+      <doc>
+        <doc-text>Path(s) to add the virtual interface to.</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="serviceInterface" multiplicity="one">
+      <doc>
+        <doc-text>The interface defining the methods to add.</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="bean" multiplicity="one">
+      <doc>
+        <doc-text>The bean which implements the interface.</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+  <extension-point id="interceptor">
+    <parameter-def id="inBean" multiplicity="any" />
+    <parameter-def id="outBean" multiplicity="any" />
+  </extension-point>
+</plugin>

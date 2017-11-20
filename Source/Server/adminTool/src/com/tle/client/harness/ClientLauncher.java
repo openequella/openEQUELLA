@@ -384,7 +384,7 @@ public class ClientLauncher extends JFrame implements ActionListener, WindowList
 				PluginServiceImpl pluginService = new PluginServiceImpl(endpointUrl, Version.load()
 					.getCommit(), createInvoker(RemotePluginDownloadService.class, endpointUrl));
 				pluginService.registerPlugins();
-				HarnessInterface client = (HarnessInterface) pluginService.getBean("com.tle.admin.common",
+				HarnessInterface client = (HarnessInterface) pluginService.getBean("com.equella.admin",
 					"com.tle.admin.AdminConsole");
 				client.setPluginService(pluginService);
 				client.setLocale(Locale.getDefault());

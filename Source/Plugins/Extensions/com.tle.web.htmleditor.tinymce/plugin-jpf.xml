@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.htmleditor.tinymce" version="1">
+  <extension-point id="addons">
+    <parameter-def id="id" multiplicity="one" />
+    <parameter-def id="class" multiplicity="one">
+      <doc>
+        <doc-text>Must implement com.tle.web.htmleditor.tinymce.TinyMceAddonProvider</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+</plugin>

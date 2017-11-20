@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.api.item.equella.serializer" version="1">
+  <extension-point id="attachmentEditor">
+    <parameter-def id="class" multiplicity="one-or-more" />
+    <parameter-def id="bean" multiplicity="one" />
+  </extension-point>
+  <extension-point id="serializer">
+    <parameter-def id="bean" multiplicity="one" />
+  </extension-point>
+  <extension-point id="deserializer">
+    <parameter-def id="bean" multiplicity="one" />
+  </extension-point>
+  <extension-point id="attachmentSerializer">
+    <parameter-def id="type" multiplicity="one-or-more" />
+    <parameter-def id="bean" multiplicity="one" />
+  </extension-point>
+  <extension-point id="metadataListener">
+    <parameter-def id="bean" multiplicity="one" />
+  </extension-point>
+  <extension-point id="attachmentListener">
+    <parameter-def id="bean" multiplicity="one" />
+  </extension-point>
+</plugin>

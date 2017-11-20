@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.admin.usermanagement.tool" version="1">
+  <extension-point id="configUI">
+    <parameter-def id="displayorder" type="number" multiplicity="one" />
+    <parameter-def id="settingsClass" type="string" />
+    <parameter-def id="class" type="string" multiplicity="none-or-one" />
+    <parameter-def id="width" type="number" multiplicity="none-or-one" />
+    <parameter-def id="height" type="number" multiplicity="none-or-one" />
+    <parameter-def id="icon" type="string" multiplicity="none-or-one" />
+    <parameter-def id="name" type="string" />
+  </extension-point>
+</plugin>

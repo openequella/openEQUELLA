@@ -1,6 +1,0 @@
-<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
-<plugin id="com.tagsoup.core" version="1">
-	<requires>
-		<import plugin-id="org.ccil.cowan.tagsoup:tagsoup" exported="true" />
-	</requires>
-</plugin>

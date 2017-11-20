@@ -122,7 +122,7 @@ public class TLEAclManagerImpl implements TLEAclManager
 			"securityTargetHandler", "handlesTransformationOf");
 		transformHandlers.setBeanKey("handler");
 
-		postProcessors = new PluginTracker<SecurityPostProcessor>(pluginService, getClass(), "securityPostProcessor",
+		postProcessors = new PluginTracker<SecurityPostProcessor>(pluginService, "com.tle.core.security", "securityPostProcessor",
 			null).setBeanKey("bean");
 	}
 

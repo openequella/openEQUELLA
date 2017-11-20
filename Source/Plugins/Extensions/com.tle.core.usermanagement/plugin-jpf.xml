@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.usermanagement" version="1">
+  <extension-point id="userManager">
+    <parameter-def id="class" />
+    <parameter-def id="settingsClass" />
+    <parameter-def id="order" type="number" />
+  </extension-point>
+  <extension-point id="logonFilter">
+    <parameter-def id="bean" />
+    <parameter-def id="settingsClass" multiplicity="none-or-one" />
+    <parameter-def id="order" type="number" multiplicity="none-or-one" />
+  </extension-point>
+</plugin>

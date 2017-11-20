@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.connectors" version="1">
+  <extension-point id="connectorType">
+    <parameter-def id="id" multiplicity="one" type="string" />
+    <parameter-def id="nameKey" multiplicity="one" type="string" />
+    <parameter-def id="descriptionKey" multiplicity="one" type="string" />
+    <parameter-def id="serviceClass" multiplicity="none-or-one" type="string" />
+  </extension-point>
+  <extension-point id="connectorImplementation">
+    <parameter-def id="type" multiplicity="one" type="string" />
+    <parameter-def id="class" multiplicity="one" type="string">
+      <doc>
+        <doc-text>Must implement com.tle.core.connectors.service.ConnectorRepositoryImplementation</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+  <extension-point id="connectorSchema">
+    <parameter-def id="table" multiplicity="one-or-more" type="string" />
+    <parameter-def id="domainClass" multiplicity="one-or-more" type="string" />
+  </extension-point>
+</plugin>

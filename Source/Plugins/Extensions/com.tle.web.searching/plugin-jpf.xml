@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.searching" version="1">
+  <extension-point id="searchTab">
+    <parameter-def id="bean" type="string" />
+    <parameter-def id="order" type="number" />
+  </extension-point>
+  <extension-point id="videoPreviewRenderer">
+    <parameter-def id="bean" type="string" />
+  </extension-point>
+</plugin>

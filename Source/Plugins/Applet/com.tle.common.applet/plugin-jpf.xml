@@ -1,27 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.common.applet" version="1">
-	<attributes>
-		<attribute id="type" value="admin-console" />
-	</attributes>
-	<requires>
-		<import plugin-id="com.tle.common.usermanagement" exported="true" />
-		<import plugin-id="com.tle.common.i18n" exported="true" />
-		<import plugin-id="com.tle.common.powersearch" exported="true" />
-		<import plugin-id="com.tle.common.activation" exported="true" />
-		<import plugin-id="com.tle.common.entity" exported="true" />
-		<import plugin-id="com.tle.common.item" exported="true" />
-		<import plugin-id="com.pearson.equella:httpinvoker" exported="true" optional="true" />
-		<import plugin-id="com.tle.platform.swing" exported="true" />
-		<import plugin-id="com.tle.platform.common" exported="true" />
-		<import plugin-id="com.tle.platform.equella" exported="true" />
-		<import plugin-id="com.miglayout:miglayout-swing" exported="true" />
-		<import plugin-id="jnlp:jnlp" exported="true" />
-		<import plugin-id="log4j:log4j" exported="true" />
-	</requires>
-
-	<runtime>
-		<library type="code" path="classes/" id="core">
-			<export prefix="*" />
-		</library>
-	</runtime>
+  <attributes>
+    <attribute id="type" value="admin-console" />
+  </attributes>
+  <requires>
+    <import plugin-id="com.tle.platform.swing" exported="true" />
+    <import plugin-id="com.tle.platform.common" exported="true" />
+    <import plugin-id="com.tle.platform.equella" exported="true" />
+    <import plugin-id="com.equella.base" exported="true" />
+  </requires>
+  <runtime>
+    <library type="code" path="classes/" id="core">
+      <export prefix="*" />
+    </library>
+  </runtime>
 </plugin>

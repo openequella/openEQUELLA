@@ -1,9 +1,0 @@
-<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
-<plugin id="org.apache.cxf" version="1">
-	<requires>
-		<import plugin-id="wsdl4j:wsdl4j" exported="true" />
-		<import plugin-id="org.apache.cxf:cxf-bundle" exported="true" />
-		<import plugin-id="org.apache.neethi:neethi" exported="true" />
-		<import plugin-id="org.apache.ws.xmlschema:xmlschema-core" exported="true" />
-	</requires>
-</plugin>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.activation" version="1">
+  <extension-point id="activationImplementation">
+    <parameter-def id="type" multiplicity="one" type="string" />
+    <parameter-def id="class" multiplicity="one" type="string">
+      <doc>
+        <doc-text>Must implement com.tle.core.activation.service.ActivationImplementation</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+</plugin>

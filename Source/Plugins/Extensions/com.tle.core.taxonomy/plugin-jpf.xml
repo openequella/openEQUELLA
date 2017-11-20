@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.taxonomy" version="1">
+  <extension-point id="dataSourceFactory">
+    <parameter-def id="bean" />
+  </extension-point>
+  <extension-point id="termSelectorDisplay">
+    <parameter-def id="bean" />
+  </extension-point>
+</plugin>

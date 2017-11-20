@@ -1,13 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.common.inplaceeditor" version="1">
-	<requires>
-		<import plugin-id="com.tle.common.applet" />
-	</requires>
-
-	<runtime>
-		<library type="code" path="classes/" id="core">
-			<export prefix="*" />
-		</library>
-		<!-- <library type="resources" path="resources/" id="resources" /> -->
-	</runtime>
+  <requires>
+    <import plugin-id="com.tle.common.applet" />
+  </requires>
+  <runtime>
+    <library type="code" path="classes/" id="core">
+      <export prefix="*" />
+    </library>
+    <!-- <library type="resources" path="resources/" id="resources" /> -->
+  </runtime>
 </plugin>

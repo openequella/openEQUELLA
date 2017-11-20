@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.migration" version="1">
+  <extension-point id="migration">
+    <parameter-def id="id" multiplicity="one" />
+    <parameter-def id="bean" multiplicity="none-or-one" />
+    <parameter-def id="date" multiplicity="one" type="date" />
+    <parameter-def id="initial" multiplicity="none-or-one" type="boolean" />
+    <parameter-def id="system" multiplicity="none-or-one" type="boolean" />
+    <parameter-def id="depends" multiplicity="any" type="string">
+      <doc>
+        <doc-text>Any migrations which must be executed before this are listed here</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="obsoletedby" type="string" multiplicity="any">
+      <doc>
+        <doc-text>Only execute if none of these will be executed, mark as obsoleted otherwise</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="fixes" type="string" multiplicity="any">
+      <doc>
+        <doc-text>Only execute if all of these have already been executed, skip otherwise</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="ifskipped" type="string" multiplicity="any">
+      <doc>
+        <doc-text>Only execute if all of these have been skipped, skip otherwise</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+  <extension-point id="initialSchema">
+    <parameter-def id="class" multiplicity="one-or-more" />
+    <parameter-def id="system" multiplicity="none-or-one" type="boolean" />
+    <parameter-def id="index" multiplicity="any">
+      <parameter-def id="table" multiplicity="one" />
+      <parameter-def id="name" multiplicity="one" />
+      <parameter-def id="column" multiplicity="one-or-more" />
+      <parameter-def id="function" multiplicity="none-or-one" />
+    </parameter-def>
+  </extension-point>
+</plugin>

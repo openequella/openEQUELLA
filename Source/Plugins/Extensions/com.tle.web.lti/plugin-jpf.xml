@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.lti" version="1">
+  <extension-point id="ltiWrapperExtension">
+    <parameter-def id="id" type="string" />
+    <parameter-def id="bean" type="string">
+      <doc>
+        <doc-text>Must implement LtiWrapperExtension</doc-text>
+      </doc>
+    </parameter-def>
+    <parameter-def id="order" type="number" />
+  </extension-point>
+</plugin>

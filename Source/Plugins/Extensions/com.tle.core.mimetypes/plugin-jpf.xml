@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.mimetypes" version="1">
+  <extension-point id="textExtracter">
+    <parameter-def id="id" multiplicity="one" type="string" />
+    <parameter-def id="class" multiplicity="one" type="string" />
+    <parameter-def id="mimeType" multiplicity="one-or-more" type="string" />
+    <parameter-def id="order" multiplicity="one" type="number">
+      <doc>
+        <doc-text>Generally any extracter using a wild card mime type should be lower down in the order than
+					a more specific
+					extracter. 0 is the highest priority and you can assume 1000 is the lowest.</doc-text>
+      </doc>
+    </parameter-def>
+  </extension-point>
+  <extension-point id="attachmentResourceMimeType">
+    <parameter-def id="class" />
+    <parameter-def id="type" multiplicity="one-or-more" />
+    <parameter-def id="order" multiplicity="none-or-one" type="number" />
+  </extension-point>
+</plugin>

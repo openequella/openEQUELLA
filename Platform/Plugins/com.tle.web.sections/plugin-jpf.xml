@@ -1,69 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.web.sections" version="1">
-	<requires>
-		<import plugin-id="javax.servlet:servlet-api" exported="true" />
-		<import plugin-id="org.hurl:hurl" />
-		<import plugin-id="net.sf.transmorph:transmorph" exported="true" />
-		<import plugin-id="com.google.code.gson:gson" />
-		<import plugin-id="com.tle.platform.common" />
-		<import plugin-id="com.tle.core.guice" />
-		<import plugin-id="commons-lang:commons-lang" />
-	</requires>
-	<runtime>
-		<library type="code" path="classes/" id="core">
-			<export prefix="*" />
-		</library>
-	</runtime>
-
-	<extension-point id="sectionTree">
-		<parameter-def id="path" />
-		<parameter-def id="root" />
-		<parameter-def id="url" type="boolean" multiplicity="none-or-one" />
-		<parameter-def id="attribute" multiplicity="any" type="null">
-			<parameter-def id="key" type="string" multiplicity="none-or-one" />
-			<parameter-def id="keyClass" type="string" multiplicity="none-or-one" />
-			<parameter-def id="value" type="string" multiplicity="none-or-one" />
-			<parameter-def id="bean" type="string" multiplicity="none-or-one" />
-		</parameter-def>
-	</extension-point>
-
-	<extension-point id="section">
-		<parameter-def id="class" multiplicity="one-or-more" />
-		<parameter-def id="path" />
-		<parameter-def id="parentid" />
-		<parameter-def id="afterid" multiplicity="none-or-one" />
-		<parameter-def id="beforeid" multiplicity="none-or-one" />
-		<parameter-def id="layout" multiplicity="none-or-one" />
-		<parameter-def id="order" multiplicity="none-or-one" />
-	</extension-point>
-
-	<extension-point id="sectionFilter">
-		<parameter-def id="id" type="string" />
-		<parameter-def id="class" type="string" />
-		<parameter-def id="order" type="number" />
-	</extension-point>
-
-	<extension-point id="converter">
-		<parameter-def id="converter" type="string" multiplicity="one-or-more" />
-	</extension-point>
-
-	<extension-point id="registrationHandler">
-		<parameter-def id="class" type="string" />
-		<parameter-def id="order" type="number" />
-	</extension-point>
-
-	<extension-point id="exceptionHandler">
-		<parameter-def id="class" type="string" />
-		<parameter-def id="order" type="number" />
-		<parameter-def id="exceptionClass" type="string" multiplicity="none-or-one" />
-	</extension-point>
-
-	<extension-point id="pluginErrorHandler">
-		<parameter-def id="class" type="string" />
-	</extension-point>
-
-	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
-		<parameter id="class" value="com.tle.web.sections.convert.ConverterTrackerModule" />
-	</extension>
-
+  <requires>
+    <import plugin-id="com.tle.platform.common" />
+    <import plugin-id="com.tle.core.guice" />
+  </requires>
+  <runtime>
+    <library type="code" path="classes/" id="core">
+      <export prefix="*" />
+    </library>
+  </runtime>
+  <extension-point id="sectionTree">
+    <parameter-def id="path" />
+    <parameter-def id="root" />
+    <parameter-def id="url" type="boolean" multiplicity="none-or-one" />
+    <parameter-def id="attribute" multiplicity="any" type="null">
+      <parameter-def id="key" type="string" multiplicity="none-or-one" />
+      <parameter-def id="keyClass" type="string" multiplicity="none-or-one" />
+      <parameter-def id="value" type="string" multiplicity="none-or-one" />
+      <parameter-def id="bean" type="string" multiplicity="none-or-one" />
+    </parameter-def>
+  </extension-point>
+  <extension-point id="section">
+    <parameter-def id="class" multiplicity="one-or-more" />
+    <parameter-def id="path" />
+    <parameter-def id="parentid" />
+    <parameter-def id="afterid" multiplicity="none-or-one" />
+    <parameter-def id="beforeid" multiplicity="none-or-one" />
+    <parameter-def id="layout" multiplicity="none-or-one" />
+    <parameter-def id="order" multiplicity="none-or-one" />
+  </extension-point>
+  <extension-point id="sectionFilter">
+    <parameter-def id="id" type="string" />
+    <parameter-def id="class" type="string" />
+    <parameter-def id="order" type="number" />
+  </extension-point>
+  <extension-point id="converter">
+    <parameter-def id="converter" type="string" multiplicity="one-or-more" />
+  </extension-point>
+  <extension-point id="registrationHandler">
+    <parameter-def id="class" type="string" />
+    <parameter-def id="order" type="number" />
+  </extension-point>
+  <extension-point id="exceptionHandler">
+    <parameter-def id="class" type="string" />
+    <parameter-def id="order" type="number" />
+    <parameter-def id="exceptionClass" type="string" multiplicity="none-or-one" />
+  </extension-point>
+  <extension-point id="pluginErrorHandler">
+    <parameter-def id="class" type="string" />
+  </extension-point>
+  <extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+    <parameter id="class" value="com.tle.web.sections.convert.ConverterTrackerModule" />
+  </extension>
 </plugin>

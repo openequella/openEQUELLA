@@ -1,25 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.core.guice" version="1" class="com.tle.core.guice.GuicePlugin">
-	<requires>
-		<import plugin-id="javax.inject:javax.inject" exported="true" />
-		<import plugin-id="com.tle.platform.common" />
-		<import plugin-id="org.ow2.asm:asm" />
-		<import plugin-id="com.google.inject:guice" exported="true" />
-		<import plugin-id="com.google.inject.extensions:guice-assistedinject" exported="true" />
-		<import plugin-id="org.guice-recipes:guice-recipes-core" />
-	</requires>
-
-	<runtime>
-		<library type="code" path="classes/" id="classes">
-			<export prefix="*" />
-		</library>
-	</runtime>
-
-	<extension-point id="module">
-		<parameter-def id="class" type="string" multiplicity="any" />
-	</extension-point>
-
-	<extension-point id="beanChecker">
-		<parameter-def id="class" type="string" />
-	</extension-point>
+  <requires>
+    <import plugin-id="com.tle.platform.common" />
+  </requires>
+  <runtime>
+    <library type="code" path="classes/" id="classes">
+      <export prefix="*" />
+    </library>
+  </runtime>
+  <extension-point id="module">
+    <parameter-def id="class" type="string" multiplicity="any" />
+  </extension-point>
+  <extension-point id="beanChecker">
+    <parameter-def id="class" type="string" />
+  </extension-point>
 </plugin>

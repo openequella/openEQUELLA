@@ -138,20 +138,10 @@ public class PluginTracker<T extends Object> implements RegistryChangeListener
 		}
 	}
 
-	public PluginTracker(PluginService service, Class<?> pluginClass, String extensionId, String parameterKey)
-	{
-		this(service, service.getPluginIdForObject(pluginClass), extensionId, parameterKey, null);
-	}
 
 	public PluginTracker(PluginService service, String pluginId, String extensionId, String parameterKey)
 	{
 		this(service, pluginId, extensionId, parameterKey, null);
-	}
-
-	public PluginTracker(PluginService service, Class<?> pluginClass, String extensionId, String parameterKey,
-		Comparator<Extension> comparator)
-	{
-		this(service, service.getPluginIdForObject(pluginClass), extensionId, parameterKey, comparator);
 	}
 
 	public PluginTracker(PluginService service, String pluginId, String extensionId, String parameterKey,

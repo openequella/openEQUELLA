@@ -1,11 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.log4j" version="1">
-	<requires>
-		<import plugin-id="log4j:log4j" />
-	</requires>
-	<runtime>
-		<library type="code" path="classes/" id="classes">
-			<export prefix="*" />
-		</library>
-	</runtime>
+  <requires />
+  <runtime>
+    <library type="code" path="classes/" id="classes">
+      <export prefix="*" />
+    </library>
+  </runtime>
 </plugin>

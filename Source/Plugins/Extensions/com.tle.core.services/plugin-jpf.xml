@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.core.services" version="1">
+  <extension-point id="coreTasks">
+    <parameter-def id="id" type="string" multiplicity="one" />
+    <parameter-def id="dependency" type="string" multiplicity="any" />
+    <parameter-def id="essential" type="boolean" multiplicity="none-or-one" default-value="false" />
+  </extension-point>
+</plugin>

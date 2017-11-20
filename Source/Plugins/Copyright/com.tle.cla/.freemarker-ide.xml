@@ -1,9 +1,0 @@
-<config>
-	<context-values>
-		<resource path="resources/view/cal/popup/rolloveractivations.ftl">
-			<value key="m" object-class="com.tle.cla.web.sections.model.CalRolloverActivationsModel"/>
-		</resource>
-	</context-values>
-	<macro-library>
-	</macro-library>
-</config>

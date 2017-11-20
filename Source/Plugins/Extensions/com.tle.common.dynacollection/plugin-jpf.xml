@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.common.dynacollection" version="1">
+  <extension-point id="usages">
+    <parameter-def id="nameKey" />
+  </extension-point>
+</plugin>

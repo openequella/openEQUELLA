@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.tle.web.wizard.controls.universal" version="1">
+  <extension-point id="universalResourceHandler">
+    <parameter-def id="class" multiplicity="one" type="string" />
+    <parameter-def id="order" multiplicity="one" type="number" />
+  </extension-point>
+  <extension-point id="packageAttachmentHandler">
+    <parameter-def id="class" multiplicity="one" type="string" />
+    <parameter-def id="type" multiplicity="one-or-more" type="string" />
+  </extension-point>
+</plugin>
