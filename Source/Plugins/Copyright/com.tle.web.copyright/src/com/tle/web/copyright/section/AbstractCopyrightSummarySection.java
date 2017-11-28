@@ -416,8 +416,6 @@ public abstract class AbstractCopyrightSummarySection<H extends Holding, P exten
 		final SelectionSession session = selectionService.getCurrentSession(info);
 		if( session != null )
 		{
-			final CourseListSection cls = info.lookupSection(CourseListSection.class);
-
 			final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(info);
 			final Item item = itemInfo.getItem();
 
@@ -451,18 +449,24 @@ public abstract class AbstractCopyrightSummarySection<H extends Holding, P exten
 				attachment = new UnmodifiableAttachments(item).getAttachmentByUuid(attachmentId);
 			}
 
-			if( cls != null && cls.isApplicable(info) )
+			addResource(info, item, attachment, activateRequest);
+		}
+	}
+
+	private void addResource(SectionInfo info, Item item, IAttachment attachment, @Nullable ActivateRequest activateRequest)
+	{
+		final CourseListSection cls = info.lookupSection(CourseListSection.class);
+		if( cls != null && cls.isApplicable(info) )
+		{
+			for( String folder : cls.getSelectedFolders(info) )
 			{
-				for( String folder : cls.getSelectedFolders(info) )
-				{
-					addResource(info, new SelectedResource(item.getItemId(), attachment,
+				addResource(info, new SelectedResource(item.getItemId(), attachment,
 						selectionService.findTargetFolder(info, folder), null), activateRequest);
-				}
 			}
-			else
-			{
-				addResource(info, new SelectedResource(item.getItemId(), attachment, null, null), activateRequest);
-			}
+		}
+		else
+		{
+			addResource(info, new SelectedResource(item.getItemId(), attachment, null, null), activateRequest);
 		}
 	}
 
