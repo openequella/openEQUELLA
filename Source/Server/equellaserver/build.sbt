@@ -177,7 +177,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.slf4j")
     ),
   "org.ow2.asm" % "asm" % "5.0.3",
-  "org.postgresql" % "postgresql" % "9.3-1101-jdbc41",
+  postgresDep,
   "org.scala-lang.modules" % "scala-xml_2.11" % "1.0.5",
   "org.scannotation" % "scannotation" % "1.0.3",
   "org.slf4j" % "jcl-over-slf4j" % "1.7.5",
