@@ -38,6 +38,7 @@ import com.tle.core.copyright.Portion;
 import com.tle.core.copyright.Section;
 import com.tle.core.copyright.service.CopyrightService;
 import com.tle.core.i18n.BundleCache;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.web.activation.ActivationResultsExtension;
 import com.tle.web.copyright.section.ViewByRequestSection.ViewRequestUrl;
@@ -123,6 +124,8 @@ public abstract class AbstractCopyrightSummarySection<H extends Holding, P exten
 	@PlugKey("summary.restricted")
 	private static Label LABEL_RESTRICTED_ATTACHMENT;
 
+	@Inject
+	private ItemService itemService;
 	@Inject
 	private IntegrationService integrationService;
 	@Inject
@@ -416,8 +419,7 @@ public abstract class AbstractCopyrightSummarySection<H extends Holding, P exten
 		final SelectionSession session = selectionService.getCurrentSession(info);
 		if( session != null )
 		{
-			final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(info);
-			final Item item = itemInfo.getItem();
+			final Item item = itemService.getUnsecure(itemId);
 
 			final boolean integrating = integrationService.isInIntegrationSession(info);
 			final IAttachment attachment;
@@ -437,15 +439,7 @@ public abstract class AbstractCopyrightSummarySection<H extends Holding, P exten
 						{
 							boolean firstMatch = o1.getCourse().getCode().equals(courseCode);
 							boolean secondMatch = o2.getCourse().getCode().equals(courseCode);
-							if (firstMatch && !secondMatch)
-							{
-								return -1;
-							}
-							else if (secondMatch && !firstMatch)
-							{
-								return 1;
-							}
-							return 0;
+							return -Boolean.compare(firstMatch, secondMatch);
 						}).findFirst().get();
 					attachment = copyrightWebService.getAttachmentMap(info, item)
 							.get(activateRequest.getAttachment());
