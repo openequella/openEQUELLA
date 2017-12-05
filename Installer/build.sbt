@@ -8,7 +8,9 @@ libraryDependencies ++= Seq(
 
 excludeDependencies ++= Seq(
   "log4j" % "log4j",
-  "org.slf4j" % "slf4j-log4j12"
+  "org.slf4j" % "slf4j-log4j12",
+  "commons-logging" % "commons-logging",
+  "stax" % "stax-api"
 )
 
 unmanagedJars in Compile ++= oracleDriverJar.value.toSeq.classpath
