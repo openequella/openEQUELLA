@@ -425,22 +425,34 @@ public abstract class AbstractCopyrightSummarySection<H extends Holding, P exten
 			if (integrating)
 			{
 				final String courseCode = getCourseCode(info, session, integrationService.isInIntegrationSession(info));
-				final List<ActivateRequest> requests = activationService
-						.getAllCurrentAndPendingActivations(getCopyrightServiceImpl().getActivationType(), attachmentId);
-
-				//FIXME: we need some logic to pull out the best activate request in the case there is > 1
-				final Optional<ActivateRequest> opt = requests.stream()
-						.filter(r -> r.getCourse().getCode().equals(courseCode)).findFirst();
-				// The blue "+" button won't show if there are no activations and we are integrating, but best to be sure.
-				if (opt.isPresent())
+				if (activationService
+						.attachmentIsSelectableForCourse(copyrightService.getActivationType(), attachmentId, courseCode))
 				{
-					activateRequest = opt.get();
+					final List<ActivateRequest> requests = activationService
+							.getAllCurrentAndPendingActivations(getCopyrightServiceImpl().getActivationType(), attachmentId);
+
+					//FIXME: we need some logic to pull out the best activate request in the case there is > 1
+					// Pull out the first activate request with matching course if there is one, otherwise just whatever is first.
+					activateRequest = requests.stream().sorted((o1, o2) ->
+						{
+							boolean firstMatch = o1.getCourse().getCode().equals(courseCode);
+							boolean secondMatch = o2.getCourse().getCode().equals(courseCode);
+							if (firstMatch && !secondMatch)
+							{
+								return -1;
+							}
+							else if (secondMatch && !firstMatch)
+							{
+								return 1;
+							}
+							return 0;
+						}).findFirst().get();
 					attachment = copyrightWebService.getAttachmentMap(info, item)
 							.get(activateRequest.getAttachment());
 				}
 				else
 				{
-					throw new RuntimeException("Attachment " + attachmentId + " is not activated for the current course.");
+					throw new RuntimeException("Attachment " + attachmentId + " is not selectable for the current course.");
 				}
 			}
 			else
