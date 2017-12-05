@@ -16,13 +16,7 @@
 
 package com.tle.web.copyright.section;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -35,6 +29,7 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.IAttachment;
+import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.core.activation.ActivationConstants;
 import com.tle.core.activation.service.ActivationService;
 import com.tle.core.activation.validation.PageCounter;
@@ -400,7 +395,7 @@ public abstract class AbstractCopyrightSummarySection<H extends Holding, P exten
 					{
 						HtmlComponentState addState = new HtmlComponentState();
 						addState.setClickHandler(
-							events.getNamedHandler("addAlreadyActivated", portionItem.getItemId(), attachUuid));
+							events.getNamedHandler("addAttachment", portionItem.getItemId(), attachUuid));
 						sectionDisplay
 							.setAddButton(new ButtonRenderer(addState).showAs(ButtonType.PLUS).addClass("add"));
 						holdingDisplay.setHaveAdd(true);
@@ -416,45 +411,84 @@ public abstract class AbstractCopyrightSummarySection<H extends Holding, P exten
 
 	//Dirty hack, mostly copy and pasted from AbstractActivateSection
 	@EventHandlerMethod
-	public void addAlreadyActivated(SectionInfo info, ItemId itemId, String attachmentId)
+	public void addAttachment(SectionInfo info, ItemId itemId, String attachmentId)
 	{
 		final SelectionSession session = selectionService.getCurrentSession(info);
 		if( session != null )
 		{
-			final CourseListSection cls = info.lookupSection(CourseListSection.class);
-
 			final ItemSectionInfo itemInfo = ParentViewItemSectionUtils.getItemInfo(info);
 			final Item item = itemInfo.getItem();
 
-			final String courseCode = getCourseCode(info, session, integrationService.isInIntegrationSession(info));
-			final List<ActivateRequest> requests = activationService
-				.getAllCurrentAndPendingActivations(getCopyrightServiceImpl().getActivationType(), attachmentId);
-
-			//FIXME: we need some logic to pull out the best activate request in the case there is > 1
-			final ActivateRequest activateRequest = requests.stream()
-				.filter(r -> r.getCourse().getCode().equals(courseCode)).findFirst().get();
-			final Attachment attachment = copyrightWebService.getAttachmentMap(info, item)
-				.get(activateRequest.getAttachment());
-
-			if( cls != null && cls.isApplicable(info) )
+			final boolean integrating = integrationService.isInIntegrationSession(info);
+			final IAttachment attachment;
+			final ActivateRequest activateRequest;
+			if (integrating)
 			{
-				for( String folder : cls.getSelectedFolders(info) )
+				final String courseCode = getCourseCode(info, session, integrationService.isInIntegrationSession(info));
+				if (activationService
+						.attachmentIsSelectableForCourse(copyrightService.getActivationType(), attachmentId, courseCode))
 				{
-					addResource(info, new SelectedResource(item.getItemId(), attachment,
-						selectionService.findTargetFolder(info, folder), null), activateRequest);
+					final List<ActivateRequest> requests = activationService
+							.getAllCurrentAndPendingActivations(getCopyrightServiceImpl().getActivationType(), attachmentId);
+
+					//FIXME: we need some logic to pull out the best activate request in the case there is > 1
+					// Pull out the first activate request with matching course if there is one, otherwise just whatever is first.
+					activateRequest = requests.stream().sorted((o1, o2) ->
+						{
+							boolean firstMatch = o1.getCourse().getCode().equals(courseCode);
+							boolean secondMatch = o2.getCourse().getCode().equals(courseCode);
+							if (firstMatch && !secondMatch)
+							{
+								return -1;
+							}
+							else if (secondMatch && !firstMatch)
+							{
+								return 1;
+							}
+							return 0;
+						}).findFirst().get();
+					attachment = copyrightWebService.getAttachmentMap(info, item)
+							.get(activateRequest.getAttachment());
+				}
+				else
+				{
+					throw new RuntimeException("Attachment " + attachmentId + " is not selectable for the current course.");
 				}
 			}
 			else
 			{
-				addResource(info, new SelectedResource(item.getItemId(), attachment, null, null), activateRequest);
+				activateRequest = null;
+				attachment = new UnmodifiableAttachments(item).getAttachmentByUuid(attachmentId);
 			}
+
+			addResource(info, item, attachment, activateRequest);
 		}
 	}
 
-	private void addResource(SectionInfo info, SelectedResource resource, ActivateRequest activateRequest)
+	private void addResource(SectionInfo info, Item item, IAttachment attachment, @Nullable ActivateRequest activateRequest)
 	{
-		resource.addExtender(new ViewRequestUrl(activateRequest.getUuid()));
-		resultsExtension.addRequest(resource, activateRequest);
+		final CourseListSection cls = info.lookupSection(CourseListSection.class);
+		if( cls != null && cls.isApplicable(info) )
+		{
+			for( String folder : cls.getSelectedFolders(info) )
+			{
+				addResource(info, new SelectedResource(item.getItemId(), attachment,
+						selectionService.findTargetFolder(info, folder), null), activateRequest);
+			}
+		}
+		else
+		{
+			addResource(info, new SelectedResource(item.getItemId(), attachment, null, null), activateRequest);
+		}
+	}
+
+	private void addResource(SectionInfo info, SelectedResource resource, @Nullable ActivateRequest activateRequest)
+	{
+		if (activateRequest != null)
+		{
+			resource.addExtender(new ViewRequestUrl(activateRequest.getUuid()));
+			resultsExtension.addRequest(resource, activateRequest);
+		}
 		selectionService.addSelectedResource(info, resource, true);
 	}
 
