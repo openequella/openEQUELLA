@@ -30,6 +30,7 @@ import com.tle.core.item.serializer.ItemSerializerItemBean;
 import com.tle.core.item.serializer.ItemSerializerService;
 import com.tle.web.api.item.ItemLinkService;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
+import com.tle.web.remoting.rest.service.UrlLinkService;
 
 @Bind
 @Singleton
@@ -42,6 +43,9 @@ public class ActivationSerializer
 	private ItemLinkService itemLinkService;
 	@Inject
 	private CourseBeanSerializer courseSerializer;
+	@Inject
+	private UrlLinkService urlLinkService;
+
 
 	public ActivationBean serialize(ActivateRequest request)
 	{
@@ -53,8 +57,8 @@ public class ActivationSerializer
 		if( request.getCourse() != null )
 		{
 			CourseBean courseBean = courseSerializer.serialize(request.getCourse(), null, false);
-			courseBean.set("links", Collections.singletonMap("self",
-				UriBuilder.fromMethod(CourseResource.class, "get").build(courseBean.getUuid()).toString()));
+			courseBean.set("links", Collections.singletonMap("self", urlLinkService.getMethodUriBuilder(CourseResource.class, "get")
+				.build(courseBean.getUuid()).toString()));
 			activation.setCourse(courseBean);
 		}
 		activation.setFrom(request.getFrom());

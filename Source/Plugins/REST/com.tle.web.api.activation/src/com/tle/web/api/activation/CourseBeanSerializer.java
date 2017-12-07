@@ -82,11 +82,16 @@ public class CourseBeanSerializer extends AbstractEquellaBaseEntitySerializer<Co
 	}
 
 	@Override
+	protected void copyCustomLightweightFields(CourseInfo entity, CourseBean bean, Object data)
+	{
+		bean.setCode(entity.getCode());
+	}
+
+	@Override
 	protected void copyCustomFields(CourseInfo entity, CourseBean bean, Object data)
 	{
 		super.copyCustomFields(entity, bean, data);
 		bean.setArchived(entity.isDisabled());
-		bean.setCode(entity.getCode());
 		bean.setType(CourseInfo.getTypeStringFromChar(entity.getCourseType()));
 		bean.setCitation(entity.getCitation());
 		bean.setDepartmentName(entity.getDepartmentName());
