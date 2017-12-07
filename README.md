@@ -99,7 +99,7 @@ Once SBT and Java are installed, you may need to set a JAVA_HOME environment var
 ### Optional code
 There is functionality that could not be included into the core Equella code repository, but based on your business needs, may be appropriate to include.
 * Oracle DB Driver
-* [Kaltura](https://equella.github.io/optional-functionality/Kaltura.html)
+* [Kaltura](https://github.com/equella/Equella-Kaltura)
 
 ## Build configuration
 
