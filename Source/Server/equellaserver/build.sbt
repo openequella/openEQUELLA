@@ -217,6 +217,7 @@ excludeDependencies ++= Seq(
   "stax" % "stax-api",
   "xml-apis" % "xml-apis",
   "javax.xml" % "jaxrpc-api",
+  "xalan" % "xalan",
   "xerces" % "xercesImpl",
   "javax.xml.stream" % "stax-api",
   "javax.ws.rs" % "jsr311-api",
