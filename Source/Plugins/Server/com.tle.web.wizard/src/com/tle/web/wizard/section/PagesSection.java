@@ -178,33 +178,28 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel> impleme
 		{
 			throw new Error("No pages in wizard");
 		}
-
-		for( WebWizardPage page : pages )
-		{
-			boolean doLoad = load;
-			try
-			{
-				if( !page.isLoaded() )
-				{
-					page.setReloadFunction(reloadFunction);
-					page.createPage();
-					doLoad = true;
-				}
-				if( doLoad )
-				{
-					page.loadFromDocument(info);
-					page.saveDefaults();
-				}
-				page.ensureTreeAdded(info, params);
-			}
-			catch( Exception e )
-			{
-				throw new RuntimeException(e);
-			}
-		}
-
 		WebWizardPage page = pages.get(pageNum);
-		return page;
+		boolean doLoad = load;
+		try
+		{
+			if( !page.isLoaded() )
+			{
+				page.setReloadFunction(reloadFunction);
+				page.createPage();
+				doLoad = true;
+			}
+			if( doLoad )
+			{
+				page.loadFromDocument(info);
+				page.saveDefaults();
+			}
+			page.ensureTreeAdded(info, params);
+			return page;
+		}
+		catch( Exception e )
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	protected List<WebWizardPage> getPages(WizardState state)
