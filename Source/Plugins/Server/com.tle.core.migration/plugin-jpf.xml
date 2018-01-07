@@ -94,6 +94,11 @@
 		<parameter id="date" value="1970-01-01" />
 	</extension>
 
+	<extension plugin-id="com.tle.core.migration" point-id="migration" id="removedMigration1">
+		<parameter id="id" value="com.tle.core.payment.migration.CreateDefaultPaymentObjects" />
+		<parameter id="date" value="1970-01-01" />
+	</extension>
+
 	<extension plugin-id="com.tle.core.migration" point-id="migration" id="itemsWithNullDateCreatedMigration">
 		<parameter id="id" value="com.tle.core.migration.initial.ItemsWithNullDateCreatedMigration" />
 		<parameter id="bean" value="bean:com.tle.core.migration.initial.ItemsWithNullDateCreatedMigration" />
