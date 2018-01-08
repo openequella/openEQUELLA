@@ -290,15 +290,18 @@ public class TextExtracter
 						attachmentText));
 					fields.add(AbstractIndexingExtension
 						.unstoredAndVectored(FreeTextQuery.FIELD_ATTACHMENT_VECTORED_NOSTEM, attachmentText));
+					LOGGER.trace("Text extracted for attachment " + attach.getAttachmentSignature() + ":");
+				} else {
+					LOGGER.trace("No text extracted for attachment " + attach.getAttachmentSignature() + ":");
 				}
 			}
 			catch( FileNotFoundException ex )
 			{
-				LOGGER.warn("Attachment could not be found: " + ex.getMessage()); //$NON-NLS-1$
+				LOGGER.warn("Attachment " + attach.getAttachmentSignature() + " could not be found: " + ex.getMessage()); //$NON-NLS-1$
 			}
 			catch( Exception t )
 			{
-				LOGGER.error("Error indexing attachment: ", t);
+				LOGGER.error("Error indexing attachment " + attach.getAttachmentSignature() + ": ", t);
 			}
 			catch( Throwable tt )
 			{
@@ -316,7 +319,7 @@ public class TextExtracter
 				else
 				{
 					LOGGER.trace(
-						"No mimeEntry for attachment " + attach.getDescription() + " on item " + item.getIdString());
+						"No mimeEntry for attachment " + attach.getAttachmentSignature());
 				}
 			}
 			catch( Throwable t )

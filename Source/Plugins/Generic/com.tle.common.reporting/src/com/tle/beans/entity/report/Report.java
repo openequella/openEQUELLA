@@ -58,4 +58,8 @@ public class Report extends BaseEntity
 	{
 		this.hideReport = hideReport;
 	}
+	
+	public String getReportSignature() {
+		return "reportName=[" + this.getName() + "], reportFilename=[" + filename + "]";
+	}
 }

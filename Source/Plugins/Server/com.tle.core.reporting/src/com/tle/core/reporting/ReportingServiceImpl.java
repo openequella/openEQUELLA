@@ -278,7 +278,7 @@ public class ReportingServiceImpl extends AbstractEntityServiceImpl<EntityEditin
 			+ CurrentUser.getUserID();
 		String outName = designFile != null ? designFile.replace('/', '_') : "report";
 		final String outfile = outName + Math.abs(hash.hashCode() % 10000) + extension;
-
+		String reportSignature = report.getReportSignature() + ", format=[" + format + "]";
 		try
 		{
 			final CachedFile entityFile = new CachedFile(report.getUuid());
@@ -297,7 +297,7 @@ public class ReportingServiceImpl extends AbstractEntityServiceImpl<EntityEditin
 			{
 				final IReportEngine engine = getReportEngine();
 
-				LOGGER.info("Started Report");
+				LOGGER.info("Started Report - " + reportSignature);
 				final IReportRunnable design = getReportDesign(engine, report, designFile);
 				final IRunAndRenderTask task = engine.createRunAndRenderTask(design);
 				RenderOption options = new RenderOption();
@@ -362,21 +362,24 @@ public class ReportingServiceImpl extends AbstractEntityServiceImpl<EntityEditin
 					task.run();
 					task.close();
 
-					LOGGER.info("Finished report");
+					LOGGER.info("Finished report - "+reportSignature);
 				}
 			}
 			return outfile;
 		}
 		catch( BirtException be )
 		{
+			LOGGER.warn("Failed running report - "+reportSignature);
 			throw new RuntimeException(be);
 		}
 		catch( IOException ioe )
 		{
+			LOGGER.warn("Failed running report - "+reportSignature);
 			throw new RuntimeException(ioe);
 		}
 		catch( Exception e )
 		{
+			LOGGER.warn("Failed running report - "+reportSignature);
 			throw new RuntimeException("executeReport threw up (not BirtException nor IOException) ...", e.getCause());
 		}
 		finally
