@@ -84,7 +84,6 @@ tests:
       - com.tle.webtests.test.admin.CustomLinksTest
       - com.tle.webtests.test.admin.ServerMessageTest
       - com.tle.webtests.test.admin.MultiLingualTest
-      - com.tle.webtests.test.admin.CreditsTest
       - com.tle.webtests.test.accessibility.AccessibilityModeTest
       - com.tle.webtests.test.acl.ACLTest
       - com.tle.webtests.test.cal.CALActivationsMetadataTest

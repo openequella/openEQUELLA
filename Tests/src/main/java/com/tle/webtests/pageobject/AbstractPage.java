@@ -588,12 +588,6 @@ public abstract class AbstractPage<T extends PageObject> implements PageObject, 
 		return loadedElement;
 	}
 
-	public LicencesPage clickCreditsLink()
-	{
-		driver.findElement(By.linkText("Credits")).click();
-		return new LicencesPage(context).get();
-	}
-
 	protected T clickAndUpdate(WebElement element)
 	{
 		WaitingPageObject<T> updateWaiter = updateWaiter(element);

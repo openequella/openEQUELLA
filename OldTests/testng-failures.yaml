@@ -4,20 +4,14 @@ threadCount: 2
 tests:
   - name: BrokenBits
     classes:
-      - com.tle.webtests.test.viewing.DisplayNodesTest
       - com.tle.webtests.test.webservices.rest.FileListingApiTest
       - com.tle.webtests.test.contribute.WizardConfigTest
-      - com.tle.webtests.test.contribute.controls.attachments.FileAttachmentControlTest
       - com.tle.webtests.test.searching.manage.BulkScriptExecutionTest
-      - com.tle.webtests.test.viewing.ViewerTest
       - com.tle.webtests.test.myresources.MyResourcesControlsTest
-      - com.tle.webtests.test.drm.DRMTest
-      - com.tle.webtests.test.admin.CreditsTest
       - com.tle.webtests.test.viewing.MimeTypesTest
       - com.tle.webtests.test.webservices.rest.FileApiTest
       - com.tle.webtests.test.workflow.MessageToModeratorTest
       - com.tle.webtests.test.contribute.controls.asc.AdvancedScriptControlTests
       - com.tle.webtests.test.workflow.ModerationProgressTest
-      - com.tle.webtests.test.viewing.SearchResultTemplateTest
       - com.tle.webtests.test.myresources.MyResourcesTest
       - com.tle.webtests.test.usersscripts.UserScriptTest
