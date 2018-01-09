@@ -21,6 +21,7 @@ import javax.persistence.Entity;
 import org.hibernate.annotations.AccessType;
 
 import com.tle.beans.entity.BaseEntity;
+import com.tle.common.i18n.LangUtils;
 
 /**
  * @author Nicholas Read
@@ -60,6 +61,6 @@ public class Report extends BaseEntity
 	}
 	
 	public String getReportSignature() {
-		return "reportName=[" + this.getName() + "], reportFilename=[" + filename + "]";
+		return "reportName=[" + LangUtils.getString(this.getName()) + "], reportFilename=[" + filename + "]";
 	}
 }
