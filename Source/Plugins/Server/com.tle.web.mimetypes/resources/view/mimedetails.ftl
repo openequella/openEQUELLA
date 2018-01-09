@@ -5,9 +5,6 @@
 <#include "/com.tle.web.sections.equella@/macro/settings.ftl"/>
 
 <h3>${b.key("tab.details")}</h3>
-<#if m.errorKey??>
-	<@setting label="" error=b.key("error." + m.errorKey) />
-</#if>
 
 <@setting label=b.key('label.description') section=s.description />
 <@setting label=b.key('label.type') section=s.type mandatory=true />

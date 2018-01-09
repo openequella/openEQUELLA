@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.core.plugins.AbstractPluginService;
 import org.hibernate.Hibernate;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
@@ -69,6 +70,7 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
 {
 	private static final String DEFAULT_MIMETYPE = "application/octet-stream"; //$NON-NLS-1$
 
+	private static final String KEY_PFX = AbstractPluginService.getMyPluginId(MimeTypeServiceImpl.class)+".";
 	@Inject
 	private MimeEntryDao mimeEntryDao;
 	@Inject
@@ -294,13 +296,13 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
 		if( existing != null && existing.getId() != mimeEntry.getId() )
 		{
 			throw new InvalidDataException(
-				new ValidationError("type", CurrentLocale.get("com.tle.core.mimetypes.error.mimetype.exists")));
+				new ValidationError("type", null, KEY_PFX + "error.mimetype.exists"));
 		}
 
 		if( Check.isEmpty(mimeEntry.getType()) )
 		{
 			throw new InvalidDataException(
-				new ValidationError("type", CurrentLocale.get("com.tle.core.mimetypes.error.mimetype.empty")));
+				new ValidationError("type", null,KEY_PFX + "error.mimetype.empty"));
 		}
 
 		Collection<String> extensions = mimeEntry.getExtensions();
@@ -310,8 +312,7 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
 			int sz = entries.size();
 			if( sz > 1 || (sz == 1 && entries.get(0).getId() != mimeEntry.getId()) )
 			{
-				throw new InvalidDataException(new ValidationError("extensions",
-					CurrentLocale.get("com.tle.core.mimetypes.error.extensions.alreadyinuse")));
+				throw new InvalidDataException(new ValidationError("extensions",null,KEY_PFX + "error.extensions.alreadyinuse"));
 			}
 		}
 	}
