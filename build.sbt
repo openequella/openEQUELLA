@@ -3,6 +3,7 @@ import org.jacoco.core.tools.{ExecDumpClient, ExecFileLoader}
 import org.jdom2.input.SAXBuilder
 import org.jdom2.input.sax.XMLReaders
 import sbt.Keys.{scalaVersion, version}
+import sbt.complete.DefaultParsers.spaceDelimited
 
 import scala.collection.JavaConversions._
 
@@ -183,6 +184,16 @@ def serviceCommand(opts: InstallOptions, cmd: String): Unit = {
 startEquella := serviceCommand(installOptions.value, "start")
 
 stopEquella := serviceCommand(installOptions.value, "stop")
+
+val TestPrj = LocalProject("Tests")
+
+setupForTests := {
+  val run = (runner in (TestPrj,Test)).value
+  val log = sLog.value
+  run.run("equellatests.SetupForTests", (fullClasspath in (TestPrj, Test)).value.files, spaceDelimited("<arg>").parsed, log)
+}
+
+configureInstall := (runMain in (TestPrj, Test)).toTask(" equellatests.InstallFirstTime").value
 
 aggregate in test := false
 

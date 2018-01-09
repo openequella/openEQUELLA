@@ -1,6 +1,6 @@
 import com.typesafe.config.Config
 import org.jacoco.core.tools.ExecFileLoader
-import sbt.{AutoPlugin, File, settingKey, taskKey}
+import sbt.{AutoPlugin, File, settingKey, taskKey, inputKey}
 
 object TestKeys extends AutoPlugin {
 
@@ -12,7 +12,7 @@ object TestKeys extends AutoPlugin {
     lazy val installOptions = taskKey[InstallOptions]("EQUELLA installer options")
     lazy val installerZip = settingKey[Option[File]]("The installer zip")
     lazy val buildConfig = settingKey[Config]("The build config options")
-    lazy val setupForTests = taskKey[Unit]("Setup the EQUELLA server for tests")
+    lazy val setupForTests = inputKey[Unit]("Setup the EQUELLA server for tests")
     lazy val configureInstall = taskKey[Unit]("Setup and test the initial installation page")
     lazy val coverageReport = taskKey[Unit]("Generate coverage report")
     lazy val sourceZip = taskKey[Option[File]]("The EQUELLA sources zip")

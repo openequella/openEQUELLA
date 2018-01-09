@@ -10,22 +10,27 @@ import com.tle.webtests.pageobject.multidb.InstallPage
 
 import scala.util.{Failure, Success, Try}
 
-object SetupForTests extends App {
-
+object ImportInsts {
+  val configInstFilter: String => Boolean = {
+    Option(testConfig.getProperty("tests.insts")).map(_.split(",").map(_.trim).toSet)
+      .getOrElse((_: String) => true)
+  }
   val INSTITUTION_FILE = "institution"
+}
 
-  def insts: Seq[File] = {
-    val testFolders = new File(testConfig.getTestFolder, "tests").list().toSeq
-    Option(testConfig.getProperty("tests.insts"))
-      .map(i => testFolders.filter(i.split(",").toSet))
-      .getOrElse(testFolders)
-      .map(n => new File(testConfig.getTestFolder, s"tests/$n"))
-      .filter(f => new File(f, INSTITUTION_FILE).isDirectory)
+class ImportInsts(allowed: String => Boolean) {
+
+  import ImportInsts._
+
+  val insts: Seq[File] = {
+    val baseTestFolder = new File(testConfig.getTestFolder, "tests")
+    baseTestFolder.listFiles.toSeq.filter { testDir =>
+      allowed(testDir.getName) && new File(testDir, INSTITUTION_FILE).isDirectory
+    }
   }
 
-  TestChecker.withServerAdmin {
-    context =>
-
+  def run(): Unit = {
+    TestChecker.withServerAdmin { context =>
       insts.foreach { instFolder =>
         val shortName = instFolder.getName
         val instutionUrl = context.getTestConfig.getInstitutionUrl(shortName)
@@ -46,5 +51,15 @@ object SetupForTests extends App {
         assert(importTab.importInstitution(instutionUrl, shortName,
           new File(instFolder, INSTITUTION_FILE).toPath).waitForFinish)
       }
+    }
   }
+}
+
+object SetupForTests extends App {
+  val instFilter = if (args.isEmpty) {
+    ImportInsts.configInstFilter
+  } else {
+    args.toSet
+  }
+  new ImportInsts(instFilter).run()
 }

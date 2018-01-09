@@ -1,3 +1,5 @@
+import sbt.complete.DefaultParsers.spaceDelimited
+
 val circeVersion = "0.9.0-M2"
 val http4sVersion = "0.18.0-M5"
 val catsVersion = "1.0.0-RC1"
@@ -43,8 +45,4 @@ testOptions in Test := Seq(
 )
 
 parallelExecution in Test := buildConfig.value.getBoolean("tests.parallel")
-
-setupForTests := (runMain in Test).toTask(" equellatests.SetupForTests").value
-
-configureInstall := (runMain in Test).toTask(" equellatests.InstallFirstTime").value
 
