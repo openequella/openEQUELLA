@@ -334,4 +334,8 @@ public abstract class Attachment implements IAttachment, Serializable, Cloneable
 	{
 		this.restricted = restricted;
 	}
+	
+	public String getAttachmentSignature() {
+		return item.getIdString() + "/" + this.uuid + " [" + this.description + "]";
+	}
 }
