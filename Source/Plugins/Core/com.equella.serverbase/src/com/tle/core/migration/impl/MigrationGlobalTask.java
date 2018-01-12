@@ -218,7 +218,7 @@ public class MigrationGlobalTask extends AlwaysRunningTask<SimpleMessage>
 					else
 					{
 						setupMigrationInfo(schemaInfo, migrationsToRun);
-						if( autoMigrate )
+						if( autoMigrate || schemaInfo.getMigrations().isEmpty())
 						{
 							migrateSchema(schemaId, schemaInfo);
 						}

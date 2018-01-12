@@ -350,6 +350,10 @@
     <parameter id="id" value="customScriptObjects" />
     <parameter id="class" value="bean:com.tle.core.userscript.scriptobject.UserScriptObject" />
   </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="removedMigration1">
+    <parameter id="id" value="com.tle.core.payment.migration.CreateDefaultPaymentObjects" />
+    <parameter id="date" value="1970-01-01" />
+  </extension>
   <extension plugin-id="com.tle.core.migration" point-id="initialSchema" id="userScriptsInitialSchema">
     <parameter id="class" value="com.tle.common.userscripts.entity.UserScript" />
   </extension>
