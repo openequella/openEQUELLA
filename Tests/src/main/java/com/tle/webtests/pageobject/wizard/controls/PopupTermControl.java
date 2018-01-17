@@ -35,7 +35,7 @@ public class PopupTermControl extends AbstractWizardControl<PopupTermControl>
 	public PopupTermDialog openDialog()
 	{
 		addTermButton.click();
-		return new PopupTermDialog(context, page.getControlId(ctrlnum) + "d_popupBrowserDialog").get();
+		return new PopupTermDialog(context, page.getControlId(ctrlnum) + "d_popupBrowserDialog", page, ctrlnum).get();
 	}
 
 	public WaitingPageObject<StringSelectedStuff> selectWaiter(String newSelection)

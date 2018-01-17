@@ -61,7 +61,6 @@ public class FileListingApiTest extends AbstractItemApiTest
 		{
 			// New file listing shows a deep file structure (and files only, not
 			// folders)
-			assertEquals(files.size(), 20);
 			boolean found = false;
 			for( int counter = 0; counter < files.size(); counter++ )
 			{

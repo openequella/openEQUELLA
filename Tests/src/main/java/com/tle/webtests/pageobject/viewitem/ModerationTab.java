@@ -75,14 +75,15 @@ public class ModerationTab extends AbstractPage<ModerationTab>
 	{
 		if( Check.isEmpty(comment) )
 		{
-			return "//div[@class='comment' and count(div[@class='comment-content']) = 0]";
+			return "//div[@class='modcomment' and count(div[@class='comment-content']) = 0]";
 		}
-		return "//div[@class[contains(.,'comment')] and contains(div[@class='comment-content'],'" + comment + "')]";
+		return "//div[contains(@class,'modcomment') and .//div[@class='modcomment-content' and normalize-space(text()) = "+quoteXPath(comment)+"]]";
 	}
 
 	public boolean containsComment(String comment)
 	{
-		return isPresent(By.xpath(xpathForComment(comment)));
+		String commentXpath = xpathForComment(comment);
+		return isPresent(By.xpath(commentXpath));
 
 	}
 

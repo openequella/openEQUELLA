@@ -86,7 +86,7 @@ public class MyResourcesUploadFilesPage extends AbstractPage<MyResourcesUploadFi
 	{
 		try
 		{
-			driver.findElement(By.cssSelector(".dndicon"));
+			driver.findElement(By.cssSelector(".filedrop"));
 		}
 		catch( NotFoundException ex )
 		{

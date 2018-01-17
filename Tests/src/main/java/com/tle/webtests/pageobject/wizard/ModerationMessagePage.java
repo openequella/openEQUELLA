@@ -11,6 +11,7 @@ import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import com.tle.webtests.pageobject.tasklist.ModerationView;
 import com.tle.webtests.pageobject.tasklist.TaskListPage;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public abstract class ModerationMessagePage<M extends AbstractWizardTab<M>> extends AbstractWizardTab<M>
 {
@@ -70,7 +71,12 @@ public abstract class ModerationMessagePage<M extends AbstractWizardTab<M>> exte
 
 	public ModerationView cancel()
 	{
+		By dialogById = By.id(getPfx());
+		WebElement dialogElem = driver.findElement(dialogById);
 		cancelButton.click();
+		WebDriverWait waiter = getWaiter();
+		waiter.until(ExpectedConditions.stalenessOf(dialogElem));
+		waiter.until(ExpectedConditions.invisibilityOfElementLocated(dialogById));
 		return new ModerationView(context).get();
 	}
 

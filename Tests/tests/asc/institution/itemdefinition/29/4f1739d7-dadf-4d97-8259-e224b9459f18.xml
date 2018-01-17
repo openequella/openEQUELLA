@@ -143,9 +143,9 @@ if(request.get(&apos;doit&apos;) == &apos;Edit text file&apos;)
 
 if (request.get(&apos;doit&apos;) == &apos;Create binary attachment&apos;)
 {
-	var response = utils.getConnection(&quot;http://www.equella.com/images/pearsonLogo.png&quot;).getResponse(true);
-	attachments.createBinaryFileAttachment(&quot;pearsonLogo.png&quot;,&quot;Pearson Logo&quot;,response.getAsBinaryData());
-	attachments.addExistingFileAsAttachment(&quot;pearsonLogo.png&quot;,&quot;Pearson Logo&quot;);
+	var response = utils.getConnection(&quot;https://www.apereo.org/sites/default/files/styles/project_logo/public/projects/logos/largeequella_logo.gif&quot;).getResponse(true);
+	attachments.createBinaryFileAttachment(&quot;equellaLogo.gif &quot;,&quot;EQUELLA Logo&quot;,response.getAsBinaryData());
+	attachments.addExistingFileAsAttachment(&quot;equellaLogo.gif &quot;,&quot;EQUELLA Logo&quot;);
 	
 	attributes.set(&apos;content&apos;, &apos;Binary attachment created!&apos;);
 }
@@ -209,14 +209,14 @@ if(request.get(&quot;doit&quot;) == &apos;Get Mime Details&apos;)
 }
 if(request.get(&quot;doit&quot;) == &quot;Get Image Size&quot;)
 {
-	var dimensions = images.getDimensions(&quot;pearsonLogo.png&quot;);
+	var dimensions = images.getDimensions(&quot;equellaLogo.gif &quot;);
 	attributes.set(&apos;content&apos;, &quot;Width: &quot; + dimensions.getWidth() + &quot; | Height: &quot; + dimensions.getHeight());
 }
 if(request.get(&quot;doit&quot;) == &quot;Resize Image&quot;)
 {
-	var dimensions = images.getDimensions(&quot;pearsonLogo.png&quot;);
-	images.resize(&quot;pearsonLogo.png&quot;, dimensions.getWidth() / 2, dimensions.getHeight()/2 ,&quot;pearsonLogo.png&quot;);
-	var dimensions = images.getDimensions(&quot;pearsonLogo.png&quot;);
+	var dimensions = images.getDimensions(&quot;equellaLogo.gif &quot;);
+	images.resize(&quot;equellaLogo.gif &quot;, dimensions.getWidth() / 2, dimensions.getHeight()/2 ,&quot;equellaLogo.gif &quot;);
+	var dimensions = images.getDimensions(&quot;equellaLogo.gif &quot;);
 	attributes.set(&apos;content&apos;, &quot;Width: &quot; + dimensions.getWidth() + &quot; | Height: &quot; + dimensions.getHeight());
 }
 </string>

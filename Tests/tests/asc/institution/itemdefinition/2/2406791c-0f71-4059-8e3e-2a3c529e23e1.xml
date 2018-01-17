@@ -179,9 +179,9 @@
                   <string>StoreJs</string>
                   <string>if (request.get(&apos;doit&apos;) == &apos;Create binary file&apos;)
 {
-	var connection = utils.getConnection(&quot;http://www.equella.com/images/pearsonLogo.png&quot;);	
+	var connection = utils.getConnection(&quot;https://www.apereo.org/sites/default/files/styles/project_logo/public/projects/logos/largeequella_logo.gif&quot;);
 	var response = connection.getResponse(true);
-	staging.writeBinaryFile(&quot;pearsonLogo.png&quot;,response.getAsBinaryData());
+	staging.writeBinaryFile(&quot;equellaLogo.gif &quot;,response.getAsBinaryData());
 }
 if (request.get(&apos;doit&apos;) == &apos;Create text file&apos;)
 {

@@ -1,5 +1,6 @@
 package com.tle.webtests.pageobject.generic.component;
 
+import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
@@ -16,6 +17,8 @@ import com.tle.webtests.pageobject.WaitingPageObject;
 public class PopupTermDialog extends AbstractPage<PopupTermDialog>
 {
 	private final String baseId;
+	private final int ctrlNum;
+	private final AbstractWizardControlPage<?> ctrlPage;
 
 	@FindBy(id = "{baseid}")
 	private WebElement dialog;
@@ -29,9 +32,11 @@ public class PopupTermDialog extends AbstractPage<PopupTermDialog>
 	@FindBy(id = "{baseid}_treeView")
 	private WebElement treeTag;
 
-	public PopupTermDialog(PageContext context, String baseId)
+	public PopupTermDialog(PageContext context, String baseId, AbstractWizardControlPage<?> ctrlPage, int ctrlNum)
 	{
 		super(context);
+		this.ctrlPage = ctrlPage;
+		this.ctrlNum = ctrlNum;
 		this.baseId = baseId;
 	}
 
@@ -110,7 +115,9 @@ public class PopupTermDialog extends AbstractPage<PopupTermDialog>
 
 	public <T extends PageObject> T finish(WaitingPageObject<T> page)
 	{
+		WaitingPageObject<?> updateWaiter = ctrlPage.getUpdateWaiter(ctrlNum);
 		okButton.click();
+		updateWaiter.get();
 		return page.get();
 	}
 

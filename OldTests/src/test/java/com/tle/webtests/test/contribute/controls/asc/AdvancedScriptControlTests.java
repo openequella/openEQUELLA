@@ -544,14 +544,14 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest
 		clickAscButton("Create binary attachment", wizard);
 		assertEquals(getAscMessage().getText(), "Binary attachment created!", "ASC Message was wrong");
 		item = wizard.saveNoConfirm();
-		assertTrue(item.attachments().attachmentExists("Pearson Logo"));
+		assertTrue(item.attachments().attachmentExists("EQUELLA Logo"));
 
 		// resize image
 		wizard = item.edit();
 		clickAscButton("Get Image Size", wizard);
-		assertEquals(getAscMessage().getText(), "Width: 145 | Height: 176", "ASC Message was wrong");
+		assertEquals(getAscMessage().getText(), "Width: 163 | Height: 33", "ASC Message was wrong");
 		clickAscButton("Resize Image", wizard);
-		assertEquals(getAscMessage().getText(), "Width: 72 | Height: 87", "ASC Message was wrong");
+		assertEquals(getAscMessage().getText(), "Width: 79 | Height: 16", "ASC Message was wrong");
 
 		// html creation + single attachment deletion
 		clickAscButton("Create html attachment", wizard);
@@ -671,11 +671,11 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest
 		wizard.editbox(1, itemName);
 		// Create binary file
 		clickAscButton("Create binary file", wizard);
-		assertEquals(getDivMessageForId("stagingFiles"), "pearsonLogo.png");
+		assertEquals(getDivMessageForId("stagingFiles"), "equellaLogo.gif");
 		// Create text file
 		clickAscButton("Create text file", wizard);
 		assertEqualsNoOrder(getDivMessageForId("stagingFiles").split("\n"), new String[]{"autotest.txt",
-				"pearsonLogo.png"});
+				"equellaLogo.gif"});
 		// fileHandle get details
 		ascSelectDropdown("fileDetails", "autotest.txt");
 		clickAscButton("Get File Details", wizard);
@@ -683,15 +683,15 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest
 		// Copy
 		clickAscButton("Copy all files", wizard);
 		assertEqualsNoOrder(getDivMessageForId("stagingFiles").split("\n"), new String[]{"autotest.txt",
-				"Copy of autotest.txt", "Copy of pearsonLogo.png", "pearsonLogo.png"});
+				"Copy of autotest.txt", "Copy of equellaLogo.gif", "equellaLogo.gif"});
 
 		// Delete
 		ascSelectDropdown("delFileList", "Copy of autotest.txt");
 		clickAscButton("Delete file", wizard);
-		ascSelectDropdown("delFileList", "Copy of pearsonLogo.png");
+		ascSelectDropdown("delFileList", "Copy of equellaLogo.gif");
 		clickAscButton("Delete file", wizard);
 		assertEqualsNoOrder(getDivMessageForId("stagingFiles").split("\n"), new String[]{"autotest.txt",
-				"pearsonLogo.png"});
+				"equellaLogo.gif"});
 
 		wizard.cancel(new ContributePage(context));
 

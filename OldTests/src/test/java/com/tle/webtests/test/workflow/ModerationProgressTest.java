@@ -71,8 +71,8 @@ public class ModerationProgressTest extends AbstractCleanupTest
 		modTab.openModerationComments(1);
 		assertTrue(modTab.containsComment("Moderation Comment"));
 		assertTrue(modTab.containsComment("Contribution Comment"));
-		assertTrue(modTab.getCommentClass("Moderation Comment").equalsIgnoreCase("comment "));
-		assertTrue(modTab.getCommentClass("Contribution Comment").equalsIgnoreCase("comment "));
+		assertTrue(modTab.getCommentClass("Moderation Comment").equalsIgnoreCase("modcomment "));
+		assertTrue(modTab.getCommentClass("Contribution Comment").equalsIgnoreCase("modcomment "));
 		assertTrue(modTab.getNumberModerationComments(1) == 2);
 
 		// acceptance comment
@@ -87,7 +87,7 @@ public class ModerationProgressTest extends AbstractCleanupTest
 		assertTrue(modTab.getNumberModerationComments(1) == 1);
 		modTab.openModerationComments(1);
 		assertTrue(modTab.containsComment("Acceptance Message"));
-		assertTrue(modTab.getCommentClass("Acceptance Message").equalsIgnoreCase("comment approval"));
+		assertTrue(modTab.getCommentClass("Acceptance Message").equalsIgnoreCase("modcomment approval"));
 
 		// reject
 		logon("secondstepmoderator", "``````");
@@ -102,6 +102,6 @@ public class ModerationProgressTest extends AbstractCleanupTest
 		assertTrue(modTab.getNumberModerationComments(1) == 1);
 		modTab.openModerationComments(1);
 		assertTrue(modTab.containsComment("Reject Message"));
-		assertTrue(modTab.getCommentClass("Reject Message").equalsIgnoreCase("comment rejection"));
+		assertTrue(modTab.getCommentClass("Reject Message").equalsIgnoreCase("modcomment rejection"));
 	}
 }

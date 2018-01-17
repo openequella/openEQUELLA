@@ -108,7 +108,6 @@ tests:
       - com.tle.webtests.test.myresources.favourites.FavouriteItemsTest
       - com.tle.webtests.test.myresources.favourites.FavouritesInIntegrationTest
       - com.tle.webtests.test.myresources.favourites.ResourceSelectorFavouritesTest
-      - com.tle.webtests.test.myresources.MyResourcesControlsTest
       - com.tle.webtests.test.myresources.MyResourcesTest
       - com.tle.webtests.test.myresources.MyResourcesWebPageTest
       - com.tle.webtests.test.users.DisplayDateFormatTest

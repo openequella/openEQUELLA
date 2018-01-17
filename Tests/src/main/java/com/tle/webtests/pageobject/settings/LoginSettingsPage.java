@@ -203,10 +203,10 @@ public class LoginSettingsPage extends AbstractPage<LoginSettingsPage>
 
 	public LoginSettingsPage deleteIpAddress(String ip)
 	{
+		WaitingPageObject<LoginSettingsPage> ajaxUpdate = ajaxUpdate(ipAjaxDiv);
 		WebElement ipRow = driver.findElement(By.xpath("//tr/td[@class='name' and text()=" + quoteXPath(ip) + "]"));
-		WaitingPageObject<LoginSettingsPage> waiter = removalWaiter(ipRow);
 		ipRow.findElement(By.xpath("../td[@class='actions']/a[@class='unselect']")).click();
-		return waiter.get();
+		return ajaxUpdate.get();
 	}
 
 	public boolean hasIpAddress(String ip)
