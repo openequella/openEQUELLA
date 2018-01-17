@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.type.SerializationException;
 import org.hibernate.usertype.UserType;
@@ -33,6 +34,8 @@ import org.hibernate.util.SerializationHelper;
 
 public class HibernateCsvType implements UserType
 {
+	private static final Logger LOGGER = Logger.getLogger(HibernateCsvType.class);
+
 	private final int sqlType;
 
 	public HibernateCsvType(int sqlType)
@@ -135,43 +138,52 @@ public class HibernateCsvType implements UserType
 	@Override
 	public void nullSafeSet(PreparedStatement st, Object value, int index) throws SQLException
 	{
+		LOGGER.trace("Checking nullSafeSet for [" + value + "] of type [" + value.getClass().getName() + "] at index [" + index + "].");
 		String res = null;
-		StringBuilder sbuf = new StringBuilder();
-		Collection<?> col = (Collection<?>) value;
-		boolean first = true;
-		if( col != null )
-		{
-			for( Object object : col )
+		if(value instanceof String) {
+			LOGGER.trace("It's a String - casting the value and returning.");
+			//Only pass in a String if you don't care about the type of value being included.
+			//Example:  You are in a where clause and using a 'like' operator.
+			res = escapeString((String) value);
+		} else {
+			LOGGER.trace("It's not a String - assuming it's a Collection and proceeding with general logic.");
+			StringBuilder sbuf = new StringBuilder();
+			Collection<?> col = (Collection<?>) value;
+			boolean first = true;
+			if( col != null )
 			{
-				if( first )
+				for( Object object : col )
 				{
-					if( object instanceof Integer )
+					if( first )
 					{
-						sbuf.append("int"); //$NON-NLS-1$
+						if( object instanceof Integer )
+						{
+							sbuf.append("int"); //$NON-NLS-1$
+						}
+						if( object instanceof Long )
+						{
+							sbuf.append("long");//$NON-NLS-1$
+						}
+						if( object instanceof String )
+						{
+							sbuf.append("string");//$NON-NLS-1$
+						}
+						first = false;
 					}
-					if( object instanceof Long )
-					{
-						sbuf.append("long");//$NON-NLS-1$
-					}
+					sbuf.append(',');
 					if( object instanceof String )
 					{
-						sbuf.append("string");//$NON-NLS-1$
+						object = escapeString((String) object);
 					}
-					first = false;
+					sbuf.append(object.toString());
 				}
-				sbuf.append(',');
-				if( object instanceof String )
+	
+				if( first )
 				{
-					object = escapeString((String) object);
+					sbuf.append("string");//$NON-NLS-1$
 				}
-				sbuf.append(object.toString());
+				res = sbuf.toString();
 			}
-
-			if( first )
-			{
-				sbuf.append("string");//$NON-NLS-1$
-			}
-			res = sbuf.toString();
 		}
 		st.setString(index, res);
 	}

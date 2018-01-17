@@ -16,11 +16,17 @@
 
 package com.tle.core.freetext.reindex;
 
+import java.util.Arrays;
+
+import org.apache.log4j.Logger;
+
 /**
  * @author Nicholas Read
  */
 public class ItemMetadataFilter extends ReindexFilter
 {
+	private static final Logger LOGGER = Logger.getLogger(ItemMetadataFilter.class);
+
 	private static final long serialVersionUID = 1L;
 
 	private static final String[] NAMES = {"targetId"};
@@ -35,7 +41,7 @@ public class ItemMetadataFilter extends ReindexFilter
 	@Override
 	protected String getWhereClause()
 	{
-		return "where :targetId in (metadataSecurityTargets)";
+		return "where metadataSecurityTargets like :targetId";
 	}
 
 	@Override
@@ -47,6 +53,12 @@ public class ItemMetadataFilter extends ReindexFilter
 	@Override
 	protected Object[] getValues()
 	{
-		return values;
+		// Bookend the target ID(s) with wildcards for the 'like' where clause.
+		Object[] ret = Arrays.stream(values).map(s -> "%" + s + "%").toArray();
+		if(LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Original values: " + Arrays.toString(values));
+			LOGGER.trace("Wildcard values: " + Arrays.toString(ret));
+		}
+		return ret;
 	}
 }

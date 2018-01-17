@@ -31,6 +31,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -86,6 +87,8 @@ import com.tle.core.plugins.PluginTracker;
 @SuppressWarnings({"nls", "unchecked"})
 public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implements ItemDao
 {
+	private static final Logger LOGGER = Logger.getLogger(ItemDaoImpl.class);
+
 	@Inject
 	private ItemLockingDao itemLockingDao;
 
@@ -575,12 +578,15 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
 				for( String name : names )
 				{
 					Object obj = values[i++];
+					LOGGER.trace("Inspecting parameter [" + name + "] with obj of type [" + obj.getClass().getName() + "].");
 					if( obj instanceof Collection )
 					{
+						LOGGER.trace("Setting parameter list [" + name + "].");
 						query.setParameterList(name, (Collection<?>) obj);
 					}
 					else
 					{
+						LOGGER.trace("Setting parameter [" + name + "] to [" + obj + "].");
 						query.setParameter(name, obj);
 					}
 				}
