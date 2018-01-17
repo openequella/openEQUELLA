@@ -19,6 +19,7 @@ object JPFRunnerPlugin extends AutoPlugin {
 
   object autoImport {
     lazy val writeJars = taskKey[Iterable[ManifestWritten]]("Write JPF jars")
+    lazy val additionalPlugins = taskKey[Iterable[JPFRuntime]]("Additional JPF plugins to include")
 
     case class ManifestWritten(file: File, pluginId: String, group: String)
 
@@ -27,7 +28,7 @@ object JPFRunnerPlugin extends AutoPlugin {
       Seq(
         writeJars := {
           val compileAll = (fullClasspath in Compile).all(scope).value
-          val allRuntimes = jpfRuntime.all(scope).value
+          val allRuntimes = jpfRuntime.all(scope).value ++ additionalPlugins.value
           val outBase = target.value / "jpfjars"
           IO.delete(outBase)
           allRuntimes.map { r =>
@@ -92,5 +93,4 @@ object JPFRunnerPlugin extends AutoPlugin {
     val pluginXml = new XMLOutputter(Format.getPrettyFormat).outputString(x)
     (pluginId, pluginXml)
   }
-
 }

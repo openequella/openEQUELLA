@@ -278,8 +278,14 @@ collectJars := {
   IO.copy((managedClasspath in Compile).value.map(af => (af.data, destDir / af.data.getName)))
 }
 
-lazy val allPlugins = LocalProject("allPlugins")
+lazy val allPlugins : ProjectReference = LocalProject("allPlugins")
 runnerTasks(allPlugins)
+
+additionalPlugins := {
+  ((baseDirectory in allPlugins).value / "Extensions" * "*" * "plugin-jpf.xml").get.map {
+    mf => JPFRuntime(mf, Seq.empty, Seq.empty, Seq.empty, "Extensions")
+  }
+}
 
 upgradeZip := {
   val log = streams.value.log

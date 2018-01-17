@@ -1,8 +1,13 @@
+import java.time.Instant
+import java.time.temporal.{ChronoUnit, TemporalUnit}
+
 import sbt.Keys._
 import sbt._
 import CommonSettings.autoImport._
 
 object JarSignerPlugin extends AutoPlugin {
+
+  var lastSignTime : Option[Instant] = None
 
   override def trigger: PluginTrigger = noTrigger
 
@@ -14,7 +19,7 @@ object JarSignerPlugin extends AutoPlugin {
     lazy val keyAlias = settingKey[String]("The key alias")
     lazy val keyPassword = settingKey[Option[String]]("The key password")
     lazy val jarSigner = taskKey[(File, File) => Unit]("The jarsigner task")
-    lazy val tsaUrl = taskKey[Option[String]]("The tsa url")
+    lazy val tsaUrl = taskKey[Option[(String, Int)]]("The tsa url")
   }
 
   import autoImport._
@@ -40,7 +45,8 @@ object JarSignerPlugin extends AutoPlugin {
     },
     (tsaUrl in ThisBuild) := {
       val c = buildConfig.value
-      if (c.hasPath("signer.tsaUrl")) Some(c.getString("signer.tsaUrl")) else None
+      val seconds = c.getInt("signer.tsaDelay")
+      if (c.hasPath("signer.tsaUrl")) Some((c.getString("signer.tsaUrl"), seconds)) else None
     },
     (jarSigner in ThisBuild) := {
       (inJar, outJar) =>
@@ -67,8 +73,16 @@ object JarSignerPlugin extends AutoPlugin {
           "-storepass", spasswd,
           "-signedjar", outJar.absolutePath
         ) ++ kpasswd.map(kp => List("-keypass", kp)).getOrElse(Nil) ++
-          tsaUrl.value.map(u => List("-tsa", u)).getOrElse(Nil) ++
+          tsaUrl.value.map(u => List("-tsa", u._1)).getOrElse(Nil) ++
           List(inJar.absolutePath, alias)
+        tsaUrl.value.foreach {
+          case (_, seconds) =>
+            while (lastSignTime.exists(_.plus(seconds, ChronoUnit.SECONDS).isAfter(Instant.now()))) {
+              log.info(s"Jar signer ran less than $seconds seconds ago - waiting")
+              Thread.sleep(5000L)
+            }
+        }
+        lastSignTime = Some(Instant.now())
         log.info(s"Signing jar ${inJar.absolutePath} to ${outJar.absolutePath}")
         val exResult = (ops !)
         if (exResult != 0)

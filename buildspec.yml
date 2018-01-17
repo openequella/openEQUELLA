@@ -1,5 +1,8 @@
 version: 0.2
 
+env:
+  variables:
+    KALTURA_BRANCH: post65
 phases:
   pre_build:
     commands:
