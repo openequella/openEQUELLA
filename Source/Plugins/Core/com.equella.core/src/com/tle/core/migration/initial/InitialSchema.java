@@ -24,6 +24,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.web.resources.PluginResourceHelper;
+import com.tle.web.resources.ResourcesService;
 import org.hibernate.classic.Session;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
@@ -99,6 +101,7 @@ import com.tle.core.plugins.PluginTracker;
 public class InitialSchema extends AbstractCreateMigration
 {
 	private PluginTracker<Object> initialTracker;
+	private static PluginResourceHelper r = ResourcesService.getResourceHelper(InitialSchema.class);
 
 	private static Class<?>[] clazzes = new Class<?>[]{ConfigurationProperty.class, ItemDefinitionScript.class,
 			SchemaScript.class, Institution.class, Language.class, Staging.class, UserPreference.class,
@@ -118,7 +121,7 @@ public class InitialSchema extends AbstractCreateMigration
 	@Override
 	public MigrationInfo createMigrationInfo()
 	{
-		return new MigrationInfo("com.tle.core.migration.initial.title", "com.tle.core.migration.initial.description");
+		return new MigrationInfo(r.key("initial.title"), r.key("initial.description"));
 	}
 
 	@Override

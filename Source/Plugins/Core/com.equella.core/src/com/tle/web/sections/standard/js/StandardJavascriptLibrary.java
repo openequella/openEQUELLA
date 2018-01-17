@@ -28,6 +28,8 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
 import com.tle.core.javascript.JavascriptLibrary;
 import com.tle.core.javascript.JavascriptModule;
+import com.tle.web.resources.PluginResourceHelper;
+import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.standard.js.modules.JSONModule;
 import com.tle.web.sections.standard.js.modules.SelectModule;
 import com.tle.web.sections.standard.js.modules.StandardModule;
@@ -40,6 +42,7 @@ import com.tle.web.sections.standard.js.modules.StandardModule;
 public class StandardJavascriptLibrary implements JavascriptLibrary
 {
 	private static final long serialVersionUID = 1L;
+	public static final PluginResourceHelper r = ResourcesService.getResourceHelper(StandardJavascriptLibrary.class);
 
 	private final Map<String, JavascriptModule> moduleMap;
 
@@ -61,7 +64,7 @@ public class StandardJavascriptLibrary implements JavascriptLibrary
 	@Override
 	public String getDisplayName()
 	{
-		return CurrentLocale.get("com.tle.web.sections.standard.js.standardlibrary.name"); //$NON-NLS-1$
+		return r.getString("js.standardlibrary.name"); //$NON-NLS-1$
 	}
 
 	@Override

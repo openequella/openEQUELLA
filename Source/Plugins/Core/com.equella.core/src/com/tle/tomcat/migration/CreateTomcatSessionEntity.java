@@ -30,19 +30,23 @@ import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
 import com.tle.core.events.services.EventService;
 import com.tle.tomcat.events.TomcatRestartEvent;
+import com.tle.web.resources.PluginResourceHelper;
+import com.tle.web.resources.ResourcesService;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
 public class CreateTomcatSessionEntity extends AbstractCreateMigration
 {
+	private static PluginResourceHelper r = ResourcesService.getResourceHelper(CreateTomcatSessionEntity.class);
+
 	@Inject
 	private EventService eventService;
 	
 	@Override
 	public MigrationInfo createMigrationInfo()
 	{
-		return new MigrationInfo("migration.create.info");
+		return new MigrationInfo(r.key("migration.create.info"));
 	}
 	
 	@Override

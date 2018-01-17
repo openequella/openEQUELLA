@@ -47,7 +47,7 @@ public class JSONModule implements JavascriptModule
 	@Override
 	public String getDisplayName()
 	{
-		return CurrentLocale.get("com.tle.web.sections.standard.js.modules.json.name");
+		return urlHelper.getString("js.modules.json.name");
 	}
 
 	@Override

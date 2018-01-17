@@ -18,6 +18,7 @@ package com.tle.web.sections.standard.js.modules;
 
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.javascript.JavascriptModule;
+import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
@@ -28,9 +29,9 @@ import com.tle.web.sections.render.PreRenderable;
 public class SelectModule implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
+	public static final PluginResourceHelper r = ResourcesService.getResourceHelper(JSONModule.class);
 
-	public static final IncludeFile INCLUDE = new IncludeFile(ResourcesService.getResourceHelper(SelectModule.class)
-		.url("js/select.js"));
+	public static final IncludeFile INCLUDE = new IncludeFile(r.url("js/select.js"));
 	public static final JSCallable SELECTED_TEXT = new ExternallyDefinedFunction("getSelectedText", 1, INCLUDE);
 	public static final JSCallable SELECTED_TEXTS = new ExternallyDefinedFunction("getSelectedTexts", 1, INCLUDE);
 	public static final JSCallable SELECTED_VALUES = new ExternallyDefinedFunction("getSelectedValues", 1, INCLUDE);
@@ -46,7 +47,7 @@ public class SelectModule implements JavascriptModule
 	@Override
 	public String getDisplayName()
 	{
-		return CurrentLocale.get("com.tle.web.sections.standard.js.modules.select.name");
+		return r.getString("js.modules.select.name");
 	}
 
 	@Override

@@ -20,16 +20,17 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.web.resources.PluginResourceHelper;
+import com.tle.web.resources.ResourcesService;
 
 public class SelectionGroupingTreeNode extends SelectionTreeNode
 {
+	private static PluginResourceHelper r = ResourcesService.getResourceHelper(SelectionGroupingTreeNode.class);
 	@SuppressWarnings("nls")
 	public enum Grouping
 	{
-		MATCH_ALL(CurrentLocale.get("com.tle.web.recipientselector.expressiontreenode.all")), MATCH_ANY(CurrentLocale
-			.get("com.tle.web.recipientselector.expressiontreenode.any")), MATCH_NONE(CurrentLocale
-			.get("com.tle.web.recipientselector.expressiontreenode.none")), TEMPORARY_NOT(CurrentLocale
-			.get("com.tle.web.recipientselector.expressiontreenode.not"));
+		MATCH_ALL(r.getString("expressiontreenode.all")), MATCH_ANY(r.getString("expressiontreenode.any")),
+		MATCH_NONE(r.getString("expressiontreenode.none")), TEMPORARY_NOT(r.getString("expressiontreenode.not"));
 		
 		private final String display;
 

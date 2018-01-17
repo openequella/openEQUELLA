@@ -2,6 +2,7 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="com.tle.core.remoterepo.srw" version="1">
   <requires>
+    <import plugin-id="com.tle.common.i18n" />
     <import plugin-id="com.tle.core.guice" />
     <import plugin-id="com.tle.web.sections" />
     <import plugin-id="com.tle.web.fedsearch" />
@@ -14,6 +15,10 @@
       <export prefix="*" />
     </library>
   </runtime>
+  <extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings_resource-centre">
+    <parameter id="group" value="resource-centre" />
+    <parameter id="file" value="lang/i18n-resource-centre.properties" />
+  </extension>
   <extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
     <parameter id="class" value="com.tle.web.remoterepo.sru.SRUModule" />
     <parameter id="class" value="com.tle.web.remoterepo.srw.SRWModule" />

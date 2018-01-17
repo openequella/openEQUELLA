@@ -186,8 +186,7 @@ public class SchemaAndTargetChooserDialog
 		@Override
 		public void finished()
 		{
-			chooser.addItem(new NameValue(CurrentLocale
-				.get("com.tle.admin.search.searchset.virtualisation.xpathchooser.schemadropdown"), ""));
+			chooser.addItem(new NameValue(getString("searchset.virtualisation.xpathchooser.schemadropdown"), ""));
 			AppletGuiUtils.addItemsToJCombo(chooser, get());
 
 			chooser.addActionListener(schemaChoiceListener);

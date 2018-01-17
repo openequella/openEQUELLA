@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import com.tle.core.plugins.AbstractPluginService;
 import org.hibernate.Transaction;
 import org.hibernate.classic.Session;
 
@@ -45,6 +46,8 @@ import com.tle.core.system.service.SchemaDataSourceService;
 
 public final class MigrateTask extends SingleShotTask
 {
+	private static String KEY_PFX = AbstractPluginService.getMyPluginId(MigrateTask.class)+".";
+
 	@Inject
 	private MigrationService migrationService;
 	@Inject
@@ -106,7 +109,7 @@ public final class MigrateTask extends SingleShotTask
 		session.clear();
 		tx.commit();
 		updateMigrationInfos(infos);
-		setupStatus("com.tle.core.migration.task.status", infos.size()); //$NON-NLS-1$
+		setupStatus(KEY_PFX+"task.status", infos.size()); //$NON-NLS-1$
 		int i = 0;
 		for( MigrationState ext : migrationsToExecute )
 		{
@@ -188,7 +191,7 @@ public final class MigrateTask extends SingleShotTask
 	@Override
 	protected String getTitleKey()
 	{
-		return "com.tle.core.migration.task.title"; //$NON-NLS-1$
+		return KEY_PFX+"task.title"; //$NON-NLS-1$
 	}
 
 	public void updateSubtask(MigrationSubTaskStatus subtask)
