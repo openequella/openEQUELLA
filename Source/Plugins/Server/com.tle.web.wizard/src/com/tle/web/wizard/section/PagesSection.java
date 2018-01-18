@@ -139,7 +139,6 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel> impleme
 						page.setSubmitted(true);
 						itemHelper.updateItemFromXml(state.getItemPack());
 						wizardService.checkPages(state);
-						wizardService.updateSession(info, state);
 					}
 				}
 			});
