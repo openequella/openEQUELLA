@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import com.tle.web.sections.events.RespondingListener;
 import org.java.plugin.registry.Extension;
 
 import com.dytech.edge.wizard.WizardException;
@@ -70,7 +71,7 @@ import com.tle.web.workflow.tasks.ModerationService;
 public class RootWizardSection extends TwoColumnLayout<WizardForm>
 	implements
 		BeforeEventsListener,
-		ReadyToRespondListener,
+		RespondingListener,
 		CourseListVetoSection
 {
 	protected static final PluginResourceHelper resources = ResourcesService.getResourceHelper(WizardCommand.class);
@@ -166,7 +167,7 @@ public class RootWizardSection extends TwoColumnLayout<WizardForm>
 	}
 
 	@Override
-	public void readyToRespond(SectionInfo info, boolean redirect)
+	public void responding(SectionInfo info)
 	{
 		final String wizid = getModel(info).getWizid();
 		final WizardState state = wizardService.getFromSession(info, wizid);
@@ -287,12 +288,6 @@ public class RootWizardSection extends TwoColumnLayout<WizardForm>
 		context.getForm().setName("WizardForm");
 		final WizardSectionInfo winfo = getWizardInfo(context);
 		final WizardState state = winfo.getWizardState();
-		final String wizid = model.getWizid();
-		if( wizid != null )
-		{
-			wizardService.updateSession(context, state);
-		}
-
 		return super.renderHtml(context);
 	}
 
