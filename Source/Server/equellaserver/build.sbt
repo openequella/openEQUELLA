@@ -197,7 +197,8 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver" % "xml-resolver" % "1.2",
-  "org.scala-sbt" %% "io" % "1.1.0"
+  "org.scala-sbt" %% "io" % "1.1.0",
+  "org.mozilla" % "rhino" % "1.7R4"
 )
 
 dependencyOverrides += "javax.mail" % "mail" % "1.4.3"
@@ -224,7 +225,6 @@ excludeDependencies ++= Seq(
   "commons-logging" % "commons-logging",
   "velocity" % "velocity",
   "rhino" % "js",
-  "org.mozilla" % "rhino",
   "bouncycastle" % "bcprov-jdk15",
   "org.bouncycastle" % "bcprov-jdk15",
   "org.codehaus.jackson" % "jackson-core-asl",

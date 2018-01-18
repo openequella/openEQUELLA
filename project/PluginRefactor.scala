@@ -34,8 +34,7 @@ object PluginRefactor {
 
 
   val mutualExclusions = Map("com.equella.base" -> Set("com.tle.core.guice"),
-    "com.equella.serverbase" -> Set("com.tle.web.sections"),
-    "com.equella.core-oldrhino" -> Set("org.mozilla.rhino")
+    "com.equella.serverbase" -> Set("com.tle.web.sections")
   ).withDefaultValue(Set.empty)
 
   val mutualKeys = mutualExclusions.keySet

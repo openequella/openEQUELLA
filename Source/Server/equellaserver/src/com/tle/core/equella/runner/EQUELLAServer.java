@@ -141,7 +141,7 @@ public class EQUELLAServer
 				pathResolver = CleaningShadingPathResolver.class.getName();
 			}
 			props.setProperty("org.java.plugin.PathResolver", pathResolver);
-			props.setProperty("org.java.plugin.standard.StandardPluginLifecycleHandler.probeParentLoaderLast", "false");
+			props.setProperty("org.java.plugin.standard.StandardPluginLifecycleHandler.probeParentLoaderLast", "true");
 			ObjectFactory objectFactory = ObjectFactory.newInstance(props);
 
 			String pluginLocations = getProperty(mandatory, "plugins.location", null);
@@ -165,7 +165,7 @@ public class EQUELLAServer
 						pluginLocation.getManifestLocation()};
 				alreadyRegistered.add(entry);
 			}
-			Plugin plugin = manager.getPlugin("com.tle.core.application");
+			Plugin plugin = manager.getPlugin("com.equella.base");
 			PluginClassLoader plugLoader = manager.getPluginClassLoader(plugin.getDescriptor());
 			Class<?> clazz = plugLoader.loadClass("com.tle.core.application.ApplicationStarter");
 			Method method = clazz.getMethod("start", PluginManager.class, Collection.class, Collection.class);

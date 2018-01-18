@@ -3,7 +3,7 @@
 <plugin id="com.equella.base" version="1">
   <requires>
     <import plugin-id="com.tle.platform.common" exported="true" />
-    <import plugin-id="com.tle.platform.equella" />
+    <import plugin-id="com.tle.platform.equella" exported="true" />
     <import plugin-id="org.hibernate" exported="true" optional="true" />
   </requires>
 </plugin>

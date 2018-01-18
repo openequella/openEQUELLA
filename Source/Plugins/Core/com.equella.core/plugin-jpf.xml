@@ -87,7 +87,6 @@
     <import plugin-id="com.tle.web.workflow" />
     <import plugin-id="com.tle.web.workflow.portal" />
     <import plugin-id="org.hibernate" />
-    <import plugin-id="org.mozilla.rhino" />
   </requires>
   <extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
     <parameter id="class" value="com.tle.core.collection.guice.CollectionTrackerModule" />
