@@ -10,7 +10,7 @@ import equellatests.instgen.workflow._
 import equellatests.pages.HomePage
 import equellatests.pages.moderate.TaskListPage
 import equellatests.pages.wizard.ContributePage
-import equellatests.sections.moderate.ModerationView
+import equellatests.sections.moderate.{ModerationMessageDialog, ModerationView}
 import equellatests.sections.wizard.EditBoxControl
 import org.scalacheck.{Gen, Prop}
 import org.scalacheck.Prop._
@@ -62,25 +62,32 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
 
   case class ModerateItemCommand(name: String) extends WorkflowCommentCommand
 
-  case class InvalidCommentCommand(msgType: MessageType, invalidReason: InvalidReason) extends WorkflowCommentCommand
+  case class InvalidCommentCommand(msgType: MessageType, file: TestFile, invalidReason: InvalidReason) extends WorkflowCommentCommand
 
   case class PostCommentCommand(msg: String, files: Seq[(TestFile, String)], msgType: MessageType, cancel: Boolean)
     extends WorkflowCommentCommand
+
+  case object CloseDialogCommand extends WorkflowCommentCommand
 
 
   case object VerifyComments extends WorkflowCommentCommand
 
 
+  def genFile(banned: Boolean): Gen[TestFile] =
+    Gen.oneOf(TestFile.testFiles.filterNot(tf => banned ^ TestFile.bannedExt(tf.extension)))
+
   val fileAndName = for {
     vfn <- arbitrary[ValidFilename]
-    tf <- Gen.oneOf(TestFile.testFiles.filterNot(tf => TestFile.bannedExt(tf.extension)))
+    tf <- genFile(false)
   } yield (tf, s"${vfn.filename}.${tf.extension}")
 
-  def errorComment(inv: InvalidReason)(msgType: MessageType): Gen[(WorkflowCommentCommand, Boolean)] = {
-    Gen.oneOf(stdComment(RejectMessage(None)), Gen.const((InvalidCommentCommand(msgType, inv), true)))
+  def errorComment(inv: InvalidReason, genFile: Gen[TestFile])(msgType: MessageType):
+      Gen[(List[WorkflowCommentCommand], Boolean)] = genFile.flatMap { tf =>
+    val invalid = Gen.const { (List(InvalidCommentCommand(msgType, tf, inv), CloseDialogCommand), true) }
+    Gen.oneOf(stdComment(RejectMessage(None)), invalid)
   }
 
-  def stdComment(msgType: MessageType): Gen[(WorkflowCommentCommand, Boolean)] = for {
+  def stdComment(msgType: MessageType): Gen[(List[WorkflowCommentCommand], Boolean)] = for {
     comment <- arbitrary[RandomWords]
     numFiles <- Gen.choose(0, 3)
     files <- Gen.listOfN(numFiles, fileAndName)
@@ -88,11 +95,12 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
     blankMessage <- Gen.frequency(2 -> false, 1 -> true).map(mb => mb && numFiles == 0 && msgType.typ == MessageTypes.Approve )
   } yield {
     val message = if (blankMessage) "" else comment.asString
-    (PostCommentCommand(message, files, msgType, cancel), cancel || !MessageType.moderates(msgType))
+    val cancelCom = if (cancel) List(CloseDialogCommand) else Nil
+    (List(PostCommentCommand(message, files, msgType, cancel)) ++ cancelCom, cancel || !MessageType.moderates(msgType))
   }
 
 
-  def doComments(f: WorkflowCommentState => Boolean, doComment: MessageType => Gen[(WorkflowCommentCommand, Boolean)])
+  def doComments(f: WorkflowCommentState => Boolean, doComment: MessageType => Gen[(List[WorkflowCommentCommand], Boolean)])
                 (state: WorkflowCommentState): Gen[List[WorkflowCommentCommand]] = state.item match {
     case Some(CommentItem(itemName, Some(task), _)) =>
       for {
@@ -101,9 +109,9 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
           t => state.commentTypes.contains(t.typ))
         (pcc, staysModerating) <- doComment(msgType)
       } yield {
-        if (!state.moderating) List(ModerateItemCommand(itemName), VerifyComments, pcc)
-        else if (staysModerating) List(pcc, VerifyComments)
-        else List(pcc)
+        if (!state.moderating) List(ModerateItemCommand(itemName), VerifyComments) ++ pcc
+        else if (staysModerating) pcc :+ VerifyComments
+        else pcc
       }
     case _ if f(state) =>
       arbitrary[RandomWords].map { urw => List(CreateItemCommand(Uniqueify.uniquelyNumbered(state.itemNames, urw.asString))) }
@@ -120,7 +128,8 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
     case CreateItemCommand(name) =>
       val newItem = CommentItem(name, Some("Step 1"), Seq.empty)
       s.copy(item = Some(newItem), items = s.items :+ newItem)
-    case InvalidCommentCommand(msgType, invalidReason) => s.copy(attemptedInvalid = true)
+    case InvalidCommentCommand(msgType, file, invalidReason) => s.copy(attemptedInvalid = true)
+    case CloseDialogCommand => s
     case PostCommentCommand(msg, files, msgType, cancel) =>
       def nextTask(current: String) = msgType match {
         case ApproveMessage => nextTask3Step(current)
@@ -146,13 +155,16 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
       page.ctrl(EditBoxControl, 1).value = b.uniquePrefix(name)
       page.save().submitForModeration()
     }
+    case CloseDialogCommand => b.runOnPage {
+      case md: ModerationMessageDialog => md.cancel()
+    }
     case ModerateItemCommand(n) => b.run {
       val tlp = new TaskListPage(b.page.ctx).load()
       val realName = b.uniquePrefix(n)
       tlp.query = s"+$realName"
       tlp.search().resultForName(realName).moderate()
     }
-    case InvalidCommentCommand(msgType, invalidReason) => b.verifyOnPage {
+    case InvalidCommentCommand(msgType, tf, invalidReason) => b.verifyOnPage {
       case mv: ModerationView =>
         val md = msgType match {
           case CommentMessage => mv.postComment()
@@ -162,18 +174,14 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
         invalidReason match {
           case NoMessage => msgType match {
             case ApproveMessage =>
-              TestFile.testFiles.find(TestFile.bannedTestFile.andThen(!_)).foreach { tf =>
-                md.uploadFile(tf, tf.realFilename)
-                md.submitError()
-              }
+              md.uploadFile(tf, tf.realFilename)
+              md.submitError()
             case _ => md.submitError()
           }
-          case BannedFile => TestFile.testFiles.find(TestFile.bannedTestFile).foreach {
-            tf => md.uploadFileError(tf, tf.realFilename)
-          }
+          case BannedFile => md.uploadFileError(tf, tf.realFilename)
         }
         val errMsg = md.errorMessage
-        md.cancel() -> collect(s"invalid_$invalidReason") {
+        md -> collect(s"invalid_$invalidReason") {
           errMsg ?= ((invalidReason, msgType) match {
             case (NoMessage, ApproveMessage) => "Please enter a message when files attached"
             case (NoMessage, _) => "You must enter a message"
@@ -196,7 +204,7 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
         files.foreach {
           case (tf, fn) => md.uploadFile(tf, fn)
         }
-        val newpage = if (cancel) md.cancel()
+        val newpage = if (cancel) md
         else if (MessageType.moderates(msgType)) md.submitModeration() else md.submit()
         newpage -> classify(cancel, "cancelled") {
           collect(msgType)(true)
@@ -220,11 +228,11 @@ object WorkflowCommentProperties extends StatefulProperties("Workflow comments")
   }
 
   statefulProp("comment with no message") {
-    generateCommands(doComments(!_.attemptedInvalid, errorComment(NoMessage)))
+    generateCommands(doComments(!_.attemptedInvalid, errorComment(NoMessage, genFile(false))))
   }
 
   statefulProp("upload banned file") {
-    generateCommands(doComments(!_.attemptedInvalid, errorComment(BannedFile)))
+    generateCommands(doComments(!_.attemptedInvalid, errorComment(BannedFile, genFile(true))))
   }
 
 }

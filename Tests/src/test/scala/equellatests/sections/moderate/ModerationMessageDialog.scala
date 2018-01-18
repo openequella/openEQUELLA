@@ -1,6 +1,6 @@
 package equellatests.sections.moderate
 
-import com.tle.webtests.framework.PageContext
+import com.tle.webtests.framework.{PageContext, ScreenshotTaker}
 import com.tle.webtests.pageobject.generic.component.EquellaSelect
 import equellatests.browserpage.{BrowserPage, WaitingBrowserPage}
 import equellatests.domain.TestFile
