@@ -55,12 +55,22 @@ oracleDriverJar in ThisBuild := {
 
 name := "Equella"
 
+equellaMajorMinor in ThisBuild := "6.6"
+equellaStream in ThisBuild := "Beta"
+equellaBuild in ThisBuild := buildConfig.value.getString("build.buildname")
+
 git.useGitDescribe := true
 
 val TagRegex = """(.*)-(.*)-(\d*)-(.*)""".r
 git.gitTagToVersionNumber := {
-  case TagRegex(m, t, v, sha) => Some(EquellaVersion(m, t, v.toInt, sha).fullVersion)
-  case _ => None
+  val streamName = equellaStream.value
+  val majorMinor = equellaMajorMinor.value
+  val buildName = equellaBuild.value
+
+  {
+    case TagRegex(_, _, v, sha) => Some(EquellaVersion(majorMinor, s"$streamName.$buildName", v.toInt, sha).fullVersion)
+    case _ => None
+  }
 }
 
 equellaVersion in ThisBuild := EquellaVersion(version.value)
