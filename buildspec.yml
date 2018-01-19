@@ -1,5 +1,8 @@
 version: 0.2
 
+env:
+  variables:
+    KALTURA_BRANCH: stable
 phases:
   pre_build:
     commands:
