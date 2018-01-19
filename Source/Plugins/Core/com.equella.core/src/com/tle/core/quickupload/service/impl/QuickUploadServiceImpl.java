@@ -127,6 +127,24 @@ public class QuickUploadServiceImpl implements QuickUploadService
 				else
 				{
 					PropBagEx root = new PropBagEx("<xml/>");
+
+					if (params.containsKey("item/title"))
+					{
+						String itemNamePath = collection.getSchema().getItemNamePath();
+						for (String v : params.get("item/title"))
+						{
+							root.setNode(itemNamePath, v);
+						}
+					}
+					if (params.containsKey("item/description"))
+					{
+						String itemDescriptionPath = collection.getSchema().getItemDescriptionPath();
+						for (String v : params.get("item/description"))
+						{
+							root.setNode(itemDescriptionPath, v);
+						}
+					}
+
 					List<WorkflowOperation> ops = new ArrayList<WorkflowOperation>();
 					FileAttachment fa = new FileAttachment();
 					fa.setFilename(filename);
@@ -190,8 +208,16 @@ public class QuickUploadServiceImpl implements QuickUploadService
 			getItem().getAttachments().add(fattach);
 			final Schema schema = getSchema();
 			final PropBagEx itemxml = getItemXml();
-			itemxml.setNode(schema.getItemNamePath(), filename);
-			itemxml.setNode(schema.getItemDescriptionPath(), filename);
+			final String itemNamePath = schema.getItemNamePath();
+			if (!itemxml.nodeExists(itemNamePath))
+			{
+				itemxml.setNode(itemNamePath, filename);
+			}
+			final String itemDescriptionPath = schema.getItemDescriptionPath();
+			if (!itemxml.nodeExists(itemDescriptionPath))
+			{
+				itemxml.setNode(itemDescriptionPath, filename);
+			}
 			return true;
 		}
 
