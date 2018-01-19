@@ -16,6 +16,7 @@
 
 package com.tle.core.dao.helpers;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
@@ -30,6 +31,8 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 @SuppressWarnings("nls")
 public abstract class DMLPartitioner implements HibernateCallback
 {
+	private static final Logger LOGGER = Logger.getLogger(DMLPartitioner.class);
+
 	private static final int MAX_BATCH_SIZE = 500;
 
 	private final String tableName;
