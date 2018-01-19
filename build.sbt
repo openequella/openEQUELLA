@@ -11,8 +11,6 @@ name := "equella-autotests"
 
 libraryDependencies += "org.jacoco" % "org.jacoco.agent" % "0.7.9" classifier "runtime"
 
-lazy val installerDir = "equella-installer-6.5"
-
 lazy val common = Seq(
   scalaVersion := "2.12.3",
   version := "1.0"
@@ -63,7 +61,7 @@ installOptions := {
   val ic = installConfig.value
   val jacoco = Option(ic.getString("jacoco")).filter(_.nonEmpty).map(o => JacocoAgent(coverageJar.value, o))
   val db = ic.getConfig("db")
-  InstallOptions(target.value / installerDir,
+  InstallOptions(
     installDir.value, file(sys.props("java.home")),
     url = ic.getString("url"), hostname = ic.getString("hostname"), port = ic.getInt("port"),
     jacoco = jacoco, dbtype = db.getString("type"), dbname = db.getString("name"),
@@ -160,13 +158,16 @@ coverageReport := {
 installEquella := {
   val opts = installOptions.value
   val zipFile = installerZip.value
+  val log = sLog.value
   val installSettings = target.value / "installsettings.xml"
   zipFile.fold(sys.error("Must have install.zip set")) { z =>
-    IO.delete(target.value / installerDir)
-    IO.unzip(z, target.value)
-    val baseInstaller = opts.baseInstall
+    val installFiles = target.value / "installer_files"
+    log.info(s"Unzipping $z")
+    IO.delete(installFiles)
+    IO.unzip(z, installFiles)
+    val baseInstaller = (installFiles * "*").get.head
     val installerJar = baseInstaller / "enterprise-install.jar"
-    opts.writeXML(installSettings)
+    opts.writeXML(installSettings, baseInstaller)
     val o = ForkOptions(runJVMOptions = Seq(
       "-jar", installerJar.absolutePath
     ))

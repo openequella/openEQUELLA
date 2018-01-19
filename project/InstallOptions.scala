@@ -6,10 +6,10 @@ case class JacocoAgent(jar: File, jacocoOpts: String) {
   def opts = s"-javaagent:${jar.absolutePath}=$jacocoOpts"
 }
 
-case class InstallOptions(baseInstall: File, installDir: File, jvmHome: File, url: String, hostname: String,
+case class InstallOptions(installDir: File, jvmHome: File, url: String, hostname: String,
                           port: Int, jacoco: Option[JacocoAgent],
                           dbtype: String, dbhost: String, dbport: Int, dbname: String, dbuser: String, dbpassword: String) {
-  def writeXML(xmlFile: File) = {
+  def writeXML(xmlFile: File, baseInstall: File) = {
     val optXml = <commands>
       <installer>
         <product>
