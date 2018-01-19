@@ -31,8 +31,6 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 @SuppressWarnings("nls")
 public abstract class DMLPartitioner implements HibernateCallback
 {
-	private static final Logger LOGGER = Logger.getLogger(DMLPartitioner.class);
-
 	private static final int MAX_BATCH_SIZE = 500;
 
 	private final String tableName;

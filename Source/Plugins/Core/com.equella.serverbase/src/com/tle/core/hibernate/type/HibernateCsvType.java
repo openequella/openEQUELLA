@@ -138,15 +138,12 @@ public class HibernateCsvType implements UserType
 	@Override
 	public void nullSafeSet(PreparedStatement st, Object value, int index) throws SQLException
 	{
-		LOGGER.trace("Checking nullSafeSet for [" + value + "] of type [" + value.getClass().getName() + "] at index [" + index + "].");
 		String res = null;
 		if(value instanceof String) {
-			LOGGER.trace("It's a String - casting the value and returning.");
 			//Only pass in a String if you don't care about the type of value being included.
 			//Example:  You are in a where clause and using a 'like' operator.
 			res = escapeString((String) value);
 		} else {
-			LOGGER.trace("It's not a String - assuming it's a Collection and proceeding with general logic.");
 			StringBuilder sbuf = new StringBuilder();
 			Collection<?> col = (Collection<?>) value;
 			boolean first = true;
