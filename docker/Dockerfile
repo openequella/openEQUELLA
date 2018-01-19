@@ -9,7 +9,7 @@ RUN \
 
 FROM baseequella as installer
 
-COPY ["equella-installer-6.5.zip","defaults.xml", "./"]
+COPY ["equella-installer*.zip","defaults.xml", "./"]
 
 RUN unzip equella-installer-6.5.zip \
     && java -jar equella-installer-6.5/enterprise-install.jar --unsupported defaults.xml
