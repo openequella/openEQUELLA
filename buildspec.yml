@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    KALTURA_BRANCH: post65
+    KALTURA_BRANCH: master
 phases:
   pre_build:
     commands:
