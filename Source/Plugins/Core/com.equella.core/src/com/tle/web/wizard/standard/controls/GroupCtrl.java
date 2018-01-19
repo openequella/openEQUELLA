@@ -158,12 +158,12 @@ public class GroupCtrl extends GroupWebControl<WebControlModel>
 	}
 
 	@Override
-	public void addNewGroup(ControlGroup group)
+	public void addNewGroup(ControlGroup group, int index)
 	{
-		super.addNewGroup(group);
+		super.addNewGroup(group, index);
 
 		List<List<WebControl>> webGroups = getWebGroups();
-		List<WebControl> newGroup = webGroups.get(webGroups.size() - 1);
+		List<WebControl> newGroup = webGroups.get(index);
 		for( WebControl g : newGroup )
 		{
 			g.setNested(true);

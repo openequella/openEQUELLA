@@ -35,6 +35,10 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.tomcat.JarScanFilter;
+import org.apache.tomcat.JarScanType;
+import org.apache.tomcat.JarScanner;
+import org.apache.tomcat.JarScannerCallback;
 import org.apache.tomcat.util.descriptor.web.ErrorPage;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
@@ -52,8 +56,10 @@ import com.tle.core.zookeeper.ZookeeperService;
 import com.tle.tomcat.events.TomcatRestartListener;
 import com.tle.tomcat.service.TomcatService;
 import com.tle.web.dispatcher.RequestDispatchFilter;
+import org.apache.tomcat.util.scan.StandardJarScanner;
 
 import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletContext;
 
 @Bind(TomcatService.class)
 @Singleton
@@ -196,6 +202,26 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
 
 			// Clustering
 			setupClusteringConfig(context);
+
+			context.setJarScanner(new JarScanner()
+			{
+				@Override
+				public void scan(JarScanType scanType, ServletContext context, JarScannerCallback callback)
+				{
+					//No-op
+				}
+
+				@Override
+				public JarScanFilter getJarScanFilter()
+				{
+					return null;
+				}
+
+				@Override
+				public void setJarScanFilter(JarScanFilter jarScanFilter)
+				{
+				}
+			});
 
 			tomcat.getServer().setParentClassLoader(getClass().getClassLoader());
 			tomcat.start();

@@ -16,21 +16,20 @@
 
 package com.tle.web.wizard.controls;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.wizard.beans.control.Repeater;
 import com.dytech.edge.wizard.beans.control.WizardControl;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
-import com.tle.common.i18n.LangUtils;
 import com.tle.core.wizard.WizardPageException;
 import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.core.wizard.controls.WizardPage;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.result.util.KeyLabel;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author jmaginnis
@@ -111,13 +110,14 @@ public class CRepeater extends GroupsCtrl
 		}
 
 		final ControlGroup group = new ControlGroup(controls, index);
-		addGroup(group);
+		addGroup(index, group);
+		updateIndexes();
 		resetGroup(group);
 
 		final WizardGroupListener listener = getListener();
 		if( listener != null )
 		{
-			listener.addNewGroup(group);
+			listener.addNewGroup(group, index);
 		}
 		return group;
 	}
@@ -241,9 +241,8 @@ public class CRepeater extends GroupsCtrl
 		}
 	}
 
-	public void addAndEvaluate()
+	public void addAndEvaluate(int index)
 	{
-		int index = getGroupSize();
 		// why (was) it index +1?
 		wizardPage.pushPathOverride(this, getFirstTarget().getTarget(), index);
 		evaluateGroup(addNewSet(index));

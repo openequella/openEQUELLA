@@ -2,7 +2,9 @@
 <#include "/com.tle.web.sections.standard@/ajax.ftl">
 <#include "/com.tle.web.sections.equella@/component/button.ftl">
 
-<@div id="${id}_groups">
+<@button section=s.addTopButton class="add" showAs="add" class="repeater-addtop">${b.gkey("wizard.controls.repeater.addtop", [wc.noun])}</@button>
+
+<@div id="${id}_groups" class="repeater-groups">
 	<#list m.renderedGroups as group>
 		<@div id="${id}_gajax_${group_index?c}" writediv=false>
 			<div class="repeater indent${c.nestingLevel + 1}">
@@ -19,4 +21,4 @@
 	</#list>
 </@div>
 
-<@button section=s.addButton class="add" showAs="add">${b.gkey("wizard.controls.repeater.add", [wc.noun])}</@button>
+<@button section=s.addButton class="add" showAs="add" class="repeater-addbottom">${b.gkey("wizard.controls.repeater.add", [wc.noun])}</@button>

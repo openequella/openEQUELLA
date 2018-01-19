@@ -5,7 +5,7 @@ var focusOnClose;
 $(function()
 {
 	// FIXME: these are english strings...
-	$('BODY').ajaxError(function(event, response, settings, exception)
+	$(document).ajaxError(function(event, response, settings, exception)
 	{
 		$('BODY').removeClass("waitcursor");
 		if (response)

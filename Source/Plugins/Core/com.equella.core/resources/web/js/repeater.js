@@ -5,23 +5,57 @@
 		init : function(options)
 		{
 			var id = this.attr('id');
+			var $t = $('#' + id);
+
+			options.disablers = options.disablers || [];
+
+			var checkInsertButton = function(){
+				$('.repeater-addtop').toggle($t.find('.repeater-groups').children().length !== 0);
+			};
+			checkInsertButton();
+
+			var add = function(top){
+            		return function(results, status)
+            			{
+            				updateIncludes(results, function()
+            				{
+            					var parent = $("#" + id + "_groups");
+            					var $newhtml = $(results.added.html).hide();
+            					WizardCtrl.setMessage(id, results.message);
+            					if (top)
+            					{
+            						parent.html($newhtml);
+            					}
+            					else
+            					{
+            						parent.append($newhtml);
+            					}
+            					$.globalEval(results.added.script);
+            					options.disablers.forEach(function(dis){dis(results.disabled);});
+            					if (top)
+            					{
+            						var $first = $newhtml.first();
+            						$newhtml = $newhtml.not($first);
+            						$newhtml.show();
+            						$first.slideDown(checkInsertButton);
+            					}
+            					else
+            					{
+            						$newhtml.slideDown(checkInsertButton);
+            					}
+            				});
+            			};
+            	};
 			$(options.addButton).click(function()
 			{
-				options.addAjax(function(results, status)
-				{
-					updateIncludes(results, function()
-					{
-						var parent = $("#" + id + "_groups");
-						var newhtml = $(results.added.html).hide();
-						WizardCtrl.setMessage(id, results.message);
-						parent.append(newhtml);
-						$.globalEval(results.added.script);
-						options.disabler(results.disabled);
-						newhtml.slideDown();
-					});
-				});
+				options.addAjax(add(false), false);
 			});
-			$("." + id + "repeater-remove").live('click', function()
+			$(options.addTopButton).click(function()
+			{
+				options.addAjax(add(true), true);
+			});
+
+			$(document).on('click.remove.repeater', "." + id + "repeater-remove", function()
 			{
 				if (busy)
 				{
@@ -29,29 +63,33 @@
 				}
 				if (!$(this).hasClass('disabled'))
 				{
-					busy = true;
-					var index = $(this).data('repeater.index');
-					options.removeAjax(function(results, status)
+					if (confirm(options.confirmRemoveMessage || 'Remove this item?'))
 					{
-						updateIncludes(results, function()
+						busy = true;
+						var index = $(this).data('repeater.index');
+						options.removeAjax(function(results, status)
 						{
-							var parent = $("#" + id + "_groups");
-							var $removing = $($(parent).children()[index]);
-							$removing.slideUp(function()
+							updateIncludes(results, function()
 							{
-								$removing.remove();
-								WizardCtrl.setMessage(id, results.message);
-								var newhtml = $(results.added.html);
-								parent.html(newhtml);
-								$.globalEval(results.added.script);
-								busy = false;
+								var parent = $("#" + id + "_groups");
+								var $removing = $($(parent).children()[index]);
+								$removing.slideUp(function()
+								{
+									$removing.remove();
+									WizardCtrl.setMessage(id, results.message);
+									var newhtml = $(results.added.html);
+									parent.html(newhtml);
+									$.globalEval(results.added.script);
+									busy = false;
+									checkInsertButton();
+								});
+								options.disablers.forEach(function(dis){dis(results.disabled);});
 							});
-							options.disabler(results.disabled);
-						});
-					}, index);
+						}, index);
+					}
 				}
 			});
-			$("." + id + "move-down").live('click', function()
+			$(document).on('click.movedown.repeater', "." + id + "move-down", function()
 			{
 				if (busy)
 				{
@@ -67,7 +105,7 @@
 						var parent = $("#" + id + "_groups");
 						var moving = $(parent.children()[index]);
 						var target = $(parent.children()[index + 1]);
-						
+
 						if(target.length < 1)
 						{
 							busy = false;
@@ -81,7 +119,7 @@
 								parent.html(newhtml);
 								$.globalEval(results.added.script);
 								busy = false;
-								options.disabler(results.disabled);
+								options.disablers.forEach(function(dis){dis(results.disabled);});
 							});
 							target.slideUp();
 						});
@@ -90,7 +128,7 @@
 					}, index, index + 1);
 				}
 			});
-			$("." + id + "move-up").live('click', function()
+			$(document).on('click.moveup.repeater', "." + id + "move-up", function()
 			{
 				if (busy)
 				{
@@ -105,7 +143,7 @@
 						var parent = $("#" + id + "_groups");
 						var moving = $(parent.children()[index]);
 						var target = $(parent.children()[index - 1]);
-						
+
 						if(target.length < 1)
 						{
 							busy = false;
@@ -119,7 +157,7 @@
 								parent.html(newhtml);
 								$.globalEval(results.added.script);
 								busy = false;
-								options.disabler(results.disabled);
+								options.disablers.forEach(function(dis){dis(results.disabled);});
 							});
 							target.slideUp();
 						});
