@@ -25,7 +25,10 @@ import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.exceptions.AccessDeniedException;
+import com.tle.web.cloud.search.section.RootCloudSearchSection;
 import com.tle.web.login.LogonSection;
+import com.tle.web.resources.PluginResourceHelper;
+import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -49,6 +52,8 @@ public class RootPortletSection extends CombinedLayout<CombinedModel>
 	private TLEAclManager aclManager;
 	@Inject
 	private InstitutionService institutionService;
+
+	private static PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(RootPortletSection.class);
 
 	@Override
 	public Class<CombinedModel> getModelClass()
@@ -87,8 +92,7 @@ public class RootPortletSection extends CombinedLayout<CombinedModel>
 					LogonSection.STANDARD_LOGON_PATH);
 				return null;
 			}
-			throw new AccessDeniedException(
-				CurrentLocale.get("com.tle.web.portal.missingprivileges", WebConstants.DASHBOARD_PAGE_PRIVILEGE));
+			throw new AccessDeniedException(urlHelper.getString("missingprivileges", WebConstants.DASHBOARD_PAGE_PRIVILEGE));
 		}
 
 		getModel(info).setReceiptSpanBothColumns(true);

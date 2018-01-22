@@ -110,7 +110,7 @@ public class ItemFilestoreServlet extends HttpServlet
 					&& !privs.contains(AttachmentConfigConstants.VIEW_ATTACHMENTS)) )
 				{
 					String privileges = SecurityConstants.VIEW_ITEM + ", " + AttachmentConfigConstants.VIEW_ATTACHMENTS;
-					throw new AccessDeniedException(CurrentLocale.get(urlHelper.key("viewitem.missingprivileges"), privileges));
+					throw new AccessDeniedException(urlHelper.getString("viewitem.missingprivileges", privileges));
 				}
 				// check restricted attachments (FIXME: needs to cache this,
 				// probably by invoking something on item service much like
@@ -130,7 +130,7 @@ public class ItemFilestoreServlet extends HttpServlet
 					}
 					if( attachment != null && attachment.isRestricted() )
 					{
-						throw new AccessDeniedException(CurrentLocale.get(urlHelper.key("viewitem.missingprivileges"),
+						throw new AccessDeniedException(urlHelper.getString("viewitem.missingprivileges",
 							AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS));
 					}
 				}

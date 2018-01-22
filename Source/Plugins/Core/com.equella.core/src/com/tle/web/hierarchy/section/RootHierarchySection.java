@@ -28,6 +28,8 @@ import com.tle.core.institution.InstitutionService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.login.LogonSection;
+import com.tle.web.resources.PluginResourceHelper;
+import com.tle.web.resources.ResourcesService;
 import com.tle.web.search.base.ContextableSearchSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -43,12 +45,14 @@ import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
+import com.tle.web.viewitem.ItemFilestoreServlet;
 
 @SuppressWarnings("nls")
 public class RootHierarchySection extends ContextableSearchSection<ContextableSearchSection.Model>
 	implements
 		BlueBarEventListener
 {
+	private static PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(RootHierarchySection.class);
 	public static final String HIERARCHYURL = "/hierarchy.do";
 
 	@PlugURL("css/hierarchy.css")
@@ -81,7 +85,7 @@ public class RootHierarchySection extends ContextableSearchSection<ContextableSe
 				return null;
 			}
 			throw new AccessDeniedException(
-				CurrentLocale.get("com.tle.web.hierarchy.missingprivileges", WebConstants.HIERARCHY_PAGE_PRIVILEGE));
+					urlHelper.getString("missingprivileges", WebConstants.HIERARCHY_PAGE_PRIVILEGE));
 		}
 		return super.renderHtml(context);
 	}

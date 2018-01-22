@@ -28,6 +28,8 @@ import com.tle.core.institution.InstitutionService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.login.LogonSection;
+import com.tle.web.resources.PluginResourceHelper;
+import com.tle.web.resources.ResourcesService;
 import com.tle.web.search.base.ContextableSearchSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -35,6 +37,7 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.layout.ContentLayout;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
+import com.tle.web.viewitem.ItemFilestoreServlet;
 
 /**
  * @author Aaron
@@ -58,6 +61,8 @@ public class RootCloudSearchSection extends ContextableSearchSection<Contextable
 	@Inject
 	private InstitutionService institutionService;
 
+	private static PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(RootCloudSearchSection.class);
+
 	@Override
 	public SectionResult renderHtml(RenderEventContext context)
 	{
@@ -76,8 +81,7 @@ public class RootCloudSearchSection extends ContextableSearchSection<Contextable
 					LogonSection.STANDARD_LOGON_PATH);
 				return null;
 			}
-			throw new AccessDeniedException(
-				CurrentLocale.get("com.tle.web.searching.missingprivileges", WebConstants.SEARCH_PAGE_PRIVILEGE));
+			throw new AccessDeniedException(urlHelper.getString("missingprivileges", WebConstants.SEARCH_PAGE_PRIVILEGE));
 		}
 
 		return super.renderHtml(context);

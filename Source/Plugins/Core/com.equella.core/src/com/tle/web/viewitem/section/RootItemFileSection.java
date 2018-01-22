@@ -43,6 +43,8 @@ import com.tle.web.integration.Integration;
 import com.tle.web.integration.IntegrationSessionData;
 import com.tle.web.integration.service.IntegrationService;
 import com.tle.web.login.LogonSection;
+import com.tle.web.resources.PluginResourceHelper;
+import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -64,6 +66,7 @@ import com.tle.web.viewable.NewDefaultViewableItem;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.servlet.ItemServlet;
 import com.tle.web.viewitem.DRMFilter;
+import com.tle.web.viewitem.ItemFilestoreServlet;
 import com.tle.web.viewitem.ViewItemAuditor;
 import com.tle.web.viewitem.info.DefaultItemFileInfo;
 import com.tle.web.viewitem.section.PathMapper.Type;
@@ -88,7 +91,7 @@ public class RootItemFileSection extends AbstractPrototypeSection<RootItemFileSe
 		ForwardEventListener,
 		BeforeEventsListener
 {
-	protected static final String KEY_PFX = AbstractPluginService.getMyPluginId(RootItemFileSection.class)+".";
+	private static PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(RootItemFileSection.class);
 
 	@Inject
 	private SelectionService selectionService;
@@ -355,7 +358,7 @@ public class RootItemFileSection extends AbstractPrototypeSection<RootItemFileSe
 			sbuf.append(priv);
 			first = false;
 		}
-		throw new AccessDeniedException(CurrentLocale.get(   KEY_PFX +"viewitem.missingprivileges", sbuf.toString())); //$NON-NLS-1$
+		throw new AccessDeniedException(urlHelper.getString("viewitem.missingprivileges", sbuf.toString())); //$NON-NLS-1$
 	}
 
 	@Override

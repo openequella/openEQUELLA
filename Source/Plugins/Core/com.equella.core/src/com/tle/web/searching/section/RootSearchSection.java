@@ -26,7 +26,10 @@ import com.tle.core.security.TLEAclManager;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
+import com.tle.web.hierarchy.section.RootHierarchySection;
 import com.tle.web.login.LogonSection;
+import com.tle.web.resources.PluginResourceHelper;
+import com.tle.web.resources.ResourcesService;
 import com.tle.web.search.base.ContextableSearchSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -46,6 +49,7 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
 {
 	public static final String SEARCHURL = "/searching.do";
 	public static final String SEARCH_SESSIONKEY = "searchContext";
+	private static PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(RootSearchSection.class);
 
 	@PlugKey("searching.search.title")
 	private static Label LABEL_TITLE;
@@ -83,7 +87,7 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
 				return null;
 			}
 			throw new AccessDeniedException(
-				CurrentLocale.get("com.tle.web.searching.missingprivileges", WebConstants.SEARCH_PAGE_PRIVILEGE));
+					urlHelper.getString("missingprivileges", WebConstants.SEARCH_PAGE_PRIVILEGE));
 		}
 		return super.renderHtml(context);
 	}
