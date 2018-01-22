@@ -31,6 +31,6 @@ public class XsltConfig extends AbstractTemplatingConfig
 	@Override
 	public String getEditorLabelKey()
 	{
-		return "com.tle.admin.collection.tool.summarysections.xslt.desc";
+		return getKey("summarysections.xslt.desc");
 	}
 }

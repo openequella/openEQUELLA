@@ -58,7 +58,10 @@ public class CommentsConfig extends AbstractOnlyTitleConfig
 	private JRadioButton hideIdenty;
 	private ChangeDetector changeDetector;
 
-	private static final String RESOURCE_PFX = "com.tle.admin.collection.tool.summarysections.comments."; //$NON-NLS-1$
+	private final String s(String key)
+	{
+		return getString("summarysections.comments."+key);
+	}
 
 	@SuppressWarnings("nls")
 	@Override
@@ -69,25 +72,25 @@ public class CommentsConfig extends AbstractOnlyTitleConfig
 		ButtonGroup displayIdentity = new ButtonGroup();
 		ButtonGroup names = new ButtonGroup();
 
-		text = new JLabel(CurrentLocale.get(RESOURCE_PFX + "text"));
-		showIdentity = new JRadioButton(CurrentLocale.get(RESOURCE_PFX + "showidentity"));
+		text = new JLabel(s("text"));
+		showIdentity = new JRadioButton(s("showidentity"));
 		displayIdentity.add(showIdentity);
 		showIdentity.addActionListener(new EnableOptions());
 
-		firstAndLast = new JRadioButton(CurrentLocale.get(RESOURCE_PFX + "firstandlast"));
+		firstAndLast = new JRadioButton(s("firstandlast"));
 		names.add(firstAndLast);
 
-		firstOnly = new JRadioButton(CurrentLocale.get(RESOURCE_PFX + "first"));
+		firstOnly = new JRadioButton(s("first"));
 		names.add(firstOnly);
 
-		lastOnly = new JRadioButton(CurrentLocale.get(RESOURCE_PFX + "last"));
+		lastOnly = new JRadioButton(s("last"));
 		names.add(lastOnly);
 
-		suppressUsername = new JCheckBox(CurrentLocale.get(RESOURCE_PFX + "suppressusername"));
+		suppressUsername = new JCheckBox(s("suppressusername"));
 
-		allowAnonymous = new JCheckBox(CurrentLocale.get(RESOURCE_PFX + "allowanonymous"));
+		allowAnonymous = new JCheckBox(s("allowanonymous"));
 
-		hideIdenty = new JRadioButton(CurrentLocale.get(RESOURCE_PFX + "hideidentity"));
+		hideIdenty = new JRadioButton(s("hideidentity"));
 		displayIdentity.add(hideIdenty);
 		hideIdenty.addActionListener(new DisableOptions());
 

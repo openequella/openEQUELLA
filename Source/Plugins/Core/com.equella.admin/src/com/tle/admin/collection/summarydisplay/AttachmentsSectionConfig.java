@@ -180,8 +180,8 @@ public class AttachmentsSectionConfig extends AbstractOnlyTitleConfig
 		changeDetector.clearChanges();
 	}
 
-	private static final String s(String keypart)
+	private final String s(String keypart)
 	{
-		return CurrentLocale.get("com.tle.admin.collection.tool.summarysections.attachments." + keypart);
+		return getString("summarysections.attachments." + keypart);
 	}
 }

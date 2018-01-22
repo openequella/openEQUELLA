@@ -124,6 +124,6 @@ public class FreemarkerConfig extends AbstractTemplatingConfig
 	@Override
 	public String getEditorLabelKey()
 	{
-		return "com.tle.admin.collection.tool.summarysections.freemarker.label.markup";
+		return getKey("summarysections.freemarker.label.markup");
 	}
 }
