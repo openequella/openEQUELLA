@@ -16,10 +16,14 @@
 
 package com.tle.web.resources;
 
+import com.tle.beans.Institution;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.plugins.PluginService;
+import com.tle.core.services.UrlService;
+import com.tle.core.services.impl.UrlServiceImpl;
 import org.java.plugin.Plugin;
 
 public class PluginResourceHelper
@@ -48,7 +52,17 @@ public class PluginResourceHelper
 
 	public String instUrl(String path)
 	{
-		return "FIXME";
+		Institution institution = CurrentInstitution.get();
+		String baseUrl;
+		if (institution != null)
+		{
+			baseUrl = institution.getUrl();
+		}
+		else
+		{
+			baseUrl = UrlServiceImpl.instance().getAdminUrl().toString();
+		}
+		return baseUrl+path;
 	}
 
 	public String key(String key)

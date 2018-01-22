@@ -52,12 +52,19 @@ public class UrlServiceImpl implements UrlService
 	public static final String INTEG = "integ/";
 
 	private final URL adminUrl;
+	private static UrlService instance;
 
 	@Inject
 	public UrlServiceImpl(@Named("admin.url") URL adminUrl)
 	{
 		this.adminUrl = append(adminUrl, "");
 		LOGGER.info("Admin URL is " + adminUrl.toString());
+		instance = this;
+	}
+
+	public static UrlService instance()
+	{
+		return instance;
 	}
 
 	@Override
