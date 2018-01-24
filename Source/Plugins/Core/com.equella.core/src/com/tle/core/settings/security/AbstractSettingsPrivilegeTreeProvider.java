@@ -32,11 +32,14 @@ import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.security.PrivilegeTreeProvider;
 import com.tle.core.security.TLEAclManager;
 import com.tle.exceptions.AccessDeniedException;
+import com.tle.web.resources.PluginResourceHelper;
+import com.tle.web.resources.ResourcesService;
 
 @SuppressWarnings("nls")
 public abstract class AbstractSettingsPrivilegeTreeProvider implements PrivilegeTreeProvider
 {
-	private static String KEY_PFX = AbstractPluginService.getMyPluginId(AbstractSettingsPrivilegeTreeProvider.class)+".";
+	protected static PluginResourceHelper r = ResourcesService.getResourceHelper(AbstractSettingsPrivilegeTreeProvider.class);
+
 	public enum Type
 	{
 		SYSTEM_SETTING(Node.ALL_SYSTEM_SETTINGS, Node.SYSTEM_SETTING, "EDIT_SYSTEM_SETTINGS"), MANAGEMENT_PAGE(
@@ -118,7 +121,7 @@ public abstract class AbstractSettingsPrivilegeTreeProvider implements Privilege
 	{
 		if( !isAuthorised() )
 		{
-			throw new AccessDeniedException(CurrentLocale.get(KEY_PFX+"settings.error.noaccess"));
+			throw new AccessDeniedException(r.getString("settings.error.noaccess"));
 		}
 	}
 

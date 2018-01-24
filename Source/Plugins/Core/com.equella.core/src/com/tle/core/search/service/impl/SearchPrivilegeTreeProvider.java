@@ -32,6 +32,6 @@ public class SearchPrivilegeTreeProvider extends AbstractSettingsPrivilegeTreePr
 {
 	public SearchPrivilegeTreeProvider()
 	{
-		super(Type.SYSTEM_SETTING, "com.tle.core.search.securitytree.searchsettings", new SettingsTarget("searching"));
+		super(Type.SYSTEM_SETTING, r.key("securitytree.searchsettings"), new SettingsTarget("searching"));
 	}
 }
