@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "browserify": "yarn install && browserify index.js -o target/bundle.js"
+  },
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "babelify": "^8.0.0",
+    "swagger-ui": "^3.9.3"
+  }
+}
