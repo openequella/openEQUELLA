@@ -54,7 +54,7 @@ import io.swagger.annotations.ApiParam;
  */
 @Bind
 @Path("connector")
-@Api(value = "/connector", description = "connector")
+@Api(value = "External connectors", description = "connector")
 @Produces({"application/json"})
 @Singleton
 @SuppressWarnings("nls")

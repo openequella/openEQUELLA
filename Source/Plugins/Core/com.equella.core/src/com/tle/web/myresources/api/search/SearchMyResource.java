@@ -65,7 +65,7 @@ import io.swagger.annotations.ApiParam;
  */
 @Bind
 @Path("search/myresources")
-@Api(value = "/search/myresources", description = "search-myresources")
+@Api(value = "My resources search", description = "search-myresources")
 @Produces({"application/json"})
 @SuppressWarnings("nls")
 @Singleton

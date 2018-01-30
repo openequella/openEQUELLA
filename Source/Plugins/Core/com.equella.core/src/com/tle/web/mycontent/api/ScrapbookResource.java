@@ -92,7 +92,7 @@ import io.swagger.annotations.ApiParam;
  */
 @Bind
 @Path("scrapbook")
-@Api(value = "/scrapbook", description = "scrapbook")
+@Api(value = "Scrapbook items", description = "scrapbook")
 @Produces({"application/json"})
 @SuppressWarnings("nls")
 @Singleton

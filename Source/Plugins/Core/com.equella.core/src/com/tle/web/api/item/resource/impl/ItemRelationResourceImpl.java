@@ -50,7 +50,7 @@ import io.swagger.annotations.ApiOperation;
 @Bind
 @Produces({"application/json"})
 @Path("item/{uuid}/{version}/relation/")
-@Api(value = "/item/{uuid}/{version}/relation", description = "item-relation")
+@Api(value = "Item relations", description = "item-relation")
 @Singleton
 @SuppressWarnings("nls")
 public class ItemRelationResourceImpl

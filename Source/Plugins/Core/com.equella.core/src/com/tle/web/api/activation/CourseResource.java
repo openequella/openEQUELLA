@@ -37,7 +37,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 @Path("course")
-@Api(value = "/course", description = "course")
+@Api(value = "Courses", description = "course")
 @Produces(MediaType.APPLICATION_JSON)
 public interface CourseResource extends BaseEntityResource<CourseBean, BaseEntitySecurityBean>
 {

@@ -39,7 +39,7 @@ import io.swagger.annotations.ApiParam;
 // Note: EQUELLA overrides the root Path
 @Produces(MediaType.APPLICATION_JSON)
 @Path("usermanagement/local/role/")
-@Api(value = "/usermanagement/local/role", description = "usermanagement-local-role")
+@Api(value = "Local roles", description = "usermanagement-local-role")
 @SuppressWarnings("nls")
 public interface RoleResource
 {

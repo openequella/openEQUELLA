@@ -37,7 +37,7 @@ import io.swagger.annotations.ApiParam;
  * @author Dongsheng Cai
  */
 @Path("activation/")
-@Api(value = "/activation", description = "activation")
+@Api(value = "Copyright activations", description = "activation")
 @Produces({"application/json"})
 public interface ActivationResource
 {

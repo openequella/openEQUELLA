@@ -48,7 +48,7 @@ import io.swagger.annotations.ApiParam;
  */
 @Produces({"application/json"})
 @Path("staging/")
-@Api(value = "/staging", description = "staging")
+@Api(value = "Staging files", description = "staging")
 public interface StagingResource
 {
 	@POST
@@ -104,7 +104,7 @@ public interface StagingResource
 		InputStream data,
 		@ApiParam("folder to unzip to") @QueryParam("unzipto") String unzipTo,
 		@ApiParam("path of existing file to copy from") @QueryParam("copyfrom") String copySource,
-		@ApiParam(value = "part number for multipart upload", allowableValues = "1-10000") @QueryParam("partNumber") int partNumber,
+		@ApiParam(value = "part number for multipart upload", allowableValues = "range[1,10000]") @QueryParam("partNumber") int partNumber,
 		@ApiParam("id for multipart upload") @QueryParam("uploadId") String uploadId,
 		@HeaderParam("content-length") @DefaultValue("-1") long size, @HeaderParam("content-type") String contentType)
 		throws IOException;

@@ -25,7 +25,7 @@ import io.swagger.annotations.Api;
  * @author Aaron
  */
 @Path("usermanagement/local/role/")
-@Api(value = "/usermanagement/local/role", description = "usermanagement-local-role")
+@Api(value = "Local roles", description = "usermanagement-local-role")
 public interface EquellaRoleResource extends RoleResource
 {
 	// Nothing to add, just the path annotation at the top

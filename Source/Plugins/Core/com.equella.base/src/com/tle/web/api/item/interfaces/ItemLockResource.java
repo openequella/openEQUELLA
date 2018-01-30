@@ -31,7 +31,7 @@ import io.swagger.annotations.ApiOperation;
 
 @Produces({"application/json"})
 @Path("item/{uuid}/{version}/lock")
-@Api(value = "/item/{uuid}/{version}/lock", description = "item-lock")
+@Api(value = "Item locks", description = "item-lock")
 public interface ItemLockResource
 {
 	@Path("")

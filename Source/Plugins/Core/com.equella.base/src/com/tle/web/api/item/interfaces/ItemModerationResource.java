@@ -28,7 +28,7 @@ import io.swagger.annotations.ApiParam;
 
 @Produces({"application/json"})
 @Path("item/{uuid}/{version}/moderation")
-@Api(value = "/item/{uuid}/{version}/moderation", description = "item-moderation")
+@Api(value = "Moderation status", description = "item-moderation")
 @SuppressWarnings("nls")
 public interface ItemModerationResource
 {

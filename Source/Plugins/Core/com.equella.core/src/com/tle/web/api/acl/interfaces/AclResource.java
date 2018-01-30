@@ -29,7 +29,7 @@ import io.swagger.annotations.ApiParam;
 
 @Produces({"application/json"})
 @Path("acl/")
-@Api(value = "/acl", description = "acl")
+@Api(value = "ACLs", description = "acl")
 public interface AclResource
 {
 	@GET

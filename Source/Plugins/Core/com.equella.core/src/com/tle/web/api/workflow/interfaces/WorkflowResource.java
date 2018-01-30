@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiParam;
 
 @Produces({"application/json"})
 @Path("workflow/")
-@Api(value = "/workflow", description = "workflow")
+@Api(value = "Workflows", description = "workflow")
 public interface WorkflowResource extends BaseEntityResource<WorkflowBean, BaseEntitySecurityBean>
 {
 	@GET

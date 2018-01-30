@@ -29,7 +29,7 @@ import io.swagger.annotations.ApiParam;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Path("item/{uuid}/{version}/thumb/")
-@Api(value = "/item/{uuid}/{version}/thumb", description = "item-thumbnail")
+@Api(value = "Item thumbnails", description = "item-thumbnail")
 @SuppressWarnings("nls")
 public interface ItemThumbnailResource
 {

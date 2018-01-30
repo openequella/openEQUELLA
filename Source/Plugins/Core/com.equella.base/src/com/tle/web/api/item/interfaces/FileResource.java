@@ -44,7 +44,7 @@ import io.swagger.annotations.ApiParam;
 
 @Produces({"application/json"})
 @Path("file/")
-@Api(value = "/file", description = "file")
+@Api(value = "Files (deprecated)", description = "file")
 @SuppressWarnings("nls")
 public interface FileResource
 {

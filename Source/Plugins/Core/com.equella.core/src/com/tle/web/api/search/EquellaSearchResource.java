@@ -40,7 +40,7 @@ import io.swagger.annotations.ApiResponses;
  * @author Aaron
  */
 @Path("search")
-@Api(value = "/search", description = "search")
+@Api(value = "Searching", description = "search")
 @Produces(MediaType.APPLICATION_JSON)
 public interface EquellaSearchResource extends SearchResource
 {

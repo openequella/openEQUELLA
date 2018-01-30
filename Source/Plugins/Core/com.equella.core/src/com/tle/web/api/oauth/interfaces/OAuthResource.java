@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiParam;
 
 @Produces({"application/json"})
 @Path("oauth/")
-@Api(value = "/oauth", description = "oauth")
+@Api(value = "OAuth clients", description = "oauth")
 public interface OAuthResource extends BaseEntityResource<OAuthClientBean, BaseEntitySecurityBean>
 {
 	@GET

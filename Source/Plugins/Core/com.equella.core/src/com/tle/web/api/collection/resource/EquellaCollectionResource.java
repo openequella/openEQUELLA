@@ -36,7 +36,7 @@ import io.swagger.annotations.ApiParam;
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Path("collection/")
-@Api(value = "/collection", description = "collection")
+@Api(value = "Collections", description = "collection")
 public interface EquellaCollectionResource extends CollectionResource
 {
 	@GET

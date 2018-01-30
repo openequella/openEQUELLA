@@ -39,7 +39,7 @@ import io.swagger.annotations.ApiParam;
 // Note: EQUELLA overrides the root Path
 @Produces(MediaType.APPLICATION_JSON)
 @Path("localgroup/")
-@Api(value = "/localgroup", description = "localgroup")
+@Api(value = "Local groups", description = "localgroup")
 public interface GroupResource
 {
 	@GET

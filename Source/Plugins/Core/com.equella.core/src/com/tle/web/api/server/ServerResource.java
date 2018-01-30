@@ -33,7 +33,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @Bind
 @Path("status")
-@Api(value = "/status", description = "status")
+@Api(value = "Server status", description = "status")
 @Produces({"application/json"})
 @Singleton
 public class ServerResource

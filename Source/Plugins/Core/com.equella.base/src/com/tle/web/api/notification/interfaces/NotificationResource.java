@@ -32,7 +32,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 @Path("notification")
-@Api(value = "/notification", description = "notification")
+@Api(value = "Notifications", description = "notification")
 @Produces({"application/json"})
 public interface NotificationResource
 {

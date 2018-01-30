@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiParam;
 @SuppressWarnings("nls")
 @Path("user/{id}/action/")
 @Produces({"application/json"})
-@Api(value = "/user/{id}/action", description = "user-action")
+@Api(value = "User actions", description = "user-action")
 public class UserActionResource
 {
 	@Inject

@@ -29,7 +29,7 @@ import io.swagger.annotations.ApiParam;
 
 @Produces({"application/json"})
 @Path("item/{uuid}/{version}/action/")
-@Api(value = "/item/{uuid}/{version}/action", description = "item-action")
+@Api(value = "Item actions", description = "item-action")
 @SuppressWarnings("nls")
 public interface ItemActionsResource
 {

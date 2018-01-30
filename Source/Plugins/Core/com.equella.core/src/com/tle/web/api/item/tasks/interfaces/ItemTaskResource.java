@@ -28,7 +28,7 @@ import io.swagger.annotations.ApiOperation;
 
 @Produces({"application/json"})
 @Path("item/{uuid}/{version}/task/{taskUuid}/")
-@Api(value = "/item/{uuid}/{version}/task/{taskUuid}", description = "item-task")
+@Api(value = "Moderaction actions", description = "item-task")
 public interface ItemTaskResource
 {
 	@POST

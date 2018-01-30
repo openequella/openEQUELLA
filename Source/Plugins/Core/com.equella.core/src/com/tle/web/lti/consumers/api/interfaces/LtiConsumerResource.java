@@ -42,7 +42,7 @@ import io.swagger.annotations.ApiParam;
  */
 @Produces({"application/json"})
 @Path("lti/consumer")
-@Api(value = "/lti/consumer", description = "lti-consumer")
+@Api(value = "LTI consumers", description = "lti-consumer")
 public interface LtiConsumerResource extends BaseEntityResource<LtiConsumerBean, BaseEntitySecurityBean>
 {
 	@GET

@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiParam;
 @SuppressWarnings("nls")
 @Path("group/{id}/action/")
 @Produces({"application/json"})
-@Api(value = "/group/{id}/action", description = "group-action")
+@Api(value = "Group actions", description = "group-action")
 public class GroupActionResource
 {
 	@Inject

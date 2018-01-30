@@ -32,7 +32,7 @@ import io.swagger.annotations.ApiParam;
  * @author Aaron
  */
 @Path("task")
-@Api(value = "/task", description = "task")
+@Api(value = "Task searching", description = "task")
 @Produces(MediaType.APPLICATION_JSON)
 public interface EquellaTaskResource extends TaskResource
 {

@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiParam;
 
 @Produces({"application/json"})
 @Path("schema/")
-@Api(value = "/schema", description = "schema")
+@Api(value = "Schemas", description = "schema")
 public interface SchemaResource extends BaseEntityResource<SchemaBean, BaseEntitySecurityBean>
 {
 	@GET

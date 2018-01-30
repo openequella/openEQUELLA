@@ -37,7 +37,7 @@ import io.swagger.annotations.ApiParam;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Path("usermanagement/local/group/")
-@Api(value = "/usermanagement/local/group", description = "usermanagement-local-group")
+@Api(value = "Local groups", description = "usermanagement-local-group")
 public interface EquellaGroupResource extends GroupResource
 {
 	// @formatter:off

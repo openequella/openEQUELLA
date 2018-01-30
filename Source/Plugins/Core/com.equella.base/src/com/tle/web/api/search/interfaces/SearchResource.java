@@ -30,7 +30,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 @Path("search")
-@Api(value = "/search", description = "search")
+@Api(value = "Searching", description = "search")
 @Produces(MediaType.APPLICATION_JSON)
 public interface SearchResource
 {

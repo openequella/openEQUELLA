@@ -31,7 +31,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 @Path("task")
-@Api(value = "/task", description = "task")
+@Api(value = "Task searching", description = "task")
 @Produces(MediaType.APPLICATION_JSON)
 @SuppressWarnings("nls")
 public interface TaskResource

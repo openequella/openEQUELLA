@@ -56,7 +56,7 @@ import io.swagger.annotations.ApiParam;
 @Bind
 @Produces({"application/json"})
 @Path("dynacollection")
-@Api(value = "/dynacollection", description = "dynacollection")
+@Api(value = "Dynamic collections", description = "dynacollection")
 @Singleton
 public class DynaCollectionResource
 {

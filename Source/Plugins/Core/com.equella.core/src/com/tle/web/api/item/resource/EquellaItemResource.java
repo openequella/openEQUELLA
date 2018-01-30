@@ -46,7 +46,7 @@ import io.swagger.annotations.ApiParam;
 @SuppressWarnings("nls")
 @Produces(MediaType.APPLICATION_JSON)
 @Path("item")
-@Api(value = "/item", description = "item")
+@Api(value = "Items", description = "item")
 public interface EquellaItemResource extends ItemResource
 {
 	static final String APIDOC_ITEMUUID = "The uuid of the item";

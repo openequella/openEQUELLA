@@ -39,7 +39,7 @@ import io.swagger.annotations.ApiParam;
 // Note: EQUELLA overrides the root Path
 @Produces(MediaType.APPLICATION_JSON)
 @Path("localuser/")
-@Api(value = "/localuser", description = "localuser")
+@Api(value = "Local users", description = "localuser")
 public interface UserResource
 {
 	@GET

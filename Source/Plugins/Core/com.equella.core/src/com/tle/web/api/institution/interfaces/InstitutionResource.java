@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiParam;
 
 @Produces({"application/json"})
 @Path("institution")
-@Api(value = "/institution", description = "institution")
+@Api(value = "Institutions", description = "institution")
 @Institutional(Type.NON_INSTITUTIONAL)
 public interface InstitutionResource
 {

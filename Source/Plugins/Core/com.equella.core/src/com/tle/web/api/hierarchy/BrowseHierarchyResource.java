@@ -83,7 +83,7 @@ import io.swagger.annotations.ApiParam;
  */
 @Bind
 @Path("browsehierarchy")
-@Api(value = "/browsehierarchy", description = "hierarchy-browse")
+@Api(value = "Hierarchy browsing", description = "hierarchy-browse")
 @Produces({"application/json"})
 @Singleton
 @SuppressWarnings("nls")

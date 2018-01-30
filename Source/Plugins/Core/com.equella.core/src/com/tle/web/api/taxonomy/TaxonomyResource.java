@@ -61,7 +61,7 @@ import io.swagger.annotations.ApiParam;
 @NonNullByDefault
 @Bind
 @Path("taxonomy")
-@Api(value = "/taxonomy", description = "taxonomy")
+@Api(value = "Taxonomies", description = "taxonomy")
 @Produces({"application/json"})
 @SuppressWarnings("nls")
 @Singleton
