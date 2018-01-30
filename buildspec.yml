@@ -15,5 +15,9 @@ phases:
     commands:
       - publishBuild
       - echo "Finished"
-      
-
+cache:
+  paths:
+    - '/root/.ivy2/**/*'
+    - '/root/.npm/**/*'
+    - '/root/.sbt/**/*'
+    
