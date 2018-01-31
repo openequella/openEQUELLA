@@ -57,7 +57,7 @@ public interface ItemResource
 	static final String APIDOC_WAITFORINDEX = "Number of seconds to wait for the item to be indexed";
 	static final String APIDOC_FILEID = "The id of a file area to use";
 
-	static final String ALL_ALLOWABLE_INFOS = "basic,metadata,attachment,detail,navigation,drm,all";
+	static final String ALL_ALLOWABLE_INFOS = "basic,metadata,attachment,detail,navigation,drm,display,all";
 
 	@GET
 	@Path("/{uuid}/{version}")

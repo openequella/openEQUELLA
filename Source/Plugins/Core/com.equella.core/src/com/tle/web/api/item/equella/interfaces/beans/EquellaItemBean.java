@@ -20,11 +20,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.tle.web.api.item.interfaces.beans.ItemBean;
 
+import java.util.List;
+
 @SuppressWarnings("nls")
 @XmlRootElement
 public class EquellaItemBean extends ItemBean
 {
 	private String thumbnail;
+	private List<DisplayField> displayFields;
+	private DisplayOptions displayOptions;
 
 	public String getThumbnail()
 	{
@@ -34,6 +38,26 @@ public class EquellaItemBean extends ItemBean
 	public void setThumbnail(String thumbnail)
 	{
 		this.thumbnail = thumbnail;
+	}
+
+	public List<DisplayField> getDisplayFields()
+	{
+		return displayFields;
+	}
+
+	public void setDisplayFields(List<DisplayField> displayFields)
+	{
+		this.displayFields = displayFields;
+	}
+
+	public void setDisplayOptions(DisplayOptions displayOptions)
+	{
+		this.displayOptions = displayOptions;
+	}
+
+	public DisplayOptions getDisplayOptions()
+	{
+		return displayOptions;
 	}
 
 	/**

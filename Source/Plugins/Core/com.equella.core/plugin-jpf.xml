@@ -3248,6 +3248,9 @@
   <extension plugin-id="com.tle.web.api.item.equella.serializer" point-id="serializer" id="navigation">
     <parameter id="bean" value="bean:com.tle.core.item.serializer.impl.NavigationNodeSerializerProvider" />
   </extension>
+  <extension plugin-id="com.tle.web.api.item.equella.serializer" point-id="serializer" id="searchSerializer">
+    <parameter id="bean" value="bean:com.tle.core.item.serializer.impl.SearchDetailsSerializer" />
+  </extension>
   <extension plugin-id="com.tle.web.api.item.equella.serializer" point-id="serializer" id="drm">
     <parameter id="bean" value="bean:com.tle.core.item.serializer.impl.DrmSerializerProvider" />
   </extension>
