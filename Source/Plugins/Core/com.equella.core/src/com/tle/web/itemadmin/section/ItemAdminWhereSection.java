@@ -137,9 +137,17 @@ public class ItemAdminWhereSection extends AbstractPrototypeSection<ItemAdminWhe
 	private static String LIKE;
 	@PlugKey("whereclause.xpath.notlike")
 	private static String NOTLIKE;
+	@PlugKey("whereclause.xpath.exists")
+	private static String EXISTS;
 
 	@PlugKey("whereclause.xpath.datewarning")
 	private static String DATE_WARNING;
+
+	@PlugKey("whereclause.xpath.formwarning")
+	private static String FORM_WARNING;
+
+	@PlugKey("whereclause.xpath.duplicatewarning")
+	private static String DUPLICATE_WARNING;
 
 	@TreeLookup
 	private RootItemAdminSection rootItemAdmin;
@@ -155,6 +163,8 @@ public class ItemAdminWhereSection extends AbstractPrototypeSection<ItemAdminWhe
 
 		ObjectExpression strs = new ObjectExpression();
 		strs.put("datewarning", CurrentLocale.get(DATE_WARNING));
+		strs.put("formwarning", CurrentLocale.get(FORM_WARNING));
+		strs.put("duplicatewarning", CurrentLocale.get(DUPLICATE_WARNING));
 
 		div.addReadyStatements(new ScriptStatement(PropertyExpression.create(new JQuerySelector(div),
 			new FunctionCallExpression(CRITERIA_FUNC, strs))));
@@ -213,6 +223,7 @@ public class ItemAdminWhereSection extends AbstractPrototypeSection<ItemAdminWhe
 		exprOps.add(new VoidKeyOption(ISNOT, "IS NOT"));
 		exprOps.add(new VoidKeyOption(LIKE, "LIKE"));
 		exprOps.add(new VoidKeyOption(NOTLIKE, "NOT LIKE"));
+		exprOps.add(new VoidKeyOption(EXISTS, "EXISTS"));
 		exprOps.add(new SimpleOption<Void>("<", "<"));
 		exprOps.add(new SimpleOption<Void>("<=", "<="));
 		exprOps.add(new SimpleOption<Void>(">", ">"));
