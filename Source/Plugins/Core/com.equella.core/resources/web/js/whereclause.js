@@ -5,7 +5,9 @@
 		return this.each(function() 
 		{
 			var settings = {
-				"datewarning" : ""
+				"datewarning" : "",
+				"formwarning" : "",
+				"duplicatewarning" : ""
 			};
 			
 			if(options) 
@@ -40,14 +42,32 @@
 			{
 				buildWhereStart(true);
 			});
+
+			// Disable the 'value' textfield if the user selects the 'EXISTS' operator.
+			whereoperator.change(function() {
+				if(whereoperator.val() == "EXISTS") {
+					wherevalue.prop('disabled', true);
+					wherevalue.val("");
+				} else {
+					wherevalue.prop('disabled', false);
+				}
+			});
 			
 			
 			add.click(function() 
 			{
 				var start = wherestart.val(), path = wherepath.val(), operator = whereoperator.val(), value = wherevalue.val();
 
-				if (!start.length > 0 || !path.length > 0 || !operator.length > 0 || !value.length > 0) 
+				// All fields must be filled in unless the user chose the EXISTS operator,
+				// in which case, the value is not needed
+				var valueOk = value.length > 0;
+				var isOpExistsSet = (operator == "EXISTS");
+				if(isOpExistsSet) {
+					valueOk = true;
+				}
+				if (!start.length > 0 || !path.length > 0 || !operator.length > 0 || !valueOk)
 				{
+					alert(settings.formwarning);
 					return false;
 				} 
 				else 
@@ -64,7 +84,11 @@
 						}
 					}
 					
-					var criteria = start + ' ' + path + ' ' + operator + ' \'' + value + '\'';
+					var criteria = start + ' ' + path + ' ' + operator;
+					// The value is only needed if the operator is not 'EXISTS'.
+					if(!isOpExistsSet) {
+						criteria += ' \'' + value + '\'';
+					}
 					if(addWhereClause(criteria))
 					{	
 						addOption(whereclauses.get(0), criteria, criteria);
@@ -124,8 +148,10 @@
 						exists = true;
 					}
 				});
-				if (exists) 
+				if (exists) {
+					alert(settings.duplicatewarning);
 					return false;
+				}
 
 				var c = items.length % 2 != 0 ? 'even' : 'odd';
 				list.append('<li class="' + c + '">' + criteria + '<span class="criteria-remove"></span></li>');
