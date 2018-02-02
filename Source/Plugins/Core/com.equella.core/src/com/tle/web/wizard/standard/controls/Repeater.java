@@ -16,40 +16,32 @@
 
 package com.tle.web.wizard.standard.controls;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.collect.Lists;
 import com.tle.common.Pair;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
 import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.core.wizard.controls.WizardPage;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
-import com.tle.web.sections.ajax.AbstractDOMResult;
-import com.tle.web.sections.ajax.AjaxCaptureResult;
-import com.tle.web.sections.ajax.AjaxGenerator;
-import com.tle.web.sections.ajax.AjaxRenderContext;
-import com.tle.web.sections.ajax.FullDOMResult;
-import com.tle.web.sections.ajax.JSONResponseCallback;
+import com.tle.web.sections.ajax.*;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
 import com.tle.web.sections.ajax.handler.AjaxMethod;
+import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.annotation.PlugURL;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
 import com.tle.web.sections.events.BookmarkEvent;
+import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.jquery.JQueryStatement;
 import com.tle.web.sections.jquery.libraries.effects.JQueryUIEffects;
 import com.tle.web.sections.js.ElementId;
+import com.tle.web.sections.js.JSExpression;
 import com.tle.web.sections.js.generic.AppendedElementId;
-import com.tle.web.sections.js.generic.expression.FunctionCallExpression;
-import com.tle.web.sections.js.generic.expression.ObjectExpression;
+import com.tle.web.sections.js.generic.expression.*;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.render.Label;
-import com.tle.web.sections.render.LabelRenderer;
 import com.tle.web.sections.result.util.IconLabel;
 import com.tle.web.sections.result.util.IconLabel.Icon;
 import com.tle.web.sections.standard.Link;
@@ -62,6 +54,9 @@ import com.tle.web.wizard.controls.GroupsCtrl.ControlGroup;
 import com.tle.web.wizard.controls.WebControl;
 import com.tle.web.wizard.controls.WebControlModel;
 import com.tle.web.wizard.page.ControlResult;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("nls")
 @Bind
@@ -82,12 +77,16 @@ public class Repeater extends GroupWebControl<Repeater.RepeaterModel>
 
 	@PlugURL("js/repeater.js")
 	private static String URL_REPEATERJS;
+	@PlugKey("repeater.confirmremove")
+	private static Label CONFIRM_REMOVE;
 	private static final IncludeFile INCJS = new IncludeFile(URL_REPEATERJS, WizardJSLibrary.INCLUDE,
 		JQueryUIEffects.SLIDE);
 	private static ExternallyDefinedFunction REPEATER = new ExternallyDefinedFunction("repeater", INCJS);
 
 	@Component
 	private Link addButton;
+	@Component
+	private Link addTopButton;
 
 	private CRepeater crepeater;
 	private String addedDivId;
@@ -103,22 +102,38 @@ public class Repeater extends GroupWebControl<Repeater.RepeaterModel>
 	public void registered(String id, SectionTree tree)
 	{
 		super.registered(id, tree);
+		//@formatter:off
 		addButton.addReadyStatements(new JQueryStatement(this, new FunctionCallExpression(REPEATER,
-			new ObjectExpression("addAjax", ajax.getAjaxFunction("addAjax"), "addButton", addButton, "disabler",
-				addButton.createDisableFunction(), "removeAjax", ajax.getAjaxFunction("removeAjax"), "swapIndexAjax",
-				ajax.getAjaxFunction("swapIndexAjax")))));
+			new ObjectExpression(
+					"addAjax", ajax.getAjaxFunction("addAjax"),
+					"addButton", addButton,
+					"addTopButton", addTopButton,
+					"disablers", new ArrayExpression(addButton.createDisableFunction(), addTopButton.createDisableFunction()),
+					"removeAjax", ajax.getAjaxFunction("removeAjax"),
+					"swapIndexAjax", ajax.getAjaxFunction("swapIndexAjax"),
+					"confirmRemoveMessage", new RuntimeExpression()
+						{
+							@Override
+							protected JSExpression createExpression(RenderContext info)
+							{
+								return new StringExpression(CONFIRM_REMOVE.getText());
+							}
+						}
+			))));
+		//@formatter:on
 		addedDivId = getSectionId() + "_groups";
 	}
 
 	@AjaxMethod
-	public JSONResponseCallback addAjax(AjaxRenderContext context)
+	public JSONResponseCallback addAjax(AjaxRenderContext context, boolean top)
 	{
 		getModel(context).setRenderMeOnly(true);
-		final String ajaxId = getSectionId() + "_gajax_" + crepeater.getGroups().size();
+		final int numGroups = crepeater.getGroups().size();
+		final String ajaxId = (top ? addedDivId : getSectionId() + "_gajax_" + numGroups);
 		context.addAjaxDivs(ajaxId);
 		context.setModalId(getSectionId());
 		context.setFormBookmarkEvent(new BookmarkEvent(this, true, context));
-		add(context);
+		add(context, (top ? 0 : numGroups));
 		return new JSONResponseCallback()
 		{
 			@Override
@@ -249,8 +264,10 @@ public class Repeater extends GroupWebControl<Repeater.RepeaterModel>
 		popParentOverrides(wizardPage, parentChain);
 
 		model.setRenderedGroups(renderedGroups);
-		addButton.setDisabled(context, groups.size() >= crepeater.getMax());
-		addDisablers(context, addButton);
+		boolean disabled = (groups.size() >= crepeater.getMax());
+		addButton.setDisabled(context, disabled);
+		addTopButton.setDisabled(context, disabled);
+		addDisablers(context, addButton, addTopButton);
 		addDisableablesForControls(context);
 		return viewFactory.createResult("repeater/repeater.ftl", context);
 	}
@@ -318,9 +335,9 @@ public class Repeater extends GroupWebControl<Repeater.RepeaterModel>
 		}
 	}
 
-	public void add(SectionInfo info)
+	private void add(SectionInfo info, int index)
 	{
-		crepeater.addAndEvaluate();
+		crepeater.addAndEvaluate(index);
 		getWebWizardPage().ensureTreeAdded(info, false);
 	}
 
@@ -421,6 +438,11 @@ public class Repeater extends GroupWebControl<Repeater.RepeaterModel>
 		return addButton;
 	}
 
+	public Link getAddTopButton()
+	{
+		return addTopButton;
+	}
+
 	public class RepeaterUpdate extends AbstractDOMResult
 	{
 		private final boolean disabled;
@@ -435,14 +457,14 @@ public class Repeater extends GroupWebControl<Repeater.RepeaterModel>
 			this.message = message != null ? message.getText() : null;
 			this.disabled = addButton.isDisabled(info);
 		}
-
+		/*
 		public RepeaterUpdate(SectionInfo info)
 		{
 			Label message = Repeater.this.getMessage();
 			this.message = message != null ? message.getText() : null;
 			this.disabled = addButton.isDisabled(info);
 		}
-
+*/
 		public boolean isDisabled()
 		{
 			return disabled;

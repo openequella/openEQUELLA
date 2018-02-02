@@ -90,3 +90,7 @@
 #wizard-actions span {
 	padding: 0 5px;
 }
+
+button + .repeater-groups {
+	margin-top: 1em;
+}

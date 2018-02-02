@@ -60,16 +60,23 @@ public abstract class GroupWebControl<M extends WebControlModel> extends Abstrac
 		gctrl.setListener(this);
 		for( ControlGroup group : gctrl.getGroups() )
 		{
-			addNewGroup(group);
+			addNewGroup(group, -1);
 		}
 	}
 
 	@Override
-	public void addNewGroup(ControlGroup group)
+	public void addNewGroup(ControlGroup group, int index)
 	{
 		WebWizardPage webWizardPage = getWebWizardPage();
 		List<WebControl> wrappedGroup = webWizardPage.wrapControls(group.getControls());
-		webGroups.add(wrappedGroup);
+		if (index == -1)
+		{
+			webGroups.add(wrappedGroup);
+		}
+		else
+		{
+			webGroups.add(index, wrappedGroup);
+		}
 	}
 
 	@Override
