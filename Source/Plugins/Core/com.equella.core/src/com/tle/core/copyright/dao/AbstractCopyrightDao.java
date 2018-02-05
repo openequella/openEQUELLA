@@ -16,11 +16,8 @@
 
 package com.tle.core.copyright.dao;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -162,11 +159,18 @@ public abstract class AbstractCopyrightDao<H extends Holding, P extends Portion,
 	@Transactional(propagation = Propagation.MANDATORY)
 	public List<P> getPortionsForItems(List<Item> items)
 	{
+	    return getPortionsForItemIds(items.stream().map(Item::getId).collect(Collectors.toList()));
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.MANDATORY)
+	public List<P> getPortionsForItemIds(Collection<Long> items)
+	{
 		if( items.isEmpty() )
 		{
 			return Collections.emptyList();
 		}
-		return getHibernateTemplate().findByNamedParam(query("from %p p where p.item in (:items)"), "items", items);
+		return getHibernateTemplate().findByNamedParam(query("from %p p where p.item.id in (:items)"), "items", items);
 	}
 
 	@Override
@@ -262,17 +266,24 @@ public abstract class AbstractCopyrightDao<H extends Holding, P extends Portion,
 	@Transactional(propagation = Propagation.MANDATORY)
 	public Map<Long, H> getHoldingsForItems(List<Item> items)
 	{
+	    return getHoldingsForItemIds(items.stream().map(Item::getId).collect(Collectors.toList()));
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.MANDATORY)
+	public Map<Long, H> getHoldingsForItemIds(Collection<Long> items)
+	{
 		Map<Long, H> holdingMap = new HashMap<Long, H>();
 		if( !items.isEmpty() )
 		{
 			List<Object[]> holdingItems = getHibernateTemplate()
-				.findByNamedParam(query("select p.holding, p.item from %p p where p.item in (:items)"), "items", items);
+					.findByNamedParam(query("select p.holding, p.item from %p p where p.item.id in (:items)"), "items", items);
 			for( Object[] objs : holdingItems )
 			{
 				holdingMap.put(((Item) objs[1]).getId(), (H) objs[0]);
 			}
 			holdingItems = getHibernateTemplate()
-				.findByNamedParam(query("select h, h.item from %h h where h.item in (:items)"), "items", items);
+					.findByNamedParam(query("select h, h.item from %h h where h.item.id in (:items)"), "items", items);
 			for( Object[] objs : holdingItems )
 			{
 				holdingMap.put(((Item) objs[1]).getId(), (H) objs[0]);
@@ -280,6 +291,8 @@ public abstract class AbstractCopyrightDao<H extends Holding, P extends Portion,
 		}
 		return holdingMap;
 	}
+
+
 
 	@Override
 	@Transactional(propagation = Propagation.MANDATORY)

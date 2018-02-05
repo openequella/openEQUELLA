@@ -16,23 +16,39 @@
 
 package com.tle.core.item.serializer.impl
 
-import javax.inject.Singleton
+import java.util
+import java.util.{List, Map}
+import javax.inject.{Inject, Singleton}
 
+import com.tle.beans.cal.{CALHolding, CALPortion}
 import com.tle.beans.entity.LanguageBundle
 import com.tle.beans.entity.itemdef.SearchDetails
+import com.tle.beans.item.Item
+import com.tle.cal.dao.CALDao
+import com.tle.cal.service.CALService
 import com.tle.common.Pair
-import com.tle.common.interfaces.I18NStrings
-import com.tle.common.interfaces.equella.BundleString
+import com.tle.common.interfaces.{I18NStrings, SimpleI18NString}
+import com.tle.common.interfaces.equella.{BundleString, TextI18NStrings}
+import com.tle.core.copyright.service.CopyrightService
 import com.tle.core.guice.Bind
 import com.tle.core.item.serializer.{ItemSerializerProvider, ItemSerializerState, XMLStreamer}
 import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, DisplayOptions, EquellaItemBean}
+import com.tle.web.itemlist.item.AbstractItemlikeListEntry
+import com.tle.web.resources.{PluginResourceHelper, ResourcesService}
 import org.hibernate.criterion.Projections
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 @Bind
 @Singleton
 class SearchDetailsSerializer extends ItemSerializerProvider {
+
+  private val R = ResourcesService.getResourceHelper(getClass)
+  @Inject
+  var calDao : CALDao = _
+  @Inject
+  var calService : CALService = _
 
   val CATEGORY_DISPLAY = "display"
 
@@ -44,8 +60,14 @@ class SearchDetailsSerializer extends ItemSerializerProvider {
     itemProjection.add(Projections.property("slow.searchDetails"), "colSearchDetails")
   }
 
-  override def performAdditionalQueries(state: ItemSerializerState): Unit = {
-
+  override def performAdditionalQueries(state: ItemSerializerState): Unit = if (state.hasCategory(CATEGORY_DISPLAY)) {
+    val itemIds = state.getItemKeys
+    val holdingsMap = calDao.getHoldingsForItemIds(itemIds).asScala
+    val portionsMap = calDao.getPortionsForItemIds(itemIds).asScala.groupBy(_.getItem.getId)
+    holdingsMap.foreach {
+      case (itemId, ch) =>
+        portionsMap.get(itemId).flatMap(_.headOption).foreach(cp => state.setData(itemId, "caldata", (ch, cp)))
+    }
   }
 
   override def writeXmlResult(xml: XMLStreamer, state: ItemSerializerState, itemId: Long): Unit = ???
@@ -56,14 +78,18 @@ class SearchDetailsSerializer extends ItemSerializerProvider {
         equellaItemBean.setDisplayOptions(new DisplayOptions(csd.getAttDisplay, csd.isDisableThumbnail,
           csd.isStandardOpen, csd.isIntegrationOpen))
       }
-      Option(state.getData[java.util.List[Pair[LanguageBundle, LanguageBundle]]](itemId, "searchDetails")).foreach { sd =>
-        equellaItemBean.setDisplayFields {
-          sd.asScala.map { p =>
-            val name = BundleString.getString(p.getFirst)
-            val html = BundleString.getString(p.getSecond)
-            new DisplayField(name, html)
-          }.asJava
+      val displayNodes = Option(state.getData[java.util.List[Pair[LanguageBundle, LanguageBundle]]](itemId, "searchDetails")).map {
+        sd => sd.asScala.map { p =>
+          val name = BundleString.getString(p.getFirst)
+          val html = BundleString.getString(p.getSecond)
+          new DisplayField("node", name, html)
         }
       }
+      val citation = Option(state.getData[(CALHolding, CALPortion)](itemId, "caldata")).map {
+        case (ch, cp) =>
+          val citation = calService.citate(ch, cp)
+          new DisplayField("cal-citation", new SimpleI18NString(R.getString("list.citation")), new SimpleI18NString(citation))
+      }
+      equellaItemBean.setDisplayFields((displayNodes.getOrElse(mutable.Buffer.empty) ++ citation).asJava)
     }
 }

@@ -16,6 +16,7 @@
 
 package com.tle.core.copyright.dao;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -46,6 +47,10 @@ public interface CopyrightDao<H extends Holding, P extends Portion, S extends Se
 	Map<Long, H> getHoldingsForItems(List<Item> items);
 
 	List<P> getPortionsForItems(List<Item> items);
+
+	Map<Long, H> getHoldingsForItemIds(Collection<Long> items);
+
+	List<P> getPortionsForItemIds(Collection<Long> items);
 
 	H getHoldingInItem(Item item);
 
