@@ -15,6 +15,7 @@ unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_co
 
 val jacksonVersion = "2.4.1"
 val axis2Version = "1.6.2"
+val tomcatVersion = "8.0.49"
 
 libraryDependencies ++= Seq(
   "axis" % "axis" % "1.4",
@@ -138,17 +139,17 @@ libraryDependencies ++= Seq(
   "org.apache.struts" % "struts-taglib" % "1.3.10",
   "org.apache.tika" % "tika-core" % "1.3",
   "org.apache.tika" % "tika-parsers" % "1.3",
-  "org.apache.tomcat" % "tomcat-annotations-api" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-api" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-catalina" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-catalina-ha" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-coyote" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-jsp-api" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-juli" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-servlet-api" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-tribes" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-util" % "8.0.15",
-  "org.apache.tomcat" % "tomcat-util-scan" % "8.0.15",
+  "org.apache.tomcat" % "tomcat-annotations-api" % tomcatVersion,
+  "org.apache.tomcat" % "tomcat-api" % tomcatVersion,
+  "org.apache.tomcat" % "tomcat-catalina" % tomcatVersion,
+  "org.apache.tomcat" % "tomcat-catalina-ha" % tomcatVersion,
+  "org.apache.tomcat" % "tomcat-coyote" % tomcatVersion,
+  "org.apache.tomcat" % "tomcat-jsp-api" % tomcatVersion,
+  "org.apache.tomcat" % "tomcat-juli" % tomcatVersion,
+  "org.apache.tomcat" % "tomcat-servlet-api" % tomcatVersion,
+  "org.apache.tomcat" % "tomcat-tribes" % tomcatVersion,
+  "org.apache.tomcat" % "tomcat-util" % tomcatVersion,
+  "org.apache.tomcat" % "tomcat-util-scan" % tomcatVersion,
   "org.apache.ws.commons.axiom" % "axiom-api" % "1.2.13",
   "org.apache.ws.commons.axiom" % "axiom-impl" % "1.2.13",
   "org.apache.ws.security" % "wss4j" % "1.6.2",
