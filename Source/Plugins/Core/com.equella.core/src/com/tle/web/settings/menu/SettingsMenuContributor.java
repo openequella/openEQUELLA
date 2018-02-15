@@ -32,6 +32,7 @@ import com.tle.web.sections.ViewableChildInterface;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
+import com.tle.web.settings.SettingsList;
 import com.tle.web.template.section.MenuContributor;
 
 @Bind
@@ -48,15 +49,6 @@ public class SettingsMenuContributor implements MenuContributor
 	@Inject
 	private UserSessionService userSessionService;
 
-	private PluginTracker<ViewableChildInterface> extensionTracker;
-
-	@Inject
-	public void setPluginService(PluginService pluginService)
-	{
-		extensionTracker = new PluginTracker<ViewableChildInterface>(pluginService, "com.tle.web.settings", "settingsExtension",
-			null);
-		extensionTracker.setBeanKey("class");
-	}
 
 	@Override
 	public List<MenuContribution> getMenuContributions(SectionInfo info)
@@ -83,14 +75,7 @@ public class SettingsMenuContributor implements MenuContributor
 
 	private boolean canView(SectionInfo info)
 	{
-		for( ViewableChildInterface bean : extensionTracker.getBeanList() )
-		{
-			if( bean.canView(info) )
-			{
-				return true;
-			}
-		}
-		return false;
+		return SettingsList.anyEditable();
 	}
 
 	@Override

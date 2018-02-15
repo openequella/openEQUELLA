@@ -25,7 +25,6 @@ import com.tle.core.echo.EchoConstants;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
 import com.tle.exceptions.AccessDeniedException;
-import com.tle.web.echo.settings.EchoSettingsLinkSection;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -34,6 +33,7 @@ import com.tle.web.sections.equella.layout.OneColumnLayout;
 import com.tle.web.sections.equella.layout.OneColumnLayout.OneColumnLayoutModel;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
+import com.tle.web.settings.SettingsList;
 import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
@@ -77,7 +77,7 @@ public class RootEchoServerSection extends OneColumnLayout<OneColumnLayoutModel>
 
 		if( modalSection != null )
 		{
-			crumbs.add(EchoSettingsLinkSection.getShowEchoServersLink(info));
+			crumbs.add(SettingsList.asLinkOrNull(SettingsList.echoSettings()));
 
 			SectionId section = info.getSectionForId(modalSection);
 			if( section instanceof ModalEchoServerSection )

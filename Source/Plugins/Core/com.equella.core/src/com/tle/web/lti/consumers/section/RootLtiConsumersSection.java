@@ -27,6 +27,7 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.layout.OneColumnLayout.OneColumnLayoutModel;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.model.HtmlLinkState;
+import com.tle.web.settings.SettingsList;
 
 @Bind
 public class RootLtiConsumersSection extends AbstractRootEntitySection<OneColumnLayoutModel>
@@ -53,7 +54,7 @@ public class RootLtiConsumersSection extends AbstractRootEntitySection<OneColumn
 	@Override
 	protected HtmlLinkState getShowEntitiesLink(SectionInfo info)
 	{
-		return LtiConsumersSettingsSection.getShowConsumersLink(info);
+		return SettingsList.asLinkOrNull(SettingsList.ltiConsumersSettings());
 	}
 
 }

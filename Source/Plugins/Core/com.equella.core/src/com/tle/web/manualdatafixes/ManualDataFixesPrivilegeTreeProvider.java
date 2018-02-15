@@ -27,7 +27,7 @@ public class ManualDataFixesPrivilegeTreeProvider extends AbstractSettingsPrivil
 {
 	public ManualDataFixesPrivilegeTreeProvider()
 	{
-		super(Type.SYSTEM_SETTING, ResourcesService.getResourceHelper(ManualDataFixesSettingsSection.class).key(
+		super(Type.SYSTEM_SETTING, ResourcesService.getResourceHelper(ManualDataFixesPrivilegeTreeProvider.class).key(
 			"securitytree.mdf"), new SettingsTarget("manualdatafixes"));
 	}
 }

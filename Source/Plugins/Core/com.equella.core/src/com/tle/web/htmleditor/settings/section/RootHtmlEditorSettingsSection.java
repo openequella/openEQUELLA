@@ -29,6 +29,7 @@ import com.tle.web.sections.equella.layout.OneColumnLayout;
 import com.tle.web.sections.equella.layout.OneColumnLayout.OneColumnLayoutModel;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
+import com.tle.web.settings.SettingsList;
 import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
@@ -70,7 +71,7 @@ public class RootHtmlEditorSettingsSection extends OneColumnLayout<OneColumnLayo
 
 		if( modalSection != null )
 		{
-			crumbs.add(HtmlEditorSettingsSection.getShowHtmlEditorPluginsLink(info));
+			crumbs.add(SettingsList.asLinkOrNull(SettingsList.htmlEditorSettings()));
 
 			SectionId section = info.getSectionForId(modalSection);
 			if( section instanceof ModalHtmlEditorSettingsSection )

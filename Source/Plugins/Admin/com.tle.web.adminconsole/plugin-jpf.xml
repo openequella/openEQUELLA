@@ -4,9 +4,9 @@
   <requires>
     <import plugin-id="com.tle.common.i18n" />
     <import plugin-id="com.tle.core.guice" />
+    <import plugin-id="com.tle.core.application" />
     <import plugin-id="com.tle.web.core" />
     <import plugin-id="com.tle.web.sections" />
-    <import plugin-id="com.tle.web.settings" />
     <import plugin-id="com.tle.web.services" />
     <import plugin-id="com.tle.webstart.admin" />
     <import plugin-id="com.equella.base" exported="true" />
@@ -33,13 +33,6 @@
     <parameter id="class" value="com.tle.common.adminconsole.RemoteAdminService" />
     <parameter id="bean" value="bean:com.tle.common.adminconsole.RemoteAdminService" />
   </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="settingLinks">
-    <parameter id="class" value="bean:com.tle.core.adminconsole.AdminConsoleLinkSection" />
-    <parameter id="grouping" value="generalsettings" />
-    <parameter id="grouping" value="externalsettings" />
-    <parameter id="grouping" value="systemsettings" />
-    <parameter id="grouping" value="interfacesettings" />
-  </extension>
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="downloadServletMapping">
     <parameter id="url-pattern" value="/ds/*" />
     <parameter id="bean" value="bean:com.tle.web.plugin.download.DownloadServlet" />
@@ -47,5 +40,10 @@
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="jnlpServlet">
     <parameter id="bean" value="bean:com.tle.core.adminconsole.TleJnlpDownloadServlet" />
     <parameter id="url-pattern" value="/jnlp/admin.jnlp" />
+  </extension>
+  <extension plugin-id="com.tle.core.application" point-id="onStartup" id="extensions">
+    <parameter id="bean" value="bean:com.tle.core.adminconsole.AdminConsoleExtensions" />
+    <parameter id="type" value="web" />
+    <parameter id="order" value="1" />
   </extension>
 </plugin>

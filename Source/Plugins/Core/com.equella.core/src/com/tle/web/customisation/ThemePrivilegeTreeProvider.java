@@ -26,7 +26,7 @@ public class ThemePrivilegeTreeProvider extends AbstractSettingsPrivilegeTreePro
 {
 	public ThemePrivilegeTreeProvider()
 	{
-		super(Type.SYSTEM_SETTING, ResourcesService.getResourceHelper(ThemeSettingsSection.class).key(
+		super(Type.SYSTEM_SETTING, ResourcesService.getResourceHelper(ThemePrivilegeTreeProvider.class).key(
 			"securitytree.theme"), new SettingsTarget("theme"));
 	}
 }

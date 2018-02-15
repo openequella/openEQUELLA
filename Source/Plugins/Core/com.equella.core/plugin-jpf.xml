@@ -75,7 +75,6 @@
     <import plugin-id="com.tle.web.sections.standard" />
     <import plugin-id="com.tle.web.selection" />
     <import plugin-id="com.tle.web.services" />
-    <import plugin-id="com.tle.web.settings" />
     <import plugin-id="com.tle.web.spellcheck" />
     <import plugin-id="com.tle.web.viewitem" />
     <import plugin-id="com.tle.web.viewitem.summary" />
@@ -89,6 +88,7 @@
     <import plugin-id="org.hibernate" />
   </requires>
   <extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
+    <parameter id="class" value="com.tle.legacy.LegacyGuice" />
     <parameter id="class" value="com.tle.core.collection.guice.CollectionTrackerModule" />
     <parameter id="class" value="com.tle.core.connectors.brightspace.guice.BrightspaceConnectorModule" />
     <parameter id="class" value="com.tle.core.entity.guice.EntityTrackerModule" />
@@ -266,10 +266,6 @@
     <parameter id="bean" value="bean:com.tle.web.sections.registry.SectionsServlet" />
     <parameter id="url-pattern" value="/oauth/redirect" />
   </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="oauthSettingSection">
-    <parameter id="class" value="bean:com.tle.web.oauth.section.OAuthSettingsSection" />
-    <parameter id="grouping" value="externalsettings" />
-  </extension>
   <extension plugin-id="com.tle.web.core" point-id="webFilter" id="oauthSSLFilter">
     <parameter id="bean" value="bean:com.tle.web.oauth.filter.OAuthFilter" />
     <parameter id="url-pattern" value="/oauth/access_token" />
@@ -324,10 +320,6 @@
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="searching_13">
     <parameter id="path" value="/access/quickcontributeandversionsettings.do" />
     <parameter id="root" value="bean:/access/quickcontributeandversionsettings" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="quickContributeAndVersionSettingsLink">
-    <parameter id="class" value="bean:com.tle.web.quickcontributeandversion.QuickContributeAndVersionSettingsLinkSection" />
-    <parameter id="grouping" value="generalsettings" />
   </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="quickContributeAndVersionSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.quickcontributeandversion.QuickContributeAndVersionSettingsPrivilegeTreeProvider" />
@@ -518,10 +510,6 @@
     <parameter id="path" value="/access/scheduledtasksdebug.do" />
     <parameter id="root" value="bean:/access/scheduledtasksdebug" />
   </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="settingsLink">
-    <parameter id="class" value="bean:com.tle.web.scheduler.ScheduledTasksSettingsSection" />
-    <parameter id="grouping" value="systemsettings" />
-  </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="privilegeTreeProvider_2">
     <parameter id="provider" value="bean:com.tle.web.scheduler.ScheduledTasksPrivilegeTreeProvider" />
   </extension>
@@ -704,20 +692,12 @@
     <parameter id="path" value="/access/shortcuturlssettings.do" />
     <parameter id="root" value="bean:/access/shortcuturlssettings" />
   </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="shortcuturlsSettingsLink">
-    <parameter id="class" value="bean:com.tle.web.shortcuturls.ShortcutUrlsSettingsLinkSection" />
-    <parameter id="grouping" value="generalsettings" />
-  </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="shortcutUrlsSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.shortcuturls.ShortcutUrlsSettingsPrivilegeTreeProvider" />
   </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="searching_11">
     <parameter id="path" value="/access/liu.do" />
     <parameter id="root" value="bean:/access/liu" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="loggedInUsersLink">
-    <parameter id="class" value="bean:com.tle.web.loggedinusers.LoggedInusersSettingsSection" />
-    <parameter id="grouping" value="usersettings" />
   </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="loggedInUsersPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.loggedinusers.LoggedInUsersPrivilegeTreeProvider" />
@@ -771,10 +751,6 @@
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="mdfSection">
     <parameter id="path" value="/access/manualdatafixes.do" />
     <parameter id="root" value="bean:/access/manualdatafixes" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="mdfLink">
-    <parameter id="class" value="bean:com.tle.web.manualdatafixes.ManualDataFixesSettingsSection" />
-    <parameter id="grouping" value="generalsettings" />
   </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="mdfPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.manualdatafixes.ManualDataFixesPrivilegeTreeProvider" />
@@ -1012,10 +988,6 @@
     <parameter id="path" value="/access/echoservers.do" />
     <parameter id="root" value="bean:/access/echoservers" />
   </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="echoSettingsLink">
-    <parameter id="class" value="bean:com.tle.web.echo.settings.EchoSettingsLinkSection" />
-    <parameter id="grouping" value="externalsettings" />
-  </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="echoSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.echo.settings.EchoSettingsPrivilegeTreeProvider" />
   </extension>
@@ -1083,10 +1055,6 @@
     <parameter id="path" value="/access/remotecaching.do" />
     <parameter id="root" value="bean:/access/remotecaching" />
   </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="remoteCachingLink">
-    <parameter id="class" value="bean:com.tle.web.remotecaching.RemoteCachingLinkSection" />
-    <parameter id="grouping" value="externalsettings" />
-  </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="remoteCachingPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.remotecaching.RemoteCachingPrivilegeTreeProvider" />
   </extension>
@@ -1100,10 +1068,6 @@
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="searching_7">
     <parameter id="path" value="/access/harvesterskipdrmsettings.do" />
     <parameter id="root" value="bean:/access/harvesterskipdrmsettings" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="harvesterSkipDrmSettingsLink">
-    <parameter id="class" value="bean:com.tle.web.harvesterskipdrmsettings.HarvesterSkipDrmSettingsLinkSection" />
-    <parameter id="grouping" value="externalsettings" />
   </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="harvesterSkipDrmSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.harvesterskipdrmsettings.HarvesterSkipDrmSettingsPrivilegeTreeProvider" />
@@ -1365,10 +1329,6 @@
     <parameter id="path" value="/access/externaltools.do" />
     <parameter id="root" value="bean:externalToolsTree" />
   </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="externalToolsSettingSection">
-    <parameter id="class" value="bean:com.tle.web.externaltools.section.ExternalToolsSettingsSection" />
-    <parameter id="grouping" value="externalsettings" />
-  </extension>
   <extension plugin-id="com.tle.web.services" point-id="invoker" id="externalToolsInvoker">
     <parameter id="class" value="com.tle.core.remoting.RemoteExternalToolsService" />
     <parameter id="bean" value="bean:com.tle.core.externaltools.service.ExternalToolsService" />
@@ -1400,10 +1360,6 @@
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="customdateformat">
     <parameter id="path" value="/access/dateformatsettings.do" />
     <parameter id="root" value="bean:/access/dateformatsettings" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="dateFormatLink">
-    <parameter id="class" value="bean:com.tle.web.customdateformat.DateFormatSettingsLinkSection" />
-    <parameter id="grouping" value="systemsettings" />
   </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="dateFormatPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.customdateformat.DateFormatSettingsPrivilegeTreeProvider" />
@@ -1556,10 +1512,6 @@
     <parameter id="path" value="/access/loginsettings.do" />
     <parameter id="root" value="bean:/access/loginsettings" />
   </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="loginSettingsLink">
-    <parameter id="class" value="bean:com.tle.web.login.LoginSettingsLinkSection" />
-    <parameter id="grouping" value="usersettings" />
-  </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="loginSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.login.LoginSettingsPrivilegeTreeProvider" />
   </extension>
@@ -1569,10 +1521,6 @@
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="userScriptsSection">
     <parameter id="path" value="/access/userscripts.do" />
     <parameter id="root" value="bean:userScriptsTree" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="userScriptsSettingSection">
-    <parameter id="class" value="bean:com.tle.web.userscripts.section.UserScriptsSettingsSection" />
-    <parameter id="grouping" value="externalsettings" />
   </extension>
   <extension plugin-id="com.tle.core.workflow" point-id="workflowNodesSave" id="wns">
     <parameter id="bean" value="bean:com.tle.core.workflow.standard.service.WorkflowStandardService" />
@@ -1590,10 +1538,6 @@
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="searching_5">
     <parameter id="path" value="/access/language.do" />
     <parameter id="root" value="bean:/access/language" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="languageSettingsLink">
-    <parameter id="class" value="bean:com.tle.web.language.LanguageSettingsLinkSection" />
-    <parameter id="grouping" value="interfacesettings" />
   </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="languageSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.language.LanguageSettingsPrivilegeTreeProvider" />
@@ -1613,10 +1557,6 @@
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="searching_4">
     <parameter id="path" value="/access/oaiidentifiersettings.do" />
     <parameter id="root" value="bean:/access/oaiidentifiersettings" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="oaiIdentifierSettingsLink">
-    <parameter id="class" value="bean:com.tle.web.oaiidentifier.OaiIdentifierSettingsLinkSection" />
-    <parameter id="grouping" value="externalsettings" />
   </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="oaiIdentifierSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.oaiidentifier.OaiIdentifierSettingsPrivilegeTreeProvider" />
@@ -1840,10 +1780,6 @@
     <parameter id="path" value="/access/editoradmin.do" />
     <parameter id="root" value="bean:htmleditorTree" />
   </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="htmleditorSettingSection">
-    <parameter id="class" value="bean:com.tle.web.htmleditor.settings.section.HtmlEditorSettingsSection" />
-    <parameter id="grouping" value="externalsettings" />
-  </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="htmleditorSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.htmleditor.settings.HtmlEditorSettingsPrivilegeTreeProvider" />
   </extension>
@@ -1930,10 +1866,6 @@
     <parameter id="path" value="/access/themesettings.do" />
     <parameter id="root" value="bean:/access/themesettings" />
   </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="themeLink">
-    <parameter id="class" value="bean:com.tle.web.customisation.ThemeSettingsSection" />
-    <parameter id="grouping" value="interfacesettings" />
-  </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="themePrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.customisation.ThemePrivilegeTreeProvider" />
   </extension>
@@ -1962,10 +1894,6 @@
     <parameter id="menuContributorClass" value="bean:com.tle.web.customlinks.menu.CustomLinksMenuContributor" />
     <parameter id="enabledFor" value="loggedIn" />
     <parameter id="enabledFor" value="guest" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="customLink">
-    <parameter id="class" value="bean:com.tle.web.customlinks.section.CustomLinksSettingSection" />
-    <parameter id="grouping" value="interfacesettings" />
   </extension>
   <extension plugin-id="com.tle.web.viewurl" point-id="attachmentResource" id="resourceResource">
     <parameter id="type" value="custom/resource" />
@@ -2033,20 +1961,12 @@
     <parameter id="path" value="/access/diagnostics.do" />
     <parameter id="root" value="bean:/access/diagnostics" />
   </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="diagnosticsUsersLink">
-    <parameter id="class" value="bean:com.tle.web.diagnostics.section.DiagnosticsUsersSettingsSection" />
-    <parameter id="grouping" value="usersettings" />
-  </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="diagnosticsSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.diagnostics.security.DiagnosticsSettingsPrivilegeTreeProvider" />
   </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="searching_3">
     <parameter id="path" value="/access/coursedefaultssettings.do" />
     <parameter id="root" value="bean:/access/coursedefaultssettings" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="coursedefaultsSettingsLink">
-    <parameter id="class" value="bean:com.tle.web.coursedefaults.CourseDefaultsSettingsLinkSection" />
-    <parameter id="grouping" value="generalsettings" />
   </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="courseDefaultsSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.coursedefaults.CourseDefaultsSettingsPrivilegeTreeProvider" />
@@ -2116,10 +2036,6 @@
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="searching_2_2">
     <parameter id="path" value="/access/contentrestrictions.do" />
     <parameter id="root" value="bean:/access/contentrestrictions" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="contentRestrictionsLink">
-    <parameter id="class" value="bean:com.tle.web.contentrestrictions.ContentRestrictionsLinkSection" />
-    <parameter id="grouping" value="generalsettings" />
   </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="contentRestrictionsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.contentrestrictions.ContentRestrictionsPrivilegeTreeProvider" />
@@ -2470,20 +2386,12 @@
     <parameter id="parentid" value="ROOT_TEMPLATE_ID" />
     <parameter id="class" value="bean:com.tle.web.google.analytics.ScriptSection" />
   </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="googleAnalyticsLink">
-    <parameter id="class" value="bean:com.tle.web.google.analytics.GoogleAnalyticsSettingsSection" />
-    <parameter id="grouping" value="externalsettings" />
-  </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="googleAnalyticsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.google.analytics.GoogleAnalyticsPrivilegeTreeProvider" />
   </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="ltiConsumersSection">
     <parameter id="path" value="/access/lticonsumers.do" />
     <parameter id="root" value="bean:ltiConsumersTree" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="ltiConsumersSettingSection">
-    <parameter id="class" value="bean:com.tle.web.lti.consumers.section.LtiConsumersSettingsSection" />
-    <parameter id="grouping" value="externalsettings" />
   </extension>
   <extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="LtiConsumerRestService">
     <parameter id="class" value="com.tle.web.lti.consumers.api.interfaces.LtiConsumerResource" />
@@ -2498,10 +2406,6 @@
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="searching_2">
     <parameter id="path" value="/access/mailsettings.do" />
     <parameter id="root" value="bean:/access/mailsettings" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="mailSettingsLink">
-    <parameter id="class" value="bean:com.tle.web.mail.MailSettingsLinkSection" />
-    <parameter id="grouping" value="systemsettings" />
   </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="mailSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.mail.MailSettingsPrivilegeTreeProvider" />
@@ -2953,10 +2857,6 @@
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="googleapi">
     <parameter id="path" value="/access/googleapisettings.do" />
     <parameter id="root" value="bean:/access/googleapisettings" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="googleApiSettingsLink">
-    <parameter id="class" value="bean:com.tle.web.google.api.settings.GoogleApiSettingsLinkSection" />
-    <parameter id="grouping" value="systemsettings" />
   </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="googleApiSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.google.api.privileges.GoogleApiSettingsPrivilegeTreeProvider" />
@@ -3957,17 +3857,9 @@
     <parameter id="listenerClass" value="com.tle.core.events.listeners.UserSessionLogoutListener" />
     <parameter id="listenerClass" value="com.tle.web.portal.events.PortletsUpdatedEventListener" />
   </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="portalAdmin">
-    <parameter id="class" value="bean:com.tle.web.portal.section.admin.PortalSettingsSection" />
-    <parameter id="grouping" value="interfacesettings" />
-  </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="searchingSettings">
     <parameter id="path" value="/access/searchsettings.do" />
     <parameter id="root" value="bean:/access/searchsettings" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="search">
-    <parameter id="class" value="bean:com.tle.web.search.settings.SearchSettingsLinksSection" />
-    <parameter id="grouping" value="systemsettings" />
   </extension>
   <extension plugin-id="com.tle.web.itemlist" point-id="itemListExtension" id="selectSearchResult">
     <parameter id="bean" value="bean:com.tle.web.search.selection.SelectItemListExtension" />
@@ -4197,10 +4089,6 @@
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="connectorsSection">
     <parameter id="path" value="/access/connectors.do" />
     <parameter id="root" value="bean:connectorsTree" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="connectorsSettingSection">
-    <parameter id="class" value="bean:com.tle.web.connectors.section.ConnectorsSettingsSection" />
-    <parameter id="grouping" value="externalsettings" />
   </extension>
   <extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="addToExternal">
     <parameter id="id" value="addToExternal" />
@@ -4437,10 +4325,6 @@
   </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="mimeSearchPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.mimetypes.MimeSearchPrivilegeTreeProvider" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsExtension" id="mimeLink">
-    <parameter id="class" value="bean:com.tle.web.mimetypes.search.section.MimeSettingsSection" />
-    <parameter id="grouping" value="systemsettings" />
   </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="mime">
     <parameter id="path" value="/access/mime.do" />
@@ -6145,21 +6029,6 @@
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="sectionsServlet">
     <parameter id="bean" value="bean:com.tle.web.sections.equella.MultipartSectionsServlet" />
     <parameter id="url-pattern" value="*.do" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsGroupingExtension" id="externalsettings">
-    <parameter id="nameKey" value="com.equella.core.group.externalsettings.name" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsGroupingExtension" id="generalsettings">
-    <parameter id="nameKey" value="com.equella.core.group.generalsettings.name" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsGroupingExtension" id="systemsettings">
-    <parameter id="nameKey" value="com.equella.core.group.systemsettings.name" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsGroupingExtension" id="interfacesettings">
-    <parameter id="nameKey" value="com.equella.core.group.interfacesettings.name" />
-  </extension>
-  <extension plugin-id="com.tle.web.settings" point-id="settingsGroupingExtension" id="usersettings">
-    <parameter id="nameKey" value="com.equella.core.group.usersettings.name" />
   </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="settingsTree">
     <parameter id="path" value="/access/settings.do" />

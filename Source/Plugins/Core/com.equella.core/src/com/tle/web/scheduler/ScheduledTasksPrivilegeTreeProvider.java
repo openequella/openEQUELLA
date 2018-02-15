@@ -27,7 +27,7 @@ public class ScheduledTasksPrivilegeTreeProvider extends AbstractSettingsPrivile
 {
 	public ScheduledTasksPrivilegeTreeProvider()
 	{
-		super(Type.SYSTEM_SETTING, ResourcesService.getResourceHelper(ScheduledTasksSettingsSection.class).key(
+		super(Type.SYSTEM_SETTING, ResourcesService.getResourceHelper(ScheduledTasksPrivilegeTreeProvider.class).key(
 			"securitytree.scheduler"), new SettingsTarget("scheduledTasks"));
 	}
 }

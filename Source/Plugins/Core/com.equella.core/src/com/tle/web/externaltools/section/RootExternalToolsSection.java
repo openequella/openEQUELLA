@@ -27,6 +27,7 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.layout.OneColumnLayout.OneColumnLayoutModel;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.model.HtmlLinkState;
+import com.tle.web.settings.SettingsList;
 
 @Bind
 public class RootExternalToolsSection extends AbstractRootEntitySection<OneColumnLayoutModel>
@@ -53,7 +54,7 @@ public class RootExternalToolsSection extends AbstractRootEntitySection<OneColum
 	@Override
 	protected HtmlLinkState getShowEntitiesLink(SectionInfo info)
 	{
-		return ExternalToolsSettingsSection.getShowToolsLink(info);
+		return SettingsList.asLinkOrNull(SettingsList.externalToolsSettings());
 	}
 }
 

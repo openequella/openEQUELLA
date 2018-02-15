@@ -34,6 +34,7 @@ import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.DebugSettings;
 import com.tle.web.remoting.rest.resource.InstitutionSecurityFilter;
+import com.tle.web.settings.rest.SettingsResource;
 import io.swagger.jaxrs.listing.ApiListingResource;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
 import io.swagger.models.Swagger;
@@ -110,6 +111,8 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 			.get(Application.class);
 
 		Set<Class<?>> classes = application.getClasses();
+		dispatcher.getRegistry().addSingletonResource(new SettingsResource());
+		classes.add(SettingsResource.class);
 		ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
 		providerFactory.registerProvider(SwaggerSerializers.class);
 		providerFactory.registerProviderInstance(new JsonContextResolver());
