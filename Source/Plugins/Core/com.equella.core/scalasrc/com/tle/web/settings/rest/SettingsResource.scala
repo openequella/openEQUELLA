@@ -18,7 +18,7 @@ package com.tle.web.settings.rest
 
 import java.net.URI
 import java.util
-import javax.ws.rs.{GET, Path}
+import javax.ws.rs.{GET, Path, Produces}
 
 import com.tle.common.institution.CurrentInstitution
 import com.tle.web.settings.SettingsList
@@ -33,6 +33,7 @@ case class SettingType(@BeanProperty id: String, @BeanProperty name: String, @Be
                        @BeanProperty group: String, @BeanProperty links: SettingTypeLinks)
 
 @Path("settings/")
+@Produces(value = Array("application/json"))
 @Api(value = "Settings")
 class SettingsResource {
 
