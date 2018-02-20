@@ -315,7 +315,7 @@ public class AttachmentsSection extends AbstractAttachmentsSection<Item, Attachm
 				}
 				// Check attachment UUID vs presence in item XML at any associated Xpath
 				String attachmentUuid = attachmentView.getAttachment().getUuid();
-				final PropBagEx xml = attachmentView.getViewableResource().getViewableItem().getItemxml();
+				final PropBagEx xml = vitem.getItemxml();
 				for( String target : metadataTargets )
 				{
 					for( String val : xml.getNodeList(target) )
