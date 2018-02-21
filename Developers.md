@@ -1,5 +1,6 @@
 # Setting up a development environment
 
+Note:  There are a couple of changes to the build process, and some discussion on Scala / Java and the frontend that should be understood when working on Equella code - please take a look at this [Google Group thread](https://groups.google.com/a/apereo.org/forum/#!topic/equella-users/bLV_XXQFOTI) and this [issue ticket](https://github.com/equella/Equella/issues/437).  This page will be updated once the React UI code is a bit more solidified.
 
 ## IDE
 The source isn't tied to a particular IDE, so it should be buildable 
