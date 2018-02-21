@@ -1,6 +1,6 @@
-![Travis build](https://travis-ci.org/equella/Equella.svg?branch=master)
-
 # EQUELLA
+
+[![Travis build](https://travis-ci.org/equella/Equella.svg?branch=master)](https://travis-ci.org/equella/Equella)
 
 More in-depth documentation can be found in [Docs](https://equella.github.io/) repo.
 
@@ -26,7 +26,7 @@ In ubuntu:
 
 **SSH**
 
-This guide assumes you have SSH capabilities.  Be sure to add your public SSH key into the you git profile to access the code repos.
+This guide assumes you have SSH capabilities. Be sure to add your public SSH key into the you git profile to access the code repos.
 
 **Download and install SBT**
 
@@ -48,6 +48,7 @@ In ubuntu:
 Oracle is the recommended and historically the supported vendor of Java to run Equella with.
 
 In ubuntu:
+
 ```
 ~$ sudo add-apt-repository ppa:webupd8team/java
 ~$ sudo apt-get update
@@ -58,10 +59,11 @@ In ubuntu:
 
 <http://www.imagemagick.org/script/binary-releases.php>
 
-*Note: For ubuntu follow the install from Unix Source instructions:*
+_Note: For ubuntu follow the install from Unix Source instructions:_
 <https://www.imagemagick.org/script/install-source.php>
 
 To confirm the installation directory in Ubuntu for the Equella installer, run the command:
+
 ```
 ~$ whereis convert
 ```
@@ -77,10 +79,10 @@ In ubuntu:
 ```
 
 To confirm the installation directory in Ubuntu for the Equella installer, run the command:
+
 ```
 ~$ whereis avconv
 ```
-
 
 Once SBT and Java are installed, you may need to set a JAVA_HOME environment variable.
 
@@ -91,13 +93,17 @@ Once SBT and Java are installed, you may need to set a JAVA_HOME environment var
 ## Get the code
 
 ### Base code
+
 **Git Clone**
+
 ```
 ~$ git clone git@github.com:equella/Equella.git
 ```
 
 ### Optional code
+
 There is functionality that could not be included into the core Equella code repository, but based on your business needs, may be appropriate to include.
+
 * Oracle DB Driver
 * [Kaltura](https://github.com/equella/Equella-Kaltura)
 
@@ -128,7 +134,8 @@ It can be done with the Java Control Panel or directly adding the domain in a ne
 ${user.home}/.java/deployment/security/exception.sites
 
 ## Building the installer
-This guide runs sbt in non-interactive mode.  You can run in interactive mode to save rebuild time by first running 'sbt', and the another command such as 'compile'.
+
+This guide runs sbt in non-interactive mode. You can run in interactive mode to save rebuild time by first running 'sbt', and the another command such as 'compile'.
 
 ```bash
 cd to the {Equella repo} directory
