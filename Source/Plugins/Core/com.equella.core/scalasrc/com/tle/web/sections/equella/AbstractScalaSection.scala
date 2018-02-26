@@ -20,7 +20,7 @@ import com.tle.common.Utils
 import com.tle.web.sections.{Section, SectionInfo, SectionTree}
 
 abstract class AbstractScalaSection extends Section {
-  type M <: AnyRef
+  type M <: Any
 
   var treeRegisteredIn : SectionTree = _
   var sectionId : String = _
@@ -28,7 +28,7 @@ abstract class AbstractScalaSection extends Section {
   def getModel(info: SectionInfo): M = info.getModelForId(getSectionId)
   def newModel: SectionInfo => M
 
-  override def instantiateModel(info: SectionInfo): AnyRef = newModel(info)
+  override def instantiateModel(info: SectionInfo): AnyRef = newModel(info).asInstanceOf[AnyRef]
 
   override def getTree: SectionTree = treeRegisteredIn
 

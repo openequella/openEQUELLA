@@ -83,7 +83,7 @@ public class ReportingMenuContributor implements MenuContributor
 
 			HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/reports.do"));
 			hls.setLabel(LABEL_KEY);
-			MenuContribution mc = new MenuContribution(hls, ICON_PATH, 30, 20);
+			MenuContribution mc = new MenuContribution(hls, ICON_PATH, 30, 20, "insert_chart");
 			return Collections.singletonList(mc);
 		}
 		else

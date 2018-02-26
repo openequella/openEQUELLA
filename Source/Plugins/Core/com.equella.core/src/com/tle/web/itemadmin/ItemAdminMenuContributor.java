@@ -72,7 +72,7 @@ public class ItemAdminMenuContributor implements MenuContributor
 
 			HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/itemadmin.do"));
 			hls.setLabel(LABEL_KEY);
-			MenuContribution mc = new MenuContribution(hls, ICON_PATH, 30, 10);
+			MenuContribution mc = new MenuContribution(hls, ICON_PATH, 30, 10, "toc");
 			return Collections.singletonList(mc);
 		}
 		else

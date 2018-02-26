@@ -52,7 +52,7 @@ public class MyResourcesMenuContributor implements MenuContributor
 
 		HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/myresources.do"));
 		hls.setLabel(LABEL_KEY);
-		MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 20);
+		MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 20, "assignment_ind");
 		return Collections.singletonList(mc);
 	}
 

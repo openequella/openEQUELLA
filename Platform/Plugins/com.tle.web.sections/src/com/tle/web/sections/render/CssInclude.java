@@ -101,6 +101,7 @@ public class CssInclude implements PreRenderable, Comparable<CssInclude>
 	}
 
 	private final String cssFile;
+	private boolean hasNew;
 	private boolean hasRtl;
 	private Browser browser = Browser.ANY;
 	private Media media = Media.ALL;
@@ -139,9 +140,19 @@ public class CssInclude implements PreRenderable, Comparable<CssInclude>
 		return hasRtl;
 	}
 
+	public boolean isHasNew()
+	{
+		return hasNew;
+	}
+
 	public String getRtlHref()
 	{
 		return cssFile.replace(".css", ".rtl.css");
+	}
+
+	public String getNewHref()
+	{
+		return cssFile.replace(".css", "-new.css");
 	}
 
 	public Browser getBrowser()
@@ -217,6 +228,12 @@ public class CssInclude implements PreRenderable, Comparable<CssInclude>
 		public CssIncludeBuilder prerender(PreRenderable... prs)
 		{
 			inc.preRenderables = prs;
+			return this;
+		}
+
+		public CssIncludeBuilder hasNew()
+		{
+			inc.hasNew = true;
 			return this;
 		}
 

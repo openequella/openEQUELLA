@@ -21,6 +21,7 @@ trait EditableSettings {
   def name: String
   def group: String
   def description: String
-  def pageUri: Option[String]
+  def uri: String
+  def uriType: String
   def isEditable : Boolean
 }

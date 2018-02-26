@@ -66,6 +66,7 @@ import com.tle.web.sections.render.NestedRenderable;
 import com.tle.web.sections.render.PreRenderable;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.WrappedNestedRenderable;
+import com.tle.web.template.RenderNewTemplate;
 
 public class StandardAjaxRenderContext extends WrappedSectionInfo implements AjaxRenderContext, RenderResultListener
 {
@@ -207,9 +208,14 @@ public class StandardAjaxRenderContext extends WrappedSectionInfo implements Aja
 		domResult.setLists(lists);
 		List<String> css = Lists.newArrayList();
 		boolean rtl = CurrentLocale.isRightToLeft();
+		boolean newLayout = RenderNewTemplate.isNewLayout(this);
 		for( CssInclude ci : cssFiles )
 		{
-			if( rtl && ci.isHasRtl() )
+			if (newLayout && ci.isHasNew())
+			{
+				css.add(ci.getNewHref());
+			}
+			else if( rtl && ci.isHasRtl() )
 			{
 				css.add(ci.getRtlHref());
 			}

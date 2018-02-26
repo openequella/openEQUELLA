@@ -33,13 +33,20 @@ public interface MenuContributor
 		private final String backgroundImagePath;
 		private final int groupPriority;
 		private final int linkPriority;
+		private final String systemIcon;
 
-		public MenuContribution(HtmlLinkState link, String backgroundImage, int groupPriority, int linkPriority)
+		public MenuContribution(HtmlLinkState link, String backgroundImage, int groupPriority, int linkPriority, String systemIcon)
 		{
 			this.link = link;
 			this.backgroundImagePath = backgroundImage;
 			this.groupPriority = groupPriority;
 			this.linkPriority = linkPriority;
+			this.systemIcon = systemIcon;
+		}
+
+		public MenuContribution(HtmlLinkState link, String backgroundImage, int groupPriority, int linkPriority)
+		{
+			this(link, backgroundImage, groupPriority, linkPriority, null);
 		}
 
 		public HtmlLinkState getLink()
@@ -60,6 +67,11 @@ public interface MenuContributor
 		public int getLinkPriority()
 		{
 			return linkPriority;
+		}
+
+		public String getSystemIcon()
+		{
+			return systemIcon;
 		}
 	}
 }

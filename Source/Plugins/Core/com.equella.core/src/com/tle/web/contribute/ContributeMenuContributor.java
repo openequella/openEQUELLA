@@ -70,7 +70,7 @@ public class ContributeMenuContributor implements MenuContributor
 
 		HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/contribute.do"));
 		hls.setLabel(LABEL_KEY);
-		MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 30);
+		MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 30, "create");
 		return Collections.singletonList(mc);
 	}
 

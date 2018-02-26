@@ -39,6 +39,8 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.sections.render.Label;
+import com.tle.web.template.Decorations;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
 
@@ -72,6 +74,12 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
 	protected String getSessionKey()
 	{
 		return SEARCH_SESSIONKEY;
+	}
+
+	@Override
+	protected String getReactInclude()
+	{
+		return urlHelper.url("reactjs/searching.js");
 	}
 
 	@Override

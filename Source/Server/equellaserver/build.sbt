@@ -15,8 +15,21 @@ val jacksonVersion = "2.4.1"
 val axis2Version = "1.6.2"
 val TomcatVersion = "8.5.23"
 val SwaggerVersion = "1.5.16"
+val simpledbaVersion = "0.1.3-SNAPSHOT"
+val fs2Version = "0.10.2"
+val circeVersion = "0.9.1"
+
+resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies ++= Seq(
+  "io.circe" %% "circe-core",
+  "io.circe" %% "circe-generic",
+  "io.circe" %% "circe-parser"
+).map(_ % circeVersion)
+
+libraryDependencies ++= Seq(
+  "co.fs2" %% "fs2-core" % fs2Version,
+  "io.github.doolse" %% "simpledba-jdbc" % simpledbaVersion,
   "axis" % "axis" % "1.4",
   "cglib" % "cglib" % "2.2",
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,

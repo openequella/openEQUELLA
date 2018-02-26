@@ -54,6 +54,8 @@ public class Decorations
 	private boolean breadcrumbs = true;
 	private boolean forceBreadcrumbsOn = false;
 	private FullScreen fullscreen = FullScreen.NO;
+	private String reactUrl = null;
+	private boolean excludeForm = false;
 
 	private Set<String> contentBodyClasses = new HashSet<String>();
 
@@ -290,5 +292,25 @@ public class Decorations
 	public Set<String> getContentBodyClasses()
 	{
 		return contentBodyClasses;
+	}
+
+	public String getReactUrl()
+	{
+		return reactUrl;
+	}
+
+	public void setReactUrl(String reactUrl)
+	{
+		this.reactUrl = reactUrl;
+	}
+
+	public void setExcludeForm(boolean excludeForm)
+	{
+		this.excludeForm = excludeForm;
+	}
+
+	public boolean isExcludeForm()
+	{
+		return excludeForm;
 	}
 }

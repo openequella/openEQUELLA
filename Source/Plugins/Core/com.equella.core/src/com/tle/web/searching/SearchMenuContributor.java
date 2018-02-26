@@ -56,7 +56,7 @@ public class SearchMenuContributor implements MenuContributor
 
 		HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("searching.do"));
 		hls.setLabel(LABEL_KEY);
-		MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 20);
+		MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 20, "search");
 		return Collections.singletonList(mc);
 	}
 
