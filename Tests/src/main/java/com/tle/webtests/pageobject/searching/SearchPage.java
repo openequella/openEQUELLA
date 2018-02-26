@@ -25,7 +25,6 @@ public class SearchPage extends AbstractQueryableSearchPage<SearchPage, ItemList
 	private WebElement selectUser;
 	@FindBy(id = "fbo_r")
 	private WebElement clearUser;
-	protected WebElement selectedContainer;
 	private SearchTabsPage searchTabs;
 	private QuerySection realQuerySection;
 
@@ -95,7 +94,11 @@ public class SearchPage extends AbstractQueryableSearchPage<SearchPage, ItemList
 	public void checkLoaded() throws Error
 	{
 		super.checkLoaded();
-		selectedContainer = driver.findElement(By.xpath("id('searchform')//div[@class='selectedcontainer']"));
+	}
+
+	public WebElement getSelectedContainer()
+	{
+		return driver.findElement(By.xpath("id('searchform')//div[@class='selectedcontainer']"));
 	}
 
 	@Override
@@ -117,7 +120,7 @@ public class SearchPage extends AbstractQueryableSearchPage<SearchPage, ItemList
 
 	protected void setWithin(String name)
 	{
-		selectedContainer.click();
+		getSelectedContainer().click();
 		WebElement richDropdown = waitForElement(By.xpath("//div[contains(@class,'richdropdown active')]"));
 		richDropdown.findElement(By.xpath("ul/li/a[text()=" + quoteXPath(name) + "]")).click();
 	}
@@ -148,7 +151,7 @@ public class SearchPage extends AbstractQueryableSearchPage<SearchPage, ItemList
 
 	public String getSelectedWithin()
 	{
-		return selectedContainer.findElement(By.className("selectedtext")).getText();
+		return getSelectedContainer().findElement(By.className("selectedtext")).getText();
 	}
 
 	public SearchPage saveSearchToFavourites(String searchName)
