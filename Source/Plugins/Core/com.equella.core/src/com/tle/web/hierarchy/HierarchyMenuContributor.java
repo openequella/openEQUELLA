@@ -122,7 +122,7 @@ public class HierarchyMenuContributor implements MenuContributor
 			HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("hierarchy.do?topic=" + topic.getValue()));
 			hls.setLabel(new TextLabel(topic.getName()));
 
-			MenuContribution mc = new MenuContribution(hls, ICON_PATH, 10, linkPriority++);
+			MenuContribution mc = new MenuContribution(hls, ICON_PATH, 10, linkPriority++, "device_hub");
 			mcs.add(mc);
 		}
 

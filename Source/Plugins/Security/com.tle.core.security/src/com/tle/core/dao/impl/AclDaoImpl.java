@@ -17,6 +17,7 @@
 package com.tle.core.dao.impl;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Singleton;
@@ -131,6 +132,10 @@ public class AclDaoImpl extends GenericDaoImpl<AccessEntry, Long> implements Acl
 	@Transactional(propagation = Propagation.MANDATORY)
 	public List<Object[]> getPrivileges(final Collection<String> privileges, final Collection<Long> expressions)
 	{
+		if (privileges.isEmpty() || expressions.isEmpty())
+		{
+			return Collections.emptyList();
+		}
 		return getHibernateTemplate().executeFind(new TLEHibernateCallback()
 		{
 			@Override

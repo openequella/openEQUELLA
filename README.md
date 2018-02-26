@@ -41,6 +41,20 @@ In ubuntu:
 ~$ sudo apt-get install sbt
 ```
 
+**Install yarn**
+
+<https://yarnpkg.com/lang/en/docs/install/>
+
+In ubuntu (17.10):
+
+```sh
+~$ curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+~$ echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+~$ sudo apt-get update && sudo apt-get install yarn
+``` 
+
+As of the time of writing the build was tested with yarn 1.3.2 and Node v6.11.4.
+
 **Download and install Java 8 JDK**
 
 <http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html>

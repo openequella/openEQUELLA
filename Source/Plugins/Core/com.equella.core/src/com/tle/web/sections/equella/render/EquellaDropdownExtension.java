@@ -29,6 +29,7 @@ import com.tle.web.sections.standard.RendererFactoryExtension;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlListState;
 import com.tle.web.sections.standard.renderers.list.DropDownRenderer;
+import com.tle.web.template.RenderNewTemplate;
 
 /**
  * plugin defines the stateClassName as HtmlListState
@@ -63,7 +64,7 @@ public class EquellaDropdownExtension implements RendererFactoryExtension
 			return new BootstrapSplitDropDownRenderer((HtmlListState) state, ButtonType.NAV);
 		}
 
-		if( acMode.isAccessibilityMode() )
+		if( acMode.isAccessibilityMode() || RenderNewTemplate.isNewLayout(info) )
 		{
 			return new DropDownRenderer(htmlListState);
 		}

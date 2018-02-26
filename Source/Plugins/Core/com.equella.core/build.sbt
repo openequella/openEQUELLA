@@ -69,9 +69,17 @@ resourceGenerators in Compile += Def.task {
 
 resourceGenerators in Compile += Def.task {
   val baseSwagger = baseDirectory.value / "swaggerui"
-  Process("yarn run browserify", baseSwagger) !
+  Common.runYarn("browserify", baseSwagger)
   val outDir = (resourceManaged in Compile).value / "web/apidocs"
   val bundle = baseSwagger / "target/bundle.js"
   val css = baseSwagger / "node_modules/swagger-ui/dist/swagger-ui.css"
   IO.copy(Seq(bundle, css).pair(flat(outDir))).toSeq
+}.taskValue
+
+resourceGenerators in Compile += Def.task {
+  val baseJs = baseDirectory.value / "js"
+  Common.runYarn("build", baseJs)
+  val outDir = (resourceManaged in Compile).value / "web"
+  val baseJsTarget = baseJs / "target"
+  IO.copy((baseJsTarget ** ("*.js"|"*.css")).pair(rebase(baseJsTarget, outDir))).toSeq
 }.taskValue

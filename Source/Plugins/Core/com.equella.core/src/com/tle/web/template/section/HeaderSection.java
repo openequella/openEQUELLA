@@ -48,6 +48,7 @@ import com.tle.web.sections.render.TemplateRenderable;
 import com.tle.web.sections.render.TemplateResult;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.template.Decorations;
+import com.tle.web.template.RenderNewTemplate;
 
 @SuppressWarnings("nls")
 @Bind
@@ -83,6 +84,7 @@ public class HeaderSection extends AbstractPrototypeSection<HeaderSection.Header
 				Collections.sort(cssFiles);
 				model.setStylesheets(cssFiles);
 				model.setIncludeRtlStyles(CurrentLocale.isRightToLeft());
+				model.setNewLayout(RenderNewTemplate.isNewLayout(context));
 
 				setupTitle(context, model);
 				model.setHead(standard.getHeaderMarkup());
@@ -159,6 +161,7 @@ public class HeaderSection extends AbstractPrototypeSection<HeaderSection.Header
 	{
 		private List<CssInclude> stylesheets;
 		private boolean includeRtlStyles;
+		private boolean newLayout;
 		private final StringBuilder headerScript = new StringBuilder();
 		private final StringBuilder postMarkupScript = new StringBuilder();
 		private Collection<String> externalScripts;
@@ -244,6 +247,16 @@ public class HeaderSection extends AbstractPrototypeSection<HeaderSection.Header
 		public void setIncludeRtlStyles(boolean includeRtlStyles)
 		{
 			this.includeRtlStyles = includeRtlStyles;
+		}
+
+		public boolean isNewLayout()
+		{
+			return newLayout;
+		}
+
+		public void setNewLayout(boolean newLayout)
+		{
+			this.newLayout = newLayout;
 		}
 	}
 

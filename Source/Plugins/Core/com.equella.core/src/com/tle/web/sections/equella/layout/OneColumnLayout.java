@@ -31,6 +31,7 @@ import com.tle.web.sections.equella.receipt.ReceiptService;
 import com.tle.web.sections.equella.render.Bootstrap;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
+import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.render.CombinedTemplateResult;
 import com.tle.web.sections.render.FallbackTemplateResult;
 import com.tle.web.sections.render.GenericTemplateResult;
@@ -40,7 +41,10 @@ import com.tle.web.sections.render.TemplateResult;
 import com.tle.web.sections.render.TemplateResultCollector;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import com.tle.web.template.ReactPageModel;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.event.BlueBarEvent;
+import sun.font.Decoration;
 
 @TreeIndexed
 @NonNullByDefault
@@ -66,9 +70,22 @@ public abstract class OneColumnLayout<M extends OneColumnLayout.OneColumnLayoutM
 		return "";
 	}
 
+	protected String getReactInclude()
+	{
+		return null;
+	}
+
 	@Override
 	public SectionResult renderHtml(RenderEventContext context)
 	{
+		if (getReactInclude() != null && RenderNewTemplate.isNewLayout(context))
+		{
+			Decorations decs = Decorations.getDecorations(context);
+			decs.setReactUrl(getReactInclude());
+			addBreadcrumbsAndTitle(context, decs, Breadcrumbs.get(context));
+			return null;
+		}
+
 		final M model = getModel(context);
 
 		TemplateResult template = setupTemplate(context);

@@ -23,6 +23,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import com.tle.web.navigation.MenuService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -94,9 +95,9 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 	private static final PluginResourceHelper RESOURCES = ResourcesService.getResourceHelper(RenderTemplate.class);
 
 	private static final CssInclude BOOTSTRAP_CSS = Bootstrap.CSS;
-	private static final CssInclude STYLES_CSS = include(RESOURCES.url("css/styles.css")).prerender(BOOTSTRAP_CSS)
-		.hasRtl().priority(Priority.LOWEST).make();
-	private static final CssInclude CUSTOMER_CSS = include("css/customer.css").priority(Priority.HIGHEST).make();
+	public static final CssInclude STYLES_CSS = include(RESOURCES.url("css/styles.css")).prerender(BOOTSTRAP_CSS)
+		.hasRtl().hasNew().priority(Priority.LOWEST).make();
+	public static final CssInclude CUSTOMER_CSS = include("css/customer.css").priority(Priority.HIGHEST).make();
 
 	private static final String KEY_IGNORE_STANDARD_TEMPLATE = "IGNORE_STANDARD_TEMPLATE";
 	private static final IncludeFile HEARTBEAT = new IncludeFile(RESOURCES.url("scripts/heartbeat.js"),
@@ -111,6 +112,8 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 	private FreemarkerFactory viewFactory;
 
 	@Inject
+	private MenuService menuService;
+	@Inject
 	private HeaderSection header;
 	@Inject
 	private AccessibilityModeService acMode;
@@ -120,16 +123,13 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 	@Override
 	public SectionResult renderHtml(RenderEventContext context) throws Exception
 	{
+		boolean oldLayout = !RenderNewTemplate.isNewLayout(context);
 		setupHeaderHelper(context);
 		if( checkForResponse(context) )
 		{
 			return null;
 		}
 		RenderTemplateModel model = getModel(context);
-
-		PreRenderContext precontext = context.getPreRenderContext();
-		precontext.preRender(STYLES_CSS);
-		precontext.preRender(CUSTOMER_CSS);
 
 		TemplateResultCollector collector = new TemplateResultCollector();
 		TemplateResult template;
@@ -173,12 +173,20 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 			// whether it is full-screen or not.
 			setHtmlAttrsToModel(context, model, decorations);
 
-			template = selectInnerLayout(context, collector.getTemplateResult());
+			template = collector.getTemplateResult();
+			if (oldLayout) {
+				template = selectInnerLayout(context, template);
+			}
 		}
 
 		model.getBody().setPostmarkup(template.getNamedResult(context, "postmarkup"));
-
-		return selectLayout(context, template);
+		PreRenderContext precontext = context.getPreRenderContext();
+        if (oldLayout) {
+			precontext.preRender(STYLES_CSS);
+			precontext.preRender(CUSTOMER_CSS);
+			return selectLayout(context, template);
+        }
+        else return RenderNewTemplate.renderHtml(viewFactory, context, template, menuService);
 	}
 
 	private void setupHeaderHelper(RenderEventContext context)

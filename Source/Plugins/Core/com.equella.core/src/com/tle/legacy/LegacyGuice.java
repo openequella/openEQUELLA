@@ -17,6 +17,9 @@
 package com.tle.legacy;
 
 import com.google.inject.AbstractModule;
+import com.tle.core.dao.AclDao;
+import com.tle.core.events.services.EventService;
+import com.tle.core.institution.InstitutionService;
 import com.tle.core.search.service.impl.SearchPrivilegeTreeProvider;
 import com.tle.core.security.TLEAclManager;
 import com.tle.web.contentrestrictions.ContentRestrictionsPrivilegeTreeProvider;
@@ -113,6 +116,12 @@ public class LegacyGuice extends AbstractModule {
 
     @Inject
     public static PortletWebService portletWebService;
+
+    @Inject
+    public static InstitutionService institutionService;
+
+    @Inject
+    public static EventService eventService;
 
     @Override
     protected void configure()

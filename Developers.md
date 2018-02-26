@@ -41,10 +41,29 @@ the database that you have created for EQUELLA.
 
 The default admin url will be: `http://localhost:8080/`
 
+### Updating plugin library jars for dev mode
+
+When running the server in dev mode, the server runner doesn't have access to the SBT build information, so it
+can't find the jar libraries which some of the plugins require, so an extra SBT task is required to copy the jars
+into a known location for the runner. This task is run by the `prepareDevConfig` task too. 
+
+```bash
+~$ sbt jpfWriteDevJars
+```
+
+### Running SBT task to generate non-java resources
+
+When you build EQUELLA from within IntelliJ, it will only compile Scala/Java sources and copy resources 
+from the resource folders, it won't run any of the scripts that generate resoureces 
+(such as compile code to Javascript), in order to do this you can run:
+
+```bash
+~$ sbt resources
+```
+
 ### Running a dev server
 
-Ensure you have your `Dev/learningedge-config` setup 
-and your development manifests are up-to-date. 
+Ensure you have your `Dev/learningedge-config` setup.
 
 ```bash
 ~$ sbt compile equellaserver/run
@@ -70,16 +89,19 @@ Ensure you have your server running and know it's
 
 or run `com.tle.client.harness.ClientLauncher` in the `Source/Server/adminTool` project.
 
+### Developing the JS code
 
-### Updating plugin library jars for dev mode
+In the `Source/Plugins/Core/com.equella.core/js` directory you will find a yarn/npm 
+project which compiles Purescript/Typescript/Sass into JS and CSS. Currently there are number 
+of separate JS bundles which are generated and you could develope them easier by running a yarn 
+"watched build" script. E.g. to develop the settings page:
 
-When running the server in dev mode, the server runner doesn't have access to the SBT build information, so it
-can't find the jar libraries which some of the plugins require, so an extra SBT task is required to copy the jars
-into a known location for the runner. This task is run by the `prepareDevConfig` task too. 
-
-```bash
-~$ sbt jpfWriteDevJars
+```sh
+~/Source/Plugins/Core/com.equella.core/js$ yarn run dev:settings
 ```
+
+This will build the javascript bundle to the correct location for running a dev EQUELLA and will 
+watch for source changes and re-build if required.
 
 ## SBT Notes
 The new build uses SBT (very flexible and has a large set of useful plugins available). You can customize pretty much any aspect of your build process using Scala scripts.
@@ -110,13 +132,8 @@ The root plugin manually defines the sub-project location and their inter-projec
 * `adminTool` - contains the admin console client launcher
 
 ### Misc
-if you get a deduplicate dependencies on commons logging, SLF4J has a moonlighting jar that says it's commons logging.  Use the build.sbt directive of exclude dependencies like the adminConsole does.
+if you get a deduplicate dependencies on commons logging, SLF4J has a moonlighting jar that 
+says it's commons logging.  Use the build.sbt directive of exclude dependencies like the 
+adminConsole does.
 
-### Speeding up the build during dev
-
-If you are editing the build files you can temporarily disable all the non-essential plugins to speed up your dev/reload/test process by editing (or creating) the `project/build.conf` file to have the setting:
-
-```
-plugin.whitelist = []
-```
 

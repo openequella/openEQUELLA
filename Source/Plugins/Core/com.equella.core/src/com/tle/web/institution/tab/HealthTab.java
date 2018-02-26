@@ -59,7 +59,9 @@ import com.tle.web.sections.equella.annotation.PluginResourceHandler;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.events.js.JSHandler;
+import com.tle.web.sections.jquery.JQueryLibrary;
 import com.tle.web.sections.jquery.libraries.JQueryCore;
+import com.tle.web.sections.jquery.libraries.JQueryTimer;
 import com.tle.web.sections.jquery.libraries.JQueryUICore;
 import com.tle.web.sections.js.JSCallAndReference;
 import com.tle.web.sections.js.JSCallable;
@@ -143,7 +145,7 @@ public class HealthTab extends AbstractInstitutionTab<HealthTab.ClusterModel>
 	@PlugKey("institutionusage.name")
 	private static Label INST_NAME;
 
-	private static IncludeFile SERVICES_INCLUDE = new IncludeFile(SERVICES_JS_URL);
+	private static IncludeFile SERVICES_INCLUDE = new IncludeFile(SERVICES_JS_URL, JQueryTimer.PRERENDER);
 	private static JSCallAndReference REFRESH_FUNC = new ExternallyDefinedFunction("refresh", 2, SERVICES_INCLUDE,
 		JQueryUICore.PRERENDER);
 

@@ -10,6 +10,6 @@
 	</#if>	
 	<@render m.template['left']/>
 </div>
-<div id="col2">
+<div id="col2" class="mui-fixed">
 	<@render m.template['right']/>
 </div>

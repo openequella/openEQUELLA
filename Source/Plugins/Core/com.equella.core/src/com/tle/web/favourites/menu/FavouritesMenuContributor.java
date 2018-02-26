@@ -59,7 +59,7 @@ public class FavouritesMenuContributor implements MenuContributor
 		// hard-coding the URL
 		HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/favourites.do"));
 		hls.setLabel(LABEL_KEY);
-		MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 2);
+		MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 2, "star_rate");
 		return Collections.singletonList(mc);
 	}
 }

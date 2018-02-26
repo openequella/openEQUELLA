@@ -39,6 +39,7 @@ object CommonSettings extends AutoPlugin {
   override def projectSettings = Seq(
     organization := "com.github.equella",
     scalaVersion := "2.12.4",
+    scalacOptions += "-Ypartial-unification",
     javacOptions ++= Seq("-source", "1.8"),
     compileOrder := CompileOrder.Mixed,
     headerLicense := Some(HeaderLicense.ALv2("2017", "Apereo")),

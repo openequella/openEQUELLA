@@ -52,4 +52,14 @@ object Common {
     pluginElem.addContent(insertionPoint(pluginElem.getChildren.asScala.toList, 0), rt)
     rt
   }
+
+  def runYarn(script: String, dir: File): Unit = {
+    val os = sys.props("os.name").toLowerCase
+    val precmd = os match {
+      case x if x contains "windows" => Seq("cmd", "/C")
+      case _ => Seq.empty
+    }
+    if (Process(precmd ++ Seq("yarn", "--mutex", "network", "run", script), dir).! > 0)
+      sys.error(s"Running yarn script '$script' in dir ${dir.absolutePath} failed")
+  }
 }

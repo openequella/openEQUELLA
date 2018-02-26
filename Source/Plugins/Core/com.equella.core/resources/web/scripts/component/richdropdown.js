@@ -1,20 +1,38 @@
 (function($)
 {
-
 	$.fn.setupRichDropDown = function(options)
 	{
+		var adjustWidths = function(){
+			$('.richdropdown-selectedcontainer').each(function(){
+				var $containerDiv = $(this);
+				var $select = $containerDiv.prev();
+
+				var width = $select[0].offsetWidth;
+				if (width === 'auto' || width === '0px' || width === 0) {
+					width = $select.width();
+				}
+				else {
+					width = parseInt(width);
+				}
+				$containerDiv.css('width', width + 'px');
+
+				var $richdd = $('.richdropdown');
+				$richdd.css('min-width', (width + 1) + 'px');
+			});
+		};
+
+		$(window).on('resize.richdropdown', adjustWidths);
 
 		return this.each(function()
 		{
+			var $select = $(this);
 
-			var $input = $(this);
-
-			var $richcont = $('<div class="richcontainer"/>');
+			var $richcont = $('<div class="richdropdown-richcontainer richcontainer"/>');
 			var $richdd = $('<div class="richdropdown"></div>');
-			var $containerDiv = $('<div class="selectedcontainer" tabIndex="0"></div>');
-			var $containerDivText = $('<div class="selectedtext"></div>');
+			var $containerDiv = $('<div class="richdropdown-selectedcontainer selectedcontainer" tabIndex="0"></div>');
+			var $containerDivText = $('<div class="richdropdown-selectedtext selectedtext"></div>');
 
-			$containerDiv.insertAfter($input);
+			$containerDiv.insertAfter($select);
 			$containerDivText.prependTo($containerDiv);
 			// if/else for Redmine #7163
 			if ($("#dropdowncontainer").length != 0)
@@ -26,28 +44,10 @@
 				$("#searchform").append($richcont.append($richdd));
 			}
 
-			/* fudge factor for EQUELLA styles */
-			var ulfudge = 14;
-			var divfudge = 0;
-
-			var width = document.getElementById($input.attr('id')).offsetWidth;
-
-			if (width === 'auto' || width === '0px' || width === 0)
-			{
-				width = $input.width() + divfudge;
-			}
-			else
-			{
-				width = parseInt(width) + divfudge;
-			}
-
-			$containerDiv.css('width', width);
-			$richdd.css('min-width', width + 1);
-
-			$input.hide();
+			$select.hide();
 
 			// Build hidden div
-			$input.children('optgroup').each(function()
+			$select.children('optgroup').each(function()
 			{
 				// Create List
 				var $optGroupList = $('<ul></ul>');
@@ -126,8 +126,8 @@
 				var val = $link.parent().data('key');
 
 				// Update the select input
-				$input.val(val);
-				$input.change();
+				$select.val(val);
+				$select.change();
 
 				// Update the selected text
 				$containerDivText.text(text);
@@ -172,6 +172,8 @@
 					setPosition();
 				}
 			});
+
+			adjustWidths();
 
 			// Show/Hide functions
 			function showOptions()

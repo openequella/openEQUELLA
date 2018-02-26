@@ -73,7 +73,7 @@ public class ActivationsMenuContributor implements MenuContributor
 
 			HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/activations.do"));
 			hls.setLabel(LABEL_KEY);
-			MenuContribution mc = new MenuContribution(hls, ICON_PATH, 30, 15);
+			MenuContribution mc = new MenuContribution(hls, ICON_PATH, 30, 15, "copyright");
 			return Collections.singletonList(mc);
 		}
 		else

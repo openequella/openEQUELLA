@@ -50,7 +50,7 @@ public class TaskManagementMenuContributor extends AbstractCachedMenuContributor
 		if( hasManageTasks )
 		{
 			return new MenuContribution(new HtmlLinkState(LABEL_MENU, new SimpleBookmark("access/managetasks.do")),
-				URL_ICON, 30, 5);
+				URL_ICON, 30, 5, "assignment");
 		}
 		return null;
 	}

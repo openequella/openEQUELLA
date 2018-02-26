@@ -41,6 +41,7 @@ public class DocsSection extends AbstractPrototypeSection<Object> implements Htm
 	{
 		Decorations decorations = Decorations.getDecorations(context);
 		decorations.setTitle(LABEL_TITLE);
+		decorations.setExcludeForm(true);
 		// decorations.clearAllDecorations();
 		return viewFactory.createResult("swagger.ftl", this);
 	}

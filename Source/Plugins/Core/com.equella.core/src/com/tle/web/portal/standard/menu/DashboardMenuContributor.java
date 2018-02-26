@@ -56,7 +56,7 @@ public class DashboardMenuContributor implements MenuContributor
 
 		HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("home.do"));
 		hls.setLabel(LABEL);
-		MenuContribution mc = new MenuContribution(hls, ICON_URL, 1, 1);
+		MenuContribution mc = new MenuContribution(hls, ICON_URL, 1, 1, "dashboard");
 		return Collections.singletonList(mc);
 	}
 

@@ -30,7 +30,8 @@ class AdminConsoleExtensions extends StartupBean {
   var adminService : RemoteAdminService = _
 
   override def startup(): Unit = {
-    SettingsList += SettingsPage(ResourcesService.getResourceHelper(getClass), "adminconsole", "admin.link.title", "admin.link.description",
-      "jnlp/admin.jnlp", () => !adminService.getAllowedTools.isEmpty)
+    SettingsList += SettingsPage(ResourcesService.getResourceHelper(getClass),
+      "adminconsole", "general", "admin.link.title", "admin.link.description",
+      "jnlp/admin.jnlp", "web", () => !adminService.getAllowedTools.isEmpty)
   }
 }
