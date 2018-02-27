@@ -33,7 +33,7 @@ import MaterialUI.Properties (IProp, className, style, variant)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.Switch (switch)
 import MaterialUI.SwitchBase (checked, disabled, onChange)
-import MaterialUI.TextField (margin, textField, value)
+import MaterialUI.TextField (margin, placeholder, textField, value)
 import MaterialUI.TextStyle (headline, subheading)
 import MaterialUI.Typography (typography, typography_)
 import Network.HTTP.Affjax (AJAX, get, put_)
@@ -139,8 +139,8 @@ uiSettingsEditor = createFactory (withStyles styles $ createLifecycleComponent (
       dis :: forall r. IProp (disabled::Boolean|r)
       dis = disabled $ not newUI.enabled
       facetEditor ind (FacetSetting {name,path}) = D.div' [
-        textField [dis, label "Name", margin "normal", value name, changeField _name],
-        textField [className classes.pathField, dis, margin "normal", label "Path", value path, changeField _path ],
+        textField [dis, label "Name", margin "normal", value name, changeField _name, placeholder "Name"],
+        textField [className classes.pathField, dis, margin "normal", label "Path", value path, changeField _path, placeholder "/item/metadata/path" ],
         button [dis, onClick $ handle $ d \_ -> RemoveFacet ind ] [ icon_ [ text "delete"] ]
       ]
         where changeField l = onChange $ mkEffFn1 (d $ \e -> ModifyFacet ind $ set (_Newtype <<< l) e.target.value)
