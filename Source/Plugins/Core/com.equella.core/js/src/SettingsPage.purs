@@ -14,7 +14,7 @@ import Data.Maybe (Maybe(..), maybe)
 import Data.StrMap as SM
 import Data.Tuple (Tuple(..))
 import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMount, modifyState)
-import EQUELLA.Environment (baseUrl)
+import EQUELLA.Environment (baseUrl, prepLangStrings)
 import MaterialUI.ExpansionPanel (expansionPanel_)
 import MaterialUI.ExpansionPanelDetails (expansionPanelDetails_)
 import MaterialUI.ExpansionPanelSummary (expandIcon, expansionPanelSummary)
@@ -51,13 +51,21 @@ instance decodeSetting :: DecodeJson Setting where
     pageUrl <- links .?? "web"
     pure $ Setting {id,group,name,description,pageUrl}
 
+rawStrings = Tuple "settings" {
+  general: {name:"General",desc:"General settings"},
+  integration: {name:"Integrations",desc:"Settings for integrating with external systems"},
+  diagnostics: {name:"Diagnostics",desc:"Diagnostic pages"},
+  ui: {name:"UI",desc:"UI settings"}
+}
 
-groupDetails :: Array (Tuple String { n :: String, d :: String })
+string = prepLangStrings rawStrings
+
+groupDetails :: Array (Tuple String { name :: String, desc :: String })
 groupDetails = [
-  Tuple "general" {n:"General",d:"General settings"},
-  Tuple "integration" {n:"Integrations",d:"Settings for integrating with external systems"},
-  Tuple "diagnostics" {n:"Diagnostics",d:"Diagnostic pages"},
-  Tuple "ui" {n:"UI",d:"UI settings"}
+  Tuple "general" string.general,
+  Tuple "integration" string.integration,
+  Tuple "diagnostics" string.diagnostics,
+  Tuple "ui" string.ui
 ]
 
 type State = {
@@ -97,10 +105,10 @@ settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didM
           renderGroup _ = Nothing
       in D.div' $ mapMaybe renderGroup groupDetails
 
-    settingGroup {n,d} contents = expansionPanel_ [
+    settingGroup {name,desc} contents = expansionPanel_ [
       expansionPanelSummary [expandIcon $ icon_ [D.text "expand_more"] ] [
-        typography [className classes.heading] [ D.text n ],
-        typography [className classes.secondaryHeading] [ D.text d ]
+        typography [className classes.heading] [ D.text name ],
+        typography [className classes.secondaryHeading] [ D.text desc ]
       ],
       contents
     ]

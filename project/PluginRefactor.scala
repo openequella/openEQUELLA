@@ -5,6 +5,8 @@ import org.jdom2.output.{Format, XMLOutputter}
 import org.jdom2.{DocType, Document, Element}
 import sbt.Keys.Classpath
 import sbt._
+import Path.rebase
+import sbt.io.Using
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
@@ -351,7 +353,7 @@ object PluginRefactor {
               case (f, p) if f.isFile => (p, pId, f.length())
             }
             val mapped = allRes.pair(rebase(bd, baseDir))
-            IO.copy(mapped, overwrite = false)
+            IO.copy(mapped, overwrite = false, true, true)
             relative
         }
 

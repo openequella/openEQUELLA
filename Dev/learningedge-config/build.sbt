@@ -1,4 +1,5 @@
 import org.apache.commons.configuration.{FileConfiguration, PropertiesConfiguration}
+import Path.rebase
 
 prepareDevConfig := {
   val bc = buildConfig.value.getConfig("devconfig")
@@ -18,7 +19,7 @@ prepareDevConfig := {
     "hibernate.properties"
   ).map(f => (defaultsDir / s"$f.default", baseDir / f))
 
-  IO.copy(fromInstaller ++ fromDefaults, overwrite = false)
+  IO.copy(fromInstaller ++ fromDefaults, CopyOptions().withOverwrite(true))
 
   val port = bc.getInt("port")
   val hostname = bc.getString("hostname")

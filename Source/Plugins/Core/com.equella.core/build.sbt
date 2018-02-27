@@ -1,9 +1,21 @@
+import Path.rebase
+import Path.flat
+
+import scala.io.Source
+import _root_.io.circe.parser._
+
 langStrings := {
   val langDir = (resourceDirectory in Compile).value / "com/tle/core/i18n/service/impl"
+  val baseJs = baseDirectory.value / "js"
+  Common.runYarn("build:langbundle", baseJs)
+  val bundle =
+    decode[Map[String, String]](IO.read(baseJs / "target/lang/jsbundle.json")).fold(throw _, identity)
+  val pluginLangStrings = langStrings.value
   Seq(
     Common.loadLangProperties(langDir / "i18n-resource-centre.properties", "", "resource-centre"),
-    Common.loadLangProperties(langDir / "i18n-admin-console.properties", "", "admin-console")
-  )
+    Common.loadLangProperties(langDir / "i18n-admin-console.properties", "", "admin-console"),
+    LangStrings("newui", false, bundle)
+  ) ++ pluginLangStrings
 }
 
 lazy val jql = Seq("jquery.fancybox.js", "jquery.ui.datepicker.js", "jquery.ui.draggable.js", "jquery.ui.droppable.js",
@@ -79,7 +91,7 @@ resourceGenerators in Compile += Def.task {
 resourceGenerators in Compile += Def.task {
   val baseJs = baseDirectory.value / "js"
   Common.runYarn("build", baseJs)
-  val outDir = (resourceManaged in Compile).value / "web"
+  val outDir = (resourceManaged in Compile).value
   val baseJsTarget = baseJs / "target"
-  IO.copy((baseJsTarget ** ("*.js"|"*.css")).pair(rebase(baseJsTarget, outDir))).toSeq
+  IO.copy((baseJsTarget ** ("*.js"|"*.css"|"*.json")).pair(rebase(baseJsTarget, outDir))).toSeq
 }.taskValue

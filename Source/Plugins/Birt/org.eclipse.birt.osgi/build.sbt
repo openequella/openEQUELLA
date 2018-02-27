@@ -1,3 +1,5 @@
+import Path.flat
+
 lazy val BirtOsgi = config("birtosgi")
 lazy val CustomCompile = config("compile") extend BirtOsgi
 

@@ -1,14 +1,11 @@
-import javax.xml.parsers.SAXParserFactory
-
-import scala.collection.JavaConverters._
-import scala.collection.JavaConversions._
-import org.jdom2.input.SAXBuilder
-import org.jdom2.input.sax.XMLReaders
-import sbt._
-import sbt.Keys._
-import JPFPlugin.autoImport._
-import scala.annotation.tailrec
 import Common._
+import JPFPlugin.autoImport._
+import sbt.Keys._
+import sbt._
+
+import scala.annotation.tailrec
+import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 object JPFScanPlugin extends AutoPlugin {
   val serverRef = LocalProject("equellaserver")
@@ -73,7 +70,7 @@ object JPFScanPlugin extends AutoPlugin {
             val deps = internalDeps.map(_._1)
             val (a, l) = convertAll(already + pId, processed, deps)
             val prjDeps = deps.toSeq.flatMap(classpathDep)
-            val prj = Project(toSbtPrj(pId), baseDir, dependencies = prjDeps)
+            val prj = Project(toSbtPrj(pId), baseDir).dependsOn(prjDeps: _*)
               .settings(
                 managedClasspath in Compile ++= (managedClasspath in(parentForPlugin(pjpf), Compile)).value,
                 managedClasspath in Compile ++= {

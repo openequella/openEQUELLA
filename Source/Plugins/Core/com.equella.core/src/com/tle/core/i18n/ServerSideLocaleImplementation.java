@@ -71,21 +71,7 @@ public class ServerSideLocaleImplementation extends AbstractCurrentLocale
 		}
 		else
 		{
-			boolean sessionAvailable = userSessionService.isSessionAvailable();
-			if( sessionAvailable )
-			{
-				locale = userSessionService.getAttribute(WebConstants.KEY_LOCALE);
-			}
-			if( locale == null )
-			{
-				HttpServletRequest request = userSessionService.getAssociatedRequest();
-				Locale preferredLocale = userPreferenceService.getPreferredLocale(request);
-				locale = new LocaleData(preferredLocale, languageService.isRightToLeft(preferredLocale));
-			}
-			if( sessionAvailable )
-			{
-				userSessionService.setAttribute(WebConstants.KEY_LOCALE, locale);
-			}
+			locale = LocaleLookup.selectLocale();
 		}
 
 		currentData = new CurrentData(userState, locale.getLocale(), locale.isRightToLeft(),

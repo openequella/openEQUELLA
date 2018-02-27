@@ -3,15 +3,14 @@ module Settings.UISettings where
 import Prelude
 
 import Control.Monad.Aff (Fiber, Milliseconds(..), delay, error, forkAff, killFiber)
-import Control.Monad.Aff.Console (CONSOLE, log)
+import Control.Monad.Aff.Console (log)
 import Control.Monad.Eff.Uncurried (mkEffFn1, mkEffFn2)
 import Control.Monad.Reader (ask, runReaderT)
 import Control.Monad.Trans.Class (lift)
 import Data.Argonaut (class DecodeJson, class EncodeJson, decodeJson, encodeJson, jsonEmptyObject, (.?), (:=), (~>))
-import Data.Array (deleteAt, mapWithIndex, modifyAt, snoc, updateAt)
+import Data.Array (deleteAt, mapWithIndex, modifyAt, snoc)
 import Data.Either (either)
 import Data.Lens (over)
-import Data.Lens.Index (ix)
 import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
 import Data.Lens.Setter (set)
@@ -19,24 +18,25 @@ import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Newtype (class Newtype)
 import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
+import Data.Tuple (Tuple(..))
 import Dispatcher (DispatchEff(..))
 import Dispatcher.React (ReactProps(..), createLifecycleComponent, didMount, getState, modifyState)
-import EQUELLA.Environment (baseUrl)
+import EQUELLA.Environment (baseUrl, prepLangStrings)
 import MaterialUI.Button (button, fab)
 import MaterialUI.ButtonBase (onClick)
 import MaterialUI.ExpansionPanelDetails (expansionPanelDetails_)
-import MaterialUI.FormControl (formControl, formControl_)
+import MaterialUI.FormControl (formControl_)
 import MaterialUI.FormControlLabel (control, formControlLabel, label)
-import MaterialUI.Icon (icon, icon_)
+import MaterialUI.Icon (icon_)
 import MaterialUI.PropTypes (handle)
-import MaterialUI.Properties (IProp, className, style, variant)
+import MaterialUI.Properties (IProp, className, variant)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.Switch (switch)
 import MaterialUI.SwitchBase (checked, disabled, onChange)
 import MaterialUI.TextField (margin, placeholder, textField, value)
-import MaterialUI.TextStyle (headline, subheading)
-import MaterialUI.Typography (typography, typography_)
-import Network.HTTP.Affjax (AJAX, get, put_)
+import MaterialUI.TextStyle (subheading)
+import MaterialUI.Typography (typography)
+import Network.HTTP.Affjax (get, put_)
 import React (ReactElement, createFactory)
 import React.DOM (text)
 import React.DOM as D
@@ -97,12 +97,22 @@ type State eff = {
 }
 
 
+rawStrings = Tuple "uiconfig" {
+  facet: {
+    name: "Name",
+    path: "Path",
+    title: "Search facets"
+  },
+  enableNew: "Enable new UI"
+}
+
 initialState :: forall eff. State eff
 initialState = {disabled:true, saving:Nothing, settings:UISettings {newUI: NewUISettings {enabled:false, facets:[]}}}
 
 uiSettingsEditor :: ReactElement
 uiSettingsEditor = createFactory (withStyles styles $ createLifecycleComponent (didMount LoadSetting) initialState render eval) {}
   where
+  string = prepLangStrings rawStrings
   styles theme = {
     fab: {
       position: "absolute",
@@ -139,8 +149,9 @@ uiSettingsEditor = createFactory (withStyles styles $ createLifecycleComponent (
       dis :: forall r. IProp (disabled::Boolean|r)
       dis = disabled $ not newUI.enabled
       facetEditor ind (FacetSetting {name,path}) = D.div' [
-        textField [dis, label "Name", margin "normal", value name, changeField _name, placeholder "Name"],
-        textField [className classes.pathField, dis, margin "normal", label "Path", value path, changeField _path, placeholder "/item/metadata/path" ],
+        textField [dis, label $ string.facet.name, margin "normal", value name, changeField _name, placeholder string.facet.name],
+        textField [className classes.pathField, dis, margin "normal", label "Path", value path, changeField _path,
+          placeholder "/item/metadata/path" ],
         button [dis, onClick $ handle $ d \_ -> RemoveFacet ind ] [ icon_ [ text "delete"] ]
       ]
         where changeField l = onChange $ mkEffFn1 (d $ \e -> ModifyFacet ind $ set (_Newtype <<< l) e.target.value)
@@ -148,11 +159,11 @@ uiSettingsEditor = createFactory (withStyles styles $ createLifecycleComponent (
     expansionPanelDetails_ [
       D.div [DP.className classes.enableColumn] [
         formControl_ [
-          formControlLabel [ label "Enable new UI", control $ switch [checked newUI.enabled,
+          formControlLabel [ label string.enableNew, control $ switch [checked newUI.enabled,
                           disabled s.disabled, onChange $ mkEffFn2 \e -> d $ SetNewUI ]]
                           ]],
       D.div [DP.className $ joinWith " " [classes.facetConfig, classes.facetColumn] ] $ [
-          typography [variant subheading] [text "Search facets"]
+          typography [variant subheading] [text string.facet.title]
         ] <> (mapWithIndex facetEditor newUI.facets) <>
         [
           button [dis, variant fab, className classes.fab, onClick $ handle $ d \e -> AddFacet] [ icon_ [text "add"] ]

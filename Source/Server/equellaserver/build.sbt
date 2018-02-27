@@ -1,3 +1,5 @@
+import Path.rebase
+
 javacOptions ++= Seq("-source", "1.8")
 
 resourceDirectory in Compile := baseDirectory.value / "resources"
@@ -252,7 +254,7 @@ unmanagedJars in Compile ++= oracleDriverJar.value.toSeq.classpath
 
 run := {
   val cp = (fullClasspath in Runtime).value
-  val o = ForkOptions(runJVMOptions = Seq(
+  val o = ForkOptions().withRunJVMOptions(Vector(
     "-cp", Path.makeString(cp.files),
     "-Dequella.devmode=true", "-Dequella.autotest=true"
   ))

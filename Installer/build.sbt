@@ -1,3 +1,5 @@
+import Path.relativeTo
+
 libraryDependencies ++= Seq(
   "com.google.guava" % "guava" % "18.0",
   "org.slf4j" % "slf4j-simple" % "1.7.5",
@@ -28,7 +30,7 @@ installerZip := {
   val dirname = s"equella-installer-${ver.majorMinor}"
   val outZip = target.value / s"$dirname.zip"
   val serverData = baseDirectory.value / "data/server"
-  val allServerFiles = serverData.***.pair(relativeTo(serverData), false)
+  val allServerFiles = serverData ** "*" pair(relativeTo(serverData), false)
   val upZip = (upgradeZip in equellaserver).value
   val allFiles = Seq(
     assembly.value -> "enterprise-install.jar",

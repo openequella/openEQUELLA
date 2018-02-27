@@ -20,6 +20,7 @@ import cats.data.OptionT
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.db.RunWithDB
+import com.tle.core.i18n.LocaleLookup
 import com.tle.core.plugins.PluginTracker
 import com.tle.legacy.LegacyGuice
 import com.tle.web.DebugSettings
@@ -74,6 +75,7 @@ object RenderNewTemplate {
     case class TemplateScript(getScriptUrl : String,  getRenderJs: ObjectExpression, getTemplate: TemplateResult)
 
     context.preRender(JQueryCore.PRERENDER)
+    context.preRender(new IncludeFile(s"api/language/bundle/${LocaleLookup.selectLocale.getLocale.toLanguageTag}/bundle.js"))
 
     val decs = Decorations.getDecorations(context)
     if (decs.getReactUrl == null)

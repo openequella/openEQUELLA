@@ -3,6 +3,7 @@ import org.mozilla.javascript.{ErrorReporter, EvaluatorException}
 import sbt._
 import sbt.Keys._
 import sbt.plugins.JvmPlugin
+import Path.rebase
 
 object YUICompressPlugin extends AutoPlugin {
 

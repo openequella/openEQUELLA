@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.tle.web.settings.rest
+package com.tle.web.api.settings
 
 import java.net.URI
 import java.util
 
-import javax.ws.rs.{GET, PUT, Path, Produces}
 import com.tle.common.institution.CurrentInstitution
 import com.tle.core.db.{DB, RunWithDB}
 import com.tle.core.security.AclChecks
 import com.tle.web.settings.{EditableSettings, SettingsList, UISettings}
 import io.swagger.annotations.Api
+import javax.ws.rs.{GET, PUT, Path, Produces}
 
 import scala.beans.BeanProperty
 import scala.collection.JavaConverters._

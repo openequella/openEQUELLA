@@ -17,11 +17,14 @@
 package com.tle.legacy;
 
 import com.google.inject.AbstractModule;
+import com.tle.beans.UserPreference;
 import com.tle.core.dao.AclDao;
 import com.tle.core.events.services.EventService;
+import com.tle.core.i18n.service.LanguageService;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.search.service.impl.SearchPrivilegeTreeProvider;
 import com.tle.core.security.TLEAclManager;
+import com.tle.core.services.user.UserPreferenceService;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.contentrestrictions.ContentRestrictionsPrivilegeTreeProvider;
 import com.tle.web.coursedefaults.CourseDefaultsSettingsPrivilegeTreeProvider;
@@ -126,6 +129,12 @@ public class LegacyGuice extends AbstractModule {
 
     @Inject
     public static UserSessionService userSessionService;
+
+    @Inject
+    public static UserPreferenceService userPreferenceService;
+
+    @Inject
+    public static LanguageService languageService;
 
     @Override
     protected void configure()

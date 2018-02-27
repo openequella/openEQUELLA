@@ -3,6 +3,7 @@ import java.time.temporal.{ChronoUnit, TemporalUnit}
 
 import sbt.Keys._
 import sbt._
+import scala.sys.process._
 import CommonSettings.autoImport._
 
 object JarSignerPlugin extends AutoPlugin {

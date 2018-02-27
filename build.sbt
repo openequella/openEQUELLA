@@ -4,6 +4,7 @@ import complete.DefaultParsers._
 import com.typesafe.sbt.license.LicenseReport
 
 import scala.collection.JavaConverters._
+import sbt.io.Using
 
 lazy val learningedge_config = project in file("Dev/learningedge-config")
 

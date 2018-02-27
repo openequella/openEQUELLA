@@ -8,8 +8,10 @@ import scala.util.Try
 import Common._
 import org.jdom2.Element
 import org.jdom2.output.{Format, XMLOutputter}
+import Path.rebase
+import Path.flatRebase
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 object JPFRunnerPlugin extends AutoPlugin {
 
@@ -33,7 +35,7 @@ object JPFRunnerPlugin extends AutoPlugin {
           IO.delete(outBase)
           allRuntimes.map { r =>
             val allCode = r.code.flatMap(f => (f ** "*.class").pair(rebase(f, "classes/"), false))
-            val allResources = r.resources.flatMap(f => (f ***).pair(rebase(f, "resources/"), false))
+            val allResources = r.resources.flatMap(f => (f ** "*").pair(rebase(f, "resources/"), false))
             val allJars = r.jars.flatMap(f => flatRebase("lib/").apply(f).map((f, _)))
             val libs = allCode.headOption.map(_ => JPFLibrary("code", "code", "classes/", Some("*"))) ++
               allResources.headOption.map(_ => JPFLibrary("resources", "resources", "resources/", None)) ++
@@ -74,8 +76,8 @@ object JPFRunnerPlugin extends AutoPlugin {
     val root = x.getRootElement
     val pluginId = root.getAttribute("id").getValue
     Option(root.getChild("requires")).foreach { r =>
-      val newchildren = r.getChildren().filterNot(_.getAttribute("plugin-id").getValue.contains(":"))
-      if (newchildren.isEmpty) root.removeChild("requires") else r.setContent(newchildren)
+      val newchildren = r.getChildren().asScala.filterNot(_.getAttribute("plugin-id").getValue.contains(":"))
+      if (newchildren.isEmpty) root.removeChild("requires") else r.setContent(newchildren.asJava)
     }
     if (jars.nonEmpty) {
 

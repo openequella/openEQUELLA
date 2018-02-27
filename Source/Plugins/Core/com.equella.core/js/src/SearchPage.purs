@@ -20,7 +20,7 @@ import Data.String (joinWith)
 import Data.Tuple (Tuple(..), fst)
 import Dispatcher (DispatchEff(DispatchEff))
 import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMount, getState, modifyState)
-import EQUELLA.Environment (baseUrl)
+import EQUELLA.Environment (baseUrl, prepLangStrings)
 import Facet (facetDisplay)
 import Global (encodeURIComponent)
 import MaterialUI.Chip (chip, onDelete)
@@ -99,9 +99,15 @@ type State = {
 
 data Command = InitSearch | Search | QueryUpdate String | ToggledTerm String String
 
+rawStrings = Tuple "searchpage" {
+ resultsAvailable: "results available",
+ modifiedDate: "Modified"
+}
+
+string = prepLangStrings rawStrings
+
 initialState :: State
 initialState = {searching:false, query:"", searchResults:Nothing, facets:SM.empty, facetSettings: []}
-
 
 searchPage :: ReactElement
 searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMount InitSearch) initialState render eval) {}
@@ -205,7 +211,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     renderResults (Just (SearchResults {results,available})) =
       let resultLen = length results
       in [
-        typography [variant TS.subheading] [ D.text $ show available <> " results available"],
+        typography [variant TS.subheading] [ D.text $ show available <> " " <> string.resultsAvailable],
         D.div [ DP.className classes.facetContainer ] $ facetChips,
         list_ (mapWithIndex (\i -> oneResult $ i /= (resultLen - 1)) results)
       ]
@@ -219,7 +225,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
           firstThumb = fromFoldable $ findMap attachThumb attachments
           extraDeets = [
             listItem [classes_ {default: classes.displayNode}, disableGutters true] [
-              typography [variant TS.body1] [ D.text "Modified" ],
+              typography [variant TS.body1] [ D.text string.modifiedDate ],
               typography [component "div", color textSecondary] [
                 D.text "\xa0-\xa0",
                 timeAgo modifiedDate []

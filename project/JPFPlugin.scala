@@ -2,7 +2,7 @@ import sbt.Keys._
 import sbt._
 import sbt.plugins.JvmPlugin
 import CommonSettings.autoImport._
-import JPFRunnerPlugin.readPluginId
+import Path.flat
 
 import scala.collection.JavaConverters._
 

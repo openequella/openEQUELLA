@@ -1,14 +1,16 @@
 {
   "config": {
-    "buildjs": "target/reactjs",
+    "buildjs": "target/web/reactjs",
     "devjs": "../target/scala-2.12/classes/web/reactjs",
-    "buildcss": "target/css",
-    "devcss": "../target/scala-2.12/classes/web/css"
+    "buildcss": "target/web/css",
+    "devcss": "../target/scala-2.12/classes/web/css",
+    "buildlang": "target/lang",
+    "devlang": "../target/scala-2.12/classes/lang"
   },
   "scripts": {
-    "install": "cross-env-shell \"bower --allow-root install && mkdirp ${npm_package_config_devjs} ${npm_package_config_buildjs} ${npm_package_config_devcss} ${npm_package_config_buildcss}\"",
+    "install": "cross-env-shell \"bower --allow-root install && mkdirp ${npm_package_config_devjs} ${npm_package_config_buildlang} ${npm_package_config_buildjs} ${npm_package_config_devcss} ${npm_package_config_buildcss}\"",
     "clean": "rm -rf target/ output/ node_modules/ bower_components/ && yarn install",
-    "build": "yarn install && yarn run build:pages && yarn run build:scss",
+    "build": "yarn install && yarn run build:pages && yarn run build:scss && yarn run build:langbundle",
     "build:pages": "yarn run build:legacy && yarn run build:search && yarn run build:settings",
     "build:legacy": "cross-env-shell \"pulp build -O -m LegacyPage | browserify -g [ envify --NODE_ENV production ] -g uglifyify - | uglifyjs --compress --mangle > ${npm_package_config_buildjs}/index.js\"",
     "dev:legacy": "cross-env-shell \"pulp -w browserify -m LegacyPage --to ${npm_package_config_devjs}/index.js\"",
@@ -17,7 +19,9 @@
     "build:settings": "cross-env-shell \"pulp build -O -m SettingsPage | browserify -g [ envify --NODE_ENV production ] -g uglifyify - | uglifyjs --compress --mangle > ${npm_package_config_buildjs}/settings.js\"",
     "dev:settings": "cross-env-shell \"pulp -w browserify -m SettingsPage --to ${npm_package_config_devjs}/settings.js\"",
     "build:scss": "cross-env-shell \"node-sass sass/styles.scss ${npm_package_config_buildcss}/styles-new.css\"",
-    "dev:scss": "cross-env-shell \"node-sass sass/styles.scss ${npm_package_config_devcss}/styles-new.css\""
+    "dev:scss": "cross-env-shell \"node-sass sass/styles.scss ${npm_package_config_devcss}/styles-new.css\"",
+    "build:langbundle": "cross-env-shell \"pulp build -O --to output/genlang.js -m Tools.GenLangStrings && node output/genlang.js > ${npm_package_config_buildlang}/jsbundle.json\"",
+    "dev:langbundle": "cross-env-shell \"pulp build -O --to output/genlang.js -m Tools.GenLangStrings && node output/genlang.js > ${npm_package_config_devlang}/jsbundle.json\""
   },
   "dependencies": {
     "create-react-class": "^15.6.2",

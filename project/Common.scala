@@ -4,7 +4,9 @@ import com.typesafe.config.{Config, ConfigFactory}
 import org.jdom2.Element
 import org.jdom2.input.SAXBuilder
 import org.jdom2.input.sax.XMLReaders
+import scala.sys.process._
 import sbt._
+import sbt.io.Using
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
@@ -26,6 +28,7 @@ object Common {
 
   def loadLangProperties(f: File, prefix: String, group: String) : LangStrings = {
     val p = new Properties()
+
     Using.fileInputStream(f) { finp =>
       val xml = f.getName.endsWith(".xml")
       if (xml) p.loadFromXML(finp) else p.load(finp)
