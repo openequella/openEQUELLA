@@ -102,7 +102,7 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 	private static final String KEY_IGNORE_STANDARD_TEMPLATE = "IGNORE_STANDARD_TEMPLATE";
 	private static final IncludeFile HEARTBEAT = new IncludeFile(RESOURCES.url("scripts/heartbeat.js"),
 		JQueryCore.JQUERY, JQueryTimer.PRERENDER);
-	private static final IncludeFile AUTOTEST_JS = new IncludeFile(RESOURCES.url("scripts/autotest.js"),
+	public static final IncludeFile AUTOTEST_JS = new IncludeFile(RESOURCES.url("scripts/autotest.js"),
 		JQueryCore.JQUERY);
 	private static final IncludeFile DEBUG_JS = new IncludeFile(RESOURCES.url("scripts/debug.js"), JQueryCore.PRERENDER);
 	private static final IncludeFile DEBUG_AARON_JS = new IncludeFile(RESOURCES.url("scripts/debug_aaron.js"),

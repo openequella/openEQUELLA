@@ -3,7 +3,7 @@
 
 <@css path="noportlets.css" hasRtl=true/>
 
-<div class="area">
+<div class="area dashboard-page">
 	<h2><@bundlekey "enduser.noportlets.title"/></h2>
 	
 	${b.key('enduser.noportlets.spiel')}

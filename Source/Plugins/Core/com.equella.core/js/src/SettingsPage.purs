@@ -93,7 +93,7 @@ settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didM
           renderGroup (Tuple "ui" details) = Just $ settingGroup details uiSettingsEditor
           renderGroup (Tuple id details) | Just _pages <- SM.lookup id groupMap =
             let pages = sortWith _.name _pages
-            in Just $ settingGroup details (list_ $ mapMaybe pageLink pages)
+            in Just $ settingGroup details $ expansionPanelDetails_ [ list_ $ mapMaybe pageLink pages ]
           renderGroup _ = Nothing
       in D.div' $ mapMaybe renderGroup groupDetails
 
@@ -102,9 +102,7 @@ settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didM
         typography [className classes.heading] [ D.text n ],
         typography [className classes.secondaryHeading] [ D.text d ]
       ],
-      expansionPanelDetails_ [
-        contents
-      ]
+      contents
     ]
 
     pageLink s@{pageUrl:Just pageUrl} = Just $ listItem_ [

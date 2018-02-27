@@ -16,10 +16,13 @@
 
 package com.tle.web.template
 
+import cats.data.OptionT
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.db.RunWithDB
 import com.tle.core.plugins.PluginTracker
+import com.tle.legacy.LegacyGuice
+import com.tle.web.DebugSettings
 import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.navigation.MenuService
 import com.tle.web.resources.ResourcesService
@@ -51,26 +54,32 @@ object RenderNewTemplate {
 
   def isNewLayout(info: SectionInfo): Boolean = {
     Option(info.getAttribute(NewLayoutKey)).getOrElse {
-      val oldOverride = Option(info.getRequest.getParameter("old")).map(_.toBoolean)
-      val lookedUp = if (oldOverride.isEmpty) {
-        RunWithDB.executeIfInInstitution(UISettings.cachedUISettings).map(_.newUI.enabled)
-      } else None
-      val newLayout = oldOverride.orElse(lookedUp).getOrElse(false)
+      val paramOverride = Option(info.getRequest.getParameter("old")).map(!_.toBoolean)
+      val sessionOverride = paramOverride.fold(Option(LegacyGuice.userSessionService.getAttribute[Boolean](NewLayoutKey))) {
+        newUI => LegacyGuice.userSessionService.setAttribute(NewLayoutKey, newUI)
+          Some(newUI)
+      }
+      val newLayout = sessionOverride.getOrElse {
+        RunWithDB.executeIfInInstitution(UISettings.cachedUISettings).getOrElse(UISettings.defaultSettings).newUI.enabled
+      }
       info.setAttribute(NewLayoutKey, newLayout)
       newLayout
     }
   }
 
-  case class TemplateScript(getScriptUrl : String,  getRenderJs: ObjectExpression, getTemplate: TemplateResult)
 
   def renderHtml(viewFactory: FreemarkerFactory, context: RenderEventContext,
                  tempResult: TemplateResult, menuService: MenuService): SectionResult = {
 
+    case class TemplateScript(getScriptUrl : String,  getRenderJs: ObjectExpression, getTemplate: TemplateResult)
+
     context.preRender(JQueryCore.PRERENDER)
+
     val decs = Decorations.getDecorations(context)
     if (decs.getReactUrl == null)
     {
       val precontext = context.getPreRenderContext
+      if (DebugSettings.isAutoTestMode) precontext.preRender(RenderTemplate.AUTOTEST_JS)
       precontext.preRender(RenderTemplate.STYLES_CSS)
       precontext.preRender(RenderTemplate.CUSTOMER_CSS)
     }

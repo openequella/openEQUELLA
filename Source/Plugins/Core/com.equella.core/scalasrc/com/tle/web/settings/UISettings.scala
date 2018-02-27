@@ -43,7 +43,7 @@ object UISettings {
 
   private val UIPropName = "ui"
 
-  val defaultSettings = UISettings(NewUISettings(false, None))
+  val defaultSettings = UISettings(NewUISettings(true, None))
 
   val getUISettings : DB[Option[UISettings]] = SettingsDB.jsonProperty[UISettings](UIPropName).value
 

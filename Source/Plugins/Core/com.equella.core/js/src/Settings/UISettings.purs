@@ -17,13 +17,15 @@ import Data.Lens.Record (prop)
 import Data.Lens.Setter (set)
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Newtype (class Newtype)
+import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
 import Dispatcher (DispatchEff(..))
 import Dispatcher.React (ReactProps(..), createLifecycleComponent, didMount, getState, modifyState)
 import EQUELLA.Environment (baseUrl)
 import MaterialUI.Button (button, fab)
 import MaterialUI.ButtonBase (onClick)
-import MaterialUI.FormControl (formControl)
+import MaterialUI.ExpansionPanelDetails (expansionPanelDetails_)
+import MaterialUI.FormControl (formControl, formControl_)
 import MaterialUI.FormControlLabel (control, formControlLabel, label)
 import MaterialUI.Icon (icon, icon_)
 import MaterialUI.PropTypes (handle)
@@ -32,6 +34,8 @@ import MaterialUI.Styles (withStyles)
 import MaterialUI.Switch (switch)
 import MaterialUI.SwitchBase (checked, disabled, onChange)
 import MaterialUI.TextField (margin, textField, value)
+import MaterialUI.TextStyle (headline, subheading)
+import MaterialUI.Typography (typography, typography_)
 import Network.HTTP.Affjax (AJAX, get, put_)
 import React (ReactElement, createFactory)
 import React.DOM (text)
@@ -104,6 +108,21 @@ uiSettingsEditor = createFactory (withStyles styles $ createLifecycleComponent (
       position: "absolute",
       bottom: 0,
       right: 16
+    },
+    enableColumn: {
+      flexBasis: "33.3%"
+    },
+    facetColumn: {
+      flexBasis: "50%"
+    },
+    facetConfig: {
+      position:"relative",
+      paddingBottom: 64
+    },
+    pathField: {
+      marginLeft: theme.spacing.unit,
+      marginRight: theme.spacing.unit,
+      width: 300
     }
   }
   _enabled = prop (SProxy :: SProxy "enabled")
@@ -121,21 +140,24 @@ uiSettingsEditor = createFactory (withStyles styles $ createLifecycleComponent (
       dis = disabled $ not newUI.enabled
       facetEditor ind (FacetSetting {name,path}) = D.div' [
         textField [dis, label "Name", margin "normal", value name, changeField _name],
-        textField [dis, label "Path", value path, changeField _path ],
+        textField [className classes.pathField, dis, margin "normal", label "Path", value path, changeField _path ],
         button [dis, onClick $ handle $ d \_ -> RemoveFacet ind ] [ icon_ [ text "delete"] ]
       ]
         where changeField l = onChange $ mkEffFn1 (d $ \e -> ModifyFacet ind $ set (_Newtype <<< l) e.target.value)
-    in D.div' $ [
-      formControl [] [
-        formControlLabel [ label "Enable new UI", control $ switch [checked newUI.enabled,
-          disabled s.disabled, onChange $ mkEffFn2 \e -> d $ SetNewUI ]
-        ]
-      ],
-      D.div [DP.style {position:"relative", paddingBottom: 64}] $ (mapWithIndex facetEditor newUI.facets)
-        <> [
+    in
+    expansionPanelDetails_ [
+      D.div [DP.className classes.enableColumn] [
+        formControl_ [
+          formControlLabel [ label "Enable new UI", control $ switch [checked newUI.enabled,
+                          disabled s.disabled, onChange $ mkEffFn2 \e -> d $ SetNewUI ]]
+                          ]],
+      D.div [DP.className $ joinWith " " [classes.facetConfig, classes.facetColumn] ] $ [
+          typography [variant subheading] [text "Search facets"]
+        ] <> (mapWithIndex facetEditor newUI.facets) <>
+        [
           button [dis, variant fab, className classes.fab, onClick $ handle $ d \e -> AddFacet] [ icon_ [text "add"] ]
         ]
-      ]
+    ]
 
   modifyFacets = modifyState <<< over (_settings <<< _UIfacets)
   modifyFacetsM f = modifyFacets \facets -> fromMaybe facets $ f facets

@@ -109,12 +109,11 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
 
   styles theme = {
     results: {
-      flexGrow: 2,
+      flexBasis: "75%",
       padding: 16
     },
     refinements: {
-      width: "25%",
-      maxWidth: "250px",
+      flexBasis: "25%",
       marginLeft: 16,
       padding: 16
     },
@@ -133,9 +132,6 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     layoutDiv: {
       display: "flex",
       justifyContent: "space-around"
-    },
-    searchPane: {
-      width: "75%"
     },
     queryWrapper: {
       fontFamily: theme.typography.fontFamily,
