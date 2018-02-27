@@ -22,7 +22,7 @@ case class LoginPage(ctx: PageContext) extends LoadablePage {
   }
 
   def load() = {
-    driver.get(ctx.getBaseUrl + "logon.do?logout=true")
+    driver.get(ctx.getBaseUrl + "logon.do?logout=true&old=true")
     get()
   }
 

@@ -24,7 +24,7 @@ public class ServerAdminLogonPage extends AbstractPage<ServerAdminLogonPage>
 
     @Override
     protected void loadUrl() {
-        driver.get(context.getTestConfig().getAdminUrl() + "institutions.do?method=admin");
+        driver.get(context.getTestConfig().getAdminUrl() + "institutions.do?method=admin&old=true");
     }
 
     @Override

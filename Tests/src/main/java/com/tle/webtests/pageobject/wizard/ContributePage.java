@@ -31,7 +31,7 @@ public class ContributePage extends AbstractPage<ContributePage>
 	@Override
 	protected void loadUrl()
 	{
-		driver.get(context.getBaseUrl() + "access/contribute.do");
+		driver.get(context.getBaseUrl() + "access/contribute.do?old=true");
 	}
 
 	public WizardPageTab openWizard(String collection)

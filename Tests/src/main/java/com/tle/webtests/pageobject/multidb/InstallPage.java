@@ -36,7 +36,7 @@ public class InstallPage extends AbstractPage<InstallPage>
 	@Override
 	protected void loadUrl()
 	{
-		driver.get(context.getBaseUrl() + "institutions.do");
+		driver.get(context.getBaseUrl() + "institutions.do?old=true");
 	}
 
 	public void setEmails(String emails)

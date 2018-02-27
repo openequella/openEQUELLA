@@ -1,12 +1,12 @@
 package equellatests.pages.moderate
 
 import com.tle.webtests.framework.PageContext
-import equellatests.browserpage.{CommonXPath, LoadablePage}
+import equellatests.browserpage.{CommonXPath, LoadablePage, TitledPage}
 import equellatests.sections.search._
 import org.openqa.selenium.By
 
 
-case class ManageTasksPage(ctx:PageContext) extends LoadablePage with QuerySection with NamedResultList {
+case class ManageTasksPage(ctx:PageContext) extends TitledPage("Manage tasks", "access/managetasks.do") with QuerySection with NamedResultList {
 
   case class ManageTasksBulkOps(parent: ManageTasksPage) extends BulkOperationDialog
   {
@@ -24,13 +24,6 @@ case class ManageTasksPage(ctx:PageContext) extends LoadablePage with QuerySecti
 
 
     def ctx = ManageTasksPage.this.ctx
-  }
-
-  override def pageBy: By = CommonXPath.pageTitle("Manage tasks")
-
-  def load() = {
-    driver.get(ctx.getBaseUrl + "access/managetasks.do")
-    get()
   }
 
   override def resultsUpdateExpectation = updatedBy(By.xpath("id('searchresults')[div[@class='itemlist'] or h3]/*[1]"))
