@@ -5,7 +5,7 @@ javacOptions ++= Seq("-source", "1.8")
 resourceDirectory in Compile := baseDirectory.value / "resources"
 
 javaSource in Compile := baseDirectory.value / "src"
-javaSource in Test := baseDirectory.value / "test"
+javaSource in Test := baseDirectory.value / "test/java"
 
 scalaSource in Compile := baseDirectory.value / "scalasrc"
 

@@ -32,7 +32,8 @@ object JPFPlugin extends AutoPlugin {
     jpfLibraryJars := Seq(),
     managedClasspath in Compile ++= jpfLibraryJars.value,
     javaSource in Compile := baseDirectory.value / "src",
-    javaSource in Test := baseDirectory.value / "test",
+    javaSource in Test := baseDirectory.value / "test/java",
+    resourceDirectory in Test := baseDirectory.value / "test/resources",
     scalaSource in Compile := baseDirectory.value / "scalasrc",
     updateOptions := updateOptions.value.withCachedResolution(true),
     jpfWriteDevJars := {

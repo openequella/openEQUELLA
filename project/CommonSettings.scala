@@ -47,6 +47,6 @@ object CommonSettings extends AutoPlugin {
       "EBI Nexus" at "http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/",
       Resolver.bintrayRepo("omegat-org", "maven")
     ),
-    libraryDependencies += "junit" % "junit" % "4.12" % Test
+    libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % Test
   )
 }
