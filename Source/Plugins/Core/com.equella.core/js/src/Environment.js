@@ -24,8 +24,5 @@ exports.prepLangStrings = function(t) {
       return val;
     }
   }
-  var retVal = overrideVal(t.value0, t.value1);
-  console.log(retVal);
-  console.log(t);
-  return retVal;
+  return overrideVal(t.value0, t.value1);
 }
