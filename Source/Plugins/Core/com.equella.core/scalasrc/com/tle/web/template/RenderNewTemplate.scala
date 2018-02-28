@@ -16,9 +16,9 @@
 
 package com.tle.web.template
 
-import cats.data.OptionT
 import com.tle.common.institution.CurrentInstitution
-import com.tle.common.usermanagement.user.CurrentUser
+import com.tle.common.settings.standard.AutoLogin
+import com.tle.common.usermanagement.user.{CurrentUser, UserState}
 import com.tle.core.db.RunWithDB
 import com.tle.core.i18n.LocaleLookup
 import com.tle.core.plugins.PluginTracker
@@ -28,9 +28,8 @@ import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.navigation.MenuService
 import com.tle.web.resources.ResourcesService
 import com.tle.web.sections._
-import com.tle.web.sections.equella.js.StandardExpressions
 import com.tle.web.sections.events._
-import com.tle.web.sections.events.js.{BookmarkAndModify, JSHandler}
+import com.tle.web.sections.events.js.BookmarkAndModify
 import com.tle.web.sections.jquery.libraries.JQueryCore
 import com.tle.web.sections.js.JSUtils
 import com.tle.web.sections.js.generic.expression.{ArrayExpression, ObjectExpression}
@@ -38,9 +37,7 @@ import com.tle.web.sections.js.generic.function.IncludeFile
 import com.tle.web.sections.render._
 import com.tle.web.settings.UISettings
 import com.tle.web.template.Decorations.MenuMode
-import com.tle.web.template.section.MenuContributor
 import io.circe.generic.auto._
-import io.circe.syntax._
 
 import scala.collection.JavaConverters._
 
@@ -66,6 +63,17 @@ object RenderNewTemplate {
       info.setAttribute(NewLayoutKey, newLayout)
       newLayout
     }
+  }
+
+  def userObj(state: UserState) : ObjectExpression = {
+    val prefsEditable = !(state.isSystem || state.isGuest) && !(state.wasAutoLoggedIn &&
+      LegacyGuice.configService.getProperties(new AutoLogin).isEditDetailsDisallowed)
+    new ObjectExpression(
+      "id", state.getUserBean.getUniqueID,
+      "guest", java.lang.Boolean.valueOf(state.isGuest),
+      "autoLogin", java.lang.Boolean.valueOf(state.wasAutoLoggedIn),
+      "prefsEditable", java.lang.Boolean.valueOf(prefsEditable)
+    )
   }
 
 
@@ -102,7 +110,9 @@ object RenderNewTemplate {
     val title = Option(decs.getTitle).map(_.getText).getOrElse("")
     val reactScript = Option(decs.getReactUrl).getOrElse(reactTemplate)
     val htmlVals = new ObjectExpression("body", html)
-    val renderData = new ObjectExpression("baseResources", r.url(""), "newUI", java.lang.Boolean.TRUE, "html", htmlVals, "title", title,
+    val renderData = new ObjectExpression("baseResources", r.url(""),
+      "newUI", java.lang.Boolean.TRUE, "html", htmlVals, "title", title,
+      "user", userObj(CurrentUser.getUserState),
       "menuItems", new ArrayExpression(JSUtils.convertExpressions(menuValues.toSeq: _*)))
     viewFactory.createResultWithModel("layouts/outer/react.ftl", TemplateScript(reactScript, renderData, tempResult))
   }

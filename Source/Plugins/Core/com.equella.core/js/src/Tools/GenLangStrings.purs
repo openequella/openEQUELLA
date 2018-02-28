@@ -12,6 +12,7 @@ import Data.StrMap (fromFoldable)
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Tuple (Tuple(..))
 import SearchPage (rawStrings) as SearchPage
+import Template (rawStrings) as Template
 import Settings.UISettings (rawStrings) as UISettings
 import SettingsPage (rawStrings) as SettingsPage
 import Type.Row (class RowToList, Cons, Nil, RLProxy(..))
@@ -43,6 +44,7 @@ instance prefixed :: ConvertToStrings a => ConvertToStrings (Tuple String a) whe
 main :: forall eff. Eff ( console :: CONSOLE | eff) Unit
 main = do
   log $ stringify $ encodeJson $ fromFoldable $
+    genStrings "" Template.rawStrings <>
     genStrings "" SearchPage.rawStrings <>
     genStrings "" UISettings.rawStrings <>
     genStrings "" SettingsPage.rawStrings

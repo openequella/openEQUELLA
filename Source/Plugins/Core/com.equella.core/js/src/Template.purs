@@ -4,6 +4,7 @@ import Prelude
 
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE)
+import Control.MonadZero (guard)
 import DOM (DOM)
 import DOM.HTML (window)
 import DOM.HTML.Types (HTMLElement, htmlDocumentToDocument)
@@ -14,9 +15,11 @@ import Data.Array (intercalate)
 import Data.Maybe (Maybe(..), fromJust, fromMaybe, isJust)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.StrMap as M
+import Data.Tuple (Tuple(..))
 import Data.Unfoldable as U
 import Dispatcher (DispatchEff(DispatchEff), effEval)
 import Dispatcher.React (ReactProps(ReactProps), createComponent, modifyState)
+import EQUELLA.Environment (prepLangStrings)
 import MaterialUI.AppBar (appBar)
 import MaterialUI.ButtonBase (onClick)
 import MaterialUI.Color (inherit)
@@ -51,9 +54,19 @@ newtype MenuItem = MenuItem {href::String, title::String, systemIcon::Nullable S
 
 data Command = ToggleMenu | UserMenuAnchor (Maybe HTMLElement)
 
-foreign import renderData :: {baseResources::String, html::M.StrMap String, title::String, menuItems :: Array (Array MenuItem), newUI::Boolean}
+type RenderData = {baseResources::String, html::M.StrMap String, title::String, menuItems :: Array (Array MenuItem), newUI::Boolean, user::UserData}
+type UserData = {id::String, guest::Boolean, autoLogin::Boolean, prefsEditable::Boolean}
+
+foreign import renderData :: RenderData
 
 type State = {mobileOpen::Boolean, menuAnchor::Maybe HTMLElement}
+
+rawStrings = Tuple "template" {
+  menu: {
+    logout:"Logout",
+    prefs:"My preferences"
+  }
+}
 
 initialState :: State
 initialState = {mobileOpen:false, menuAnchor:Nothing}
@@ -61,6 +74,7 @@ initialState = {mobileOpen:false, menuAnchor:Nothing}
 template :: {mainContent :: ReactElement, titleExtra::Maybe ReactElement} -> ReactElement
 template = createFactory (withStyles ourStyles (createComponent initialState render (effEval eval)))
   where
+  strings = prepLangStrings rawStrings
   drawerWidth = 240
   ourStyles theme = {
     root: {
@@ -146,21 +160,22 @@ template = createFactory (withStyles ourStyles (createComponent initialState ren
       ]
     ]
     where
-    userMenu = D.div' [
-      iconButton [color inherit, onClick $ handle $ d \e -> UserMenuAnchor $ Just e.currentTarget] [
-        icon_ [ D.text "account_circle"]
-      ],
-      menu [
-          anchorEl $ toNullable menuAnchor,
-          open $ isJust menuAnchor,
-          onClose $ handle $ d \_ -> UserMenuAnchor Nothing,
-          anchorOrigin $ { vertical: "top", horizontal: "right" },
-          transformOrigin $ { vertical: "top", horizontal: "right" }
-          ]
+    userMenu = D.div' do
+      guard (not renderData.user.guest)
       [
-        menuItem [component "a", mkProp "href" "logon.do?logout=true"] [D.text "Logout"]
+        iconButton [color inherit, onClick $ handle $ d \e -> UserMenuAnchor $ Just e.currentTarget] [
+          icon_ [ D.text "account_circle"]
+        ],
+        menu [
+            anchorEl $ toNullable menuAnchor,
+            open $ isJust menuAnchor,
+            onClose $ handle $ d \_ -> UserMenuAnchor Nothing,
+            anchorOrigin $ { vertical: "top", horizontal: "right" },
+            transformOrigin $ { vertical: "top", horizontal: "right" }
+        ] $
+          [ menuItem [component "a", mkProp "href" "logon.do?logout=true"] [D.text strings.menu.logout] ]
+          <> (guard renderData.user.prefsEditable $> menuItem [component "a", mkProp "href" "access/user.do"] [D.text strings.menu.prefs])
       ]
-    ]
     menuContent = [D.div [DP.className classes.logo] [ D.img [ DP.src logoSrc] []]] <>
                   intercalate [divider []] (group <$> renderData.menuItems)
       where
