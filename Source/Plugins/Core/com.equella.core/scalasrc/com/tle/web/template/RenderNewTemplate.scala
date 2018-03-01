@@ -30,6 +30,7 @@ import com.tle.web.resources.ResourcesService
 import com.tle.web.sections._
 import com.tle.web.sections.events._
 import com.tle.web.sections.events.js.BookmarkAndModify
+import com.tle.web.sections.jquery.JQueryStatement
 import com.tle.web.sections.jquery.libraries.JQueryCore
 import com.tle.web.sections.js.JSUtils
 import com.tle.web.sections.js.generic.expression.{ArrayExpression, ObjectExpression}
@@ -100,6 +101,9 @@ object RenderNewTemplate {
     val bodyTag = context.getBody
     if (!decs.isExcludeForm) {
       val formTag = context.getForm
+      formTag.addReadyStatements(new JQueryStatement(formTag,
+        "bind('submit', function(){if (!g_bSubmitting) return false; })"))
+
       formTag.setNestedRenderable(bodyResult)
       bodyTag.setNestedRenderable(formTag)
     } else {
