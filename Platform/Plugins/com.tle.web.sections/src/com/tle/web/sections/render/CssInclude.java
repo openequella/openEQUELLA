@@ -231,10 +231,15 @@ public class CssInclude implements PreRenderable, Comparable<CssInclude>
 			return this;
 		}
 
+		public CssIncludeBuilder hasNew(boolean hasNew)
+		{
+			inc.hasNew = hasNew;
+			return this;
+		}
+
 		public CssIncludeBuilder hasNew()
 		{
-			inc.hasNew = true;
-			return this;
+			return hasNew(true);
 		}
 
 		public CssIncludeBuilder hasRtl()

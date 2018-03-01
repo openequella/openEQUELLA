@@ -52,10 +52,15 @@ public class JQueryLibraryInclude extends IncludeFile
 		return fullJses;
 	}
 
-	public JQueryLibraryInclude(String js, String css, PreRenderable... preRenderables)
+	public JQueryLibraryInclude(String js, String css, boolean hasNew, PreRenderable... preRenderables)
 	{
 		this(js, preRenderables);
-		addPreRenderer(new CssInclude(urlHelper.url("css/jquerylib/" + css))); //$NON-NLS-1$
+		addPreRenderer(CssInclude.include(urlHelper.url("css/jquerylib/" + css)).hasNew(hasNew).make()); //$NON-NLS-1$
+	}
+
+	public JQueryLibraryInclude(String js, String css, PreRenderable... preRenderables)
+	{
+		this(js, css, false, preRenderables);
 	}
 
 	public JQueryLibraryInclude(String[] jses, String css, PreRenderable... preRenderables)

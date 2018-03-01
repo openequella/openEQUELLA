@@ -11,7 +11,7 @@ import DOM.HTML.Types (HTMLElement, htmlDocumentToDocument)
 import DOM.HTML.Window (document)
 import DOM.Node.NonElementParentNode (getElementById)
 import DOM.Node.Types (ElementId(ElementId), documentToNonElementParentNode)
-import Data.Array (intercalate)
+import Data.Array (catMaybes, intercalate)
 import Data.Maybe (Maybe(..), fromJust, fromMaybe, isJust)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.StrMap as M
@@ -172,9 +172,10 @@ template = createFactory (withStyles ourStyles (createComponent initialState ren
             onClose $ handle $ d \_ -> UserMenuAnchor Nothing,
             anchorOrigin $ { vertical: "top", horizontal: "right" },
             transformOrigin $ { vertical: "top", horizontal: "right" }
-        ] $
-          [ menuItem [component "a", mkProp "href" "logon.do?logout=true"] [D.text strings.menu.logout] ]
-          <> (guard renderData.user.prefsEditable $> menuItem [component "a", mkProp "href" "access/user.do"] [D.text strings.menu.prefs])
+        ] $ catMaybes
+          [ Just $ menuItem [component "a", mkProp "href" "logon.do?logout=true"] [D.text strings.menu.logout],
+            guard renderData.user.prefsEditable $> menuItem [component "a", mkProp "href" "access/user.do"] [D.text strings.menu.prefs]
+          ]
       ]
     menuContent = [D.div [DP.className classes.logo] [ D.img [ DP.src logoSrc] []]] <>
                   intercalate [divider []] (group <$> renderData.menuItems)

@@ -31,7 +31,7 @@ public class JQueryFancyBox implements JavascriptModule
 
 	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
 		DebugSettings.isDebuggingMode() ? "jquery.fancybox.js" : "jquery.fancybox.min.js",
-		DebugSettings.isDebuggingMode() ? "fancybox/jquery.fancybox.css" : "fancybox/jquery.fancybox.min.css");
+		DebugSettings.isDebuggingMode() ? "fancybox/jquery.fancybox.css" : "fancybox/jquery.fancybox.min.css", true);
 
 	public static final JSCallAndReference FANCYBOX = new ExternallyDefinedFunction("fancybox", -1, PRERENDER);
 
