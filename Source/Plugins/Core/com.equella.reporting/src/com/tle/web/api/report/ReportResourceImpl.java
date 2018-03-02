@@ -1,0 +1,81 @@
+/*
+ * Copyright 2017 Apereo
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.tle.web.api.report;
+
+import com.tle.beans.entity.report.Report;
+import com.tle.common.security.PrivilegeTree;
+import com.tle.common.security.SecurityConstants;
+import com.tle.core.guice.Bind;
+import com.tle.core.reporting.ReportingService;
+import com.tle.web.api.baseentity.serializer.BaseEntitySerializer;
+import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
+import com.tle.web.api.interfaces.beans.SearchBean;
+import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.ws.rs.core.UriInfo;
+
+@SuppressWarnings("nls")
+@Bind(ReportResource.class)
+@Singleton
+public class ReportResourceImpl extends
+        AbstractBaseEntityResource<Report, BaseEntitySecurityBean, ReportBean> implements ReportResource {
+
+    @Inject
+    private ReportingService reportingService;
+
+    @Inject
+    private ReportBeanSerializer reportSerializer;
+
+    @Override
+    public SearchBean<ReportBean> list(UriInfo uriInfo)
+    {
+        return super.list(uriInfo);
+    }
+
+    @Override
+    protected PrivilegeTree.Node[] getAllNodes() {
+        return new PrivilegeTree.Node[]{PrivilegeTree.Node.ALL_REPORTS};
+    }
+
+    @Override
+    protected BaseEntitySecurityBean createAllSecurityBean() {
+        return new BaseEntitySecurityBean();
+    }
+
+    @Override
+    protected ReportingService getEntityService() {
+        return reportingService;
+    }
+
+    @Override
+    protected int getSecurityPriority() {
+        // TODO is there a better Security Priority to assign?
+        return SecurityConstants.PRIORITY_ALL_REPORTS;
+    }
+
+    @Override
+    protected BaseEntitySerializer<Report, ReportBean> getSerializer() {
+        return reportSerializer;
+    }
+
+    @Override
+    protected Class<?> getResourceClass() {
+        return ReportResource.class;
+    }
+}

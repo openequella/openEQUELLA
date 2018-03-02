@@ -16,6 +16,13 @@
 
 package com.tle.common.security;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_COLLECTIONS;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_CONNECTORS;
 import static com.tle.common.security.SecurityConstants.PRIORITY_ALL_COURSE_INFO;
@@ -71,13 +78,6 @@ import static com.tle.common.security.SecurityConstants.PRIORITY_TAXONOMY;
 import static com.tle.common.security.SecurityConstants.PRIORITY_USER_SCRIPTS;
 import static com.tle.common.security.SecurityConstants.PRIORITY_WORKFLOW;
 import static com.tle.common.security.SecurityConstants.PRIORITY_WORKFLOW_TASK;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * @author Nicholas Read
@@ -375,10 +375,16 @@ public final class PrivilegeTree
 		PrivilegeNode courseInfo = buildEntity(Node.COURSE_INFO, Node.ALL_COURSE_INFO, "COURSE_INFO");
 
 		// Reports
-		PrivilegeNode reports = buildBasic(Node.REPORT, Node.ALL_REPORTS, "REPORT");
+		// DESIGN_REPORT allows a user to connect into Equella via BIRT Report Designer
+		PrivilegeNode reports = buildEntity(Node.REPORT, Node.ALL_REPORTS, "REPORT");
 		reports.registerPrivilege("DESIGN_REPORT");
+
+		// EXECUTE_REPORT allows a user to run a report
+		// VIEW_REPORT allows a user to view the report via the API, and
+		// in the future, in Settings > Manage Reports UI
 		PrivilegeNode report = reports.getChildren().get(0);
 		report.registerPrivilege("EXECUTE_REPORT");
+		report.registerPrivilege("VIEW_REPORT");
 
 		// Dynamic Item Metadata
 		PrivilegeNode dynamicItemMetadata = new PrivilegeNode(Node.DYNAMIC_ITEM_METADATA);

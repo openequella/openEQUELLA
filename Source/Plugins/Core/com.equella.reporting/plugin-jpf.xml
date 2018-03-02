@@ -16,11 +16,14 @@
     <import plugin-id="com.tle.web.sections" />
     <import plugin-id="com.tle.web.sections.equella" />
     <import plugin-id="com.tle.web.services" />
+    <import plugin-id="com.tle.web.remoting.rest" />
   </requires>
   <extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
     <parameter id="class" value="com.tle.core.reporting.guice.ReportingModule" />
     <parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
     <parameter id="class" value="com.tle.web.sections.equella.guice.EquellaModule" />
+    <parameter id="class" value="com.tle.web.remoting.rest.docs.DocsModule" />
+    <parameter id="class" value="com.tle.web.remoting.resteasy.RestEasyModule" />
   </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="objects">
     <parameter id="class" value="com.tle.beans.entity.report.Report" />
@@ -77,5 +80,8 @@
   <extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings_resource-centre">
     <parameter id="group" value="resource-centre" />
     <parameter id="file" value="lang/i18n-resource-centre.properties" />
+  </extension>
+  <extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="ReportRestService">
+    <parameter id="class" value="com.tle.web.api.report.ReportResource" />
   </extension>
 </plugin>
