@@ -27,6 +27,8 @@ import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.AbstractItemXmlMigrator;
 import com.tle.core.institution.convert.ConverterParams;
+import com.tle.core.xml.XmlDocument;
+import org.w3c.dom.Node;
 
 @Bind
 @Singleton
@@ -37,20 +39,14 @@ public class WorkflowMessageUuidXmlMigration extends AbstractItemXmlMigrator
 	public boolean migrate(ConverterParams params, PropBagEx xml, SubTemporaryFile file, String filename)
 		throws Exception
 	{
-		String xpath = "com.tle.common.workflow.WorkflowItemStatus/comments/com.tle.common.workflow.WorkflowMessage";
-		Iterator<PropBagEx> iter = xml.iterateAll(xpath);
-		boolean modified = false;
+		XmlDocument xpathDoc = new XmlDocument(xml.getRootElement().getOwnerDocument());
+		XmlDocument.NodeListIterable messages =
+				xpathDoc.nodeList("//com.tle.common.workflow.WorkflowMessage[count(uuid) = 0]");
 
-		while( iter.hasNext() )
+		for (Node msg : messages)
 		{
-			PropBagEx comment = iter.next();
-			if( Check.isEmpty(comment.getNode("uuid")) )
-			{
-				comment.setNode("uuid", UUID.randomUUID().toString());
-				modified = true;
-			}
-		}
-
-		return modified;
+		    xpathDoc.createNode(msg, "uuid").setTextContent(UUID.randomUUID().toString());
+    	}
+		return messages.size() > 0;
 	}
 }
