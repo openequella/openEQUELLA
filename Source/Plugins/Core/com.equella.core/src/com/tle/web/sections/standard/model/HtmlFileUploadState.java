@@ -26,6 +26,7 @@ public class HtmlFileUploadState extends HtmlComponentState
 {
 	private Bookmark ajaxUploadUrl;
 	private JSAssignable validateFile;
+	private boolean dontInitialise;
 
 	public Bookmark getAjaxUploadUrl()
 	{
@@ -47,4 +48,14 @@ public class HtmlFileUploadState extends HtmlComponentState
 		this.validateFile = validateFile;
 	}
 
+
+	public void setDontInitialise(boolean dontInitialise)
+	{
+		this.dontInitialise = dontInitialise;
+	}
+
+	public boolean isDontInitialise()
+	{
+		return dontInitialise;
+	}
 }

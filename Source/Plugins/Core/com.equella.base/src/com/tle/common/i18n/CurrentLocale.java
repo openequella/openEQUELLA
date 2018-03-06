@@ -54,6 +54,11 @@ public final class CurrentLocale
 		return getImpl().get(key, values);
 	}
 
+	public static String getFormatForKey(String key)
+	{
+		return getImpl().resolveKey(key).getSecond();
+	}
+
 	public static String get(LanguageBundle bundle)
 	{
 		return getImpl().get(bundle);

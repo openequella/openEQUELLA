@@ -1,5 +1,5 @@
 
-function setupFileDrop(options, filedrag)
+function setupFileDrop(filedrag, options)
 {
     var $file = $('#'+filedrag.id+"_file");
     $(filedrag).bind('click', function(e) {
@@ -15,8 +15,11 @@ function setupFileDrop(options, filedrag)
         var files = e.target.files || e.dataTransfer.files;
         for (var i = 0, f; f = files[i]; i++) {
             var xhr = null;
-            xhr = new XMLHttpRequest();
-            xhr.open("POST", options.ajaxUploadUrl, true);
+            if (options.ajaxUploadUrl)
+            {
+                xhr = new XMLHttpRequest();
+                xhr.open("POST", options.ajaxUploadUrl, true);
+            }
             if (!options.validateFile || options.validateFile(f, xhr))
             {
                 if (xhr)

@@ -99,6 +99,7 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
   @PlugKey("handlers.file.zipdetails.link.selectnone") var selectNone: Link = _
   @Component var attachZip : Checkbox = _
   @Component var viewers : SingleSelectionList[NameValue] = _
+  @Component var previewCheckBox: Checkbox = _
   @Component var restrictCheckbox: Checkbox = _
   @Component(name = "st") var suppressThumbnails : Checkbox = _
 
@@ -189,9 +190,11 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
 
     def isShowViewers = viewers.getListModel.getOptions(info).size() != 2
 
-    def isShowPreview = false
+    def isShowPreview = ctx.controlSettings.isAllowPreviews
 
     def isShowRestrict = showRestrict
+
+    def getPreviewCheckBox = previewCheckBox
 
     def getRestrictCheckbox = restrictCheckbox
 
@@ -215,7 +218,19 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
 
     def getExecuteUnzip = executeUnzip
 
-    def getFileListDiv = fileListDiv
+    lazy val getFileListDiv = {
+      val pa = _files.groupBy(_.parentPath)
+      def mkNodeChildren(path: String): ObjectExpression =
+        new ObjectExpression("folder", false.asInstanceOf[Object],
+          "children", pa.getOrElse(path, Seq.empty).filter(!_.isFolder).map(_.id).asJavaCollection)
+
+      val map = new ObjectExpression("ROOT", mkNodeChildren(""))
+      _files.filter(_.isFolder).foreach { e =>
+        map.put(e.id, mkNodeChildren(e.getPath))
+      }
+      fileListDiv.addReadyStatements(info, new AssignStatement(SELECTION_TREE, map))
+      fileListDiv
+    }
 
     def getSelections = selections
 
@@ -227,24 +242,27 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
 
     def isUnzipped = zipHandler.unzipped
 
-    def isUnzipping = zipHandler.zipProgress.isDefined
+    def isUnzipping = _isUnzipping
 
     def getZipProgressDiv = zipProgressDiv
 
-    lazy val _files = {
-      val allEntries = zipHandler.unzippedEntries
-      val (files, folders) = convertFileList("", "", 1, allEntries)
-      (files ++ folders).zipWithIndex.map {
-        case (efp, i) =>
-          val id = "s" + i
-          val check = if (efp.file) selections.getBooleanState(info, efp.fullpath) else {
-            val s = new HtmlBooleanState
-            s.setClickHandler(Js.handler(Js.call_s(SELECT_FUNCTION, id)))
-            s
-          }
-          check.setId(id)
-          new EntryDisplay(efp, check, id)
-      }
+    lazy val (_isUnzipping, _files) = {
+      val _unzipping = zipHandler.zipProgress.exists(!_.isFinished)
+      if (!_unzipping) {
+        val allEntries = zipHandler.unzippedEntries
+        val (files, folders) = convertFileList("", "", 1, allEntries)
+        (false, (files ++ folders).zipWithIndex.map {
+          case (efp, i) =>
+            val id = "s" + i
+            val check = if (efp.file) selections.getBooleanState(info, efp.fullpath) else {
+              val s = new HtmlBooleanState
+              s.setClickHandler(Js.handler(Js.call_s(SELECT_FUNCTION, id)))
+              s
+            }
+            check.setId(id)
+            new EntryDisplay(efp, check, id)
+        })
+      } else (true, Seq.empty)
     }
 
     def getFiles: util.Collection[EntryDisplay] = _files.asJavaCollection
@@ -252,23 +270,8 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
 
   def renderDetails(context: RenderContext): (SectionRenderable, DialogRenderOptions => Unit) = {
     val m = getModel(context)
-    if (m.isUnzipped) prepareFileList(context, m)
     if (m.appletMode != null) editFileDiv.addReadyStatements(context, createInplaceApplet(context))
     (renderModel("file/file-edit.ftl", m), _.setSaveClickHandler(saveClickHandler))
-  }
-
-  def prepareFileList(context: RenderContext, m: FileEditDetailsModel) = {
-    val pa = m._files.groupBy(_.parentPath)
-
-    def mkNodeChildren(path: String): ObjectExpression =
-      new ObjectExpression("folder", false.asInstanceOf[Object],
-        "children", pa.getOrElse(path, Seq.empty).filter(!_.isFolder).map(_.id).asJavaCollection)
-
-    val map = new ObjectExpression("ROOT", mkNodeChildren(""))
-    m._files.filter(_.isFolder).foreach { e =>
-      map.put(e.id, mkNodeChildren(e.getPath))
-    }
-    fileListDiv.addReadyStatements(context, new AssignStatement(SELECTION_TREE, map))
   }
 
   def prepareUI(info: SectionInfo): Unit = {
@@ -280,6 +283,7 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
       case _ => ()
     }
     displayName.setValue(info, et.getDescription)
+    previewCheckBox.setChecked(info, et.isPreview)
     restrictCheckbox.setChecked(info, et.isRestricted)
     viewers.setSelectedStringValue(info, et.getViewer)
     suppressThumbnails.setChecked(info, WebFileUploads.isSuppressThumbnail(et))
@@ -290,6 +294,7 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
     def copyExtra(src: Attachment, dest: Attachment): Unit = {
       dest.setUuid(src.getUuid)
       dest.setRestricted(src.isRestricted)
+      dest.setPreview(src.isPreview)
       dest.setMd5sum(src.getMd5sum)
       dest.setThumbnail(src.getThumbnail)
     }
@@ -341,6 +346,10 @@ class FileEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, 
     a.setDescription(displayName.getValue(info))
     if (showRestrict) {
       a.setRestricted(restrictCheckbox.isChecked(info))
+    }
+    if (ctx.controlSettings.isAllowPreviews)
+    {
+      a.setPreview(previewCheckBox.isChecked(info))
     }
     if (ctx.controlSettings.isShowThumbOption) {
       val wasSuppressed = WebFileUploads.isSuppressThumbnail(_a)

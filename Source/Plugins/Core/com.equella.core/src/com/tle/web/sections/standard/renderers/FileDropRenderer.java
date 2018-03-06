@@ -24,6 +24,8 @@ import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.SectionsRuntimeException;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.jquery.libraries.JQueryProgression;
+import com.tle.web.sections.js.ElementId;
+import com.tle.web.sections.js.JSAssignable;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.JSStatements;
 import com.tle.web.sections.js.generic.Js;
@@ -32,6 +34,7 @@ import com.tle.web.sections.js.generic.expression.ElementValueExpression;
 import com.tle.web.sections.js.generic.expression.ObjectExpression;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
+import com.tle.web.sections.js.generic.function.PartiallyApply;
 import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.TagRenderer;
 import com.tle.web.sections.standard.model.HtmlFileDropState;
@@ -44,10 +47,10 @@ public class FileDropRenderer extends TagRenderer
 {
 	private static final PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(FileDropRenderer.class);
 
-	private static final CssInclude CSS = CssInclude.include(urlHelper.url("css/filedrop.css")).make();
+	public static final CssInclude CSS = CssInclude.include(urlHelper.url("css/filedrop.css")).make();
 	private static final IncludeFile JS = new IncludeFile(urlHelper.url("js/filedrop.js"));
 
-	private static final String KEY_DND = urlHelper.key("dnd.dropfiles");
+	public static final String KEY_DND = urlHelper.key("dnd.dropfiles");
 
 	private static final JSCallable SETUP = new ExternallyDefinedFunction("setupFileDrop", JS,
 		JQueryProgression.PRERENDER);
@@ -88,20 +91,27 @@ public class FileDropRenderer extends TagRenderer
 	{
 		super.preRender(info);
 		info.preRender(CSS);
+		if (!dropState.isDontInitialise())
+		{
+			ObjectExpression oe = new ObjectExpression();
+			Bookmark ajaxUploadUrl = dropState.getAjaxUploadUrl();
+			if (ajaxUploadUrl != null)
+			{
+				oe.put("ajaxUploadUrl", ajaxUploadUrl.getHref());
+				oe.put("validateFile", dropState.getValidateFile());
+			}
+			else
+			{
+				throw new SectionsRuntimeException("Must set an ajax upload url for filedrop");
+			}
+			oe.put("maxFiles", dropState.getMaxFiles());
+			final JSStatements initDnd = Js.call_s(SETUP, new ElementByIdExpression(this), oe);
+			info.addReadyStatements(initDnd);
+		}
+	}
 
-		ObjectExpression oe = new ObjectExpression();
-		Bookmark ajaxUploadUrl = dropState.getAjaxUploadUrl();
-		if( ajaxUploadUrl != null )
-		{
-			oe.put("ajaxUploadUrl", ajaxUploadUrl.getHref());
-			oe.put("validateFile", dropState.getValidateFile());
-		}
-		else
-		{
-			throw new SectionsRuntimeException("Must set an ajax upload url for filedrop");
-		}
-		oe.put("maxFiles", dropState.getMaxFiles());
-		final JSStatements initDnd = Js.call_s(SETUP, oe, new ElementByIdExpression(this));
-		info.addReadyStatements(initDnd);
+	public static JSAssignable setupFileDropFunc(ElementId id)
+	{
+		return PartiallyApply.partial(SETUP, 1, new ElementByIdExpression(id));
 	}
 }

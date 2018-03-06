@@ -18,8 +18,9 @@ package com.tle.web.controls.universal.handlers
 
 import java.util
 import java.util.{Collections, UUID}
-import javax.inject.Inject
 
+import com.google.common.io.ByteStreams
+import javax.inject.Inject
 import com.tle.beans.item.ItemId
 import com.tle.beans.item.attachments._
 import com.tle.common.collection.AttachmentConfigConstants
@@ -30,6 +31,7 @@ import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings
 import com.tle.core.filesystem.staging.service.StagingService
 import com.tle.core.guice.Bind
 import com.tle.core.item.service.{ItemFileService, ItemService}
+import com.tle.core.json.CirceUtils
 import com.tle.core.mimetypes.MimeTypeService
 import com.tle.core.plugins.AbstractPluginService
 import com.tle.core.security.TLEAclManager
@@ -38,7 +40,9 @@ import com.tle.core.workflow.thumbnail.service.ThumbnailService
 import com.tle.core.workflow.video.VideoService
 import com.tle.mycontent.service.MyContentService
 import com.tle.mycontent.web.selection.{MyContentSelectable, MyContentSelectionSettings}
+import com.tle.web.controls.universal.UniversalWebControlNew.uploadListSrc
 import com.tle.web.controls.universal._
+import com.tle.web.controls.universal.handlers.fileupload.WebFileUploads.{attachmentCreatorForUpload, validateContent}
 import com.tle.web.controls.universal.handlers.fileupload._
 import com.tle.web.controls.universal.handlers.fileupload.details._
 import com.tle.web.freemarker.FreemarkerFactory
@@ -48,28 +52,32 @@ import com.tle.web.resources.ResourcesService
 import com.tle.web.sections.ajax.AjaxGenerator
 import com.tle.web.sections.ajax.handler.{AjaxFactory, AjaxMethod}
 import com.tle.web.sections.annotations.{Bookmarked, EventHandlerMethod}
-import com.tle.web.sections.equella.ajaxupload.AjaxUpload
+import com.tle.web.sections.equella.ajaxupload._
 import com.tle.web.sections.equella.annotation.PlugKey
-import com.tle.web.sections.equella.render.UnselectLinkRenderer
+import com.tle.web.sections.equella.render.{EquellaFileUploadExtension, UnselectLinkRenderer}
 import com.tle.web.sections.events.RenderContext
 import com.tle.web.sections.events.js.BookmarkAndModify
 import com.tle.web.sections.generic.InfoBookmark
 import com.tle.web.sections.jquery.JQuerySelector
 import com.tle.web.sections.js.generic.StatementHandler
-import com.tle.web.sections.js.generic.function.{PartiallyApply, PassThroughFunction}
-import com.tle.web.sections.render.{CombinedRenderer, Label, SectionRenderable, TextLabel}
+import com.tle.web.sections.js.generic.expression.ObjectExpression
+import com.tle.web.sections.js.generic.function.{AnonymousFunction, ExternallyDefinedFunction, PartiallyApply, PassThroughFunction}
+import com.tle.web.sections.render._
 import com.tle.web.sections.result.util.KeyLabel
 import com.tle.web.sections.standard._
 import com.tle.web.sections.standard.annotations.Component
 import com.tle.web.sections.standard.model.{HtmlComponentState, HtmlLinkState, TableState}
-import com.tle.web.sections.standard.renderers.{DivRenderer, LinkRenderer}
-import com.tle.web.sections.{Bookmark, SectionInfo, SectionTree}
+import com.tle.web.sections.standard.renderers.{DivRenderer, FileDropRenderer, LinkRenderer}
+import com.tle.web.sections._
 import com.tle.web.selection.filter.SelectionFilter
 import com.tle.web.selection.{ParentFrameSelectionCallback, SelectedResourceDetails, SelectionService, SelectionSession}
-import com.tle.web.viewurl.attachments.AttachmentResourceService
+import com.tle.web.viewurl.attachments.{AttachmentNode, AttachmentResourceService}
 import com.tle.web.viewurl.{AttachmentDetail, ViewItemService, ViewableResource}
+import io.circe.parser.decode
+import io.circe.syntax._
 
 import scala.collection.JavaConverters._
+import scala.io.Source
 
 class FileUploadHandlerModel extends AbstractDetailsAttachmentHandler.AbstractAttachmentHandlerModel {
   @Bookmarked(name = "s") var selecting = false
@@ -89,6 +97,10 @@ object FileUploadHandlerNew {
   val LABEL_REMOVE_UPLOAD = l("handlers.file.link.removeupload")
   val LABEL_CANCEL_UPLOAD = l("handlers.file.link.cancelupload")
   val VIEW_LINK_LABEL = l("handlers.file.viewlink")
+  val SCRAPBOOK_LABEL = l("handlers.file.link.filesfromscrapbook")
+
+  val universalUploadFunc = new ExternallyDefinedFunction("PS.universalUpload", uploadListSrc, AjaxUpload.CSS_INCLUDE, EquellaFileUploadExtension.CSS)
+
 }
 
 import com.tle.web.controls.universal.handlers.FileUploadHandlerNew._
@@ -113,10 +125,6 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
   @Inject var videoService: VideoService = _
   @Inject var inplaceEditorService: InPlaceEditorWebService = _
 
-  @Component var fileUpload: FileUpload = _
-  @Component
-  @PlugKey("handlers.file.link.filesfromscrapbook") var filesFromScrapbookLink: Link = _
-  @Component var fileDrop: FileDrop = _
   @AjaxFactory var ajax: AjaxGenerator = _
   @Component
   @PlugKey("handlers.file.action.next") var optionsButton: Button = _
@@ -134,7 +142,6 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
   override def registered(id: String, tree: SectionTree): Unit = {
     super.registered(id, tree)
     ctx = new AfterRegister(id, tree, state)
-    filesFromScrapbookLink.setClickHandler(events.getNamedHandler("startSelection"))
   }
 
   def getHandlerId: String = "fileHandler"
@@ -188,22 +195,6 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
   override def isHiddenFromSummary(attachment: IAttachment): Boolean =
     super.isHiddenFromSummary(attachment) || WebFileUploads.zipAttachment(attachment).exists(!_.isAttachZip)
 
-  @AjaxMethod def processUploadDND(info: SectionInfo): SectionRenderable = WebFileUploads.ajaxUpload(info, ctx, fileDrop)
-
-  @AjaxMethod def processUploadOld(info: SectionInfo): SectionRenderable = WebFileUploads.ajaxUpload(info, ctx, fileUpload)
-
-  @EventHandlerMethod def finishedUpload(info: SectionInfo, uploadId: UUID): Unit = {
-    WebFileUploads.removeFailedUploads(ctx, Some(uploadId))
-    WebFileUploads.validateAllFinished(info, ctx)
-  }
-
-  @EventHandlerMethod def illegalFile(info: SectionInfo, filename: String, reason: String): Unit =
-    ctx.state.newIllegalFile(filename, IllegalFileReason.fromString(reason))
-
-  @EventHandlerMethod def removeUpload(info: SectionInfo, uuid: UUID): Unit = {
-    ctx.stopOrCancel(info, uuid)
-  }
-
   @EventHandlerMethod def nextPage(info: SectionInfo): Unit = {
     getModel(info).setEditDetails(true)
     ctx.startEdit(info)
@@ -216,29 +207,26 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
     ctx.selectionsMade(info, selectedResources.asScala)
   }
 
+  @AjaxMethod def uploadCommand(info: SectionInfo): SectionResult = ctx.processUploadCommand(info)
 
   class AfterRegister(id: String, tree: SectionTree, val controlState: UniversalControlState)
     extends ControlContext with RenderHelper with ZipHandler with ViewerHandler with EditingHandler {
 
-    val canScrapbook = myContentService.isMyContentContributionAllowed
+    val commandModifier = ajax.getModifier("uploadCommand")
+    val updateFooter = controlState.getDialog.getFooterUpdate(tree, null)
+    val scrapBookOnClick = Option(new AnonymousFunction(events.getNamedHandler("startSelection")))
+                            .filter(_ => myContentService.isMyContentContributionAllowed)
     val state: FileUploadState = new FileUploadState
     val stagingContext = new FileStagingContext(Option(repo.getStagingid), repo.getItem.getItemId, fileSystemService, thumbnailService,
       videoService, mimeTypeService, controlState.getRepository)
     val controlSettings = new FileUploadSettings(controlState.getControlConfiguration)
-    val cancelFunc = ajax.getAjaxUpdateDomFunction(tree, FileUploadHandlerNew.this, events.getEventHandler("removeUpload"),
-      ajax.getEffectFunction(AjaxGenerator.EffectType.REPLACE_IN_PLACE), "uploads")
 
-    val validateFile = {
-      val errorCallback = PartiallyApply.partial(events.getSubmitValuesFunction("illegalFile"), 2)
-      val doneCallback = PartiallyApply.partial(events.getSubmitValuesFunction("finishedUpload"), 1)
-      val startedUpload = AjaxUpload.createProgressFunc(new JQuerySelector(JQuerySelector.Type.RAW, "#uploads .uploadsprogress"), cancelFunc)
-      WebFileUploads.validateFunc(controlSettings, errorCallback, startedUpload, doneCallback)
-    }
     val _resultsCallback = new PassThroughFunction("r" + id, events.getSubmitValuesFunction("selectionsMade"))
 
     val showRestrict = hasInstitutionPrivilege(AttachmentConfigConstants.RESTRICT_ATTACHMENTS)
     private def getEditingAttachment(info: SectionInfo) = getEditState.a
-    val fileEditDetails = new FileEditDetails(id, tree, this, this, this, this, showRestrict, getEditingAttachment, inplaceEditorService)
+    val fileEditDetails = new FileEditDetails(id, tree, this, this, this, this, showRestrict,
+      getEditingAttachment, inplaceEditorService)
     val packageEditDetails = new PackageEditDetails(id, tree, this, this, showRestrict, getEditingAttachment)
     val fileOptions = new FileOptions(id, tree, controlSettings, this, _ => singleUpload, resolvedType)
 
@@ -281,44 +269,25 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
     def allValidatedUploads = CurrentUpload.validatedUploads(state.allCurrentUploads)
 
 
-    class UploadDisplay(id: UUID, filename: String, finished: Boolean) {
-      def getFilename = filename
-
-      val getProgressDiv = {
-        val progressDivState = new HtmlComponentState
-        val progressDiv = new DivRenderer(progressDivState)
-        progressDivState.setId("u" + id)
-        if (finished) {
-          val inner = new DivRenderer("")
-          inner.addClass("progress-bar-inner complete")
-          progressDiv.setNestedRenderable(inner)
-        }
-        progressDiv
+    case class FileAddModel(info: SectionInfo) {
+      def getReactTag = {
+        val ts = new TagState()
+        ts.setId(id+"_react")
+        val uploadArgs = new ObjectExpression("elem", ts,
+          "ctrlId", id,
+          "commandUrl", new BookmarkAndModify(info, commandModifier).getHref,
+          "scrapBookOnClick", scrapBookOnClick.orNull,
+          "updateFooter", PartiallyApply.partial(updateFooter, 0),
+          "strings", new ObjectExpression(
+            "scrapbook", SCRAPBOOK_LABEL.getText,
+            "delete", LABEL_REMOVE_UPLOAD.getText,
+            "cancel", LABEL_CANCEL_UPLOAD.getText,
+            "drop", CurrentLocale.get(FileDropRenderer.KEY_DND)
+          )
+        )
+        ts.addReadyStatements(universalUploadFunc, uploadArgs)
+        new DivRenderer(ts)
       }
-
-      val getRemove = {
-        val remove = new HtmlLinkState
-        remove.setClickHandler(new StatementHandler(cancelFunc, id))
-        new UnselectLinkRenderer(remove, if (finished) LABEL_REMOVE_UPLOAD else LABEL_CANCEL_UPLOAD)
-      }
-    }
-
-    case class FileAddModel(_uploads: Iterable[CurrentUpload]) {
-      def isCanScrapbook = canScrapbook
-
-      val getUploads = _uploads.collect {
-        case UploadingFile(id, _, fn, _, _, _) => new UploadDisplay(id, fn, false)
-        case SuccessfulUpload(id, _, fn, _, _, _) => new UploadDisplay(id, fn, true)
-        case v: ValidatedUpload => new UploadDisplay(v.id, v.s.originalFilename, true)
-      }.asJava
-
-      def getProblemLabel = WebFileUploads.errorMessage(_uploads).orNull
-
-      def getFileUpload = fileUpload
-
-      def getFileDrop = fileDrop
-
-      def getFilesFromScrapbookLink = filesFromScrapbookLink
     }
 
     class DetailsModel(info: SectionInfo) {
@@ -361,13 +330,8 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
     }
 
     def renderFileUpload(context: RenderContext): (SectionRenderable, DialogRenderOptions => Unit) = {
-      fileUpload.setAjaxUploadUrl(context, new BookmarkAndModify(context, ajax.getModifier("processUploadOld")))
-      fileDrop.setAjaxUploadUrl(context, new BookmarkAndModify(context, ajax.getModifier("processUploadDND")))
-      fileUpload.setValidateFile(context, validateFile)
-      fileDrop.setValidateFile(context, validateFile)
-
       val allUploads = state.allCurrentUploads
-      val m = FileAddModel(allUploads)
+      val m = FileAddModel(context)
       (renderModel("file/file-add.ftl", m), prepareOptions(context, allUploads))
     }
 
@@ -458,7 +422,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
     def prepareOptions(context: RenderContext, uploads: Iterable[CurrentUpload])(renderOptions: DialogRenderOptions): Unit = {
       // Can move on if there are no uploading files and at least one successful upload
-      if (!uploads.exists(!_.finished)) {
+      if (uploads.forall(_.finished)) {
         val allValidated = allValidatedUploads
         if (allValidated.size == 1) {
           optionsButton.setClickHandler(context, events.getNamedHandler("nextPage"))
@@ -598,7 +562,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
     lazy val viewerListModel: ViewersListModel = new ViewersListModel(viewItemService, viewableResource)
 
-    def zipProgress: Option[ZipProgress] = getEditState.zipProgress.filter(!_.isFinished)
+    def zipProgress: Option[ZipProgress] = getEditState.zipProgress
 
     def editingArea: String = {
       val eds = getEditState
@@ -617,6 +581,61 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
       }
     }
 
+
+    def processUploadCommand(info: SectionInfo) : SectionResult = {
+      val request = info.getRequest
+
+      def uploadStream(uploadId: UUID) : AjaxUploadResponse = {
+        state.uploadForId(uploadId) match {
+          case Some(uf: UploadingFile) =>
+            def illegal(reason: IllegalFileReason) : (CurrentUpload, AjaxUploadResponse) = {
+              val u = uf.failed(IllegalFile(reason))
+              (u, UploadFailed(WebFileUploads.labelForIllegalReason(reason, uf.originalFilename).getText))
+            }
+            val mimeType = mimeTypeForFilename(uf.originalFilename)
+            val (fu,r) = WebFileUploads.validateBeforeUpload(mimeType, request.getContentLengthLong, controlSettings).map(illegal).getOrElse {
+              WebFileUploads.writeStream(uf, this, request.getInputStream) match {
+                case Successful(fileInfo) =>
+                  validateContent(info, this, uf.uploadPath) match {
+                    case Left(ifr) =>
+                      illegal(ifr)
+                    case Right(detected) =>
+                      val v = ValidatedUpload(uf.success(fileInfo), detected)
+                      (v, UpdateEntry(AjaxFileEntry(uploadId.toString, uf.originalFilename, "", true, false,
+                        Iterable.empty)))
+                  }
+                case IllegalFile(reason) => illegal(reason)
+                case e@Errored(t) => (uf.failed(e), UploadFailed(Option(t.getMessage).getOrElse("Unknown error")))
+              }
+            }
+            state.finishedUpload(fu)
+            r
+          case _ => UploadFailed("NO SUCH UPLOAD")
+        }
+      }
+
+      val response = Option(request.getParameter("uploadId")).map(UUID.fromString).map(uploadStream).getOrElse {
+        val maxStream = ByteStreams.limit(request.getInputStream, 32 * 1024)
+        val jsonSource = Source.fromInputStream(maxStream, "UTF-8").mkString
+        decode[AjaxUploadCommand](jsonSource).fold(throw _, identity) match {
+          case Delete(uploadId) =>
+            stopOrCancel(info, UUID.fromString(uploadId))
+            RemoveEntries(Iterable(uploadId))
+          case NewUpload(filename, size) =>
+            val uploadId = UUID.randomUUID()
+            val uniqueName = WebFileUploads.uniqueName(filename, uploadId, this)
+            WebFileUploads.validateBeforeUpload(mimeTypeForFilename(filename), size, controlSettings).map { reason =>
+              UploadFailed( WebFileUploads.labelForIllegalReason(reason, filename).getText )
+            }.getOrElse {
+              state.initialiseUpload(uploadId, uniqueName, uniqueName)
+              val uploadUrl = new BookmarkAndModify(info,
+                commandModifier, new SimpleBookmarkModifier("uploadId", uploadId.toString)).getHref
+              NewUploadResponse(uploadUrl, uploadId.toString, uniqueName)
+            }
+        }
+      }
+      new SimpleSectionResult(response.asJson.noSpaces, "application/json")
+    }
   }
 
 }

@@ -56,7 +56,7 @@ public class EquellaFileUploadExtension implements RendererFactoryExtension
 	private static final PluginResourceHelper RESOURCES = ResourcesService
 		.getResourceHelper(EquellaFileUploadExtension.class);
 
-	private static final CssInclude CSS = CssInclude.include(RESOURCES.url("css/render/jquery.fileinput.css")).hasRtl()
+	public static final CssInclude CSS = CssInclude.include(RESOURCES.url("css/render/jquery.fileinput.css")).hasRtl()
 		.make();
 	private static final IncludeFile JS = new IncludeFile(RESOURCES.url("scripts/render/jquery.fileinput.js"));
 
@@ -128,22 +128,26 @@ public class EquellaFileUploadExtension implements RendererFactoryExtension
 			if( renderFile )
 			{
 				info.preRender(CSS);
-				ObjectExpression oe = new ObjectExpression();
-				JSHandler onChange = uploadState.getHandler(JSHandler.EVENT_CHANGE);
-				if (onChange != null) {
-					oe.put("onchange", new AnonymousFunction(onChange));
-				}
-				Bookmark ajaxUploadUrl = uploadState.getAjaxUploadUrl();
-				if( ajaxUploadUrl != null )
+				if (!uploadState.isDontInitialise())
 				{
-					oe.put("ajaxUploadUrl", ajaxUploadUrl.getHref());
-					oe.put("validateFile", uploadState.getValidateFile());
+					ObjectExpression oe = new ObjectExpression();
+					JSHandler onChange = uploadState.getHandler(JSHandler.EVENT_CHANGE);
+					if (onChange != null)
+					{
+						oe.put("onchange", new AnonymousFunction(onChange));
+					}
+					Bookmark ajaxUploadUrl = uploadState.getAjaxUploadUrl();
+					if (ajaxUploadUrl != null)
+					{
+						oe.put("ajaxUploadUrl", ajaxUploadUrl.getHref());
+						oe.put("validateFile", uploadState.getValidateFile());
+					}
+					else
+					{
+						info.getForm().setEncoding("multipart/form-data");
+					}
+					info.addReadyStatements(Js.call_s(INIT, this, oe));
 				}
-				else
-				{
-					info.getForm().setEncoding("multipart/form-data");
-				}
-				info.addReadyStatements(Js.call_s(INIT, this, oe));
 			}
 		}
 	}
