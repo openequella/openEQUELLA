@@ -1375,32 +1375,31 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 	public void addToSession(SectionInfo info, WizardStateInterface state, boolean resumable)
 	{
 		// Clears out transients
-		state.onSessionSave();
-		userSessionService.setAttribute(state.getWizid(), new WizardSessionState(state));
+		synchronized (state.getItem()) {
+			state.onSessionSave();
+			userSessionService.setAttribute(state.getWizid(), new WizardSessionState(state));
 
-		if( resumable )
-		{
-			// Not resumable if in moderation
-			if( moderationService.isModerating(info) )
-			{
-				return;
-			}
+			if (resumable) {
+				// Not resumable if in moderation
+				if (moderationService.isModerating(info)) {
+					return;
+				}
 
-			// save some info about the session (for resumption)
-			Set<WizardInfo> wizards = userSessionService.getAttribute(WIZARD_INFO_KEY);
-			if( wizards == null )
-			{
-				wizards = new HashSet<WizardInfo>();
+				// save some info about the session (for resumption)
+				Set<WizardInfo> wizards = userSessionService.getAttribute(WIZARD_INFO_KEY);
+				if (wizards == null) {
+					wizards = new HashSet<WizardInfo>();
+				}
+				WizardInfo winfo = new WizardInfo();
+				winfo.setUuid(state.getWizid());
+				Item item = state.getItem();
+				winfo.setCollectionName(CurrentLocale.get(item.getItemDefinition().getName()));
+				winfo.setItemUuid(item.getUuid());
+				winfo.setItemVersion(item.getVersion());
+				winfo.setNewItem(item.isNewItem());
+				wizards.add(winfo);
+				userSessionService.setAttribute(WIZARD_INFO_KEY, wizards);
 			}
-			WizardInfo winfo = new WizardInfo();
-			winfo.setUuid(state.getWizid());
-			Item item = state.getItem();
-			winfo.setCollectionName(CurrentLocale.get(item.getItemDefinition().getName()));
-			winfo.setItemUuid(item.getUuid());
-			winfo.setItemVersion(item.getVersion());
-			winfo.setNewItem(item.isNewItem());
-			wizards.add(winfo);
-			userSessionService.setAttribute(WIZARD_INFO_KEY, wizards);
 		}
 	}
 

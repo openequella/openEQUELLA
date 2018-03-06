@@ -16,6 +16,14 @@ unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_co
 val jacksonVersion = "2.4.1"
 val axis2Version = "1.6.2"
 val tomcatVersion = "8.0.49"
+val circeVersion = "0.9.1"
+
+libraryDependencies ++= Seq(
+  "io.circe" %% "circe-core",
+  "io.circe" %% "circe-generic",
+  "io.circe" %% "circe-parser",
+  "io.circe" %% "circe-generic-extras"
+).map(_ % circeVersion)
 
 libraryDependencies ++= Seq(
   "axis" % "axis" % "1.4",

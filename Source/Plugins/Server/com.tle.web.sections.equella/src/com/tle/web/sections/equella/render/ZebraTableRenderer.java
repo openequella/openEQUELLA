@@ -88,7 +88,7 @@ public class ZebraTableRenderer extends TableRenderer implements JSTableComponen
 		PluginResourceHandler.init(ZebraTableRenderer.class);
 	}
 
-	private static final CssInclude CSS = CssInclude.include(URL_CSS).hasRtl().make();
+	public static final CssInclude CSS = CssInclude.include(URL_CSS).hasRtl().make();
 	private static final IncludeFile INCLUDE = new IncludeFile(URL_JS, StandardExpressions.STANDARD_JS);
 
 	private static final ExternallyDefinedFunction SORT_FUNCTION = new ExternallyDefinedFunction("sortColumn", 4,

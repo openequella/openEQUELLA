@@ -35,12 +35,13 @@ sealed trait CurrentUpload
   def finished: Boolean
   def id: UUID
   def started: Instant
+  def successful: Boolean = false
   def temporaryPath(path: String): String = s"${FileUploadState.UPLOADS_FOLDER}/${id}_files/$path"
 }
 
 case class UploadingFile(id: UUID, started: Instant, originalFilename: String, uploadPath: String, description: String, cancel: AtomicReference[Boolean]) extends CurrentUpload
 {
-  def success(fileInfo: FileInfo): CurrentUpload = SuccessfulUpload(id, started, originalFilename, uploadPath, description, fileInfo)
+  def success(fileInfo: FileInfo): SuccessfulUpload = SuccessfulUpload(id, started, originalFilename, uploadPath, description, fileInfo)
   def failed(reason: UploadResult): CurrentUpload = FailedUpload(id, started, originalFilename, reason)
   def finished = false
 }
@@ -48,7 +49,7 @@ case class UploadingFile(id: UUID, started: Instant, originalFilename: String, u
 case class SuccessfulUpload(id: UUID, started: Instant, originalFilename: String, uploadPath: String, description: String, fileInfo: FileInfo) extends CurrentUpload
 {
   def finished = true
-  def successful = true
+  override def successful = true
 }
 
 case class ValidatedUpload(s: SuccessfulUpload, detected: Seq[PackageType]) extends CurrentUpload {
@@ -79,6 +80,5 @@ case class WrongPackageType(allowed: Seq[PackageType], detected: Seq[PackageType
 
 sealed trait UploadResult
 case class Successful(fileInfo: FileInfo) extends UploadResult
-case object Cancelled extends UploadResult
 case class IllegalFile(reason: IllegalFileReason) extends UploadResult
 case class Errored(t: Throwable) extends UploadResult
