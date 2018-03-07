@@ -626,7 +626,7 @@ public class ReportingServiceImpl extends AbstractEntityServiceImpl<EntityEditin
 		StagingFile stagingFile = new StagingFile(stagingId);
 		StagingFile outStaging = stagingService.createStagingArea();
 		String dirToZip = DIR_DESIGN;
-		if( !fileSystemService.fileExists(stagingFile, DIR_DESIGN) )
+		if(!fileSystemService.fileExists(stagingFile, DIR_DESIGN) )
 		{
 			dirToZip = "";
 		}
