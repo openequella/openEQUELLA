@@ -13,6 +13,9 @@ Due to the enourmous number of projects, when importing into IntelliJ the requir
 
 You will also need to increase the default maximum memory allocation for SBT when doing the import: (`Build Tools -> SBT -> Maximum Heap size`). Currently 4096MB is recommended.
 
+If you get compile errors in the IDE, but standalone `sbt compile` works, do an sbt refresh from the IntelliJ `SBT 
+tool window`.
+
 ### Eclipse - Scala IDE 4.6
 
 You must use the [sbteclipse](https://github.com/typesafehub/sbteclipse) plugin to write projects out Eclipse projects 
