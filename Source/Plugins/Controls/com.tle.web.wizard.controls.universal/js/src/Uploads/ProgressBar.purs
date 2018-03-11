@@ -4,9 +4,9 @@ import Prelude hiding (div)
 
 import Control.Monad.Eff (Eff)
 import Data.Nullable (Nullable, toNullable)
-import React (ReactElement, ReactProps, ReactRefs, ReactState, ReactThis, ReadOnly, Ref, createClass, createClassStateless, createFactory, getProps, readRef, spec, writeRef)
+import React (ReactElement, ReactProps, ReactRefs, ReactThis, ReadOnly, Ref, createClass, createFactory, getProps, readRef, spec, writeRef)
 import React.DOM (div)
-import React.DOM.Props (className, ref, withRef)
+import React.DOM.Props (className, withRef)
 
 foreign import runProgress :: forall e. Nullable Ref -> Int -> Eff e Unit
 

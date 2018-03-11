@@ -2,19 +2,16 @@ module Uploads.FileDrop where
 
 import Prelude hiding (div)
 
-import Control.Bind (bindFlipped)
 import Control.Monad.Eff.Class (liftEff)
-import Control.Monad.IOSync (IOSync, runIOSync, runIOSync')
+import Control.Monad.IOSync (IOSync, runIOSync')
 import DOM.File.Types (File)
 import DOM.HTML.HTMLElement (click)
 import DOM.HTML.HTMLInputElement (setValue)
 import Data.Maybe (maybe)
-import Data.Nullable (toNullable)
-import React (ReactElement, createClass, createClassStateless, createFactory, getProps, preventDefault, readRef, spec, stopPropagation, writeRef)
+import React (ReactElement, createClass, createFactory, getProps, preventDefault, readRef, spec, stopPropagation, writeRef)
 import React.DOM (button, div, input, span, text)
-import React.DOM.Dynamic (div')
-import React.DOM.Props (Props, _id, _type, className, key, multiple, onChange, onClick, onDragEnter, onDragLeave, onDragOver, onDrop, ref, style, withRef)
-import ReactDOM (refToNode)
+import React.DOM.Props (Props, _id, _type, className, multiple, onChange, onClick, onDragEnter, onDragLeave, onDragOver, onDrop, style, withRef)
+ 
 import Unsafe.Coerce (unsafeCoerce)
 
 invisibleFile :: String -> IOSync Unit -> Array Props -> ReactElement
