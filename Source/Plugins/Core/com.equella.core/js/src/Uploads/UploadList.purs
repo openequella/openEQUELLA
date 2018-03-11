@@ -1,67 +1,32 @@
 module Uploads.UploadList (inlineUpload, universalUpload) where
 
 
-import Control.Monad.IOEffFn
-import Prelude hiding (div)
-import Uploads.UploadModel
-
-import Control.Bind (bindFlipped)
-import Control.Monad.Aff (Aff, Fiber, forkAff, killFiber, parallel, runAff_, throwError)
-import Control.Monad.Aff.Compat (EffFnAff(..), fromEffFnAff)
-import Control.Monad.Aff.Console (error, log)
-import Control.Monad.Aff.Unsafe (unsafeCoerceAff)
-import Control.Monad.Eff (Eff)
+import Control.Monad.IOEffFn (IOFn2, runIOFn2)
+import Prelude (Unit, bind, const, mod, not, pure, show, unit, void, whenM, (#), ($), ($>), (&&), (*), (*>), (-), (/), (/=), (<$>), (<<<), (<>), (=<<), (==), (>), (>=))
+import Uploads.UploadModel (Command(..), FileElement(..), State, commandEval, fileToEntry)
 import Control.Monad.Eff.Class (liftEff)
-import Control.Monad.Eff.Console (logShow, log) as Eff
-import Control.Monad.Eff.Exception (error) as E
-import Control.Monad.Eff.Uncurried (EffFn1, EffFn2, mkEffFn1, runEffFn1, runEffFn2)
-import Control.Monad.Eff.Unsafe (unsafeCoerceEff, unsafePerformEff)
-import Control.Monad.Except (runExcept)
-import Control.Monad.IO.Class (liftIO)
-import Control.Monad.IOSync (IOSync(..), runIOSync, runIOSync')
-import Control.Monad.IOSync.Class (liftIOSync)
-import Control.Monad.Reader (ask, runReaderT)
+import Control.Monad.Eff.Unsafe (unsafePerformEff)
+import Control.Monad.IOSync (IOSync, runIOSync')
 import Control.Monad.State (modify)
-import Control.Monad.Trans.Class (lift)
-import Control.MonadZero (guard, (<|>))
-import Control.Parallel (parTraverse_)
-import DOM.File.File (name, size)
-import DOM.File.Types (Blob, File, fileToBlob)
+import Control.MonadZero (guard)
 import DOM.HTML (window)
 import DOM.HTML.Window (confirm)
 import DOM.Node.Types (Element)
-import Data.Argonaut (class DecodeJson, class EncodeJson, Json, decodeJson, encodeJson, jsonEmptyObject, jsonParser, (.?), (:=), (~>))
-import Data.Array (alterAt, any, catMaybes, concat, deleteBy, elem, filter, find, findIndex, intercalate, length, mapMaybe, mapWithIndex, modifyAtIndices, notElem, snoc)
+import Data.Array (catMaybes, concat, intercalate, length, mapWithIndex)
 import Data.Either (Either(..), either)
-import Data.Foldable (traverse_)
-import Data.Foreign (F, Foreign, ForeignError(..), fail, readString, toForeign)
-import Data.Function (applyFlipped)
-import Data.Function.Uncurried (Fn2)
-import Data.Int (floor, fromNumber)
-import Data.Lens (Lens', Prism', Traversal', _Just, iso, lens, over, preview, prism', set, setJust, toListOf, traversed, view, (?~), (^.))
-import Data.Lens.At (at)
-import Data.Lens.Index (ix)
-import Data.Lens.Iso.Newtype (_Newtype)
-import Data.Lens.Record (prop)
-import Data.Maybe (Maybe(..), fromMaybe, isNothing, maybe)
-import Data.Newtype (class Newtype, unwrap, wrap)
+import Data.Int (floor)
+import Data.Maybe (Maybe(Just, Nothing), maybe)
 import Data.Nullable (Nullable, toMaybe)
-import Data.Ord (greaterThan, greaterThanOrEq, lessThan)
-import Data.Symbol (SProxy(..))
-import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable as U
-import Data.Unfoldable as U
-import Dispatcher (DispatchEff(..), dispatch)
-import Dispatcher.React (createComponent, createLifecycleComponent, didMount, getState, modifyState)
-import Network.HTTP.Affjax (AJAX, URL, AffjaxResponse, post, post_, put, put_)
-import Network.HTTP.Affjax.Response (fromResponse)
-import React (Event, ReactElement, createFactory, preventDefault, readState, stopPropagation)
-import React.DOM (a, div, div', h2', input, p, strong', table, tbody', td, text, tr)
-import React.DOM.Dynamic (span, span', table', td', tr')
-import React.DOM.Props (Props, _id, _type, className, href, key, multiple, onChange, onClick, onDragEnter, onDragLeave, onDragOver, onDrop, style, target, title)
+import Dispatcher (DispatchEff(DispatchEff))
+import Dispatcher.React (createComponent, createLifecycleComponent)
+import Network.HTTP.Affjax (URL)
+import React (ReactElement, createFactory, readState)
+import React.DOM (a, div, p, strong', table, tbody', td, text, tr)
+import React.DOM.Dynamic (span, td')
+import React.DOM.Props (Props, _id, className, href, key, onClick, target, title)
 import ReactDOM (render) as RD
-import Unsafe.Coerce (unsafeCoerce)
 import Uploads.FileDrop (fileDrop, invisibleFile, customFile)
 import Uploads.ProgressBar (progressBar)
 
@@ -76,20 +41,6 @@ type DialogStrings = {
   cancel :: String, 
   drop :: String
 }
-
--- strings :: 
--- strings = {
---   edit: "Edit",
---   replace: "Replace",
---   delete: "Delete",
---   cancel: "Cancel",
---   add: "Add a resource",
---   drop: "Click to select files or drag and drop files here",
---   none: "No attached resources",
---   scrapbook: "Import files from scrapbook",
---   preview: "(preview)",
---   toomany: "This attachment control is restricted to a max. of {0} attachments. Please remove {1} attachment(s)."
--- }
 
 jsVoid :: Props
 jsVoid = href "javascript:void(0);"
