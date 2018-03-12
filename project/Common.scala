@@ -4,7 +4,9 @@ import com.typesafe.config.{Config, ConfigFactory}
 import org.jdom2.input.SAXBuilder
 import org.jdom2.input.sax.XMLReaders
 import sbt._
+
 import scala.collection.JavaConverters._
+import scala.sys.process.Process
 
 object Common {
 
@@ -32,5 +34,15 @@ object Common {
       }
       LangStrings(group, xml, s.toMap)
     }
+  }
+
+  def runYarn(script: String, dir: File): Unit = {
+    val os = sys.props("os.name").toLowerCase
+    val precmd = os match {
+      case x if x contains "windows" => Seq("cmd", "/C")
+      case _ => Seq.empty
+    }
+    if (Process(precmd ++ Seq("yarn", "--mutex", "network", "run", script), dir).! > 0)
+      sys.error(s"Running yarn script '$script' in dir ${dir.absolutePath} failed")
   }
 }

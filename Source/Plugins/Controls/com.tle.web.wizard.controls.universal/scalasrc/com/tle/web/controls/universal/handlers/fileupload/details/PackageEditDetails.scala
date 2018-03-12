@@ -126,6 +126,7 @@ class PackageEditDetails(parentId: String, tree: SectionTree, ctx: ControlContex
       case _ => ()
     }
     displayName.setValue(info, et.getDescription)
+    previewCheckBox.setChecked(info, et.isPreview)
     restrictCheckbox.setChecked(info, et.isRestricted)
     viewers.setSelectedStringValue(info, et.getViewer)
   }
@@ -134,6 +135,10 @@ class PackageEditDetails(parentId: String, tree: SectionTree, ctx: ControlContex
     a.setDescription(displayName.getValue(info))
     if (showRestrict) {
       a.setRestricted(restrictCheckbox.isChecked(info))
+    }
+    if (ctx.controlSettings.isAllowPreviews)
+    {
+      a.setPreview(previewCheckBox.isChecked(info))
     }
     a.setViewer(viewers.getSelectedValueAsString(info))
     val newExpand = expandButtons.getSelectedValue(info) == ExpandType.EXPAND

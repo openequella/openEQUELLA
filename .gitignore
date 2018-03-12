@@ -9,3 +9,5 @@ generated.keystore
 .project
 .cache-main
 .cache-tests
+# Remove this one day
+Source/Plugins/Kaltura

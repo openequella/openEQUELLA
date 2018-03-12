@@ -4,16 +4,4 @@
 
 <@css "universalresource.css" />
 
-<@div id="${m.id}universalresources" class="universalresources">
-    <#if m.uploadProblem??>
-        <div class="ctrlinvalid">
-            <p class="ctrlinvalidmessage">${m.uploadProblem}</p>
-        </div>
-    </#if>
-	<@render s.attachmentsTable />
-	<#if m.showFileUpload>
-        <#if m.canAdd>
-            <@filedrop s.fileUpload/>
-        </#if>
-	</#if>
-</@div>
+<@render m.divTag />

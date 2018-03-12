@@ -58,13 +58,12 @@ object WebFileUploads {
   val KEY_ERROR_NOTPACKAGE = r.key("handlers.file.error.notpackage")
   val KEY_ERROR_NOTALLOWEDPACKAGE = r.key("handlers.file.error.notallowedpackage")
 
-  val SUPPRESS_THUMB_VALUE = "suppress"
-  def isSuppressThumbnail(et: Attachment): Boolean = SUPPRESS_THUMB_VALUE == et.getThumbnail
-
   private val INCLUDE = new IncludeFile(r.url("scripts/file/fileuploadhandler.js"))
   private val FILE_UPLOAD_HANDLER_CLASS = new ExternallyDefinedFunction("FileUploadHandler", INCLUDE)
-  val ADD_ATTACHMENT_FUNC = new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "addAttachmentEntry", 2)
   val ZIP_PROGRESS_FUNC = new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "setupZipProgress", 2)
+
+  val SUPPRESS_THUMB_VALUE = "suppress"
+  def isSuppressThumbnail(et: Attachment): Boolean = SUPPRESS_THUMB_VALUE == et.getThumbnail
 
   def validateBeforeUpload(mimeType: String, size: Long, fileSettings: FileUploadSettings): Option[IllegalFileReason] = {
     if (fileSettings.isRestrictByMime && !fileSettings.getMimeTypes.asScala.toSet.contains(mimeType))
@@ -74,17 +73,21 @@ object WebFileUploads {
   }
 
   def writeStream(uf: UploadingFile, ctx: ControlContext, stream: InputStream) : UploadResult = {
-    AjaxUpload.writeCancellableStream(s => ctx.repo.uploadStream(uf.uploadPath, s, true), stream, uf.cancel) match {
+    val tried = Try(ctx.repo.uploadStream(uf.uploadPath, stream, true))
+    Try(stream.close)
+    tried match {
       case Success(finfo) => Successful(finfo)
-      case Failure(t) => t match {
-        case k: StreamKilledException => Cancelled
-        case b: BannedFileException => IllegalFile(BannedType)
-        case t => Errored(t)
-      }
+      case Failure(t) =>
+        Try(ctx.stagingContext.delete(uf.uploadPath))
+        t match {
+          case b: BannedFileException => IllegalFile(BannedType)
+          case t => Errored(t)
+        }
     }
   }
 
-  def uploadStream(uploadId: UUID, filename: String, description: String, fileSize: Long, mimeType: String, openStream: () => InputStream, ctx: ControlContext) : Boolean = {
+  def uploadStream(uploadId: UUID, filename: String, description: String, fileSize: Long, mimeType: String,
+                   openStream: () => InputStream, ctx: ControlContext) : CurrentUpload = {
     val currentUpload = validateBeforeUpload(mimeType, fileSize, ctx.controlSettings) match {
       case Some(failReason) => FailedUpload(uploadId, Instant.now(), filename, IllegalFile(failReason))
       case None => ctx.state.initialiseUpload(uploadId, filename, description) match {
@@ -97,19 +100,10 @@ object WebFileUploads {
     }
     ctx.state.finishedUpload(currentUpload)
     currentUpload match {
-      case fu: FailedUpload =>
-        ctx.stagingContext.deregisterFilename(uploadId)
-        false
-      case _ => true
+      case fu: FailedUpload => ctx.stagingContext.deregisterFilename(uploadId)
+      case _ => ()
     }
-  }
-
-  def ajaxUpload(info: SectionInfo, ctx: ControlContext, upload: AbstractFileUpload[_]): SectionRenderable = {
-    val filename = upload.getFilename(info)
-    val uploadId = UUID.fromString(info.getRequest.getHeader("X_UUID"))
-    val uniqueFilename = WebFileUploads.uniqueName(filename, uploadId, ctx)
-    val mimeType = ctx.mimeTypeForFilename(uniqueFilename)
-    new SimpleSectionResult(uploadStream(uploadId, uniqueFilename, uniqueFilename, upload.getFileSize(info), mimeType, () => upload.getInputStream(info), ctx))
+    currentUpload
   }
 
   val packageTypes: Map[PackageType, FileUploadSettings => Boolean] = Map(
@@ -123,9 +117,9 @@ object WebFileUploads {
     } else Seq.empty
   }
 
-  def validateContent(info: SectionInfo, ctx: ControlContext, file: SuccessfulUpload): Either[IllegalFileReason, Seq[PackageType]] = {
+  def validateContent(info: SectionInfo, ctx: ControlContext, uploadPath: String): Either[IllegalFileReason, Seq[PackageType]] = {
     val settings = ctx.controlSettings
-    val detected = ctx.repo.determinePackageTypes(info, file.uploadPath).asScala.map(PackageType.fromString)
+    val detected = ctx.repo.determinePackageTypes(info, uploadPath).asScala.map(PackageType.fromString)
     val allowed = allowedPackageTypes(settings)
     if (settings.isPackagesOnly && detected.isEmpty)
       Left(NotAPackage)
@@ -143,7 +137,8 @@ object WebFileUploads {
   def validateAllFinished(info: SectionInfo, ctx: ControlContext): Unit = {
     val allFinished = ctx.state.allCurrentUploads.collect {
       case s: SuccessfulUpload =>
-        validateContent(info, ctx, s).fold(ifr => failedValidation(ctx, s, ifr), dpt => ValidatedUpload(s, dpt))
+        validateContent(info, ctx, s.uploadPath).fold(ifr => failedValidation(ctx, s, ifr),
+          dpt => ValidatedUpload(s, dpt))
     }
     allFinished.foreach ( u => ctx.state.finishedUpload(u) )
   }
