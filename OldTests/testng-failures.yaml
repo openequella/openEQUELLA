@@ -5,9 +5,12 @@ tests:
   - name: BrokenBits
     classes:
       - com.tle.webtests.test.contribute.WizardConfigTest
-      - com.tle.webtests.test.viewing.MimeTypesTest
-      - com.tle.webtests.test.webservices.rest.FileApiTest
-      - com.tle.webtests.test.workflow.MessageToModeratorTest
-      - com.tle.webtests.test.contribute.controls.asc.AdvancedScriptControlTests
-      - com.tle.webtests.test.myresources.MyResourcesTest
+      - com.tle.webtests.test.searching.PowerSearchTest
+      - com.tle.webtests.test.contribute.controls.attachments.FileAttachmentControlTest
+      - com.tle.webtests.test.reporting.RunReportTest
+      - com.tle.webtests.test.viewing.ItemSummaryTest
+      - com.tle.webtests.test.contribute.controls.GroupsAndDisabling
+      - com.tle.webtests.test.contribute.SelectionSessionTest
+      - com.tle.webtests.test.searching.SearchSettingsTest
+      - com.tle.webtests.test.searching.GuidedSearchingTest
 

@@ -365,8 +365,8 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
         val ctrl = page1.universalControl(control.num)
         val expectedDescription = tf.packageName.getOrElse(filename)
         val failure = control.illegalReason.lift(tf).map(_ (filename))
-        val w = ExpectedConditions.and(ctrl.updatedExpectation(), failure.map(ctrl.errorExpectation)
-          .getOrElse(ctrl.attachNameWaiter(expectedDescription, false)))
+        val w = failure.map(ctrl.errorExpectation)
+          .getOrElse(ctrl.attachNameWaiter(expectedDescription, false))
         ctrl.uploadInline(tf, filename, w)
         (page1, true)
     }

@@ -20,7 +20,8 @@ class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends Wizard
   }
 
   def errorExpectation(msg: String) = {
-    ExpectedConditions.visibilityOfNestedElementsLocatedBy(pageBy, By.xpath(s"//p[@class='ctrlinvalidmessage' and text() = ${quoteXPath(msg)}]"))
+    ExpectedConditions.visibilityOfNestedElementsLocatedBy(pageBy,
+      By.xpath(s"//p[@class='ctrlinvalidmessage' and text() = ${quoteXPath(msg)}]"))
   }
 
   def uploadInline[A](tf: TestFile, actualFilename: String, after: ExpectedCondition[A]) : A = {

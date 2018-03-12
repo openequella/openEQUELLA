@@ -297,9 +297,10 @@ public class FileAttachmentControlTest extends AbstractCleanupAutoTest
 		AttachmentsPage attachments = view.attachments();
 
 		assertTrue(attachments.attachmentExists("google2.zip"));
-		for( int i = 1; i < 7; i++ )
+		for( int i = 1; i < 6; i++ )
 		{
-			assertTrue(attachments.attachmentExists("google" + i + ".jpg"));
+		    String file = "google" + i + ".jpg";
+			assertTrue(attachments.attachmentExists(file), "File doesn't exist: "+file);
 		}
 	}
 

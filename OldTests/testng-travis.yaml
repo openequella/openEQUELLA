@@ -2,7 +2,7 @@ name: SingleSuite
 threadCount: 1
 
 tests:
-  - name: OneAfterAnother
+  - name: Searching
     classes:
       - com.tle.webtests.test.searching.BrowsebyTest
       - com.tle.webtests.test.searching.CloudSearchingTest
@@ -24,6 +24,8 @@ tests:
       - com.tle.webtests.test.searching.indexing.AutomaticIndexingTest
       - com.tle.webtests.test.searching.indexing.FileIndexingTest
       - com.tle.webtests.test.searching.hierarchy.HierarchyTopicTest
+  - name: Contribute
+    classes:
       - com.tle.webtests.test.contribute.controls.AllControlsTest
       - com.tle.webtests.test.contribute.controls.BannedExtensionTest
       - com.tle.webtests.test.contribute.controls.FileSizeRestrictionTest
@@ -57,6 +59,8 @@ tests:
       - com.tle.webtests.test.contribute.controls.asc.PropBagExTest
       - com.tle.webtests.test.contribute.controls.asc.ScriptedDisplayTemplateTest
       - com.tle.webtests.test.contribute.controls.asc.ScriptedPortletTests
+  - name: Reporting
+    classes:
       - com.tle.webtests.test.reporting.CascadingParametersReportPage
       - com.tle.webtests.test.reporting.CascadingParametersReportParametersPage
       - com.tle.webtests.test.reporting.DisplayTextReportPage
@@ -68,6 +72,8 @@ tests:
       - com.tle.webtests.test.reporting.MultiValueReportPage
       - com.tle.webtests.test.reporting.RunReportTest
       - com.tle.webtests.test.reporting.UsersReportPage
+  - name: Viewing
+    classes:
       - com.tle.webtests.test.viewing.DisplayNodesTest
       - com.tle.webtests.test.viewing.ItemHistoryTest
       - com.tle.webtests.test.viewing.ItemServletRedirectTest

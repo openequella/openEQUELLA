@@ -98,7 +98,7 @@ public class SearchPage extends AbstractQueryableSearchPage<SearchPage, ItemList
 
 	public WebElement getSelectedContainer()
 	{
-		return driver.findElement(By.xpath("id('searchform')//div[@class='selectedcontainer']"));
+		return driver.findElement(By.xpath("id('searchform')//div[contains(@class, 'selectedcontainer')]"));
 	}
 
 	@Override

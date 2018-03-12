@@ -30,7 +30,6 @@ public class ItemAdminPage extends AbstractBulkResultsPage<ItemAdminPage, ItemLi
 	private WebElement manualInclusions;
 	@FindBy(id = "ab")
 	private WebElement autoInclusions;
-	private WebElement selectedContainer;
 	@FindBy(id = "fbp_filter")
 	private WebElement purchasedResourcesFilter;
 
@@ -56,11 +55,15 @@ public class ItemAdminPage extends AbstractBulkResultsPage<ItemAdminPage, ItemLi
 		driver.get(context.getBaseUrl() + "access/itemadmin.do");
 	}
 
+	public WebElement getSelectedContainer()
+	{
+		return driver.findElement(By.xpath("id('searchform')//div[contains(@class, 'selectedcontainer')]"));
+	}
+
 	@Override
 	public void checkLoaded() throws Error
 	{
 		super.checkLoaded();
-		selectedContainer = driver.findElement(By.xpath("id('searchform')//div[@class='selectedcontainer']"));
 	}
 
 	public ItemAdminPage filterByStatus(String status)
@@ -74,7 +77,7 @@ public class ItemAdminPage extends AbstractBulkResultsPage<ItemAdminPage, ItemLi
 
 	protected void setWithin(String name)
 	{
-		selectedContainer = driver.findElement(By.xpath("id('searchform')//div[@class='selectedcontainer']"));
+		WebElement selectedContainer = getSelectedContainer();
 		selectedContainer.click();
 		By richdropdown = By.xpath("//div[contains(@class,'richdropdown active')]");
 		waitForElement(richdropdown);
