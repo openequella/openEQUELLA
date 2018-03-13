@@ -88,10 +88,12 @@ resourceGenerators in Compile += Def.task {
   IO.copy(Seq(bundle, css).pair(flat(outDir))).toSeq
 }.taskValue
 
-resourceGenerators in Compile += Def.task {
+buildJS := {
   val baseJs = baseDirectory.value / "js"
   Common.runYarn("build", baseJs)
   val outDir = (resourceManaged in Compile).value
   val baseJsTarget = baseJs / "target"
   IO.copy((baseJsTarget ** ("*.js"|"*.css"|"*.json")).pair(rebase(baseJsTarget, outDir))).toSeq
-}.taskValue
+}
+
+resourceGenerators in Compile += buildJS.taskValue
