@@ -30,6 +30,7 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.js.JSAssignable;
 import com.tle.web.sections.js.JSCallable;
+import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlFileDropState;
 
 import static com.tle.web.sections.standard.FileUpload.isMultipartRequest;
@@ -39,6 +40,8 @@ import static com.tle.web.sections.standard.FileUpload.isMultipartRequest;
  */
 public class FileDrop extends AbstractFileUpload<HtmlFileDropState>
 {
+	private boolean disableInitialise;
+
 	public FileDrop()
 	{
 		super(RendererConstants.FILEDROP);
@@ -49,5 +52,19 @@ public class FileDrop extends AbstractFileUpload<HtmlFileDropState>
 	{
 		return HtmlFileDropState.class;
 	}
+
+	public void disableInitialise()
+	{
+		disableInitialise = true;
+	}
+
+	@Override
+	protected HtmlFileDropState setupState(SectionInfo info, HtmlFileDropState state)
+	{
+		super.setupState(info, state);
+		state.setDontInitialise(disableInitialise);
+		return state;
+	}
+
 
 }
