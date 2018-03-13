@@ -7,7 +7,7 @@
     "install": "cross-env-shell \"bower --allow-root install && mkdirp ${npm_package_config_devjs} ${npm_package_config_buildjs}\"",
     "clean": "rm -rf target/ output/ node_modules/ bower_components/ && yarn install",
     "build": "yarn install && yarn run build:uploadlist",
-    "build:uploadlist": "cross-env-shell \"pulp browserify --optimise -m Uploads.UploadList --standalone PS | browserify -g [ envify --NODE_ENV production ] -g uglifyify - | uglifyjs --compress --mangle > ${npm_package_config_buildjs}/uploadlist.js\"",
+    "build:uploadlist": "node build-bundle.js Uploads.UploadList uploadlist.js",
     "dev:uploadlist": "cross-env-shell \"pulp -w browserify --optimise -m Uploads.UploadList --standalone PS --to ${npm_package_config_devjs}/uploadlist.js\""
   },
   "dependencies": {
@@ -20,11 +20,13 @@
     "bower": "^1.8.2",
     "browserify": "^16.1.0",
     "cross-env": "^5.1.3",
+    "cross-spawn": "^6.0.5",
     "envify": "^4.1.0",
     "mkdirp": "^0.5.1",
     "pulp": "^12.0.1",
     "purescript": "^0.11.7",
     "uglify-es": "^3.3.9",
-    "uglifyify": "^4.0.5"
+    "uglifyify": "^4.0.5",
+    "combined-stream2": "^1.1.2"
   }
 }
