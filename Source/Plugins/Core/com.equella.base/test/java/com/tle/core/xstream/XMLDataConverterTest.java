@@ -67,7 +67,7 @@ public class XMLDataConverterTest extends TestCase
 	@Override
 	protected void setUp() throws Exception
 	{
-		xstream = TLEXStream.instance();
+		xstream = new TLEXStream();
 		stringXml = "<xml xml:base=\"attribute\" attribute=\"attribute\" another=\"another\">"
 			+ "	<string>string</string>" + "   <parent><parent reference=\"../..\"/></parent>"
 			+ "   <subclasser xclass=\"" + OverideBean.class.getName() + "\">" + "     <string>string</string>"

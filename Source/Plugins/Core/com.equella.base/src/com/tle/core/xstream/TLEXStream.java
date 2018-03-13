@@ -25,6 +25,7 @@ import java.io.Writer;
 import com.dytech.devlib.PropBagEx;
 import com.thoughtworks.xstream.MarshallingStrategy;
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.ConverterLookup;
 import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
@@ -42,19 +43,36 @@ public class TLEXStream extends XStream
 {
 	private XppDriver xppDriver;
 	private MarshallingStrategy marshallingStrategy;
+	private boolean disallowAdd;
 	private static TLEXStream instance;
 
-	private TLEXStream()
+	public TLEXStream()
+	{
+		this(false);
+	}
+
+	private TLEXStream(boolean disallowAdd)
 	{
 		xppDriver = new XppDriver();
 		registerConverter(new XMLDataConverter());
+		this.disallowAdd = disallowAdd;
+	}
+
+	@Override
+	public void registerConverter(Converter converter)
+	{
+		if (!disallowAdd)
+		{
+			super.registerConverter(converter);
+		}
+		else throw new Error("Can't add converters to this instance, use: new TLEXStream() instead");
 	}
 
 	public static synchronized TLEXStream instance()
 	{
 		if (instance == null)
 		{
-			instance = new TLEXStream();
+			instance = new TLEXStream(true);
 		}
 		return instance;
 	}
