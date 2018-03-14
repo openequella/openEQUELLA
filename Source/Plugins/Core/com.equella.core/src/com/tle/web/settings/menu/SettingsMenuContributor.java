@@ -33,6 +33,7 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.settings.SettingsList;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.MenuContributor;
 
 @Bind
@@ -63,7 +64,7 @@ public class SettingsMenuContributor implements MenuContributor
 		List<MenuContribution> mcs = new ArrayList<MenuContribution>();
 		if( showSettings )
 		{
-			HtmlLinkState hls = new HtmlLinkState(SettingsUtils.SETTINGS_BOOKMARK);
+			HtmlLinkState hls = new HtmlLinkState(SettingsUtils.getBookmark(info));
 			hls.setLabel(LABEL_KEY);
 
 			MenuContribution mc = new MenuContribution(hls, ICON_PATH, 30, 30, "settings");

@@ -37,6 +37,6 @@ public class RootCustomLinksSection extends OneColumnLayout<OneColumnLayoutModel
 		decorations.setContentBodyClass("customlinks"); //$NON-NLS-1$
 		decorations.setOptions(false);
 
-		crumbs.addToStart(SettingsUtils.getBreadcrumb());
+		crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
 	}
 }

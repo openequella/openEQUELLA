@@ -54,12 +54,15 @@ newtype MenuItem = MenuItem {href::String, title::String, systemIcon::Nullable S
 
 data Command = ToggleMenu | UserMenuAnchor (Maybe HTMLElement)
 
-type RenderData = {baseResources::String, html::M.StrMap String, title::String, menuItems :: Array (Array MenuItem), newUI::Boolean, user::UserData}
+type RenderData = {baseResources::String, html::Nullable (M.StrMap String), title::String, menuItems :: Array (Array MenuItem), newUI::Boolean, user::UserData}
 type UserData = {id::String, guest::Boolean, autoLogin::Boolean, prefsEditable::Boolean}
 
 foreign import renderData :: RenderData
 
 type State = {mobileOpen::Boolean, menuAnchor::Maybe HTMLElement}
+
+initialState :: State
+initialState = {mobileOpen:false, menuAnchor:Nothing}
 
 rawStrings = Tuple "template" {
   menu: {
@@ -68,10 +71,7 @@ rawStrings = Tuple "template" {
   }
 }
 
-initialState :: State
-initialState = {mobileOpen:false, menuAnchor:Nothing}
-
-template :: {mainContent :: ReactElement, titleExtra::Maybe ReactElement} -> ReactElement
+template :: {mainContent :: ReactElement, title::String, titleExtra::Maybe ReactElement} -> ReactElement
 template = createFactory (withStyles ourStyles (createComponent initialState render (effEval eval)))
   where
   strings = prepLangStrings rawStrings
@@ -138,14 +138,14 @@ template = createFactory (withStyles ourStyles (createComponent initialState ren
   eval ToggleMenu = modifyState \(s :: State) -> s {mobileOpen = not s.mobileOpen}
   eval (UserMenuAnchor el) = modifyState \(s :: State) -> s {menuAnchor = el}
 
-  render {mobileOpen,menuAnchor} (ReactProps {classes,mainContent,titleExtra}) (DispatchEff d) =
+  render {mobileOpen,menuAnchor} (ReactProps {classes,mainContent,title:titleText,titleExtra}) (DispatchEff d) =
     D.div [DP.className classes.root] [
       reboot_ [],
       D.div [DP.className classes.appFrame] [
         appBar [className $ classes.appBar] [
           toolbar [disableGutters true] [
             iconButton [color C.inherit, className classes.navIconHide, onClick $ handle $ d \_ -> ToggleMenu] [ icon_ [D.text "menu" ] ],
-            typography [variant title, color C.inherit, className classes.title] [ D.text renderData.title ],
+            typography [variant title, color C.inherit, className classes.title] [ D.text titleText ],
             D.div [DP.className classes.extraTool] (U.fromMaybe titleExtra),
             userMenu
           ]
@@ -198,3 +198,6 @@ renderReact divId main = do
 
 renderMain :: forall eff. ReactElement -> Eff (dom :: DOM, console::CONSOLE | eff) Unit
 renderMain = renderReact "mainDiv"
+
+
+

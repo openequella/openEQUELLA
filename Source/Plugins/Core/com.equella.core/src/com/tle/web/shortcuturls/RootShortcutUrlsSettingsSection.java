@@ -119,7 +119,7 @@ public class RootShortcutUrlsSettingsSection extends OneColumnLayout<ShortcutUrl
 	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
 	{
 		decorations.setTitle(LABEL_TITLE);
-		crumbs.addToStart(SettingsUtils.getBreadcrumb());
+		crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
 	}
 
 	private ShortcutUrls getShortcutUrls()

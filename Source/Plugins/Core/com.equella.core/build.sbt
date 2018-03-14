@@ -9,7 +9,7 @@ langStrings := {
   val baseJs = baseDirectory.value / "js"
   Common.runYarn("build:langbundle", baseJs)
   val bundle =
-    decode[Map[String, String]](IO.read(baseJs / "target/lang/jsbundle.json")).fold(throw _, identity)
+    decode[Map[String, String]](IO.read(baseJs / "target/resources/lang/jsbundle.json")).fold(throw _, identity)
   val pluginLangStrings = langStrings.value
   Seq(
     Common.loadLangProperties(langDir / "i18n-resource-centre.properties", "", "resource-centre"),
@@ -92,7 +92,7 @@ buildJS := {
   val baseJs = baseDirectory.value / "js"
   Common.runYarn("build", baseJs)
   val outDir = (resourceManaged in Compile).value
-  val baseJsTarget = baseJs / "target"
+  val baseJsTarget = baseJs / "target/resources"
   IO.copy((baseJsTarget ** ("*.js"|"*.css"|"*.json")).pair(rebase(baseJsTarget, outDir))).toSeq
 }
 

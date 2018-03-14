@@ -17,9 +17,12 @@
 package com.tle.web.settings.menu;
 
 import com.tle.web.resources.ResourcesService;
+import com.tle.web.sections.Bookmark;
+import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
+import com.tle.web.template.RenderNewTemplate;
 
 @SuppressWarnings("nls")
 public final class SettingsUtils
@@ -27,14 +30,25 @@ public final class SettingsUtils
 	private static final KeyLabel BREADCRUMB_LABEL = new KeyLabel(ResourcesService.getResourceHelper(
 		SettingsUtils.class).key("breadcrumb"));
 
-	public static final SimpleBookmark SETTINGS_BOOKMARK = new SimpleBookmark("access/settings.do");
+	private static final SimpleBookmark SETTINGS_BOOKMARK = new SimpleBookmark("access/settings.do");
+	private static final SimpleBookmark NEW_SETTINGS_BOOKMARK = new SimpleBookmark("page.do#settings");
 
 	private static final KeyLabel BREADCRUMB_TITLE = new KeyLabel(ResourcesService.getResourceHelper(
 		SettingsUtils.class).key("settings.breadcrumb.title"));
 
-	public static HtmlLinkState getBreadcrumb()
+	public static final Bookmark getBookmark(SectionInfo info)
 	{
-		HtmlLinkState link = new HtmlLinkState(SETTINGS_BOOKMARK);
+		if (RenderNewTemplate.isNewLayout(info))
+		{
+			return NEW_SETTINGS_BOOKMARK;
+		}
+		return SETTINGS_BOOKMARK;
+	}
+
+
+	public static HtmlLinkState getBreadcrumb(SectionInfo info)
+	{
+		HtmlLinkState link = new HtmlLinkState(getBookmark(info));
 		link.setLabel(BREADCRUMB_LABEL);
 		link.setTitle(BREADCRUMB_TITLE);
 		return link;

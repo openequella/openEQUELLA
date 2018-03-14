@@ -87,38 +87,38 @@ object RenderNewTemplate {
     context.preRender(new IncludeFile(s"api/language/bundle/${LocaleLookup.selectLocale.getLocale.toLanguageTag}/bundle.js"))
 
     val decs = Decorations.getDecorations(context)
-    if (decs.getReactUrl == null)
-    {
+    val htmlVals = if (!decs.isSinglePageApp) {
       val precontext = context.getPreRenderContext
       if (DebugSettings.isAutoTestMode) precontext.preRender(RenderTemplate.AUTOTEST_JS)
       precontext.preRender(RenderTemplate.STYLES_CSS)
       precontext.preRender(RenderTemplate.CUSTOMER_CSS)
-    }
 
-    val _bodyResult = tempResult.getNamedResult(context, "body")
-    val unnamedResult = tempResult.getNamedResult(context, "unnamed")
-    val bodyResult = CombinedRenderer.combineResults(_bodyResult, unnamedResult)
-    val bodyTag = context.getBody
-    if (!decs.isExcludeForm) {
-      val formTag = context.getForm
-      formTag.addReadyStatements(new JQueryStatement(formTag,
-        "bind('submit', function(){if (!g_bSubmitting) return false; })"))
+      val _bodyResult = tempResult.getNamedResult(context, "body")
+      val unnamedResult = tempResult.getNamedResult(context, "unnamed")
+      val bodyResult = CombinedRenderer.combineResults(_bodyResult, unnamedResult)
 
-      formTag.setNestedRenderable(bodyResult)
-      bodyTag.setNestedRenderable(formTag)
-    } else {
-      bodyTag.setNestedRenderable(bodyResult)
-    }
-    val menuValues = menuOptions(context, menuService)
-    val html = SectionUtils.renderToString(context, bodyTag)
+      val bodyTag = context.getBody
+      if (!decs.isExcludeForm) {
+        val formTag = context.getForm
+        formTag.addReadyStatements(new JQueryStatement(formTag,
+          "bind('submit', function(){if (!g_bSubmitting) return false; })"))
+
+        formTag.setNestedRenderable(bodyResult)
+        bodyTag.setNestedRenderable(formTag)
+      } else {
+        bodyTag.setNestedRenderable(bodyResult)
+      }
+      val html = SectionUtils.renderToString(context, bodyTag)
+      new ObjectExpression("body", html)
+    } else null
+
     val title = Option(decs.getTitle).map(_.getText).getOrElse("")
-    val reactScript = Option(decs.getReactUrl).getOrElse(reactTemplate)
-    val htmlVals = new ObjectExpression("body", html)
+    val menuValues = menuOptions(context, menuService)
     val renderData = new ObjectExpression("baseResources", r.url(""),
       "newUI", java.lang.Boolean.TRUE, "html", htmlVals, "title", title,
       "user", userObj(CurrentUser.getUserState),
       "menuItems", new ArrayExpression(JSUtils.convertExpressions(menuValues.toSeq: _*)))
-    viewFactory.createResultWithModel("layouts/outer/react.ftl", TemplateScript(reactScript, renderData, tempResult))
+    viewFactory.createResultWithModel("layouts/outer/react.ftl", TemplateScript(reactTemplate, renderData, tempResult))
   }
 
   private val GUEST_FILTER = new PluginTracker.ParamFilter("enabledFor", "guest")

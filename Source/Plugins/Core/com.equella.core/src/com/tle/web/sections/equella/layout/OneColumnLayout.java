@@ -70,22 +70,9 @@ public abstract class OneColumnLayout<M extends OneColumnLayout.OneColumnLayoutM
 		return "";
 	}
 
-	protected String getReactInclude()
-	{
-		return null;
-	}
-
 	@Override
 	public SectionResult renderHtml(RenderEventContext context)
 	{
-		if (getReactInclude() != null && RenderNewTemplate.isNewLayout(context))
-		{
-			Decorations decs = Decorations.getDecorations(context);
-			decs.setReactUrl(getReactInclude());
-			addBreadcrumbsAndTitle(context, decs, Breadcrumbs.get(context));
-			return null;
-		}
-
 		final M model = getModel(context);
 
 		TemplateResult template = setupTemplate(context);

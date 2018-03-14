@@ -73,7 +73,7 @@ public class RootEchoServerSection extends OneColumnLayout<OneColumnLayoutModel>
 	{
 		OneColumnLayoutModel model = getModel(info);
 		SectionId modalSection = model.getModalSection();
-		crumbs.add(SettingsUtils.getBreadcrumb());
+		crumbs.add(SettingsUtils.getBreadcrumb(info));
 
 		if( modalSection != null )
 		{

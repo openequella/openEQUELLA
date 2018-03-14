@@ -33,7 +33,7 @@ class SettingsSection extends AbstractScalaSection with HtmlRenderer {
 
   override def newModel = _ => ()
 
-  val jsUrl = CoreUrls.url("reactjs/settings.js")
+  val jsUrl = CoreUrls.url("reactjs/index.js")
 
   // "title", "settings.filter.all", "settings.categories"
 
@@ -41,17 +41,11 @@ class SettingsSection extends AbstractScalaSection with HtmlRenderer {
     val decs = Decorations.getDecorations(context)
     decs.setExcludeForm(true)
     decs.setTitle(new TextLabel(CoreStrings.text("title")))
-    if (RenderNewTemplate.isNewLayout(context))
-    {
-      decs.setReactUrl(jsUrl)
-      null
-    } else {
-      val scriptTag = new TagState()
-      scriptTag.addTagProcessor(new ExtraAttributes("src", jsUrl))
-      CombinedRenderer.combineResults(
-        new DivRenderer(new TagState("settingsPage")),
-        new TagRenderer("script", scriptTag)
-      )
-    }
+    val scriptTag = new TagState()
+    scriptTag.addTagProcessor(new ExtraAttributes("src", jsUrl))
+    CombinedRenderer.combineResults(
+      new DivRenderer(new TagState("settingsPage")),
+      new TagRenderer("script", scriptTag)
+    )
   }
 }

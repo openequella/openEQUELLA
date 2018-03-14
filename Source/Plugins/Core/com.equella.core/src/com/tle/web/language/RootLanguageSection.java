@@ -375,7 +375,7 @@ public class RootLanguageSection extends OneColumnLayout<OneColumnLayout.OneColu
 	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
 	{
 		decorations.setTitle(TITLE_LABEL);
-		crumbs.addToStart(SettingsUtils.getBreadcrumb());
+		crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
 	}
 
 	public boolean hasLanguagePacks(SectionInfo info)

@@ -106,7 +106,7 @@ public class RootScheduledTasksSettingsSection extends OneColumnLayout<OneColumn
 	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
 	{
 		decorations.setTitle(TITLE_LABEL);
-		crumbs.add(SettingsUtils.getBreadcrumb());
+		crumbs.add(SettingsUtils.getBreadcrumb(info));
 	}
 
 	@Override

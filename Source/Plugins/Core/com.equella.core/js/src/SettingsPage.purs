@@ -3,10 +3,7 @@ module SettingsPage where
 import Prelude
 
 import Control.Monad.Aff.Console (log)
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Trans.Class (lift)
-import DOM (DOM)
 import Data.Argonaut (class DecodeJson, decodeJson, (.?), (.??))
 import Data.Array (mapMaybe, sortWith)
 import Data.Either (either)
@@ -25,12 +22,12 @@ import MaterialUI.ListItemText (listItemText, primary, secondary)
 import MaterialUI.Properties (className)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.Typography (typography)
-import Network.HTTP.Affjax (AJAX, get)
+import Network.HTTP.Affjax (get)
 import React (ReactElement, createFactory)
-import React.DOM as D
-import React.DOM.Props as D
+import React.DOM (a, div', text) as D
+import React.DOM.Props (href) as D
 import Settings.UISettings (uiSettingsEditor)
-import Template (renderData, renderMain, renderReact, template)
+import Template (renderData, template)
 
 newtype Setting = Setting {
   id :: String,
@@ -51,22 +48,6 @@ instance decodeSetting :: DecodeJson Setting where
     pageUrl <- links .?? "web"
     pure $ Setting {id,group,name,description,pageUrl}
 
-rawStrings = Tuple "settings" {
-  general: {name:"General",desc:"General settings"},
-  integration: {name:"Integrations",desc:"Settings for integrating with external systems"},
-  diagnostics: {name:"Diagnostics",desc:"Diagnostic pages"},
-  ui: {name:"UI",desc:"UI settings"}
-}
-
-string = prepLangStrings rawStrings
-
-groupDetails :: Array (Tuple String { name :: String, desc :: String })
-groupDetails = [
-  Tuple "general" string.general,
-  Tuple "integration" string.integration,
-  Tuple "diagnostics" string.diagnostics,
-  Tuple "ui" string.ui
-]
 
 type State = {
   settings :: Maybe (Array Setting)
@@ -77,9 +58,31 @@ data Command = LoadSettings
 initialState :: State
 initialState = {settings:Nothing}
 
+rawStrings = Tuple "settings" {
+  general: {name:"General",desc:"General settings"},
+  integration: {name:"Integrations",desc:"Settings for integrating with external systems"},
+  diagnostics: {name:"Diagnostics",desc:"Diagnostic pages"},
+  ui: {name:"UI",desc:"UI settings"}
+}
+
+coreStrings = Tuple "com.equella.core" {
+  title: "Settings"
+}
+
 settingsPage :: ReactElement
 settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didMount LoadSettings) initialState render eval) {}
   where
+  groupDetails :: Array (Tuple String { name :: String, desc :: String })
+  groupDetails = [
+    Tuple "general" string.general,
+    Tuple "integration" string.integration,
+    Tuple "diagnostics" string.diagnostics,
+    Tuple "ui" string.ui
+  ]
+
+  string = prepLangStrings rawStrings
+  coreString = prepLangStrings coreStrings 
+
   styles theme = {
     heading: {
       fontSize: theme.typography.pxToRem 15,
@@ -92,7 +95,7 @@ settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didM
     }
   }
   render {settings} (ReactProps {classes})= if renderData.newUI
-                      then template {mainContent,titleExtra:Nothing}
+                      then template {mainContent, title:coreString.title, titleExtra:Nothing}
                       else mainContent
     where
     mainContent = maybe (D.div' []) renderSettings settings
@@ -124,6 +127,3 @@ settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didM
   eval (LoadSettings) = do
     result <- lift $ get $ baseUrl <> "api/settings"
     either (lift <<< log) (\r -> modifyState _ {settings=Just r}) $ decodeJson result.response
-
-main :: forall eff. Eff (dom :: DOM, ajax :: AJAX, console::CONSOLE | eff) Unit
-main = (if renderData.newUI then renderMain else renderReact "settingsPage") $ settingsPage

@@ -174,7 +174,7 @@ public abstract class AbstractPortletEditorSection<M extends AbstractPortletEdit
 		PortletEditingBean portlet = model.getPortlet();
 		if( portlet.isAdmin() )
 		{
-			crumbs.add(SettingsUtils.getBreadcrumb());
+			crumbs.add(SettingsUtils.getBreadcrumb(info));
 			crumbs.add(breadcrumbAdmin);
 		}
 		else

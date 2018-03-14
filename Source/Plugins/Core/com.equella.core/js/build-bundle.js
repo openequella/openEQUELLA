@@ -3,6 +3,7 @@ const CombinedStream = require('combined-stream2');
 const ArgumentParser = require("argparse").ArgumentParser;
 const mkdirp = require('mkdirp');
 const classesDir = "../target/scala-2.12/classes/web/reactjs/";
+const targetDir = "target/resources/web/reactjs/"
 
 var parser = new ArgumentParser({
     version: '1.0.0',
@@ -32,12 +33,12 @@ function buildDev()
 
 function buildProd()
 {
-    var targetDir = "target/web/reactjs/"
+    var destDir = targetDir;
     if (args.devpath) {
-        targetDir = classesDir;
+        destDir = classesDir;
     }
-    mkdirp.sync(targetDir);
-    const outjs = targetDir+args.out;
+    mkdirp.sync(destDir);
+    const outjs = destDir+args.out;
     console.log("Building production bundle: "+outjs);
     var pargs = ["build", "-O", "-m", main]
     var bargs = []

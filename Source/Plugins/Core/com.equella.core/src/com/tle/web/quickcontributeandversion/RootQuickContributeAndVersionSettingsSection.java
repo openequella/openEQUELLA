@@ -163,7 +163,7 @@ public class RootQuickContributeAndVersionSettingsSection
 	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
 	{
 		decorations.setTitle(TITLE_LABEL);
-		crumbs.addToStart(SettingsUtils.getBreadcrumb());
+		crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
 	}
 
 	public SingleSelectionList<NameValue> getCollectionSelector()

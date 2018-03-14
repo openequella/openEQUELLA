@@ -67,7 +67,7 @@ public class RootHtmlEditorSettingsSection extends OneColumnLayout<OneColumnLayo
 	{
 		OneColumnLayoutModel model = getModel(info);
 		SectionId modalSection = model.getModalSection();
-		crumbs.add(SettingsUtils.getBreadcrumb());
+		crumbs.add(SettingsUtils.getBreadcrumb(info));
 
 		if( modalSection != null )
 		{

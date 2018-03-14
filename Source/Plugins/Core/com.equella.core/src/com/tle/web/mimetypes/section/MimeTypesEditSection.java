@@ -117,7 +117,7 @@ public class MimeTypesEditSection extends AbstractPrototypeSection<MimeTypesEdit
 			.setTitle(getModel(context).getEditId() == 0 ? ADD_TITLE_LABEL : EDIT_TITLE_LABEL);
 
 		Breadcrumbs breadcrumbs = Breadcrumbs.get(context);
-		breadcrumbs.add(SettingsUtils.getBreadcrumb());
+		breadcrumbs.add(SettingsUtils.getBreadcrumb(context));
 		breadcrumbs.add(parentBreadcrumb);
 
 		final GenericTemplateResult result = new GenericTemplateResult();

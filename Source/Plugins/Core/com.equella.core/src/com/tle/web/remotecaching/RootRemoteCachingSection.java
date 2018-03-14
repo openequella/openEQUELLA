@@ -276,7 +276,7 @@ public class RootRemoteCachingSection extends OneColumnLayout<RootRemoteCachingS
 	protected void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs)
 	{
 		decorations.setTitle(TITLE_LABEL);
-		crumbs.addToStart(SettingsUtils.getBreadcrumb());
+		crumbs.addToStart(SettingsUtils.getBreadcrumb(info));
 	}
 
 	@DirectEvent(priority = SectionEvent.PRIORITY_AFTER_EVENTS)

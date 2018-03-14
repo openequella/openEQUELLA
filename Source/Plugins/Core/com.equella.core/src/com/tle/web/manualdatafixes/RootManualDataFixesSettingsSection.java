@@ -101,7 +101,7 @@ public class RootManualDataFixesSettingsSection extends AbstractPrototypeSection
 	public SectionResult renderHtml(RenderEventContext context)
 	{
 		Decorations.getDecorations(context).setTitle(TITLE_LABEL);
-		Breadcrumbs.get(context).add(SettingsUtils.getBreadcrumb());
+		Breadcrumbs.get(context).add(SettingsUtils.getBreadcrumb(context));
 
 		List<SectionRenderable> srs = renderChildren(context, new ResultListCollector()).getResultList();
 		srs.add(0, HeadingRenderer.topLevel(new LabelRenderer(TITLE_LABEL)));

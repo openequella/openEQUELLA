@@ -54,8 +54,8 @@ public class Decorations
 	private boolean breadcrumbs = true;
 	private boolean forceBreadcrumbsOn = false;
 	private FullScreen fullscreen = FullScreen.NO;
-	private String reactUrl = null;
 	private boolean excludeForm = false;
+	private boolean singlePageApp = false;
 
 	private Set<String> contentBodyClasses = new HashSet<String>();
 
@@ -294,16 +294,6 @@ public class Decorations
 		return contentBodyClasses;
 	}
 
-	public String getReactUrl()
-	{
-		return reactUrl;
-	}
-
-	public void setReactUrl(String reactUrl)
-	{
-		this.reactUrl = reactUrl;
-	}
-
 	public void setExcludeForm(boolean excludeForm)
 	{
 		this.excludeForm = excludeForm;
@@ -312,5 +302,15 @@ public class Decorations
 	public boolean isExcludeForm()
 	{
 		return excludeForm;
+	}
+
+	public void setSinglePageApp(boolean singlePageApp)
+	{
+		this.singlePageApp = singlePageApp;
+	}
+
+	public boolean isSinglePageApp()
+	{
+		return singlePageApp;
 	}
 }

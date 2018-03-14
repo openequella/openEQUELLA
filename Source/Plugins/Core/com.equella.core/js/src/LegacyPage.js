@@ -1,10 +1,12 @@
-exports.setBodyHtml = function(ref)
-{
-  return function()
+exports.setBodyHtml = function (html) {
+  return function(ref)
   {
-    if (ref)
+    return function()
     {
-      $(ref).html(renderData.html.body);
+      if (ref)
+      {
+        $(ref).html(html.body);
+      }
     }
   }
 }

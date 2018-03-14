@@ -129,7 +129,7 @@ public class RootThemeSection extends AbstractPrototypeSection<RootThemeSection.
 		}
 
 		Decorations.getDecorations(context).setTitle(TITLE_LABEL);
-		Breadcrumbs.get(context).add(SettingsUtils.getBreadcrumb());
+		Breadcrumbs.get(context).add(SettingsUtils.getBreadcrumb(context));
 
 		GenericTemplateResult gtr = new GenericTemplateResult();
 		HelpAndScreenOptionsSection.addHelp(context, viewFactory.createResult("themesettingshelp.ftl", this));

@@ -3,10 +3,7 @@ module SearchPage where
 import Prelude
 
 import Control.Monad.Aff.Console (log)
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Trans.Class (lift)
-import DOM (DOM)
 import Data.Argonaut (class DecodeJson, decodeJson, (.?), (.??))
 import Data.Array (filter, findMap, fromFoldable, intercalate, length, mapMaybe, mapWithIndex, singleton)
 import Data.Either (either)
@@ -37,12 +34,12 @@ import MaterialUI.Styles (withStyles)
 import MaterialUI.TextField (label)
 import MaterialUI.TextStyle as TS
 import MaterialUI.Typography (textSecondary, typography)
-import Network.HTTP.Affjax (AJAX, get)
+import Network.HTTP.Affjax (get)
 import React (ReactElement, createFactory)
 import React.DOM as D
 import React.DOM.Props as DP
 import Settings.UISettings (FacetSetting(..), NewUISettings(..), UISettings(..))
-import Template (renderMain, template)
+import Template (template)
 import TimeAgo (timeAgo)
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -99,19 +96,23 @@ type State = {
 
 data Command = InitSearch | Search | QueryUpdate String | ToggledTerm String String
 
-rawStrings = Tuple "searchpage" {
- resultsAvailable: "results available",
- modifiedDate: "Modified"
-}
-
-string = prepLangStrings rawStrings
-
 initialState :: State
 initialState = {searching:false, query:"", searchResults:Nothing, facets:SM.empty, facetSettings: []}
+
+rawStrings = Tuple "searchpage" {
+  resultsAvailable: "results available",
+  modifiedDate: "Modified"
+}
+coreStrings = Tuple "com.equella.core.searching.search" {
+  title: "Search"
+}
 
 searchPage :: ReactElement
 searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMount InitSearch) initialState render eval) {}
   where
+
+  string = prepLangStrings rawStrings
+  coreString = prepLangStrings coreStrings
 
   styles theme = {
     results: {
@@ -183,7 +184,8 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     where clause term = "/xml" <> node <> " = " <> "'" <> term <> "'"
   whereClause _ = Nothing
 
-  render {searchResults,query,facets,facetSettings} (ReactProps {classes}) (DispatchEff d) = template {mainContent,titleExtra:Just searchBar}
+  render {searchResults,query,facets,facetSettings} (ReactProps {classes}) (DispatchEff d) = 
+      template {mainContent,titleExtra:Just searchBar, title: coreString.title}
     where
 
     facetMap = SM.fromFoldable $ (\fac@(FacetSetting {path}) -> Tuple path fac) <$> facetSettings
@@ -274,6 +276,3 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     modifyState _ {query=q}
     {facets} <- getState
     searchWith q facets
-
-main :: forall eff. Eff (dom :: DOM, ajax :: AJAX, console::CONSOLE | eff) Unit
-main = renderMain searchPage

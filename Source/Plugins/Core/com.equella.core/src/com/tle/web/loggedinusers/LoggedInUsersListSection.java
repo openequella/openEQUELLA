@@ -82,7 +82,7 @@ public class LoggedInUsersListSection extends AbstractPrototypeSection<LoggedInU
 	public SectionResult renderHtml(RenderEventContext context)
 	{
 		Decorations.getDecorations(context).setTitle(LABEL_TITLE);
-		Breadcrumbs.get(context).add(SettingsUtils.getBreadcrumb());
+		Breadcrumbs.get(context).add(SettingsUtils.getBreadcrumb(context));
 
 		final TableState sessionsTableState = sessionsTable.getState(context);
 		int users = 0;

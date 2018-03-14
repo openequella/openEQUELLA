@@ -11,10 +11,10 @@ import Data.Record (get)
 import Data.StrMap (fromFoldable)
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Tuple (Tuple(..))
-import SearchPage (rawStrings) as SearchPage
-import Template (rawStrings) as Template
+import SearchPage (coreStrings, rawStrings) as SearchPage
 import Settings.UISettings (rawStrings) as UISettings
-import SettingsPage (rawStrings) as SettingsPage
+import SettingsPage (coreStrings, rawStrings) as SettingsPage
+import Template (rawStrings) as Template
 import Type.Row (class RowToList, Cons, Nil, RLProxy(..))
 
 class ConvertToStrings a where
@@ -46,5 +46,7 @@ main = do
   log $ stringify $ encodeJson $ fromFoldable $
     genStrings "" Template.rawStrings <>
     genStrings "" SearchPage.rawStrings <>
+    genStrings "" SearchPage.coreStrings <>
     genStrings "" UISettings.rawStrings <>
-    genStrings "" SettingsPage.rawStrings
+    genStrings "" SettingsPage.rawStrings <>
+    genStrings "" SettingsPage.coreStrings

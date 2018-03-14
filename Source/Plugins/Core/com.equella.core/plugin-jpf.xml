@@ -6232,4 +6232,8 @@
     <parameter id="group" value="resource-centre" />
     <parameter id="file" value="lang/i18n-resource-centre.properties" />
   </extension>
+  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="spaPages">
+    <parameter id="path" value="/page.do" />
+    <parameter id="root" value="bean:com.tle.web.template.SinglePageApp" />
+  </extension>
 </plugin>

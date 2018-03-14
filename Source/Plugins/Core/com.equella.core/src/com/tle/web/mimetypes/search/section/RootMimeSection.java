@@ -83,7 +83,7 @@ public class RootMimeSection extends ContextableSearchSection<ContextableSearchS
 	{
 		super.addBreadcrumbsAndTitle(info, decorations, crumbs);
 
-		Breadcrumbs.get(info).add(SettingsUtils.getBreadcrumb());
+		Breadcrumbs.get(info).add(SettingsUtils.getBreadcrumb(info));
 	}
 
 	@Override

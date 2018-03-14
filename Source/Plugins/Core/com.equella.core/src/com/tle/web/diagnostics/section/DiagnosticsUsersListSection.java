@@ -113,7 +113,7 @@ public class DiagnosticsUsersListSection extends AbstractPrototypeSection<Diagno
 	public SectionResult renderHtml(RenderEventContext context)
 	{
 		Decorations.getDecorations(context).setTitle(LABEL_TITLE);
-		Breadcrumbs.get(context).add(SettingsUtils.getBreadcrumb());
+		Breadcrumbs.get(context).add(SettingsUtils.getBreadcrumb(context));
 
 		return freemarkerFactory.createResult("diagnostics.ftl", context);
 	}

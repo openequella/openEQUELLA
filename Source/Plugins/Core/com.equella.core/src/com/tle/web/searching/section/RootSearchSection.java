@@ -77,12 +77,6 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
 	}
 
 	@Override
-	protected String getReactInclude()
-	{
-		return urlHelper.url("reactjs/searching.js");
-	}
-
-	@Override
 	public SectionResult renderHtml(RenderEventContext context)
 	{
 		if( aclManager.filterNonGrantedPrivileges(WebConstants.SEARCH_PAGE_PRIVILEGE).isEmpty() )
