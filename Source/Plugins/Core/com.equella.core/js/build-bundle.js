@@ -4,6 +4,8 @@ const ArgumentParser = require("argparse").ArgumentParser;
 const mkdirp = require('mkdirp');
 const classesDir = "../target/scala-2.12/classes/web/reactjs/";
 const targetDir = "target/resources/web/reactjs/"
+var env = Object.create( process.env );
+env.NODE_PATH = './target/ts';
 
 var parser = new ArgumentParser({
     version: '1.0.0',
@@ -28,7 +30,7 @@ function buildDev()
     if (args.lib) {
         pargs.push("--no-check-main", "--standalone", "PS");
     }
-    spawn.sync("pulp", pargs, {stdio:'inherit'});
+    spawn.sync("pulp", pargs, {env:env, stdio:'inherit'});
 }
 
 function buildProd()
@@ -55,7 +57,7 @@ function buildProd()
     jsbundle.append(pulp.stdout);
     jsbundle.append(Buffer.from("module.exports = PS[\""+main+"\"];\n"));
 
-    var browserify = spawn("browserify", bargs, { stdio: ['pipe', 'pipe', 'inherit'] });
+    var browserify = spawn("browserify", bargs, { env: env, stdio: ['pipe', 'pipe', 'inherit'] });
     jsbundle.pipe(browserify.stdin);
 
     var uglilfy = spawn("uglifyjs", ["-o", outjs, "--compress", "--mangle"], { stdio: ['pipe', 'inherit', 'inherit'] });

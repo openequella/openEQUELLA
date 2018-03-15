@@ -1,3 +1,3 @@
-exports.courseStore = require("../../target/ts/course/CourseStore").default;
-exports.searchCourses = require("../../target/ts/course/SearchCourse").default;
-exports.editCourse = require("../../target/ts/course/EditCourse").default;
+exports.courseStore = require("course/CourseStore").default;
+exports.searchCourses = require("course/SearchCourse").default;
+exports.editCourse = require("course/EditCourse").default;
