@@ -121,6 +121,11 @@ public class ViewItemSummaryModule extends SectionsModule
 	{
 		NodeProvider node = node(MajorActionsGroupSection.class).placeHolder(
 			"com.tle.web.viewitem.summary.sidebar.MAJOR_ACTIONS");
+		node.child(com.tle.web.searching.prevnext.SearchPrevNextSection.class);
+		node.child(com.tle.web.viewitem.sharing.ShareWithOthersLinkSection.class);
+		node.child(com.tle.web.favourites.actions.AddToFavouritesSection.class);
+		node.child(com.tle.web.favourites.actions.RemoveFromFavouritesSection.class);
+		node.child(com.tle.web.viewitem.moderation.ViewMetadataAction.class);
 		node.child(SelectItemSummarySection.class);
 		node.child(UnselectItemSummarySection.class);
 		return node;

@@ -449,16 +449,6 @@
     <parameter id="class" value="bean:com.tle.web.controls.roleselector.RoleSelectorWebControl" />
     <parameter id="type" value="roleselector" />
   </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="addtofavouritessection">
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="class" value="bean:com.tle.web.favourites.actions.AddToFavouritesSection" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.sidebar.MAJOR_ACTIONS" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="removefromfavouritessection">
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="class" value="bean:com.tle.web.favourites.actions.RemoveFromFavouritesSection" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.sidebar.MAJOR_ACTIONS" />
-  </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="favourites">
     <parameter id="path" value="/access/favourites.do" />
     <parameter id="root" value="bean:com.tle.web.favourites.RootFavouritesSection" />
@@ -882,11 +872,6 @@
     <parameter id="id" value="summary" />
     <parameter id="id" value="progress" />
     <parameter id="bean" value="bean:com.tle.web.viewitem.moderation.ModerationSummaryView" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="metadataAction">
-    <parameter id="class" value="bean:com.tle.web.viewitem.moderation.ViewMetadataAction" />
-    <parameter id="path" value="/viewitem/viewitem.do" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.sidebar.MAJOR_ACTIONS" />
   </extension>
   <extension plugin-id="com.tle.core.item" id="calPostSave" point-id="operation">
     <parameter id="type" value="postSave" />
@@ -1355,12 +1340,6 @@
     <parameter id="path" value="/access/browseby.do" />
     <parameter id="root" value="bean:/access/browseby" />
   </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="searchPrevNextSectionSideline">
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="class" value="bean:com.tle.web.searching.prevnext.SearchPrevNextSection" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.sidebar.MAJOR_ACTIONS" />
-    <parameter id="order" value="1000" />
-  </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="customdateformat">
     <parameter id="path" value="/access/dateformatsettings.do" />
     <parameter id="root" value="bean:/access/dateformatsettings" />
@@ -1379,11 +1358,6 @@
   <extension plugin-id="com.tle.web.wizard.controls.universal" point-id="universalResourceHandler" id="echoHandler">
     <parameter id="class" value="bean:com.tle.web.controls.echo.EchoHandler" />
     <parameter id="order" value="700" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="link">
-    <parameter id="class" value="bean:com.tle.web.viewitem.sharing.ShareWithOthersLinkSection" />
-    <parameter id="path" value="/viewitem/viewitem.do" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.sidebar.MAJOR_ACTIONS" />
   </extension>
   <extension plugin-id="com.tle.web.sections" point-id="section" id="content">
     <parameter id="class" value="bean:com.tle.web.viewitem.sharing.ShareWithOthersContentSection" />

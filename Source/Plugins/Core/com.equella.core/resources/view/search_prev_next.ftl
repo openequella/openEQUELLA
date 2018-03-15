@@ -10,4 +10,3 @@
 	<@button section=s.nextButton showAs="next" size="small" />
 </div>
 </@>
-<div class="clear"></div>

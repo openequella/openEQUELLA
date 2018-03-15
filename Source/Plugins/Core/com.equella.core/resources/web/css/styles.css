@@ -756,6 +756,16 @@ fieldset.float {
 	margin-left: -3px;
 }
 
+.majorActions
+{
+    display: flex;
+	flex-direction: column;
+}
+
+.majorActions > :not(:first-child) {
+    margin-top: 10px;
+}
+
 .action-button {
 	width: 100%;
 	height: 28px;
