@@ -49,9 +49,6 @@ function setupToolbar($available, $currents, $container,initialDirty, ajaxCallba
 		var fromIndex = $button.data('fromIndex');
 		var toIndex  = $toolbar.children('.toolbarbutton').index($button);
 		
-		//make sure the dynamicheighthack is always last
-		$(this).find('.dynamicheighthack').appendTo(this);
-
 		if (fromRow != toRow || fromIndex != toIndex)
 		{
 			if (ajaxCallbacks.movedCallback)
