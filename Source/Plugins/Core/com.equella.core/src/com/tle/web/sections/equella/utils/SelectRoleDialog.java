@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import com.tle.core.i18n.CoreStrings;
 import net.sf.json.JSONArray;
 
 import com.tle.common.Check;
@@ -174,8 +175,8 @@ public class SelectRoleDialog extends AbstractOkayableDialog<SelectRoleDialog.Mo
 	protected Label getOkLabel()
 	{
 		final boolean multiple = section.isMultipleRoles();
-		final String okeyDokey = (multiple ? "com.tle.web.sections.equella.utils.selectroledialog.selecttheseroles"
-			: "com.tle.web.sections.equella.utils.selectroledialog.selectthisrole");
+		final String okeyDokey = (multiple ? CoreStrings.key("utils.selectroledialog.selecttheseroles")
+			: CoreStrings.key("utils.selectroledialog.selectthisrole"));
 
 		return new KeyLabel(okeyDokey);
 	}

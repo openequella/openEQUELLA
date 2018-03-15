@@ -40,10 +40,12 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.dytech.gui.ComponentHelper;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.NameId;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.gui.models.GenericListModel;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import com.tle.core.plugins.AbstractPluginService;
 
 /**
@@ -62,26 +64,19 @@ public class EntityDialog implements ActionListener, ListSelectionListener, Mous
 	private JDialog dialog;
 	private boolean cancelled = true;
 
-	private static String KEY_PFX = AbstractPluginService.getMyPluginId(EntityDialog.class) + ".";
-
-	protected static String getString(String key)
-	{
-		return CurrentLocale.get(getKey(key));
-	}
-
-	protected static String getKey(String key)
-	{
-		return KEY_PFX+key;
-	}
-
 	public EntityDialog(String entityName)
 	{
 		setup(entityName);
 	}
 
+	private static String getString(String key, Object... vals)
+	{
+		return Lookup.lookup.text(key, vals);
+	}
+
 	private void setup(String entityName)
 	{
-		title = CurrentLocale.get("com.tle.admin.search.entitydialog.select", entityName);
+		title = getString("entitydialog.select", entityName);
 
 		model = new GenericListModel<NameId>();
 		list = new JList(model);

@@ -163,6 +163,10 @@ public class GroupCtrl extends GroupWebControl<WebControlModel>
 		super.addNewGroup(group, index);
 
 		List<List<WebControl>> webGroups = getWebGroups();
+		if (index == -1)
+		{
+			index = webGroups.size() - 1;
+		}
 		List<WebControl> newGroup = webGroups.get(index);
 		for( WebControl g : newGroup )
 		{

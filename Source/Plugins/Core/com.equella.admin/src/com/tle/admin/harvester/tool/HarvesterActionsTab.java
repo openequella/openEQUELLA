@@ -29,14 +29,17 @@ import javax.swing.JPanel;
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.admin.Driver;
+import com.tle.admin.baseentity.BaseEntityEditor;
 import com.tle.admin.baseentity.BaseEntityTab;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.common.DateSelector;
 import com.tle.admin.gui.common.JNameValuePanel;
 import com.tle.admin.harvester.standard.HarvesterPlugin;
+import com.tle.admin.i18n.Lookup;
 import com.tle.common.harvester.HarvesterProfile;
 import com.tle.common.harvester.RemoteHarvesterProfileService;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 
 @SuppressWarnings("nls")
 public class HarvesterActionsTab extends BaseEntityTab<HarvesterProfile> implements ActionListener
@@ -51,6 +54,7 @@ public class HarvesterActionsTab extends BaseEntityTab<HarvesterProfile> impleme
 
 	private final DateSelector dateSelect;
 
+	private static StringLookup lookup = Lookup.lookup.prefix("actionstab");
 	@Override
 	public void setDriver(Driver driver)
 	{
@@ -65,8 +69,8 @@ public class HarvesterActionsTab extends BaseEntityTab<HarvesterProfile> impleme
 		JPanel runPanel = new JPanel();
 		JPanel testPanel = new JPanel();
 
-		runBtn = new JButton(getString("actionstab.run"));
-		testBtn = new JButton(getString("actionstab.test"));
+		runBtn = new JButton(lookup.text("run"));
+		testBtn = new JButton(lookup.text("test"));
 
 		runBtn.addActionListener(this);
 		testBtn.addActionListener(this);
@@ -76,9 +80,9 @@ public class HarvesterActionsTab extends BaseEntityTab<HarvesterProfile> impleme
 
 		namePanel = new JNameValuePanel();
 
-		namePanel.addNameAndComponent(getString("actionstab.lastdate"), dateSelect);
-		namePanel.addNameAndComponent(getString("actionstab.testlabel"), testPanel);
-		namePanel.addNameAndComponent(getString("actionstab.runnow"), runPanel);
+		namePanel.addNameAndComponent(lookup.text("lastdate"), dateSelect);
+		namePanel.addNameAndComponent(lookup.text("testlabel"), testPanel);
+		namePanel.addNameAndComponent(lookup.text("runnow"), runPanel);
 
 		this.editor = editor;
 	}
@@ -98,7 +102,7 @@ public class HarvesterActionsTab extends BaseEntityTab<HarvesterProfile> impleme
 	@Override
 	public String getTitle()
 	{
-		return getString("actionstab.name");
+		return lookup.text("name");
 	}
 
 	@Override
@@ -156,7 +160,7 @@ public class HarvesterActionsTab extends BaseEntityTab<HarvesterProfile> impleme
 		Object src = e.getSource();
 		if( src.equals(runBtn) )
 		{
-			int option = JOptionPane.showConfirmDialog(namePanel.getComponent(), getString("alert"), getString("sure"),
+			int option = JOptionPane.showConfirmDialog(namePanel.getComponent(), lookup.text("alert"), lookup.text("sure"),
 				JOptionPane.YES_NO_OPTION);
 
 			if( option == JOptionPane.YES_OPTION )
@@ -169,7 +173,7 @@ public class HarvesterActionsTab extends BaseEntityTab<HarvesterProfile> impleme
 						.getService(RemoteHarvesterProfileService.class);
 					harvesterService.startHarvesterTask(havProfile.getUuid(), true);
 
-					JOptionPane.showMessageDialog(namePanel.getComponent(), getString("running"));
+					JOptionPane.showMessageDialog(namePanel.getComponent(), lookup.text("running"));
 				}
 			}
 		}
@@ -198,7 +202,7 @@ public class HarvesterActionsTab extends BaseEntityTab<HarvesterProfile> impleme
 				@Override
 				public void finished()
 				{
-					JOptionPane.showMessageDialog(namePanel.getComponent(), getString("testpass", get()));
+					JOptionPane.showMessageDialog(namePanel.getComponent(), lookup.text("testpass", get()));
 				}
 
 				@Override
@@ -207,7 +211,7 @@ public class HarvesterActionsTab extends BaseEntityTab<HarvesterProfile> impleme
 					Exception ex = getException();
 					ex.printStackTrace();
 					Driver.displayInformation(HarvesterActionsTab.this.getComponent(),
-						getString("testfailed", ex.getMessage()));
+							lookup.text("testfailed", ex.getMessage()));
 				}
 			};
 			worker.setComponent(namePanel.getComponent());
@@ -228,16 +232,5 @@ public class HarvesterActionsTab extends BaseEntityTab<HarvesterProfile> impleme
 			JOptionPane.showMessageDialog(namePanel.getComponent(), ex.getLocalizedMessage());
 			return false;
 		}
-	}
-
-	/**
-	 * @param partKey Will be prefixed by
-	 *            com.tle.admin.harvester.tool.actionstab.
-	 * @param params
-	 * @return
-	 */
-	private String getString(String partKey, Object... params)
-	{
-		return getString("actionstab." + partKey, params);
 	}
 }

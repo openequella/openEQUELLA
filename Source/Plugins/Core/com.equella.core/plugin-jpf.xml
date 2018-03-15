@@ -4013,8 +4013,8 @@
   </extension>
   <extension plugin-id="com.tle.core.portal" point-id="portletType" id="tasksPortlet">
     <parameter id="id" value="tasks" />
-    <parameter id="nameKey" value="com.equella.core.portal.name" />
-    <parameter id="descriptionKey" value="com.equella.core.portal.description" />
+    <parameter id="nameKey" value="com.equella.core.workflow.portal.name" />
+    <parameter id="descriptionKey" value="com.equella.core.workflow.portal.description" />
     <parameter id="node" value="PORTLET_TASKS" />
   </extension>
   <extension plugin-id="com.tle.web.remoting.soap" point-id="endpoint-interface" id="taskListMethods">

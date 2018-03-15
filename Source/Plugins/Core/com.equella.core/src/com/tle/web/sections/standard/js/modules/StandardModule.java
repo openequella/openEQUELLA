@@ -17,6 +17,7 @@
 package com.tle.web.sections.standard.js.modules;
 
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.core.javascript.JavascriptModule;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.render.PreRenderable;
@@ -36,7 +37,7 @@ public class StandardModule implements JavascriptModule
 	@Override
 	public String getDisplayName()
 	{
-		return CurrentLocale.get("com.tle.web.sections.standard.js.modules.standard.name");
+		return CoreStrings.lookup().getString("js.modules.standard.name");
 	}
 
 	@Override

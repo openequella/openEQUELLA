@@ -16,13 +16,18 @@
 
 package com.tle.core.i18n
 
+import com.tle.common.i18n.StringLookup
 import com.tle.web.resources.ResourcesService
 
-object CoreStrings {
+object CoreStrings extends StringLookup {
 
   val lookup = ResourcesService.getResourceHelper("com.equella.core")
 
-  def text(key: String, vals: String*): String = lookup.getString(key, vals: _*)
-
   def key(local: String): String = lookup.key(local)
+
+  def text(key: String) : String = text(key, Seq.empty: _*)
+
+  override def text(key: String, vals: AnyRef*): String = lookup.getString(key, vals: _*)
+
+  override def prefix(prefix: String): StringLookup = StringLookup.prefixed(key(prefix))
 }

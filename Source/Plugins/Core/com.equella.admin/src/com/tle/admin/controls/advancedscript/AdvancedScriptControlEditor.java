@@ -40,6 +40,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
+import com.tle.admin.i18n.Lookup;
+import com.tle.common.i18n.StringLookup;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import com.dytech.common.io.FileExtensionFilter;
@@ -107,6 +109,8 @@ public class AdvancedScriptControlEditor extends AbstractControlEditor<AdvancedS
 	private final Map<EquellaSyntaxTextArea, String> changedStringsReferenceMap;
 
 	private EquellaSyntaxTextArea focus;
+	private static StringLookup strings = Lookup.lookup;
+
 
 	private static String DEFAULT_TEMPLATE;
 	protected static String[] HIGHLIGHTER_KEYWORDS;
@@ -341,11 +345,6 @@ public class AdvancedScriptControlEditor extends AbstractControlEditor<AdvancedS
 		}
 	}
 
-	protected static String getString(String partKey, Object... params)
-	{
-		return CurrentLocale.get("com.tle.admin.controls.advancedscript." + partKey, params); //$NON-NLS-1$
-	}
-
 	private static NameValue[] getJavascriptModules()
 	{
 		List<NameValue> result = new ArrayList<NameValue>();
@@ -450,7 +449,7 @@ public class AdvancedScriptControlEditor extends AbstractControlEditor<AdvancedS
 	{
 		public AdvancedScriptConfigFileFilter()
 		{
-			super(new FileExtensionFilter(EXPORT_FILE_EXTENSION), getString("file.description", EXPORT_FILE_EXTENSION));
+			super(new FileExtensionFilter(EXPORT_FILE_EXTENSION), strings.text("file.description", EXPORT_FILE_EXTENSION));
 		}
 	}
 
@@ -473,7 +472,7 @@ public class AdvancedScriptControlEditor extends AbstractControlEditor<AdvancedS
 		if( focus != null )
 		{
 			getEntityEditor().getStatusBar().setMessage(
-				getString("lineandcolumn", focus.getCaretLineNumber() + 1, focus.getCaretOffsetFromLineStart())); //$NON-NLS-1$
+					strings.text("lineandcolumn", focus.getCaretLineNumber() + 1, focus.getCaretOffsetFromLineStart())); //$NON-NLS-1$
 		}
 	}
 }

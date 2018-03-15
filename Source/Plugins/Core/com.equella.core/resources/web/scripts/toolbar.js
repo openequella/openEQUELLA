@@ -51,7 +51,7 @@ function setupToolbar($available, $currents, $container,initialDirty, ajaxCallba
 		
 		//make sure the dynamicheighthack is always last
 		$(this).find('.dynamicheighthack').appendTo(this);
-		
+
 		if (fromRow != toRow || fromIndex != toIndex)
 		{
 			if (ajaxCallbacks.movedCallback)

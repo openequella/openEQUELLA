@@ -20,6 +20,7 @@ import java.awt.Component;
 
 import javax.swing.JDialog;
 
+import com.tle.admin.i18n.Lookup;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.plugins.AbstractPluginService;
 import org.apache.commons.logging.Log;
@@ -37,16 +38,15 @@ import com.tle.common.applet.client.ClientService;
 public abstract class BaseEntityTab<T extends BaseEntity> extends JFakePanel
 {
 	public static final Log LOGGER = LogFactory.getLog(BaseEntityTab.class);
-	private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
 
-	protected String getString(String key)
+	protected static String getString(String key)
 	{
-		return CurrentLocale.get(getKey(key));
+		return Lookup.lookup.text(key);
 	}
 
-	protected String getKey(String key)
+	protected static String getKey(String key)
     {
-        return KEY_PFX+key;
+    	return Lookup.lookup.key(key);
     }
 
 	protected EditorState<T> state;

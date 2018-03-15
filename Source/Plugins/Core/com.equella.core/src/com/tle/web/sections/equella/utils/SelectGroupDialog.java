@@ -23,6 +23,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import com.tle.core.i18n.CoreStrings;
 import net.sf.json.JSONArray;
 
 import com.tle.common.Check;
@@ -175,8 +176,8 @@ public class SelectGroupDialog extends AbstractOkayableDialog<SelectGroupDialog.
 	protected Label getOkLabel()
 	{
 		final boolean multiple = section.isMultipleGroups();
-		final String okeyDokey = (multiple ? "com.tle.web.sections.equella.utils.selectgroupdialog.selectthesegroups"
-			: "com.tle.web.sections.equella.utils.selectgroupdialog.selectthisgroup");
+		final String okeyDokey = (multiple ? CoreStrings.key("utils.selectgroupdialog.selectthesegroups")
+			: CoreStrings.key("utils.selectgroupdialog.selectthisgroup"));
 
 		return new KeyLabel(okeyDokey);
 	}
