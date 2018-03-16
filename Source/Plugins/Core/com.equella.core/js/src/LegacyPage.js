@@ -1,4 +1,4 @@
-exports.setBodyHtml = function (html) {
+exports.setInnerHtml = function (html) {
   return function(ref)
   {
     return function()

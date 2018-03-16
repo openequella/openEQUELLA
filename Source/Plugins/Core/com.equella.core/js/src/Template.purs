@@ -3,7 +3,8 @@ module Template where
 import Prelude
 
 import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE)
+import Control.Monad.Eff.Console (CONSOLE, log)
+import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
 import DOM (DOM)
 import DOM.HTML (window)
@@ -18,7 +19,7 @@ import Data.StrMap as M
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable as U
 import Dispatcher (DispatchEff(DispatchEff), effEval)
-import Dispatcher.React (ReactProps(ReactProps), createComponent, modifyState)
+import Dispatcher.React (ReactProps(ReactProps), createComponent, createLifecycleComponent, didMount, modifyState)
 import EQUELLA.Environment (prepLangStrings)
 import MaterialUI.AppBar (appBar)
 import MaterialUI.ButtonBase (onClick)

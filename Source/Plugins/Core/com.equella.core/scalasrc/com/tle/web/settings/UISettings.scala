@@ -28,11 +28,13 @@ import scala.collection.JavaConverters._
 import scala.beans.BeanProperty
 
 case class FacetSetting @JsonCreator() (@JsonProperty("name") @BeanProperty name: String, @JsonProperty("path") @BeanProperty path: String)
-case class NewUISettings(@BeanProperty enabled: Boolean, facets: Option[Iterable[FacetSetting]]) {
+case class NewUISettings(@BeanProperty enabled: Boolean, newSearch: Option[Boolean], facets: Option[Iterable[FacetSetting]]) {
   @JsonCreator
-  def this(@JsonProperty("enabled") enabled: Boolean, @JsonProperty("facets") facets: Array[FacetSetting]) = {
-    this(enabled, Option(facets).map(_.toIterable))
+  def this(@JsonProperty("enabled") enabled: Boolean, @JsonProperty("newSearch") newSearch: Boolean, @JsonProperty("facets") facets: Array[FacetSetting]) = {
+    this(enabled, Option(newSearch), Option(facets).map(_.toIterable))
   }
+
+  def getNewSearch = newSearch.getOrElse(false)
 
   def getFacets = facets.getOrElse(Iterable.empty).asJavaCollection
 }
@@ -43,7 +45,7 @@ object UISettings {
 
   private val UIPropName = "ui"
 
-  val defaultSettings = UISettings(NewUISettings(false, None))
+  val defaultSettings = UISettings(NewUISettings(false, Some(false), None))
 
   val getUISettings : DB[Option[UISettings]] = SettingsDB.jsonProperty[UISettings](UIPropName).value
 

@@ -3,13 +3,15 @@ module LegacyPage where
 import Prelude
 
 import Control.Monad.Eff (Eff)
+import Control.Monad.State (modify)
+import Control.Monad.Trans.Class (lift)
 import DOM.HTML.Types (HTMLElement)
 import Data.Array (catMaybes)
 import Data.Maybe (Maybe(Nothing, Just), fromMaybe, isJust)
 import Data.Nullable (Nullable, toNullable)
 import Data.StrMap (StrMap, lookup)
 import Dispatcher (DispatchEff(..), effEval)
-import Dispatcher.React (ReactProps(..), createComponent, modifyState)
+import Dispatcher.React (ReactProps(ReactProps), createComponent, createLifecycleComponent, getProps, modifyState)
 import MaterialUI.ButtonBase (onClick)
 import MaterialUI.Color (inherit)
 import MaterialUI.Icon (icon_)
@@ -26,10 +28,18 @@ import React.DOM.Props (Props)
 import React.DOM.Props as DP
 import Template (renderData, template')
 
-foreign import setBodyHtml :: forall eff. String -> Nullable Ref -> Eff eff Unit
+foreign import setInnerHtml :: forall eff. String -> Nullable Ref -> Eff eff Unit
 
-divWithHtml :: Array Props -> String -> ReactElement
-divWithHtml p html = D.div (p <> [ DP.withRef $ setBodyHtml html ]) []
+data RawHtml = DomNode (Nullable Ref)
+
+divWithHtml :: {divProps :: Array Props, html :: String} -> ReactElement
+divWithHtml = createFactory $ createLifecycleComponent lc {} render eval 
+  where 
+    lc = modify _ { shouldComponentUpdate = \_ _ _ -> pure false }
+    eval (DomNode r) = do
+      {html} <- getProps
+      lift $ setInnerHtml html r
+    render _ (ReactProps {divProps,html}) (DispatchEff d) = D.div (divProps <> [ DP.withRef $ d DomNode ]) []
 
 data Command = OptionsAnchor (Maybe HTMLElement)
 type State = {optionsAnchor::Maybe HTMLElement}
@@ -46,17 +56,17 @@ legacy htmlMap = createFactory (withStyles styles $ createComponent {optionsAnch
         template' {title:renderData.title, mainContent, titleExtra:Nothing, 
             menuExtra: fromMaybe [] $ (options <$> lookup "so" htmlMap)}
     where
-    options h = [ 
+    options html = [ 
         iconButton [color inherit, onClick $ handle $ d \e -> OptionsAnchor $ Just e.currentTarget] [ icon_ [text "more_vert"] ],
         popover [ open $ isJust s.optionsAnchor, marginThreshold 64
             , anchorOrigin {vertical:"bottom",horizontal:"left"}
             , onClose (handle $ d \_ -> OptionsAnchor Nothing)
             , anchorEl $ toNullable s.optionsAnchor ] 
         [ 
-            divWithHtml [DP.className $ classes.screenOptions] h 
+            divWithHtml {divProps:[DP.className $ classes.screenOptions], html}
         ]
     ]
     mainContent = D.div' $ catMaybes [ 
-        divWithHtml [] <$> lookup "body" htmlMap
+      (divWithHtml <<< {divProps:[], html: _} <$> lookup "body" htmlMap)
     ]
   eval (OptionsAnchor el) = modifyState _ {optionsAnchor = el}

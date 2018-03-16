@@ -10,7 +10,7 @@ window.confirm = function(msg) {
 
 $(function()
 {
-	$("HTML").ajaxStart(function()
+	$(document).ajaxStart(function()
 	{
 		_ajaxBusy = true;
 	}).ajaxStop(function()
