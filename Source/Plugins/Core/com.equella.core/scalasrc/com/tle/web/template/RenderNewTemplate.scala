@@ -38,6 +38,7 @@ import com.tle.web.sections.js.generic.function.IncludeFile
 import com.tle.web.sections.render._
 import com.tle.web.settings.UISettings
 import com.tle.web.template.Decorations.MenuMode
+import com.tle.web.template.section.HelpAndScreenOptionsSection
 import io.circe.generic.auto._
 
 import scala.collection.JavaConverters._
@@ -108,8 +109,12 @@ object RenderNewTemplate {
       } else {
         bodyTag.setNestedRenderable(bodyResult)
       }
-      val html = SectionUtils.renderToString(context, bodyTag)
-      new ObjectExpression("body", html)
+      val hasoMap = HelpAndScreenOptionsSection.getContent(context).asScala
+      val scrops = hasoMap.get("screenoptions").map(bbr => SectionUtils.renderToString(context, bbr.getRenderable))
+      val bodyHtml = SectionUtils.renderToString(context, bodyTag)
+      val htmlMap = new ObjectExpression("body", bodyHtml)
+      scrops.foreach(htmlMap.put("so", _))
+      htmlMap
     } else null
 
     val title = Option(decs.getTitle).map(_.getText).getOrElse("")

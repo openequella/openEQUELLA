@@ -51,6 +51,7 @@ import com.tle.web.sections.render.PreRenderable;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.result.util.IconLabel.Icon;
 import com.tle.web.sections.standard.model.HtmlComponentState;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.event.BlueBarConstants;
 import com.tle.web.template.section.event.BlueBarRenderable;
 
@@ -77,6 +78,10 @@ public class HelpAndScreenOptionsSection
 	@Override
 	public SectionResult renderHtml(RenderEventContext context)
 	{
+		if (RenderNewTemplate.isNewLayout(context))
+		{
+			return null;
+		}
 		return new GenericNamedResult("helpandoptions", new PreRenderable()
 		{
 			@Override
@@ -138,6 +143,12 @@ public class HelpAndScreenOptionsSection
 		final HelpAndScreenOptionsModel model = getModel(info);
 		model.setShown(null);
 	}
+
+	public static Map<String, BlueBarRenderable> getContent(SectionInfo info)
+	{
+		return info.lookupSection(HelpAndScreenOptionsSection.class).getModel(info).getTabMap();
+	}
+
 
 	@Override
 	public void registered(String id, SectionTree tree)

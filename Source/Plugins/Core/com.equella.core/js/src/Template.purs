@@ -72,7 +72,11 @@ rawStrings = Tuple "template" {
 }
 
 template :: {mainContent :: ReactElement, title::String, titleExtra::Maybe ReactElement} -> ReactElement
-template = createFactory (withStyles ourStyles (createComponent initialState render (effEval eval)))
+template {mainContent,title,titleExtra} = template' {mainContent,title,titleExtra,menuExtra:[]}
+
+template' :: {mainContent :: ReactElement, title::String, titleExtra::Maybe ReactElement, 
+  menuExtra::Array ReactElement} -> ReactElement
+template' = createFactory (withStyles ourStyles (createComponent initialState render (effEval eval)))
   where
   strings = prepLangStrings rawStrings
   drawerWidth = 240
@@ -138,7 +142,7 @@ template = createFactory (withStyles ourStyles (createComponent initialState ren
   eval ToggleMenu = modifyState \(s :: State) -> s {mobileOpen = not s.mobileOpen}
   eval (UserMenuAnchor el) = modifyState \(s :: State) -> s {menuAnchor = el}
 
-  render {mobileOpen,menuAnchor} (ReactProps {classes,mainContent,title:titleText,titleExtra}) (DispatchEff d) =
+  render {mobileOpen,menuAnchor} (ReactProps {classes,mainContent,title:titleText,titleExtra,menuExtra}) (DispatchEff d) =
     D.div [DP.className classes.root] [
       reboot_ [],
       D.div [DP.className classes.appFrame] [
@@ -160,8 +164,8 @@ template = createFactory (withStyles ourStyles (createComponent initialState ren
       ]
     ]
     where
-    userMenu = D.div' do
-      guard (not renderData.user.guest)
+    userMenu = D.div' $ menuExtra <>
+      (guard (not renderData.user.guest) *>
       [
         iconButton [color inherit, onClick $ handle $ d \e -> UserMenuAnchor $ Just e.currentTarget] [
           icon_ [ D.text "account_circle"]
@@ -176,7 +180,7 @@ template = createFactory (withStyles ourStyles (createComponent initialState ren
           [ Just $ menuItem [component "a", mkProp "href" "logon.do?logout=true"] [D.text strings.menu.logout],
             guard renderData.user.prefsEditable $> menuItem [component "a", mkProp "href" "access/user.do"] [D.text strings.menu.prefs]
           ]
-      ]
+      ])
     menuContent = [D.div [DP.className classes.logo] [ D.img [ DP.src logoSrc] []]] <>
                   intercalate [divider []] (group <$> renderData.menuItems)
       where

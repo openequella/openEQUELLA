@@ -5,7 +5,7 @@ exports.setBodyHtml = function (html) {
     {
       if (ref)
       {
-        $(ref).html(html.body);
+        $(ref).html(html);
       }
     }
   }
