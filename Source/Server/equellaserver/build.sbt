@@ -13,10 +13,11 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_config")).value
 
-val jacksonVersion = "2.4.1"
+val jacksonVersion = "2.9.4"
 val axis2Version = "1.6.2"
 val TomcatVersion = "8.5.23"
 val SwaggerVersion = "1.5.16"
+val RestEasyVersion = "3.5.0.Final"
 val simpledbaVersion = "0.1.3-SNAPSHOT"
 val fs2Version = "0.10.2"
 val circeVersion = "0.9.1"
@@ -36,6 +37,7 @@ libraryDependencies ++= Seq(
   "axis" % "axis" % "1.4",
   "cglib" % "cglib" % "2.2",
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
   "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
   "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-base" % jacksonVersion,
@@ -62,6 +64,7 @@ libraryDependencies ++= Seq(
   "io.swagger" % "swagger-core" % SwaggerVersion,
   "io.swagger" % "swagger-annotations" % SwaggerVersion,
   "io.swagger" % "swagger-jaxrs" % SwaggerVersion,
+  "io.swagger" %% "swagger-scala-module" % "1.0.3",
 
   "com.zaxxer" % "HikariCP" % "2.6.1",
   "commons-beanutils" % "commons-beanutils" % "1.9.3",
@@ -179,9 +182,16 @@ libraryDependencies ++= Seq(
   "org.freemarker" % "freemarker" % "2.3.23",
   "com.github.equella.legacy" % "hurl" % "1.1",
   "org.javassist" % "javassist" % "3.18.2-GA",
-  "org.jboss.resteasy" % "resteasy-jackson-provider" % "3.0.10.Final",
-  "org.jboss.resteasy" % "resteasy-jaxrs" % "3.0.10.Final",
-  "org.jboss.resteasy" % "jaxrs-api" % "3.0.10.Final",
+  "org.jboss.resteasy" % "resteasy-jaxrs" % RestEasyVersion,
+  "org.jboss.spec.javax.annotation" % "jboss-annotations-api_1.2_spec" % "1.0.2.Final",
+  "org.jboss.logging" % "jboss-logging" % "3.3.2.Final",
+  "org.jboss.logging" % "jboss-logging-annotations" % "2.1.0.Final",
+  "org.jboss.logging" % "jboss-logging-processor" % "2.1.0.Final",
+  "org.reactivestreams" % "reactive-streams" % "1.0.2",
+  "org.jboss.spec.javax.ws.rs" % "jboss-jaxrs-api_2.1_spec" % "1.0.0.Final",
+  "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "1.0.1",
+  "org.eclipse.microprofile.config" % "microprofile-config-api" % "1.2.1",
+  "javax.json.bind" % "javax.json.bind-api" % "1.0",
   "org.jsoup" % "jsoup" % "1.6.1",
   xstreamDep,
   "org.opensaml" % "xmltooling" % "1.3.1" excludeAll (
@@ -243,12 +253,9 @@ excludeDependencies ++= Seq(
   "rhino" % "js",
   "bouncycastle" % "bcprov-jdk15",
   "org.bouncycastle" % "bcprov-jdk15",
-  "org.codehaus.jackson" % "jackson-core-asl",
-  "org.codehaus.jackson" % "jackson-jaxrs",
-  "org.codehaus.jackson" % "jackson-mapper-asl",
-  "org.codehaus.jackson" % "jackson-xc",
   "org.apache.geronimo.specs" % "geronimo-javamail_1.4_spec",
-  "org.apache.geronimo.specs" % "geronimo-stax-api_1.0_spec"
+  "org.apache.geronimo.specs" % "geronimo-stax-api_1.0_spec",
+  "org.jboss.spec.javax.servlet" % "jboss-servlet-api_3.1_spec"
 )
 
 unmanagedJars in Compile ++= oracleDriverJar.value.toSeq.classpath

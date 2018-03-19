@@ -21,31 +21,21 @@ import com.fasterxml.jackson.annotation.{JsonCreator, JsonProperty}
 import com.tle.core.cache.{Cache, InstCacheable}
 import com.tle.core.db.DB
 import com.tle.core.settings.SettingsDB
-import io.circe.generic.auto._
 import cats.syntax.apply._
-import scala.collection.JavaConverters._
+import io.circe.generic.extras.Configuration, io.circe.generic.extras.auto._
 
-import scala.beans.BeanProperty
+case class FacetSetting(name: String, path: String)
 
-case class FacetSetting @JsonCreator() (@JsonProperty("name") @BeanProperty name: String, @JsonProperty("path") @BeanProperty path: String)
-case class NewUISettings(@BeanProperty enabled: Boolean, newSearch: Option[Boolean], facets: Option[Iterable[FacetSetting]]) {
-  @JsonCreator
-  def this(@JsonProperty("enabled") enabled: Boolean, @JsonProperty("newSearch") newSearch: Boolean, @JsonProperty("facets") facets: Array[FacetSetting]) = {
-    this(enabled, Option(newSearch), Option(facets).map(_.toIterable))
-  }
+case class NewUISettings(enabled: Boolean, newSearch: Boolean = false, facets: Iterable[FacetSetting] = Iterable.empty)
 
-  def getNewSearch = newSearch.getOrElse(false)
-
-  def getFacets = facets.getOrElse(Iterable.empty).asJavaCollection
-}
-
-case class UISettings @JsonCreator() (@JsonProperty("newUI") @BeanProperty newUI: NewUISettings)
+case class UISettings(newUI: NewUISettings)
 
 object UISettings {
+  implicit val customConfig: Configuration = Configuration.default.withDefaults
 
   private val UIPropName = "ui"
 
-  val defaultSettings = UISettings(NewUISettings(false, Some(false), None))
+  val defaultSettings = UISettings(NewUISettings(enabled = false))
 
   val getUISettings : DB[Option[UISettings]] = SettingsDB.jsonProperty[UISettings](UIPropName).value
 

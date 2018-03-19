@@ -2503,7 +2503,7 @@
     <parameter id="root" value="bean:/access/course/search" />
   </extension>
   <extension plugin-id="com.tle.web.sections.equella" point-id="menuContributor" id="searchMenuContributor">
-    <parameter id="menuContributorClass" value="bean:com.tle.web.searching.SearchMenuContributor" />
+    <parameter id="menuContributorClass" value="object:com.tle.web.searching.SearchMenuContributor" />
     <parameter id="enabledFor" value="loggedIn" />
     <parameter id="enabledFor" value="guest" />
   </extension>
@@ -2662,14 +2662,6 @@
     <parameter id="init-param">
       <parameter id="name" value="resteasy.servlet.mapping.prefix" />
       <parameter id="value" value="/api" />
-    </parameter>
-    <parameter id="init-param">
-      <parameter id="name" value="resteasy.scan" />
-      <parameter id="value" value="true" />
-    </parameter>
-    <parameter id="init-param">
-      <parameter id="name" value="resteasy.providers" />
-      <parameter id="value" value="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider,io.swagger.jaxrs.listing.ApiListingResource,io.swagger.jaxrs.listing.SwaggerSerializers" />
     </parameter>
     <parameter id="init-param">
       <parameter id="name" value="javax.ws.rs.Application" />

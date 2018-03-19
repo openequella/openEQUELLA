@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.module.scala.DefaultScalaModule;
 import com.tle.common.interfaces.equella.I18NSerializer;
 import com.tle.common.interfaces.equella.RestStringsModule;
 import com.tle.core.guice.Bind;
@@ -223,16 +224,14 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 	@Override
 	public void extendMapper(ObjectMapper mapper)
 	{
-		SimpleModule restModule = new SimpleModule("RestModule", new Version(1, 0, 0, null));
-		// TODO this probably should be somewhere else, but it can't be in
-		// com.tle.core.jackson
-		// as that would make it dependent on equella i18n
+		SimpleModule restModule = new SimpleModule("RestModule");
 		restModule.addSerializer(new I18NSerializer());
 		mapper.registerModule(restModule);
 		mapper.registerModule(new JavaTypesModule());
+		mapper.registerModule(new DefaultScalaModule());
 
 		mapper.registerModule(new RestStringsModule());
-		mapper.setSerializationInclusion(Include.NON_NULL);
+		mapper.setSerializationInclusion(Include.NON_ABSENT);
 
 		// dev mode!
 		if( DebugSettings.isDebuggingMode() )

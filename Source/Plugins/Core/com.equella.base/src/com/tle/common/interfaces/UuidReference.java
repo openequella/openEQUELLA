@@ -46,6 +46,7 @@ public class UuidReference
 		return uuid;
 	}
 
+	@JsonProperty("$ref")
 	public void setUuid(String uuid)
 	{
 		this.uuid = uuid;

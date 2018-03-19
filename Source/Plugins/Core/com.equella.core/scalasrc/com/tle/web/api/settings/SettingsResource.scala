@@ -17,7 +17,6 @@
 package com.tle.web.api.settings
 
 import java.net.URI
-import java.util
 
 import com.tle.common.institution.CurrentInstitution
 import com.tle.core.db.{DB, RunWithDB}
@@ -26,17 +25,14 @@ import com.tle.web.settings.{EditableSettings, SettingsList, UISettings}
 import io.swagger.annotations.Api
 import javax.ws.rs.{GET, PUT, Path, Produces}
 
-import scala.beans.BeanProperty
-import scala.collection.JavaConverters._
-
-case class SettingTypeLinks(@BeanProperty web: URI, @BeanProperty rest: URI)
-case class SettingType(@BeanProperty id: String, @BeanProperty name: String, @BeanProperty description: String,
-                       @BeanProperty group: String, @BeanProperty links: SettingTypeLinks)
+case class SettingTypeLinks(web: Option[URI], rest: Option[URI])
+case class SettingType(id: String, name: String, description: String,
+                       group: String, links: SettingTypeLinks)
 
 object SettingTypeLinks {
   def apply(instUri: URI, ed: EditableSettings): SettingTypeLinks = ed.uriType match {
-    case "rest" => SettingTypeLinks(null, instUri.resolve(ed.uri))
-    case _ => SettingTypeLinks(instUri.resolve(ed.uri), null : URI)
+    case "rest" => SettingTypeLinks(None, Option(instUri.resolve(ed.uri)))
+    case _ => SettingTypeLinks(Option(instUri.resolve(ed.uri)), None)
   }
 }
 
@@ -46,11 +42,11 @@ object SettingTypeLinks {
 class SettingsResource {
 
   @GET
-  def settings : util.Collection[SettingType] = {
+  def settings : Iterable[SettingType] = {
     SettingsList.allSettings.filter(_.isEditable).map { s =>
       val instUri = CurrentInstitution.get().getUrlAsUri
       SettingType(s.id, s.name, s.description, s.group, SettingTypeLinks(instUri, s))
-    }.asJavaCollection
+    }
   }
 
   def ensureEditSystem[A](db: DB[A]): DB[A] = AclChecks.ensureOnePriv("EDIT_SYSTEM_SETTINGS")(db)

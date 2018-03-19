@@ -16,7 +16,6 @@ import Data.Lens.Record (prop)
 import Data.Lens.Setter (set)
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Newtype (class Newtype)
-import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
 import Data.Tuple (Tuple(..))
 import Dispatcher (DispatchEff(..))
@@ -44,7 +43,7 @@ import React.DOM.Props as DP
 
 
 newtype FacetSetting = FacetSetting { name :: String, path :: String }
-newtype NewUISettings = NewUISettings { enabled :: Boolean, facets :: Array FacetSetting }
+newtype NewUISettings = NewUISettings { enabled :: Boolean, newSearch :: Boolean, facets :: Array FacetSetting }
 newtype UISettings = UISettings { newUI :: NewUISettings }
 
 derive instance newtypeUISettings :: Newtype UISettings _
@@ -62,8 +61,9 @@ instance decNewUISettings :: DecodeJson NewUISettings where
   decodeJson v = do
     o <- decodeJson v
     enabled <- o .? "enabled"
+    newSearch <- o .? "newSearch"
     facets <- o .? "facets"
-    pure $ NewUISettings {enabled,facets}
+    pure $ NewUISettings {enabled,newSearch,facets}
 
 instance decUISettings :: DecodeJson UISettings where
   decodeJson v = do
@@ -78,15 +78,16 @@ instance encFacetSetting :: EncodeJson FacetSetting where
     jsonEmptyObject
 
 instance encNewUISettings :: EncodeJson NewUISettings where
-  encodeJson (NewUISettings {enabled,facets}) =
+  encodeJson (NewUISettings {enabled,newSearch,facets}) =
      "enabled" := enabled ~>
+     "newSearch" := newSearch ~>
      "facets" := facets ~>
      jsonEmptyObject
 
 instance encUISettings :: EncodeJson UISettings where
   encodeJson (UISettings {newUI}) = "newUI" := newUI ~> jsonEmptyObject
 
-data Command = LoadSetting | SetNewUI Boolean
+data Command = LoadSetting | SetNewUI Boolean | SetNewSearch Boolean
               | ModifyFacet Int (FacetSetting -> FacetSetting) | RemoveFacet Int
               | AddFacet
 
@@ -103,11 +104,12 @@ rawStrings = Tuple "uiconfig" {
     path: "Path",
     title: "Search facets"
   },
-  enableNew: "Enable new UI"
+  enableNew: "Enable new UI",
+  enableSearch: "Enable new search page"
 }
 
 initialState :: forall eff. State eff
-initialState = {disabled:true, saving:Nothing, settings:UISettings {newUI: NewUISettings {enabled:false, facets:[]}}}
+initialState = {disabled:true, saving:Nothing, settings:UISettings {newUI: NewUISettings {enabled:false, newSearch: false, facets:[]}}}
 
 uiSettingsEditor :: ReactElement
 uiSettingsEditor = createFactory (withStyles styles $ createLifecycleComponent (didMount LoadSetting) initialState render eval) {}
@@ -135,14 +137,14 @@ uiSettingsEditor = createFactory (withStyles styles $ createLifecycleComponent (
       width: 300
     }
   }
+  _newSearch = prop (SProxy :: SProxy "newSearch")
   _enabled = prop (SProxy :: SProxy "enabled")
   _newUI = prop (SProxy :: SProxy "newUI")
   _settings = prop (SProxy :: SProxy "settings")
   _facets = prop (SProxy :: SProxy "facets")
   _name = prop (SProxy :: SProxy "name")
   _path = prop (SProxy :: SProxy "path")
-  _enabledFlag = _Newtype <<< _newUI <<< _Newtype <<< _enabled
-  _UIfacets = _Newtype <<< _newUI <<< _Newtype <<< _facets
+  _newUISettings = _settings <<< _Newtype <<< _newUI <<< _Newtype
 
   render s@{settings:UISettings uis@{newUI: (NewUISettings newUI)}} (ReactProps {classes}) (DispatchEff d) =
     let
@@ -161,16 +163,23 @@ uiSettingsEditor = createFactory (withStyles styles $ createLifecycleComponent (
         formControl_ [
           formControlLabel [ label string.enableNew, control $ switch [checked newUI.enabled,
                           disabled s.disabled, onChange $ mkEffFn2 \e -> d $ SetNewUI ]]
-                          ]],
-      D.div [DP.className $ joinWith " " [classes.facetConfig, classes.facetColumn] ] $ [
+        ]
+      ],
+      D.div [DP.className classes.facetColumn] $ [
+        formControl_ [
+          formControlLabel [ label string.enableSearch, control $ switch [checked newUI.newSearch,
+                          dis, onChange $ mkEffFn2 \e -> d $ SetNewSearch ]]
+        ],
+        D.div [DP.className classes.facetConfig ] $ [
           typography [variant subheading] [text string.facet.title]
         ] <> (mapWithIndex facetEditor newUI.facets) <>
         [
           button [dis, variant fab, className classes.fab, onClick $ handle $ d \e -> AddFacet] [ icon_ [text "add"] ]
         ]
+      ]
     ]
 
-  modifyFacets = modifyState <<< over (_settings <<< _UIfacets)
+  modifyFacets = modifyState <<< over (_newUISettings <<< _facets)
   modifyFacetsM f = modifyFacets \facets -> fromMaybe facets $ f facets
 
   save = do
@@ -183,7 +192,7 @@ uiSettingsEditor = createFactory (withStyles styles $ createLifecycleComponent (
     modifyState _{saving=Just newFiber}
     lift $ maybe (pure unit) (killFiber (error "")) saving
 
-  eval (LoadSetting) = do
+  eval LoadSetting = do
     result <- lift $ get $ baseUrl <> "api/settings/ui"
     either (lift <<< log) (\r -> modifyState _ {settings=r, disabled=false}) $ decodeJson result.response
   eval AddFacet = do
@@ -196,5 +205,8 @@ uiSettingsEditor = createFactory (withStyles styles $ createLifecycleComponent (
     modifyFacetsM $ modifyAt ind f
     save
   eval (SetNewUI v) = do
-    modifyState $ set (_settings <<< _enabledFlag) v
+    modifyState $ set (_newUISettings <<< _enabled) v
+    save
+  eval (SetNewSearch v) = do
+    modifyState $ set (_newUISettings <<< _newSearch) v
     save
