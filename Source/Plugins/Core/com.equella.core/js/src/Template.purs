@@ -3,8 +3,7 @@ module Template where
 import Prelude
 
 import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
-import Control.Monad.Trans.Class (lift)
+import Control.Monad.Eff.Console (CONSOLE)
 import Control.MonadZero (guard)
 import DOM (DOM)
 import DOM.HTML (window)
@@ -19,12 +18,13 @@ import Data.StrMap as M
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable as U
 import Dispatcher (DispatchEff(DispatchEff), effEval)
-import Dispatcher.React (ReactProps(ReactProps), createComponent, createLifecycleComponent, didMount, modifyState)
+import Dispatcher.React (ReactProps(ReactProps), createComponent, modifyState)
 import EQUELLA.Environment (prepLangStrings)
 import MaterialUI.AppBar (appBar)
 import MaterialUI.ButtonBase (onClick)
 import MaterialUI.Color (inherit)
 import MaterialUI.Color as C
+import MaterialUI.CssBaseline (cssBaseline_)
 import MaterialUI.Divider (divider)
 import MaterialUI.Drawer (anchor, drawer, left, open, permanent, temporary)
 import MaterialUI.Hidden (css, hidden, implementation, mdUp, smDown)
@@ -40,7 +40,6 @@ import MaterialUI.Modal (onClose)
 import MaterialUI.Popover (anchorOrigin, transformOrigin)
 import MaterialUI.PropTypes (handle)
 import MaterialUI.Properties (className, classes_, color, component, mkProp, variant)
-import MaterialUI.Reboot (reboot_)
 import MaterialUI.Styles (mediaQuery, withStyles)
 import MaterialUI.TextStyle (title)
 import MaterialUI.Toolbar (disableGutters, toolbar)
@@ -145,7 +144,7 @@ template' = createFactory (withStyles ourStyles (createComponent initialState re
 
   render {mobileOpen,menuAnchor} (ReactProps {classes,mainContent,title:titleText,titleExtra,menuExtra}) (DispatchEff d) =
     D.div [DP.className classes.root] [
-      reboot_ [],
+      cssBaseline_ [],
       D.div [DP.className classes.appFrame] [
         appBar [className $ classes.appBar] [
           toolbar [disableGutters true] [

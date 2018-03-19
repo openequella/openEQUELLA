@@ -24,10 +24,11 @@ import MaterialUI.Styles (withStyles)
 import MaterialUI.Typography (typography)
 import Network.HTTP.Affjax (get)
 import React (ReactElement, createFactory)
-import React.DOM (a, div', text) as D
+import React.DOM (a, div, div', text) as D
+import React.DOM.Props (_id)
 import React.DOM.Props (href) as D
 import Settings.UISettings (uiSettingsEditor)
-import Template (renderData, template)
+import Template (template)
 
 newtype Setting = Setting {
   id :: String,
@@ -69,8 +70,8 @@ coreStrings = Tuple "com.equella.core" {
   title: "Settings"
 }
 
-settingsPage :: ReactElement
-settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didMount LoadSettings) initialState render eval) {}
+settingsPage :: {legacyMode::Boolean} -> ReactElement
+settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didMount LoadSettings) initialState render eval)
   where
   groupDetails :: Array (Tuple String { name :: String, desc :: String })
   groupDetails = [
@@ -94,7 +95,7 @@ settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didM
       color: theme.palette.text.secondary
     }
   }
-  render {settings} (ReactProps {classes})= if renderData.newUI
+  render {settings} (ReactProps {legacyMode,classes})= if not legacyMode
                       then template {mainContent, title:coreString.title, titleExtra:Nothing}
                       else mainContent
     where
@@ -106,7 +107,7 @@ settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didM
             let pages = sortWith _.name _pages
             in Just $ settingGroup details $ expansionPanelDetails_ [ list_ $ mapMaybe pageLink pages ]
           renderGroup _ = Nothing
-      in D.div' $ mapMaybe renderGroup groupDetails
+      in D.div [_id "settingsPage"] $ mapMaybe renderGroup groupDetails
 
     settingGroup {name,desc} contents = expansionPanel_ [
       expansionPanelSummary [expandIcon $ icon_ [D.text "expand_more"] ] [
