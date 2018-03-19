@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, TextField } from 'material-ui';
+import { Button, TextField, List, ListItem, ListItemText } from 'material-ui';
 import { Course } from './CourseModel';
 import * as actions from './actions';
 import { Routes, Route } from '../api/routes';
@@ -24,23 +24,28 @@ class SearchCourse extends React.Component<SearchCourse, object> {
     render() {
         console.log('render')
         return <div className="courses">
+
                 <div className="coursesSearch">
                     <TextField id="txtCourseSearch" inputRef={(input: any) => { this.textInput = input; }} />
                     <Button color="primary" onClick={this.onButtonClick.bind(this)} variant="raised">Search</Button>
                 </div>
+
+                <div>
+                <List>
                 {
                     (this.props.courses ?
-                        this.props.courses.map((course) => (                            
+                        this.props.courses.map((course) => (
+                            <ListItem key={course.uuid}>
                             <a key={course.uuid} href={this.props.routes(Routes.CourseEdit.create(course.uuid)).href} onClick={
                                 this.props.routes(Routes.CourseEdit.create(course.uuid)).onClick}>
-                                <div>
-                                    <h2>{course.name}</h2>
-                                    {course.code}
-                                </div>
-                            </a>))
-                        : <div></div>
+                                <ListItemText primary={course.code + " - " + course.name} secondary={course.description} />
+                            </a>
+                            </ListItem>))
+                        : <div>No Results</div>
                     )
                 }
+                </List>
+            </div>
             </div>
     }
 }

@@ -65,11 +65,12 @@ export interface LoadedCourseAction extends Action {
 }
 
 function transformApiCourse(course: API.Course): Course {
-    let { uuid, name, code } = course;
+    let { uuid, name, code, description } = course;
     return {
         uuid,
         name,
-        code
+        code,
+        description
     };
 }
 

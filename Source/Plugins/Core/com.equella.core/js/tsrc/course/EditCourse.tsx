@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, TextField, Stepper, Step } from 'material-ui';
+import { Button, TextField, Stepper, Step, Drawer, Grid } from 'material-ui';
 import { Course } from './CourseModel';
 import { saveCourse, searchCourses } from './actions';
 import { CourseStoreState } from './CourseStore';
@@ -39,9 +39,20 @@ class EditCourse extends React.Component<EditCoursesProps, object> {
     }
 
     render() {
-        return <Stepper>
+        return <Drawer anchor="right" open>
+            <Grid> 
+            <Stepper>
                 <Step title="Basic Details" active>
-                    <TextField id="txtCode" 
+                    Basic Details
+                </Step>
+                <Step title="Permissions">
+                        <div>TODO</div>
+                </Step>
+            </Stepper>
+
+            <div>
+                AAA
+            <TextField id="txtCode" 
                         label="Code" 
                         helperText="Course code, e.g. EQ101" 
                         inputRef={(input: any) => { this.textCode = input; }}
@@ -58,11 +69,9 @@ class EditCourse extends React.Component<EditCoursesProps, object> {
                     
                     <Button color="primary" onClick={this.handleSave.bind(this)} variant="raised">Save</Button>
                     <Button onClick={this.handleCancel.bind(this)} variant="raised">Cancel</Button>
-                </Step>
-                <Step title="Permissions">
-                        <div>TODO</div>
-                </Step>
-            </Stepper>
+                </div>
+            </Grid>
+            </Drawer>
     }
 }
 
