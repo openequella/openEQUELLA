@@ -43,6 +43,7 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.jboss.resteasy.spi.*;
 import org.jboss.resteasy.util.GetRestful;
+import scala.collection.GenTraversableOnce;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -154,15 +155,22 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 	public class JsonContextResolver implements ContextResolver<ObjectMapper>
 	{
 		private final ObjectMapper objectMapper;
+		private final ObjectMapper scalaObjectMapper;
 
 		public JsonContextResolver()
 		{
 			objectMapper = objectMapperService.createObjectMapper("rest");
+			scalaObjectMapper = objectMapperService.createObjectMapper("rest");
+			scalaObjectMapper.registerModule(new DefaultScalaModule());
 		}
 
 		@Override
-		public ObjectMapper getContext(Class<?> arg0)
+		public ObjectMapper getContext(Class<?> beanClass)
 		{
+			if (scala.Product.class.isAssignableFrom(beanClass) || GenTraversableOnce.class.isAssignableFrom(beanClass))
+			{
+				return scalaObjectMapper;
+			}
 			return objectMapper;
 		}
 	}
@@ -228,7 +236,6 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 		restModule.addSerializer(new I18NSerializer());
 		mapper.registerModule(restModule);
 		mapper.registerModule(new JavaTypesModule());
-		mapper.registerModule(new DefaultScalaModule());
 
 		mapper.registerModule(new RestStringsModule());
 		mapper.setSerializationInclusion(Include.NON_ABSENT);
