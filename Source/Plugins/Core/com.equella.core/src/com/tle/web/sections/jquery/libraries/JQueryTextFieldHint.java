@@ -41,7 +41,7 @@ public class JQueryTextFieldHint implements TagProcessor, JavascriptModule
 
 	public static final PreRenderable INCLUDE = new IncludeFile(
 		ResourcesService.getResourceHelper(JQueryTextFieldHint.class)
-			.url(DebugSettings.isDebuggingMode() ? "jquerylib/jquery.hint.js" : "jquerylib/jquery.hint.min.js"));
+			.url("jquerylib/jquery.hint.js")).hasMin();
 
 	public static final JSCallable HINT_FUNC = new ExternallyDefinedFunction("hint", INCLUDE);
 

@@ -33,6 +33,16 @@ public class JQueryLibraryInclude extends IncludeFile
 {
 	public static final PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(JQueryLibraryInclude.class);
 
+	public static CssInclude.CssIncludeBuilder cssb(String css)
+	{
+		return CssInclude.include(urlHelper.url("css/jquerylib/" + css));
+	}
+
+	public static CssInclude css(String css)
+	{
+		return cssb(css).make();
+	}
+
 	private static String[] addLibFolder(String[] jses)
 	{
 		String[] fullJses = new String[jses.length];
@@ -55,7 +65,7 @@ public class JQueryLibraryInclude extends IncludeFile
 	public JQueryLibraryInclude(String js, String css, boolean hasNew, PreRenderable... preRenderables)
 	{
 		this(js, preRenderables);
-		addPreRenderer(CssInclude.include(urlHelper.url("css/jquerylib/" + css)).hasNew(hasNew).make()); //$NON-NLS-1$
+		addPreRenderer(cssb(css).hasNew(hasNew).make()); //$NON-NLS-1$
 	}
 
 	public JQueryLibraryInclude(String js, String css, PreRenderable... preRenderables)
@@ -65,7 +75,8 @@ public class JQueryLibraryInclude extends IncludeFile
 
 	public JQueryLibraryInclude(String[] jses, String css, PreRenderable... preRenderables)
 	{
-		this(jses, css, false, preRenderables);
+		this(jses, preRenderables);
+		addPreRenderer(css(css));
 	}
 
 	public JQueryLibraryInclude(String js, PreRenderable... preRenderables)
@@ -77,18 +88,12 @@ public class JQueryLibraryInclude extends IncludeFile
 	/**
 	 * @param jses A js file location can be prefixed with '~' if you don't want
 	 *            it to look in the jquerylib folder
-	 * @param css The css file can be null
-	 * @param rtl Css file has an rtl equivelant
 	 * @param preRenderables
 	 */
-	public JQueryLibraryInclude(String[] jses, String css, boolean rtl, PreRenderable... preRenderables)
+	public JQueryLibraryInclude(String[] jses, PreRenderable... preRenderables)
 	{
 		super(addLibFolder(jses));
 		addPreRenderers(Arrays.asList(preRenderables));
-		if( css != null )
-		{
-			addPreRenderer(new CssInclude(urlHelper.url("css/jquerylib/" + css), rtl)); //$NON-NLS-1$
-		}
 		addPreRenderer(JQueryCore.PRERENDER);
 	}
 

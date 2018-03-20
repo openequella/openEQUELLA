@@ -30,8 +30,7 @@ public class JQuerySortable implements JavascriptModule
 	/**
 	 * Includes ui.mouse
 	 */
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
-		DebugSettings.isDebuggingMode() ? "jquery.ui.sortable.js" : "jquery.ui.sortable.min.js", JQueryMouse.PRERENDER);
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.sortable.js", JQueryMouse.PRERENDER).hasMin();
 
 	@Override
 	public String getDisplayName()

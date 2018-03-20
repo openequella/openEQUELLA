@@ -37,8 +37,7 @@ public class JQueryStylishSelect implements JavascriptModule
 	private static final long serialVersionUID = 1L;
 
 	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
-		DebugSettings.isDebuggingMode() ? "jquery.stylish-select.js" : "jquery.stylish-select.min.js",
-		DebugSettings.isDebuggingMode() ? "jquery.stylish-select.css" : "jquery.stylish-select.min.css");
+		"jquery.stylish-select.js", JQueryLibraryInclude.cssb("jquery.stylish-select.css").hasMin().make()).hasMin();
 
 	private static final JSCallable SETUP_STYLISH = new ExternallyDefinedFunction("sSelect", PRERENDER);
 

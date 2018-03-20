@@ -34,9 +34,8 @@ public class JQueryStarRating implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
-		DebugSettings.isDebuggingMode() ? "jquery.stars.js" : "jquery.stars.min.js", "jquery.stars.css",
-		JQueryUIWidget.PRERENDER);
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.stars.js", "jquery.stars.css",
+		JQueryUIWidget.PRERENDER).hasMin();
 
 	public static final JSCallable FUNC_STARRATING = new ExternallyDefinedFunction("stars", PRERENDER);
 

@@ -66,6 +66,7 @@ public interface SectionInfo extends InfoCreator
 	String KEY_ORIGINAL_EXCEPTION = "$ORIGINAL_EXCEPTION$";
 	// The exception cause matching the exception handler
 	String KEY_MATCHED_EXCEPTION = "$MATCHED_EXCEPTION$";
+	String KEY_MINIFIED = "$USE_MINIFIED$";
 
 	/**
 	 * Gets the cached Model instance for the given {@code Section} id.

@@ -26,8 +26,7 @@ public class JQueryTabs implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
-		DebugSettings.isDebuggingMode() ? "jquery.ui.tabs.js" : "jquery.ui.tabs.min.js", JQueryUIWidget.PRERENDER);
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.tabs.js", JQueryUIWidget.PRERENDER).hasMin();
 
 	@Override
 	public String getDisplayName()

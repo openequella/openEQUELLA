@@ -97,11 +97,11 @@ public interface SectionsController extends InfoCreator
 
 	MutableSectionInfo createInfo(String path, @Nullable HttpServletRequest request,
 		@Nullable HttpServletResponse response, @Nullable SectionInfo from, @Nullable Map<String, String[]> params,
-		@Nullable Map<?, ?> attrs);
+		@Nullable Map<Object, Object> attrs);
 
 	MutableSectionInfo createInfo(SectionTree tree, String path, @Nullable HttpServletRequest request,
 		@Nullable HttpServletResponse response, @Nullable SectionInfo from, @Nullable Map<String, String[]> params,
-		@Nullable Map<?, ?> attrs);
+		@Nullable Map<Object, Object> attrs);
 
 	void execute(SectionInfo info);
 

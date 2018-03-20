@@ -31,7 +31,7 @@ public class JQueryUIWidget implements JavascriptModule
 	 * Includes ui.core
 	 */
 	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
-		DebugSettings.isDebuggingMode() ? "jquery.ui.widget.js" : "jquery.ui.widget.min.js", JQueryUICore.PRERENDER);
+		"jquery.ui.widget.js", JQueryUICore.PRERENDER).hasMin();
 
 	@Override
 	public String getDisplayName()

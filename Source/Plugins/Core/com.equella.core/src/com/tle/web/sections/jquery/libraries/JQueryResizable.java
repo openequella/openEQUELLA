@@ -26,9 +26,7 @@ public class JQueryResizable implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
-		DebugSettings.isDebuggingMode() ? "jquery.ui.resizable.js" : "jquery.ui.resizable.min.js",
-		JQueryMouse.PRERENDER);
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.resizable.js", JQueryMouse.PRERENDER).hasMin();
 
 	@Override
 	public String getDisplayName()

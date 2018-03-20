@@ -31,10 +31,8 @@ public class JQuerySlider implements JavascriptModule
 
 	public static final PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(JQuerySlider.class);
 
-	public static final PreRenderable PRERENDER = new IncludeFile(
-		urlHelper.url(
-			DebugSettings.isDebuggingMode() ? "jquerylib/jquery.ui.slider.js" : "jquerylib/jquery.ui.slider.min.js"),
-		JQueryMouse.PRERENDER);
+	public static final PreRenderable PRERENDER = new IncludeFile(urlHelper.url("jquerylib/jquery.ui.slider.js"),
+			JQueryMouse.PRERENDER).hasMin();
 
 	@Override
 	public String getId()

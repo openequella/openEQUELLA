@@ -18,6 +18,7 @@ package com.tle.web.sections.registry;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
@@ -75,11 +76,16 @@ public class SectionsServlet extends HttpServlet
 		else
 		{
 			sectionInfo = sectionsController.createInfo(tree, servletPath, request, response, null,
-				request.getParameterMap(), Collections.singletonMap(SectionInfo.KEY_FROM_REQUEST, true));
+				request.getParameterMap(), defaultAttributes());
 			if( !sectionInfo.isRendered() )
 			{
 				sectionsController.execute(sectionInfo);
 			}
 		}
+	}
+
+	protected Map<Object, Object> defaultAttributes()
+	{
+		return Collections.singletonMap(SectionInfo.KEY_FROM_REQUEST, true);
 	}
 }

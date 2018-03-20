@@ -28,7 +28,7 @@ public class JQueryUIMenu implements JavascriptModule
 	private static final long serialVersionUID = 1L;
 
 	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
-		DebugSettings.isDebuggingMode() ? "jquery.ui.menu.js" : "jquery.ui.menu.min.js", JQueryUICore.PRERENDER);
+		"jquery.ui.menu.js", JQueryUICore.PRERENDER).hasMin();
 
 	@Override
 	public String getDisplayName()

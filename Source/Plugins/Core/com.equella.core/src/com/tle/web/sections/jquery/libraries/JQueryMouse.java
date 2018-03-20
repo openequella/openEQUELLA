@@ -30,8 +30,7 @@ public class JQueryMouse implements JavascriptModule
 	/**
 	 * Includes ui.widget
 	 */
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
-		DebugSettings.isDebuggingMode() ? "jquery.ui.mouse.js" : "jquery.ui.mouse.min.js", JQueryUIWidget.PRERENDER);
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.mouse.js", JQueryUIWidget.PRERENDER).hasMin();
 
 	@Override
 	public String getDisplayName()

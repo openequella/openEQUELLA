@@ -37,14 +37,12 @@ public class JQueryCore implements PreRenderable, JavascriptModule
 
 	private static final PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(JQueryCore.class);
 
-	private static final String JQ_SHIM = urlHelper
-		.url(DebugSettings.isDebuggingMode() ? "jquerycore/jquery-migrate.js" : "jquerycore/jquery-migrate.min.js");
-	private static final String CORE_URL = urlHelper
-		.url(DebugSettings.isDebuggingMode() ? "jquerycore/jquery.js" : "jquerycore/jquery.min.js");
-	public static final IncludeFile PRERENDER = new IncludeFile(JQ_SHIM, new IncludeFile(CORE_URL));
+	private static final IncludeFile CORE_URL = new IncludeFile(urlHelper.url("jquerycore/jquery.js"));
+	private static final IncludeFile JQ_SHIM = new IncludeFile(urlHelper.url("jquerycore/jquery-migrate.js"), CORE_URL);
+	public static final IncludeFile PRERENDER = JQ_SHIM;
 	public static final ExternallyDefinedFunction JQUERY = new ExternallyDefinedFunction("$", PRERENDER);
 
-	public static String getJQueryCoreUrl()
+	public static IncludeFile getJQueryCoreUrl()
 	{
 		return CORE_URL;
 	}

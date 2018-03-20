@@ -155,7 +155,7 @@ public class SectionsControllerImpl implements SectionsController
 	@Override
 	public MutableSectionInfo createInfo(String path, @Nullable HttpServletRequest request,
 		@Nullable HttpServletResponse response, @Nullable SectionInfo info, @Nullable Map<String, String[]> params,
-		@Nullable Map<?, ?> attrs)
+		@Nullable Map<Object, Object> attrs)
 	{
 		SectionTree tree = treeRegistry.getTreeForPath(path);
 		if( tree == null )
@@ -168,7 +168,7 @@ public class SectionsControllerImpl implements SectionsController
 	@Override
 	public MutableSectionInfo createInfo(SectionTree tree, String path, @Nullable HttpServletRequest request,
 		@Nullable HttpServletResponse response, @Nullable SectionInfo info, @Nullable Map<String, String[]> params,
-		@Nullable Map<?, ?> attributes)
+		@Nullable Map<Object, Object> attributes)
 	{
 		MutableSectionInfo sectionInfo = new DefaultSectionInfo(this);
 		sectionInfo.setRequest(request);

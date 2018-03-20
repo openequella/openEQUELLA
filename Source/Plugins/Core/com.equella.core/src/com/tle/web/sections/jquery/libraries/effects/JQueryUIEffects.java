@@ -35,7 +35,7 @@ public class JQueryUIEffects implements JavascriptModule
 	private static final long serialVersionUID = 1L;
 
 	private static final PreRenderable PRERENDER = new JQueryLibraryInclude(
-		DebugSettings.isDebuggingMode() ? "jquery.ui.effect.js" : "jquery.ui.effect.min.js", JQueryCore.PRERENDER);
+		"jquery.ui.effect.js", JQueryCore.PRERENDER).hasMin();
 	private static final Map<String, PreRenderable> effectLibraries = new HashMap<String, PreRenderable>();
 
 	public static PreRenderable getEffectLibrary(String effect)
@@ -52,7 +52,7 @@ public class JQueryUIEffects implements JavascriptModule
 	public static JQueryUIEffectsLibrary addStdEffect(String effect)
 	{
 		JQueryUIEffectsLibrary lib = new JQueryUIEffectsLibrary(effect,
-			"jquery.ui.effect-" + (DebugSettings.isDebuggingMode() ? effect : effect + ".min") + ".js");
+			"jquery.ui.effect-" +  effect + ".js");
 		effectLibraries.put(effect, lib);
 		return lib;
 	}
@@ -111,6 +111,7 @@ public class JQueryUIEffects implements JavascriptModule
 		{
 			super(filename, JQueryUIEffects.PRERENDER);
 			this.effectName = effectName;
+			hasMin();
 		}
 
 		public String getEffectName()

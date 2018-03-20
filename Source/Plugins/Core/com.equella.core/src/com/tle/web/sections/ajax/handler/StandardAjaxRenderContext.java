@@ -213,15 +213,15 @@ public class StandardAjaxRenderContext extends WrappedSectionInfo implements Aja
 		{
 			if (newLayout && ci.isHasNew())
 			{
-				css.add(ci.getNewHref());
+				css.add(ci.getNewHref(this));
 			}
 			else if( rtl && ci.isHasRtl() )
 			{
-				css.add(ci.getRtlHref());
+				css.add(ci.getRtlHref(this));
 			}
 			else
 			{
-				css.add(ci.getHref());
+				css.add(ci.getHref(this));
 			}
 		}
 		domResult.setCss(css);

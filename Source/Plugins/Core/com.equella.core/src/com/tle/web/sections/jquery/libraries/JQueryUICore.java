@@ -37,9 +37,9 @@ public class JQueryUICore implements PreRenderable, JavascriptModule
 
 	public static final PreRenderable PRERENDER = new IncludeFile(
 		urlHelper
-			.url(DebugSettings.isDebuggingMode() ? "jquerylib/jquery.ui.core.js" : "jquerylib/jquery.ui.core.min.js"),
-		JQueryCore.PRERENDER, new CssInclude(urlHelper.url(DebugSettings.isDebuggingMode()
-			? "css/themes/equella/jquery-ui.css" : "css/themes/equella/jquery-ui.min.css")));
+			.url("jquerylib/jquery.ui.core.js"),
+		JQueryCore.PRERENDER, CssInclude.include(urlHelper.url(
+			"css/themes/equella/jquery-ui.css")).hasMin().make()).hasMin();
 
 	@Override
 	public void preRender(PreRenderContext info)

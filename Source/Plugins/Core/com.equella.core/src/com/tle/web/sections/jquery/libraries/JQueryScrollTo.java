@@ -30,10 +30,8 @@ public class JQueryScrollTo implements JavascriptModule
 
 	public static final PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(JQueryScrollTo.class);
 
-	public static final IncludeFile INCLUDE = new IncludeFile(
-		urlHelper
-			.url(DebugSettings.isDebuggingMode() ? "jquerylib/jquery.scrollTo.js" : "jquerylib/jquery.scrollTo.min.js"),
-		JQueryCore.PRERENDER);
+	public static final IncludeFile INCLUDE = new IncludeFile(urlHelper.url("jquerylib/jquery.scrollTo.js"),
+			JQueryCore.PRERENDER).hasMin();
 
 	@Override
 	public String getDisplayName()

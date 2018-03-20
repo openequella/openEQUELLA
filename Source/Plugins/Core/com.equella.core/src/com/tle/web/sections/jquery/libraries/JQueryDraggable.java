@@ -26,9 +26,8 @@ public class JQueryDraggable implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
-		DebugSettings.isDebuggingMode() ? "jquery.ui.draggable.js" : "jquery.ui.draggable.min.js",
-		JQueryUICore.PRERENDER, JQueryMouse.PRERENDER, JQueryUIWidget.PRERENDER);
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.draggable.js",
+		JQueryUICore.PRERENDER, JQueryMouse.PRERENDER, JQueryUIWidget.PRERENDER).hasMin();
 
 	@Override
 	public String getDisplayName()

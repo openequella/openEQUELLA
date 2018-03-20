@@ -9,6 +9,7 @@ object YUICompressPlugin extends AutoPlugin {
 
   object autoImport {
     lazy val yuiResources = taskKey[Seq[File]]("Resources to minify")
+    lazy val minify = taskKey[Seq[File]]("Generate minified resources")
   }
 
   override def requires: Plugins = JvmPlugin
@@ -25,8 +26,9 @@ object YUICompressPlugin extends AutoPlugin {
     def warning(s: String, s1: String, i: Int, s2: String, i1: Int): Unit = ???
   }
 
-  override def projectSettings: Seq[Def.Setting[_]] = {
-    resourceGenerators in Compile += Def.task {
+  override def projectSettings: Seq[Def.Setting[_]] = Seq(
+    minify in Compile := {
+      val logger = streams.value.log
       val baseDir = (resourceManaged in Compile).value
       yuiResources.value.pair(rebase((resourceDirectory in Compile).value, "")).map {
         case (f, path) => IO.reader(f) { br =>
@@ -35,6 +37,7 @@ object YUICompressPlugin extends AutoPlugin {
             case "js" =>
               val jsCompress = new JavaScriptCompressor(br, jsReporter)
               val outFile = baseDir / (path.substring(0, ind) + ".min.js")
+              logger.info(s"Minifying ${outFile.absolutePath}")
               IO.writer(outFile, "", IO.utf8) { bw =>
                 jsCompress.compress(bw, 8000, true, false, false, false)
               }
@@ -42,6 +45,7 @@ object YUICompressPlugin extends AutoPlugin {
             case "css" =>
               val cssCompress = new CssCompressor(br)
               val outFile = baseDir / (path.substring(0, ind) + ".min.css")
+              logger.info(s"Minifying ${outFile.absolutePath}")
               IO.writer(outFile, "", IO.utf8) { bw =>
                 cssCompress.compress(bw, 8000)
               }
@@ -49,6 +53,7 @@ object YUICompressPlugin extends AutoPlugin {
           }
         }
       }
-    }.taskValue
-  }
+    },
+    resourceGenerators in Compile += (minify in Compile).taskValue
+  )
 }

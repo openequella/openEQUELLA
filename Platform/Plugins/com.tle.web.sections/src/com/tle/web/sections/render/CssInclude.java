@@ -16,6 +16,7 @@
 
 package com.tle.web.sections.render;
 
+import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.PreRenderContext;
 
 @SuppressWarnings("nls")
@@ -103,6 +104,7 @@ public class CssInclude implements PreRenderable, Comparable<CssInclude>
 	private final String cssFile;
 	private boolean hasNew;
 	private boolean hasRtl;
+	private boolean hasMin;
 	private Browser browser = Browser.ANY;
 	private Media media = Media.ALL;
 	private Priority priority = Priority.NORMAL;
@@ -130,9 +132,28 @@ public class CssInclude implements PreRenderable, Comparable<CssInclude>
 		info.addCss(this);
 	}
 
-	public String getHref()
+	public String getHref(SectionInfo info)
 	{
-		return cssFile;
+		return minified(info, cssFile);
+	}
+
+	private String minified(SectionInfo info, String filename)
+	{
+		if (hasMin && info != null && info.getBooleanAttribute(SectionInfo.KEY_MINIFIED))
+		{
+			return filename.replace(".css", ".min.css");
+		}
+		return filename;
+	}
+
+	public String getRtlHref(SectionInfo info)
+	{
+		return minified(info, cssFile.replace(".css", ".rtl.css"));
+	}
+
+	public String getNewHref(SectionInfo info)
+	{
+		return minified(info, cssFile.replace(".css", "-new.css"));
 	}
 
 	public boolean isHasRtl()
@@ -143,16 +164,6 @@ public class CssInclude implements PreRenderable, Comparable<CssInclude>
 	public boolean isHasNew()
 	{
 		return hasNew;
-	}
-
-	public String getRtlHref()
-	{
-		return cssFile.replace(".css", ".rtl.css");
-	}
-
-	public String getNewHref()
-	{
-		return cssFile.replace(".css", "-new.css");
 	}
 
 	public Browser getBrowser()
@@ -263,6 +274,12 @@ public class CssInclude implements PreRenderable, Comparable<CssInclude>
 		public CssIncludeBuilder media(Media m)
 		{
 			inc.media = m;
+			return this;
+		}
+
+		public CssIncludeBuilder hasMin()
+		{
+			inc.hasMin = true;
 			return this;
 		}
 	}

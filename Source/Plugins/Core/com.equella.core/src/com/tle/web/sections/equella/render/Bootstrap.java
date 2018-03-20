@@ -37,12 +37,10 @@ public class Bootstrap implements JavascriptModule
 	private static final PluginResourceHelper URL_HELPER = ResourcesService.getResourceHelper(Bootstrap.class);
 
 	public static final CssInclude CSS = CssInclude
-		.include(URL_HELPER
-			.url(DebugSettings.isDebuggingMode() ? "bootstrap/css/bootstrap.css" : "bootstrap/css/bootstrap.min.css"))
+		.include(URL_HELPER.url("bootstrap/css/bootstrap.css")).hasMin()
 		.priority(Priority.LOWEST).make();
-	public static final PreRenderable PRERENDER = new IncludeFile(
-		URL_HELPER.url(DebugSettings.isDebuggingMode() ? "bootstrap/js/bootstrap.js" : "bootstrap/js/bootstrap.min.js"),
-		CSS, JQueryCore.PRERENDER);
+	public static final PreRenderable PRERENDER = new IncludeFile(URL_HELPER.url("bootstrap/js/bootstrap.js"),
+			CSS, JQueryCore.PRERENDER).hasMin();
 	public static final TagProcessor TOGGLE_ATTR = new ExtraAttributes("data-toggle", "dropdown");
 
 	@Override

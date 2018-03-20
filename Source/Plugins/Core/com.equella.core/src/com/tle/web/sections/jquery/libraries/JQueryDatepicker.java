@@ -33,6 +33,7 @@ import com.tle.web.sections.js.JSExpression;
 import com.tle.web.sections.js.JSStatements;
 import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
+import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.render.PreRenderable;
 
 @SuppressWarnings("nls")
@@ -41,10 +42,8 @@ public class JQueryDatepicker implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
-		new String[]{DebugSettings.isDebuggingMode() ? "jquery.ui.datepicker.js" : "jquery.ui.datepicker.min.js",
-				"~js/datepicker.js"},
-		null, JQueryUICore.PRERENDER);
+	public static final PreRenderable DATEPICKER = new JQueryLibraryInclude("jquery.ui.datepicker.js", JQueryUICore.PRERENDER).hasMin();
+	public static final PreRenderable PRERENDER = new IncludeFile(JQueryLibraryInclude.urlHelper.url("js/datepicker.js"), DATEPICKER);
 
 	private static final JSCallable SETUP_PICKER_FUNCTION = new ExternallyDefinedFunction("setupPicker", PRERENDER);
 

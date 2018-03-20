@@ -31,8 +31,8 @@ public class JQueryUIPosition implements JavascriptModule
 	 * Includes ui.position
 	 */
 	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
-		DebugSettings.isDebuggingMode() ? "jquery.ui.position.js" : "jquery.ui.position.min.js",
-		JQueryUICore.PRERENDER);
+		"jquery.ui.position.js",
+		JQueryUICore.PRERENDER).hasMin();
 
 	@Override
 	public String getDisplayName()

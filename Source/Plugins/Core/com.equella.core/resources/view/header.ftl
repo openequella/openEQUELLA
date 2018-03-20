@@ -16,11 +16,11 @@
 			${stylesheet.browser.conditionStart}<#lt/>
 		</#if><#t/>
 		<#if m.newLayout && stylesheet.hasNew>
-		    <link rel="stylesheet" type="text/css" href="${stylesheet.newHref}" media="${stylesheet.media?string?lower_case}"><#lt/>
+		    <link rel="stylesheet" type="text/css" href="${stylesheet.getNewHref(_info)}" media="${stylesheet.media?string?lower_case}"><#lt/>
 	  	<#elseif m.includeRtlStyles && stylesheet.hasRtl>
-	  		<link rel="stylesheet" type="text/css" href="${stylesheet.rtlHref}" media="${stylesheet.media?string?lower_case}"><#lt/>
+	  		<link rel="stylesheet" type="text/css" href="${stylesheet.getRtlHref(_info)}" media="${stylesheet.media?string?lower_case}"><#lt/>
 	  	<#else>
-	  		<link rel="stylesheet" type="text/css" href="${stylesheet.href}" media="${stylesheet.media?string?lower_case}"><#lt/>
+	  		<link rel="stylesheet" type="text/css" href="${stylesheet.getHref(_info)}" media="${stylesheet.media?string?lower_case}"><#lt/>
 	  	</#if>
 	  	<#if stylesheet.browser.conditionEnd??><#t/>
 	  		${stylesheet.browser.conditionEnd}<#lt/>

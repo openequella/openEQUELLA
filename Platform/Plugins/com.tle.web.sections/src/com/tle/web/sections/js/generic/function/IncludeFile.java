@@ -24,8 +24,11 @@ import java.util.List;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.render.PreRenderable;
 
+import static com.tle.web.sections.SectionInfo.KEY_MINIFIED;
+
 public class IncludeFile implements PreRenderable
 {
+	protected boolean hasMin = false;
 	protected List<String> includes = new ArrayList<String>();
 	protected List<PreRenderable> preRenderables = new ArrayList<PreRenderable>();
 
@@ -38,6 +41,12 @@ public class IncludeFile implements PreRenderable
 	{
 		this.includes.add(include);
 		this.preRenderables.addAll(Arrays.asList(preRenderables));
+	}
+
+	public IncludeFile hasMin()
+	{
+		this.hasMin = true;
+		return this;
 	}
 
 	public IncludeFile(String[] includes)
@@ -59,8 +68,13 @@ public class IncludeFile implements PreRenderable
 	public void preRender(PreRenderContext info)
 	{
 		info.preRender(preRenderables);
+		boolean replaceExt = hasMin && info.getBooleanAttribute(KEY_MINIFIED);
 		for( String include : includes )
 		{
+			if (replaceExt)
+			{
+				include = include.replace(".js", ".min.js");
+			}
 			info.addJs(include);
 		}
 	}

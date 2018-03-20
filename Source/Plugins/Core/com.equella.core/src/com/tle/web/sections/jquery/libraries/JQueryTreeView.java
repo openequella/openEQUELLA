@@ -27,13 +27,16 @@ import com.tle.web.sections.js.generic.expression.FunctionCallExpression;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.render.PreRenderable;
 
+import static com.tle.web.sections.jquery.JQueryLibraryInclude.css;
+import static com.tle.web.sections.jquery.JQueryLibraryInclude.cssb;
+
 public class JQueryTreeView implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings("nls")
 	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(new String[]{"jquery.treeview.js",
-			"jquery.treeview.async.js",}, "jquery.treeview.css", true);
+			"jquery.treeview.async.js",}, cssb("jquery.treeview.css").hasRtl().make());
 
 	public static final JSCallable FUNC_TREEVIEW = new ExternallyDefinedFunction("treeview", PRERENDER); //$NON-NLS-1$
 

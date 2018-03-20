@@ -32,8 +32,8 @@ public class JQueryUIAccordion implements JavascriptModule
 	 * Includes jquery.ui.accordion.js
 	 */
 	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
-		DebugSettings.isDebuggingMode() ? "jquery.ui.accordion.js" : "jquery.ui.accordion.min.js",
-		JQueryUICore.PRERENDER, JQueryUIWidget.PRERENDER, JQueryUIEffects.PRERENDER_ALL);
+		"jquery.ui.accordion.js",
+		JQueryUICore.PRERENDER, JQueryUIWidget.PRERENDER, JQueryUIEffects.PRERENDER_ALL).hasMin();
 
 	@Override
 	public String getDisplayName()

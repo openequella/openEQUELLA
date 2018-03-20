@@ -31,8 +31,8 @@ public class JQueryUIAutocomplete implements JavascriptModule
 	 * Includes ui.autocomplete
 	 */
 	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
-		DebugSettings.isDebuggingMode() ? "jquery.ui.autocomplete.js" : "jquery.ui.autocomplete.min.js",
-		JQueryUIWidget.PRERENDER, JQueryUIPosition.PRERENDER, JQueryUIMenu.PRERENDER);
+		"jquery.ui.autocomplete.js",
+		JQueryUIWidget.PRERENDER, JQueryUIPosition.PRERENDER, JQueryUIMenu.PRERENDER).hasMin();
 
 	@Override
 	public String getDisplayName()

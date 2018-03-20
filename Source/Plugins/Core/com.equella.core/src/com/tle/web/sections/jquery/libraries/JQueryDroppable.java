@@ -27,9 +27,8 @@ public class JQueryDroppable implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
-		DebugSettings.isDebuggingMode() ? "jquery.ui.droppable.js" : "jquery.ui.droppable.min.js",
-		JQueryUICore.PRERENDER, JQueryMouse.PRERENDER, JQueryUIWidget.PRERENDER, JQueryDraggable.PRERENDER);
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.ui.droppable.js" ,
+		JQueryUICore.PRERENDER, JQueryMouse.PRERENDER, JQueryUIWidget.PRERENDER, JQueryDraggable.PRERENDER).hasMin();
 
 	@Override
 	public String getDisplayName()

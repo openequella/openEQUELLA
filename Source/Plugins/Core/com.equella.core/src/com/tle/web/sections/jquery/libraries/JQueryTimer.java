@@ -31,8 +31,7 @@ import com.tle.web.sections.render.PreRenderable;
 public class JQueryTimer implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
-	public static final PreRenderable PRERENDER = new JQueryLibraryInclude(
-		DebugSettings.isDebuggingMode() ? "jquery.timer.js" : "jquery.timer.min.js");
+	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.timer.js").hasMin();
 
 	@SuppressWarnings("nls")
 	private static final ExternallyDefinedFunction TIMER_FUNC = new ExternallyDefinedFunction(
