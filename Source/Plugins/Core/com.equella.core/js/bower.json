@@ -17,7 +17,9 @@
     "purescript-record": "^0.2.6",
     "purescript-io": "^5.0.0",
     "purescript-routing": "^7.0.0",
-    "purescript-uri": "^4.2.4"
+    "purescript-uri": "^4.2.4",
+    "purescript-js-date": "^5.2.0",
+    "purescript-formatters": "^3.0.1"
   },
   "devDependencies": {
     "purescript-psci-support": "^3.0.0"

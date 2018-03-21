@@ -44,6 +44,8 @@ import MaterialUI.Styles (mediaQuery, withStyles)
 import MaterialUI.TextStyle (title)
 import MaterialUI.Toolbar (disableGutters, toolbar)
 import MaterialUI.Typography (typography)
+import MaterialUIPicker.DateFns (dateFnsUtils)
+import MaterialUIPicker.MuiPickersUtilsProvider (muiPickersUtilsProvider, utils)
 import Partial.Unsafe (unsafePartial)
 import React (ReactElement, createFactory)
 import React.DOM as D
@@ -142,18 +144,12 @@ template' = createFactory (withStyles ourStyles (createComponent initialState re
   eval ToggleMenu = modifyState \(s :: State) -> s {mobileOpen = not s.mobileOpen}
   eval (UserMenuAnchor el) = modifyState \(s :: State) -> s {menuAnchor = el}
 
-  render {mobileOpen,menuAnchor} (ReactProps {classes,mainContent,title:titleText,titleExtra,menuExtra}) (DispatchEff d) =
+  render {mobileOpen,menuAnchor} (ReactProps {classes,mainContent,title:titleText,titleExtra,menuExtra}) 
+    (DispatchEff d) = muiPickersUtilsProvider [utils dateFnsUtils] [
     D.div [DP.className classes.root] [
       cssBaseline_ [],
       D.div [DP.className classes.appFrame] [
-        appBar [className $ classes.appBar] [
-          toolbar [disableGutters true] [
-            iconButton [color C.inherit, className classes.navIconHide, onClick $ handle $ d \_ -> ToggleMenu] [ icon_ [D.text "menu" ] ],
-            typography [variant title, color C.inherit, className classes.title] [ D.text titleText ],
-            D.div [DP.className classes.extraTool] (U.fromMaybe titleExtra),
-            userMenu
-          ]
-        ],
+        topBar,
         hidden [ mdUp true ] [
           drawer [ variant temporary, anchor left, classes_ {paper: classes.drawerPaper},
                     open mobileOpen, onClose (handle $ d \_ -> ToggleMenu) ] menuContent ],
@@ -163,7 +159,16 @@ template' = createFactory (withStyles ourStyles (createComponent initialState re
         D.main [ DP.className classes.content ] [mainContent]
       ]
     ]
+  ]
     where
+    topBar = appBar [className $ classes.appBar] [
+      toolbar [disableGutters true] [
+        iconButton [color C.inherit, className classes.navIconHide, onClick $ handle $ d \_ -> ToggleMenu] [ icon_ [D.text "menu" ] ],
+        typography [variant title, color C.inherit, className classes.title] [ D.text titleText ],
+        D.div [DP.className classes.extraTool] (U.fromMaybe titleExtra),
+        userMenu
+      ]
+    ]
     userMenu = D.div' $ menuExtra <>
       (guard (not renderData.user.guest) *>
       [

@@ -41,13 +41,13 @@ main = do
   w <- window
   l <- location w
   p <- pathname l
-  let pagePath = fromMaybe "" do 
+  let 
+    pagePath = fromMaybe "" do 
         bp <- basePath
         stripPrefix (Pattern bp) p
-      initialRoute = case pagePath of 
+    initialRoute = case pagePath of 
         "access/settings.do" -> Just SettingsPage
         _ -> Nothing
-  let 
     renderRoot = createFactory
           (createLifecycleComponent (didMount Init) {route:initialRoute} render (effEval eval) ) {}
       where 
