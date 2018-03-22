@@ -9,7 +9,7 @@
   "dependencies": {
     "purescript-prelude": "^3.1.1",
     "purescript-console": "^3.0.0",
-    "purescript-react-mui": "doolse/purescript-react-mui#e9aab17266f61246d8",
+    "purescript-react-mui": "doolse/purescript-react-mui#b06e6f1222e01d4361",
     "purescript-dispatcher-react": "^3.1.0",
     "purescript-affjax": "^5.0.0",
     "purescript-argonaut": "^3.1.0",
