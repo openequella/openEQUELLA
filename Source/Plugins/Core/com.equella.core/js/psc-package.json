@@ -1,6 +1,6 @@
 {
   "name": "js",
-  "set": "psc-0.11.7",
+  "set": "psc-0.11.7-equella",
   "source": "https://github.com/equella/package-sets.git",
   "depends": [
     "io",
