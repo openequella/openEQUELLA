@@ -7,7 +7,7 @@
     "devlang": "../target/scala-2.12/classes/lang"
   },
   "scripts": {
-    "install": "cross-env-shell \"bower --allow-root install && mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang} ${npm_package_config_devcss} ${npm_package_config_buildcss}\"",
+    "install": "cross-env-shell \"psc-package install && mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang} ${npm_package_config_devcss} ${npm_package_config_buildcss}\"",
     "clean": "rm -rf target/ output/ node_modules/ bower_components/ && yarn install",
     "build": "yarn install && tsc && yarn run build:pages && yarn run build:scss && yarn run build:langbundle",
     "build:pages": "yarn run build:index && yarn run build:uploadlist",
@@ -32,6 +32,7 @@
     "history": "^4.7.2",
     "material-ui": "1.0.0-beta.38",
     "material-ui-pickers": "^1.0.0-rc.3",
+    "psc-package": "^0.3.2-pre",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-redux": "^5.0.7",
@@ -52,7 +53,6 @@
     "@types/react": "^16.0.40",
     "@types/react-dom": "^16.0.4",
     "argparse": "^1.0.10",
-    "bower": "^1.8.2",
     "browserify": "^16.1.0",
     "combined-stream2": "^1.1.2",
     "cross-env": "^5.1.3",

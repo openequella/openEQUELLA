@@ -1,0 +1,17 @@
+{
+  "name": "js",
+  "set": "psc-0.11.7",
+  "source": "https://github.com/equella/package-sets.git",
+  "depends": [
+    "io",
+    "uri",
+    "formatters",
+    "routing",
+    "affjax",
+    "dispatcher-react",
+    "react-mui",
+    "argonaut",
+    "console",
+    "prelude"
+  ]
+}
