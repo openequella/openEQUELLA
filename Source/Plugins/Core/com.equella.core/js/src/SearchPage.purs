@@ -2,25 +2,34 @@ module SearchPage where
 
 import Prelude
 
-import CheckList (checkList)
 import Control.Comonad (extract)
 import Control.Monad.Aff.Console (log)
+import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Now (now, nowDate)
-import Control.Monad.Eff.Uncurried (mkEffFn2)
 import Control.Monad.Eff.Unsafe (unsafePerformEff)
+import Control.Monad.Reader (ask)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
+import DOM.Event.EventTarget (addEventListener, eventListener)
+import DOM.Event.Types (Event, EventType(..))
+import DOM.HTML (window)
+import DOM.HTML.Document (body)
+import DOM.HTML.HTMLElement (offsetHeight)
+import DOM.HTML.Window (document, innerHeight, scrollY)
 import Data.Argonaut (class DecodeJson, decodeJson, (.?), (.??))
-import Data.Array (catMaybes, filter, findMap, fromFoldable, intercalate, length, mapMaybe, mapWithIndex, singleton)
+import Data.Array (catMaybes, filter, findMap, fromFoldable, intercalate, length, mapMaybe, mapWithIndex)
 import Data.DateTime (Date, DateTime(DateTime))
 import Data.DateTime.Instant (instant, toDateTime, unInstant)
 import Data.Either (either, fromRight)
 import Data.Formatter.DateTime (Formatter, format, parseFormatString)
+import Data.Int (floor)
 import Data.JSDate (JSDate)
-import Data.Lens (Lens', _1, _2, over, set, (^.))
+import Data.Lens (Lens', _1, _2, _Just, over, set, setJust)
+import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
-import Data.Maybe (Maybe(Just, Nothing), fromMaybe, maybe)
-import Data.Newtype (unwrap)
+import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, maybe)
+import Data.Newtype (class Newtype, unwrap)
 import Data.Set (isEmpty)
 import Data.Set as S
 import Data.StrMap (lookup)
@@ -29,32 +38,28 @@ import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
 import Data.Time.Duration (class Duration, Days(..), Milliseconds(..), fromDuration)
 import Data.Tuple (Tuple(..), fst)
-import DateUtils (dateToLocalJSDate, localJSToDate)
-import Dispatcher (DispatchEff(DispatchEff))
+import DateUtils (localJSToDate)
+import Dispatcher (DispatchEff(DispatchEff), dispatch, fromContext)
 import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMount, getState, modifyState)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
 import Facet (facetDisplay)
-import MaterialUI.Button (fullWidth)
-import MaterialUI.Checkbox (CheckboxProps, checkbox)
 import MaterialUI.Chip (chip, onDelete)
 import MaterialUI.Colors (fade)
 import MaterialUI.Divider as C
 import MaterialUI.Icon (icon_)
 import MaterialUI.List (disablePadding, list, list_)
 import MaterialUI.ListItem (button, disableGutters, divider, listItem)
-import MaterialUI.ListItemText (ListItemTextProps, disableTypography, listItemText, primary, secondary)
+import MaterialUI.ListItemText (disableTypography, listItemText, primary, secondary)
 import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Paper (elevation, paper)
 import MaterialUI.PropTypes (handle)
-import MaterialUI.Properties (IProp, className, classes_, color, component, mkProp, style, variant)
-import MaterialUI.Select (autoWidth, select)
+import MaterialUI.Properties (className, classes_, color, component, mkProp, style, variant)
+import MaterialUI.Select (select)
 import MaterialUI.Styles (withStyles)
-import MaterialUI.SwitchBase (checked)
 import MaterialUI.TextField (label, value)
-import MaterialUI.TextStyle (subheading)
 import MaterialUI.TextStyle as TS
 import MaterialUI.Typography (textSecondary, typography)
-import MaterialUIPicker.DatePicker (datePicker, onChange)
+import MaterialUIPicker.DatePicker (onChange)
 import Network.HTTP.Affjax (get)
 import Partial.Unsafe (unsafePartial)
 import QueryString (queryString)
@@ -74,42 +79,7 @@ newtype Result = Result {name::String, description:: Maybe String, modifiedDate:
     displayFields :: Array DisplayField, thumbnail::String, uuid::String, version::Int, attachments::Array Attachment}
 newtype SearchResults = SearchResults {start::Int, length::Int, available::Int, results::Array Result}
 
-instance attachDecode :: DecodeJson Attachment where
-  decodeJson v = do
-    o <- decodeJson v
-    links <- o .? "links"
-    thumbnailHref <- links .? "thumbnail"
-    pure $ Attachment {thumbnailHref}
-
-
-instance dfDecode :: DecodeJson DisplayField where
-  decodeJson v = do
-    o <- decodeJson v
-    name <- o .? "name"
-    html <- o .? "html"
-    pure $ DisplayField {name, html}
-
-instance rDecode :: DecodeJson Result where
-  decodeJson v = do
-    o <- decodeJson v
-    nameO <- o .?? "name"
-    description <- o .?? "description"
-    uuid <- o .? "uuid"
-    modifiedDate <- o .? "modifiedDate"
-    thumbnail <- o .? "thumbnail"
-    df <- o .?? "displayFields"
-    version <- o .? "version"
-    attachments <- o .? "attachments"
-    pure $ Result {uuid,version,name:fromMaybe uuid nameO, description, thumbnail, modifiedDate, displayFields:fromMaybe [] df, attachments}
-
-instance srDecode :: DecodeJson SearchResults where
-  decodeJson v = do
-    o <- decodeJson v
-    start <- o .? "start"
-    length <- o .? "length"
-    available <- o .? "available"
-    results <- o .? "results"
-    pure $ SearchResults {start,length,available,results}
+derive instance srNT :: Newtype SearchResults _
 
 type State = {
   searching :: Boolean,
@@ -125,6 +95,7 @@ type DateLens = Lens' State (Tuple Boolean Date)
 
 data Command = InitSearch | Search | QueryUpdate String | ToggledTerm String String 
   | SetDate DateLens JSDate | ToggleDate DateLens | SetLast Milliseconds
+  | Scrolled Event
 
 initialState :: State
 initialState = {searching:false, query:""
@@ -166,6 +137,9 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
   _after :: DateLens
   _after = prop (SProxy :: SProxy "after")
   _modifiedLast = prop (SProxy :: SProxy "modifiedLast")
+  _searchResults = prop (SProxy :: SProxy "searchResults")
+  _results = prop (SProxy :: SProxy "results")
+
   string = prepLangStrings rawStrings
   coreString = prepLangStrings coreStrings
 
@@ -333,8 +307,10 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
         typography [component "div", color textSecondary] [ D.div [DP.dangerouslySetInnerHTML {__html: "\xa0-\xa0" <> html}] [] ]
       ]
 
-  searchWith f = do
+  searchWith = searchWith' true
+  searchWith' reset f = do
     s <- getState
+    let offset = if reset then 0 else maybe 0 (\(SearchResults sr) -> sr.start + sr.length) s.searchResults 
     modifyState $ (_ {searching=true} >>> f)
     let 
       {facets,query,before,after,modifiedLast} = f s
@@ -347,6 +323,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     result <- lift $ get $ baseUrl <> "api/search?" <> (queryString $ [
         Tuple "info" "basic,detail,attachment,display",
         Tuple "q" query,        
+        Tuple "start" $ show offset,
         Tuple "where" $ joinWith " AND " whereXpath
       ] <> catMaybes [
         beforeLast <$> modifiedLast,
@@ -354,7 +331,10 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
         dateParam "modifiedAfter" after
       ]
     )
-    either (lift <<< log) (\r -> modifyState _ {searchResults=Just r}) $ decodeJson result.response
+    let resetres = setJust _searchResults
+        appendres (SearchResults sr) = over (_searchResults <<< _Just <<< _Newtype) 
+                                              (over _results $ append sr.results)
+    either (lift <<< log) (modifyState <<< if reset then resetres else appendres) $ decodeJson result.response
 
   toggleFacet node term facMap = SM.insert node (toggle $ fromMaybe S.empty $ SM.lookup node facMap) facMap
     where
@@ -362,8 +342,27 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
 
   eval InitSearch = do
     searchWith id
+    (DispatchEff d) <- ask >>= fromContext eval
+    liftEff $ do 
+      w <- window
+      addEventListener (EventType "scroll") (eventListener $ d \e -> Scrolled e) false (unsafeCoerce w)
     result <- lift $ get $ baseUrl <> "api/settings/ui"
-    either (lift <<< log) (\(UISettings {newUI:(NewUISettings {facets})}) -> modifyState _ {facetSettings= facets}) $ decodeJson result.response
+    either (lift <<< log) (\(UISettings {newUI:(NewUISettings {facets})}) -> 
+      modifyState _ {facetSettings= facets}) $ decodeJson result.response
+  eval (Scrolled e) = do
+    shouldScroll <- liftEff $ do 
+      w <- window
+      h <- innerHeight w
+      sY <- scrollY w
+      d <- document w
+      b <- body d
+      oh <- unsafePartial $ offsetHeight $ fromJust b
+      pure $ h + sY >= (floor oh - 500) 
+    searchWith' false id
+    lift $ do 
+      log $ unsafeCoerce e
+      log $ unsafeCoerce shouldScroll
+
 
   eval (SetLast ms) = do 
     searchWith $ set (_modifiedLast) $ (guard $ unwrap ms > 0.0) $> ms
@@ -382,3 +381,41 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
   
   eval (ToggleDate l) = do
     searchWith $ over (l <<< _1) not
+
+
+instance attachDecode :: DecodeJson Attachment where
+  decodeJson v = do
+    o <- decodeJson v
+    links <- o .? "links"
+    thumbnailHref <- links .? "thumbnail"
+    pure $ Attachment {thumbnailHref}
+
+
+instance dfDecode :: DecodeJson DisplayField where
+  decodeJson v = do
+    o <- decodeJson v
+    name <- o .? "name"
+    html <- o .? "html"
+    pure $ DisplayField {name, html}
+
+instance rDecode :: DecodeJson Result where
+  decodeJson v = do
+    o <- decodeJson v
+    nameO <- o .?? "name"
+    description <- o .?? "description"
+    uuid <- o .? "uuid"
+    modifiedDate <- o .? "modifiedDate"
+    thumbnail <- o .? "thumbnail"
+    df <- o .?? "displayFields"
+    version <- o .? "version"
+    attachments <- o .? "attachments"
+    pure $ Result {uuid,version,name:fromMaybe uuid nameO, description, thumbnail, modifiedDate, displayFields:fromMaybe [] df, attachments}
+
+instance srDecode :: DecodeJson SearchResults where
+  decodeJson v = do
+    o <- decodeJson v
+    start <- o .? "start"
+    length <- o .? "length"
+    available <- o .? "available"
+    results <- o .? "results"
+    pure $ SearchResults {start,length,available,results}
