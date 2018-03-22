@@ -5,19 +5,21 @@ import Prelude
 import CheckList (checkList)
 import Control.Comonad (extract)
 import Control.Monad.Aff.Console (log)
-import Control.Monad.Eff.Now (nowDate)
+import Control.Monad.Eff.Now (now, nowDate)
 import Control.Monad.Eff.Uncurried (mkEffFn2)
 import Control.Monad.Eff.Unsafe (unsafePerformEff)
 import Control.Monad.Trans.Class (lift)
+import Control.MonadZero (guard)
 import Data.Argonaut (class DecodeJson, decodeJson, (.?), (.??))
 import Data.Array (catMaybes, filter, findMap, fromFoldable, intercalate, length, mapMaybe, mapWithIndex, singleton)
 import Data.DateTime (Date, DateTime(DateTime))
+import Data.DateTime.Instant (instant, toDateTime, unInstant)
 import Data.Either (either, fromRight)
 import Data.Formatter.DateTime (Formatter, format, parseFormatString)
 import Data.JSDate (JSDate)
 import Data.Lens (Lens', _1, _2, over, set, (^.))
 import Data.Lens.Record (prop)
-import Data.Maybe (Maybe(Just, Nothing), fromMaybe)
+import Data.Maybe (Maybe(Just, Nothing), fromMaybe, maybe)
 import Data.Newtype (unwrap)
 import Data.Set (isEmpty)
 import Data.Set as S
@@ -25,12 +27,14 @@ import Data.StrMap (lookup)
 import Data.StrMap as SM
 import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
+import Data.Time.Duration (class Duration, Days(..), Milliseconds(..), fromDuration)
 import Data.Tuple (Tuple(..), fst)
 import DateUtils (dateToLocalJSDate, localJSToDate)
 import Dispatcher (DispatchEff(DispatchEff))
 import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMount, getState, modifyState)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
 import Facet (facetDisplay)
+import MaterialUI.Button (fullWidth)
 import MaterialUI.Checkbox (CheckboxProps, checkbox)
 import MaterialUI.Chip (chip, onDelete)
 import MaterialUI.Colors (fade)
@@ -39,12 +43,14 @@ import MaterialUI.Icon (icon_)
 import MaterialUI.List (disablePadding, list, list_)
 import MaterialUI.ListItem (button, disableGutters, divider, listItem)
 import MaterialUI.ListItemText (ListItemTextProps, disableTypography, listItemText, primary, secondary)
+import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Paper (elevation, paper)
 import MaterialUI.PropTypes (handle)
 import MaterialUI.Properties (IProp, className, classes_, color, component, mkProp, style, variant)
+import MaterialUI.Select (autoWidth, select)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.SwitchBase (checked)
-import MaterialUI.TextField (label)
+import MaterialUI.TextField (label, value)
 import MaterialUI.TextStyle (subheading)
 import MaterialUI.TextStyle as TS
 import MaterialUI.Typography (textSecondary, typography)
@@ -54,6 +60,7 @@ import Partial.Unsafe (unsafePartial)
 import QueryString (queryString)
 import React (ReactElement, createFactory)
 import React.DOM as D
+import React.DOM.Dynamic (em')
 import React.DOM.Props as DP
 import SearchFilters (filterSection)
 import Settings.UISettings (FacetSetting(..), NewUISettings(..), UISettings(..))
@@ -110,18 +117,20 @@ type State = {
   facetSettings :: Array FacetSetting,
   facets :: SM.StrMap (S.Set String),
   searchResults :: Maybe SearchResults, 
+  modifiedLast :: Maybe Milliseconds,
   after :: Tuple Boolean Date,
   before :: Tuple Boolean Date
 }
 type DateLens = Lens' State (Tuple Boolean Date)
 
 data Command = InitSearch | Search | QueryUpdate String | ToggledTerm String String 
-  | SetDate DateLens JSDate | ToggleDate DateLens
+  | SetDate DateLens JSDate | ToggleDate DateLens | SetLast Milliseconds
 
 initialState :: State
 initialState = {searching:false, query:""
   , searchResults:Nothing
   , facets:SM.empty
+  , modifiedLast: Nothing
   , after:Tuple false currentDate
   , before:Tuple false currentDate
   , facetSettings: []}
@@ -129,10 +138,14 @@ initialState = {searching:false, query:""
 rawStrings = Tuple "searchpage" {
   resultsAvailable: "results available",
   modifiedDate: "Modified",
-  filterDates: {
-      name: "Filter by modifed date",
-      before: "Before:",
-      after: "After:"
+  filterLast: {
+    name: "Resources modified within last:",
+    none: "None",
+    month: "Month",
+    year: "Year",
+    fiveyear: "Five years",
+    week: "Week",
+    day: "Day"
   }
 }
 coreStrings = Tuple "com.equella.core.searching.search" {
@@ -143,7 +156,7 @@ currentDate :: Date
 currentDate = unsafePerformEff $ extract <$> nowDate
 
 dateFormat :: Formatter
-dateFormat = unsafePartial $ fromRight $ parseFormatString "YYYY-MM-DD"
+dateFormat = unsafePartial $ fromRight $ parseFormatString "YYYY-MM-DDTHH:mm:ss"
 
 searchPage :: ReactElement
 searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMount InitSearch) initialState render eval) {}
@@ -152,8 +165,21 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
   _before = prop (SProxy :: SProxy "before")
   _after :: DateLens
   _after = prop (SProxy :: SProxy "after")
+  _modifiedLast = prop (SProxy :: SProxy "modifiedLast")
   string = prepLangStrings rawStrings
   coreString = prepLangStrings coreStrings
+
+  ago :: forall a. Duration a => String -> a -> {name::String, emmed::Boolean, duration::Milliseconds}
+  ago name d = {name, emmed:false, duration: fromDuration d}
+
+  agoEntries = let s = string.filterLast in [
+    (ago s.none (Milliseconds 0.0)) {emmed=true},
+    ago s.day (Days 1.0), 
+    ago s.week (Days 7.0),
+    ago s.month (Days 28.0),
+    ago s.year (Days 365.0),
+    ago s.fiveyear (Days $ 365.0 * 5.0)
+  ]
 
   styles theme = {
     results: {
@@ -221,6 +247,9 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     },
     dateContainer: {
       margin: theme.spacing.unit
+    },
+    selectFilter: {
+      width: 150
     }
   }
 
@@ -241,41 +270,19 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
         renderResults searchResults,
       paper [className classes.refinements, elevation 4] $ 
         intercalate [C.divider []] $ 
-          (pure [ 
-            let {before,after,name} = string.filterDates in
-            filterSection {name} [
-              checkList { entries: [
-                dateControl before _before,
-                dateControl after _after
-              ]}
-            ]
-          ]) <> 
-          (makeFacet >>> singleton <$> facetSettings)
+          (pure [ lastModifiedSelect ]) <> 
+          (pure <<< makeFacet <$> facetSettings)
     ]
 
-    dateControl :: String -> DateLens -> {checkProps::Array (IProp CheckboxProps), textProps::Array (IProp ListItemTextProps)}
-    dateControl title l = 
-      let (Tuple enabled date) = s ^. l
-          selDate = dateToLocalJSDate date
-      in {
-        checkProps: [
-          checked enabled, 
-          onChange $ mkEffFn2 \e c -> (d \_ -> ToggleDate l) e
-        ],
-        textProps: [ 
-          disableTypography true, 
-          primary $ datePicker [
-            mkProp "className" classes.dateContainer, 
-            mkProp "disabled" $ not enabled, 
-            mkProp "disableFuture" true, 
-            mkProp "keyboard" true,
-            mkProp "label" title, 
-            mkProp "value" $ (unsafeCoerce $ selDate) :: String, 
-            mkProp "format" "MMMM Do, YYYY",
-            onChange $ handle $ d (SetDate l)
-          ]
-        ]
-      }
+    lastModifiedSelect = filterSection {name:string.filterLast.name} [ 
+      select [ className classes.selectFilter,
+        value $ maybe 0.0 unwrap s.modifiedLast, 
+        onChange $ handle $ d \e -> SetLast $ Milliseconds $ e.target.value
+      ] $ (agoItem <$> agoEntries)
+    ]
+      where
+      agoItem {name,emmed,duration:(Milliseconds ms)} = menuItem [mkProp "value" ms] $ 
+        (if emmed then pure <<< em' else id) [D.text name]
 
     facetChips = facetChip <$> (allVals =<< SM.toUnfoldable facets)
     allVals (Tuple node s) = {name:fromMaybe node $ unwrap >>> _.name <$> lookup node facetMap, node, value: _} <$> S.toUnfoldable s
@@ -330,8 +337,11 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     s <- getState
     modifyState $ (_ {searching=true} >>> f)
     let 
-      {facets,query,before,after} = f s
+      {facets,query,before,after,modifiedLast} = f s
       whereXpath = mapMaybe whereClause $ SM.toUnfoldable facets
+      beforeLast ms = 
+        let nowInst = unsafePerformEff now
+        in Tuple "modifiedAfter" $ format dateFormat $ toDateTime $ fromMaybe nowInst $ instant $ (unInstant nowInst) - ms
       dateParam p (Tuple true d) = Just $ Tuple p $ format dateFormat (DateTime d bottom)
       dateParam _ _ = Nothing
     result <- lift $ get $ baseUrl <> "api/search?" <> (queryString $ [
@@ -339,6 +349,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
         Tuple "q" query,        
         Tuple "where" $ joinWith " AND " whereXpath
       ] <> catMaybes [
+        beforeLast <$> modifiedLast,
         dateParam "modifiedBefore" before,
         dateParam "modifiedAfter" after
       ]
@@ -354,6 +365,9 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     result <- lift $ get $ baseUrl <> "api/settings/ui"
     either (lift <<< log) (\(UISettings {newUI:(NewUISettings {facets})}) -> modifyState _ {facetSettings= facets}) $ decodeJson result.response
 
+  eval (SetLast ms) = do 
+    searchWith $ set (_modifiedLast) $ (guard $ unwrap ms > 0.0) $> ms
+
   eval (SetDate dl d) = do
     searchWith $ set (dl <<< _2) $ localJSToDate d
 
@@ -368,4 +382,3 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
   
   eval (ToggleDate l) = do
     searchWith $ over (l <<< _1) not
-
