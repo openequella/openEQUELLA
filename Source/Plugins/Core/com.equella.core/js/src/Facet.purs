@@ -2,6 +2,7 @@ module Facet where
 
 import Prelude
 
+import CheckList (checkList)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Console (log)
@@ -16,20 +17,13 @@ import Dispatcher (dispatch)
 import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMount, getProps, modifyState)
 import EQUELLA.Environment (baseUrl)
 import Global (encodeURIComponent)
-import MaterialUI.Checkbox (checkbox)
-import MaterialUI.List (disablePadding, list)
-import MaterialUI.ListItem (disableGutters, listItem)
-import MaterialUI.ListItemText (listItemText, primary, secondary)
-import MaterialUI.Properties (className, classes_, variant)
-import MaterialUI.Styles (withStyles)
+import MaterialUI.ListItemText (primary, secondary)
 import MaterialUI.SwitchBase (checked)
 import MaterialUI.TextField (onChange)
-import MaterialUI.TextStyle (subheading)
-import MaterialUI.Typography (typography)
 import Network.HTTP.Affjax (get)
 import React (ReactElement, createFactory)
 import React.DOM as D
-import React.DOM.Props as DP
+import SearchFilters (filterSection)
 import Settings.UISettings (FacetSetting(..))
 
 newtype FacetResult = FacetResult {term::String, count::Int}
@@ -66,38 +60,21 @@ initialState :: State
 initialState = {searching:false, searchResults:Nothing}
 
 facetDisplay :: forall eff. Props eff -> ReactElement
-facetDisplay = createFactory (withStyles styles $ createLifecycleComponent (do
+facetDisplay = createFactory (createLifecycleComponent (do
     didMount Search
     modify _ { componentWillReceiveProps = \c {query} -> dispatch eval c (UpdatedProps query) }
     ) initialState render eval)
   where
-
-  styles theme = {
-    container: {
-      padding: theme.spacing.unit
-    },
-    reallyDense: {
-      padding: 0
-    },
-    smallerCheckbox: {
-      height: theme.spacing.unit * 4
-    },
-    facetText: {
-      display: "flex",
-      justifyContent: "space-between"
-    }
-  }
-
-  render {searchResults} (ReactProps {facet:(FacetSetting {name}), classes,onClickTerm,selectedTerms}) = D.div [DP.className classes.container] [
-    typography [variant subheading] [ D.text name ],
+  render {searchResults} (ReactProps {facet:(FacetSetting {name}), onClickTerm,selectedTerms}) = filterSection {name} [
     renderResults searchResults
   ]
     where
-    renderResults (Just (FacetResults results)) = list [disablePadding true] $ result <$> results
-      where result (FacetResult {term,count}) = listItem [classes_ {default:classes.reallyDense}, disableGutters true] [
-        checkbox [classes_ {default:classes.smallerCheckbox}, checked $ member term selectedTerms, onChange $ (mkEffFn2 \e c -> onClickTerm term)],
-        listItemText [className classes.facetText, primary term, secondary $ show count]
-      ]
+    renderResults (Just (FacetResults results)) = checkList {entries: result <$> results}
+      where 
+      result (FacetResult {term,count}) = {
+        checkProps : [checked $ member term selectedTerms, onChange $ (mkEffFn2 \e c -> onClickTerm term)],
+        textProps : [primary term, secondary $ show count]
+      }
     renderResults _ = D.div' []
 
   searchWith query = do
