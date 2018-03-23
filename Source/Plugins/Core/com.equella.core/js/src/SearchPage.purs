@@ -3,9 +3,11 @@ module SearchPage where
 import Prelude
 
 import Control.Comonad (extract)
+import Control.Monad.Aff (Aff)
 import Control.Monad.Aff.Console (log)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
+import Control.Monad.Eff.Console (logShow)
 import Control.Monad.Eff.Now (now, nowDate)
 import Control.Monad.Eff.Unsafe (unsafePerformEff)
 import Control.Monad.Reader (ask)
@@ -21,11 +23,11 @@ import Data.Argonaut (class DecodeJson, decodeJson, (.?), (.??))
 import Data.Array (catMaybes, filter, findMap, fromFoldable, intercalate, length, mapMaybe, mapWithIndex)
 import Data.DateTime (Date, DateTime(DateTime))
 import Data.DateTime.Instant (instant, toDateTime, unInstant)
-import Data.Either (either, fromRight)
+import Data.Either (Either, either, fromRight)
 import Data.Formatter.DateTime (Formatter, format, parseFormatString)
 import Data.Int (floor)
 import Data.JSDate (JSDate)
-import Data.Lens (Lens', _1, _2, _Just, over, set, setJust)
+import Data.Lens (Lens', _1, _2, _Just, addOver, appendOver, over, set, setJust)
 import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
 import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, maybe)
@@ -60,7 +62,7 @@ import MaterialUI.TextField (label, value)
 import MaterialUI.TextStyle as TS
 import MaterialUI.Typography (textSecondary, typography)
 import MaterialUIPicker.DatePicker (onChange)
-import Network.HTTP.Affjax (get)
+import Network.HTTP.Affjax (AJAX, get)
 import Partial.Unsafe (unsafePartial)
 import QueryString (queryString)
 import React (ReactElement, createFactory)
@@ -139,6 +141,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
   _modifiedLast = prop (SProxy :: SProxy "modifiedLast")
   _searchResults = prop (SProxy :: SProxy "searchResults")
   _results = prop (SProxy :: SProxy "results")
+  _length = prop (SProxy :: SProxy "length")
 
   string = prepLangStrings rawStrings
   coreString = prepLangStrings coreStrings
@@ -227,10 +230,6 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     }
   }
 
-  whereClause (Tuple node terms) | not isEmpty terms = Just $ "(" <> (joinWith " OR " $ clause <$> S.toUnfoldable terms) <> ")"
-    where clause term = "/xml" <> node <> " = " <> "'" <> term <> "'"
-  whereClause _ = Nothing
-
   render s@{searchResults,query,facets,facetSettings} (ReactProps {classes}) (DispatchEff d) = 
       template {mainContent,titleExtra:Just searchBar, title: coreString.title}
     where
@@ -307,34 +306,24 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
         typography [component "div", color textSecondary] [ D.div [DP.dangerouslySetInnerHTML {__html: "\xa0-\xa0" <> html}] [] ]
       ]
 
-  searchWith = searchWith' true
-  searchWith' reset f = do
+  searchMore = do 
     s <- getState
-    let offset = if reset then 0 else maybe 0 (\(SearchResults sr) -> sr.start + sr.length) s.searchResults 
+    case s of 
+      {searching:false, searchResults:Just (SearchResults {start,length,available})} | start+length < available -> do 
+        modifyState _ {searching=true}
+        sr <- lift $ query (start+length) s
+        let appendres (SearchResults sr) = 
+              modifyState $ _ {searching=false} >>> over (_searchResults <<< _Just <<< _Newtype) 
+                ((appendOver _results sr.results) <<< (addOver _length sr.length))
+        either (lift <<< log) appendres sr
+      _ -> pure unit
+    
+
+  searchWith f = do
+    s <- getState
     modifyState $ (_ {searching=true} >>> f)
-    let 
-      {facets,query,before,after,modifiedLast} = f s
-      whereXpath = mapMaybe whereClause $ SM.toUnfoldable facets
-      beforeLast ms = 
-        let nowInst = unsafePerformEff now
-        in Tuple "modifiedAfter" $ format dateFormat $ toDateTime $ fromMaybe nowInst $ instant $ (unInstant nowInst) - ms
-      dateParam p (Tuple true d) = Just $ Tuple p $ format dateFormat (DateTime d bottom)
-      dateParam _ _ = Nothing
-    result <- lift $ get $ baseUrl <> "api/search?" <> (queryString $ [
-        Tuple "info" "basic,detail,attachment,display",
-        Tuple "q" query,        
-        Tuple "start" $ show offset,
-        Tuple "where" $ joinWith " AND " whereXpath
-      ] <> catMaybes [
-        beforeLast <$> modifiedLast,
-        dateParam "modifiedBefore" before,
-        dateParam "modifiedAfter" after
-      ]
-    )
-    let resetres = setJust _searchResults
-        appendres (SearchResults sr) = over (_searchResults <<< _Just <<< _Newtype) 
-                                              (over _results $ append sr.results)
-    either (lift <<< log) (modifyState <<< if reset then resetres else appendres) $ decodeJson result.response
+    sr <- lift $ query 0 (f s)
+    either (lift <<< log) (\sr -> modifyState $ setJust _searchResults sr <<< _ {searching=false}) $ sr
 
   toggleFacet node term facMap = SM.insert node (toggle $ fromMaybe S.empty $ SM.lookup node facMap) facMap
     where
@@ -349,6 +338,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     result <- lift $ get $ baseUrl <> "api/settings/ui"
     either (lift <<< log) (\(UISettings {newUI:(NewUISettings {facets})}) -> 
       modifyState _ {facetSettings= facets}) $ decodeJson result.response
+      
   eval (Scrolled e) = do
     shouldScroll <- liftEff $ do 
       w <- window
@@ -358,11 +348,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
       b <- body d
       oh <- unsafePartial $ offsetHeight $ fromJust b
       pure $ h + sY >= (floor oh - 500) 
-    searchWith' false id
-    lift $ do 
-      log $ unsafeCoerce e
-      log $ unsafeCoerce shouldScroll
-
+    if shouldScroll then searchMore else pure unit
 
   eval (SetLast ms) = do 
     searchWith $ set (_modifiedLast) $ (guard $ unwrap ms > 0.0) $> ms
@@ -382,6 +368,32 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
   eval (ToggleDate l) = do
     searchWith $ over (l <<< _1) not
 
+query :: forall e. Int -> State -> Aff (ajax :: AJAX |e) (Either String SearchResults)
+query offset {facets,query,before,after,modifiedLast} = do
+  let
+    whereXpath = mapMaybe whereClause $ SM.toUnfoldable facets
+    beforeLast ms = 
+      let nowInst = unsafePerformEff now
+      in Tuple "modifiedAfter" $ format dateFormat $ toDateTime $ fromMaybe nowInst $ instant $ (unInstant nowInst) - ms
+    dateParam p (Tuple true d) = Just $ Tuple p $ format dateFormat (DateTime d bottom)
+    dateParam _ _ = Nothing
+  result <- get $ baseUrl <> "api/search?" <> (queryString $ [
+      Tuple "info" "basic,detail,attachment,display",
+      Tuple "q" query,        
+      Tuple "start" $ show offset,
+      Tuple "where" $ joinWith " AND " whereXpath
+    ] <> catMaybes [
+      beforeLast <$> modifiedLast,
+      dateParam "modifiedBefore" before,
+      dateParam "modifiedAfter" after
+    ]
+  )
+  pure $ decodeJson result.response
+
+whereClause :: Tuple String (S.Set String) -> Maybe String
+whereClause (Tuple node terms) | not isEmpty terms = Just $ "(" <> (joinWith " OR " $ clause <$> S.toUnfoldable terms) <> ")"
+  where clause term = "/xml" <> node <> " = " <> "'" <> term <> "'"
+whereClause _ = Nothing
 
 instance attachDecode :: DecodeJson Attachment where
   decodeJson v = do
