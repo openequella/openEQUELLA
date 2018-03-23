@@ -59,17 +59,6 @@ data Command = LoadSettings
 initialState :: State
 initialState = {settings:Nothing}
 
-rawStrings = Tuple "settings" {
-  general: {name:"General",desc:"General settings"},
-  integration: {name:"Integrations",desc:"Settings for integrating with external systems"},
-  diagnostics: {name:"Diagnostics",desc:"Diagnostic pages"},
-  ui: {name:"UI",desc:"UI settings"}
-}
-
-coreStrings = Tuple "com.equella.core" {
-  title: "Settings"
-}
-
 settingsPage :: {legacyMode::Boolean} -> ReactElement
 settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didMount LoadSettings) initialState render eval)
   where
@@ -100,8 +89,8 @@ settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didM
                       else mainContent
     where
     mainContent = maybe (D.div' []) renderSettings settings
-    renderSettings s =
-      let groupMap = SM.fromFoldableWith append $ (\(Setting s) -> Tuple s.group [s]) <$> s
+    renderSettings allSettings =
+      let groupMap = SM.fromFoldableWith append $ (\(Setting s) -> Tuple s.group [s]) <$> allSettings
           renderGroup (Tuple "ui" details) = Just $ settingGroup details uiSettingsEditor
           renderGroup (Tuple id details) | Just _pages <- SM.lookup id groupMap =
             let pages = sortWith _.name _pages
@@ -128,3 +117,25 @@ settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didM
   eval (LoadSettings) = do
     result <- lift $ get $ baseUrl <> "api/settings"
     either (lift <<< log) (\r -> modifyState _ {settings=Just r}) $ decodeJson result.response
+
+type GroupStrings = { name :: String, desc :: String }
+
+rawStrings :: Tuple String
+  { general :: GroupStrings
+  , integration :: GroupStrings
+  , diagnostics :: GroupStrings
+  , ui :: GroupStrings
+  }
+rawStrings = Tuple "settings" {
+  general: {name:"General",desc:"General settings"},
+  integration: {name:"Integrations",desc:"Settings for integrating with external systems"},
+  diagnostics: {name:"Diagnostics",desc:"Diagnostic pages"},
+  ui: {name:"UI",desc:"UI settings"}
+}
+
+coreStrings :: Tuple String
+  { title :: String
+  }
+coreStrings = Tuple "com.equella.core" {
+  title: "Settings"
+}

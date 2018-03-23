@@ -7,13 +7,10 @@ import MaterialUI.Checkbox (CheckboxProps, checkbox)
 import MaterialUI.List (disablePadding, list)
 import MaterialUI.ListItem (disableGutters, listItem)
 import MaterialUI.ListItemText (ListItemTextProps, listItemText)
-import MaterialUI.Properties (IProp, className, classes_, variant)
+import MaterialUI.Properties (IProp, className, classes_)
 import MaterialUI.Styles (withStyles)
-import MaterialUI.TextStyle (subheading)
-import MaterialUI.Typography (typography)
+ 
 import React (ReactElement, createFactory)
-import React.DOM as D
-import React.DOM.Props as DP
 
 
 

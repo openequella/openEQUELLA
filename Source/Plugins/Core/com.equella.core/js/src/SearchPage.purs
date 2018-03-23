@@ -5,9 +5,7 @@ import Prelude
 import Control.Comonad (extract)
 import Control.Monad.Aff (Aff)
 import Control.Monad.Aff.Console (log)
-import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
-import Control.Monad.Eff.Console (logShow)
 import Control.Monad.Eff.Now (now, nowDate)
 import Control.Monad.Eff.Unsafe (unsafePerformEff)
 import Control.Monad.Reader (ask)
@@ -41,7 +39,7 @@ import Data.Symbol (SProxy(..))
 import Data.Time.Duration (class Duration, Days(..), Milliseconds(..), fromDuration)
 import Data.Tuple (Tuple(..), fst)
 import DateUtils (localJSToDate)
-import Dispatcher (DispatchEff(DispatchEff), dispatch, fromContext)
+import Dispatcher (DispatchEff(DispatchEff), fromContext)
 import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMount, getState, modifyState)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
 import Facet (facetDisplay)
@@ -107,23 +105,6 @@ initialState = {searching:false, query:""
   , after:Tuple false currentDate
   , before:Tuple false currentDate
   , facetSettings: []}
-
-rawStrings = Tuple "searchpage" {
-  resultsAvailable: "results available",
-  modifiedDate: "Modified",
-  filterLast: {
-    name: "Resources modified within last:",
-    none: "None",
-    month: "Month",
-    year: "Year",
-    fiveyear: "Five years",
-    week: "Week",
-    day: "Day"
-  }
-}
-coreStrings = Tuple "com.equella.core.searching.search" {
-  title: "Search"
-}
 
 currentDate :: Date
 currentDate = unsafePerformEff $ extract <$> nowDate
@@ -230,7 +211,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     }
   }
 
-  render s@{searchResults,query,facets,facetSettings} (ReactProps {classes}) (DispatchEff d) = 
+  render {modifiedLast,searchResults,query,facets,facetSettings} (ReactProps {classes}) (DispatchEff d) = 
       template {mainContent,titleExtra:Just searchBar, title: coreString.title}
     where
 
@@ -249,7 +230,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
 
     lastModifiedSelect = filterSection {name:string.filterLast.name} [ 
       select [ className classes.selectFilter,
-        value $ maybe 0.0 unwrap s.modifiedLast, 
+        value $ maybe 0.0 unwrap modifiedLast, 
         onChange $ handle $ d \e -> SetLast $ Milliseconds $ e.target.value
       ] $ (agoItem <$> agoEntries)
     ]
@@ -295,10 +276,10 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
             ]
           ]
           extraFields = (fieldDiv <$> displayFields) <> extraDeets
-          mainContent = D.div [ DP.className classes.searchResultContent ] $ firstThumb <>
+          itemContent = D.div [ DP.className classes.searchResultContent ] $ firstThumb <>
             [ D.div' $ fromFoldable (descMarkup <$> description) <> [ list [disablePadding true] extraFields ] ]
       in listItem [button true, divider showDivider] [
-          listItemText [ disableTypography true, primary titleLink, secondary mainContent ]
+          listItemText [ disableTypography true, primary titleLink, secondary itemContent ]
       ]
       where
       fieldDiv (DisplayField {name:n,html}) = listItem [classes_ {default: classes.displayNode}, disableGutters true] [
@@ -306,24 +287,25 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
         typography [component "div", color textSecondary] [ D.div [DP.dangerouslySetInnerHTML {__html: "\xa0-\xa0" <> html}] [] ]
       ]
 
+  modifySearchFlag searchFlag f = modifyState $ _{searching=searchFlag} <<< f
   searchMore = do 
     s <- getState
     case s of 
       {searching:false, searchResults:Just (SearchResults {start,length,available})} | start+length < available -> do 
-        modifyState _ {searching=true}
-        sr <- lift $ query (start+length) s
-        let appendres (SearchResults sr) = 
-              modifyState $ _ {searching=false} >>> over (_searchResults <<< _Just <<< _Newtype) 
-                ((appendOver _results sr.results) <<< (addOver _length sr.length))
+        modifySearchFlag true id
+        sr <- lift $ callSearch (start+length) s
+        let appendres (SearchResults newres) = 
+              modifySearchFlag false $ over (_searchResults <<< _Just <<< _Newtype) 
+                ((appendOver _results newres.results) <<< (addOver _length newres.length))
         either (lift <<< log) appendres sr
       _ -> pure unit
     
 
   searchWith f = do
     s <- getState
-    modifyState $ (_ {searching=true} >>> f)
-    sr <- lift $ query 0 (f s)
-    either (lift <<< log) (\sr -> modifyState $ setJust _searchResults sr <<< _ {searching=false}) $ sr
+    modifySearchFlag true f
+    sr <- lift $ callSearch 0 (f s)
+    either (lift <<< log) (modifySearchFlag false <<< setJust _searchResults) $ sr
 
   toggleFacet node term facMap = SM.insert node (toggle $ fromMaybe S.empty $ SM.lookup node facMap) facMap
     where
@@ -338,14 +320,13 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     result <- lift $ get $ baseUrl <> "api/settings/ui"
     either (lift <<< log) (\(UISettings {newUI:(NewUISettings {facets})}) -> 
       modifyState _ {facetSettings= facets}) $ decodeJson result.response
-      
+
   eval (Scrolled e) = do
     shouldScroll <- liftEff $ do 
       w <- window
       h <- innerHeight w
       sY <- scrollY w
-      d <- document w
-      b <- body d
+      b <- document w >>= body 
       oh <- unsafePartial $ offsetHeight $ fromJust b
       pure $ h + sY >= (floor oh - 500) 
     if shouldScroll then searchMore else pure unit
@@ -368,8 +349,8 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
   eval (ToggleDate l) = do
     searchWith $ over (l <<< _1) not
 
-query :: forall e. Int -> State -> Aff (ajax :: AJAX |e) (Either String SearchResults)
-query offset {facets,query,before,after,modifiedLast} = do
+callSearch :: forall e. Int -> State -> Aff (ajax :: AJAX |e) (Either String SearchResults)
+callSearch offset {facets,query,before,after,modifiedLast} = do
   let
     whereXpath = mapMaybe whereClause $ SM.toUnfoldable facets
     beforeLast ms = 
@@ -431,3 +412,35 @@ instance srDecode :: DecodeJson SearchResults where
     available <- o .? "available"
     results <- o .? "results"
     pure $ SearchResults {start,length,available,results}
+
+rawStrings :: Tuple String
+  { resultsAvailable :: String
+  , modifiedDate :: String
+  , filterLast :: { name :: String
+                  , none :: String
+                  , month :: String
+                  , year :: String
+                  , fiveyear :: String
+                  , week :: String
+                  , day :: String
+                  }
+  }
+rawStrings = Tuple "searchpage" {
+  resultsAvailable: "results available",
+  modifiedDate: "Modified",
+  filterLast: {
+    name: "Resources modified within last:",
+    none: "None",
+    month: "Month",
+    year: "Year",
+    fiveyear: "Five years",
+    week: "Week",
+    day: "Day"
+  }
+}
+coreStrings :: Tuple String
+  { title :: String
+  }
+coreStrings = Tuple "com.equella.core.searching.search" {
+  title: "Search"
+}
