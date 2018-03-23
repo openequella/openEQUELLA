@@ -97,17 +97,6 @@ type State eff = {
   saving :: Maybe (Fiber eff Unit)
 }
 
-
-rawStrings = Tuple "uiconfig" {
-  facet: {
-    name: "Name",
-    path: "Path",
-    title: "Search facets"
-  },
-  enableNew: "Enable new UI",
-  enableSearch: "Enable new search page"
-}
-
 initialState :: forall eff. State eff
 initialState = {disabled:true, saving:Nothing, settings:UISettings {newUI: NewUISettings {enabled:false, newSearch: false, facets:[]}}}
 
@@ -210,3 +199,21 @@ uiSettingsEditor = createFactory (withStyles styles $ createLifecycleComponent (
   eval (SetNewSearch v) = do
     modifyState $ set (_newUISettings <<< _newSearch) v
     save
+
+rawStrings :: Tuple String
+  { facet :: { name :: String
+             , path :: String
+             , title :: String
+             }
+  , enableNew :: String
+  , enableSearch :: String
+  }
+rawStrings = Tuple "uiconfig" {
+  facet: {
+    name: "Name",
+    path: "Path",
+    title: "Search facets"
+  },
+  enableNew: "Enable new UI",
+  enableSearch: "Enable new search page"
+}

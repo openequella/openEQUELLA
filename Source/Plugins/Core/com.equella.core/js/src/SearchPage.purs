@@ -2,25 +2,34 @@ module SearchPage where
 
 import Prelude
 
-import CheckList (checkList)
 import Control.Comonad (extract)
+import Control.Monad.Aff (Aff)
 import Control.Monad.Aff.Console (log)
+import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Now (now, nowDate)
-import Control.Monad.Eff.Uncurried (mkEffFn2)
 import Control.Monad.Eff.Unsafe (unsafePerformEff)
+import Control.Monad.Reader (ask)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
+import DOM.Event.EventTarget (addEventListener, eventListener)
+import DOM.Event.Types (Event, EventType(..))
+import DOM.HTML (window)
+import DOM.HTML.Document (body)
+import DOM.HTML.HTMLElement (offsetHeight)
+import DOM.HTML.Window (document, innerHeight, scrollY)
 import Data.Argonaut (class DecodeJson, decodeJson, (.?), (.??))
-import Data.Array (catMaybes, filter, findMap, fromFoldable, intercalate, length, mapMaybe, mapWithIndex, singleton)
+import Data.Array (catMaybes, filter, findMap, fromFoldable, intercalate, length, mapMaybe, mapWithIndex)
 import Data.DateTime (Date, DateTime(DateTime))
 import Data.DateTime.Instant (instant, toDateTime, unInstant)
-import Data.Either (either, fromRight)
+import Data.Either (Either, either, fromRight)
 import Data.Formatter.DateTime (Formatter, format, parseFormatString)
+import Data.Int (floor)
 import Data.JSDate (JSDate)
-import Data.Lens (Lens', _1, _2, over, set, (^.))
+import Data.Lens (Lens', _1, _2, _Just, addOver, appendOver, over, set, setJust)
+import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
-import Data.Maybe (Maybe(Just, Nothing), fromMaybe, maybe)
-import Data.Newtype (unwrap)
+import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, maybe)
+import Data.Newtype (class Newtype, unwrap)
 import Data.Set (isEmpty)
 import Data.Set as S
 import Data.StrMap (lookup)
@@ -29,33 +38,29 @@ import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
 import Data.Time.Duration (class Duration, Days(..), Milliseconds(..), fromDuration)
 import Data.Tuple (Tuple(..), fst)
-import DateUtils (dateToLocalJSDate, localJSToDate)
-import Dispatcher (DispatchEff(DispatchEff))
+import DateUtils (localJSToDate)
+import Dispatcher (DispatchEff(DispatchEff), fromContext)
 import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMount, getState, modifyState)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
 import Facet (facetDisplay)
-import MaterialUI.Button (fullWidth)
-import MaterialUI.Checkbox (CheckboxProps, checkbox)
 import MaterialUI.Chip (chip, onDelete)
 import MaterialUI.Colors (fade)
 import MaterialUI.Divider as C
 import MaterialUI.Icon (icon_)
 import MaterialUI.List (disablePadding, list, list_)
 import MaterialUI.ListItem (button, disableGutters, divider, listItem)
-import MaterialUI.ListItemText (ListItemTextProps, disableTypography, listItemText, primary, secondary)
+import MaterialUI.ListItemText (disableTypography, listItemText, primary, secondary)
 import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Paper (elevation, paper)
 import MaterialUI.PropTypes (handle)
-import MaterialUI.Properties (IProp, className, classes_, color, component, mkProp, style, variant)
-import MaterialUI.Select (autoWidth, select)
+import MaterialUI.Properties (className, classes_, color, component, mkProp, style, variant)
+import MaterialUI.Select (select)
 import MaterialUI.Styles (withStyles)
-import MaterialUI.SwitchBase (checked)
 import MaterialUI.TextField (label, value)
-import MaterialUI.TextStyle (subheading)
 import MaterialUI.TextStyle as TS
 import MaterialUI.Typography (textSecondary, typography)
-import MaterialUIPicker.DatePicker (datePicker, onChange)
-import Network.HTTP.Affjax (get)
+import MaterialUIPicker.DatePicker (onChange)
+import Network.HTTP.Affjax (AJAX, get)
 import Partial.Unsafe (unsafePartial)
 import QueryString (queryString)
 import React (ReactElement, createFactory)
@@ -74,42 +79,7 @@ newtype Result = Result {name::String, description:: Maybe String, modifiedDate:
     displayFields :: Array DisplayField, thumbnail::String, uuid::String, version::Int, attachments::Array Attachment}
 newtype SearchResults = SearchResults {start::Int, length::Int, available::Int, results::Array Result}
 
-instance attachDecode :: DecodeJson Attachment where
-  decodeJson v = do
-    o <- decodeJson v
-    links <- o .? "links"
-    thumbnailHref <- links .? "thumbnail"
-    pure $ Attachment {thumbnailHref}
-
-
-instance dfDecode :: DecodeJson DisplayField where
-  decodeJson v = do
-    o <- decodeJson v
-    name <- o .? "name"
-    html <- o .? "html"
-    pure $ DisplayField {name, html}
-
-instance rDecode :: DecodeJson Result where
-  decodeJson v = do
-    o <- decodeJson v
-    nameO <- o .?? "name"
-    description <- o .?? "description"
-    uuid <- o .? "uuid"
-    modifiedDate <- o .? "modifiedDate"
-    thumbnail <- o .? "thumbnail"
-    df <- o .?? "displayFields"
-    version <- o .? "version"
-    attachments <- o .? "attachments"
-    pure $ Result {uuid,version,name:fromMaybe uuid nameO, description, thumbnail, modifiedDate, displayFields:fromMaybe [] df, attachments}
-
-instance srDecode :: DecodeJson SearchResults where
-  decodeJson v = do
-    o <- decodeJson v
-    start <- o .? "start"
-    length <- o .? "length"
-    available <- o .? "available"
-    results <- o .? "results"
-    pure $ SearchResults {start,length,available,results}
+derive instance srNT :: Newtype SearchResults _
 
 type State = {
   searching :: Boolean,
@@ -125,6 +95,7 @@ type DateLens = Lens' State (Tuple Boolean Date)
 
 data Command = InitSearch | Search | QueryUpdate String | ToggledTerm String String 
   | SetDate DateLens JSDate | ToggleDate DateLens | SetLast Milliseconds
+  | Scrolled Event
 
 initialState :: State
 initialState = {searching:false, query:""
@@ -134,23 +105,6 @@ initialState = {searching:false, query:""
   , after:Tuple false currentDate
   , before:Tuple false currentDate
   , facetSettings: []}
-
-rawStrings = Tuple "searchpage" {
-  resultsAvailable: "results available",
-  modifiedDate: "Modified",
-  filterLast: {
-    name: "Resources modified within last:",
-    none: "None",
-    month: "Month",
-    year: "Year",
-    fiveyear: "Five years",
-    week: "Week",
-    day: "Day"
-  }
-}
-coreStrings = Tuple "com.equella.core.searching.search" {
-  title: "Search"
-}
 
 currentDate :: Date
 currentDate = unsafePerformEff $ extract <$> nowDate
@@ -166,6 +120,10 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
   _after :: DateLens
   _after = prop (SProxy :: SProxy "after")
   _modifiedLast = prop (SProxy :: SProxy "modifiedLast")
+  _searchResults = prop (SProxy :: SProxy "searchResults")
+  _results = prop (SProxy :: SProxy "results")
+  _length = prop (SProxy :: SProxy "length")
+
   string = prepLangStrings rawStrings
   coreString = prepLangStrings coreStrings
 
@@ -253,11 +211,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     }
   }
 
-  whereClause (Tuple node terms) | not isEmpty terms = Just $ "(" <> (joinWith " OR " $ clause <$> S.toUnfoldable terms) <> ")"
-    where clause term = "/xml" <> node <> " = " <> "'" <> term <> "'"
-  whereClause _ = Nothing
-
-  render s@{searchResults,query,facets,facetSettings} (ReactProps {classes}) (DispatchEff d) = 
+  render {modifiedLast,searchResults,query,facets,facetSettings} (ReactProps {classes}) (DispatchEff d) = 
       template {mainContent,titleExtra:Just searchBar, title: coreString.title}
     where
 
@@ -276,7 +230,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
 
     lastModifiedSelect = filterSection {name:string.filterLast.name} [ 
       select [ className classes.selectFilter,
-        value $ maybe 0.0 unwrap s.modifiedLast, 
+        value $ maybe 0.0 unwrap modifiedLast, 
         onChange $ handle $ d \e -> SetLast $ Milliseconds $ e.target.value
       ] $ (agoItem <$> agoEntries)
     ]
@@ -322,10 +276,10 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
             ]
           ]
           extraFields = (fieldDiv <$> displayFields) <> extraDeets
-          mainContent = D.div [ DP.className classes.searchResultContent ] $ firstThumb <>
+          itemContent = D.div [ DP.className classes.searchResultContent ] $ firstThumb <>
             [ D.div' $ fromFoldable (descMarkup <$> description) <> [ list [disablePadding true] extraFields ] ]
       in listItem [button true, divider showDivider] [
-          listItemText [ disableTypography true, primary titleLink, secondary mainContent ]
+          listItemText [ disableTypography true, primary titleLink, secondary itemContent ]
       ]
       where
       fieldDiv (DisplayField {name:n,html}) = listItem [classes_ {default: classes.displayNode}, disableGutters true] [
@@ -333,28 +287,25 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
         typography [component "div", color textSecondary] [ D.div [DP.dangerouslySetInnerHTML {__html: "\xa0-\xa0" <> html}] [] ]
       ]
 
+  modifySearchFlag searchFlag f = modifyState $ _{searching=searchFlag} <<< f
+  searchMore = do 
+    s <- getState
+    case s of 
+      {searching:false, searchResults:Just (SearchResults {start,length,available})} | start+length < available -> do 
+        modifySearchFlag true id
+        sr <- lift $ callSearch (start+length) s
+        let appendres (SearchResults newres) = 
+              modifySearchFlag false $ over (_searchResults <<< _Just <<< _Newtype) 
+                ((appendOver _results newres.results) <<< (addOver _length newres.length))
+        either (lift <<< log) appendres sr
+      _ -> pure unit
+    
+
   searchWith f = do
     s <- getState
-    modifyState $ (_ {searching=true} >>> f)
-    let 
-      {facets,query,before,after,modifiedLast} = f s
-      whereXpath = mapMaybe whereClause $ SM.toUnfoldable facets
-      beforeLast ms = 
-        let nowInst = unsafePerformEff now
-        in Tuple "modifiedAfter" $ format dateFormat $ toDateTime $ fromMaybe nowInst $ instant $ (unInstant nowInst) - ms
-      dateParam p (Tuple true d) = Just $ Tuple p $ format dateFormat (DateTime d bottom)
-      dateParam _ _ = Nothing
-    result <- lift $ get $ baseUrl <> "api/search?" <> (queryString $ [
-        Tuple "info" "basic,detail,attachment,display",
-        Tuple "q" query,        
-        Tuple "where" $ joinWith " AND " whereXpath
-      ] <> catMaybes [
-        beforeLast <$> modifiedLast,
-        dateParam "modifiedBefore" before,
-        dateParam "modifiedAfter" after
-      ]
-    )
-    either (lift <<< log) (\r -> modifyState _ {searchResults=Just r}) $ decodeJson result.response
+    modifySearchFlag true f
+    sr <- lift $ callSearch 0 (f s)
+    either (lift <<< log) (modifySearchFlag false <<< setJust _searchResults) $ sr
 
   toggleFacet node term facMap = SM.insert node (toggle $ fromMaybe S.empty $ SM.lookup node facMap) facMap
     where
@@ -362,8 +313,23 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
 
   eval InitSearch = do
     searchWith id
+    (DispatchEff d) <- ask >>= fromContext eval
+    liftEff $ do 
+      w <- window
+      addEventListener (EventType "scroll") (eventListener $ d \e -> Scrolled e) false (unsafeCoerce w)
     result <- lift $ get $ baseUrl <> "api/settings/ui"
-    either (lift <<< log) (\(UISettings {newUI:(NewUISettings {facets})}) -> modifyState _ {facetSettings= facets}) $ decodeJson result.response
+    either (lift <<< log) (\(UISettings {newUI:(NewUISettings {facets})}) -> 
+      modifyState _ {facetSettings= facets}) $ decodeJson result.response
+
+  eval (Scrolled e) = do
+    shouldScroll <- liftEff $ do 
+      w <- window
+      h <- innerHeight w
+      sY <- scrollY w
+      b <- document w >>= body 
+      oh <- unsafePartial $ offsetHeight $ fromJust b
+      pure $ h + sY >= (floor oh - 500) 
+    if shouldScroll then searchMore else pure unit
 
   eval (SetLast ms) = do 
     searchWith $ set (_modifiedLast) $ (guard $ unwrap ms > 0.0) $> ms
@@ -382,3 +348,99 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
   
   eval (ToggleDate l) = do
     searchWith $ over (l <<< _1) not
+
+callSearch :: forall e. Int -> State -> Aff (ajax :: AJAX |e) (Either String SearchResults)
+callSearch offset {facets,query,before,after,modifiedLast} = do
+  let
+    whereXpath = mapMaybe whereClause $ SM.toUnfoldable facets
+    beforeLast ms = 
+      let nowInst = unsafePerformEff now
+      in Tuple "modifiedAfter" $ format dateFormat $ toDateTime $ fromMaybe nowInst $ instant $ (unInstant nowInst) - ms
+    dateParam p (Tuple true d) = Just $ Tuple p $ format dateFormat (DateTime d bottom)
+    dateParam _ _ = Nothing
+  result <- get $ baseUrl <> "api/search?" <> (queryString $ [
+      Tuple "info" "basic,detail,attachment,display",
+      Tuple "q" query,        
+      Tuple "start" $ show offset,
+      Tuple "where" $ joinWith " AND " whereXpath
+    ] <> catMaybes [
+      beforeLast <$> modifiedLast,
+      dateParam "modifiedBefore" before,
+      dateParam "modifiedAfter" after
+    ]
+  )
+  pure $ decodeJson result.response
+
+whereClause :: Tuple String (S.Set String) -> Maybe String
+whereClause (Tuple node terms) | not isEmpty terms = Just $ "(" <> (joinWith " OR " $ clause <$> S.toUnfoldable terms) <> ")"
+  where clause term = "/xml" <> node <> " = " <> "'" <> term <> "'"
+whereClause _ = Nothing
+
+instance attachDecode :: DecodeJson Attachment where
+  decodeJson v = do
+    o <- decodeJson v
+    links <- o .? "links"
+    thumbnailHref <- links .? "thumbnail"
+    pure $ Attachment {thumbnailHref}
+
+
+instance dfDecode :: DecodeJson DisplayField where
+  decodeJson v = do
+    o <- decodeJson v
+    name <- o .? "name"
+    html <- o .? "html"
+    pure $ DisplayField {name, html}
+
+instance rDecode :: DecodeJson Result where
+  decodeJson v = do
+    o <- decodeJson v
+    nameO <- o .?? "name"
+    description <- o .?? "description"
+    uuid <- o .? "uuid"
+    modifiedDate <- o .? "modifiedDate"
+    thumbnail <- o .? "thumbnail"
+    df <- o .?? "displayFields"
+    version <- o .? "version"
+    attachments <- o .? "attachments"
+    pure $ Result {uuid,version,name:fromMaybe uuid nameO, description, thumbnail, modifiedDate, displayFields:fromMaybe [] df, attachments}
+
+instance srDecode :: DecodeJson SearchResults where
+  decodeJson v = do
+    o <- decodeJson v
+    start <- o .? "start"
+    length <- o .? "length"
+    available <- o .? "available"
+    results <- o .? "results"
+    pure $ SearchResults {start,length,available,results}
+
+rawStrings :: Tuple String
+  { resultsAvailable :: String
+  , modifiedDate :: String
+  , filterLast :: { name :: String
+                  , none :: String
+                  , month :: String
+                  , year :: String
+                  , fiveyear :: String
+                  , week :: String
+                  , day :: String
+                  }
+  }
+rawStrings = Tuple "searchpage" {
+  resultsAvailable: "results available",
+  modifiedDate: "Modified",
+  filterLast: {
+    name: "Resources modified within last:",
+    none: "None",
+    month: "Month",
+    year: "Year",
+    fiveyear: "Five years",
+    week: "Week",
+    day: "Day"
+  }
+}
+coreStrings :: Tuple String
+  { title :: String
+  }
+coreStrings = Tuple "com.equella.core.searching.search" {
+  title: "Search"
+}

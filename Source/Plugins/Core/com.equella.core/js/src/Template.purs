@@ -66,13 +66,6 @@ type State = {mobileOpen::Boolean, menuAnchor::Maybe HTMLElement}
 initialState :: State
 initialState = {mobileOpen:false, menuAnchor:Nothing}
 
-rawStrings = Tuple "template" {
-  menu: {
-    logout:"Logout",
-    prefs:"My preferences"
-  }
-}
-
 template :: {mainContent :: ReactElement, title::String, titleExtra::Maybe ReactElement} -> ReactElement
 template {mainContent,title,titleExtra} = template' {mainContent,title,titleExtra,menuExtra:[]}
 
@@ -208,5 +201,14 @@ renderReact divId main = do
 renderMain :: forall eff. ReactElement -> Eff (dom :: DOM, console::CONSOLE | eff) Unit
 renderMain = renderReact "mainDiv"
 
-
-
+rawStrings :: Tuple String
+  { menu :: { logout :: String
+            , prefs :: String
+            }
+  }
+rawStrings = Tuple "template" {
+  menu: {
+    logout:"Logout",
+    prefs:"My preferences"
+  }
+}

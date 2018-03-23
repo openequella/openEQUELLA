@@ -154,9 +154,9 @@ commandEval {commandUrl,updateUI} = eval
       case r of
         (NewUploadResponse {uploadUrl,id,name}) -> do
           fiber <- lift $ forkAff $ flip runReaderT this $ do
-            r <- lift $ responseJson $ postFile f uploadUrl 
+            postr <- lift $ responseJson $ postFile f uploadUrl 
                     (mkIOFn1 \e -> do runEval this (Progress id {length:e.total, finished:e.loaded}))
-            case r of
+            case postr of
               (AddEntries entries) -> do 
                 modifyState $ removeOne id <<< \s -> s {entries = s.entries <> (fileToEntry <$> entries), error=Nothing}
               (UpdateEntry entry) -> do
