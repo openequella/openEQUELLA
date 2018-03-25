@@ -1,10 +1,11 @@
 # Setting up a development environment
 
-Note:  There are a couple of changes to the build process, and some discussion on Scala / Java and the frontend that should be understood when working on Equella code - please take a look at this [Google Group thread](https://groups.google.com/a/apereo.org/forum/#!topic/equella-users/bLV_XXQFOTI) and this [issue ticket](https://github.com/equella/Equella/issues/437).  This page will be updated once the React UI code is a bit more solidified.
+Note: There are a couple of changes to the build process, and some discussion on Scala / Java and the frontend that should be understood when working on Equella code - please take a look at this [Google Group thread](https://groups.google.com/a/apereo.org/forum/#!topic/equella-users/bLV_XXQFOTI) and this [issue ticket](https://github.com/equella/Equella/issues/437). This page will be updated once the React UI code is a bit more solidified.
 
 ## IDE
-The source isn't tied to a particular IDE, so it should be buildable 
-with any IDE which has an SBT integration. Having said that IntelliJ is 
+
+The source isn't tied to a particular IDE, so it should be buildable
+with any IDE which has an SBT integration. Having said that IntelliJ is
 what most developers are using.
 
 ### IntelliJ - latest
@@ -13,15 +14,14 @@ Due to the enourmous number of projects, when importing into IntelliJ the requir
 
 You will also need to increase the default maximum memory allocation for SBT when doing the import: (`Build Tools -> SBT -> Maximum Heap size`). Currently 4096MB is recommended.
 
-If you get compile errors in the IDE, but standalone `sbt compile` works, do an sbt refresh from the IntelliJ `SBT 
-tool window`.
+If you get compile errors in the IDE, but standalone `sbt compile` works, do an sbt refresh from the IntelliJ `SBT tool window`.
 
 ### Eclipse - Scala IDE 4.6
 
-You must use the [sbteclipse](https://github.com/typesafehub/sbteclipse) plugin to write projects out Eclipse projects 
-and you must configure it with the following settings: 
+You must use the [sbteclipse](https://github.com/typesafehub/sbteclipse) plugin to write projects out Eclipse projects
+and you must configure it with the following settings:
 
-``` sbtshell
+```sbtshell
 import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 
 EclipseKeys.withBundledScalaContainers := false
@@ -40,7 +40,7 @@ sbt prepareDevConfig
 
 This will create a configuration in the `{Equella repo}/Dev/learningedge-config` folder which you can
 modify for your needs, in particular you will need to configure `hibernate.properties` to point to
-the database that you have created for EQUELLA. 
+the database that you have created for EQUELLA.
 
 The default admin url will be: `http://localhost:8080/`
 
@@ -48,7 +48,7 @@ The default admin url will be: `http://localhost:8080/`
 
 When running the server in dev mode, the server runner doesn't have access to the SBT build information, so it
 can't find the jar libraries which some of the plugins require, so an extra SBT task is required to copy the jars
-into a known location for the runner. This task is run by the `prepareDevConfig` task too. 
+into a known location for the runner. This task is run by the `prepareDevConfig` task too.
 
 ```bash
 ~$ sbt jpfWriteDevJars
@@ -56,8 +56,8 @@ into a known location for the runner. This task is run by the `prepareDevConfig`
 
 ### Running SBT task to generate non-java resources
 
-When you build EQUELLA from within IntelliJ, it will only compile Scala/Java sources and copy resources 
-from the resource folders, it won't run any of the scripts that generate resoureces 
+When you build EQUELLA from within IntelliJ, it will only compile Scala/Java sources and copy resources
+from the resource folders, it won't run any of the scripts that generate resoureces
 (such as compile code to Javascript), in order to do this you can run:
 
 ```bash
@@ -75,16 +75,16 @@ Ensure you have your `Dev/learningedge-config` setup.
 Alternatively you can run the server from your IDE by running the class:
 
 `com.tle.core.equella.runner.EQUELLAServer`
- 
-Inside the `Source/Server/equellaserver` project. 
 
-Ensure that your runner settings compiles the whole project before running: 
+Inside the `Source/Server/equellaserver` project.
 
-* IntelliJ - `Before Launch -> Build Project` 
+Ensure that your runner settings compiles the whole project before running:
+
+* IntelliJ - `Before Launch -> Build Project`
 
 ### Running the admin tool
 
-Ensure you have your server running and know it's 
+Ensure you have your server running and know it's
 
 ```bash
 ~$ sbt compile adminTool/run
@@ -94,19 +94,20 @@ or run `com.tle.client.harness.ClientLauncher` in the `Source/Server/adminTool` 
 
 ### Developing the JS code
 
-In the `Source/Plugins/Core/com.equella.core/js` directory you will find a yarn/npm 
-project which compiles Purescript/Typescript/Sass into JS and CSS. Currently there are number 
-of separate JS bundles which are generated and you could develope them easier by running a yarn 
+In the `Source/Plugins/Core/com.equella.core/js` directory you will find a yarn/npm
+project which compiles Purescript/Typescript/Sass into JS and CSS. Currently there are number
+of separate JS bundles which are generated and you could develope them easier by running a yarn
 "watched build" script. E.g. to develop the settings page:
 
 ```sh
 ~/Source/Plugins/Core/com.equella.core/js$ yarn run dev:settings
 ```
 
-This will build the javascript bundle to the correct location for running a dev EQUELLA and will 
+This will build the javascript bundle to the correct location for running a dev EQUELLA and will
 watch for source changes and re-build if required.
 
 ## SBT Notes
+
 The new build uses SBT (very flexible and has a large set of useful plugins available). You can customize pretty much any aspect of your build process using Scala scripts.
 
 Plugins are global to the build but can be turned on/off on a per project basis.
@@ -135,8 +136,7 @@ The root plugin manually defines the sub-project location and their inter-projec
 * `adminTool` - contains the admin console client launcher
 
 ### Misc
-if you get a deduplicate dependencies on commons logging, SLF4J has a moonlighting jar that 
-says it's commons logging.  Use the build.sbt directive of exclude dependencies like the 
+
+if you get a deduplicate dependencies on commons logging, SLF4J has a moonlighting jar that
+says it's commons logging. Use the build.sbt directive of exclude dependencies like the
 adminConsole does.
-
-
