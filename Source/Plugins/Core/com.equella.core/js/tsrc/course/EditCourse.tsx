@@ -1,77 +1,149 @@
 import * as React from 'react';
-import { Button, TextField, Stepper, Step, Drawer, Grid } from 'material-ui';
+import { Button, TextField, Grid } from 'material-ui';
 import { Course } from './CourseModel';
-import { saveCourse, searchCourses } from './actions';
+import { loadCourseWorker, saveCourseWorker, searchCoursesWorker } from './actions';
 import { CourseStoreState } from './CourseStore';
 import { connect, Dispatch } from 'react-redux';
 import { push } from 'react-router-redux'
 
+//import List, { ListItem, ListItemText } from 'material-ui/List';
+/*
+import { withStyles } from 'material-ui/styles';
+const styles = (theme: Theme) => ({
+    root: {
+      width: '100%',
+      maxWidth: 360,
+      backgroundColor: theme.palette.background.paper
+    }
+  });*/
 
-interface EditCoursesProps {
-    onSave: (course: Course) => void;
+interface EditCourseProps {
+    loadCourse: (uuid: string) => void;
+    saveCourse: (course: Course) => void;
     onCancel: () => void;
     course: Course;
     //fixme: remove
     doSearchAgain: (query?: string) => void;
+    //root: any;
 }
 
-class EditCourse extends React.Component<EditCoursesProps, object> {
+interface EditCourseState {
+    uuid?: string;
+    code?: string;
+    name?: string;
+    description?: string;
+    departmentName?: string;
+    citation?: string;
+    students?: number;
+    from?: string;
+    until?: string;
+    versionSelection?: string;
+    archived?: boolean;
+}
 
-    textName: HTMLInputElement;
-    textCode: HTMLInputElement;
+class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
+
+    constructor(props: EditCourseProps){
+        super(props);
+        var uuids = window.location.href.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+        if (uuids){
+            this.props.loadCourse(uuids[0]);
+        }
+
+        this.state = {
+            name: '',
+            code: '',
+            description: ''
+        };
+    }
+
+    componentWillReceiveProps(nextProps: EditCourseProps){
+        const course = nextProps.course;
+        if (course){
+            const { uuid, name, code, description, departmentName } = course;
+            this.setState({ uuid, name, code, description, departmentName });
+        }
+    }
 
     handleSave() {
-        let course = {
-            name: this.textName.value,
-            code: this.textCode.value
-        };
-        this.props.onSave(course);
-
-        //FIXME: can we listen to onSaved?
-        this.props.onCancel();
-
-        //FIXME: remove
-        this.props.doSearchAgain();
+        const { uuid, name, code, description } = this.state;
+        if (code){
+            let course = {
+                uuid,
+                name: name!,
+                code: code!,
+                description
+            };
+            this.props.saveCourse(course);
+        }
     }
 
     handleCancel() {
         this.props.onCancel();
     }
 
+    handleChange(stateFieldName: string): (event: React.ChangeEvent<any>) => void {
+        return (event: React.ChangeEvent<any>) => {
+            this.setState({ [stateFieldName]: event.target.value });
+        };        
+    }
+
     render() {
-        return <Drawer anchor="right" open>
-            <Grid> 
-            <Stepper>
+        const { code, name, description, departmentName } = this.state;
+        /*
+        <Stepper>
                 <Step title="Basic Details" active>
-                    Basic Details
+                    
                 </Step>
                 <Step title="Permissions">
-                        <div>TODO</div>
                 </Step>
-            </Stepper>
-
-            <div>
-                AAA
-            <TextField id="txtCode" 
+            </Stepper>*/
+        return             <Grid>
+                <div>
+                    <TextField id="code" 
                         label="Code" 
-                        helperText="Course code, e.g. EQ101" 
-                        inputRef={(input: any) => { this.textCode = input; }}
+                        helperText="Course code, e.g. EQ101"
+                        value={code}
+                        onChange={this.handleChange('code')}
                         fullWidth
-                        //required
+                        margin="normal"
+                        required
                             />
-                    <TextField id="txtName" 
+
+                    <TextField id="name" 
                         label="Name" 
                         helperText="Course name, e.g. Advanced EQUELLA studies"
-                        inputRef={(input: any) => { this.textName = input; }} 
+                        value={name}
+                        onChange={this.handleChange('name')}
                         fullWidth
-                        //required
+                        margin="normal"
+                        required
                         />
-                    
+
+                    <TextField id="description" 
+                        label="Description" 
+                        helperText="A brief description"
+                        value={description}
+                        onChange={this.handleChange('description')}
+                        fullWidth
+                        multiline
+                        rows={3}
+                        margin="normal"
+                        />
+
+                    <TextField id="departmentName" 
+                        label="Department Name" 
+                        //helperText=""
+                        value={departmentName}
+                        onChange={this.handleChange('departmentName')}
+                        fullWidth
+                        margin="normal"
+                        />
+
                     <Button color="primary" onClick={this.handleSave.bind(this)} variant="raised">Save</Button>
                     <Button onClick={this.handleCancel.bind(this)} variant="raised">Cancel</Button>
                 </div>
             </Grid>
-            </Drawer>
     }
 }
 
@@ -83,9 +155,10 @@ function mapStateToProps(state: CourseStoreState) {
 
 function mapDispatchToProps(dispatch: Dispatch<any>) {
     return {
-        onSave: (course: Course) => dispatch(saveCourse(course)),
+        loadCourse: (uuid: string) => loadCourseWorker(dispatch, {uuid}),
+        saveCourse: (course: Course) => saveCourseWorker(dispatch, {course}),
         onCancel: () => dispatch(push('/')),
-        doSearchAgain: (query?: string) => dispatch(searchCourses(query))
+        doSearchAgain: (query?: string) => searchCoursesWorker(dispatch, {query})
     };
 }
 

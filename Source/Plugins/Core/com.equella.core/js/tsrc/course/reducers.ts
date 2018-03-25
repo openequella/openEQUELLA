@@ -1,8 +1,8 @@
-import { combineReducers } from 'redux'
-import { CoursesAction, ReceiveCoursesAction } from './actions';
+import { searchCourses, loadCourse, saveCourse } from './actions';
 import { CourseStoreState } from './CourseStore';
-import { RECEIVE_COURSES } from './actions';
 import { Course } from './CourseModel';
+import { reducerWithInitialState } from "typescript-fsa-reducers";
+import * as API from '../api';
 
 let initialState: CourseStoreState = {
     query: '',
@@ -10,26 +10,41 @@ let initialState: CourseStoreState = {
     loading: false
 };
 
-// Pro tip! Although I don't think it's mentioned ANYWHERE,
-// the name of the reducer is the name of the state property it reduces to
-
-function courses(state: Course[] = initialState.courses, action: CoursesAction): Course[] {
-    switch (action.type){
-        case RECEIVE_COURSES:
-            let rcA = action as ReceiveCoursesAction;
-            return rcA.courses;
-        default:
-            return state;
-    }
+function transformApiCourse(course: API.Course): Course {
+    let { uuid, name, code, description, departmentName, citation, students,
+        from, until, versionSelection, archived } = course;
+    return {
+        uuid,
+        name,
+        code,
+        description,
+        departmentName,
+        citation,
+        students,
+        from,
+        until,
+        versionSelection,
+        archived
+    };
 }
 
-function query(state: string = initialState.query!, action: CoursesAction): string {
-    return action.query || '';
-}
-
-export const CourseReducer = combineReducers<CourseStoreState>(
-    { 
-        courses, 
-        query
-    }
-);
+export const CourseReducer = reducerWithInitialState(initialState)
+    .case(searchCourses.started, (state, data) => {
+        return state;
+    })
+    .case(searchCourses.done, (state, success) => {
+        return { ...state, courses: success.result.results.results.map(transformApiCourse) };
+    })
+    .case(loadCourse.started, (state, data) => {
+        return state;
+    })
+    .case(loadCourse.done, (state, success) => {
+        return { ...state, editingCourse: transformApiCourse(success.result.result) };
+    })
+    .case(saveCourse.started, (state, data) => {
+        return state;
+    })
+    .case(saveCourse.done, (state, success) => {
+        return state;
+    })
+    .build();

@@ -33,7 +33,6 @@
     "history": "^4.7.2",
     "material-ui": "1.0.0-beta.38",
     "material-ui-pickers": "^1.0.0-rc.3",
-    "psc-package": "^0.3.2-pre",
     "react": "^16.2.0",
     "react-beautiful-dnd": "^6.0.1",
     "react-dom": "^16.2.0",
@@ -47,7 +46,9 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
     "timeago-react": "^2.0.0",
-    "uuid": "^3.2.1"
+    "uuid": "^3.2.1",
+    "typescript-fsa": "^2.5.0",
+    "typescript-fsa-reducers": "^0.4.5"
   },
   "license": "Apache-2.0",
   "devDependencies": {

@@ -2,7 +2,6 @@ import { compose, createStore, applyMiddleware } from 'redux';
 import { CourseReducer } from './reducers';
 import thunkMiddleware from 'redux-thunk';
 import { createLogger } from 'redux-logger';
-import { fetchCourses } from './actions';
 import { Course } from './CourseModel';
 import history from '../history';
 import { routerReducer, routerMiddleware } from 'react-router-redux'
@@ -19,7 +18,7 @@ function reduceReducers(...reducers: any[]) {
         reducers.reduce(
             (p, r) => r(p, current),
             previous
-        );    
+        );
 }
 
 const loggerMiddleware = createLogger();
@@ -31,6 +30,6 @@ const CourseStore = createStore<CourseStoreState>(
                         composeEnhancers(applyMiddleware(thunkMiddleware, loggerMiddleware, historyMiddleware)
                     ));
 
-CourseStore.dispatch(fetchCourses as any);
+//CourseStore.dispatch(fetchCourses as any);
 
 export default CourseStore;
