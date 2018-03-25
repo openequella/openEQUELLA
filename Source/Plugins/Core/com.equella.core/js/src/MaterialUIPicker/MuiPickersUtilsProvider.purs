@@ -12,11 +12,11 @@ import Unsafe.Coerce (unsafeCoerce)
 type MuiPickersUtilsProviderPropsExt r = (
   utils :: Untyped {-Identifier:Utils-}
   | r
-) 
+)
 
 type MuiPickersUtilsProviderProps = MuiPickersUtilsProviderPropsExt (
 
-) 
+)
 
 
 utils :: forall r a. a -> IProp (utils :: Untyped | r)

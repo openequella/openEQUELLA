@@ -1,4 +1,4 @@
-module Control.Monad.IOEffFn where 
+module Control.Monad.IOEffFn where
 
 import Control.Monad.Aff (Fiber)
 import Control.Monad.Eff (Eff)
@@ -24,4 +24,3 @@ runIOFn2 (IOFn2 effFn2) = runEffFn2 effFn2
 
 runIOFiber :: forall e a. IOFiber a -> Fiber e a
 runIOFiber (IOFiber f) = f
-

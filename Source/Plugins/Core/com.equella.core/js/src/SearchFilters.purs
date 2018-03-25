@@ -1,4 +1,4 @@
-module SearchFilters where 
+module SearchFilters where
 
 import Prelude
 
@@ -13,11 +13,11 @@ import React.DOM.Props as DP
 
 filterSection :: {name::String} -> Array ReactElement -> ReactElement
 filterSection = createElement (withStyles styles $ createComponent {} render unit)
-  where 
+  where
   styles theme = {
     container: {
       padding: theme.spacing.unit
     }
   }
-  render _ (ReactProps {name,classes}) (ReactChildren c) = D.div [DP.className classes.container] $ 
+  render _ (ReactProps {name,classes}) (ReactChildren c) = D.div [DP.className classes.container] $
       (pure $ typography [variant subheading] [ D.text name ]) <> c

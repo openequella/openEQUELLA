@@ -1,4 +1,4 @@
-module Uploads.UploadModel where 
+module Uploads.UploadModel where
 
 import Prelude
 
@@ -32,7 +32,7 @@ import Network.HTTP.Affjax.Response (fromResponse)
 import React (ReactState, ReadWrite)
 import Unsafe.Coerce (unsafeCoerce)
 
-type EntryId = String 
+type EntryId = String
 
 data UploadCommand = NewUpload String Number | Delete EntryId
 data UploadResponse = NewUploadResponse {uploadUrl:: String, id:: EntryId, name:: String}
@@ -42,7 +42,7 @@ data UploadResponse = NewUploadResponse {uploadUrl:: String, id:: EntryId, name:
 type CurrentUpload = {id::String, name::String, length:: Number, finished:: Number, fiber :: IOFiber Unit }
 newtype FileElement = FileElement {id::EntryId, name::String, link::String, preview::Boolean, editable::Boolean, children::Array FileElement }
 
-derive instance feNT :: Newtype FileElement _ 
+derive instance feNT :: Newtype FileElement _
 
 type Progress = {loaded::Number, total::Number}
 foreign import postFile_ :: forall e. {file :: File, url::String, progress :: IOFn1 Progress Unit} -> (EffFnAff (ajax :: AJAX | e) (AffjaxResponse Foreign))
@@ -56,10 +56,10 @@ type State = {
   error :: Maybe String
 }
 
-fileToEntry :: FileElement -> Entry 
+fileToEntry :: FileElement -> Entry
 fileToEntry fe = Tuple ((unwrap fe).id) $ Left fe
 
-uploadToEntry :: CurrentUpload -> Entry 
+uploadToEntry :: CurrentUpload -> Entry
 uploadToEntry u = Tuple u.id $ Right u
 
 postFile :: forall e. File -> String -> IOFn1 Progress Unit -> Aff (ajax::AJAX|e) (AffjaxResponse Json)
@@ -116,12 +116,12 @@ type MyAff e = Aff (console :: CONSOLE, ajax :: AJAX, state :: ReactState ReadWr
 
 
 
-commandEval :: forall p e. { commandUrl :: String, updateUI :: Maybe (IOSync Unit) } -> Command -> ReactReaderT p State (MyAff e) Unit 
-commandEval {commandUrl,updateUI} = eval 
-  where 
-  responseJson a = (a >>= \res -> either (error >>> throwError) pure $ decodeJson res.response) 
+commandEval :: forall p e. { commandUrl :: String, updateUI :: Maybe (IOSync Unit) } -> Command -> ReactReaderT p State (MyAff e) Unit
+commandEval {commandUrl,updateUI} = eval
+  where
+  responseJson a = (a >>= \res -> either (error >>> throwError) pure $ decodeJson res.response)
     <|> (pure $ UploadFailed "FAILED")
-  
+
   runUpdate = liftEff $ runIOSync' $ fromMaybe (pure unit) updateUI
 
   runEval this c = runAff_ (either Eff.logShow pure) $ runReaderT (eval c) this
@@ -147,21 +147,21 @@ commandEval {commandUrl,updateUI} = eval
   eval (UploadFiles files) = do
     this <- ask
     lift $ parTraverse_ (uploadFile this) files
-    where 
+    where
     removeOne entryId = set (_entryForId entryId) Nothing
-    uploadFile this f = flip runReaderT this do 
+    uploadFile this f = flip runReaderT this do
       r <- lift $ responseJson $ post commandUrl $ encodeJson $ NewUpload (name f) (size f)
       case r of
         (NewUploadResponse {uploadUrl,id,name}) -> do
           fiber <- lift $ forkAff $ flip runReaderT this $ do
-            postr <- lift $ responseJson $ postFile f uploadUrl 
+            postr <- lift $ responseJson $ postFile f uploadUrl
                     (mkIOFn1 \e -> do runEval this (Progress id {length:e.total, finished:e.loaded}))
             case postr of
-              (AddEntries entries) -> do 
+              (AddEntries entries) -> do
                 modifyState $ removeOne id <<< \s -> s {entries = s.entries <> (fileToEntry <$> entries), error=Nothing}
               (UpdateEntry entry) -> do
                 modifyState $ (set (_entryForId id) $ Just $ fileToEntry entry) >>> _ {error=Nothing}
-              o -> do 
+              o -> do
                 modifyState $ removeOne id
                 errorResponse o
             runUpdate
@@ -170,9 +170,9 @@ commandEval {commandUrl,updateUI} = eval
           modifyState (\s -> s {entries = snoc s.entries $ uploadToEntry newUpload})
         o -> errorResponse o
 
-  eval (DeleteFile fileid) = do 
+  eval (DeleteFile fileid) = do
     r <- lift $ responseJson $ post commandUrl $ encodeJson $ Delete fileid
-    case r of 
+    case r of
       (RemoveEntries removed) -> do
         let remEntry (Tuple id o) | any (eq id) removed = Nothing
             remEntry (Tuple id (Left fe@(FileElement _))) = fileToEntry <$> remRecurse fe
@@ -188,5 +188,5 @@ commandEval {commandUrl,updateUI} = eval
 
 arrEq :: forall a. (a -> Boolean) -> Lens' (Array a) (Maybe a)
 arrEq f = lens (find f) alterIt
-  where 
+  where
     alterIt arr a = fromMaybe arr $ findIndex f arr >>= \i -> alterAt i (const a) arr

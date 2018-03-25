@@ -1,4 +1,4 @@
-module Routes where 
+module Routes where
 
 import Prelude
 
@@ -12,17 +12,17 @@ homeSlash :: Match Unit
 homeSlash = lit ""
 
 routeMatch :: Match Route
-routeMatch = 
+routeMatch =
     SearchPage <$ (lit "search") <|>
     SettingsPage <$ (lit "settings") <|>
     CourseEdit <$> (lit "course" *> str <* lit "edit") <|>
     CoursesPage <$ (lit "courses")
 
-routeHref :: Route -> String 
-routeHref = append "page.do" <<< routeHash 
+routeHref :: Route -> String
+routeHref = append "page.do" <<< routeHash
 
 routeHash :: Route -> String
-routeHash r = "#" <> ( case r of 
+routeHash r = "#" <> ( case r of
     SearchPage -> "search"
     SettingsPage -> "settings"
     CoursesPage -> "courses"

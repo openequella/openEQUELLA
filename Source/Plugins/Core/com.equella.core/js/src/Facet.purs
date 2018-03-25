@@ -70,7 +70,7 @@ facetDisplay = createFactory (createLifecycleComponent (do
   ]
     where
     renderResults (Just (FacetResults results)) = checkList {entries: result <$> results}
-      where 
+      where
       result (FacetResult {term,count}) = {
         checkProps : [checked $ member term selectedTerms, onChange $ (mkEffFn2 \e c -> onClickTerm term)],
         textProps : [primary term, secondary $ show count]

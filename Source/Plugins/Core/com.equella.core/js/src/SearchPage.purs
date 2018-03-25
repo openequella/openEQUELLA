@@ -86,14 +86,14 @@ type State = {
   query :: String,
   facetSettings :: Array FacetSetting,
   facets :: SM.StrMap (S.Set String),
-  searchResults :: Maybe SearchResults, 
+  searchResults :: Maybe SearchResults,
   modifiedLast :: Maybe Milliseconds,
   after :: Tuple Boolean Date,
   before :: Tuple Boolean Date
 }
 type DateLens = Lens' State (Tuple Boolean Date)
 
-data Command = InitSearch | Search | QueryUpdate String | ToggledTerm String String 
+data Command = InitSearch | Search | QueryUpdate String | ToggledTerm String String
   | SetDate DateLens JSDate | ToggleDate DateLens | SetLast Milliseconds
   | Scrolled Event
 
@@ -132,7 +132,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
 
   agoEntries = let s = string.filterLast in [
     (ago s.none (Milliseconds 0.0)) {emmed=true},
-    ago s.day (Days 1.0), 
+    ago s.day (Days 1.0),
     ago s.week (Days 7.0),
     ago s.month (Days 28.0),
     ago s.year (Days 365.0),
@@ -211,7 +211,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     }
   }
 
-  render {modifiedLast,searchResults,query,facets,facetSettings} (ReactProps {classes}) (DispatchEff d) = 
+  render {modifiedLast,searchResults,query,facets,facetSettings} (ReactProps {classes}) (DispatchEff d) =
       template {mainContent,titleExtra:Just searchBar, title: coreString.title}
     where
 
@@ -220,22 +220,22 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     queryWithout exclude = joinWith " AND " $ mapMaybe whereClause $ filter (fst >>> notEq exclude) $ SM.toUnfoldable facets
 
     mainContent = D.div [DP.className classes.layoutDiv] [
-      paper [className classes.results, elevation 4] $ 
+      paper [className classes.results, elevation 4] $
         renderResults searchResults,
-      paper [className classes.refinements, elevation 4] $ 
-        intercalate [C.divider []] $ 
-          (pure [ lastModifiedSelect ]) <> 
+      paper [className classes.refinements, elevation 4] $
+        intercalate [C.divider []] $
+          (pure [ lastModifiedSelect ]) <>
           (pure <<< makeFacet <$> facetSettings)
     ]
 
-    lastModifiedSelect = filterSection {name:string.filterLast.name} [ 
+    lastModifiedSelect = filterSection {name:string.filterLast.name} [
       select [ className classes.selectFilter,
-        value $ maybe 0.0 unwrap modifiedLast, 
+        value $ maybe 0.0 unwrap modifiedLast,
         onChange $ handle $ d \e -> SetLast $ Milliseconds $ e.target.value
       ] $ (agoItem <$> agoEntries)
     ]
       where
-      agoItem {name,emmed,duration:(Milliseconds ms)} = menuItem [mkProp "value" ms] $ 
+      agoItem {name,emmed,duration:(Milliseconds ms)} = menuItem [mkProp "value" ms] $
         (if emmed then pure <<< em' else id) [D.text name]
 
     facetChips = facetChip <$> (allVals =<< SM.toUnfoldable facets)
@@ -288,18 +288,18 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
       ]
 
   modifySearchFlag searchFlag f = modifyState $ _{searching=searchFlag} <<< f
-  searchMore = do 
+  searchMore = do
     s <- getState
-    case s of 
-      {searching:false, searchResults:Just (SearchResults {start,length,available})} | start+length < available -> do 
+    case s of
+      {searching:false, searchResults:Just (SearchResults {start,length,available})} | start+length < available -> do
         modifySearchFlag true id
         sr <- lift $ callSearch (start+length) s
-        let appendres (SearchResults newres) = 
-              modifySearchFlag false $ over (_searchResults <<< _Just <<< _Newtype) 
+        let appendres (SearchResults newres) =
+              modifySearchFlag false $ over (_searchResults <<< _Just <<< _Newtype)
                 ((appendOver _results newres.results) <<< (addOver _length newres.length))
         either (lift <<< log) appendres sr
       _ -> pure unit
-    
+
 
   searchWith f = do
     s <- getState
@@ -314,24 +314,24 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
   eval InitSearch = do
     searchWith id
     (DispatchEff d) <- ask >>= fromContext eval
-    liftEff $ do 
+    liftEff $ do
       w <- window
       addEventListener (EventType "scroll") (eventListener $ d \e -> Scrolled e) false (unsafeCoerce w)
     result <- lift $ get $ baseUrl <> "api/settings/ui"
-    either (lift <<< log) (\(UISettings {newUI:(NewUISettings {facets})}) -> 
+    either (lift <<< log) (\(UISettings {newUI:(NewUISettings {facets})}) ->
       modifyState _ {facetSettings= facets}) $ decodeJson result.response
 
   eval (Scrolled e) = do
-    shouldScroll <- liftEff $ do 
+    shouldScroll <- liftEff $ do
       w <- window
       h <- innerHeight w
       sY <- scrollY w
-      b <- document w >>= body 
+      b <- document w >>= body
       oh <- unsafePartial $ offsetHeight $ fromJust b
-      pure $ h + sY >= (floor oh - 500) 
+      pure $ h + sY >= (floor oh - 500)
     if shouldScroll then searchMore else pure unit
 
-  eval (SetLast ms) = do 
+  eval (SetLast ms) = do
     searchWith $ set (_modifiedLast) $ (guard $ unwrap ms > 0.0) $> ms
 
   eval (SetDate dl d) = do
@@ -345,7 +345,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
 
   eval (QueryUpdate q) = do
     searchWith _ {query=q}
-  
+
   eval (ToggleDate l) = do
     searchWith $ over (l <<< _1) not
 
@@ -353,14 +353,14 @@ callSearch :: forall e. Int -> State -> Aff (ajax :: AJAX |e) (Either String Sea
 callSearch offset {facets,query,before,after,modifiedLast} = do
   let
     whereXpath = mapMaybe whereClause $ SM.toUnfoldable facets
-    beforeLast ms = 
+    beforeLast ms =
       let nowInst = unsafePerformEff now
       in Tuple "modifiedAfter" $ format dateFormat $ toDateTime $ fromMaybe nowInst $ instant $ (unInstant nowInst) - ms
     dateParam p (Tuple true d) = Just $ Tuple p $ format dateFormat (DateTime d bottom)
     dateParam _ _ = Nothing
   result <- get $ baseUrl <> "api/search?" <> (queryString $ [
       Tuple "info" "basic,detail,attachment,display",
-      Tuple "q" query,        
+      Tuple "q" query,
       Tuple "start" $ show offset,
       Tuple "where" $ joinWith " AND " whereXpath
     ] <> catMaybes [

@@ -69,7 +69,7 @@ initialState = {mobileOpen:false, menuAnchor:Nothing}
 template :: {mainContent :: ReactElement, title::String, titleExtra::Maybe ReactElement} -> ReactElement
 template {mainContent,title,titleExtra} = template' {mainContent,title,titleExtra,menuExtra:[]}
 
-template' :: {mainContent :: ReactElement, title::String, titleExtra::Maybe ReactElement, 
+template' :: {mainContent :: ReactElement, title::String, titleExtra::Maybe ReactElement,
   menuExtra::Array ReactElement} -> ReactElement
 template' = createFactory (withStyles ourStyles (createComponent initialState render (effEval eval)))
   where
@@ -137,7 +137,7 @@ template' = createFactory (withStyles ourStyles (createComponent initialState re
   eval ToggleMenu = modifyState \(s :: State) -> s {mobileOpen = not s.mobileOpen}
   eval (UserMenuAnchor el) = modifyState \(s :: State) -> s {menuAnchor = el}
 
-  render {mobileOpen,menuAnchor} (ReactProps {classes,mainContent,title:titleText,titleExtra,menuExtra}) 
+  render {mobileOpen,menuAnchor} (ReactProps {classes,mainContent,title:titleText,titleExtra,menuExtra})
     (DispatchEff d) = muiPickersUtilsProvider [utils dateFnsUtils] [
     D.div [DP.className classes.root] [
       cssBaseline_ [],

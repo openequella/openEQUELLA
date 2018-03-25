@@ -24,11 +24,11 @@ type DatePickerPropsExt r = (
   utils :: Untyped {-Identifier:Utils-},
   shouldDisableDate :: Untyped {-unknownType:FunctionType-}
   | r
-) 
+)
 
 type DatePickerProps = DatePickerPropsExt (
 
-) 
+)
 
 
 date :: forall r a. a -> IProp (date :: Untyped | r)
@@ -77,4 +77,3 @@ datePickerU = createElement datePickerClass
 
 datePicker :: Array (IProp DatePickerProps) -> ReactElement
 datePicker = mkPropRecord >>> datePickerU >>> (#) []
-

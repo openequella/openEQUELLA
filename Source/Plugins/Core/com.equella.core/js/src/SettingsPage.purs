@@ -71,7 +71,7 @@ settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didM
   ]
 
   string = prepLangStrings rawStrings
-  coreString = prepLangStrings coreStrings 
+  coreString = prepLangStrings coreStrings
 
   styles theme = {
     heading: {
