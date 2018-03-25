@@ -1,4 +1,4 @@
-module MaterialUIPicker.DateFns where 
+module MaterialUIPicker.DateFns where
 
 import MaterialUI.PropTypes (Untyped)
 

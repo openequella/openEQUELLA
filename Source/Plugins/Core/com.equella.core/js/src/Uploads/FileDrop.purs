@@ -1,4 +1,4 @@
-module Uploads.FileDrop where 
+module Uploads.FileDrop where
 
 import Prelude hiding (div)
 
@@ -11,7 +11,7 @@ import Data.Maybe (maybe)
 import React (ReactElement, createClass, createFactory, getProps, preventDefault, readRef, spec, stopPropagation, writeRef)
 import React.DOM (button, div, input, span, text)
 import React.DOM.Props (Props, _id, _type, className, multiple, onChange, onClick, onDragEnter, onDragLeave, onDragOver, onDrop, style, withRef)
- 
+
 import Unsafe.Coerce (unsafeCoerce)
 
 invisibleFile :: String -> IOSync Unit -> Array Props -> ReactElement
@@ -26,11 +26,11 @@ customFile i doClick p = div [ className "customfile focus", onClick \_ -> runIO
 
 fileDrop :: {fileInput::IOSync Unit -> Array Props -> ReactElement, dropText::String, onFiles :: Array File -> IOSync Unit } -> ReactElement
 fileDrop = createFactory $ createClass $ spec {} \this -> render this <$> getProps this
-  where 
+  where
   render this {fileInput,dropText,onFiles} = [
-    fileInput (liftEff clickFile) [ 
-      withRef $ writeRef this "file", _type "file", multiple true, 
-      onChange $ \ev -> runIOSync' $ do 
+    fileInput (liftEff clickFile) [
+      withRef $ writeRef this "file", _type "file", multiple true,
+      onChange $ \ev -> runIOSync' $ do
         let elem = (unsafeCoerce ev).target
         onFiles (unsafeCoerce elem).files
         liftEff $ setValue "" elem
@@ -39,12 +39,11 @@ fileDrop = createFactory $ createClass $ spec {} \this -> render this <$> getPro
         ((#) stopBoth <$> [onDragEnter, onDragOver, onDragLeave ]))
       [text dropText]
   ]
-    where 
+    where
       clickFile = do
         r <- readRef this "file"
         maybe (pure unit) click (unsafeCoerce <$> r)
       stopBoth = stopPropagation *> preventDefault
-      dropFiles e = do 
+      dropFiles e = do
         stopBoth e
         runIOSync' $ onFiles (unsafeCoerce e).dataTransfer.files
-

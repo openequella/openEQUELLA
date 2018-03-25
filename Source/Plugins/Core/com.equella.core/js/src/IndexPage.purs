@@ -1,4 +1,4 @@
-module IndexPage where 
+module IndexPage where
 
 import Prelude
 
@@ -41,28 +41,28 @@ main = do
   w <- window
   l <- location w
   p <- pathname l
-  let 
-    pagePath = fromMaybe "" do 
+  let
+    pagePath = fromMaybe "" do
         bp <- basePath
         stripPrefix (Pattern bp) p
-    initialRoute = case pagePath of 
+    initialRoute = case pagePath of
         "access/settings.do" -> Just SettingsPage
         _ -> Nothing
     renderRoot = createFactory
           (createLifecycleComponent (didMount Init) {route:initialRoute} render (effEval eval) ) {}
-      where 
-      render {route:Just r} = case r of 
+      where
+      render {route:Just r} = case r of
         SearchPage -> searchPage
         SettingsPage -> settingsPage {legacyMode:false}
         CoursesPage -> coursesPage (routeHref <<< CourseEdit)
         CourseEdit cid -> courseEdit cid
       render _ = maybe (div' []) legacy $ toMaybe renderData.html
-      eval Init = do 
+      eval Init = do
         this <- ask
         _ <- liftEff $ matches routeMatch (\_ r -> runReaderT (eval $ ChangeRoute r) this)
         pure unit
       eval (ChangeRoute r) = modifyState _ {route=Just r}
 
-  if renderData.newUI 
-    then renderMain renderRoot 
+  if renderData.newUI
+    then renderMain renderRoot
     else renderReact "settingsPage" $ settingsPage {legacyMode:true}
