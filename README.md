@@ -4,7 +4,7 @@
 
 More in-depth documentation can be found in [Docs](https://equella.github.io/) repo.
 
-If you would like to contribute to EQUELLA please setup a [development environment](Developers.md).
+If you would like to contribute to EQUELLA please setup a [development environment](CONTRIBUTING.md).
 
 # Building EQUELLA from source
 
