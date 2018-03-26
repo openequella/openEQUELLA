@@ -25,9 +25,10 @@ import LegacyPage (legacy)
 import Partial.Unsafe (unsafePartial)
 import React (createFactory)
 import React.DOM (div')
-import Routes (Route(CourseEdit, CoursesPage, SettingsPage, SearchPage), matchRoute, nav, routeHref)
+import Routes (Route(..), matchRoute, nav, routeHref)
 import Routing.PushState (matchesWith)
 import SearchPage (searchPage)
+import Security.ACLEditor (testEditor)
 import SettingsPage (settingsPage)
 import TSComponents (courseEdit, coursesPage)
 import Template (renderData, renderMain, renderReact)
@@ -58,6 +59,7 @@ main = do
         SettingsPage -> settingsPage {legacyMode:false}
         CoursesPage -> coursesPage routeHref
         CourseEdit cid -> courseEdit cid
+        TestACLS -> testEditor
       render _ = maybe (div' []) legacy $ toMaybe renderData.html
 
       eval Init = do 

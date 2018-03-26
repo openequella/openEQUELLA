@@ -25,8 +25,10 @@ import com.tle.core.institution.InstitutionService;
 import com.tle.core.search.service.impl.SearchPrivilegeTreeProvider;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.user.UserPreferenceService;
+import com.tle.core.services.user.UserService;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.core.settings.service.ConfigurationService;
+import com.tle.web.api.usermanagement.UserManagementResourceImpl;
 import com.tle.web.contentrestrictions.ContentRestrictionsPrivilegeTreeProvider;
 import com.tle.web.coursedefaults.CourseDefaultsSettingsPrivilegeTreeProvider;
 import com.tle.web.customdateformat.DateFormatSettingsPrivilegeTreeProvider;
@@ -135,6 +137,9 @@ public class LegacyGuice extends AbstractModule {
 
     @Inject
     public static UserPreferenceService userPreferenceService;
+
+    @Inject
+    public static UserService userService;
 
     @Inject
     public static LanguageService languageService;

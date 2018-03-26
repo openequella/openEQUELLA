@@ -8,7 +8,6 @@ import Control.Monad.IOEffFn (IOFn1, mkIOFn1)
 import Data.Either (either)
 import Data.Foreign (toForeign)
 import Data.Maybe (Maybe(..))
-import Debug.Trace (spy)
 import MaterialUI.Event (Event)
 import React (preventDefault)
 import Routing (match)
@@ -20,7 +19,8 @@ import Unsafe.Coerce (unsafeCoerce)
 data Route = SearchPage | 
     SettingsPage | 
     CoursesPage | 
-    CourseEdit String
+    CourseEdit String | 
+    TestACLS
 
 nav :: forall eff. PushStateInterface (PushStateEffects eff)
 nav = unsafePerformEff makeInterface
@@ -33,6 +33,7 @@ routeMatch =
     SearchPage <$ (lit "search") <|>
     SettingsPage <$ (lit "settings") <|>
     CourseEdit <$> (lit "course" *> str <* lit "edit") <|>
+    TestACLS <$ (lit "testacls") <|>
     CoursesPage <$ (lit "courses")
 
 matchRoute :: String -> Maybe Route 
@@ -51,4 +52,5 @@ routeHash r = "/" <> ( case r of
     SettingsPage -> "settings"
     CoursesPage -> "courses"
     CourseEdit cid -> "course/" <> cid <> "/edit"
+    TestACLS -> "testacls"
   )
