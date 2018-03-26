@@ -67,7 +67,7 @@ public class SettingsMenuContributor implements MenuContributor
 			HtmlLinkState hls = new HtmlLinkState(SettingsUtils.getBookmark(info));
 			hls.setLabel(LABEL_KEY);
 
-			MenuContribution mc = new MenuContribution(hls, ICON_PATH, 30, 30, "settings");
+			MenuContribution mc = new MenuContribution(hls, ICON_PATH, 30, 30, "settings", "settings");
 			mcs.add(mc);
 		}
 

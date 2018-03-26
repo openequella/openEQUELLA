@@ -14,11 +14,10 @@ import Data.Either (fromRight)
 import Data.Lens ((^.))
 import Data.Maybe (Maybe(..), fromJust, fromMaybe, maybe)
 import Data.Nullable (toMaybe)
-import Data.String (Pattern(..), stripPrefix)
+import Data.String (Pattern(Pattern), stripPrefix)
 import Data.URI.AbsoluteURI (_path)
 import Data.URI.Path (printPath)
 import Data.URI.URI (_hierPart, parse)
-import Debug.Trace (spy)
 import Dispatcher (DispatchEff(..), effEval, fromContext)
 import Dispatcher.React (createLifecycleComponent, didMount, modifyState)
 import EQUELLA.Environment (baseUrl)
@@ -47,7 +46,7 @@ main = do
     parseIt m = stripPrefix (Pattern $ basePath <> "page/") m >>= matchRoute
     
     initialRoute = case pagePath of 
-        "access/settings.do" -> Just SettingsPage
+        "access/settings.do" -> Just SettingsPage        
         _ -> Nothing
 
     renderRoot = createFactory
@@ -65,7 +64,7 @@ main = do
         (DispatchEff d) <- ask >>= fromContext eval
         _ <- liftEff $ matchesWith parseIt (\_ -> d ChangeRoute) nav
         pure unit
-      eval (ChangeRoute r) = modifyState _ {route=Just (spy r)}
+      eval (ChangeRoute r) = modifyState _ {route=Just r}
 
   if renderData.newUI 
     then renderMain renderRoot 

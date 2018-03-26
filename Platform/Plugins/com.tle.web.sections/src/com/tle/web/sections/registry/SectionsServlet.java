@@ -58,7 +58,7 @@ public class SectionsServlet extends HttpServlet
 		IOException
 	{
 		MutableSectionInfo sectionInfo = null;
-		String servletPath = request.getServletPath();
+		String servletPath = getServletPath(request);
 		SectionTree tree = lookupTree(request);
 		if( tree == null )
 		{
@@ -73,6 +73,11 @@ public class SectionsServlet extends HttpServlet
 				sectionsController.execute(sectionInfo);
 			}
 		}
+	}
+
+	protected String getServletPath(HttpServletRequest request)
+	{
+		return request.getServletPath();
 	}
 
 	protected SectionTree lookupTree(HttpServletRequest request)

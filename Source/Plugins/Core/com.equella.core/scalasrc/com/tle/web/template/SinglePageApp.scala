@@ -22,7 +22,7 @@ import com.tle.web.sections.equella.AbstractScalaSection
 import com.tle.web.sections.events.RenderEventContext
 import com.tle.web.sections.registry.SectionsServlet
 import com.tle.web.sections.render.{HtmlRenderer, SimpleSectionResult, TextLabel}
-import com.tle.web.sections.{SectionInfo, SectionResult, SectionTree}
+import com.tle.web.sections.{PublicBookmarkFactory, SectionInfo, SectionResult, SectionTree}
 import javax.servlet.http.HttpServletRequest
 
 @Bind
@@ -31,6 +31,10 @@ class SinglePageAppServlet extends SectionsServlet
   val tree = LegacyGuice.treeRegistry.getTreeForPath("/newpage.do")
 
   override def lookupTree(request: HttpServletRequest): SectionTree = tree
+
+  override def getServletPath(request: HttpServletRequest): String = {
+    request.getServletPath + request.getPathInfo
+  }
 }
 
 @Bind

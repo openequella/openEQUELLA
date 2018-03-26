@@ -13,7 +13,7 @@ import DOM.HTML.Window (document)
 import DOM.Node.NonElementParentNode (getElementById)
 import DOM.Node.Types (ElementId(ElementId), documentToNonElementParentNode)
 import Data.Array (catMaybes, intercalate)
-import Data.Maybe (Maybe(..), fromJust, fromMaybe, isJust)
+import Data.Maybe (Maybe(..), fromJust, fromMaybe, isJust, isNothing)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.StrMap as M
 import Data.Tuple (Tuple(..))
@@ -75,6 +75,7 @@ template' :: {mainContent :: ReactElement, title::String, titleExtra::Maybe Reac
   menuExtra::Array ReactElement} -> ReactElement
 template' = createFactory (withStyles ourStyles (createComponent initialState render (effEval eval)))
   where
+  newPage = isNothing $ toMaybe renderData.html
   strings = prepLangStrings rawStrings
   drawerWidth = 240
   ourStyles theme = {
@@ -137,7 +138,7 @@ template' = createFactory (withStyles ourStyles (createComponent initialState re
     ]
     where 
       linkProps = case routeHref <$> (toMaybe route >>= matchRoute) of
-        (Just {href:hr,onClick:oc}) -> [mkProp "href" hr, onClick $ handle $ runIOFn1 oc]
+        (Just {href:hr,onClick:oc}) | newPage -> [mkProp "href" hr, onClick $ handle $ runIOFn1 oc]
         _ -> [ mkProp "href" href ]
 
 
