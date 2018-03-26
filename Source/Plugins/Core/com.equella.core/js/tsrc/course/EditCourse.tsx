@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, TextField, Grid } from 'material-ui';
-import { Course } from './CourseModel';
+import { Course } from '../api';
 import { loadCourseWorker, saveCourseWorker, searchCoursesWorker } from './actions';
 import { CourseStoreState } from './CourseStore';
 import { connect, Dispatch } from 'react-redux';

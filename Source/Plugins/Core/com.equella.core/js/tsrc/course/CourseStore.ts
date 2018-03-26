@@ -2,7 +2,7 @@ import { compose, createStore, applyMiddleware } from 'redux';
 import { CourseReducer } from './reducers';
 import thunkMiddleware from 'redux-thunk';
 import { createLogger } from 'redux-logger';
-import { Course } from './CourseModel';
+import { Course } from '../api';
 import history from '../history';
 import { routerReducer, routerMiddleware } from 'react-router-redux'
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, TextField } from 'material-ui';
-import { Course } from './CourseModel';
+import { Course } from '../api';
 import * as actions from './actions';
 import { Routes, Route } from '../api/routes';
 import { CourseStoreState } from './CourseStore';
