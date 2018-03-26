@@ -2,12 +2,13 @@ import * as React from 'react';
 import { Button, TextField } from 'material-ui';
 import { Course } from './CourseModel';
 import * as actions from './actions';
+import { Routes, Route } from '../api/routes';
 import { CourseStoreState } from './CourseStore';
 import { connect, Dispatch } from 'react-redux';
 
 interface SearchCourse {
     onSearch: (query?: string) => void;
-    editHref: (courseid?: string) => string;
+    routes: (route: Route) => {href:string, onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void };
     query?: string;
     courses: Course[];
 }
@@ -29,8 +30,9 @@ class SearchCourse extends React.Component<SearchCourse, object> {
                 </div>
                 {
                     (this.props.courses ?
-                        this.props.courses.map((course) => (
-                            <a key={course.uuid} href={this.props.editHref(course.uuid)}>
+                        this.props.courses.map((course) => (                            
+                            <a key={course.uuid} href={this.props.routes(Routes.CourseEdit.create(course.uuid)).href} onClick={
+                                this.props.routes(Routes.CourseEdit.create(course.uuid)).onClick}>
                                 <div>
                                     <h2>{course.name}</h2>
                                     {course.code}

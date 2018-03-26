@@ -4,6 +4,7 @@ import Prelude
 
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE)
+import Control.Monad.IOEffFn (runIOFn1)
 import Control.MonadZero (guard)
 import DOM (DOM)
 import DOM.HTML (window)
@@ -51,8 +52,9 @@ import React (ReactElement, createFactory)
 import React.DOM as D
 import React.DOM.Props as DP
 import ReactDOM (render)
+import Routes (matchRoute, routeHref)
 
-newtype MenuItem = MenuItem {href::String, title::String, systemIcon::Nullable String}
+newtype MenuItem = MenuItem {href::String, title::String, systemIcon::Nullable String, route:: Nullable String}
 
 data Command = ToggleMenu | UserMenuAnchor (Maybe HTMLElement)
 
@@ -128,10 +130,15 @@ template' = createFactory (withStyles ourStyles (createComponent initialState re
     }
   }
 
-  navItem (MenuItem {title,href,systemIcon}) = listItem [mkProp "href" href, button true, component "a"] [
+  navItem (MenuItem {title,href,systemIcon,route}) = listItem (linkProps <> [button true, component "a" ])
+    [
       listItemIcon_ [icon [ color C.inherit ] [ D.text $ fromMaybe "folder" $ toMaybe systemIcon ] ],
       listItemText [primary title]
     ]
+    where 
+      linkProps = case routeHref <$> (toMaybe route >>= matchRoute) of
+        (Just {href:hr,onClick:oc}) -> [mkProp "href" hr, onClick $ handle $ runIOFn1 oc]
+        _ -> [ mkProp "href" href ]
 
 
   eval ToggleMenu = modifyState \(s :: State) -> s {mobileOpen = not s.mobileOpen}

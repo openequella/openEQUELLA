@@ -58,17 +58,8 @@ public class SectionsServlet extends HttpServlet
 		IOException
 	{
 		MutableSectionInfo sectionInfo = null;
-		String path = treepath;
 		String servletPath = request.getServletPath();
-		if( request.getParameter("$RESET$") != null ) //$NON-NLS-1$
-		{
-			treeRegistry.clearAll();
-		}
-		if( path == null )
-		{
-			path = servletPath;
-		}
-		SectionTree tree = treeRegistry.getTreeForPath(path, true);
+		SectionTree tree = lookupTree(request);
 		if( tree == null )
 		{
 			response.sendError(404);
@@ -82,6 +73,21 @@ public class SectionsServlet extends HttpServlet
 				sectionsController.execute(sectionInfo);
 			}
 		}
+	}
+
+	protected SectionTree lookupTree(HttpServletRequest request)
+	{
+		String path = treepath;
+		String servletPath = request.getServletPath();
+		if( request.getParameter("$RESET$") != null ) //$NON-NLS-1$
+		{
+			treeRegistry.clearAll();
+		}
+		if( path == null )
+		{
+			path = servletPath;
+		}
+		return treeRegistry.getTreeForPath(path, true);
 	}
 
 	protected Map<Object, Object> defaultAttributes()

@@ -5,28 +5,29 @@ import Prelude
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Console (CONSOLE)
-import Control.Monad.Reader (ask, runReaderT)
+import Control.Monad.Reader (ask)
 import DOM (DOM)
 import DOM.HTML (window)
 import DOM.HTML.Location (pathname)
 import DOM.HTML.Window (location)
 import Data.Either (fromRight)
 import Data.Lens ((^.))
-import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Maybe (Maybe(..), fromJust, fromMaybe, maybe)
 import Data.Nullable (toMaybe)
 import Data.String (Pattern(..), stripPrefix)
 import Data.URI.AbsoluteURI (_path)
 import Data.URI.Path (printPath)
 import Data.URI.URI (_hierPart, parse)
-import Dispatcher (effEval)
+import Debug.Trace (spy)
+import Dispatcher (DispatchEff(..), effEval, fromContext)
 import Dispatcher.React (createLifecycleComponent, didMount, modifyState)
 import EQUELLA.Environment (baseUrl)
 import LegacyPage (legacy)
 import Partial.Unsafe (unsafePartial)
 import React (createFactory)
 import React.DOM (div')
-import Routes (Route(CourseEdit, CoursesPage, SettingsPage, SearchPage), routeHref, routeMatch)
-import Routing.Hash (matches)
+import Routes (Route(CourseEdit, CoursesPage, SettingsPage, SearchPage), matchRoute, nav, routeHref)
+import Routing.PushState (matchesWith)
 import SearchPage (searchPage)
 import SettingsPage (settingsPage)
 import TSComponents (courseEdit, coursesPage)
@@ -37,31 +38,34 @@ type State = {route::Maybe Route}
 
 main :: forall eff. Eff (dom :: DOM, console::CONSOLE | eff) Unit
 main = do
-  let basePath = printPath <$> (unsafePartial $ fromRight (parse baseUrl) ^. (_hierPart <<< _path))
+  let basePath = unsafePartial $ fromJust $ printPath <$> (fromRight (parse baseUrl) ^. (_hierPart <<< _path))
   w <- window
   l <- location w
   p <- pathname l
   let 
-    pagePath = fromMaybe "" do 
-        bp <- basePath
-        stripPrefix (Pattern bp) p
+    pagePath = fromMaybe "" $ stripPrefix (Pattern basePath) p
+    parseIt m = stripPrefix (Pattern $ basePath <> "page/") m >>= matchRoute
+    
     initialRoute = case pagePath of 
         "access/settings.do" -> Just SettingsPage
         _ -> Nothing
+
     renderRoot = createFactory
           (createLifecycleComponent (didMount Init) {route:initialRoute} render (effEval eval) ) {}
       where 
+      
       render {route:Just r} = case r of 
         SearchPage -> searchPage
         SettingsPage -> settingsPage {legacyMode:false}
-        CoursesPage -> coursesPage (routeHref <<< CourseEdit)
+        CoursesPage -> coursesPage routeHref
         CourseEdit cid -> courseEdit cid
       render _ = maybe (div' []) legacy $ toMaybe renderData.html
+
       eval Init = do 
-        this <- ask
-        _ <- liftEff $ matches routeMatch (\_ r -> runReaderT (eval $ ChangeRoute r) this)
+        (DispatchEff d) <- ask >>= fromContext eval
+        _ <- liftEff $ matchesWith parseIt (\_ -> d ChangeRoute) nav
         pure unit
-      eval (ChangeRoute r) = modifyState _ {route=Just r}
+      eval (ChangeRoute r) = modifyState _ {route=Just (spy r)}
 
   if renderData.newUI 
     then renderMain renderRoot 

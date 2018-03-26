@@ -34,19 +34,32 @@ public interface MenuContributor
 		private final int groupPriority;
 		private final int linkPriority;
 		private final String systemIcon;
+		private final String route;
 
-		public MenuContribution(HtmlLinkState link, String backgroundImage, int groupPriority, int linkPriority, String systemIcon)
+		public MenuContribution(HtmlLinkState link, String backgroundImage, int groupPriority, int linkPriority, String systemIcon,
+								String route)
 		{
 			this.link = link;
 			this.backgroundImagePath = backgroundImage;
 			this.groupPriority = groupPriority;
 			this.linkPriority = linkPriority;
 			this.systemIcon = systemIcon;
+			this.route = route;
+		}
+
+		public MenuContribution(HtmlLinkState link, String backgroundImage, int groupPriority, int linkPriority, String systemIcon)
+		{
+			this(link, backgroundImage, groupPriority, linkPriority, systemIcon, null);
 		}
 
 		public MenuContribution(HtmlLinkState link, String backgroundImage, int groupPriority, int linkPriority)
 		{
-			this(link, backgroundImage, groupPriority, linkPriority, null);
+			this(link, backgroundImage, groupPriority, linkPriority, null, null);
+		}
+
+		public String getRoute()
+		{
+			return route;
 		}
 
 		public HtmlLinkState getLink()

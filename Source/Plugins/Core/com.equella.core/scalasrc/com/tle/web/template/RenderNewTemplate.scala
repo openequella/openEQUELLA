@@ -147,7 +147,7 @@ object RenderNewTemplate {
             val menuLink = mc.getLink
             val href = Option(menuLink.getBookmark).getOrElse(
               new BookmarkAndModify(context, menuLink.getHandlerMap.getHandler("click").getModifier)).getHref
-            new ObjectExpression("title", menuLink.getLabelText, "href", href, "systemIcon", mc.getSystemIcon)
+            new ObjectExpression("title", menuLink.getLabelText, "href", href, "systemIcon", mc.getSystemIcon, "route", mc.getRoute)
           }.asJava
           new ArrayExpression(menuLinks)
       }

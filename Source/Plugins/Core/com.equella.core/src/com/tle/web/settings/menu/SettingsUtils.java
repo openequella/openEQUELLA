@@ -31,7 +31,7 @@ public final class SettingsUtils
 		SettingsUtils.class).key("breadcrumb"));
 
 	private static final SimpleBookmark SETTINGS_BOOKMARK = new SimpleBookmark("access/settings.do");
-	private static final SimpleBookmark NEW_SETTINGS_BOOKMARK = new SimpleBookmark("page.do#settings");
+	private static final SimpleBookmark NEW_SETTINGS_BOOKMARK = new SimpleBookmark("page/settings");
 
 	private static final KeyLabel BREADCRUMB_TITLE = new KeyLabel(ResourcesService.getResourceHelper(
 		SettingsUtils.class).key("settings.breadcrumb.title"));

@@ -5805,6 +5805,10 @@
     <parameter id="bean" value="bean:com.tle.web.viewable.servlet.LegacyItemServlet" />
     <parameter id="url-pattern" value="/item/*" />
   </extension>
+  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="newPagesServlet">
+    <parameter id="bean" value="bean:com.tle.web.template.SinglePageAppServlet" />
+    <parameter id="url-pattern" value="/page/*" />
+  </extension>
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="integrationItemServlet">
     <parameter id="bean" value="bean:com.tle.web.viewable.servlet.IntegrationItemServlet" />
     <parameter id="url-pattern" value="/integ/*" />
@@ -6199,7 +6203,8 @@
     <parameter id="file" value="lang/i18n-resource-centre.properties" />
   </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="spaPages">
-    <parameter id="path" value="/page.do" />
+    <parameter id="path" value="/newpage.do" />
     <parameter id="root" value="bean:com.tle.web.template.SinglePageApp" />
+    <parameter id="url" value="false" />
   </extension>
 </plugin>

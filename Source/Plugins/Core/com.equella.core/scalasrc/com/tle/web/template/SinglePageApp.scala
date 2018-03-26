@@ -17,10 +17,21 @@
 package com.tle.web.template
 
 import com.tle.core.guice.Bind
+import com.tle.legacy.LegacyGuice
 import com.tle.web.sections.equella.AbstractScalaSection
 import com.tle.web.sections.events.RenderEventContext
+import com.tle.web.sections.registry.SectionsServlet
 import com.tle.web.sections.render.{HtmlRenderer, SimpleSectionResult, TextLabel}
-import com.tle.web.sections.{SectionInfo, SectionResult}
+import com.tle.web.sections.{SectionInfo, SectionResult, SectionTree}
+import javax.servlet.http.HttpServletRequest
+
+@Bind
+class SinglePageAppServlet extends SectionsServlet
+{
+  val tree = LegacyGuice.treeRegistry.getTreeForPath("/newpage.do")
+
+  override def lookupTree(request: HttpServletRequest): SectionTree = tree
+}
 
 @Bind
 class SinglePageApp extends AbstractScalaSection with HtmlRenderer {
