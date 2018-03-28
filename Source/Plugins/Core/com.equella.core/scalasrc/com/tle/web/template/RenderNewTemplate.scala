@@ -50,6 +50,12 @@ object RenderNewTemplate {
 
   val reactTemplate = r.url("reactjs/index.js")
 
+  val bundleJs = new PreRenderable {
+    override def preRender(info: PreRenderContext): Unit =
+      new IncludeFile(s"api/language/bundle/${LocaleLookup.selectLocale.getLocale.toLanguageTag}/bundle.js").preRender(info)
+  }
+
+
   val NewLayoutKey = "NEW_LAYOUT"
 
   def isNewLayout(info: SectionInfo): Boolean = {
@@ -85,7 +91,7 @@ object RenderNewTemplate {
     case class TemplateScript(getScriptUrl : String,  getRenderJs: ObjectExpression, getTemplate: TemplateResult)
 
     context.preRender(JQueryCore.PRERENDER)
-    context.preRender(new IncludeFile(s"api/language/bundle/${LocaleLookup.selectLocale.getLocale.toLanguageTag}/bundle.js"))
+    context.preRender(bundleJs)
 
     val decs = Decorations.getDecorations(context)
     val htmlVals = if (!decs.isSinglePageApp) {

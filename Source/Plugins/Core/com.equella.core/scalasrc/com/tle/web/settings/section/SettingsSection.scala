@@ -43,6 +43,7 @@ class SettingsSection extends AbstractScalaSection with HtmlRenderer {
     decs.setTitle(new TextLabel(CoreStrings.text("title")))
     val scriptTag = new TagState()
     scriptTag.addTagProcessor(new ExtraAttributes("src", jsUrl))
+    scriptTag.addPreRenderable(RenderNewTemplate.bundleJs)
     CombinedRenderer.combineResults(
       new DivRenderer(new TagState("settingsPage")),
       new TagRenderer("script", scriptTag)
