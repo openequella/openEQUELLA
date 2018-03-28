@@ -101,7 +101,8 @@ aclEditor = createFactory $ createLifecycleComponent' (didMount Resolve) initial
 
 sampleEntries = [
     AccessEntry {granted:true, priv: "DISCOVER_ITEM", override:false, term: User renderData.user.id},
-    AccessEntry {granted:true, priv: "DISCOVER_ITEM", override:false, term: User "doolse"}
+    AccessEntry {granted:true, priv: "DISCOVER_ITEM", override:false, term: User "doolse"},
+    AccessEntry {granted:true, priv: "DISCOVER_ITEM", override:false, term: Group "dff74147-98b4-34d3-e193-d3eeada6d836"}
 ]
 
 testEditor :: ReactElement
