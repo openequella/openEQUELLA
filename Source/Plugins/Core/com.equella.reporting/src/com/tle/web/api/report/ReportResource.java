@@ -44,12 +44,12 @@ public interface ReportResource  extends BaseEntityResource<ReportBean, BaseEnti
 {
     @GET
     @Path("/acl")
-    @ApiOperation(value = "List global schema acls")
+    @ApiOperation(value = "List global report acls")
     public BaseEntitySecurityBean getAcls(@Context UriInfo uriInfo);
 
     @PUT
     @Path("/acl")
-    @ApiOperation(value = "Edit global schema acls")
+    @ApiOperation(value = "Edit global report acls")
     public Response editAcls(@Context UriInfo uriInfo, BaseEntitySecurityBean security);
 
     @GET
@@ -64,23 +64,40 @@ public interface ReportResource  extends BaseEntityResource<ReportBean, BaseEnti
     @ApiOperation("Retrieve a report by uuid")
     public ReportBean get(@Context UriInfo uriInfo, @ApiParam(value = "Report uuid") @PathParam("uuid") String uuid);
 
-    @GET
+    @POST
     @Path("/{uuid}/package")
     @ApiOperation("Package a report's design files into a staging folder")
     public Response packageReportFiles(@Context UriInfo uriInfo, @ApiParam(value = "Report uuid") @PathParam("uuid") String uuid);
 
+    /**
+     *
+     * @param uriInfo
+     * @param bean
+     * @param stagingUuid
+     * @param packageFilename optional - defaults to bean.getFilename().  Only needed if the report is zipped.
+     * @return
+     */
     @POST
     @ApiOperation("Create a new report")
     public Response create(@Context UriInfo uriInfo, @ApiParam ReportBean bean,
-                           @ApiParam(required = false) @QueryParam("file") String stagingUuid);
+                           @ApiParam(required = false) @QueryParam("staginguuid") String stagingUuid,
+                           @ApiParam(required = false) @QueryParam("packagename") String packageFilename);
 
     @PUT
     @Path("/{uuid}")
     @ApiOperation(value = "Edit a report")
-    public Response edit(@Context UriInfo uriInfo, @PathParam("uuid") String uuid, @ApiParam ReportBean bean,
-                         @ApiParam(required = false) @QueryParam("file") String stagingUuid,
+    public Response edit(@Context UriInfo uriInfo,
+                         @PathParam("uuid") String uuid,
+                         @ApiParam ReportBean bean,
+                         @ApiParam(required = false) @QueryParam("staginguuid") String staginguuid,
+                         @ApiParam(required = false) @QueryParam("packagename") String packagename,
                          @ApiParam(required = false) @QueryParam("lock") String lockId,
                          @ApiParam(required = false) @QueryParam("keeplocked") boolean keepLocked);
+
+    @DELETE
+    @Path("/{uuid}")
+    @ApiOperation("Delete a report")
+    public Response delete(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
     @GET
     @Path("/{uuid}/lock")

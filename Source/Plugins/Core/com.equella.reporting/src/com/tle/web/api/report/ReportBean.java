@@ -41,4 +41,8 @@ public class ReportBean extends BaseEntityBean
     public void setFilename(String filename) {
         this.filename = filename;
     }
+
+    public String toString() {
+        return String.format("[name: %s, desc: %s, uuid: %s, filename:  %s, hideReport: %s]", getName(), getDescription(), getUuid(), filename, hideReport);
+    }
 }
