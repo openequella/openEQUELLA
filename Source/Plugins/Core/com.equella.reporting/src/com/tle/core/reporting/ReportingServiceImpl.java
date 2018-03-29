@@ -106,7 +106,6 @@ public class ReportingServiceImpl extends AbstractEntityServiceImpl<EntityEditin
 {
 	private static final Logger LOGGER = Logger.getLogger(ReportingService.class);
 
-	private static final String DIR_DESIGN = "reportFiles";
 	private static final String[] BLANKS = {"name"};
 
 	private static final long CACHE_TIME = TimeUnit.MINUTES.toMillis(30);

@@ -94,12 +94,6 @@ public class ReportResourceImpl extends
         LOGGER.debug("Beginning to edit report [" + uuid + "] - bean=[" + bean + "], stagingUuid=[" + staginguuid + "], packagename=[" + packagename + "], lockId=[" + lockId + "], keepLocked=[" + keepLocked + "]");
         try {
             handlePackageAndReportName(bean, staginguuid, packagename);
-//            if (Check.isEmpty(staginguuid)) {
-//                // Keep the files from the original report
-//                StagingFile originalFiles = stagingService.createStagingArea();
-//                fileSystemService.copyToStaging(new EntityFile(reportingService.getByUuid(uuid)), originalFiles, false);
-//                staginguuid = originalFiles.getUuid();
-//            }
         } catch (IOException ioe) {
             logAndThrowError("Failed to edit the report [%s] - %s", ioe, bean.getUuid(), ioe.getMessage());
         }
