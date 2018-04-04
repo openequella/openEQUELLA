@@ -18,6 +18,7 @@ import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.StrMap as M
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable as U
+import Debug.Trace (spy, traceAnyA)
 import Dispatcher (DispatchEff(DispatchEff), effEval)
 import Dispatcher.React (ReactProps(ReactProps), createComponent, modifyState)
 import EQUELLA.Environment (prepLangStrings)
@@ -58,8 +59,25 @@ newtype MenuItem = MenuItem {href::String, title::String, systemIcon::Nullable S
 
 data Command = ToggleMenu | UserMenuAnchor (Maybe HTMLElement)
 
-type RenderData = {baseResources::String, html::Nullable (M.StrMap String), title::String, menuItems :: Array (Array MenuItem), newUI::Boolean, user::UserData}
-type UserData = {id::String, guest::Boolean, autoLogin::Boolean, prefsEditable::Boolean}
+type UserData = {
+  id::String, 
+  guest::Boolean, 
+  autoLogin::Boolean, 
+  prefsEditable::Boolean
+}
+
+type RenderData = {
+  baseResources::String, 
+  html::Nullable (M.StrMap String), 
+  title::String, 
+  menuItems :: Array (Array MenuItem), 
+  menuMode :: String,
+  fullscreenMode :: String,
+  hideAppBar :: Boolean,
+  newUI::Boolean, 
+  user::UserData
+}
+
 
 foreign import renderData :: RenderData
 
@@ -160,21 +178,28 @@ template' = createFactory (withStyles ourStyles (createComponent initialState re
 
   render {mobileOpen,menuAnchor} (ReactProps {classes,mainContent,title:titleText,titleExtra,menuExtra}) 
     (DispatchEff d) = muiPickersUtilsProvider [utils dateFnsUtils] [
-    D.div [DP.className classes.root] [
+    D.div [DP.className classes.root] $ [
       cssBaseline_ [],
-      D.div [DP.className classes.appFrame] [
-        topBar,
-        hidden [ mdUp true ] [
-          drawer [ variant temporary, anchor left, classes_ {paper: classes.drawerPaper},
-                    open mobileOpen, onClose (handle $ d \_ -> ToggleMenu) ] menuContent ],
-        hidden [ smDown true, implementation css ] [
-          drawer [variant permanent, anchor left, open true, classes_ {paper: classes.drawerPaper} ] menuContent
-        ],
-        D.main [ DP.className classes.content ] [mainContent]
-      ]
+      layout renderData.fullscreenMode renderData.menuMode renderData.hideAppBar
     ]
   ]
     where
+    content = D.main [ DP.className classes.content ] [ mainContent]
+    fullscreen = D.main' [ mainContent ]
+    layout "YES" _ _ = fullscreen
+    layout "YES_WITH_TOOLBAR" _ _ = fullscreen 
+    layout _ _ true = fullscreen
+    layout _ _ _ = D.div [DP.className classes.appFrame] [
+      topBar,
+      hidden [ mdUp true ] [
+        drawer [ variant temporary, anchor left, classes_ {paper: classes.drawerPaper},
+                  open mobileOpen, onClose (handle $ d \_ -> ToggleMenu) ] menuContent ],
+      hidden [ smDown true, implementation css ] [
+        drawer [variant permanent, anchor left, open true, classes_ {paper: classes.drawerPaper} ] menuContent
+      ],
+      content 
+    ]
+    
     topBar = appBar [className $ classes.appBar] [
       toolbar [disableGutters true] [
         iconButton [color C.inherit, className classes.navIconHide, onClick $ handle $ d \_ -> ToggleMenu] [ icon_ [D.text "menu" ] ],
@@ -209,6 +234,7 @@ template' = createFactory (withStyles ourStyles (createComponent initialState re
 
 renderReact :: forall eff. String -> ReactElement -> Eff (dom :: DOM, console::CONSOLE | eff) Unit
 renderReact divId main = do
+  traceAnyA [ renderData.menuMode, renderData.fullscreenMode ]
   void (elm' >>= render main)
   where
 

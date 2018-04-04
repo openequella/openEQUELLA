@@ -186,7 +186,7 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 			precontext.preRender(CUSTOMER_CSS);
 			return selectLayout(context, template);
         }
-        else return RenderNewTemplate.renderHtml(viewFactory, context, template, menuService);
+        else return RenderNewTemplate.renderHtml(viewFactory, context, template, menuService, model.getHtmlAttrs());
 	}
 
 	private void setupHeaderHelper(RenderEventContext context)

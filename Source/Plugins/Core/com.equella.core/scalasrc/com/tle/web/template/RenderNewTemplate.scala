@@ -16,6 +16,7 @@
 
 package com.tle.web.template
 
+import com.tle.common.i18n.{CurrentLocale, LocaleUtils}
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.settings.standard.AutoLogin
 import com.tle.common.usermanagement.user.{CurrentUser, UserState}
@@ -87,9 +88,14 @@ object RenderNewTemplate {
 
 
   def renderHtml(viewFactory: FreemarkerFactory, context: RenderEventContext,
-                 tempResult: TemplateResult, menuService: MenuService): SectionResult = {
+                 tempResult: TemplateResult, menuService: MenuService, htmlAttributes: String): SectionResult = {
 
     case class TemplateScript(getScriptUrl : String,  getRenderJs: ObjectExpression, getTemplate: TemplateResult)
+    {
+      def getLang = LocaleUtils.toHtmlLang(CurrentLocale.getLocale)
+      def isRightToLeft = CurrentLocale.isRightToLeft
+      def getHtmlAttrs = htmlAttributes
+    }
 
     context.preRender(JQueryCore.PRERENDER)
     context.preRender(bundleJs)
@@ -101,9 +107,16 @@ object RenderNewTemplate {
       precontext.preRender(RenderTemplate.STYLES_CSS)
       precontext.preRender(RenderTemplate.CUSTOMER_CSS)
 
-      val _bodyResult = tempResult.getNamedResult(context, "body")
-      val unnamedResult = tempResult.getNamedResult(context, "unnamed")
-      val bodyResult = wrapBody(CombinedRenderer.combineResults(_bodyResult, unnamedResult), decs)
+      def wrapBody(body: SectionRenderable) : SectionRenderable = {
+        val citag = new TagState("content-inner").addClass[TagState](decs.getPageLayoutDisplayClass)
+        val cbtag = new TagState("content-body").addClasses[TagState](decs.getContentBodyClasses)
+
+        new DivRenderer(citag, new DivRenderer(cbtag, body))
+      }
+
+      val _bodyResult = CombinedRenderer.combineResults(tempResult.getNamedResult(context, "body"),
+        tempResult.getNamedResult(context, "unnamed"))
+      val bodyResult = if (decs.getMenuMode != MenuMode.HIDDEN) wrapBody(_bodyResult) else _bodyResult
 
       val bodyTag = context.getBody
       if (!decs.isExcludeForm) {
@@ -129,9 +142,13 @@ object RenderNewTemplate {
     val renderData = new ObjectExpression("baseResources", r.url(""),
       "newUI", java.lang.Boolean.TRUE, "html", htmlVals, "title", title,
       "user", userObj(CurrentUser.getUserState),
+      "menuMode", decs.getMenuMode.toString,
+      "fullscreenMode", decs.isFullscreen.toString,
+      "hideAppBar", java.lang.Boolean.valueOf(!(decs.isBanner || !decs.isMenuHidden || decs.isContent)),
       "menuItems", new ArrayExpression(JSUtils.convertExpressions(menuValues.toSeq: _*)))
     viewFactory.createResultWithModel("layouts/outer/react.ftl",
       TemplateScript(reactTemplate, renderData, tempResult))
+
   }
 
   private val GUEST_FILTER = new PluginTracker.ParamFilter("enabledFor", "guest")
@@ -162,10 +179,4 @@ object RenderNewTemplate {
     }
   }
 
-  def wrapBody(body: SectionRenderable, d: Decorations) : SectionRenderable = {
-    val citag = new TagState("content-inner").addClass[TagState](d.getPageLayoutDisplayClass)
-    val cbtag = new TagState("content-body").addClasses[TagState](d.getContentBodyClasses)
-
-    new DivRenderer(citag, new DivRenderer(cbtag, body))
-  }
 }

@@ -1,7 +1,7 @@
 <#include "/com.tle.web.freemarker@/macro/sections/render.ftl"/><#t/>
 <#assign template = m.template><#t/>
 <!DOCTYPE html>
-<html>
+<html lang="${m.lang?html}" <#if m.rightToLeft>dir="rtl"</#if> ${m.htmlAttrs}>
     <head>
         <@render template["header"]/>
     	<script type="text/javascript">
