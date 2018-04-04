@@ -18,6 +18,8 @@ package com.tle.web.wizard;
 
 import com.tle.web.sections.equella.annotation.PlugURL;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
+import com.tle.web.sections.js.JSCallable;
+import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 
 public final class WizardJSLibrary
@@ -31,6 +33,8 @@ public final class WizardJSLibrary
 	private static String URL_LIBRARY;
 
 	public static final IncludeFile INCLUDE = new IncludeFile(URL_LIBRARY);
+	private static final ExternallyDefinedFunction WIZARDCTRLCLASS = new ExternallyDefinedFunction("WizardCtrl", INCLUDE);
+	public static final JSCallable AffixDiv = new ExternallyDefinedFunction(WIZARDCTRLCLASS, "affixDiv", 0);
 
 	private WizardJSLibrary()
 	{

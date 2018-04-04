@@ -39,13 +39,17 @@ public class HeaderUtils
 		info.addCss(include(css).make());
 	}
 
-	public void addCss(String file, String browser, String media, boolean hasRtl, String priority)
+	public void addCss(String file, String browser, String media, boolean hasRtl, boolean hasNew, String priority)
 	{
 		CssIncludeBuilder cib = include(file).browser(Browser.valueOf(browser)).media(Media.valueOf(media))
 			.priority(Priority.valueOf(priority));
 		if( hasRtl )
 		{
 			cib.hasRtl();
+		}
+		if (hasNew)
+		{
+			cib.hasNew();
 		}
 		info.addCss(cib.make());
 	}

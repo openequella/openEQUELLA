@@ -317,7 +317,7 @@ kbd {
 
 #content-inner {
 	min-height: 250px;
-	background: url(../images/box-beige-top.gif) 0 0 no-repeat;
+	// background: url(../images/box-beige-top.gif) 0 0 no-repeat;
 }
 
 .content a,.modal a {
@@ -1377,20 +1377,6 @@ Expandable button
     #col {
         width: 100%;
         min-height: 50vh;
-    }
-
-    #col1 {
-		min-width: 592px;
-        width: calc(100% - 240px);
-        //min-height: 50vh;
-    }
-
-    #col2 {
-		//min-height: 50vh;
-		margin-left: 16px;
-        > div {
-            width: 220px;
-        }
     }
 
     .area {

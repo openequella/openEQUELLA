@@ -3,7 +3,7 @@
 <#include "/com.tle.web.sections.equella@/component/button.ftl"/>
 <#import "/com.tle.web.sections.standard@/ajax.ftl" as a/>
 
-<@css path="search.css" hasRtl=true /> 
+<@css path="search.css" hasRtl=true hasNew=true/>
 
 <@a.div id="searchform" class="area" >
 	<div class="query-wrapper" role="search">

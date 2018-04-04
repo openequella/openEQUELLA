@@ -14,5 +14,10 @@ var WizardCtrl = {
 			$content.addClass("ctrlinvalid");
 			$msg.html(message);
 		}
+	},
+	affixDiv: function() {
+	    var ad = $("#affix-div");
+	    var offset = (ad.offset().top) - 55;
+	    ad.attr("data-offset-top",offset, "data-spy", "affix");
 	}
 };

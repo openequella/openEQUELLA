@@ -41,7 +41,7 @@ import MaterialUI.Modal (onClose)
 import MaterialUI.Popover (anchorOrigin, transformOrigin)
 import MaterialUI.PropTypes (handle)
 import MaterialUI.Properties (className, classes_, color, component, mkProp, variant)
-import MaterialUI.Styles (mediaQuery, withStyles)
+import MaterialUI.Styles (MediaQuery, allQuery, cssList, mediaQuery, withStyles)
 import MaterialUI.TextStyle (title)
 import MaterialUI.Toolbar (disableGutters, toolbar)
 import MaterialUI.Typography (typography)
@@ -78,16 +78,24 @@ template' = createFactory (withStyles ourStyles (createComponent initialState re
   newPage = isNothing $ toMaybe renderData.html
   strings = prepLangStrings rawStrings
   drawerWidth = 240
-  ourStyles theme = {
+  ourStyles theme = 
+    let desktop :: forall a. {|a} -> MediaQuery
+        desktop = mediaQuery $ theme.breakpoints.up "md"
+        mobile :: forall a. {|a} -> MediaQuery
+        mobile = mediaQuery $ theme.breakpoints.up "sm"
+    in {
     root: {
       width: "100%",
       zIndex: 1
     },
-    title: mediaQuery (theme.breakpoints.up "md") {
-      marginLeft: theme.spacing.unit * 4
-    } {
-      marginLeft: theme.spacing.unit
-    },
+    title: cssList [ 
+      desktop {
+        marginLeft: theme.spacing.unit * 4
+      }, 
+      allQuery {
+        marginLeft: theme.spacing.unit
+      }
+    ],
     extraTool: {
       flex: 1
     },
@@ -95,34 +103,38 @@ template' = createFactory (withStyles ourStyles (createComponent initialState re
       position: "relative",
       display: "flex"
     },
-    appBar: mediaQuery (theme.breakpoints.up "md") {
-        width: "calc(100% - " <> show drawerWidth <> "px)"
-      } {
+    appBar: desktop { 
+      width: "calc(100% - " <> show drawerWidth <> "px)"
     },
-    navIconHide:
-      mediaQuery (theme.breakpoints.up "md") {
-        display: "none"
-      } {
-      }
-    ,
+    navIconHide: desktop { 
+      display: "none" 
+    },
     drawerHeader: theme.mixins.toolbar,
-    drawerPaper: mediaQuery (theme.breakpoints.up "md") {
+    drawerPaper: cssList [ 
+      desktop {
         width: drawerWidth,
-        position: "relative",
+        position: "fixed",
         height: "100%",
         zIndex: 0
+      },
+      allQuery { 
+        width: 250 
       }
-      { width: 250 },
-    content: mediaQuery (theme.breakpoints.up "sm") {
+    ],
+    content: cssList [ 
+      mobile {
         height: "calc(100% - 64px)",
         marginTop: 64
-      } {
-      backgroundColor: "#eee", -- theme.palette.background.default,
-      width: "100%",
-      padding: theme.spacing.unit * 2,
-      height: "calc(100% - 56px)",
-      marginTop: 56
-    },
+      },
+      desktop { marginLeft: 240 },
+      allQuery {
+        backgroundColor: "#eee", -- theme.palette.background.default,
+        width: "100%",
+        padding: theme.spacing.unit * 2,
+        height: "calc(100% - 56px)",
+        marginTop: 56
+      }
+    ],
     logo: {
       display: "flex",
       alignItems: "center",

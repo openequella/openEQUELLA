@@ -23,7 +23,9 @@ import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.generic.CachedData;
 import com.tle.web.sections.render.SectionRenderable;
+import com.tle.web.sections.render.TagState;
 import com.tle.web.sections.standard.model.HtmlComponentState;
+import com.tle.web.sections.standard.renderers.DivRenderer;
 import com.tle.web.wizard.impl.WizardCommand;
 import com.tle.web.wizard.section.SectionTab;
 
@@ -47,6 +49,8 @@ public class WizardBodyModel
 	private List<HtmlComponentState> minorActions;
 	private List<HtmlComponentState> moreActions;
 	private List<SectionRenderable> additionalActions;
+
+	private DivRenderer fixedDiv = new DivRenderer(new TagState("affix-div"));
 
 	private final CachedData<List<SectionTab>> displayableTabs = new CachedData<List<SectionTab>>();
 	private final CachedData<List<WizardCommand>> displayableCommands = new CachedData<List<WizardCommand>>();
@@ -188,5 +192,10 @@ public class WizardBodyModel
 	public void setMoreActions(List<HtmlComponentState> moreActions)
 	{
 		this.moreActions = moreActions;
+	}
+
+	public DivRenderer getFixedDiv()
+	{
+		return fixedDiv;
 	}
 }

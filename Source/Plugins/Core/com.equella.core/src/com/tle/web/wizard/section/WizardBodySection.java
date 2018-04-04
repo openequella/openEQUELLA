@@ -54,6 +54,8 @@ import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.template.Decorations;
+import com.tle.web.template.RenderNewTemplate;
+import com.tle.web.wizard.WizardJSLibrary;
 import com.tle.web.wizard.WizardState;
 import com.tle.web.wizard.impl.WizardCommand;
 import com.tle.web.wizard.section.model.WizardBodyModel;
@@ -307,6 +309,10 @@ public class WizardBodySection extends WizardSection<WizardBodyModel> implements
 		{
 			Decorations decorations = Decorations.getDecorations(context);
 			decorations.addContentBodyClasses(cssClass);
+		}
+		if (!RenderNewTemplate.isNewLayout(context))
+		{
+			model.getFixedDiv().getTagState().addReadyStatements(WizardJSLibrary.AffixDiv);
 		}
 		return viewFactory.createTemplateResult("wizard/body.ftl", context);
 	}
