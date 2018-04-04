@@ -82,9 +82,9 @@ public abstract class AbstractItemSummarySection<I extends IItem<?>> extends Two
 	@Override
 	public SectionResult view(RenderContext info, ViewItemResource resource)
 	{
-		for( String css : getCssUrls(info) )
+		for( CssInclude css : getCssUrls(info) )
 		{
-			info.getPreRenderContext().addCss(CssInclude.include(css).hasRtl().make());
+			info.getPreRenderContext().addCss(css);
 		}
 
 		if( isPreview(info)
@@ -103,9 +103,9 @@ public abstract class AbstractItemSummarySection<I extends IItem<?>> extends Two
 		return null;
 	}
 
-	protected List<String> getCssUrls(SectionInfo info)
+	protected List<CssInclude> getCssUrls(SectionInfo info)
 	{
-		return Lists.newArrayList(LAYOUT_CSS);
+		return Lists.newArrayList(CssInclude.include(LAYOUT_CSS).hasRtl().hasNew().make());
 	}
 
 	@Override

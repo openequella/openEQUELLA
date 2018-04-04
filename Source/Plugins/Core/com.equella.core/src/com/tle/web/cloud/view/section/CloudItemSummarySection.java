@@ -32,6 +32,7 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.annotation.PlugURL;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.generic.InfoBookmark;
+import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.WrappedLabel;
 import com.tle.web.sections.result.util.BundleLabel;
@@ -121,10 +122,10 @@ public class CloudItemSummarySection extends AbstractItemSummarySection<CloudIte
 	}
 
 	@Override
-	protected List<String> getCssUrls(SectionInfo info)
+	protected List<CssInclude> getCssUrls(SectionInfo info)
 	{
-		final List<String> cssUrls = super.getCssUrls(info);
-		cssUrls.add(CSS_URL);
+		final List<CssInclude> cssUrls = super.getCssUrls(info);
+		cssUrls.add(CssInclude.include(CSS_URL).hasRtl().make());
 		return cssUrls;
 	}
 

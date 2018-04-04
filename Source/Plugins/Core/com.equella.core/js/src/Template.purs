@@ -234,7 +234,6 @@ template' = createFactory (withStyles ourStyles (createComponent initialState re
 
 renderReact :: forall eff. String -> ReactElement -> Eff (dom :: DOM, console::CONSOLE | eff) Unit
 renderReact divId main = do
-  traceAnyA [ renderData.menuMode, renderData.fullscreenMode ]
   void (elm' >>= render main)
   where
 
