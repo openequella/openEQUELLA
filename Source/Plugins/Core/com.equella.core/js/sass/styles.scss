@@ -316,9 +316,7 @@ kbd {
 }
 
 #content-inner {
-	width: 953px;
 	min-height: 250px;
-	float: left;
 	background: url(../images/box-beige-top.gif) 0 0 no-repeat;
 }
 
@@ -463,30 +461,22 @@ DIV.tooltip {
 /*****************************************************************************
  Container for the actual page content
 *****************************************************************************/
-#content-body {
-	float: right;
-	padding: 32px 18px 32px 0;
-}
+// #content-body {
+// 	float: right;
+// 	padding: 32px 18px 32px 0;
+// }
 
-.page-layout-menu-full #content-body {
-	width: 750px;
-}
+// .page-layout-menu-full #content-body {
+// 	width: 750px;
+// }
 
-.page-layout-menu-collapsed #content-body {
-	width: 899px;
-}
+// .page-layout-menu-collapsed #content-body {
+// 	width: 899px;
+// }
 
-.page-layout-menu-hidden #content-body {
-	width: 917px;
-}
-
-#col1 {
-	float: left;
-}
-
-#col2 {
-	float: right;
-}
+// .page-layout-menu-hidden #content-body {
+// 	width: 917px;
+// }
 
 /*****************************************************************************
  Generic area box - used for the main column and full page work
@@ -1366,8 +1356,12 @@ Expandable button
 #mainDiv {
     body {
         color: rgb(50, 50, 50);
-    }
+	}
 
+	div.mainCols {
+		display: flex;
+	}
+	
     main {
         > div {
             height: calc(100vh - 96px);
@@ -1386,15 +1380,14 @@ Expandable button
     }
 
     #col1 {
+		min-width: 592px;
         width: calc(100% - 240px);
         //min-height: 50vh;
     }
 
     #col2 {
-        //min-height: 50vh;
-        position: fixed;
-        top: 80px;
-        right: 16px;
+		//min-height: 50vh;
+		margin-left: 16px;
         > div {
             width: 220px;
         }

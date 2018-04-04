@@ -46,7 +46,8 @@
     "redux-actions": "^2.2.1",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
-    "timeago-react": "^2.0.0"
+    "timeago-react": "^2.0.0",
+    "uuid": "^3.2.1"
   },
   "license": "Apache-2.0",
   "devDependencies": {

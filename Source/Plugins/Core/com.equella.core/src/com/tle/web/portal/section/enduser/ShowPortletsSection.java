@@ -68,7 +68,7 @@ public class ShowPortletsSection extends AbstractPrototypeSection<ShowPortletsSe
 		"setupPortal", JQuerySortable.PRERENDER, //$NON-NLS-1$
 		new IncludeFile(resources.url("scripts/portal.js"))); //$NON-NLS-1$
 
-	private static final CssInclude CSS = new CssInclude(resources.url("css/portal.css")); //$NON-NLS-1$
+	private static final CssInclude CSS = CssInclude.include(resources.url("css/portal.css")).hasNew().make(); //$NON-NLS-1$
 
 	private JSCallable portletMovedFunction;
 

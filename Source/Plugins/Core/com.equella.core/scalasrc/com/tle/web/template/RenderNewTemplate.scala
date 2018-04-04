@@ -36,6 +36,7 @@ import com.tle.web.sections.js.JSUtils
 import com.tle.web.sections.js.generic.expression.{ArrayExpression, ObjectExpression}
 import com.tle.web.sections.js.generic.function.IncludeFile
 import com.tle.web.sections.render._
+import com.tle.web.sections.standard.renderers.DivRenderer
 import com.tle.web.settings.UISettings
 import com.tle.web.template.Decorations.MenuMode
 import com.tle.web.template.section.HelpAndScreenOptionsSection
@@ -102,7 +103,7 @@ object RenderNewTemplate {
 
       val _bodyResult = tempResult.getNamedResult(context, "body")
       val unnamedResult = tempResult.getNamedResult(context, "unnamed")
-      val bodyResult = CombinedRenderer.combineResults(_bodyResult, unnamedResult)
+      val bodyResult = wrapBody(CombinedRenderer.combineResults(_bodyResult, unnamedResult), decs)
 
       val bodyTag = context.getBody
       if (!decs.isExcludeForm) {
@@ -158,5 +159,12 @@ object RenderNewTemplate {
           new ArrayExpression(menuLinks)
       }
     }
+  }
+
+  def wrapBody(body: SectionRenderable, d: Decorations) : SectionRenderable = {
+    val citag = new TagState("content-inner").addClass[TagState](d.getPageLayoutDisplayClass)
+    val cbtag = new TagState("content-body").addClasses[TagState](d.getContentBodyClasses)
+
+    new DivRenderer(citag, new DivRenderer(cbtag, body))
   }
 }

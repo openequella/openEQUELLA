@@ -109,7 +109,8 @@ template' = createFactory (withStyles ourStyles (createComponent initialState re
     drawerPaper: mediaQuery (theme.breakpoints.up "md") {
         width: drawerWidth,
         position: "relative",
-        height: "100%"
+        height: "100%",
+        zIndex: 0
       }
       { width: 250 },
     content: mediaQuery (theme.breakpoints.up "sm") {

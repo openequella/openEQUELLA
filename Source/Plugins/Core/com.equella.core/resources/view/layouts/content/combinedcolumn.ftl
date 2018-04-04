@@ -10,9 +10,11 @@
 	</#if>
 	<@render m.template['top']/>
 </div>
-<div id="col1">	
-	<@render m.template['left']/>	
-</div>
-<div id="col2">
-	<@render m.template['right']/>
+<div class="mainCols">
+    <div id="col1">
+        <@render m.template['left']/>
+    </div>
+    <div id="col2">
+        <@render m.template['right']/>
+    </div>
 </div>
