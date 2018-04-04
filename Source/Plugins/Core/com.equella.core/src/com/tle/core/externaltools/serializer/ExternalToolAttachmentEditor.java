@@ -16,9 +16,12 @@
 
 package com.tle.core.externaltools.serializer;
 
+import com.tle.common.NameValue;
 import com.tle.common.externaltools.constants.ExternalToolConstants;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.edit.attachment.AbstractCustomAttachmentEditor;
+
+import java.util.List;
 
 @Bind
 public class ExternalToolAttachmentEditor extends AbstractCustomAttachmentEditor
@@ -39,7 +42,7 @@ public class ExternalToolAttachmentEditor extends AbstractCustomAttachmentEditor
 		editCustomData(ExternalToolConstants.LAUNCH_URL, launchUrl);
 	}
 
-	public void editCustomParameters(String customParameters)
+	public void editCustomParameters(List<NameValue> customParameters)
 	{
 		editCustomData(ExternalToolConstants.CUSTOM_PARAMS, customParameters);
 	}

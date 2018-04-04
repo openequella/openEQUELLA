@@ -16,6 +16,7 @@
 
 package com.tle.core.externaltools.serializer;
 
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
@@ -23,18 +24,25 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.inject.Singleton;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.CustomAttachment;
+import com.tle.common.NameValue;
 import com.tle.common.externaltools.constants.ExternalToolConstants;
 import com.tle.core.externaltools.beans.ExternalToolAttachmentBean;
+import com.tle.core.externaltools.service.ExternalToolsService;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.edit.ItemEditor;
 import com.tle.core.item.serializer.AbstractAttachmentSerializer;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean;
+
+import javax.inject.Inject;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
 public class ExternalToolAttachmentSerializer extends AbstractAttachmentSerializer
 {
+	@Inject
+	private ExternalToolsService externalToolsService;
+
 	@Override
 	public EquellaAttachmentBean serialize(Attachment attachment)
 	{
@@ -44,7 +52,7 @@ public class ExternalToolAttachmentSerializer extends AbstractAttachmentSerializ
 		bean.setLaunchUrl(getData(cattach, ExternalToolConstants.LAUNCH_URL));
 		bean.setConsumerKey(getData(cattach, ExternalToolConstants.CONSUMER_KEY));
 		bean.setConsumerSecret(getData(cattach, ExternalToolConstants.SHARED_SECRET));
-		bean.setCustomParameters(getData(cattach, ExternalToolConstants.CUSTOM_PARAMS));
+		bean.setCustomParameters(externalToolsService.customParamListToString((List<NameValue>)cattach.getData(ExternalToolConstants.CUSTOM_PARAMS)));
 		bean.setIconUrl(getData(cattach, ExternalToolConstants.ICON_URL));
 		bean.setShareUserNameDetails(getBooleanData(cattach, ExternalToolConstants.SHARE_NAME));
 		bean.setShareUserEmailDetails(getBooleanData(cattach, ExternalToolConstants.SHARE_EMAIL));
@@ -74,7 +82,7 @@ public class ExternalToolAttachmentSerializer extends AbstractAttachmentSerializ
 		editor.editLaunchUrl(qbean.getLaunchUrl());
 		editor.editConsumerKey(qbean.getConsumerKey());
 		editor.editConsumerSecret(qbean.getConsumerSecret());
-		editor.editCustomParameters(qbean.getCustomParameters());
+		editor.editCustomParameters(externalToolsService.parseCustomParamsString(qbean.getCustomParameters()));
 		editor.editIconUrl(qbean.getIconUrl());
 		editor.editShareUserNameDetails(qbean.isShareUserNameDetails());
 		editor.editShareUserEmailDetails(qbean.isShareUserEmailDetails());
