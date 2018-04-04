@@ -19,7 +19,7 @@ prepareDevConfig := {
     "hibernate.properties"
   ).map(f => (defaultsDir / s"$f.default", baseDir / f))
 
-  IO.copy(fromInstaller ++ fromDefaults, CopyOptions().withOverwrite(true))
+  IO.copy(fromInstaller ++ fromDefaults, CopyOptions().withOverwrite(false))
 
   val port = bc.getInt("port")
   val hostname = bc.getString("hostname")
