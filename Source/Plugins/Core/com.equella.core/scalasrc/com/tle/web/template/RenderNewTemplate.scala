@@ -130,7 +130,8 @@ object RenderNewTemplate {
       "newUI", java.lang.Boolean.TRUE, "html", htmlVals, "title", title,
       "user", userObj(CurrentUser.getUserState),
       "menuItems", new ArrayExpression(JSUtils.convertExpressions(menuValues.toSeq: _*)))
-    viewFactory.createResultWithModel("layouts/outer/react.ftl", TemplateScript(reactTemplate, renderData, tempResult))
+    viewFactory.createResultWithModel("layouts/outer/react.ftl",
+      TemplateScript(reactTemplate, renderData, tempResult))
   }
 
   private val GUEST_FILTER = new PluginTracker.ParamFilter("enabledFor", "guest")

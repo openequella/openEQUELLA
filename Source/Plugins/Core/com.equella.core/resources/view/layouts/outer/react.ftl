@@ -11,5 +11,6 @@
     <body>
         <div id="mainDiv" style="min-height: calc(100vh + 1px);"></div>
         <script src="${m.scriptUrl}"></script>
+        <@render template["postmarkup"]/>
     </body>
 </html>
