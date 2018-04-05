@@ -11,3 +11,4 @@ generated.keystore
 .cache-tests
 # Remove this one day
 Source/Plugins/Kaltura
+server.xml
