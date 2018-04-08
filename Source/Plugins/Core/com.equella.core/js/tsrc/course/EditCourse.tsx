@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button, TextField, Grid } from 'material-ui';
 import { Course } from '../api';
 import { loadCourseWorker, saveCourseWorker, searchCoursesWorker } from './actions';
-import { CourseStoreState } from './CourseStore';
+import { StoreState } from '../store';
 import { connect, Dispatch } from 'react-redux';
 import { push } from 'react-router-redux'
 
@@ -100,16 +100,6 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
             </Stepper>*/
         return             <Grid>
                 <div>
-                    <TextField id="code" 
-                        label="Code" 
-                        helperText="Course code, e.g. EQ101"
-                        value={code}
-                        onChange={this.handleChange('code')}
-                        fullWidth
-                        margin="normal"
-                        required
-                            />
-
                     <TextField id="name" 
                         label="Name" 
                         helperText="Course name, e.g. Advanced EQUELLA studies"
@@ -131,6 +121,16 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
                         margin="normal"
                         />
 
+                    <TextField id="code" 
+                        label="Code" 
+                        helperText="Course code, e.g. EQ101"
+                        value={code}
+                        onChange={this.handleChange('code')}
+                        fullWidth
+                        margin="normal"
+                        required
+                            />
+
                     <TextField id="departmentName" 
                         label="Department Name" 
                         //helperText=""
@@ -147,16 +147,17 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
     }
 }
 
-function mapStateToProps(state: CourseStoreState) {
+function mapStateToProps(state: StoreState) {
+    const { course } = state;
     return {
-        course: state.editingCourse
+        course: course.editingEntity
     };
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>) {
     return {
         loadCourse: (uuid: string) => loadCourseWorker(dispatch, {uuid}),
-        saveCourse: (course: Course) => saveCourseWorker(dispatch, {course}),
+        saveCourse: (entity: Course) => saveCourseWorker(dispatch, {entity}),
         onCancel: () => dispatch(push('/')),
         doSearchAgain: (query?: string) => searchCoursesWorker(dispatch, {query})
     };

@@ -19,7 +19,9 @@ import Unsafe.Coerce (unsafeCoerce)
 data Route = SearchPage | 
     SettingsPage | 
     CoursesPage | 
-    CourseEdit String | 
+    CourseEdit String |
+    SchemasPage |
+    SchemaEdit String |
     TestACLS
 
 nav :: forall eff. PushStateInterface (PushStateEffects eff)
@@ -33,8 +35,10 @@ routeMatch =
     SearchPage <$ (lit "search") <|>
     SettingsPage <$ (lit "settings") <|>
     CourseEdit <$> (lit "course" *> str <* lit "edit") <|>
+    SchemaEdit <$> (lit "schema" *> str <* lit "edit") <|>
     TestACLS <$ (lit "testacls") <|>
-    CoursesPage <$ (lit "courses")
+    CoursesPage <$ (lit "courses") <|>
+    SchemasPage <$ (lit "schema")
 
 matchRoute :: String -> Maybe Route 
 matchRoute = match routeMatch >>> (either (const Nothing) Just)
@@ -52,5 +56,7 @@ routeHash r = "/" <> ( case r of
     SettingsPage -> "settings"
     CoursesPage -> "courses"
     CourseEdit cid -> "course/" <> cid <> "/edit"
+    SchemasPage -> "schema"
+    SchemaEdit cid -> "schema/" <> cid <> "/edit"
     TestACLS -> "testacls"
   )

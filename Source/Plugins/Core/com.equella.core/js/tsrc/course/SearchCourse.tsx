@@ -3,11 +3,10 @@ import { Button, TextField } from 'material-ui';
 import { Course } from '../api';
 import * as actions from './actions';
 import { Routes, Route } from '../api/routes';
-import { CourseStoreState } from './CourseStore';
+import { StoreState } from '../store';
 import { connect, Dispatch } from 'react-redux';
-//import { push } from 'react-router-redux';
-
-import List, { ListItem, ListItemText } from 'material-ui/List';
+import List from 'material-ui/List';
+import SearchResult from '../components/SearchResult';
 /*
 import withStyles, { StyleRulesCallback } from 'material-ui/styles/withStyles';
 const styles: StyleRulesCallback<'root'> = (theme: Theme) => ({
@@ -20,7 +19,7 @@ const styles: StyleRulesCallback<'root'> = (theme: Theme) => ({
 
 interface SearchCourseProps {
     onSearch: (query?: string) => void;
-    routes: (route: Route) => {href:string, onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void };
+    routes: (route: any) => Route;
     query?: string;
     courses: Course[];
     root: any;
@@ -40,16 +39,8 @@ class SearchCourse extends React.Component<SearchCourseProps, object> {
         this.props.onSearch(this.textInput.value);
     }
 
-    onView(uuid: string){
-        //push(`/edit/${uuid}`);
-        
-        var href = (this.props.editHref ? this.props.editHref(uuid) : `/edit/${uuid}`);
-        //const { history } = this.context.router;
-        //history.pushState(null, '', href);
-        window.location.href = href;
-    }
-
     render() {
+        
         return <div className={this.classes.root}><div className="courses">
                 <div className="coursesSearch">
                     <TextField id="txtCourseSearch" inputRef={(input: any) => { this.textInput = input; }} />
@@ -58,16 +49,14 @@ class SearchCourse extends React.Component<SearchCourseProps, object> {
                 <List>
                 {
                     (this.props.courses ?
-                        this.props.courses.map((course) => (
-<<<<<<< HEAD
-                            <ListItem key={course.uuid}>
-                            <a key={course.uuid} href={this.props.routes(Routes.CourseEdit.create(course.uuid)).href} onClick={
-                                this.props.routes(Routes.CourseEdit.create(course.uuid)).onClick}>
-=======
-                            <ListItem key={course.uuid} button onClick={() => {this.onView(course.uuid!)}}>
->>>>>>> wip
-                                <ListItemText primary={course.code + " - " + course.name} secondary={course.description} />
-                            </ListItem>))
+                        this.props.courses.map((course) => {
+                            const courseEditRoute = this.props.routes(Routes.CourseEdit.create(course.uuid));
+                            return <SearchResult key={course.uuid} 
+                                href={courseEditRoute.href}
+                                onClick={courseEditRoute.onClick}
+                                primaryText={course.code + " - " + course.name}
+                                secondaryText={course.description} />
+                        })
                         : <div>No Results</div>
                     )
                 }
@@ -77,10 +66,11 @@ class SearchCourse extends React.Component<SearchCourseProps, object> {
     }
 }
 
-function mapStateToProps(state: CourseStoreState) {
+function mapStateToProps(state: StoreState) {
+    const { course } = state;
     return {
-        query: state.query,
-        courses: state.courses
+        query: course.query,
+        courses: course.entities
     };
 }
 

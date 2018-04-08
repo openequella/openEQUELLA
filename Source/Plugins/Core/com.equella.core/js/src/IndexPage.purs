@@ -30,7 +30,7 @@ import Routing.PushState (matchesWith)
 import SearchPage (searchPage)
 import Security.ACLEditor (testEditor)
 import SettingsPage (settingsPage)
-import TSComponents (courseEdit, coursesPage)
+import TSComponents (courseEdit, coursesPage, schemaEdit, schemasPage)
 import Template (renderData, renderMain, renderReact)
 
 data RouterCommand = Init | ChangeRoute Route
@@ -59,6 +59,8 @@ main = do
         SettingsPage -> settingsPage {legacyMode:false}
         CoursesPage -> coursesPage routeHref
         CourseEdit cid -> courseEdit cid
+        SchemasPage -> schemasPage routeHref
+        SchemaEdit cid -> schemaEdit cid
         TestACLS -> testEditor
       render _ = maybe (div' []) legacy $ toMaybe renderData.html
 

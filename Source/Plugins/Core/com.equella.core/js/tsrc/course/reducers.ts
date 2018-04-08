@@ -1,30 +1,30 @@
-import { searchCourses, loadCourse, saveCourse } from './actions';
-import { CourseStoreState } from './CourseStore';
+import { courseActions } from './actions';
+import { Course } from '../api/Course';
 import { reducerWithInitialState } from "typescript-fsa-reducers";
 
-let initialState: CourseStoreState = {
+let initialState = {
     query: '',
-    courses: [],
+    entities: [] as Course[],
     loading: false
 };
 
-export const CourseReducer = reducerWithInitialState(initialState)
-    .case(searchCourses.started, (state, data) => {
+export const courseReducer = reducerWithInitialState(initialState)
+    .case(courseActions.search.started, (state, data) => {
         return state;
     })
-    .case(searchCourses.done, (state, success) => {
-        return { ...state, courses: success.result.results.results };
+    .case(courseActions.search.done, (state, success) => {
+        return { ...state, entities: success.result.results.results };
     })
-    .case(loadCourse.started, (state, data) => {
+    .case(courseActions.read.started, (state, data) => {
         return state;
     })
-    .case(loadCourse.done, (state, success) => {
-        return { ...state, editingCourse: success.result.result };
+    .case(courseActions.read.done, (state, success) => {
+        return { ...state, editingEntity: success.result.result };
     })
-    .case(saveCourse.started, (state, data) => {
+    .case(courseActions.update.started, (state, data) => {
         return state;
     })
-    .case(saveCourse.done, (state, success) => {
+    .case(courseActions.update.done, (state, success) => {
         return state;
     })
     .build();

@@ -1,84 +1,42 @@
-import { Dispatch } from 'redux';
 import axios from 'axios';
 import { Course, CourseList } from '../api';
-import { INST_URL } from '../config';
-
-import actionCreatorFactory from 'typescript-fsa';
-
-
-import { AsyncActionCreators } from 'typescript-fsa'
+import { Config } from '../config';
+import { wrapAsyncWorker, entityCrudActions } from '../util/actionutil'
 
 
-
-// https://github.com/aikoven/typescript-fsa/issues/5#issuecomment-255347353
-function wrapAsyncWorker<TParameters, TSuccess, TError>(
-  asyncAction: AsyncActionCreators<TParameters, TSuccess, TError>,
-  worker: (params: TParameters) => Promise<TSuccess>,
-) {
-  return function wrappedWorker(dispatch: Dispatch<any>, params: TParameters): Promise<TSuccess> {
-    dispatch(asyncAction.started(params));
-    return worker(params).then(result => {
-      dispatch(asyncAction.done({ params, result }));
-      return result;
-    }, (error: TError) => {
-      dispatch(asyncAction.failed({ params, error }));
-      throw error;
-    });
-  };
-}
-
-
-
-
-const actionCreator = actionCreatorFactory();
-
-export const searchCourses = actionCreator.async<
-    {query?: string}, 
-    {query?: string, results: CourseList}, 
-    {query?: string}>('SEARCH_COURSES');
-
-export const loadCourse = actionCreator.async<
-    {uuid: string}, 
-    {uuid: string, result: Course}, 
-    {uuid: string}>('LOAD_COURSE');
-
-export const saveCourse = actionCreator.async<
-    {course: Course}, 
-    {course: Course, result: Course}, 
-    {course: Course}>('SAVE_COURSE');
-
+export const courseActions = entityCrudActions<Course>('COURSE');
 
 export const searchCoursesWorker =  
-    wrapAsyncWorker(searchCourses, 
+    wrapAsyncWorker(courseActions.search, 
         (param): Promise<{query?: string, results: CourseList}> => { 
             const { query } = param;
             const qs = (!query ? '' : `?code=${encodeURIComponent(query)}`);
-            return axios.get<CourseList>(`${INST_URL}api/course${qs}`)
+            return axios.get<CourseList>(`${Config.baseUrl}api/course${qs}`)
                 .then(res => ({ query, results: res.data})); 
         }
     );
 
 
 export const loadCourseWorker =  
-    wrapAsyncWorker(loadCourse, 
+    wrapAsyncWorker(courseActions.read, 
         (param): Promise<{uuid: string, result: Course}> => { 
             const { uuid } = param;
-            return axios.get<Course>(`${INST_URL}api/course/${uuid}`)
+            return axios.get<Course>(`${Config.baseUrl}api/course/${uuid}`)
                 .then(res => ({ uuid, result: res.data})); 
         }
     );
 
 export const saveCourseWorker =  
-    wrapAsyncWorker(saveCourse, 
-        (param): Promise<{course: Course, result: Course}> => { 
-            const { course } = param;
-            if (course.uuid){
-                return axios.put<Course>(`${INST_URL}api/course/${course.uuid}`, course)
-                    .then(res => ({ course, result: res.data})); 
+    wrapAsyncWorker(courseActions.update, 
+        (param): Promise<{entity: Course, result: Course}> => { 
+            const { entity } = param;
+            if (entity.uuid){
+                return axios.put<Course>(`${Config.baseUrl}api/course/${entity.uuid}`, entity)
+                    .then(res => ({ entity, result: res.data})); 
             }
             else {
-                return axios.post<Course>(`${INST_URL}api/course/`, course)
-                    .then(res => ({ course, result: res.data})); 
+                return axios.post<Course>(`${Config.baseUrl}api/course/`, entity)
+                    .then(res => ({ entity, result: res.data})); 
             }
             
         }
