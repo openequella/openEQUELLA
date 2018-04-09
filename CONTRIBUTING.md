@@ -96,11 +96,11 @@ or run `com.tle.client.harness.ClientLauncher` in the `Source/Server/adminTool` 
 
 In the `Source/Plugins/Core/com.equella.core/js` directory you will find a yarn/npm
 project which compiles Purescript/Typescript/Sass into JS and CSS. Currently there are number
-of separate JS bundles which are generated and you could develope them easier by running a yarn
-"watched build" script. E.g. to develop the settings page:
+of separate JS bundles which are generated and you could develop them easier by running a yarn
+"watched build" script. E.g. to develop the main bundle:
 
 ```sh
-~/Source/Plugins/Core/com.equella.core/js$ yarn run dev:settings
+~/Source/Plugins/Core/com.equella.core/js$ yarn run dev:index
 ```
 
 This will build the javascript bundle to the correct location for running a dev EQUELLA and will
