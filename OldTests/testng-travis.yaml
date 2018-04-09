@@ -24,7 +24,7 @@ tests:
       - com.tle.webtests.test.searching.indexing.AutomaticIndexingTest
       - com.tle.webtests.test.searching.indexing.FileIndexingTest
       - com.tle.webtests.test.searching.hierarchy.HierarchyTopicTest
-  - name: Contribute
+  - name: Contribution
     classes:
       - com.tle.webtests.test.contribute.controls.AllControlsTest
       - com.tle.webtests.test.contribute.controls.BannedExtensionTest
@@ -61,17 +61,7 @@ tests:
       - com.tle.webtests.test.contribute.controls.asc.ScriptedPortletTests
   - name: Reporting
     classes:
-      - com.tle.webtests.test.reporting.CascadingParametersReportPage
-      - com.tle.webtests.test.reporting.CascadingParametersReportParametersPage
-      - com.tle.webtests.test.reporting.DisplayTextReportPage
-      - com.tle.webtests.test.reporting.DisplayTextReportParametersPage
-      - com.tle.webtests.test.reporting.FreeTextReportPage
-      - com.tle.webtests.test.reporting.ItemCountReportPage
-      - com.tle.webtests.test.reporting.ItemsReportPage
-      - com.tle.webtests.test.reporting.MultiValueReportOptionsPage
-      - com.tle.webtests.test.reporting.MultiValueReportPage
       - com.tle.webtests.test.reporting.RunReportTest
-      - com.tle.webtests.test.reporting.UsersReportPage
   - name: Viewing
     classes:
       - com.tle.webtests.test.viewing.DisplayNodesTest
@@ -87,3 +77,85 @@ tests:
       - com.tle.webtests.test.viewing.SummaryXSLTTest
       - com.tle.webtests.test.viewing.VersionShowAllTest
       - com.tle.webtests.test.viewing.ViewerTest
+      - com.tle.webtests.test.admin.CustomLinksTest
+      - com.tle.webtests.test.admin.ServerMessageTest
+      - com.tle.webtests.test.admin.MultiLingualTest
+      - com.tle.webtests.test.accessibility.AccessibilityModeTest
+      - com.tle.webtests.test.acl.ACLTest
+      - com.tle.webtests.test.cal.CALActivationsMetadataTest
+      - com.tle.webtests.test.cal.CALActivationsRolloverTest
+      - com.tle.webtests.test.cal.CALAgreementTest
+      - com.tle.webtests.test.cal.CALBookActivationTest
+      - com.tle.webtests.test.cal.CALBookRulesTest
+      - com.tle.webtests.test.cal.CALExtractTest
+      - com.tle.webtests.test.cal.CALJournalRulesTest
+      - com.tle.webtests.test.cal.CALPrivilegeTest
+      - com.tle.webtests.test.cal.CALSoapInterfaceTest
+      - com.tle.webtests.test.cal.CALViolationTest
+      - com.tle.webtests.test.dashboard.PortalsTest
+      - com.tle.webtests.test.drm.DRMPrivilegeTest
+      - com.tle.webtests.test.drm.DRMTest
+      - com.tle.webtests.test.drm.DRMTestWithCleanup
+      - com.tle.webtests.test.drm.WizardDRMTest
+      - com.tle.webtests.test.dynamichierarchy.DynamicHierarchyTest
+      - com.tle.webtests.test.importexport.CloneTest
+      - com.tle.webtests.test.importexport.ExportTest
+      - com.tle.webtests.test.importexport.ImportTest
+      - com.tle.webtests.test.myresources.favourites.FavouriteItemsTest
+      - com.tle.webtests.test.myresources.favourites.FavouritesInIntegrationTest
+      - com.tle.webtests.test.myresources.favourites.ResourceSelectorFavouritesTest
+      - com.tle.webtests.test.myresources.MyResourcesTest
+      - com.tle.webtests.test.myresources.MyResourcesWebPageTest
+      - com.tle.webtests.test.users.DisplayDateFormatTest
+      - com.tle.webtests.test.users.LoginSettingsTest
+      - com.tle.webtests.test.users.TokenLoginTest
+      - com.tle.webtests.test.users.UserPasswordTest
+      - com.tle.webtests.test.usersscripts.UserScriptTest
+  - name: Webservices
+    classes:
+      - com.tle.webtests.test.webservices.rest.ActivationApiTest
+      - com.tle.webtests.test.webservices.rest.CollectionApiTest
+      - com.tle.webtests.test.webservices.rest.CommentApiTest
+      - com.tle.webtests.test.webservices.rest.CourseApiTest
+      - com.tle.webtests.test.webservices.rest.DynaCollectionApiTest
+      - com.tle.webtests.test.webservices.rest.FileApiTest
+      - com.tle.webtests.test.webservices.rest.FileListingApiTest
+      - com.tle.webtests.test.webservices.rest.HierarchyApiTest
+      - com.tle.webtests.test.webservices.rest.ItemApiActionsTest
+      - com.tle.webtests.test.webservices.rest.ItemApiContributeTest
+      - com.tle.webtests.test.webservices.rest.ItemApiEditTest
+      - com.tle.webtests.test.webservices.rest.ItemApiLockTest
+      - com.tle.webtests.test.webservices.rest.ItemApiQuickContributeTest
+      - com.tle.webtests.test.webservices.rest.ItemApiRelationTest
+      - com.tle.webtests.test.webservices.rest.ItemApiViewTest
+      - com.tle.webtests.test.webservices.rest.MyResourcesApiTest
+      - com.tle.webtests.test.webservices.rest.NotificationsApiTest
+      - com.tle.webtests.test.webservices.rest.OAuthClientEditorTest
+      - com.tle.webtests.test.webservices.rest.SchemaApiTest
+      - com.tle.webtests.test.webservices.rest.ScrapbookApiTest
+      - com.tle.webtests.test.webservices.rest.SearchApiTest
+      - com.tle.webtests.test.webservices.rest.TasksApiTest
+      - com.tle.webtests.test.webservices.rest.TaxonomyApiTest
+      - com.tle.webtests.test.webservices.rest.UserGroupManagementApiTest
+      - com.tle.webtests.test.webservices.soap.Soap51Test
+      - com.tle.webtests.test.webservices.soap.SoapServicesTest
+      - com.tle.webtests.test.webservices.OAIEndpointTest
+      - com.tle.webtests.test.webservices.SRWTest
+      - com.tle.webtests.test.workflow.assignment.AutoAssignBiggerTest
+      - com.tle.webtests.test.workflow.rejection.DecisionPointScriptingByContributorRoleTest
+      - com.tle.webtests.test.workflow.assignment.AutoAssignSimpleTest
+      - com.tle.webtests.test.workflow.movetolive.MoveToLiveDuringWorkflowTest
+      - com.tle.webtests.test.workflow.assignment.WorkflowAssignmentTest
+      - com.tle.webtests.test.workflow.rejection.DecisionPointScriptingBySchemaElementTest
+      - com.tle.webtests.test.workflow.rejection.DecisionPointScriptingByItemStatusTest
+      - com.tle.webtests.test.workflow.rejection.NewVersionTest
+      - com.tle.webtests.test.workflow.rejection.RejectionPointsTest
+      - com.tle.webtests.test.workflow.rejection.RejectionPointsWithDecisionNodesTest
+      - com.tle.webtests.test.workflow.rejection.RejectionTest
+      - com.tle.webtests.test.workflow.ClonedItemTest
+      - com.tle.webtests.test.workflow.ManageTasksTest
+      - com.tle.webtests.test.workflow.MessageToModeratorTest
+      - com.tle.webtests.test.workflow.ModerationProgressTest
+      - com.tle.webtests.test.workflow.TaskListNavigationTest
+      - com.tle.webtests.test.workflow.TasksNotificationsTopbarTest
+      - com.tle.webtests.test.workflow.TasksSortingAndFilteringTest

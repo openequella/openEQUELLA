@@ -104,7 +104,7 @@ public class SearchPage extends AbstractQueryableSearchPage<SearchPage, ItemList
 	@Override
 	protected void loadUrl()
 	{
-		driver.get(context.getBaseUrl() + "searching.do?old=true");
+		driver.get(context.getBaseUrl() + "searching.do");
 	}
 
 	public ItemListPage search()
