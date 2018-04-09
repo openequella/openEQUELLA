@@ -24,15 +24,16 @@ import com.tle.webtests.pageobject.settings.PSSSettingsPage;
 import com.tle.webtests.pageobject.settings.SelectionSessionSettingsPage;
 import com.tle.webtests.pageobject.settings.ShortcutURLsSettingsPage;
 import com.tle.webtests.pageobject.userscripts.ShowUserScriptsPage;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import java.util.List;
 
 public class SettingsPage extends AbstractPage<SettingsPage>
 {
 	public static final String SEARCH_SETTINGS_LINK_TITLE = "Searching and content indexing";
 	public static final String COURSE_DEFAULTS_LINK_TITLE = "Copyright";
 	private static final String SEARCH_SETTING_TITLE = "Searching and content indexing";
-
-	@FindBy(id = "s_st")
-	private WebElement settingsTable;
 
 	public SettingsPage(PageContext context)
 	{
@@ -42,7 +43,12 @@ public class SettingsPage extends AbstractPage<SettingsPage>
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return settingsTable.findElement(By.className("sortedasc"));
+		return getSettingsGroup();
+	}
+
+	private WebElement getSettingsGroup()
+	{
+		return driver.findElement(By.id("settingsPage"));
 	}
 
 	@Override
@@ -53,13 +59,29 @@ public class SettingsPage extends AbstractPage<SettingsPage>
 
 	protected <T extends AbstractPage<T>> T clickSetting(String title, T page)
 	{
-		settingsTable.findElement(By.linkText(title)).click();
+		return clickSetting("General", title, page);
+	}
+
+	protected WebElement openGroup(String group, By untilVisible)
+	{
+		String titlePath = "//p[text() = "+quoteXPath(group)+"]";
+		WebElement settingGroup = getSettingsGroup().findElement(By.xpath("div["+titlePath+"]"));
+		ExpectedCondition<?> appears = ExpectedConditions.visibilityOfNestedElementsLocatedBy(settingGroup, untilVisible);
+		settingGroup.findElement(By.xpath(titlePath)).click();
+		waiter.until(appears);
+		return settingGroup;
+	}
+
+	protected <T extends AbstractPage<T>> T clickSetting(String group, String title, T page)
+	{
+		WebElement groupElem = openGroup(group, By.linkText(title));
+		groupElem.findElement(By.linkText(title)).click();
 		return page.get();
 	}
 
 	public boolean isSettingVisible(String title)
 	{
-		return !settingsTable.findElements(By.linkText(title)).isEmpty();
+		return !driver.findElements(By.linkText(title)).isEmpty();
 	}
 
 	public MimeSearchPage mimeSettings()
