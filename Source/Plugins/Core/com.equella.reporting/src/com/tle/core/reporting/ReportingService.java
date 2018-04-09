@@ -33,6 +33,8 @@ import com.tle.web.sections.SectionInfo;
  */
 public interface ReportingService extends AbstractEntityService<EntityEditingBean, Report>, RemoteReportingService
 {
+	public static final String DIR_DESIGN = "reportFiles";
+
 	// @SecureOnReturn(priv = ReportPrivileges.EXECUTE_REPORT)
 	List<Report> enumerateExecutable();
 
