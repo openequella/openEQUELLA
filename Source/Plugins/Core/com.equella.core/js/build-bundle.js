@@ -1,11 +1,12 @@
 const spawn = require('cross-spawn');
-const CombinedStream = require('combined-stream2');
+const fs = require('fs');
 const ArgumentParser = require("argparse").ArgumentParser;
 const mkdirp = require('mkdirp');
 const classesDir = "../target/scala-2.12/classes/web/reactjs/";
 const targetDir = "target/resources/web/reactjs/"
+const psTargetDir = "target/ps/"
+
 var env = Object.create( process.env );
-env.NODE_PATH = './target/ts';
 
 var parser = new ArgumentParser({
     version: '1.0.0',
@@ -21,48 +22,54 @@ parser.addArgument('--devpath', { help: 'Build production bundle to dev path', a
 const args =  parser.parseArgs();
 const main = args.module;
 
-function buildDev()
-{
-    const outjs = classesDir + args.out;
-    mkdirp.sync(classesDir);
-    console.log("Starting dev mode for: "+args.out);
-    var pargs = ["-w", "browserify", "-m", main, "--to", outjs]
-    if (args.lib) {
-        pargs.push("--no-check-main", "--standalone", "PS");
-    }
-    spawn.sync("pulp", pargs, {env:env, stdio:'inherit'});
-}
-
-function buildProd()
+function buildBundle(bundle, devpath, dev)
 {
     var destDir = targetDir;
-    if (args.devpath) {
+    if (devpath || dev) {
         destDir = classesDir;
     }
     mkdirp.sync(destDir);
-    const outjs = destDir+args.out;
-    console.log("Building production bundle: "+outjs);
-    var pargs = ["build", "-O", "-m", main]
-    var bargs = []
-    if (args.lib)
+    mkdirp.sync(psTargetDir);
+    const outjs = destDir + bundle;
+    const psBundle = psTargetDir + bundle;
+    console.log("Building " + (dev ? "dev": "production") + " bundle: "+outjs);
+
+    if (dev)
     {
-        pargs.push("--skip-entry-point"); 
-        bargs.push("--standalone", "PS");
+        var pargs = ["-w", "browserify", "--to", outjs, "-m", main];
+        if (args.lib)
+        {
+            pargs.push("--no-check-main", "--standalone", "PS");
+        }
+        env.NODE_PATH = './target/ts';
+        spawn.sync("pulp", pargs, {env: env, stdio: 'inherit'})
     }
-    bargs.push("-g", "[", "envify", "--NODE_ENV", "production", "]", 
-    "-g", "uglifyify", "-");
-    const pulp = spawn("pulp", pargs, { stdio: [process.stdin, 'pipe', process.stderr]})
+    else {
+        env.NODE_PATH = './target/ts:./prod-bridge';
 
-    var jsbundle = CombinedStream.create()
-    jsbundle.append(pulp.stdout);
-    jsbundle.append(Buffer.from("module.exports = PS[\""+main+"\"];\n"));
+        var pargs = ["build", "--to", psBundle, "--skip-entry-point", "-m", main];
 
-    var browserify = spawn("browserify", bargs, { env: env, stdio: ['pipe', 'pipe', 'inherit'] });
-    jsbundle.pipe(browserify.stdin);
+        var bargs = ["-g", "[", "envify", "--NODE_ENV", "production", "]", "-g", "uglifyify", psBundle, "-"];
 
-    var uglilfy = spawn("uglifyjs", ["-o", outjs, "--compress", "--mangle"], { stdio: ['pipe', 'inherit', 'inherit'] });
-    browserify.stdout.pipe(uglilfy.stdin);
+        const pulp = spawn.sync("pulp", pargs, {stdio: 'inherit'})
+        var psExport = args.lib ? ("['" + main + "']") : "";
+        fs.appendFileSync(psBundle, "module.exports = PS"+psExport+";");
+
+        var mainModule = 'require("./' + psBundle + '")';
+        var booter;
+        if (args.lib) {
+            bargs.push("--standalone", "PS");
+            booter = mainModule+";";
+        } else {
+            booter = mainModule+ '["'+main+'"].main();';
+        }
+        console.log("* Browserify+uglify-ing bundle");
+        var browserify = spawn("browserify", bargs, { env: env, stdio: ['pipe', 'pipe', 'inherit'] });
+        browserify.stdin.write(booter);
+        browserify.stdin.end();
+        var uglilfy = spawn("uglifyjs", ["-o", outjs, "--compress", "--mangle"], { stdio: ['pipe', 'inherit', 'inherit'] });
+        browserify.stdout.pipe(uglilfy.stdin);    
+    }
 }
 
-if (args.dev) buildDev(); 
-else buildProd();
+buildBundle(args.out, args.devpath, args.dev)

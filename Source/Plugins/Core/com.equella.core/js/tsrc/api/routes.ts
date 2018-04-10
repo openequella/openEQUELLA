@@ -14,4 +14,4 @@ export interface Routes {
     }
 }
 
-export var Routes : Routes = require("../../../output/Routes");
+export var Routes : () => Routes = () => require('Routes');

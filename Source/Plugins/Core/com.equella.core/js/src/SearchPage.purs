@@ -29,7 +29,7 @@ import Data.Lens (Lens', _1, _2, _Just, addOver, appendOver, over, set, setJust)
 import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
 import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, maybe)
-import Data.Newtype (class Newtype, unwrap)
+import Data.Newtype (unwrap)
 import Data.Set (isEmpty)
 import Data.Set as S
 import Data.StrMap (lookup)
@@ -68,6 +68,7 @@ import React.DOM as D
 import React.DOM.Dynamic (em')
 import React.DOM.Props as DP
 import SearchFilters (filterSection)
+import SearchResults (SearchResults(..))
 import Settings.UISettings (FacetSetting(..), NewUISettings(..), UISettings(..))
 import Template (template)
 import TimeAgo (timeAgo)
@@ -77,16 +78,15 @@ newtype Attachment = Attachment {thumbnailHref::String}
 newtype DisplayField = DisplayField {name :: String, html::String}
 newtype Result = Result {name::String, description:: Maybe String, modifiedDate::String,
     displayFields :: Array DisplayField, thumbnail::String, uuid::String, version::Int, attachments::Array Attachment}
-newtype SearchResults = SearchResults {start::Int, length::Int, available::Int, results::Array Result}
 
-derive instance srNT :: Newtype SearchResults _
+type ItemSearchResults = SearchResults Result
 
 type State = {
   searching :: Boolean,
   query :: String,
   facetSettings :: Array FacetSetting,
   facets :: SM.StrMap (S.Set String),
-  searchResults :: Maybe SearchResults, 
+  searchResults :: Maybe ItemSearchResults, 
   modifiedLast :: Maybe Milliseconds,
   after :: Tuple Boolean Date,
   before :: Tuple Boolean Date
@@ -349,7 +349,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
   eval (ToggleDate l) = do
     searchWith $ over (l <<< _1) not
 
-callSearch :: forall e. Int -> State -> Aff (ajax :: AJAX |e) (Either String SearchResults)
+callSearch :: forall e. Int -> State -> Aff (ajax :: AJAX |e) (Either String ItemSearchResults)
 callSearch offset {facets,query,before,after,modifiedLast} = do
   let
     whereXpath = mapMaybe whereClause $ SM.toUnfoldable facets
@@ -403,15 +403,6 @@ instance rDecode :: DecodeJson Result where
     version <- o .? "version"
     attachments <- o .? "attachments"
     pure $ Result {uuid,version,name:fromMaybe uuid nameO, description, thumbnail, modifiedDate, displayFields:fromMaybe [] df, attachments}
-
-instance srDecode :: DecodeJson SearchResults where
-  decodeJson v = do
-    o <- decodeJson v
-    start <- o .? "start"
-    length <- o .? "length"
-    available <- o .? "available"
-    results <- o .? "results"
-    pure $ SearchResults {start,length,available,results}
 
 rawStrings :: Tuple String
   { resultsAvailable :: String

@@ -14,7 +14,7 @@ import Data.Tuple (Tuple(..))
 import SearchPage (coreStrings, rawStrings) as SearchPage
 import Settings.UISettings (rawStrings) as UISettings
 import SettingsPage (coreStrings, rawStrings) as SettingsPage
-import Template (rawStrings) as Template
+import Template (rawStrings, coreStrings) as Template
 import Type.Row (class RowToList, Cons, Nil, RLProxy(..))
 
 class ConvertToStrings a where
@@ -45,6 +45,7 @@ main :: forall eff. Eff ( console :: CONSOLE | eff) Unit
 main = do
   log $ stringify $ encodeJson $ fromFoldable $
     genStrings "" Template.rawStrings <>
+    genStrings "" Template.coreStrings <>
     genStrings "" SearchPage.rawStrings <>
     genStrings "" SearchPage.coreStrings <>
     genStrings "" UISettings.rawStrings <>

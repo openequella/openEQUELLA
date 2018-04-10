@@ -1,0 +1,1 @@
+module.exports = require("../../target/ps/index.js")["Routes"];

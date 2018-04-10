@@ -2,9 +2,11 @@ module Template where
 
 import Prelude
 
+import Control.Monad.Aff.Console (log)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.IOEffFn (runIOFn1)
+import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
 import DOM (DOM)
 import DOM.HTML (window)
@@ -12,19 +14,22 @@ import DOM.HTML.Types (HTMLElement, htmlDocumentToDocument)
 import DOM.HTML.Window (document)
 import DOM.Node.NonElementParentNode (getElementById)
 import DOM.Node.Types (ElementId(ElementId), documentToNonElementParentNode)
+import Data.Argonaut (decodeJson)
 import Data.Array (catMaybes, intercalate)
-import Data.Maybe (Maybe(..), fromJust, fromMaybe, isJust, isNothing)
+import Data.Either (either)
+import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, isJust, isNothing)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.StrMap as M
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable as U
-import Debug.Trace (spy, traceAnyA)
-import Dispatcher (DispatchEff(DispatchEff), effEval)
-import Dispatcher.React (ReactProps(ReactProps), createComponent, modifyState)
-import EQUELLA.Environment (prepLangStrings)
+import Dispatcher (DispatchEff(DispatchEff))
+import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMount, modifyState)
+import EQUELLA.Environment (baseUrl, prepLangStrings)
 import MaterialUI.AppBar (appBar)
+import MaterialUI.Badge (badge, badgeContent)
+import MaterialUI.Button (disabled)
 import MaterialUI.ButtonBase (onClick)
-import MaterialUI.Color (inherit)
+import MaterialUI.Color (inherit, secondary)
 import MaterialUI.Color as C
 import MaterialUI.CssBaseline (cssBaseline_)
 import MaterialUI.Divider (divider)
@@ -42,22 +47,26 @@ import MaterialUI.Modal (onClose)
 import MaterialUI.Popover (anchorOrigin, transformOrigin)
 import MaterialUI.PropTypes (handle)
 import MaterialUI.Properties (className, classes_, color, component, mkProp, variant)
+import MaterialUI.Radio (default)
 import MaterialUI.Styles (MediaQuery, allQuery, cssList, mediaQuery, withStyles)
-import MaterialUI.TextStyle (title)
+import MaterialUI.TextStyle as TS
 import MaterialUI.Toolbar (disableGutters, toolbar)
+import MaterialUI.Tooltip (tooltip, title)
 import MaterialUI.Typography (typography)
 import MaterialUIPicker.DateFns (dateFnsUtils)
 import MaterialUIPicker.MuiPickersUtilsProvider (muiPickersUtilsProvider, utils)
+import Network.HTTP.Affjax (get)
 import Partial.Unsafe (unsafePartial)
 import React (ReactElement, createFactory)
 import React.DOM as D
 import React.DOM.Props as DP
 import ReactDOM (render)
 import Routes (matchRoute, routeHref)
+import SearchResults (SearchResultsMeta(SearchResultsMeta))
 
 newtype MenuItem = MenuItem {href::String, title::String, systemIcon::Nullable String, route:: Nullable String}
 
-data Command = ToggleMenu | UserMenuAnchor (Maybe HTMLElement)
+data Command = Init | ToggleMenu | UserMenuAnchor (Maybe HTMLElement)
 
 type UserData = {
   id::String, 
@@ -81,20 +90,21 @@ type RenderData = {
 
 foreign import renderData :: RenderData
 
-type State = {mobileOpen::Boolean, menuAnchor::Maybe HTMLElement}
+type State = {mobileOpen::Boolean, menuAnchor::Maybe HTMLElement, tasks :: Maybe Int, notifications :: Maybe Int}
 
 initialState :: State
-initialState = {mobileOpen:false, menuAnchor:Nothing}
+initialState = {mobileOpen:false, menuAnchor:Nothing, tasks:Nothing, notifications:Nothing}
 
 template :: {mainContent :: ReactElement, title::String, titleExtra::Maybe ReactElement} -> ReactElement
 template {mainContent,title,titleExtra} = template' {mainContent,title,titleExtra,menuExtra:[]}
 
 template' :: {mainContent :: ReactElement, title::String, titleExtra::Maybe ReactElement, 
   menuExtra::Array ReactElement} -> ReactElement
-template' = createFactory (withStyles ourStyles (createComponent initialState render (effEval eval)))
+template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMount Init) initialState render eval))
   where
   newPage = isNothing $ toMaybe renderData.html
   strings = prepLangStrings rawStrings
+  coreString = prepLangStrings coreStrings
   drawerWidth = 240
   ourStyles theme = 
     let desktop :: forall a. {|a} -> MediaQuery
@@ -173,10 +183,16 @@ template' = createFactory (withStyles ourStyles (createComponent initialState re
         _ -> [ mkProp "href" href ]
 
 
+  eval Init = do 
+    r <- lift $ get $ baseUrl <> "api/task"
+    either (lift <<< log) (\(SearchResultsMeta {available}) -> modifyState _ {tasks = Just available})  (decodeJson r.response)
+    r2 <- lift $ get $ baseUrl <> "api/notification"
+    either (lift <<< log) (\(SearchResultsMeta {available}) -> modifyState _ {notifications = Just available})  (decodeJson r2.response)
+
   eval ToggleMenu = modifyState \(s :: State) -> s {mobileOpen = not s.mobileOpen}
   eval (UserMenuAnchor el) = modifyState \(s :: State) -> s {menuAnchor = el}
 
-  render {mobileOpen,menuAnchor} (ReactProps {classes,mainContent,title:titleText,titleExtra,menuExtra}) 
+  render {mobileOpen,menuAnchor,tasks,notifications} (ReactProps {classes,mainContent,title:titleText,titleExtra,menuExtra}) 
     (DispatchEff d) = muiPickersUtilsProvider [utils dateFnsUtils] [
     D.div [DP.className classes.root] $ [
       cssBaseline_ [],
@@ -203,14 +219,18 @@ template' = createFactory (withStyles ourStyles (createComponent initialState re
     topBar = appBar [className $ classes.appBar] [
       toolbar [disableGutters true] [
         iconButton [color C.inherit, className classes.navIconHide, onClick $ handle $ d \_ -> ToggleMenu] [ icon_ [D.text "menu" ] ],
-        typography [variant title, color C.inherit, className classes.title] [ D.text titleText ],
+        typography [variant TS.title, color C.inherit, className classes.title] [ D.text titleText ],
         D.div [DP.className classes.extraTool] (U.fromMaybe titleExtra),
         userMenu
       ]
     ]
+    topBarString = coreString.topbar.link
+
     userMenu = D.div' $ menuExtra <>
       (guard (not renderData.user.guest) *>
       [
+        badgedLink "assignment_late" tasks "access/tasklist.do" topBarString.tasks , 
+        badgedLink "assignment" notifications "access/notifications.do" topBarString.notifications,
         iconButton [color inherit, onClick $ handle $ d \e -> UserMenuAnchor $ Just e.currentTarget] [
           icon_ [ D.text "account_circle"]
         ],
@@ -225,6 +245,14 @@ template' = createFactory (withStyles ourStyles (createComponent initialState re
             guard renderData.user.prefsEditable $> menuItem [component "a", mkProp "href" "access/user.do"] [D.text strings.menu.prefs]
           ]
       ])
+    badgedLink iconName count uri tip = 
+      let iconOnly = icon_ [ D.text iconName ]
+          buttonLink c content = iconButton [mkProp "href" uri, color c] [ content ]
+       in tooltip [ title tip ] [ 
+         case fromMaybe 0 count of
+            0 -> buttonLink default iconOnly
+            c -> buttonLink inherit (badge [badgeContent c, color secondary] [iconOnly])
+       ]
     menuContent = [D.div [DP.className classes.logo] [ D.img [ DP.src logoSrc] []]] <>
                   intercalate [divider []] (group <$> renderData.menuItems)
       where
@@ -256,5 +284,14 @@ rawStrings = Tuple "template" {
   menu: {
     logout:"Logout",
     prefs:"My preferences"
+  }
+}
+
+coreStrings = Tuple "com.equella.core" {
+  topbar: { 
+    link: {
+      notifications: "Notifications",
+      tasks: "Tasks"
+    }
   }
 }
