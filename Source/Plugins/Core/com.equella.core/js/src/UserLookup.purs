@@ -18,12 +18,16 @@ type UserDetailsR = {id:: String, username:: String, firstName:: String,
                            
 newtype UserDetails = UserDetails UserDetailsR
 derive instance ntUD :: Newtype UserDetails _
+derive instance eqUD :: Eq UserDetails
+
 type IdName = {id:: String, name:: String }
 newtype GroupDetails = GroupDetails IdName
 derive instance ntGD :: Newtype GroupDetails _
+derive instance eqGD :: Eq GroupDetails
 
 newtype RoleDetails = RoleDetails IdName
 derive instance ntRD :: Newtype RoleDetails _
+derive instance eqRD :: Eq RoleDetails
 
 newtype UserGroupRoles u g r = UserGroupRoles {users:: Array u, groups :: Array g, roles:: Array r}
 

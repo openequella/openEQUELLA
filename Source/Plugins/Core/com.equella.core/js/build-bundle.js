@@ -37,7 +37,7 @@ function buildBundle(bundle, devpath, dev)
 
     if (dev)
     {
-        var pargs = ["-w", "browserify", "--to", outjs, "-m", main];
+        var pargs = ["--watch", "--before", "sleep 3; clear", "browserify", "--to", outjs, "-m", main];
         if (args.lib)
         {
             pargs.push("--no-check-main", "--standalone", "PS");

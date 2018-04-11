@@ -20,6 +20,7 @@ import Data.Either (either)
 import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, isJust, isNothing)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.StrMap as M
+import Data.String (joinWith)
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable as U
 import Dispatcher (DispatchEff(DispatchEff))
@@ -96,9 +97,9 @@ initialState :: State
 initialState = {mobileOpen:false, menuAnchor:Nothing, tasks:Nothing, notifications:Nothing}
 
 template :: {mainContent :: ReactElement, title::String, titleExtra::Maybe ReactElement} -> ReactElement
-template {mainContent,title,titleExtra} = template' {mainContent,title,titleExtra,menuExtra:[]}
+template {mainContent,title,titleExtra} = template' {fixedViewPort : false, mainContent,title,titleExtra,menuExtra:[]}
 
-template' :: {mainContent :: ReactElement, title::String, titleExtra::Maybe ReactElement, 
+template' :: {fixedViewPort :: Boolean, mainContent :: ReactElement, title::String, titleExtra::Maybe ReactElement, 
   menuExtra::Array ReactElement} -> ReactElement
 template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMount Init) initialState render eval))
   where
@@ -149,18 +150,32 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
         width: 250 
       }
     ],
+    contentNoScroll: cssList [
+      mobile {
+        height: "calc(100vh - 64px)"
+      }, 
+      allQuery {
+        height: "calc(100vh - 56px)"
+      }
+    ],
+    contentScroll: cssList [
+      mobile { 
+        minHeight: "calc(100vh - 64px)"
+      }, 
+      allQuery {
+        minHeight: "calc(100vh - 56px)"
+      }
+    ],
     content: cssList [ 
       mobile {
-        height: "calc(100% - 64px)",
         marginTop: 64
       },
       desktop { marginLeft: 240 },
       allQuery {
+        marginTop: 56,
         backgroundColor: "#eee", -- theme.palette.background.default,
         width: "100%",
-        padding: theme.spacing.unit * 2,
-        height: "calc(100% - 56px)",
-        marginTop: 56
+        padding: theme.spacing.unit * 2
       }
     ],
     logo: {
@@ -192,7 +207,8 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
   eval ToggleMenu = modifyState \(s :: State) -> s {mobileOpen = not s.mobileOpen}
   eval (UserMenuAnchor el) = modifyState \(s :: State) -> s {menuAnchor = el}
 
-  render {mobileOpen,menuAnchor,tasks,notifications} (ReactProps {classes,mainContent,title:titleText,titleExtra,menuExtra}) 
+  render {mobileOpen,menuAnchor,tasks,notifications} (ReactProps {fixedViewPort, classes, mainContent, 
+              title:titleText,titleExtra,menuExtra}) 
     (DispatchEff d) = muiPickersUtilsProvider [utils dateFnsUtils] [
     D.div [DP.className classes.root] $ [
       cssBaseline_ [],
@@ -200,7 +216,8 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
     ]
   ]
     where
-    content = D.main [ DP.className classes.content ] [ mainContent]
+    contentClass = if fixedViewPort then classes.contentNoScroll else classes.contentScroll
+    content = D.main [ DP.className $ joinWith " " [classes.content, contentClass] ] [ mainContent]
     fullscreen = D.main' [ mainContent ]
     layout "YES" _ _ = fullscreen
     layout "YES_WITH_TOOLBAR" _ _ = fullscreen 
@@ -229,8 +246,8 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
     userMenu = D.div' $ menuExtra <>
       (guard (not renderData.user.guest) *>
       [
-        badgedLink "assignment_late" tasks "access/tasklist.do" topBarString.tasks , 
-        badgedLink "assignment" notifications "access/notifications.do" topBarString.notifications,
+        badgedLink "assignment" tasks "access/tasklist.do" topBarString.tasks , 
+        badgedLink "notifications" notifications "access/notifications.do" topBarString.notifications,
         iconButton [color inherit, onClick $ handle $ d \e -> UserMenuAnchor $ Just e.currentTarget] [
           icon_ [ D.text "account_circle"]
         ],
@@ -247,11 +264,11 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
       ])
     badgedLink iconName count uri tip = 
       let iconOnly = icon_ [ D.text iconName ]
-          buttonLink c content = iconButton [mkProp "href" uri, color c] [ content ]
+          buttonLink col content = iconButton [mkProp "href" uri, color col] [ content ]
        in tooltip [ title tip ] [ 
          case fromMaybe 0 count of
             0 -> buttonLink default iconOnly
-            c -> buttonLink inherit (badge [badgeContent c, color secondary] [iconOnly])
+            c -> buttonLink inherit $ badge [badgeContent c, color secondary] [iconOnly]
        ]
     menuContent = [D.div [DP.className classes.logo] [ D.img [ DP.src logoSrc] []]] <>
                   intercalate [divider []] (group <$> renderData.menuItems)

@@ -83,7 +83,7 @@ public class AclResourceImpl implements AclResource
 		{
 			tle.add(new TargetListEntry(eb.isGranted(), eb.isOverride(), eb.getPrivilege(), eb.getWho()));
 		}
-		aclManager.setTargetList(Node.INSTITUTION, CurrentInstitution.get(), new TargetList(tle));
+		aclManager.setTargetList(Node.INSTITUTION, null, new TargetList(tle));
 		return Response.status(Status.OK).build();
 	}
 

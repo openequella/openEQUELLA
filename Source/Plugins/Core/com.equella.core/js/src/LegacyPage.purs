@@ -53,7 +53,7 @@ legacy htmlMap = createFactory (withStyles styles $ createComponent {optionsAnch
     }
   }
   render s (ReactProps {classes}) (DispatchEff d) = 
-        template' {title:renderData.title, mainContent, titleExtra:Nothing, 
+        template' {fixedViewPort:false,  title:renderData.title, mainContent, titleExtra:Nothing, 
             menuExtra: fromMaybe [] $ (options <$> lookup "so" htmlMap)}
     where
     options html = [ 
