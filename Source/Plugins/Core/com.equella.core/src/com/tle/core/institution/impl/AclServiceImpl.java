@@ -26,6 +26,7 @@ import com.tle.common.Check;
 import com.tle.core.dao.AclDao;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.AclService;
+import org.springframework.transaction.annotation.Transactional;
 
 @Bind(AclService.class)
 @Singleton
@@ -35,6 +36,7 @@ public class AclServiceImpl implements AclService
 	private AclDao aclDao;
 
 	@Override
+	@Transactional
 	public List<AccessEntry> listAll()
 	{
 		List<AccessEntry> allAcls = aclDao.listAll();
@@ -42,6 +44,7 @@ public class AclServiceImpl implements AclService
 	}
 
 	@Override
+	@Transactional
 	public void saveAll(List<AccessEntry> acls)
 	{
 		if( !Check.isEmpty(acls) )
