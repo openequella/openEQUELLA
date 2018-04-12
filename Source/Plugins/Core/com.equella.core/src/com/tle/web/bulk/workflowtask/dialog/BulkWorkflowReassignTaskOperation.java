@@ -21,14 +21,12 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import com.google.inject.assistedinject.Assisted;
 import com.tle.beans.item.ItemPack;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
 import com.tle.core.guice.BindFactory;
-import com.tle.core.institution.AclService;
 import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.plugins.BeanLocator;
