@@ -37,7 +37,7 @@ routeMatch =
     CourseEdit <$> (lit "course" *> str <* lit "edit") <|>
     SchemaEdit <$> (lit "schema" *> str <* lit "edit") <|>
     TestACLS <$ (lit "testacls") <|>
-    CoursesPage <$ (lit "courses") <|>
+    CoursesPage <$ (lit "course") <|>
     SchemasPage <$ (lit "schema")
 
 matchRoute :: String -> Maybe Route 
@@ -54,7 +54,7 @@ routeHash :: Route -> String
 routeHash r = "/" <> ( case r of 
     SearchPage -> "search"
     SettingsPage -> "settings"
-    CoursesPage -> "courses"
+    CoursesPage -> "course"
     CourseEdit cid -> "course/" <> cid <> "/edit"
     SchemasPage -> "schema"
     SchemaEdit cid -> "schema/" <> cid <> "/edit"

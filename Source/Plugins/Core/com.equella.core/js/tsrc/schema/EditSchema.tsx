@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, TextField, Grid } from 'material-ui';
 import { Schema } from '../api';
-import { loadSchemaWorker, saveSchemaWorker, searchSchemasWorker } from './actions';
+import schemaService from './index';
 import { StoreState } from '../store';
 import { connect, Dispatch } from 'react-redux';
 import { push } from 'react-router-redux'
@@ -156,11 +156,12 @@ function mapStateToProps(state: StoreState) {
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>) {
+    const { workers } = schemaService;
     return {
-        loadSchema: (uuid: string) => loadSchemaWorker(dispatch, {uuid}),
-        saveSchema: (entity: Schema) => saveSchemaWorker(dispatch, {entity}),
+        loadSchema: (uuid: string) => workers.read(dispatch, {uuid}),
+        saveSchema: (entity: Schema) => workers.update(dispatch, {entity}),
         onCancel: () => dispatch(push('/')),
-        doSearchAgain: (query?: string) => searchSchemasWorker(dispatch, {query})
+        doSearchAgain: (query?: string) => workers.search(dispatch, {query})
     };
 }
 

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, TextField } from 'material-ui';
 import { Course } from '../api';
-import * as actions from './actions';
+import courseService from './index';
 import { Routes, Route } from '../api/routes';
 import { StoreState } from '../store';
 import { connect, Dispatch } from 'react-redux';
@@ -75,8 +75,9 @@ function mapStateToProps(state: StoreState) {
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>) {
+    const { workers } = courseService;
     return {
-        onSearch: (query?: string) => actions.searchCoursesWorker(dispatch, {query})
+        onSearch: (query?: string) => workers.search(dispatch, {query})
     }
 }
 

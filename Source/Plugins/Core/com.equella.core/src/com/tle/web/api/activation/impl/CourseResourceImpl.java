@@ -74,31 +74,44 @@ public class CourseResourceImpl extends AbstractBaseEntityResource<CourseInfo, B
 	}
 
 	@Override
-	public SearchBean<CourseBean> list(UriInfo uriInfo, String code)
+	public SearchBean<CourseBean> list(UriInfo uriInfo, String code, String q)
 	{
-		if( Check.isEmpty(code) )
+		if( Check.isEmpty(code) && Check.isEmpty(q) )
 		{
 			return super.list(uriInfo);
 		}
 
-		final List<CourseBean> courseByCode = new ArrayList<>();
-		// presence of 'code' parameter means we'll have a list of at most 1
-		final CourseInfo oneAtMost = courseService.getByCode(code);
-		if( oneAtMost != null )
+		final List<CourseBean> courses = new ArrayList<>();
+		if ( !Check.isEmpty(code) )
 		{
-			Collection<CourseInfo> matchedCourses = aclService.filterNonGrantedObjects(
-				Collections.singleton("LIST_COURSE_INFO"), Collections.singletonList(oneAtMost));
-			for( CourseInfo matched : matchedCourses )
-			{
-				courseByCode.add(serialize(matched, null, true));
+			// presence of 'code' parameter means we'll have a list of at most 1
+			final CourseInfo oneAtMost = courseService.getByCode(code);
+			if (oneAtMost != null) {
+				Collection<CourseInfo> matchedCourses = aclService.filterNonGrantedObjects(
+						Collections.singleton("LIST_COURSE_INFO"), Collections.singletonList(oneAtMost));
+				for (CourseInfo matched : matchedCourses) {
+					courses.add(serialize(matched, null, true));
+				}
+			}
+		}
+		else if (!Check.isEmpty(q))
+		{
+			//FIXME: generic entity searching
+			final CourseInfo oneAtMost = courseService.getByCode(q);
+			if (oneAtMost != null) {
+				Collection<CourseInfo> matchedCourses = aclService.filterNonGrantedObjects(
+						Collections.singleton("LIST_COURSE_INFO"), Collections.singletonList(oneAtMost));
+				for (CourseInfo matched : matchedCourses) {
+					courses.add(serialize(matched, null, true));
+				}
 			}
 		}
 
 		final SearchBean<CourseBean> retBean = new SearchBean<CourseBean>();
 		retBean.setStart(0);
-		retBean.setLength(courseByCode.size());
-		retBean.setAvailable(courseByCode.size());
-		retBean.setResults(courseByCode);
+		retBean.setLength(courses.size());
+		retBean.setAvailable(courses.size());
+		retBean.setResults(courses);
 		return retBean;
 	}
 
@@ -116,6 +129,11 @@ public class CourseResourceImpl extends AbstractBaseEntityResource<CourseInfo, B
 					CurrentLocale.get(KEY_PFX + "course.edit.validation.codeinuse", courseCode)));
 			}
 		}
+	}
+
+	public List<String> citation(UriInfo uriInfo, String uuid)
+	{
+		return courseService.getAllCitations();
 	}
 
 	@Override

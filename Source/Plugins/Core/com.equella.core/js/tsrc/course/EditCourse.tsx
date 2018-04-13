@@ -1,10 +1,15 @@
 import * as React from 'react';
-import { Button, TextField, Grid } from 'material-ui';
-import { Course } from '../api';
-import { loadCourseWorker, saveCourseWorker, searchCoursesWorker } from './actions';
-import { StoreState } from '../store';
+import { Button, TextField, Grid, Select, InputLabel, Input, 
+    MenuItem, Checkbox, FormGroup, FormControl, FormControlLabel } from 'material-ui';
+import { DatePicker } from 'material-ui-pickers';
 import { connect, Dispatch } from 'react-redux';
-import { push } from 'react-router-redux'
+import { push } from 'react-router-redux';
+import { format, parse } from 'date-fns';
+
+import { Course } from '../api';
+import courseService from './index';
+import { StoreState } from '../store';
+import { Routes, Route } from '../api/routes';
 
 //import List, { ListItem, ListItemText } from 'material-ui/List';
 /*
@@ -18,13 +23,10 @@ const styles = (theme: Theme) => ({
   });*/
 
 interface EditCourseProps {
+    routes: (route: any) => Route;
     loadCourse: (uuid: string) => void;
     saveCourse: (course: Course) => void;
-    onCancel: () => void;
     course: Course;
-    //fixme: remove
-    doSearchAgain: (query?: string) => void;
-    //root: any;
 }
 
 interface EditCourseState {
@@ -35,8 +37,8 @@ interface EditCourseState {
     departmentName?: string;
     citation?: string;
     students?: number;
-    from?: string;
-    until?: string;
+    from?: Date | null;
+    until?: Date | null;
     versionSelection?: string;
     archived?: boolean;
 }
@@ -45,51 +47,68 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
 
     constructor(props: EditCourseProps){
         super(props);
-        var uuids = window.location.href.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
-        if (uuids){
-            this.props.loadCourse(uuids[0]);
-        }
 
         this.state = {
             name: '',
             code: '',
-            description: ''
+            description: '',
+            citation: '',
+            from: null,
+            until: null
         };
+
+        var uuids = window.location.href.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+        if (uuids){
+            this.props.loadCourse(uuids[0]);
+        }
     }
 
     componentWillReceiveProps(nextProps: EditCourseProps){
         const course = nextProps.course;
         if (course){
-            const { uuid, name, code, description, departmentName } = course;
-            this.setState({ uuid, name, code, description, departmentName });
+            const { uuid, name, code, description, departmentName, citation, students, from, until, versionSelection, archived } = course;
+            const fromDate = (from ? parse(from!, 'yyyy-MM-ddTHH:mm:ss', new Date()) : null);
+            const untilDate = (until ? parse(until!, 'yyyy-MM-ddTHH:mm:ss', new Date()) : null);
+            this.setState({ uuid, name, code, description, departmentName, citation, students, from: fromDate, until: untilDate, versionSelection, archived });
         }
     }
 
     handleSave() {
-        const { uuid, name, code, description } = this.state;
+        const { uuid, name, code, description, departmentName, citation, students, from, until, versionSelection, archived } = this.state;
+        const fromStr = (from ? format(from, 'yyyy-MM-ddTHH:mm:ss') : undefined);
+        const untilStr = (until ? format(until, 'yyyy-MM-ddTHH:mm:ss') : undefined);
         if (code){
             let course = {
                 uuid,
                 name: name!,
                 code: code!,
-                description
+                description,
+                departmentName,
+                citation,
+                students,
+                from: fromStr,
+                until: untilStr,
+                versionSelection,
+                archived
             };
             this.props.saveCourse(course);
         }
     }
 
-    handleCancel() {
-        this.props.onCancel();
-    }
-
     handleChange(stateFieldName: string): (event: React.ChangeEvent<any>) => void {
         return (event: React.ChangeEvent<any>) => {
             this.setState({ [stateFieldName]: event.target.value });
-        };        
+        };
+    }
+
+    handleDateChange(stateFieldName: string): (date: string) => void {
+        return (date: string) => {
+            this.setState({ [stateFieldName]: date });
+        };
     }
 
     render() {
-        const { code, name, description, departmentName } = this.state;
+        const { code, name, description, departmentName, citation, students, from, until, versionSelection, archived } = this.state;
         /*
         <Stepper>
                 <Step title="Basic Details" active>
@@ -98,7 +117,10 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
                 <Step title="Permissions">
                 </Step>
             </Stepper>*/
-        return             <Grid>
+        return  <div>
+                    <Button onClick={this.props.routes(Routes().CoursesPage.value).onClick}>&lt;-</Button>
+                    
+                       <Grid>
                 <div>
                     <TextField id="name" 
                         label="Name" 
@@ -140,10 +162,70 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
                         margin="normal"
                         />
 
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel htmlFor="citation">Citation</InputLabel>
+                        <Select id="citation" 
+                            value={citation || ''}
+                            input={<Input id="citation-inp" />}
+                            onChange={this.handleChange('citation')}
+                            fullWidth
+                        >
+                            <MenuItem key={"harvard"} value={"harvard"}>
+                                harvard
+                            </MenuItem>
+                        </Select>
+                    </FormControl>
+
+                    <TextField id="students" 
+                        label="Students" 
+                        //helperText=""
+                        value={students}
+                        onChange={this.handleChange('students')}
+                        fullWidth
+                        margin="normal"
+                        />
+
+                    <DatePicker id="from"
+                        label="Date From"
+                        value={from}
+                        onChange={this.handleDateChange('from')}
+                        fullWidth
+                        clearable
+                        margin="normal"
+                        />
+                    
+                    <DatePicker id="until"
+                        label="Date Until"
+                        value={until}
+                        onChange={this.handleDateChange('until')}
+                        fullWidth
+                        clearable
+                        margin="normal"
+                        />
+                    
+                    <TextField id="versionSelection" 
+                        label="Version Selection" 
+                        //helperText=""
+                        value={versionSelection}
+                        onChange={this.handleChange('versionSelection')}
+                        fullWidth
+                        margin="normal"
+                        />
+
+                    <FormGroup>
+                        <FormControlLabel 
+                            label="Archived"
+                            control={<Checkbox id="archived" 
+                                checked={archived || false} 
+                                onChange={this.handleChange('archived')} />}
+                        />
+                    </FormGroup>
+
                     <Button color="primary" onClick={this.handleSave.bind(this)} variant="raised">Save</Button>
-                    <Button onClick={this.handleCancel.bind(this)} variant="raised">Cancel</Button>
+                    
                 </div>
             </Grid>
+            </div>
     }
 }
 
@@ -155,11 +237,12 @@ function mapStateToProps(state: StoreState) {
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>) {
+    const { workers } = courseService;
     return {
-        loadCourse: (uuid: string) => loadCourseWorker(dispatch, {uuid}),
-        saveCourse: (entity: Course) => saveCourseWorker(dispatch, {entity}),
+        loadCourse: (uuid: string) => workers.read(dispatch, {uuid}),
+        saveCourse: (entity: Course) => workers.update(dispatch, {entity}),
         onCancel: () => dispatch(push('/')),
-        doSearchAgain: (query?: string) => searchCoursesWorker(dispatch, {query})
+        doSearchAgain: (query?: string) => workers.search(dispatch, {query})
     };
 }
 

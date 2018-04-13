@@ -58,7 +58,7 @@ main = do
         SearchPage -> searchPage
         SettingsPage -> settingsPage {legacyMode:false}
         CoursesPage -> coursesPage routeHref
-        CourseEdit cid -> courseEdit cid
+        CourseEdit cid -> courseEdit routeHref cid
         SchemasPage -> schemasPage routeHref
         SchemaEdit cid -> schemaEdit cid
         TestACLS -> testEditor

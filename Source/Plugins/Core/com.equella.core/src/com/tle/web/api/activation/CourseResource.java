@@ -35,6 +35,7 @@ import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.util.List;
 
 @Path("course")
 @Api(value = "Courses", description = "course")
@@ -44,7 +45,8 @@ public interface CourseResource extends BaseEntityResource<CourseBean, BaseEntit
 	@GET
 	@ApiOperation("List all courses")
 	public SearchBean<CourseBean> list(@Context UriInfo uriInfo,
-		@ApiParam(value = "Course code to search for", required = false) @QueryParam("code") String code);
+		@ApiParam(value = "Course code to search for", required = false) @QueryParam("code") String code,
+		@ApiParam(value = "Search name, description and code", required = false) @QueryParam("q") String q);
 
 	@GET
 	@Path("/acl")
@@ -92,4 +94,9 @@ public interface CourseResource extends BaseEntityResource<CourseBean, BaseEntit
 	@Path("/{uuid}/lock")
 	@ApiOperation("Unlock a workflow")
 	public Response unlock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+
+	@GET
+	@Path("/{uuid}/citation")
+	@ApiOperation("Retrieve all available citations")
+	public List<String> citation(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 }

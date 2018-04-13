@@ -20,8 +20,8 @@ coursesPage :: (Route -> {href::String, onClick::IOFn1 Event Unit}) -> ReactElem
 coursesPage routes = template {mainContent:createElement searchCourses {store:store,routes} [],
     title: "Courses", titleExtra:Nothing}
 
-courseEdit :: String -> ReactElement
-courseEdit cid = template {mainContent:createElement editCourse {store:store,course:{uuid:cid}} [],
+courseEdit :: (Route -> {href::String, onClick::IOFn1 Event Unit}) -> String -> ReactElement
+courseEdit routes cid = template {mainContent:createElement editCourse {store:store,routes,course:{uuid:cid}} [],
     title: "Course Edit", titleExtra:Nothing}
 
 schemasPage :: (Route -> {href::String, onClick::IOFn1 Event Unit}) -> ReactElement

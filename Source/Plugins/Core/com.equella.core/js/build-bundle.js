@@ -5,6 +5,7 @@ const mkdirp = require('mkdirp');
 const classesDir = "../target/scala-2.12/classes/web/reactjs/";
 const targetDir = "target/resources/web/reactjs/"
 const psTargetDir = "target/ps/"
+const path = require("path");
 
 var env = Object.create( process.env );
 
@@ -45,7 +46,7 @@ function buildBundle(bundle, devpath, dev)
         spawn.sync("pulp", pargs, {env: env, stdio: 'inherit'})
     }
     else {
-        env.NODE_PATH = './target/ts:./prod-bridge';
+        env.NODE_PATH = './target/ts' + path.delimiter + './prod-bridge';
 
         var pargs = ["build", "--to", psBundle, "--skip-entry-point", "-m", main];
 
