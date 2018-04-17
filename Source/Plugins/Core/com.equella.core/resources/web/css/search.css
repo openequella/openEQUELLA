@@ -232,16 +232,14 @@ div.skinnysearch {
 }
 
 #querycontainer {
-	display: table;
+	display: flex;
 }
 
 #querycontainer .autocomplete-container {
-	display: table-cell;
 	width: 100%;
 }
 
 #searchform-search {
-	display: table-cell;
 	height: 27px;
 	 padding-left: 8px;
 }

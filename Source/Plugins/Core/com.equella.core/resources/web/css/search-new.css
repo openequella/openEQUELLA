@@ -1,5 +1,5 @@
 .search-layout #col1 {
-    min-width: 592px;
+    min-width: 510px;
     width: calc(100% - 240px);
 }
 
@@ -235,6 +235,11 @@ div.skinnysearch {
 #querycontainer {
     height: 27px;
 	display: flex;
+	align-items: stretch;
+}
+
+#searchform-search {
+    height: 27px;
 }
 
 #querycontainer .autocomplete-container {

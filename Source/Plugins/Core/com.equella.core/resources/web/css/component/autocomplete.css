@@ -7,7 +7,6 @@
 	position: absolute;
 	top: 0px;
 	left: 0px;
-	height: 16px;
 }
 
 html[dir="rtl"] .autocomplete-container input {
