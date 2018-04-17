@@ -27,6 +27,7 @@ import com.tle.web.sections.SectionInfo
 import com.tle.web.sections.result.util.KeyLabel
 import com.tle.web.sections.standard.model.{HtmlLinkState, SimpleBookmark}
 import com.tle.web.settings.UISettings
+import com.tle.web.template.RenderNewTemplate
 import com.tle.web.template.section.MenuContributor
 import com.tle.web.template.section.MenuContributor.MenuContribution
 
@@ -40,7 +41,7 @@ object SearchMenuContributor extends MenuContributor {
     }
     else {
       val uis = RunWithDB.executeIfInInstitution(UISettings.cachedUISettings).getOrElse(UISettings.defaultSettings)
-      val hls = new HtmlLinkState(new SimpleBookmark(if (uis.newUI.newSearch) "page/search" else "searching.do"))
+      val hls = new HtmlLinkState(new SimpleBookmark(if (uis.newUI.newSearch && RenderNewTemplate.isNewLayout(info)) "page/search" else "searching.do"))
       hls.setLabel(SearchMenuContributor.LABEL_KEY)
       val mc = new MenuContributor.MenuContribution(hls, SearchMenuContributor.ICON_PATH, 1, 20, "search", "search")
       Collections.singletonList(mc)

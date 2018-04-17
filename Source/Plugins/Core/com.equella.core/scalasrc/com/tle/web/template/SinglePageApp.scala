@@ -16,6 +16,8 @@
 
 package com.tle.web.template
 
+import java.util
+
 import com.tle.core.guice.Bind
 import com.tle.legacy.LegacyGuice
 import com.tle.web.sections.equella.AbstractScalaSection
@@ -24,6 +26,7 @@ import com.tle.web.sections.registry.SectionsServlet
 import com.tle.web.sections.render.{HtmlRenderer, SimpleSectionResult, TextLabel}
 import com.tle.web.sections.{PublicBookmarkFactory, SectionInfo, SectionResult, SectionTree}
 import javax.servlet.http.HttpServletRequest
+import scala.collection.JavaConverters._
 
 @Bind
 class SinglePageAppServlet extends SectionsServlet
@@ -34,6 +37,10 @@ class SinglePageAppServlet extends SectionsServlet
 
   override def getServletPath(request: HttpServletRequest): String = {
     request.getServletPath + request.getPathInfo
+  }
+
+  override val defaultAttributes = {
+    super.defaultAttributes().asScala.toMap.updated(RenderNewTemplate.NewLayoutKey, java.lang.Boolean.valueOf(true)).asJava
   }
 }
 
