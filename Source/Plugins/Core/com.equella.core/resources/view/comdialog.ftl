@@ -1,6 +1,6 @@
 <#include "/com.tle.web.freemarker@/macro/sections.ftl">
 
-<@css path="moderate.css" hasRtl=true/>
+<@css path="moderate.css" hasRtl=true hasNew=true/>
 <div id="comments-dialog">
 	<div class="comments-middle">
 		<@render s.viewCommentsSection/>

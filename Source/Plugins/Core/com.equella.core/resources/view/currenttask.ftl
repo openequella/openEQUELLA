@@ -2,7 +2,7 @@
 <#include "/com.tle.web.sections.standard@/link.ftl">
 <#include "/com.tle.web.sections.equella@/macro/receipt.ftl">
 
-<@css path="moderate.css" hasRtl=true/>
+<@css path="moderate.css" hasRtl=true hasNew=true/>
 
 <div id="moderate" class="area content">
 

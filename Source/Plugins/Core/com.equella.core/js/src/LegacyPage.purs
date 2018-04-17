@@ -24,7 +24,7 @@ import MaterialUI.Styles (withStyles)
 import React (ReactElement, Ref, createFactory)
 import React.DOM (text)
 import React.DOM as D
-import React.DOM.Props (Props)
+import React.DOM.Props (Props, _id)
 import React.DOM.Props as DP
 import Template (renderData, template')
 
@@ -67,6 +67,8 @@ legacy htmlMap = createFactory (withStyles styles $ createComponent {optionsAnch
         ]
     ]
     mainContent = D.div' $ catMaybes [ 
+      (divWithHtml <<< {divProps:[_id "breadcrumbs"], html: _} <$> lookup "crumbs" htmlMap),
+      (divWithHtml <<< {divProps:[], html: _} <$> lookup "upperbody" htmlMap),
       (divWithHtml <<< {divProps:[], html: _} <$> lookup "body" htmlMap)
     ]
   eval (OptionsAnchor el) = modifyState _ {optionsAnchor = el}

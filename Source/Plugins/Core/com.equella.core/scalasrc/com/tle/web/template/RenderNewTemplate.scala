@@ -21,7 +21,7 @@ import com.tle.common.institution.CurrentInstitution
 import com.tle.common.settings.standard.AutoLogin
 import com.tle.common.usermanagement.user.{CurrentUser, UserState}
 import com.tle.core.db.RunWithDB
-import com.tle.core.i18n.LocaleLookup
+import com.tle.core.i18n.{CoreStrings, LocaleLookup}
 import com.tle.core.plugins.PluginTracker
 import com.tle.legacy.LegacyGuice
 import com.tle.web.DebugSettings
@@ -29,6 +29,7 @@ import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.navigation.MenuService
 import com.tle.web.resources.ResourcesService
 import com.tle.web.sections._
+import com.tle.web.sections.equella.layout.OneColumnLayout
 import com.tle.web.sections.events._
 import com.tle.web.sections.events.js.BookmarkAndModify
 import com.tle.web.sections.jquery.JQueryStatement
@@ -37,7 +38,9 @@ import com.tle.web.sections.js.JSUtils
 import com.tle.web.sections.js.generic.expression.{ArrayExpression, ObjectExpression}
 import com.tle.web.sections.js.generic.function.IncludeFile
 import com.tle.web.sections.render._
-import com.tle.web.sections.standard.renderers.DivRenderer
+import com.tle.web.sections.result.util.KeyLabel
+import com.tle.web.sections.standard.model.HtmlLinkState
+import com.tle.web.sections.standard.renderers.{DivRenderer, LinkRenderer, SpanRenderer}
 import com.tle.web.settings.UISettings
 import com.tle.web.template.Decorations.MenuMode
 import com.tle.web.template.section.HelpAndScreenOptionsSection
@@ -105,7 +108,6 @@ object RenderNewTemplate {
       val precontext = context.getPreRenderContext
       if (DebugSettings.isAutoTestMode) precontext.preRender(RenderTemplate.AUTOTEST_JS)
       precontext.preRender(RenderTemplate.STYLES_CSS)
-      precontext.preRender(RenderTemplate.CUSTOMER_CSS)
 
       def wrapBody(body: SectionRenderable) : SectionRenderable = {
         val citag = new TagState("content-inner").addClass[TagState](decs.getPageLayoutDisplayClass)
@@ -129,11 +131,16 @@ object RenderNewTemplate {
       } else {
         bodyTag.setNestedRenderable(bodyResult)
       }
+      val htmlMap = new ObjectExpression()
       val hasoMap = HelpAndScreenOptionsSection.getContent(context).asScala
       val scrops = hasoMap.get("screenoptions").map(bbr => SectionUtils.renderToString(context, bbr.getRenderable))
+      val upper = Option(SectionUtils.renderToString(context,
+        tempResult.getNamedResult(context, OneColumnLayout.UPPERBODY))).filter(_.nonEmpty)
+      renderCrumbs(context, decs).foreach(c => htmlMap.put("crumbs", SectionUtils.renderToString(context, c)))
       val bodyHtml = SectionUtils.renderToString(context, bodyTag)
-      val htmlMap = new ObjectExpression("body", bodyHtml)
+      htmlMap.put("body", bodyHtml)
       scrops.foreach(htmlMap.put("so", _))
+      upper.foreach(htmlMap.put(OneColumnLayout.UPPERBODY, _))
       htmlMap
     } else null
 
@@ -179,4 +186,15 @@ object RenderNewTemplate {
     }
   }
 
+  def renderCrumbs(context: RenderEventContext, d: Decorations): Option[SectionRenderable] = {
+    val bc = Breadcrumbs.get(context)
+    if (d.isForceBreadcrumbsOn || (d.isBreadcrumbs && !bc.getLinks.isEmpty)) Option {
+      val ct = new TagState("breadcrumb-inner")
+      val allCrumbs = bc.getLinks.asScala.map {
+        case ls: HtmlLinkState => new LinkRenderer(ls)
+        case o => new TagRenderer("span", o)
+      } :+ Option(bc.getForcedLastCrumb).getOrElse(d.getTitle)
+      new SpanRenderer(ct, new DelimitedRenderer(" " + CoreStrings.text("breadcrumb.separator") + " ", allCrumbs: _*))
+    } else None
+  }
 }
