@@ -5,10 +5,7 @@
 
 .search-layout #col2 {
     margin-left: 16px;
-}
-
-.search-layout #col2 div {
-    width: 220px;
+    width: 240px;
 }
 
 .search-layout #col .area {
@@ -17,22 +14,6 @@
 
 .search-layout #col1 .area {
 	padding: 25px 17px 33px;
-}
-
-.search-layout .box {
-	width: 219px;
-}
-
-.search-layout .box-head {
-	width: 219px;
-}
-
-.search-layout .box-content {
-	width: 219px;
-}
-
-.search-layout .box-content-inner {
-	width: 183px;
 }
 
 .search-layout #col2 .box hr {
