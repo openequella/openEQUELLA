@@ -3,22 +3,6 @@
 	$.fn.setupRichDropDown = function(options)
 	{
 		var adjustWidths = function(){
-			$('.richdropdown-selectedcontainer').each(function(){
-				var $containerDiv = $(this);
-				var $select = $containerDiv.prev();
-
-				var width = $select[0].offsetWidth;
-				if (width === 'auto' || width === '0px' || width === 0) {
-					width = $select.width();
-				}
-				else {
-					width = parseInt(width);
-				}
-				$containerDiv.css('width', width + 'px');
-
-				var $richdd = $('.richdropdown');
-				$richdd.css('min-width', (width + 1) + 'px');
-			});
 		};
 
 		$(window).on('resize.richdropdown', adjustWidths);

@@ -108,7 +108,7 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
     }
 
     render() {
-        const { code, name, description, departmentName, citation, students, from, until, versionSelection, archived } = this.state;
+        const { code, name, description, departmentName, citation, students, /* from, until, AARON PLS*/ versionSelection, archived } = this.state;
         /*
         <Stepper>
                 <Step title="Basic Details" active>
@@ -187,7 +187,7 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
 
                     <DatePicker id="from"
                         label="Date From"
-                        value={from}
+                        // value={from}
                         onChange={this.handleDateChange('from')}
                         fullWidth
                         clearable
@@ -196,7 +196,7 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
                     
                     <DatePicker id="until"
                         label="Date Until"
-                        value={until}
+                        // value={until}
                         onChange={this.handleDateChange('until')}
                         fullWidth
                         clearable

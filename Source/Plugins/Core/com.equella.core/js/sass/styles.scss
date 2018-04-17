@@ -1334,22 +1334,6 @@ Expandable button
 	margin-right:0px;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 div.mainCols {
 	display: flex;
 }
@@ -1384,40 +1368,6 @@ fieldset {
 	}
 	a:hover {
 		text-decoration: underline;
-	}
-}
-
-#searchform {
-	.query-wrapper {
-		#querycontainer {
-			display: block;
-
-			.autocomplete-container {
-				display: inline-block;
-				width: calc(100% - 30px);
-				height: 27px;
-
-				> input[type="text"] {
-					width: 100%;
-					height: 27px;
-				}
-			}
-
-			> input[type="text"] {
-				display: inline-block;
-				width: calc(100% - 30px);
-				height: 27px;
-			}
-
-			button {
-				display: inline-block;
-				width: 30px;
-			}
-		}
-
-		select {
-			width: 100%;
-		}
 	}
 }
 
