@@ -4,7 +4,7 @@ import Prelude
 
 import Control.Bind (bindFlipped)
 import Data.Argonaut (class DecodeJson, class EncodeJson, decodeJson, getField, jsonEmptyObject, (.?), (:=), (~>))
-import Data.Array (uncons)
+import Data.Array (mapMaybe, uncons)
 import Data.Array as A
 import Data.Bifunctor (lmap)
 import Data.Either (Either(..), either, fromRight)
@@ -175,25 +175,34 @@ traverseExpr f fop =
             (Right {op, exprs:es}) -> let exprs = recurse <$> es in fop {op, exprs} n
   in recurse
 
+collapseZero :: forall e t. ExpressionDecode e t => e -> Maybe e
+collapseZero e = let (Tuple n w) = decodeExpr e in case w of 
+  Right {exprs: []} -> Nothing
+  Right {op,exprs} -> case mapMaybe collapseZero exprs of 
+    [] -> Nothing
+    o -> Just $ fromOp op o n
+  _ -> Just e
+
 collapseOps :: forall e t. ExpressionDecode e t => e -> Maybe e 
-collapseOps e = 
+collapseOps e =
   let collapseOp :: OpType -> Boolean -> e -> Array e 
       collapseOp op n e = let (Tuple n2 w) = decodeExpr e in case w of 
-        (Right {op:op2, exprs}) | op2 == op && n == n2 -> exprs
-        _ -> [e]
+          (Right {op:op2, exprs}) | op2 == op && n == n2 -> exprs
+          _ -> [e]
       (Tuple n w) = decodeExpr e
   in case w of 
-    Right {exprs: []} -> Nothing
-    Right {exprs: [one]} | isnot one == n -> collapseOps one
-    Right {op, exprs} ->  
-        let currentLen = A.length exprs 
-            newExprs = exprs >>= collapseOp op n
-        in if currentLen /= A.length newExprs then collapseOps (fromOp op newExprs n) else Just $ e
-    _ -> Just $ e
+      Right {exprs: []} -> Nothing
+      Right {exprs: [one]} | isnot one == n -> collapseOps one
+      Right {op, exprs} ->  
+          let currentLen = A.length exprs 
+              newExprs = exprs >>= collapseOp op n
+          in if currentLen /= A.length newExprs then collapseOps (fromOp op newExprs n) else Just $ e
+      _ -> Just $ e
 
 entryToTargetList :: AccessEntry -> TargetListEntry
-entryToTargetList (AccessEntry {priv, granted, override, expr}) = TargetListEntry {privilege:priv, granted, override, who: 
-    joinWith " " $ A.reverse $ A.fromFoldable $ toWho expr}
+entryToTargetList (AccessEntry {priv, granted, override, expr}) = TargetListEntry 
+    {privilege:priv, granted, override, 
+        who: joinWith " " $ A.reverse $ A.fromFoldable $ toWho expr}
   where 
   toWho :: Expression -> List String
   toWho t | isnot t = "NOT" : toWho (notted t) 

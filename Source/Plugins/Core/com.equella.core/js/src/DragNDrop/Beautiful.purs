@@ -22,7 +22,7 @@ type DroppableProvided = {
     placeholder :: ReactElement
 }
 type DroppableStateSnapshot = {
-
+    isDraggingOver :: Boolean
 }
 
 type DraggableProvided = {
@@ -32,7 +32,7 @@ type DraggableProvided = {
     placeholder :: ReactElement
 }
 type DraggableStateSnapshot = {
-
+    
 }
 
 type DropResult = {

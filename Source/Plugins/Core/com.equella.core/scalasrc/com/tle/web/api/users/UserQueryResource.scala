@@ -16,10 +16,11 @@
 
 package com.tle.web.api.users
 
+import com.tle.common.security.SecurityConstants
 import com.tle.common.usermanagement.user.valuebean.{GroupBean, RoleBean, UserBean}
 import com.tle.legacy.LegacyGuice
-import io.swagger.annotations.Api
-import javax.ws.rs.{POST, Path, Produces}
+import io.swagger.annotations.{Api, ApiParam}
+import javax.ws.rs._
 
 import scala.collection.JavaConverters._
 
@@ -59,6 +60,7 @@ case class LookupQueryResult(users: Iterable[UserQueryResult], groups: Iterable[
 @Api(value = "User queries")
 class UserQueryResource {
 
+  val exclude = Set(SecurityConstants.LOGGED_IN_USER_ROLE_ID, SecurityConstants.GUEST_USER_ROLE_ID)
   @POST
   @Path("lookup")
   def lookup(queries: LookupQuery): LookupQueryResult = {
@@ -70,5 +72,21 @@ class UserQueryResource {
       groups.asScala.values.map(GroupQueryResult.apply),
       roles.asScala.values.map(RoleQueryResult.apply))
   }
+
+  @GET
+  @Path("search")
+  def search(@QueryParam(value="q") q : String,
+             @QueryParam("users") @DefaultValue("true") @ApiParam(name = "Include users") susers: Boolean,
+             @QueryParam("groups") @DefaultValue("true") @ApiParam(name = "Include groups") sgroups: Boolean,
+             @QueryParam("roles") @DefaultValue("true") @ApiParam(name = "Include roles") sroles: Boolean) : LookupQueryResult = {
+    val us = LegacyGuice.userService
+    val users = if (susers) us.searchUsers(q).asScala else Iterable.empty
+    val groups = if (sgroups) us.searchGroups(q).asScala else Iterable.empty
+    val roles = if (sroles) us.searchRoles(q).asScala else Iterable.empty
+    LookupQueryResult(users.map(UserQueryResult.apply),
+      groups.map(GroupQueryResult.apply),
+      roles.filterNot(r => exclude(r.getUniqueID)).map(RoleQueryResult.apply))
+  }
+
 
 }

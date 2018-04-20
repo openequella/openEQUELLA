@@ -1,4 +1,4 @@
-module UserLookup where 
+module Users.UserLookup where 
 
 import Prelude
 
@@ -11,7 +11,8 @@ import Data.Maybe (Maybe)
 import Data.Monoid (class Monoid)
 import Data.Newtype (class Newtype)
 import EQUELLA.Environment (baseUrl)
-import Network.HTTP.Affjax (AJAX, post)
+import Global (encodeURIComponent)
+import Network.HTTP.Affjax (AJAX, get, post)
 
 type UserDetailsR = {id:: String, username:: String, firstName:: String,
                            lastName:: String, email :: Maybe String }
@@ -30,6 +31,11 @@ derive instance ntRD :: Newtype RoleDetails _
 derive instance eqRD :: Eq RoleDetails
 
 newtype UserGroupRoles u g r = UserGroupRoles {users:: Array u, groups :: Array g, roles:: Array r}
+
+class ToUGRDetail a where 
+  toUGR :: a -> UGRDetail
+
+type UGRDetail = UserGroupRoles UserDetails GroupDetails RoleDetails 
 
 instance semigroupUGR :: Semigroup (UserGroupRoles u g r) where 
   append (UserGroupRoles a) (UserGroupRoles b) = UserGroupRoles {users:a.users <> b.users, groups:a.groups <> b.groups, roles: a.roles <> b.roles }
@@ -75,8 +81,21 @@ instance decRoleDetails :: DecodeJson RoleDetails where
     name <- o .? "name"
     pure $ RoleDetails {id,name}
 
-lookupUsers :: forall e. UserGroupRoles String String String -> Aff (ajax::AJAX|e) (UserGroupRoles UserDetails GroupDetails RoleDetails)
+instance uUGR :: ToUGRDetail UserDetails where 
+  toUGR u = UserGroupRoles {users:[u], groups:[], roles:[]}
+
+instance gUGR :: ToUGRDetail GroupDetails where 
+  toUGR g = UserGroupRoles {users:[], groups:[g], roles:[]}
+
+instance rUGR :: ToUGRDetail RoleDetails where 
+  toUGR r = UserGroupRoles {users:[], groups:[], roles:[r]}
+
+lookupUsers :: forall e. UserGroupRoles String String String -> Aff (ajax::AJAX|e) UGRDetail
 lookupUsers r = do 
   resp <- post (baseUrl <> "api/userquery/lookup") (encodeJson r)
   either (throwError <<< error) pure $ decodeJson resp.response
 
+searchUGR :: forall e. String -> Aff (ajax::AJAX|e) UGRDetail
+searchUGR q =   do 
+  resp <- get $ baseUrl <> "api/userquery/search?q=" <> encodeURIComponent q
+  either (throwError <<< error) pure $ decodeJson resp.response
