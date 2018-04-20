@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, TextField, Grid, Select, InputLabel, Input, 
-    MenuItem, Checkbox, FormGroup, FormControl, FormControlLabel } from 'material-ui';
+    MenuItem, Checkbox, FormGroup, FormControl, FormControlLabel, IconButton, Icon } from 'material-ui';
 import { DatePicker } from 'material-ui-pickers';
 import { connect, Dispatch } from 'react-redux';
 import { push } from 'react-router-redux';
@@ -67,16 +67,16 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
         const course = nextProps.course;
         if (course){
             const { uuid, name, code, description, departmentName, citation, students, from, until, versionSelection, archived } = course;
-            const fromDate = (from ? parse(from!, 'yyyy-MM-ddTHH:mm:ss', new Date()) : null);
-            const untilDate = (until ? parse(until!, 'yyyy-MM-ddTHH:mm:ss', new Date()) : null);
+            const fromDate = (from ? parse(from!, 'YYYY-MM-DDTHH:mm:ss', new Date()) : null);
+            const untilDate = (until ? parse(until!, 'YYYY-MM-DDTHH:mm:ss', new Date()) : null);
             this.setState({ uuid, name, code, description, departmentName, citation, students, from: fromDate, until: untilDate, versionSelection, archived });
         }
     }
 
     handleSave() {
         const { uuid, name, code, description, departmentName, citation, students, from, until, versionSelection, archived } = this.state;
-        const fromStr = (from ? format(from, 'yyyy-MM-ddTHH:mm:ss') : undefined);
-        const untilStr = (until ? format(until, 'yyyy-MM-ddTHH:mm:ss') : undefined);
+        const fromStr = (from ? format(from, 'YYYY-MM-DDTHH:mm:ss') : undefined);
+        const untilStr = (until ? format(until, 'YYYY-MM-DDTHH:mm:ss') : undefined);
         if (code){
             let course = {
                 uuid,
@@ -118,7 +118,10 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
                 </Step>
             </Stepper>*/
         return  <div>
-                    <Button onClick={this.props.routes(Routes().CoursesPage.value).onClick}>&lt;-</Button>
+                    <IconButton aria-label="Back" 
+                        onClick={this.props.routes(Routes().CoursesPage.value).onClick}>
+                            <Icon>arrow_back</Icon>
+                    </IconButton>
                     
                        <Grid>
                 <div>

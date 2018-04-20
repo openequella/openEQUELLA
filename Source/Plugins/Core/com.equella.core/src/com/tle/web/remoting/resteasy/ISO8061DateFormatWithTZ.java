@@ -22,6 +22,9 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
+import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.common.beans.exception.ValidationError;
+import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.CurrentTimeZone;
 
 public class ISO8061DateFormatWithTZ extends DateFormat
@@ -61,7 +64,8 @@ public class ISO8061DateFormatWithTZ extends DateFormat
 		try {
 			return ISO8601Utils.parse(toParse, pos);
 		} catch (ParseException e) {
-			throw new RuntimeException(e);
+			throw new InvalidDataException(new ValidationError("date",
+					CurrentLocale.get("com.equella.core.api.error.dateparse", source)));
 		}
 	}
 
