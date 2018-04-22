@@ -3,6 +3,7 @@ import { SearchResults } from './General'
 
 export interface Course extends Entity {
     code: string;
+    type?: string;
     departmentName?: string;
     citation?: string;
     students?: number;

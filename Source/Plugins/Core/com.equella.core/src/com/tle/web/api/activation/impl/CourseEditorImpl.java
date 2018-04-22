@@ -66,7 +66,6 @@ public class CourseEditorImpl extends AbstractBaseEntityEditor<CourseInfo, Cours
 		{
 			entity.setDisabled(archived);
 		}
-		entity.setDisabled(editing);
 		entity.setCode(bean.getCode());
 		entity.setCitation(bean.getCitation());
 		if( !Check.isEmpty(bean.getType()) )

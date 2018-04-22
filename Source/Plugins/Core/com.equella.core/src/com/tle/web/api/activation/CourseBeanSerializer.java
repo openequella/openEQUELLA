@@ -23,6 +23,7 @@ import javax.inject.Singleton;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
+import com.tle.beans.item.VersionSelection;
 import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.common.Check;
 import com.tle.common.beans.exception.ValidationError;
@@ -98,6 +99,11 @@ public class CourseBeanSerializer extends AbstractEquellaBaseEntitySerializer<Co
 		bean.setFrom(entity.getFrom());
 		bean.setUntil(entity.getUntil());
 		bean.setStudents(entity.getStudents());
+		final VersionSelection vs = entity.getVersionSelection();
+		if (vs != null)
+		{
+			bean.setVersionSelection(vs.toString());
+		}
 	}
 
 	@Override
