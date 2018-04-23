@@ -46,7 +46,7 @@ function buildBundle(bundle, devpath, dev)
         spawn.sync("pulp", pargs, {env: env, stdio: 'inherit'})
     }
     else {
-        env.NODE_PATH = './target/ts' + path.delimiter + './prod-bridge';
+        env.NODE_PATH = './target/ts';
 
         var pargs = ["build", "--to", psBundle, "--skip-entry-point", "-m", main];
 

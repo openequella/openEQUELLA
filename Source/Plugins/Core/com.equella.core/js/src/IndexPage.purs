@@ -25,7 +25,7 @@ import LegacyPage (legacy)
 import Partial.Unsafe (unsafePartial)
 import React (createFactory)
 import React.DOM (div')
-import Routes (Route(..), matchRoute, nav, routeHref)
+import Routes (Route(TestACLS, SchemaEdit, SchemasPage, CourseEdit, CoursesPage, SettingsPage, SearchPage), matchRoute, nav)
 import Routing.PushState (matchesWith)
 import SearchPage (searchPage)
 import Security.ACLEditor (testEditor)
@@ -57,9 +57,9 @@ main = do
       render {route:Just r} = case r of 
         SearchPage -> searchPage
         SettingsPage -> settingsPage {legacyMode:false}
-        CoursesPage -> coursesPage routeHref
-        CourseEdit cid -> courseEdit routeHref cid
-        SchemasPage -> schemasPage routeHref
+        CoursesPage -> coursesPage
+        CourseEdit cid -> courseEdit cid
+        SchemasPage -> schemasPage
         SchemaEdit cid -> schemaEdit cid
         TestACLS -> testEditor
       render _ = maybe (div' []) legacy $ toMaybe renderData.html

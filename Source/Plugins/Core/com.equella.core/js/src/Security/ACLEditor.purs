@@ -10,8 +10,9 @@ import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
 import Control.Monad.State (State, execState, get, gets)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
+import Control.Parallel (parallel, sequential)
 import Data.Argonaut (decodeJson, encodeJson)
-import Data.Array (deleteAt, find, fold, foldl, foldr, fromFoldable, index, insertAt, mapWithIndex, reverse, snoc, (!!))
+import Data.Array (deleteAt, find, fold, foldl, foldr, fromFoldable, index, insertAt, length, mapWithIndex, reverse, snoc, (!!))
 import Data.Bifunctor (bimap)
 import Data.Either (Either(..), either)
 import Data.Lens (Lens', Prism', Traversal', _Left, _Right, assign, filtered, foldMapOf, lens', modifying, over, preview, previewOn, prism', set, traversed, use, view, (^?))
@@ -40,11 +41,16 @@ import MaterialUI.Dialog (dialog)
 import MaterialUI.DialogActions (dialogActions_)
 import MaterialUI.DialogContent (dialogContent)
 import MaterialUI.DialogTitle (dialogTitle, dialogTitle_)
+import MaterialUI.Divider (divider)
 import MaterialUI.ExpansionPanelSummary (disabled)
+import MaterialUI.FormControl (formControl)
 import MaterialUI.FormControlLabel (control, formControlLabel, label)
+import MaterialUI.FormHelperText (formHelperText, formHelperText_)
 import MaterialUI.Icon (icon, icon_)
 import MaterialUI.IconButton (iconButton)
+import MaterialUI.Input (id) as P
 import MaterialUI.Input (onChange)
+import MaterialUI.InputLabel (inputLabel)
 import MaterialUI.List (disablePadding, list)
 import MaterialUI.ListItem (button) as P
 import MaterialUI.ListItem (dense, listItem)
@@ -56,7 +62,7 @@ import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Modal (onClose, open)
 import MaterialUI.Paper (paper)
 import MaterialUI.PropTypes (handle)
-import MaterialUI.Properties (className, color, component, mkProp, style, variant)
+import MaterialUI.Properties (className, color, component, mkProp, mkPropF, style, variant)
 import MaterialUI.Select (select, value)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.Switch (switch)
@@ -65,11 +71,11 @@ import MaterialUI.TextField (textField)
 import MaterialUI.TextStyle (body1, subheading)
 import MaterialUI.Typography (error, textSecondary, typography)
 import Network.HTTP.Affjax (get, put_) as A
-import React (ReactElement, createFactory)
+import React (ReactClass, ReactElement, createElement, createFactory)
 import React.DOM (div, div', text)
 import React.DOM.Props (className, ref, style) as P
 import Security.Expressions (Expression(..)) as SE
-import Security.Expressions (class ExpressionDecode, AccessEntry(AccessEntry), Expression, ExpressionTerm(..), OpType(OR, AND), TargetList(TargetList), collapseOps, collapseZero, entryToTargetList, expressionText, parseEntry, textForExpression, textForTerm, traverseExpr)
+import Security.Expressions (class ExpressionDecode, AccessEntry(AccessEntry), Expression, ExpressionTerm(..), OpType(OR, AND), TargetListEntry(..), TargetList(TargetList), collapseOps, collapseZero, entryToTargetList, expressionText, parseEntry, textForExpression, textForTerm, traverseExpr)
 import Template (template')
 import Users.SearchUser (userSearch)
 import Users.UserLookup (GroupDetails(..), RoleDetails(..), UserDetails(..), UserGroupRoles(..), UGRDetail, lookupUsers, searchUGR)
@@ -96,16 +102,16 @@ mapResolved f (Resolved r) = f r
 mapResolved _ o = o
 
 
-type ResolveEntryR = {priv::String, granted::Boolean, override::Boolean, expr :: ExprType}
-newtype ResolvedEntry = ResolvedEntry ResolveEntryR
+type ResolvedEntryR = {priv::String, granted::Boolean, override::Boolean, expr :: ExprType}
+newtype ResolvedEntry = ResolvedEntry ResolvedEntryR
 
 derive instance ntRE :: Newtype ResolvedEntry _
 derive instance eqREnt :: Eq ResolvedEntry 
 
 
 data Command = Resolve | HandleDrop DropResult | SelectEntry Int | SaveChanges | Undo 
-  | DeleteExpr Int | ChangeOp Int String | EditEntry Int (ResolveEntryR -> ResolveEntryR) | DeleteEntry Int
-  | OpenNewDialog | CloseDialog | AddUserTerm UGRDetail
+  | DeleteExpr Int | ChangeOp Int String | EditEntry Int (ResolvedEntryR -> ResolvedEntryR) | DeleteEntry Int
+  | OpenNewDialog | CloseDialog | AddUserTerm UGRDetail | NewPriv
 
 type MyState = {
   acls :: Array ResolvedEntry,
@@ -116,8 +122,12 @@ type MyState = {
   changed :: Boolean
 }
 
-aclEditor :: {acls :: Array AccessEntry, applyChanges :: IOFn1 (Array AccessEntry) Unit } -> ReactElement
-aclEditor = createFactory $ withStyles styles $ createLifecycleComponent' (didMount Resolve) initialState render eval
+aclEditorClass :: ReactClass {
+  acls :: Array TargetListEntry, 
+  applyChanges :: IOFn1 (Array TargetListEntry) Unit,
+  allowedPrivs :: Array String
+}
+aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve) initialState render eval
   where 
   _resolvedExpr :: Prism' ExprType ResolvedExpression
   _resolvedExpr = prism' Resolved $ case _ of 
@@ -131,16 +141,17 @@ aclEditor = createFactory $ withStyles styles $ createLifecycleComponent' (didMo
   _id = prop (SProxy :: SProxy "id")
   _changed = prop (SProxy :: SProxy "changed")
   _expr = prop (SProxy :: SProxy "expr")
+  _priv = prop (SProxy :: SProxy "priv")
   _terms = prop (SProxy :: SProxy "terms")
   _acls = prop (SProxy :: SProxy "acls")
   _undoList = prop (SProxy :: SProxy "undoList")
   _selectedIndex = prop (SProxy :: SProxy "selectedIndex")
   _granted = prop (SProxy :: SProxy "granted")
   _override = prop (SProxy :: SProxy "override")
-  _ResolvedEntry :: Lens' ResolvedEntry ResolveEntryR
+  _ResolvedEntry :: Lens' ResolvedEntry ResolvedEntryR
   _ResolvedEntry = _Newtype
-  currentExpr :: Int -> Traversal' (Array ResolvedEntry) ExprType
-  currentExpr ind = ix ind <<< _ResolvedEntry <<< _expr 
+  currentEntry :: Int -> Traversal' (Array ResolvedEntry) ResolvedEntryR
+  currentEntry ind = ix ind <<< _ResolvedEntry 
 
   styles theme = {
     buttons: {
@@ -149,12 +160,6 @@ aclEditor = createFactory $ withStyles styles $ createLifecycleComponent' (didMo
     accessEntry: {
       display: "flex"
     },
-    entryList: {
-      position: "relative",
-      marginRight: theme.spacing.unit,
-      flexShrink: 0,
-      width: "40%"      
-    },
     scrollable: {
       overflow: "auto",
       height: "100%"
@@ -162,27 +167,36 @@ aclEditor = createFactory $ withStyles styles $ createLifecycleComponent' (didMo
     overallPanel: {
       display: "flex",
       flexDirection: "column",
-      height: "100%"
+      height: "100%", 
+      width: "100%"
     }, 
     editorPanels: {
       display: "flex",
-      height: "100%"
+      height: "100%", 
+      width: "100%"
+    },
+    entryList: {
+      position: "relative",
+      width: "35vw",
+      flex: "0 0 auto"
     },
     currentEntryPanel: {
       position: "relative",
-      width: "30%",
-      flexShrink: 0,
       display: "flex",
-      marginRight: theme.spacing.unit,
+      flexDirection: "column",
+      height: "100%",
+      flexBasis: "50%", 
       marginLeft: theme.spacing.unit
     },
     commonPanel: {
-      width: "30%",
-      position: "relative"
+      position: "relative",
+      height: "100%",
+      flexBasis: "45%",
+      marginLeft: theme.spacing.unit
     },
     currentEntryDrop: {
-      flexGrow: 1,
-      padding: theme.spacing.unit * 2
+      padding: theme.spacing.unit, 
+      flexGrow: 1
     }, 
     opDrop: {
       height: 48
@@ -234,11 +248,18 @@ aclEditor = createFactory $ withStyles styles $ createLifecycleComponent' (didMo
       whiteSpace: "nowrap",
       overflow: "hidden", 
       textOverflow: "ellipsis"
+    }, 
+    privSelect: {
+      margin: theme.spacing.unit * 2
+    }, 
+    divideEntry: {
+      marginTop: theme.spacing.unit * 2,
+      marginBottom: theme.spacing.unit
     }
   }
 
   initialState (ReactProps {acls}) = ReactState {
-      acls:markForResolve <$> acls, 
+      acls: either (const []) (map markForResolve) $ traverse parseEntry acls, 
       terms: commonTerms,
       selectedIndex: Nothing, 
       undoList: Nil, 
@@ -249,8 +270,8 @@ aclEditor = createFactory $ withStyles styles $ createLifecycleComponent' (didMo
     markForResolve (AccessEntry {priv,granted,override,expr}) = ResolvedEntry {priv,granted,override, expr: Unresolved expr}
 
   render {acls,terms,selectedIndex,showSelectUser,undoList,changed} 
-      (ReactProps {classes}) (DispatchEff d) = 
-    let expressionM = selectedIndex >>= \i -> previewOn acls (currentExpr i)
+      (ReactProps {classes,allowedPrivs}) (DispatchEff d) = 
+    let expressionM = selectedIndex >>= \i -> Tuple i <$> previewOn acls (currentEntry i)
     in dragDropContext { onDragEnd: mkIOFn1 (d HandleDrop) } [ 
       div [P.className classes.overallPanel] [
         div [P.className classes.editorPanels] [
@@ -263,9 +284,10 @@ aclEditor = createFactory $ withStyles styles $ createLifecycleComponent' (didMo
                 ]
             ]
           ],
-          paper [className classes.currentEntryPanel ] $ expressionM # maybe [] expressionContents,
+          paper [className classes.currentEntryPanel ] $ maybe createNewPriv expressionContents expressionM,
           div [P.className classes.commonPanel] [
-            button [className classes.addTerm, variant fab, color primary, onClick $ handle $ d \_ -> OpenNewDialog] [ icon_ [text "add"]],
+            button [className classes.addTerm, variant fab, color primary, 
+                onClick $ handle $ d \_ -> OpenNewDialog] [ icon_ [text "add"]],
             paper [className classes.scrollable ] [
               droppable {droppableId:"common"} \p _ -> 
                 div [P.ref p.innerRef, p.droppableProps] [
@@ -292,10 +314,14 @@ aclEditor = createFactory $ withStyles styles $ createLifecycleComponent' (didMo
     ]
   ]
     where 
+    createNewPriv = [ button [variant raised, className classes.privSelect, 
+          onClick $ handle $ d \_ -> NewPriv ] [text "Add Privilege"] ]
     droppedOnClass snap = if snap.isDraggingOver then classes.beingDraggedOver else classes.notBeingDragged
     cantUndo = null undoList
     cantSave = changed && (isJust $ find (isNothing <<< backToAccessEntry) acls)
-    expressionContents exprType =                 
+    onChangeStr f = onChange $ handle $ d $ \e -> f e.target.value
+
+    expressionContents (Tuple i {expr:exprType, priv}) =
       let exprEntries = case exprType of 
             Resolved expression -> [ 
               list [disablePadding true] $ 
@@ -303,6 +329,12 @@ aclEditor = createFactory $ withStyles styles $ createLifecycleComponent' (didMo
             ]
             _ -> []
       in  [
+        formControl [className classes.privSelect] [ 
+          inputLabel [mkProp "htmlFor" "privSelect"] [text "Privilege"],
+          select [value priv, P.id "privSelect", onChangeStr $ EditEntry i <<< set _priv] $ 
+            (\p -> menuItem [mkProp "value" p] [text p]) <$> allowedPrivs
+        ],
+        divider [className classes.divideEntry],
         droppable {droppableId:"currentEntry"} \p _ -> 
           div [P.ref p.innerRef, p.droppableProps, P.className classes.currentEntryDrop] $ 
               snoc exprEntries p.placeholder
@@ -326,7 +358,7 @@ aclEditor = createFactory $ withStyles styles $ createLifecycleComponent' (didMo
       Op op exprs _ -> (Cons $ opEntry op ) (foldr (makeExpression (indent + 1)) l exprs)
       where 
       opEntry op = stdDrag "op" $ \i -> div [ P.className classes.opDrop, P.style {marginLeft: indentPixels} ] [ 
-        select [value $ opValue op, onChange $ handle $ d $ \e -> ChangeOp i e.target.value ] opItems
+        select [value $ opValue op, onChangeStr $ ChangeOp i ] opItems
       ]
       indentPixels = indent * 16
     
@@ -480,6 +512,10 @@ aclEditor = createFactory $ withStyles styles $ createLifecycleComponent' (didMo
     ce <- use _terms
     ce !! srcIx # maybe (pure unit) (modifyExpression <<< insertNew)  
 
+  eval NewPriv = modifyState $ execState $ do 
+    oldEntries <- use _acls
+    addUndo (flip snoc $ ResolvedEntry {priv:"", granted:true, override:false, expr: EmptyExpr})
+    assign _selectedIndex $ Just $ length oldEntries
   eval (AddUserTerm (UserGroupRoles {users,groups,roles})) = do 
     modifyState $ 
       over _terms (flip append $ (ResolvedUser <$> users) <> (ResolvedGroup <$> groups) <> (ResolvedRole <$> roles)) >>> 
@@ -514,12 +550,14 @@ aclEditor = createFactory $ withStyles styles $ createLifecycleComponent' (didMo
     {applyChanges} <- getProps
     {acls} <- getState
     (traverse backToAccessEntry acls) # maybe (pure unit) \entries -> do 
-      liftEff $ runIOFn1 applyChanges entries
+      liftEff $ runIOFn1 applyChanges $ entryToTargetList <$> entries
       modifyState _{changed=false}
     
 
   eval (SelectEntry entry) = do 
-    modifyState $ execState $ assign _selectedIndex $ Just entry
+    modifyState $ over _selectedIndex case _ of 
+      Just e | e == entry -> Nothing
+      _ -> Just entry
 
   eval Resolve = do
     {acls} <- getState
@@ -556,14 +594,7 @@ aclEditor = createFactory $ withStyles styles $ createLifecycleComponent' (didMo
     in handleDrop sourceId destId
   eval (HandleDrop _) = pure unit
 
-
--- sampleEntries = [
---     AccessEntry {granted:true, priv: "DISCOVER_ITEM", override:false, term: User "dasd"}, -- renderData.user.id},
---     AccessEntry {granted:true, priv: "DISCOVER_ITEM", override:false, term: User "doolse"},
---     AccessEntry {granted:true, priv: "DISCOVER_ITEM", override:false, term: Group "dff74147-98b4-34d3-e193-d3eeada6d836"},
---     AccessEntry {granted:true, priv: "VIEW_ITEM", override:false, term: User "somebody"}
--- ]
-
+commonTerms :: Array ResolvedTerm
 commonTerms = [
   Already Everyone,
   Already LoggedInUsers, 
@@ -611,22 +642,25 @@ backToAccessEntry (ResolvedEntry {priv,granted,override,expr}) = AccessEntry <<<
     in SE.Term seterm b
   convertRE (Op o exprs n) = SE.Op o (convertRE <$> exprs) n
 
-data TestCommand = Init | SaveIt (Array AccessEntry)
+data TestCommand = Init | SaveIt (Array TargetListEntry)
 
 testEditor :: ReactElement
-testEditor = createFactory (createLifecycleComponent (didMount Init) {acls:Nothing} render eval) {}
+testEditor = createFactory (createLifecycleComponent (didMount Init) {s:Nothing} render eval) {}
   where 
-  render {acls} (DispatchEff d) = 
-    acls # maybe (div' []) \entries -> 
+  render {s} (DispatchEff d) = 
+    s # maybe (div' []) \{entries,allowedPrivs} -> 
       template' {fixedViewPort:true, menuExtra: [], 
-        mainContent: aclEditor {acls:entries, applyChanges: mkIOFn1 $ d SaveIt}, 
+        mainContent: div [P.style {width: "100%", height: "100%"}] [createElement aclEditorClass {acls:entries, allowedPrivs, applyChanges: mkIOFn1 $ d SaveIt} []], 
         title: "TEST", titleExtra:Nothing }
   eval Init = do 
-    r <- lift $ A.get (baseUrl <> "api/acl")
-    decodeJson r.response # either (lift <<< log) 
-      \(TargetList {entries}) -> do 
-        traverse parseEntry entries # either traceAnyA \entries -> modifyState _ {acls = Just entries}
+    Tuple r1 r2 <- lift $ sequential $ Tuple <$> 
+      parallel (A.get $ baseUrl <> "api/acl") <*> 
+      parallel (A.get $ baseUrl <> "api/acl/privileges?node=INSTITUTION")
+    either (lift <<< log) (\e -> modifyState _ {s=Just e}) do 
+      TargetList {entries} <- decodeJson r1.response
+      allowedPrivs <- decodeJson r2.response
+      pure $ { entries, allowedPrivs}
     pure unit
   eval (SaveIt entries) = do 
-    r <- lift $ A.put_ (baseUrl <> "api/acl") (encodeJson (TargetList {entries: entryToTargetList <$> entries}))
+    r <- lift $ A.put_ (baseUrl <> "api/acl") (encodeJson (TargetList {entries}))
     pure unit

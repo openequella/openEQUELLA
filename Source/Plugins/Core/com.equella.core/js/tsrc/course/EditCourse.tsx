@@ -11,7 +11,7 @@ import { format, parse } from 'date-fns';
 import { Course } from '../api';
 import courseService from './index';
 import { StoreState } from '../store';
-import { Routes, Route } from '../api/routes';
+import { Bridge } from '../api/bridge';
 
 //import List, { ListItem, ListItemText } from 'material-ui/List';
 /*
@@ -37,7 +37,7 @@ const TabContainer: React.SFC<TabContainerProps> = (props: TabContainerProps) =>
 */
 
 interface EditCourseProps {
-    routes: (route: any) => Route;
+    bridge: Bridge;
     loadCourse: (uuid: string) => void;
     saveCourse: (course: Course) => void;
     course: Course;
@@ -151,6 +151,7 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
         const { code, name, description, type, departmentName, citation, students, from, 
             until, versionSelection, archived, activeTab } = this.state;
         const vs = (versionSelection ? versionSelection : "DEFAULT");
+        const {routes, router, AclEditor} = this.props.bridge;
         /*
         <Stepper>
                 <Step title="Basic Details" active>
@@ -163,7 +164,7 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
 
         return  <div>
                     <IconButton aria-label="Back" 
-                        onClick={this.props.routes(Routes().CoursesPage.value).onClick}>
+                        onClick={router(routes.CoursesPage.value).onClick}>
                             <Icon>arrow_back</Icon>
                     </IconButton>
                     
@@ -309,7 +310,9 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
                             </Grid>
                         </Typography>
 
-                        <Typography component="div" dir="ltr" style={{ padding: 8 * 3 }}>Permissions stuff goes here</Typography>
+                        <Typography component="div" dir="ltr" style={{ padding: 8 * 3 }}><AclEditor acls={[
+                            {privilege: "TEST_IT", granted:true, override:false, who: "*"}
+                        ]} allowedPrivs={["TEST_IT"]}/></Typography>
                     </SwipeableViews>
 
             </div>

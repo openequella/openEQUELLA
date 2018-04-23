@@ -2,11 +2,11 @@ import * as React from 'react';
 import { Button, TextField } from 'material-ui';
 import { Schema } from '../api';
 import schemaService from './index';
-import { Routes, Route } from '../api/routes';
 import { StoreState } from '../store';
 import { connect, Dispatch } from 'react-redux';
 import List from 'material-ui/List';
 import SearchResult from '../components/SearchResult';
+import { Bridge } from '../api/bridge';
 /*
 import withStyles, { StyleRulesCallback } from 'material-ui/styles/withStyles';
 const styles: StyleRulesCallback<'root'> = (theme: Theme) => ({
@@ -19,7 +19,7 @@ const styles: StyleRulesCallback<'root'> = (theme: Theme) => ({
 
 interface SearchSchemaProps {
     onSearch: (query?: string) => void;
-    routes: (route: any) => Route;
+    bridge: Bridge;
     query?: string;
     schemas: Schema[];
     root: any;
@@ -40,6 +40,7 @@ class SearchSchema extends React.Component<SearchSchemaProps, object> {
     }
 
     render() {
+        const {router,routes} = this.props.bridge;
         return <div className={this.classes.root}><div className="schemas">
                 <div className="schemasSearch">
                     <TextField id="txtSchemaSearch" inputRef={(input: any) => { this.textInput = input; }} />
@@ -50,8 +51,8 @@ class SearchSchema extends React.Component<SearchSchemaProps, object> {
                     (this.props.schemas ?
                         this.props.schemas.map((schema) => (
                             <SearchResult key={schema.uuid} 
-                                href={this.props.routes(Routes().SchemaEdit.create(schema.uuid)).href}
-                                onClick={this.props.routes(Routes().SchemaEdit.create(schema.uuid)).onClick}
+                                href={router(routes.SchemaEdit.create(schema.uuid)).href}
+                                onClick={router(routes.SchemaEdit.create(schema.uuid)).onClick}
                                 primaryText={schema.name}
                                 secondaryText={schema.description} />))
                         : <div>No Results</div>

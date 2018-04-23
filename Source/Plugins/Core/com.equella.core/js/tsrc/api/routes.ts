@@ -1,9 +1,4 @@
-import * as React from 'react'
-
-export interface Route {
-    href: string;
-    onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
-}
+export interface Route {};
 
 export interface Routes {
     CoursesPage: {
@@ -16,5 +11,3 @@ export interface Routes {
         create: (uuid?: string) => Route 
     }
 }
-
-export var Routes : () => Routes = () => require('Routes');

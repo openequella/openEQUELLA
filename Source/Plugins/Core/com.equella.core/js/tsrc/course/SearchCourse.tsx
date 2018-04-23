@@ -2,11 +2,11 @@ import * as React from 'react';
 import { Button, TextField } from 'material-ui';
 import { Course } from '../api';
 import courseService from './index';
-import { Routes, Route } from '../api/routes';
 import { StoreState } from '../store';
 import { connect, Dispatch } from 'react-redux';
 import List from 'material-ui/List';
 import SearchResult from '../components/SearchResult';
+import { Bridge } from '../api/bridge';
 /*
 import withStyles, { StyleRulesCallback } from 'material-ui/styles/withStyles';
 const styles: StyleRulesCallback<'root'> = (theme: Theme) => ({
@@ -19,7 +19,7 @@ const styles: StyleRulesCallback<'root'> = (theme: Theme) => ({
 
 interface SearchCourseProps {
     onSearch: (query?: string) => void;
-    routes: (route: any) => Route;
+    bridge: Bridge;
     query?: string;
     courses: Course[];
     root: any;
@@ -40,7 +40,7 @@ class SearchCourse extends React.Component<SearchCourseProps, object> {
     }
 
     render() {
-        
+        const {routes,router} = this.props.bridge;
         return <div className={this.classes.root}><div className="courses">
                 <div className="coursesSearch">
                     <TextField id="txtCourseSearch" inputRef={(input: any) => { this.textInput = input; }} />
@@ -50,7 +50,7 @@ class SearchCourse extends React.Component<SearchCourseProps, object> {
                 {
                     (this.props.courses ?
                         this.props.courses.map((course) => {
-                            const courseEditRoute = this.props.routes(Routes().CourseEdit.create(course.uuid));
+                            const courseEditRoute = router(routes.CourseEdit.create(course.uuid));
                             return <SearchResult key={course.uuid} 
                                 href={courseEditRoute.href}
                                 onClick={courseEditRoute.onClick}
