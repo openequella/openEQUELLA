@@ -1,1 +1,0 @@
-exports.routesFunc = require('../Routes');

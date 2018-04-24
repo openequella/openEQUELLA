@@ -68,8 +68,17 @@ function buildBundle(bundle, devpath, dev)
         var browserify = spawn("browserify", bargs, { env: env, stdio: ['pipe', 'pipe', 'inherit'] });
         browserify.stdin.write(booter);
         browserify.stdin.end();
-        var uglilfy = spawn("uglifyjs", ["-o", outjs, "--compress", "--mangle"], { stdio: ['pipe', 'inherit', 'inherit'] });
-        browserify.stdout.pipe(uglilfy.stdin);    
+        var uglify = spawn("uglifyjs", ["-o", outjs, "--compress", "--mangle"], { stdio: ['pipe', 'inherit', 'inherit'] });
+        browserify.stdout.pipe(uglify.stdin);
+        browserify.on('exit', function(code) {
+            if (code != 0)
+            {
+                process.exit(code);
+            }
+            uglify.on('exit', function(code){ 
+                process.exit(code);
+            });
+        });
     }
 }
 
