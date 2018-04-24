@@ -18,10 +18,11 @@ type Bridge = {
 
 tsBridge :: Bridge 
 tsBridge = {
-    routes : unsafeCoerce $ {"CoursesPage": {value:CoursesPage}, 
+    routes : unsafeCoerce $ {
+        "CoursesPage": {value:CoursesPage}, 
         "CourseEdit": CourseEdit, 
         "SchemaEdit": SchemaEdit, 
-        "SchemasPage": SchemasPage},
+        "SchemasPage": {value: SchemasPage}},
     router : routeHref,
     "AclEditor" : unsafeCoerce aclEditorClass
 } 

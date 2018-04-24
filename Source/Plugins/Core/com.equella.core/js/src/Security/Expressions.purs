@@ -8,7 +8,9 @@ import Data.Array (mapMaybe, uncons)
 import Data.Array as A
 import Data.Bifunctor (lmap)
 import Data.Either (Either(..), either, fromRight)
-import Data.List (List(..), fromFoldable, head, snoc, (:))
+import Data.Int (fromString)
+import Data.Lens (Lens', lens)
+import Data.List (List(Nil), fromFoldable, head, (:))
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.String (Pattern(Pattern), joinWith, split, trim)
 import Data.String.Regex (Regex, match, regex)
@@ -18,8 +20,26 @@ import Data.Tuple (Tuple(..), fst)
 import Global (decodeURIComponent, encodeURIComponent)
 import Partial.Unsafe (unsafePartial)
 
+data IpRange = IpRange Int Int Int Int Int
+derive instance eqIP :: Eq IpRange
+
+_ip1 :: Lens' IpRange Int
+_ip1 = lens (\(IpRange i1 _ _ _ _) -> i1) (\(IpRange _ i2 i3 i4 im) i1 -> IpRange i1 i2 i3 i4 im)
+
+_ip2 :: Lens' IpRange Int
+_ip2 = lens (\(IpRange _ i2 _ _ _) -> i2) (\(IpRange i1 _ i3 i4 im) i2 -> IpRange i1 i2 i3 i4 im)
+
+_ip3 :: Lens' IpRange Int
+_ip3 = lens (\(IpRange _ _ i3 _ _) -> i3) (\(IpRange i1 i2 _ i4 im) i3 -> IpRange i1 i2 i3 i4 im)
+
+_ip4 :: Lens' IpRange Int
+_ip4 = lens (\(IpRange _ _ _ i4 _) -> i4) (\(IpRange i1 i2 i3 _ im) i4 -> IpRange i1 i2 i3 i4 im)
+
+_ipm :: Lens' IpRange Int
+_ipm = lens (\(IpRange _ _ _ _ im) -> im) (\(IpRange i1 i2 i3 i4 _) im -> IpRange i1 i2 i3 i4 im)
+
 data ExpressionTerm = Everyone | LoggedInUsers | Owner | Guests | 
-    User String | Group String | Role String | Ip String | Referrer String | ShareSecretToken String
+    User String | Group String | Role String | Ip IpRange | Referrer String | SharedSecretToken String
 
 derive instance eqET :: Eq ExpressionTerm
 
@@ -95,8 +115,8 @@ parseTerm = let
             "TLE_GUEST_USER_ROLE" -> t Guests
             _ -> t $ Role v
         "F" -> t $ Referrer v
-        "T" -> t $ ShareSecretToken v
-        "I" -> t $ Ip v
+        "T" -> t $ SharedSecretToken v
+        "I" -> maybe (Left $ Broken s) (t <<< Ip) $ parseRange v
         u -> Left $ UnknownParamType u v
     "$OWNER" -> t Owner    
     a -> Left $ Broken a
@@ -131,10 +151,22 @@ termToWho = case _ of
     User uid -> param "U" uid 
     Group gid -> param "G" gid
     Role rid -> param "R" rid 
-    Ip ip -> param "I" ip 
+    Ip range -> param "I" $ ipAsString range 
     Referrer ref -> param "F" ref
-    ShareSecretToken tokenId -> param "T" tokenId
+    SharedSecretToken tokenId -> param "T" tokenId
   where param a v = a <> ":" <> encodeURIComponent v
+
+rangeRegex = unsafePartial fromRight $ regex "(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)/(\\d+)" noFlags
+
+parseRange :: String -> Maybe IpRange 
+parseRange s = match rangeRegex s >>= toIpRange
+  where 
+  toIpRange a = case traverse (bindFlipped fromString) a of 
+    Just [i1, i2, i3, i4, i5] -> Just $ IpRange i1 i2 i3 i4 i5
+    _ -> Nothing
+
+ipAsString :: IpRange -> String 
+ipAsString (IpRange ip1 ip2 ip3 ip4 ipm) = (joinWith "." $ show <$> [ip1, ip2, ip3, ip4]) <> "/" <> show ipm
 
 textForTerm :: ExpressionTerm -> String
 textForTerm = case _ of 
@@ -145,9 +177,9 @@ textForTerm = case _ of
     User uid -> "User with id " <> uid 
     Group gid -> "Group with id " <> gid
     Role rid -> "Role with id " <> rid 
-    Ip ip -> "IP Range - " <> ip 
+    Ip range -> "IP Range - " <> ipAsString range
     Referrer ref -> "Referrer - " <> ref
-    ShareSecretToken tokenId -> "Shared secret token " <> tokenId
+    SharedSecretToken tokenId -> "Shared secret token " <> tokenId
 
 instance exDecode :: ExpressionDecode Expression ExpressionTerm  where 
     decodeExpr (Term t n) = Tuple n (Left $ t)
