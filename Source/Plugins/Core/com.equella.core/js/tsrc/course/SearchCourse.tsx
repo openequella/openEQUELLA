@@ -50,7 +50,7 @@ class SearchCourse extends React.Component<SearchCourseProps, object> {
                 {
                     (this.props.courses ?
                         this.props.courses.map((course) => {
-                            const courseEditRoute = router(routes.CourseEdit.create(course.uuid));
+                            const courseEditRoute = router(routes.CourseEdit(course.uuid));
                             return <SearchResult key={course.uuid} 
                                 href={courseEditRoute.href}
                                 onClick={courseEditRoute.onClick}
