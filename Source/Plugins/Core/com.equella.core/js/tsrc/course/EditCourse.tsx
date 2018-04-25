@@ -164,7 +164,7 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
 
         return  <div>
                     <IconButton aria-label="Back" 
-                        onClick={router(routes.CoursesPage.value).onClick}>
+                        onClick={router(routes.CoursesPage).onClick}>
                             <Icon>arrow_back</Icon>
                     </IconButton>
                     

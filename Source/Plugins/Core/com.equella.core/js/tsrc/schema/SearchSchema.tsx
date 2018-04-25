@@ -51,8 +51,8 @@ class SearchSchema extends React.Component<SearchSchemaProps, object> {
                     (this.props.schemas ?
                         this.props.schemas.map((schema) => (
                             <SearchResult key={schema.uuid} 
-                                href={router(routes.SchemaEdit.create(schema.uuid)).href}
-                                onClick={router(routes.SchemaEdit.create(schema.uuid)).onClick}
+                                href={router(routes.SchemaEdit(schema.uuid)).href}
+                                onClick={router(routes.SchemaEdit(schema.uuid)).onClick}
                                 primaryText={schema.name}
                                 secondaryText={schema.description} />))
                         : <div>No Results</div>

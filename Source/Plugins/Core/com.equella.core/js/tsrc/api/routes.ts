@@ -1,9 +1,8 @@
 export interface Route {};
 
 export interface Routes {
-    CoursesPage: {
-        value: Route
-    },
+    CoursesPage: Route,
+    SchemasPage: Route,
     CourseEdit: (uuid?: string) => Route,
     SchemaEdit: (uuid?: string) => Route
 }
