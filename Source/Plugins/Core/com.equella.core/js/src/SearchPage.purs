@@ -44,8 +44,10 @@ import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMo
 import EQUELLA.Environment (baseUrl, prepLangStrings)
 import Facet (facetDisplay)
 import MaterialUI.Chip (chip, onDelete)
-import MaterialUI.Colors (fade)
-import MaterialUI.Divider as C
+import MaterialUI.CircularProgress (circularProgress)
+import MaterialUI.Colors (fade) as C
+import MaterialUI.Divider (divider) as C
+import MaterialUI.Fade (fade)
 import MaterialUI.Icon (icon_)
 import MaterialUI.List (disablePadding, list, list_)
 import MaterialUI.ListItem (button, disableGutters, divider, listItem)
@@ -58,6 +60,7 @@ import MaterialUI.Select (select)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.TextField (label, value)
 import MaterialUI.TextStyle as TS
+import MaterialUI.Transition (in_, timeout)
 import MaterialUI.Typography (textSecondary, typography)
 import MaterialUIPicker.DatePicker (onChange)
 import Network.HTTP.Affjax (AJAX, get)
@@ -83,6 +86,7 @@ type ItemSearchResults = SearchResults Result
 
 type State = {
   searching :: Boolean,
+  loadingNew :: Boolean,
   query :: String,
   facetSettings :: Array FacetSetting,
   facets :: SM.StrMap (S.Set String),
@@ -98,13 +102,17 @@ data Command = InitSearch | Search | QueryUpdate String | ToggledTerm String Str
   | Scrolled Event
 
 initialState :: State
-initialState = {searching:false, query:""
+initialState = {
+    searching:false
+  , query:""
   , searchResults:Nothing
   , facets:SM.empty
   , modifiedLast: Nothing
   , after:Tuple false currentDate
   , before:Tuple false currentDate
-  , facetSettings: []}
+  , facetSettings: []
+  , loadingNew: false
+}
 
 currentDate :: Date
 currentDate = unsafePerformEff $ extract <$> nowDate
@@ -142,6 +150,8 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
   styles theme = {
     results: {
       flexBasis: "75%",
+      display: "flex",
+      flexDirection: "column",
       padding: 16
     },
     refinements: {
@@ -171,7 +181,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
       marginRight: theme.spacing.unit * 2,
       marginLeft: theme.spacing.unit * 2,
       borderRadius: 2,
-      background: fade theme.palette.common.white 0.15,
+      background: C.fade theme.palette.common.white 0.15,
       width: "400px"
     },
     queryIcon: {
@@ -208,10 +218,13 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     },
     selectFilter: {
       width: 150
+    }, 
+    progress: {
+      alignSelf: "center"
     }
   }
 
-  render {modifiedLast,searchResults,query,facets,facetSettings} (ReactProps {classes}) (DispatchEff d) = 
+  render {modifiedLast,searchResults,query,facets,facetSettings,searching,loadingNew} (ReactProps {classes}) (DispatchEff d) = 
       template {mainContent,titleExtra:Just searchBar, title: coreString.title}
     where
 
@@ -221,11 +234,16 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
 
     mainContent = D.div [DP.className classes.layoutDiv] [
       paper [className classes.results, elevation 4] $ 
-        renderResults searchResults,
+        renderResults searchResults <> progress,
       paper [className classes.refinements, elevation 4] $ 
         intercalate [C.divider []] $ 
           (pure [ lastModifiedSelect ]) <> 
           (pure <<< makeFacet <$> facetSettings)
+    ]
+
+    progress = [
+      let pbar = circularProgress [className classes.progress]
+      in fade [in_ $ searching || loadingNew, timeout $ if loadingNew then 0 else 800] [ pbar ]
     ]
 
     lastModifiedSelect = filterSection {name:string.filterLast.name} [ 
