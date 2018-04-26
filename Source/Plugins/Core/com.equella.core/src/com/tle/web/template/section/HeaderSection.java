@@ -58,7 +58,7 @@ public class HeaderSection extends AbstractPrototypeSection<HeaderSection.Header
 	private FreemarkerFactory viewFactory;
 
 	@PlugKey("windowtitlepostfix")
-	private static Label LABEL_WINDOWTITLE;
+	public static Label LABEL_WINDOWTITLE;
 
 	@Override
 	public SectionResult renderHtml(RenderEventContext context)

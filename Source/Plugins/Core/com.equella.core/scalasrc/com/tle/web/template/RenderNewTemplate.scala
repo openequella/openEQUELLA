@@ -43,7 +43,7 @@ import com.tle.web.sections.standard.model.HtmlLinkState
 import com.tle.web.sections.standard.renderers.{DivRenderer, LinkRenderer, SpanRenderer}
 import com.tle.web.settings.UISettings
 import com.tle.web.template.Decorations.MenuMode
-import com.tle.web.template.section.HelpAndScreenOptionsSection
+import com.tle.web.template.section.{HeaderSection, HelpAndScreenOptionsSection}
 import io.circe.generic.auto._
 
 import scala.collection.JavaConverters._

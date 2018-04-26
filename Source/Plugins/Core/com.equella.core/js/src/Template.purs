@@ -4,6 +4,7 @@ import Prelude
 
 import Control.Monad.Aff.Console (log)
 import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.IOEffFn (runIOFn1)
 import Control.Monad.Trans.Class (lift)
@@ -24,7 +25,7 @@ import Data.String (joinWith)
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable as U
 import Dispatcher (DispatchEff(DispatchEff))
-import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMount, modifyState)
+import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMount, getProps, modifyState)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
 import MaterialUI.AppBar (appBar)
 import MaterialUI.Badge (badge, badgeContent)
@@ -90,6 +91,8 @@ type RenderData = {
 
 
 foreign import renderData :: RenderData
+
+foreign import setTitle :: forall e. String -> Eff (dom::DOM|e) Unit
 
 type State = {mobileOpen::Boolean, menuAnchor::Maybe HTMLElement, tasks :: Maybe Int, notifications :: Maybe Int}
 
@@ -199,6 +202,8 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
 
 
   eval Init = do 
+    {title} <- getProps
+    liftEff $ setTitle $ title <> coreString.windowtitlepostfix
     r <- lift $ get $ baseUrl <> "api/task"
     either (lift <<< log) (\(SearchResultsMeta {available}) -> modifyState _ {tasks = Just available})  (decodeJson r.response)
     r2 <- lift $ get $ baseUrl <> "api/notification"
@@ -305,6 +310,7 @@ rawStrings = Tuple "template" {
 }
 
 coreStrings = Tuple "com.equella.core" {
+  windowtitlepostfix: " | EQUELLA",
   topbar: { 
     link: {
       notifications: "Notifications",
