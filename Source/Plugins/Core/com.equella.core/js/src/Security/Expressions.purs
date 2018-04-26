@@ -4,14 +4,14 @@ import Prelude
 
 import Control.Bind (bindFlipped)
 import Data.Argonaut (class DecodeJson, class EncodeJson, decodeJson, getField, jsonEmptyObject, (.?), (:=), (~>))
-import Data.Array (mapMaybe, uncons)
+import Data.Array (drop, elemIndex, mapMaybe, uncons)
 import Data.Array as A
 import Data.Bifunctor (lmap)
 import Data.Either (Either(..), either, fromRight)
 import Data.Int (fromString)
 import Data.Lens (Lens', lens)
 import Data.List (List(Nil), fromFoldable, head, (:))
-import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Maybe (Maybe(Just, Nothing), isJust, maybe)
 import Data.String (Pattern(Pattern), joinWith, split, trim)
 import Data.String.Regex (Regex, match, regex)
 import Data.String.Regex.Flags (noFlags)
@@ -22,6 +22,14 @@ import Partial.Unsafe (unsafePartial)
 
 data IpRange = IpRange Int Int Int Int Int
 derive instance eqIP :: Eq IpRange
+
+validMasks :: Array Int 
+validMasks = [8, 16, 24, 32]
+
+validRange :: IpRange -> Boolean 
+validRange (IpRange i1 i2 i3 i4 im) = let byte b = b >= 0 && b < 256
+    in byte i1 && byte i2 && byte i3 && byte i4 && (isJust $ elemIndex im validMasks)
+
 
 _ip1 :: Lens' IpRange Int
 _ip1 = lens (\(IpRange i1 _ _ _ _) -> i1) (\(IpRange _ i2 i3 i4 im) i1 -> IpRange i1 i2 i3 i4 im)
@@ -116,7 +124,7 @@ parseTerm = let
             _ -> t $ Role v
         "F" -> t $ Referrer v
         "T" -> t $ SharedSecretToken v
-        "I" -> maybe (Left $ Broken s) (t <<< Ip) $ parseRange v
+        "I" -> maybe (Left $ Broken v) (t <<< Ip) $ parseRange v
         u -> Left $ UnknownParamType u v
     "$OWNER" -> t Owner    
     a -> Left $ Broken a
@@ -131,12 +139,6 @@ parseWho who = either Left (head >>> maybe (Left $ TooManyExpressions) Right) $ 
   convertToInfix c (StdTerm t : tail) = convertToInfix (Term t false : c) tail
   convertToInfix c Nil = Right $ c
   convertToInfix _ _ = Left NotEnoughOpArgs
-
-
-
-parseEntry :: TargetListEntry -> Either ExpressionParseError AccessEntry
-parseEntry (TargetListEntry {granted,override,privilege,who}) = 
-    parseWho who # map (\expr -> AccessEntry {granted,override,priv:privilege,expr: fromMaybe expr $ collapseOps expr })
 
 opText :: OpType -> String 
 opText AND = "AND"
@@ -156,12 +158,13 @@ termToWho = case _ of
     SharedSecretToken tokenId -> param "T" tokenId
   where param a v = a <> ":" <> encodeURIComponent v
 
+rangeRegex :: Regex
 rangeRegex = unsafePartial fromRight $ regex "(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)/(\\d+)" noFlags
 
 parseRange :: String -> Maybe IpRange 
 parseRange s = match rangeRegex s >>= toIpRange
   where 
-  toIpRange a = case traverse (bindFlipped fromString) a of 
+  toIpRange a = case traverse (bindFlipped fromString) $ drop 1 a of 
     Just [i1, i2, i3, i4, i5] -> Just $ IpRange i1 i2 i3 i4 i5
     _ -> Nothing
 
@@ -243,3 +246,14 @@ entryToTargetList (AccessEntry {priv, granted, override, expr}) = TargetListEntr
   toWho (Op op [h1, h2] _) = opText op : (toWho h2 <> toWho h1)
   toWho (Op op exprs _) | Just {head,tail} <- uncons exprs = toWho (Op op [head, Op op tail false] false)
   toWho _ = Nil
+
+instance tpeShow :: Show TermParseError where 
+  show = case _ of 
+    UnknownParamType p v -> "Unknown parameter type: " <> p <> " value: " <> v
+    (Broken v) -> "Unparsable: " <> v
+
+instance epeShow :: Show ExpressionParseError where 
+  show = case _ of 
+    TermError e -> show e
+    NotEnoughOpArgs -> "Not enough op args"
+    TooManyExpressions -> "Too many expressions"

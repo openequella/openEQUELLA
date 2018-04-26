@@ -12,7 +12,7 @@ import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
 import Control.Parallel (parallel, sequential)
 import Data.Argonaut (decodeJson, encodeJson)
-import Data.Array (deleteAt, find, fold, foldl, foldr, fromFoldable, index, insertAt, length, mapWithIndex, reverse, snoc, (!!))
+import Data.Array (deleteAt, find, fold, foldl, foldr, fromFoldable, index, insertAt, length, mapMaybe, mapWithIndex, nub, reverse, snoc, union, (!!))
 import Data.Bifunctor (bimap)
 import Data.Either (Either(..), either)
 import Data.Lens (Lens', Prism', Traversal', assign, filtered, foldMapOf, modifying, over, preview, previewOn, prism', set, traversed, use, view, (^?))
@@ -27,6 +27,7 @@ import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
 import Data.Traversable (traverse)
 import Data.Tuple (Tuple(Tuple), fst)
+import Debug.Trace (traceAnyA)
 import Dispatcher (DispatchEff(DispatchEff))
 import Dispatcher.React (ReactProps(ReactProps), ReactState(ReactState), createLifecycleComponent, createLifecycleComponent', didMount, getProps, getState, modifyState)
 import DragNDrop.Beautiful (DropResult, dragDropContext, draggable, droppable)
@@ -66,15 +67,19 @@ import Network.HTTP.Affjax (get, put_) as A
 import React (ReactClass, ReactElement, createElement, createFactory)
 import React.DOM (div, div', text)
 import React.DOM.Props (className, ref, style) as P
+import Security.Expressions (AccessEntry(AccessEntry), Expression, ExpressionTerm(Role, Group, User, SharedSecretToken, Referrer, Ip, Owner, Guests, LoggedInUsers, Everyone), IpRange(IpRange), OpType(OR, AND), TargetList(TargetList), TargetListEntry(..), collapseZero, entryToTargetList, expressionText, parseWho, textForExpression, textForTerm, traverseExpr)
 import Security.Expressions (Expression(..)) as SE
-import Security.Expressions (AccessEntry(AccessEntry), Expression, ExpressionTerm(Role, Group, User, SharedSecretToken, Referrer, Ip, Owner, Guests, LoggedInUsers, Everyone), IpRange(IpRange), OpType(OR, AND), TargetList(TargetList), TargetListEntry, collapseZero, entryToTargetList, expressionText, parseEntry, textForExpression, textForTerm, traverseExpr)
 import Security.Resolved (ResolvedExpression(..), ResolvedTerm(..))
 import Security.TermSelection (DialogType(..), termDialog)
 import Template (template')
 import UIComp.SpeedDial (speedDialActionU, speedDialIconU, speedDialU)
 import Users.UserLookup (GroupDetails(GroupDetails), RoleDetails(RoleDetails), UserDetails(UserDetails), UserGroupRoles(UserGroupRoles), lookupUsers)
 
-data ExprType = Unresolved Expression | Resolved ResolvedExpression | EmptyExpr
+data ExprType = Unresolved Expression | Resolved ResolvedExpression | InvalidExpr String
+
+data TermType = UnresolvedTerm ExpressionTerm | ResolvedTerm ResolvedTerm
+
+derive instance ttEQ :: Eq TermType 
 
 derive instance etEQ :: Eq ExprType
 
@@ -96,9 +101,10 @@ data Command = Resolve | HandleDrop DropResult | SelectEntry Int | SaveChanges |
 type MyState = {
   acls :: Array ResolvedEntry,
   selectedIndex :: Maybe Int,
-  terms :: Array ResolvedTerm,
+  terms :: Array TermType,
   undoList :: List (Tuple (Maybe Int) (Array ResolvedEntry)), 
   openDialog :: Maybe DialogType, 
+  showDialog :: Boolean,
   changed :: Boolean, 
   dialOpen :: Boolean, 
   dialHidden :: Boolean
@@ -118,6 +124,10 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
   _unresolvedExpr :: Prism' ExprType Expression
   _unresolvedExpr = prism' Unresolved $ case _ of 
     Unresolved r -> Just r
+    _ -> Nothing
+  _unresolvedTerm :: Prism' TermType ExpressionTerm
+  _unresolvedTerm = prism' UnresolvedTerm $ case _ of 
+    UnresolvedTerm r -> Just r
     _ -> Nothing
   _id = prop (SProxy :: SProxy "id")
   _changed = prop (SProxy :: SProxy "changed")
@@ -240,24 +250,30 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
     }
   }
 
-  initialState (ReactProps {acls}) = ReactState {
-      acls: either (const []) (map markForResolve) $ traverse parseEntry acls, 
-      terms: commonTerms,
+  initialState (ReactProps {acls:a}) = 
+    let acls = markForResolve <$> a
+        collectTerm (ResolvedEntry {expr:Unresolved e}) = 
+          traverseExpr (\rt _ -> [UnresolvedTerm rt]) (\{exprs} _ -> join exprs) e 
+        collectTerm _ = []
+    in ReactState {
+      acls, 
+      terms: union (UnresolvedTerm <$> commonTerms) $ nub (acls >>= collectTerm),
       selectedIndex: Nothing, 
       undoList: Nil, 
       openDialog: Nothing, 
+      showDialog: false,
       changed: false, 
       dialOpen: false, 
       dialHidden: false
     }
     where  
-    markForResolve (AccessEntry {priv,granted,override,expr}) = 
-      ResolvedEntry {priv,granted,override, expr: Unresolved expr}
+    markForResolve (TargetListEntry {privilege:priv,granted,override,who}) = 
+      ResolvedEntry {priv,granted,override, expr: either (InvalidExpr <<< show) Unresolved $ parseWho who}
 
-  render {acls,terms,selectedIndex,openDialog,undoList,changed, dialOpen, dialHidden} 
+  render {acls,terms,selectedIndex,openDialog,showDialog,undoList,changed, dialOpen, dialHidden} 
       (ReactProps {classes,allowedPrivs}) (DispatchEff d) = 
     let expressionM = selectedIndex >>= \i -> Tuple i <$> previewOn acls (currentEntry i)
-    in dragDropContext { onDragEnd: mkIOFn1 (d HandleDrop) } [ 
+    in dragDropContext { onDragEnd: mkIOFn1 (d HandleDrop) } $ [ 
       div [P.className classes.overallPanel] [
         div [P.className classes.editorPanels] [
           div [P.className classes.entryList] [
@@ -275,15 +291,15 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
         div [P.className classes.buttons] [ 
           button [variant raised, disabled cantSave, color primary, onClick $ command SaveChanges ] [ text "Save" ],
           button [variant raised, disabled cantUndo, onClick $ command Undo ] [ text "Undo" ]
-        ],
-        dialog [open $ isJust openDialog, onClose $ command CloseDialog] $ 
-          maybe [] (\dt -> [ termDialog {onAdd: mkIOFn1 $ d AddFromDialog, 
-            cancel: liftEff $ (d \_ -> CloseDialog) unit, dt} ]) openDialog
-    ]
-  ]
+        ]
+      ]
+    ] <> (maybe [] renderDialog openDialog)
     where 
+    renderDialog dt = [ termDialog {open:showDialog, onAdd: mkIOFn1 $ d AddFromDialog, cancel: liftEff $ (d \_ -> CloseDialog) unit, dt} ]
+
     onChangeStr :: forall r. (String -> Command) -> IProp (onChange::Untyped|r)
     onChangeStr f = onChange $ handle $ d $ \e -> f e.target.value
+
     commonPanel = let 
       dialChange = command <<< DialState
       closeDial = dialChange $ const false
@@ -318,7 +334,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
           onClick $ command NewPriv ] [text "Add Privilege"] ]
     droppedOnClass snap = if snap.isDraggingOver then classes.beingDraggedOver else classes.notBeingDragged
     cantUndo = null undoList
-    cantSave = changed && (isJust $ find (isNothing <<< backToAccessEntry) acls)
+    cantSave = not changed || (isJust $ find (isNothing <<< backToAccessEntry) acls)
 
     expressionContents (Tuple i {expr:exprType, priv}) =
       let exprEntries = case exprType of 
@@ -353,7 +369,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
               icon_ [ text "delete" ] 
             ] 
         ]
-      ] i t) l
+      ] i (ResolvedTerm t)) l
       Op op exprs _ -> (Cons $ opEntry op ) (foldr (makeExpression (indent + 1)) l exprs)
       where 
       opEntry op = stdDrag "op" $ \i -> div [ P.className classes.opDrop, P.style {marginLeft: indentPixels} ] [ 
@@ -366,10 +382,10 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
       listItem props $ [ 
         listItemIcon_ [ 
           icon_ [ 
-            text $ iconNameForResolved rt 
+            text $ iconNameForTermType rt 
           ] 
         ], 
-        listTextForResolved rt
+        listTextForTermType rt
       ] <> actions) i
 
     entryRow i (ResolvedEntry {granted,override,priv,expr}) = draggable { "type": "entry", draggableId: "entry" <> show i, index:i} \p _ -> 
@@ -398,7 +414,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
 
     textForExprType (Unresolved std) = stdExprLine $ textForExpression std 
     textForExprType (Resolved rexpr) = stdExprLine $ expressionText textForResolved rexpr
-    textForExprType EmptyExpr = typography [component "span", color error] [ text "* Required" ]
+    textForExprType (InvalidExpr msg) = typography [component "span", color error] [ text msg ]
   
   listTextForResolved = case _ of 
     Already std -> listItemText [P.primary $ textForTerm std ] 
@@ -407,6 +423,9 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
     ResolvedGroup (GroupDetails {name}) -> listItemText [ P.primary name ]
     ResolvedRole (RoleDetails {name}) -> listItemText [ P.primary name ]
 
+  listTextForTermType = case _ of 
+    ResolvedTerm t -> listTextForResolved t
+    UnresolvedTerm un -> listTextForResolved (Already un)
 
   textForResolved :: ResolvedTerm -> String
   textForResolved = case _ of 
@@ -415,6 +434,10 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
     ResolvedGroup (GroupDetails {name}) -> name
     ResolvedRole (RoleDetails {name}) -> name
 
+  iconNameForTermType = case _ of 
+    ResolvedTerm t -> iconNameForResolved t
+    UnresolvedTerm un -> iconNameForResolved (Already un)
+    
   iconNameForResolved = case _ of 
     Already std -> iconNameForTerm std
     ResolvedUser (UserDetails _) -> iconNameForTerm (User "")
@@ -433,14 +456,6 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
    Referrer _ -> "http"
    SharedSecretToken _ -> "apps"
     
-  toQuery :: Expression -> UserGroupRoles String String String
-  toQuery = traverseExpr (\t _ -> UserGroupRoles (termQuery t)) \{exprs} _ -> fold exprs
-    where
-    termQuery (User uid) = {users:[uid],groups:[], roles:[]}
-    termQuery (Group gid) = {users:[], groups:[gid], roles:[]}
-    termQuery (Role rid) = {users:[], groups:[], roles:[rid]}
-    termQuery _ = {users:[],groups:[],roles:[]}
-
   reorder :: forall a. Int -> Int -> Array a -> Array a 
   reorder sourceIndex destIndex a = fromMaybe a do
      let newdest = if destIndex < 1 then 0 else destIndex
@@ -475,8 +490,8 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
               Left {i} -> Left $ i - 1
               Right r -> mkOp r
     in case insertOrPos i e of 
-      Left 0 -> Op AND [e, nt] false
-      Right (r : n : Nil) -> Op AND [n, r] false
+      Left 0 -> Op OR [e, nt] false
+      Right (r : n : Nil) -> Op OR [n, r] false
       Right (r : Nil) -> r
       a -> e
   
@@ -493,13 +508,16 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
   modifyResolved :: (ResolvedExpression -> ResolvedExpression) -> State MyState Unit
   modifyResolved f = modifyExpression (mapResolved (f >>> Resolved))
 
+  emptyExpr :: ExprType
+  emptyExpr = InvalidExpr "* Required"
+
   modifyExpression :: (ExprType -> ExprType) -> State MyState Unit
   modifyExpression f = void $ runMaybeT do 
     selectedIndex <- MaybeT (gets _.selectedIndex)
     let curExpr :: Traversal' (Array ResolvedEntry) ExprType
         curExpr = ix selectedIndex <<< _ResolvedEntry <<< _expr
     oldEx <- MaybeT $ (preview (_acls <<< curExpr) <$> get)
-    let newEx = mapResolved (collapseZero >>> maybe EmptyExpr Resolved) $ f oldEx
+    let newEx = mapResolved (collapseZero >>> maybe emptyExpr Resolved) $ f oldEx
     guard (oldEx /= newEx)
     lift $ addUndo $ set curExpr newEx
 
@@ -507,105 +525,121 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
   copyToCurrent srcIx destIx = do 
     let insertNew t = case _ of 
          Resolved r -> Resolved $ insertInto (Term t false) destIx r
-         EmptyExpr -> Resolved (Term t false)
+         InvalidExpr _ -> Resolved (Term t false)
          o -> o 
     ce <- use _terms
-    ce !! srcIx # maybe (pure unit) (modifyExpression <<< insertNew)  
+    case ce !! srcIx of 
+      Just (ResolvedTerm t) -> modifyExpression $ insertNew t
+      _ -> pure unit
 
-  eval (AddFromDialog dt) = 
-    modifyState \s -> s {terms = append s.terms dt, openDialog=Nothing,dialHidden=false}
-      
-  eval (DialState open) = modifyState \s -> s {dialOpen = open s.dialOpen}
-  eval NewPriv = modifyState $ execState $ do 
-    oldEntries <- use _acls
-    addUndo (flip snoc $ ResolvedEntry {priv:"", granted:true, override:false, expr: EmptyExpr})
-    assign _selectedIndex $ Just $ length oldEntries
-  eval CloseDialog = modifyState _{openDialog=Nothing,dialHidden=false}
-  eval (OpenDialog dt) = modifyState _{openDialog=Just dt,dialOpen=false,dialHidden=true}
-  eval (DeleteEntry ind) = do 
-    modifyState $ execState $ do 
-        addUndo \l -> fromMaybe l $ deleteAt ind l  
-  eval (EditEntry ind f) = do
-    modifyState $ execState $ do 
-        addUndo $ over (ix ind <<< _Newtype) f
-  eval (ChangeOp ind op) = do 
-    let editOp (Op _ exprs n) | Just newOp <- valToOpType op = Op newOp exprs n 
-        editOp o = o
-        changeOp r (Right (Tuple _ e)) = editOp e
-        changeOp r _ = r
-    modifyState $ execState $ modifyResolved (\r -> changeOp r $ deleteFrom ind r)
-  eval (DeleteExpr i) = do 
-    let delExpr e@(Resolved r) = either (const e) (fst >>> maybe EmptyExpr Resolved) $ deleteFrom i r
-        delExpr o = o
-    modifyState $ execState $ modifyExpression delExpr
-  eval Undo = do 
-    modifyState $ execState do 
-      undos <- use _undoList
-      uncons undos # maybe (pure unit) \{head:Tuple ix list, tail} -> do 
-        assign _undoList tail
-        assign _acls list
-        assign _selectedIndex ix
+  termQuery :: ExpressionTerm -> UserGroupRoles String String String
+  termQuery = UserGroupRoles <<< case _ of 
+    User uid -> {users:[uid],groups:[], roles:[]}
+    Group gid -> {users:[], groups:[gid], roles:[]}
+    Role rid -> {users:[], groups:[], roles:[rid]}
+    _ -> {users:[],groups:[],roles:[]}
 
-  eval SaveChanges = do 
-    {applyChanges} <- getProps
-    {acls} <- getState
-    (traverse backToAccessEntry acls) # maybe (pure unit) \entries -> do 
-      liftEff $ runIOFn1 applyChanges $ entryToTargetList <$> entries
-      modifyState _{changed=false}
+  toQuery :: Expression -> UserGroupRoles String String String
+  toQuery = traverseExpr (\t _ -> termQuery t) \{exprs} _ -> fold exprs
+
+  eval = case _ of 
+    AddFromDialog dt -> 
+      modifyState \s -> s {terms = append s.terms $ ResolvedTerm <$> dt, showDialog=false,dialHidden=false}
+
+    DialState open -> modifyState \s -> s {dialOpen = open s.dialOpen}
+
+    NewPriv -> modifyState $ execState $ do 
+      oldEntries <- use _acls
+      addUndo (flip snoc $ ResolvedEntry {priv:"", granted:true, override:false, expr: emptyExpr})
+      assign _selectedIndex $ Just $ length oldEntries
+
+    CloseDialog -> modifyState _{showDialog=false,dialHidden=false}
+    OpenDialog dt -> modifyState _{openDialog=Just dt,showDialog=true, dialOpen=false,dialHidden=true}
     
+    DeleteEntry ind ->  
+      modifyState $ execState $ addUndo \l -> fromMaybe l $ deleteAt ind l  
+    EditEntry ind f -> 
+      modifyState $ execState $ addUndo $ over (ix ind <<< _Newtype) f
 
-  eval (SelectEntry entry) = do 
-    modifyState $ over _selectedIndex case _ of 
-      Just e | e == entry -> Nothing
-      _ -> Just entry
+    ChangeOp ind op -> do 
+      let editOp (Op _ exprs n) | Just newOp <- valToOpType op = Op newOp exprs n 
+          editOp o = o
+          changeOp r (Right (Tuple _ e)) = editOp e
+          changeOp r _ = r
+      modifyState $ execState $ modifyResolved (\r -> changeOp r $ deleteFrom ind r)
 
-  eval Resolve = do
-    {acls} <- getState
-    let ugr = foldMapOf (traversed <<< (_ResolvedEntry <<< _expr <<< _unresolvedExpr)) toQuery acls
-    (UserGroupRoles {users,groups,roles}) <- lift $ lookupUsers ugr
-    let filterById :: forall a r. Newtype a {id::String|r} => Array a -> String -> Maybe a
-        filterById arr uid = arr ^? (traversed <<< (filtered $ view ((_Newtype :: Lens' a {id::String|r}) <<< _id) >>> eq uid))
-        resolveTerm = case _ of 
-          (User uid) | Just ud <- filterById users uid -> ResolvedUser ud
-          (Group gid) | Just gd <- filterById groups gid -> ResolvedGroup gd
-          (Role rid) | Just rd <- filterById roles rid -> ResolvedRole rd
-          (User uid) -> ResolvedUser (UserDetails {id:uid, username: "Unknown user with id " <> uid, firstName:"", lastName:"", email:Nothing})
-          other -> Already other
-        resolve = traverseExpr (\t n -> Term (resolveTerm t) n) \{op,exprs} n -> Op op exprs n
-    modifyState $ over (_acls <<< traversed <<< _ResolvedEntry <<< _expr) case _ of 
-      Unresolved u -> Resolved (resolve u)
-      o -> o
+    DeleteExpr i -> do 
+      let delExpr e@(Resolved r) = either (const e) (fst >>> maybe emptyExpr Resolved) $ deleteFrom i r
+          delExpr o = o
+      modifyState $ execState $ modifyExpression delExpr
+    
+    Undo -> do 
+      modifyState $ execState do 
+        undos <- use _undoList
+        uncons undos # maybe (pure unit) \{head:Tuple ix list, tail} -> do 
+          assign _undoList tail
+          assign _acls list
+          assign _selectedIndex ix
 
-  eval (HandleDrop dr@{source:{index:sourceIndex, droppableId:sourceId}}) | Just {index:destIndex,droppableId:destId} <- toMaybe dr.destination = 
-    let handleDrop sId dId | sId == dId && sourceIndex /= destIndex = 
-          let reorderCurrent = modifyResolved $ (\e -> case deleteFrom sourceIndex e of 
-                  Right (Tuple (Just ne) re)-> insertInto re destIndex ne
-                  _ -> e
-                )
-              l = case sId of 
-                    "list" -> addUndo (reorder sourceIndex destIndex)
-                    "currentEntry" -> reorderCurrent
-                    _       -> modifying _terms (reorder sourceIndex destIndex)
-          in modifyState $ execState l
-        handleDrop "common" "currentEntry" = do 
-          modifyState $ execState $ copyToCurrent sourceIndex destIndex 
-        handleDrop _ _ = pure unit
-        
-    in handleDrop sourceId destId
-  eval (HandleDrop _) = pure unit
+    SaveChanges -> do 
+      {applyChanges} <- getProps
+      {acls} <- getState
+      (traverse backToAccessEntry acls) # maybe (pure unit) \entries -> do 
+        liftEff $ runIOFn1 applyChanges $ entryToTargetList <$> entries
+        modifyState _{changed=false}
 
-commonTerms :: Array ResolvedTerm
+    SelectEntry entry -> do 
+      modifyState $ over _selectedIndex case _ of 
+        Just e | e == entry -> Nothing
+        _ -> Just entry
+
+    Resolve -> do
+      {terms,acls} <- getState
+      let ugr = foldMapOf (traversed <<< _ResolvedEntry <<< _expr <<< _unresolvedExpr) toQuery acls <> 
+                foldMapOf (traversed <<< _unresolvedTerm) termQuery terms
+      (UserGroupRoles {users,groups,roles}) <- lift $ lookupUsers ugr
+      let filterById :: forall a r. Newtype a {id::String|r} => Array a -> String -> Maybe a
+          filterById arr uid = arr ^? (traversed <<< (filtered $ view ((_Newtype :: Lens' a {id::String|r}) <<< _id) >>> eq uid))
+          resolveTerm = case _ of 
+            (User uid) | Just ud <- filterById users uid -> ResolvedUser ud
+            (Group gid) | Just gd <- filterById groups gid -> ResolvedGroup gd
+            (Role rid) | Just rd <- filterById roles rid -> ResolvedRole rd
+            (User uid) -> ResolvedUser (UserDetails {id:uid, username: "Unknown user with id " <> uid, firstName:"", lastName:"", email:Nothing})
+            other -> Already other
+          resolve = traverseExpr (\t n -> Term (resolveTerm t) n) \{op,exprs} n -> Op op exprs n
+          resolveAcls = over (_acls <<< traversed <<< _ResolvedEntry <<< _expr) case _ of 
+            Unresolved u -> Resolved (resolve u)
+            o -> o
+          resolveTerms = over (_terms <<< traversed) case _ of 
+            UnresolvedTerm u -> ResolvedTerm (resolveTerm u)
+            o -> o
+      modifyState $ resolveAcls <<< resolveTerms
+      
+
+    HandleDrop dr@{source:{index:sourceIndex, droppableId:sourceId}} | Just {index:destIndex,droppableId:destId} <- toMaybe dr.destination -> 
+      let handleDrop sId dId | sId == dId && sourceIndex /= destIndex = 
+            let reorderCurrent = modifyResolved $ (\e -> case deleteFrom sourceIndex e of 
+                    Right (Tuple (Just ne) re)-> insertInto re destIndex ne
+                    _ -> e
+                  )
+                l = case sId of 
+                      "list" -> addUndo (reorder sourceIndex destIndex)
+                      "currentEntry" -> reorderCurrent
+                      _       -> modifying _terms (reorder sourceIndex destIndex)
+            in modifyState $ execState l
+          handleDrop "common" "currentEntry" = do 
+            modifyState $ execState $ copyToCurrent sourceIndex destIndex 
+          handleDrop _ _ = pure unit
+          
+      in handleDrop sourceId destId
+    HandleDrop _ -> pure unit
+
+commonTerms :: Array ExpressionTerm
 commonTerms = [
-  Already Everyone,
-  Already LoggedInUsers, 
-  Already Guests,
-  Already Owner,
-  Already (Role "TestRole"),
-  Already (Group "TestGroup"),
-  Already (User "TestUser"),
-  Already (Ip $ IpRange 1 2 3 5 24),
-  Already (Referrer "http://*"),
-  Already (SharedSecretToken "moodle")
+  Everyone,
+  LoggedInUsers, 
+  Guests,
+  Owner
 ]
 
 opValue :: OpType -> String 
