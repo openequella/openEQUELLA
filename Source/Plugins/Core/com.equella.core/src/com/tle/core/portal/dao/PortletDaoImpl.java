@@ -85,36 +85,33 @@ public class PortletDaoImpl extends AbstractEntityDaoImpl<Portlet> implements Po
 		public PortletSearchListCallback(String freetext, int offset, int max, String owner, String type,
 			Boolean onlyInstWide)
 		{
-			super(freetext, true, offset, max);
+			super(new EnabledCallback(
+					new PagedListCallback(null, offset, max),
+					true),
+					freetext);
 			this.owner = owner;
 			this.type = type;
 			this.onlyInstWide = onlyInstWide;
 		}
 
 		@Override
-		public String getAdditionalWhere()
+		public String createAdditionalWhere()
 		{
-			String finalWhere = null;
+			String finalWhere = super.createAdditionalWhere();
 
 			if( !Check.isEmpty(owner) )
 			{
-				finalWhere = addWhere(null, "owner = :owner");
+				finalWhere = concat(finalWhere,"owner = :owner", " AND ");
 			}
 
 			if( !Check.isEmpty(type) )
 			{
-				finalWhere = addWhere(finalWhere, "type = :type");
+				finalWhere = concat(finalWhere, "type = :type", " AND ");
 			}
 
 			if( onlyInstWide != null )
 			{
-				finalWhere = addWhere(finalWhere, "institutional = :institutional");
-			}
-
-			String additionalWhere = Strings.nullToEmpty(super.getAdditionalWhere());
-			if( !Check.isEmpty(additionalWhere) )
-			{
-				finalWhere = addWhere(finalWhere, additionalWhere);
+				finalWhere = concat(finalWhere, "institutional = :institutional", " AND ");
 			}
 
 			return finalWhere;
@@ -123,6 +120,7 @@ public class PortletDaoImpl extends AbstractEntityDaoImpl<Portlet> implements Po
 		@Override
 		public void processQuery(Query query)
 		{
+			super.processQuery(query);
 			if( freetext != null )
 			{
 				query.setParameter("freetext", freetext);
@@ -141,16 +139,6 @@ public class PortletDaoImpl extends AbstractEntityDaoImpl<Portlet> implements Po
 			if( onlyInstWide != null )
 			{
 				query.setParameter("institutional", onlyInstWide);
-			}
-
-			if( offset >= 0 )
-			{
-				query.setFirstResult(offset);
-			}
-			if( max >= 0 )
-			{
-				query.setFetchSize(max);
-				query.setMaxResults(max);
 			}
 		}
 	}

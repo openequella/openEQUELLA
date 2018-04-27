@@ -22,6 +22,7 @@ import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.opensaml.xml.signature.P;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tle.common.Check;
@@ -147,46 +148,102 @@ public class GenericInstitionalDaoImpl<T, ID extends Serializable> extends Gener
 		boolean isDistinct();
 	}
 
-	protected static class BaseCallback implements ListCallback
+	protected static abstract class BaseCallback implements ListCallback
 	{
-		@Override
-		public String getAdditionalJoins()
+		protected final ListCallback wrappedCallback;
+
+		public BaseCallback(ListCallback wrappedCallback)
+		{
+			this.wrappedCallback = wrappedCallback;
+		}
+
+		protected String createAdditionalJoins()
+		{
+			return null;
+		}
+
+		protected String createAdditionalWhere()
+		{
+			return null;
+		}
+
+		protected String createOrderBy()
 		{
 			return null;
 		}
 
 		@Override
-		public String getAdditionalWhere()
+		public final String getAdditionalJoins()
 		{
-			return null;
+			String join = createAdditionalJoins();
+			if (wrappedCallback != null)
+			{
+				join = concat(join, wrappedCallback.getAdditionalJoins());
+			}
+			return join;
 		}
 
 		@Override
-		public String getOrderBy()
+		public final String getAdditionalWhere()
 		{
-			return null;
+			String where = createAdditionalWhere();
+			if (wrappedCallback != null)
+			{
+				where = concat(where, wrappedCallback.getAdditionalWhere(), " AND ");
+			}
+			return where;
+		}
+
+		@Override
+		public final String getOrderBy()
+		{
+			String order = createOrderBy();
+			if (wrappedCallback != null)
+			{
+				order = concat(order, wrappedCallback.getOrderBy(), ", ");
+			}
+			return order;
 		}
 
 		@Override
 		public void processQuery(Query query)
 		{
-			// Nada
+			if (wrappedCallback != null)
+			{
+				wrappedCallback.processQuery(query);
+			}
 		}
 
 		@Override
 		public boolean isDistinct()
 		{
+			if (wrappedCallback != null)
+			{
+				return wrappedCallback.isDistinct();
+			}
 			return false;
 		}
 
-		@SuppressWarnings("nls")
-		protected String appendWhere(String where, String extra)
+		protected String concat(String part1, String part2)
 		{
-			if( Check.isEmpty(where) )
+			return concat(part1, part2, " ");
+		}
+
+		protected String concat(String part1, String part2, String concatWith)
+		{
+			String result = part1;
+			if (!Check.isEmpty(part2))
 			{
-				return extra;
+				if (Check.isEmpty(part1))
+				{
+					result = part2;
+				}
+				else
+				{
+					result = part1 + concatWith + part2;
+				}
 			}
-			return where + " AND " + extra;
+			return result;
 		}
 	}
 }

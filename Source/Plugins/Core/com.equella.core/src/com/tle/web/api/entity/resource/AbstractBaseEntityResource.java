@@ -28,6 +28,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import com.tle.core.entity.EnumerateOptions;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dytech.edge.common.LockedException;
@@ -172,12 +173,16 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	}
 
 	@Transactional
-	public SearchBean<B> list(UriInfo uriInfo)
+	public SearchBean<B> list(UriInfo uriInfo, String q)
 	{
-		boolean isExport = RestImportExportHelper.isExport(uriInfo);
+		final boolean isExport = RestImportExportHelper.isExport(uriInfo);
+		return list(new EnumerateOptions(q, 0, 100000, isExport, null), isExport);
+	}
 
-		final List<BE> allEntities = isExport ? getEntityService().enumerateListableIncludingSystem()
-			: getEntityService().enumerateListable();
+	protected SearchBean<B> list(EnumerateOptions opts, boolean isExport)
+	{
+		final AbstractEntityService<?, BE> entityService = getEntityService();
+		final List<BE> allEntities = entityService.enumerateListable(opts);
 		final List<B> retBeans = new ArrayList<B>(allEntities.size());
 
 		for( BE entity : allEntities )

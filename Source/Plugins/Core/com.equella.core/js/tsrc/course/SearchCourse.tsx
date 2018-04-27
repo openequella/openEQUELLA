@@ -1,7 +1,5 @@
 import * as React from 'react';
-import { Button, TextField } from 'material-ui';
 import { Course } from '../api';
-import courseService from './index';
 import { StoreState } from '../store';
 import { connect, Dispatch } from 'react-redux';
 import List from 'material-ui/List';
@@ -18,7 +16,6 @@ const styles: StyleRulesCallback<'root'> = (theme: Theme) => ({
   });*/
 
 interface SearchCourseProps {
-    onSearch: (query?: string) => void;
     bridge: Bridge;
     query?: string;
     courses: Course[];
@@ -35,17 +32,9 @@ class SearchCourse extends React.Component<SearchCourseProps, object> {
         this.classes = props;
     }
 
-    onButtonClick() {
-        this.props.onSearch(this.textInput.value);
-    }
-
     render() {
         const {routes,router} = this.props.bridge;
         return <div className={this.classes.root}><div className="courses">
-                <div className="coursesSearch">
-                    <TextField id="txtCourseSearch" inputRef={(input: any) => { this.textInput = input; }} />
-                    <Button color="primary" onClick={this.onButtonClick.bind(this)} variant="raised">Search</Button>
-                </div>
                 <List>
                 {
                     (this.props.courses ?
@@ -75,9 +64,9 @@ function mapStateToProps(state: StoreState) {
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>) {
-    const { workers } = courseService;
+    //const { workers } = courseService;
     return {
-        onSearch: (query?: string) => workers.search(dispatch, {query})
+        //onSearch: (query?: string) => workers.search(dispatch, {query})
     }
 }
 

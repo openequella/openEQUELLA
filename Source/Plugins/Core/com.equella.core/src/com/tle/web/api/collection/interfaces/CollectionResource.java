@@ -48,7 +48,7 @@ public interface CollectionResource extends BaseEntityResource<CollectionBean, A
 	@GET
 	@Path("/")
 	@ApiOperation(value = "List all collections", notes = "Retrieve a list of all collections")
-	public SearchBean<CollectionBean> list(@Context UriInfo uriInfo);
+	public SearchBean<CollectionBean> list(@Context UriInfo uriInfo, @ApiParam("Search name and description") @QueryParam("q") String q);
 
 	@GET
 	@Path("/acl")

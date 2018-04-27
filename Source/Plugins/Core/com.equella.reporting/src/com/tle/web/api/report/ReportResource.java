@@ -56,7 +56,7 @@ public interface ReportResource  extends BaseEntityResource<ReportBean, BaseEnti
     @Path("")
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Retrieve reports")
-    SearchBean<ReportBean> list(@Context UriInfo uriInfo);
+    SearchBean<ReportBean> list(@Context UriInfo uriInfo, @ApiParam("Search name and description") @QueryParam("q") String q);
 
     @GET
     @Path("/{uuid}")

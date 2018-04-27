@@ -57,7 +57,7 @@ public interface LtiConsumerResource extends BaseEntityResource<LtiConsumerBean,
 
 	@GET
 	@ApiOperation(value = "List all LTI consumers")
-	public SearchBean<LtiConsumerBean> list(@Context UriInfo uriInfo);
+	public SearchBean<LtiConsumerBean> list(@Context UriInfo uriInfo, @ApiParam("Search name and description") @QueryParam("q") String q);
 
 	@GET
 	@Path("/{uuid}")

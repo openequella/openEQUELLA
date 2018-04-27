@@ -23,9 +23,12 @@ import javax.inject.Singleton;
 
 import com.tle.beans.activation.ActivateRequest;
 import com.tle.beans.item.cal.request.CourseInfo;
+import com.tle.common.Check;
+import com.tle.core.entity.EnumerateOptions;
 import com.tle.core.entity.dao.impl.AbstractEntityDaoImpl;
 import com.tle.core.guice.Bind;
 import com.tle.common.institution.CurrentInstitution;
+import org.hibernate.Query;
 
 /**
  * @author Charles O'Farrell
@@ -60,5 +63,60 @@ public class CourseInfoDaoImpl extends AbstractEntityDaoImpl<CourseInfo> impleme
 			classes.add(ActivateRequest.class);
 		}
 		return classes;
+	}
+
+	@Override
+	protected DefaultSearchListCallback getSearchListCallback(final ListCallback nestedCallback, final EnumerateOptions options)
+	{
+		ListCallback callback = null;
+		final Boolean includeDisabled = options.isIncludeDisabled();
+		if (includeDisabled != null)
+		{
+			callback = new EnabledCallback(callback, includeDisabled);
+		}
+		if (options.getOffset() != 0 || options.getMax() != -1)
+		{
+			callback = new PagedListCallback(callback, options.getOffset(), options.getMax());
+		}
+		return new CourseSearchListCallback(callback, options.getQuery(), (String)options.getParameters().get("code"));
+	}
+
+	public static class CourseSearchListCallback extends DefaultSearchListCallback
+	{
+		final String code;
+
+		public CourseSearchListCallback(ListCallback wrappedCallback, String freetext, String code)
+		{
+			super(wrappedCallback, freetext);
+			this.code = code;
+		}
+
+		@Override
+		public String createAdditionalWhere()
+		{
+			String where = null;
+			if( freetext != null )
+			{
+				// CAST required for SQLServer
+				where = "LOWER(CAST(ns.text AS string)) LIKE :freetext"
+						+ " OR LOWER(CAST(ds.text AS string)) LIKE :freetext"
+						+ " OR LOWER(be.code) LIKE :freetext";
+			}
+			if (code != null)
+			{
+				where = concat(where, "LOWER(be.code) LIKE :code", " OR ");
+			}
+			return (Check.isEmpty(where) ? where : "(" + where + ")");
+		}
+
+		@Override
+		public void processQuery(Query query)
+		{
+			super.processQuery(query);
+			if( code != null )
+			{
+				query.setParameter("code", code);
+			}
+		}
 	}
 }

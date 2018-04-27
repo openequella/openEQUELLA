@@ -72,9 +72,9 @@ public class ReportResourceImpl extends
     private UrlLinkService urlLinkService;
 
     @Override
-    public SearchBean<ReportBean> list(UriInfo uriInfo)
+    public SearchBean<ReportBean> list(UriInfo uriInfo, String q)
     {
-        return super.list(uriInfo);
+        return super.list(uriInfo, q);
     }
 
     @Override

@@ -34,6 +34,7 @@ import com.tle.common.EntityPack;
 import com.tle.common.filesystem.handle.BucketFile;
 import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.common.filesystem.handle.TemporaryFileHandle;
+import com.tle.core.entity.EnumerateOptions;
 import com.tle.core.entity.dao.AbstractEntityDao;
 import com.tle.core.entity.dao.EntityLockingDao;
 import com.tle.core.entity.registry.EntityRegistry;
@@ -69,7 +70,7 @@ public class EntityConverter extends AbstractConverter<BaseEntity>
 				final XStream xstream = service.getXStream();
 
 				final AbstractEntityDao<BaseEntity> dao = service.getEntityDao();
-				final List<BaseEntity> allEntities = dao.enumerateAllIncludingSystem();
+				final List<BaseEntity> allEntities = dao.enumerateAll(new EnumerateOptions().setIncludeSystem(true));
 
 				message.setTotal(allEntities.size());
 				message.setKey("institutions.converter.generic.genericmsg");

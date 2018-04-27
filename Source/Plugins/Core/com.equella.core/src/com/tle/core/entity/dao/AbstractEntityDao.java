@@ -22,6 +22,7 @@ import java.util.Set;
 
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.BaseEntityLabel;
+import com.tle.core.entity.EnumerateOptions;
 import com.tle.core.hibernate.dao.GenericInstitutionalDao;
 
 public interface AbstractEntityDao<T extends BaseEntity> extends GenericInstitutionalDao<T, Long>
@@ -32,7 +33,7 @@ public interface AbstractEntityDao<T extends BaseEntity> extends GenericInstitut
 
 	List<BaseEntityLabel> listAllIncludingSystem(final String resolveVirtualTo);
 
-	List<T> enumerateAllIncludingSystem();
+	List<T> enumerateAll(EnumerateOptions options);
 
 	List<T> enumerateEnabled();
 

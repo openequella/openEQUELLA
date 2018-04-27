@@ -53,7 +53,7 @@ public interface SchemaResource extends BaseEntityResource<SchemaBean, BaseEntit
 
 	@GET
 	@ApiOperation(value = "List all schemas")
-	public SearchBean<SchemaBean> list(@Context UriInfo uriInfo);
+	public SearchBean<SchemaBean> list(@Context UriInfo uriInfo, @ApiParam("Search name and description") @QueryParam("q") String q);
 
 	@GET
 	@Path("/{uuid}")

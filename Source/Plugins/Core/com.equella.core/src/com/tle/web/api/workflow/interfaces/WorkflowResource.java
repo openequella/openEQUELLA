@@ -53,7 +53,7 @@ public interface WorkflowResource extends BaseEntityResource<WorkflowBean, BaseE
 
 	@GET
 	@ApiOperation("List all workflows")
-	public SearchBean<WorkflowBean> list(@Context UriInfo uriInfo);
+	public SearchBean<WorkflowBean> list(@Context UriInfo uriInfo, @ApiParam("Search name and description") @QueryParam("q") String q);
 
 	@GET
 	@Path("/{uuid}")

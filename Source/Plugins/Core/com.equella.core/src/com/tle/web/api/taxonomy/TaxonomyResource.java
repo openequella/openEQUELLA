@@ -35,6 +35,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import com.dytech.edge.common.LockedException;
 import com.dytech.edge.exceptions.WebException;
@@ -47,6 +48,7 @@ import com.tle.common.Pair;
 import com.tle.common.taxonomy.SelectionRestriction;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.entity.EnumerateOptions;
 import com.tle.core.entity.service.EntityLockingService;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
@@ -54,6 +56,7 @@ import com.tle.core.taxonomy.TaxonomyService;
 import com.tle.core.taxonomy.TermResult;
 import com.tle.core.taxonomy.TermService;
 import com.tle.web.api.interfaces.beans.SearchBean;
+import com.tle.web.remoting.rest.service.RestImportExportHelper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -92,11 +95,12 @@ public class TaxonomyResource
 	@Path("/")
 	@Produces("application/json")
 	@ApiOperation(value = "List all taxonomies")
-	public Response listAllTaxonomies()
+	public Response listAllTaxonomies(UriInfo uriInfo)
 	{
 		SearchBean<TaxonomyBean> results = new SearchBean<TaxonomyBean>();
+		boolean isExport = RestImportExportHelper.isExport(uriInfo);
 		List<TaxonomyBean> beans = Lists.newArrayList();
-		List<Taxonomy> taxonomies = taxonomyService.enumerateListable();
+		List<Taxonomy> taxonomies = taxonomyService.enumerateListable(new EnumerateOptions().setIncludeSystem(isExport));
 		for( Taxonomy taxonomy : taxonomies )
 		{
 			TaxonomyBean bean = taxonomySerializer.serialize(taxonomy, null, false);

@@ -53,7 +53,7 @@ public interface OAuthResource extends BaseEntityResource<OAuthClientBean, BaseE
 
 	@GET
 	@ApiOperation(value = "List all oauth clients")
-	public SearchBean<OAuthClientBean> list(@Context UriInfo uriInfo);
+	public SearchBean<OAuthClientBean> list(@Context UriInfo uriInfo, @ApiParam("Search name and description") @QueryParam("q") String q);
 
 	@GET
 	@Path("/{uuid}")

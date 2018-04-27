@@ -33,6 +33,7 @@ import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.common.security.TargetList;
 import com.tle.core.entity.EntityEditingBean;
 import com.tle.core.entity.EntityEditingSession;
+import com.tle.core.entity.EnumerateOptions;
 import com.tle.core.entity.dao.AbstractEntityDao;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.remoting.RemoteAbstractEntityService;
@@ -82,9 +83,7 @@ public interface AbstractEntityService<B extends EntityEditingBean, T extends Ba
 
 	List<T> enumerate();
 
-	List<T> enumerateListable();
-
-	List<T> enumerateListableIncludingSystem();
+	List<T> enumerateListable(EnumerateOptions options);
 
 	List<T> enumerateDeletable();
 
@@ -148,7 +147,7 @@ public interface AbstractEntityService<B extends EntityEditingBean, T extends Ba
 	<S extends EntityEditingSession<B, T>> S startEditingSession(String entityUuid);
 
 	/**
-	 * @param session
+	 * @param sessionId
 	 */
 	<S extends EntityEditingSession<B, T>> S loadSession(String sessionId);
 
@@ -193,5 +192,4 @@ public interface AbstractEntityService<B extends EntityEditingBean, T extends Ba
 	}
 
 	void afterAdd(EntityPack<T> pack);
-
 }

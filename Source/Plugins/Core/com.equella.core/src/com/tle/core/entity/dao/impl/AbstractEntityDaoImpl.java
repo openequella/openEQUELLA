@@ -16,14 +16,12 @@
 
 package com.tle.core.entity.dao.impl;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.inject.Inject;
 
+import com.tle.common.Pair;
+import com.tle.core.entity.EnumerateOptions;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -131,7 +129,7 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity> extends Generi
 	@Override
 	public List<BaseEntityLabel> listEnabled(final String resolveVirtualTo)
 	{
-		return listAll(resolveVirtualTo, new EnabledCallback(), false);
+		return listAll(resolveVirtualTo, new EnabledCallback(null), false);
 	}
 
 	@Override
@@ -205,7 +203,27 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity> extends Generi
 	@Transactional
 	public List<T> enumerateAll()
 	{
-		return enumerateAll(null);
+		return enumerateAll((ListCallback)null);
+	}
+
+	@Override
+	@Transactional
+	public List<T> enumerateAll(EnumerateOptions options)
+	{
+		ListCallback callback = null;
+		if (options != null)
+		{
+			if (!Check.isEmpty(options.getQuery()) || options.getMax() != -1 || options.getOffset() != 0)
+			{
+				callback = getSearchListCallback(callback, options);
+			}
+			Boolean includeSystem = options.isIncludeSystem();
+			if (includeSystem != null)
+			{
+				callback = new SystemCallback(callback, options.isIncludeSystem());
+			}
+		}
+		return super.enumerateAll(callback);
 	}
 
 	@Override
@@ -216,16 +234,9 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity> extends Generi
 
 	@Override
 	@Transactional
-	public List<T> enumerateAllIncludingSystem()
-	{
-		return super.enumerateAll(new SystemCallback(null, true));
-	}
-
-	@Override
-	@Transactional
 	public List<T> enumerateEnabled()
 	{
-		return super.enumerateAll(new EnabledCallback());
+		return super.enumerateAll(new EnabledCallback(null));
 	}
 
 	@Override
@@ -293,13 +304,23 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity> extends Generi
 	@Override
 	public List<T> search(String freetext, boolean allowArchived, int offset, int perPage)
 	{
-		return enumerateAll(getSearchListCallback(freetext, allowArchived, offset, perPage));
+		return enumerateAll(getSearchListCallback(null,
+				new EnumerateOptions(freetext, offset, perPage, false, allowArchived)));
 	}
 
-	protected ListCallback getSearchListCallback(final String freetext, boolean allowArchived, final int offset,
-		final int perPage)
+	protected DefaultSearchListCallback getSearchListCallback(final ListCallback nestedCallback, final EnumerateOptions options)
 	{
-		return new DefaultSearchListCallback(freetext, allowArchived, offset, perPage);
+		ListCallback callback = null;
+		final Boolean includeDisabled = options.isIncludeDisabled();
+		if (includeDisabled != null)
+		{
+			callback = new EnabledCallback(callback, includeDisabled);
+		}
+		if (options.getOffset() != 0 || options.getMax() != -1)
+		{
+			callback = new PagedListCallback(callback, options.getOffset(), options.getMax());
+		}
+		return new DefaultSearchListCallback(callback, options.getQuery());
 	}
 
 	protected static class EnabledCallback extends BaseCallback
@@ -310,33 +331,35 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity> extends Generi
 		 */
 		private final Boolean enabled;
 
-		public EnabledCallback()
+		public EnabledCallback(ListCallback wrappedCallback)
 		{
-			this(true);
+			this(wrappedCallback, true);
 		}
 
 		/**
 		 * @param enabled Tri-state value: true = enabled only, false = disabled
 		 *            only, null = no filter
 		 */
-		public EnabledCallback(Boolean enabled)
+		public EnabledCallback(ListCallback wrappedCallback, Boolean enabled)
 		{
+			super(wrappedCallback);
 			this.enabled = enabled;
 		}
 
 		@Override
-		public String getAdditionalWhere()
+		public String createAdditionalWhere()
 		{
 			if( enabled != null )
 			{
 				return "be.disabled = :disabled";
 			}
-			return "";
+			return null;
 		}
 
 		@Override
 		public void processQuery(Query query)
 		{
+			super.processQuery(query);
 			if( enabled != null )
 			{
 				query.setParameter("disabled", !enabled);
@@ -344,95 +367,63 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity> extends Generi
 		}
 	}
 
-	protected static class SystemCallback implements ListCallback
+	protected static class SystemCallback extends BaseCallback implements ListCallback
 	{
 		private final boolean includeSystem;
-		private final ListCallback wrappedCallback;
 
 		public SystemCallback(ListCallback wrappedCallback, boolean includeSystem)
 		{
-			this.wrappedCallback = wrappedCallback;
+			super(wrappedCallback);
 			this.includeSystem = includeSystem;
 		}
 
 		@Override
-		public String getAdditionalJoins()
+		public String createAdditionalWhere()
 		{
-			if( wrappedCallback != null )
-			{
-				return wrappedCallback.getAdditionalJoins();
-			}
-			return null;
-		}
-
-		@Override
-		public String getAdditionalWhere()
-		{
-			String additional = null;
 			if( !includeSystem )
 			{
-				additional = "be.systemType = false";
-			}
-
-			if( wrappedCallback != null && !Check.isEmpty(wrappedCallback.getAdditionalWhere()) )
-			{
-				String addWhere = wrappedCallback.getAdditionalWhere();
-				if( additional != null )
-				{
-					additional += " AND " + addWhere;
-				}
-				else
-				{
-					additional = addWhere;
-				}
-			}
-
-			return additional;
-		}
-
-		@Override
-		public boolean isDistinct()
-		{
-			if( wrappedCallback != null )
-			{
-				return wrappedCallback.isDistinct();
-			}
-
-			// Do not change the original schematics - DISTINCT should be false
-			// by default.
-			return false;
-		}
-
-		@Override
-		public void processQuery(Query query)
-		{
-			if( wrappedCallback != null )
-			{
-				wrappedCallback.processQuery(query);
-			}
-		}
-
-		@Override
-		public String getOrderBy()
-		{
-			if( wrappedCallback != null )
-			{
-				return wrappedCallback.getOrderBy();
+				return "be.systemType = false";
 			}
 			return null;
 		}
 	}
 
-	protected static class DefaultSearchListCallback implements ListCallback
+	protected static class PagedListCallback extends BaseCallback implements ListCallback
 	{
-		protected final String freetext;
 		protected final int offset;
 		protected final int max;
-		protected final boolean allowArchived;
+
+		public PagedListCallback(ListCallback wrappedCallback, int offset, int max)
+		{
+			super(wrappedCallback);
+			this.offset = offset;
+			this.max = max;
+		}
+
+		@Override
+		public void processQuery(Query query)
+		{
+			super.processQuery(query);
+			if (offset > 0)
+			{
+				query.setFirstResult(offset);
+			}
+			if (max >= 0)
+			{
+				query.setFetchSize(max);
+				query.setMaxResults(max);
+			}
+		}
+	}
+
+	protected static class DefaultSearchListCallback extends BaseCallback implements ListCallback
+	{
+		protected final String freetext;
 
 		@SuppressWarnings("null")
-		public DefaultSearchListCallback(String freetext, boolean allowArchived, int offset, int max)
+		public DefaultSearchListCallback(ListCallback wrappedCallback, String freetext)
 		{
+			super(wrappedCallback);
 			String query = freetext;
 			if( query != null )
 			{
@@ -448,75 +439,39 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity> extends Generi
 				query = query.replaceAll("\\*", "%");
 			}
 			this.freetext = (Check.isEmpty(query) ? null : '%' + query.trim().toLowerCase() + '%');
-			this.allowArchived = allowArchived;
-			this.offset = offset;
-			this.max = max;
 		}
 
 		@Override
-		public String getAdditionalJoins()
+		public String createAdditionalJoins()
 		{
-			String joins = "";
 			if( freetext != null )
 			{
-				joins = "LEFT JOIN be.name.strings ns LEFT JOIN be.description.strings ds";
+				return "LEFT JOIN be.name.strings ns LEFT JOIN be.description.strings ds";
 			}
-			return joins;
+			return null;
 		}
 
 		@Override
-		public String getAdditionalWhere()
+		public String createAdditionalWhere()
 		{
 			String where = null;
 			if( freetext != null )
 			{
 				// CAST required for SQLServer
-				where = addWhere(null,
-					"(LOWER(CAST(ns.text AS string)) LIKE :freetext OR LOWER(CAST(ds.text AS string)) LIKE :freetext)");
-			}
-			if( !allowArchived )
-			{
-				where = addWhere(where, "be.disabled = false");
+				where = "(LOWER(CAST(ns.text AS string)) LIKE :freetext "
+						+ "OR LOWER(CAST(ds.text AS string)) LIKE :freetext)";
 			}
 			return where;
-		}
-
-		protected String addWhere(String where, String addition)
-		{
-			if( !Check.isEmpty(where) )
-			{
-				where += " AND " + addition; //$NON-NLS-1$
-			}
-			else
-			{
-				where = addition;
-			}
-			return where;
-		}
-
-		@Override
-		public boolean isDistinct()
-		{
-			return false;
 		}
 
 		@Override
 		public void processQuery(Query query)
 		{
+			super.processQuery(query);
 			if( freetext != null )
 			{
 				query.setParameter("freetext", freetext);
 			}
-
-			query.setFirstResult(offset);
-			query.setFetchSize(max);
-			query.setMaxResults(max);
-		}
-
-		@Override
-		public String getOrderBy()
-		{
-			return null;
 		}
 	}
 

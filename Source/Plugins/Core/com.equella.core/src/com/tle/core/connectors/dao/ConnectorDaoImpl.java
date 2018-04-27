@@ -41,12 +41,12 @@ public class ConnectorDaoImpl extends AbstractEntityDaoImpl<Connector> implement
 	@Override
 	public List<Connector> enumerateForUrl(final String url)
 	{
-		return enumerateAll(new EnabledCallback(true)
+		return enumerateAll(new EnabledCallback(null, true)
 		{
 			@Override
-			public String getAdditionalWhere()
+			public String createAdditionalWhere()
 			{
-				return super.getAdditionalWhere() + " AND be.serverUrl like :serverUrl";
+				return super.createAdditionalWhere() + " AND be.serverUrl like :serverUrl";
 			}
 
 			@Override

@@ -33,6 +33,7 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.SecurityConstants;
 import com.tle.core.activation.service.CourseInfoService;
+import com.tle.core.entity.EnumerateOptions;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.security.TLEAclManager;
@@ -43,6 +44,7 @@ import com.tle.web.api.baseentity.serializer.BaseEntitySerializer;
 import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
+import com.tle.web.remoting.rest.service.RestImportExportHelper;
 
 /**
  * @author larry
@@ -76,43 +78,13 @@ public class CourseResourceImpl extends AbstractBaseEntityResource<CourseInfo, B
 	@Override
 	public SearchBean<CourseBean> list(UriInfo uriInfo, String code, String q)
 	{
-		if( Check.isEmpty(code) && Check.isEmpty(q) )
+		final boolean isExport = RestImportExportHelper.isExport(uriInfo);
+		final EnumerateOptions opts = new EnumerateOptions(q, 0, 100000, isExport, null);
+		if (!Check.isEmpty(code))
 		{
-			return super.list(uriInfo);
+			opts.addParameter("code", code);
 		}
-
-		final List<CourseBean> courses = new ArrayList<>();
-		if ( !Check.isEmpty(code) )
-		{
-			// presence of 'code' parameter means we'll have a list of at most 1
-			final CourseInfo oneAtMost = courseService.getByCode(code);
-			if (oneAtMost != null) {
-				Collection<CourseInfo> matchedCourses = aclService.filterNonGrantedObjects(
-						Collections.singleton("LIST_COURSE_INFO"), Collections.singletonList(oneAtMost));
-				for (CourseInfo matched : matchedCourses) {
-					courses.add(serialize(matched, null, true));
-				}
-			}
-		}
-		else if (!Check.isEmpty(q))
-		{
-			//FIXME: generic entity searching
-			final CourseInfo oneAtMost = courseService.getByCode(q);
-			if (oneAtMost != null) {
-				Collection<CourseInfo> matchedCourses = aclService.filterNonGrantedObjects(
-						Collections.singleton("LIST_COURSE_INFO"), Collections.singletonList(oneAtMost));
-				for (CourseInfo matched : matchedCourses) {
-					courses.add(serialize(matched, null, true));
-				}
-			}
-		}
-
-		final SearchBean<CourseBean> retBean = new SearchBean<CourseBean>();
-		retBean.setStart(0);
-		retBean.setLength(courses.size());
-		retBean.setAvailable(courses.size());
-		retBean.setResults(courses);
-		return retBean;
+		return list(opts, isExport);
 	}
 
 	@Override
