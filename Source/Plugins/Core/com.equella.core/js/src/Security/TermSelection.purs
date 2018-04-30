@@ -22,8 +22,9 @@ import MaterialUI.DialogTitle (dialogTitle_)
 import MaterialUI.ExpansionPanel (onChange)
 import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Modal (onClose, open)
+import MaterialUI.Color as C
 import MaterialUI.PropTypes (Untyped, handle)
-import MaterialUI.Properties (IProp, className, mkProp)
+import MaterialUI.Properties (IProp, className, color, mkProp)
 import MaterialUI.Select (select)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.TextField (textField, value)
@@ -104,8 +105,8 @@ termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRend
       dialogTitle_ [text title],
       dialogContent [className dialogStyle] content,
       dialogActions_ $ catMaybes [
-        (\e -> button [ onClick $ command Add, disabled $ not e ] [text "Add"]) <$> add,
-        Just $ button [ onClick $ handle $ \_ -> runIOSync cancel] [ text "Cancel" ]
+        (\e -> button [color C.primary, onClick $ command Add, disabled $ not e ] [text "Add"]) <$> add,
+        Just $ button [color C.secondary, onClick $ handle $ \_ -> runIOSync cancel] [ text "Cancel" ]
       ]
     ]
     where
@@ -114,7 +115,7 @@ termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRend
     onChangeStr f = onChange $ handle $ d $ \e -> f e.target.value
     stdText v l = textField [value v, onChangeStr $ Change <<< set l]
     dialogContents = case _ of 
-      UserDialog -> {title: "Select User / Group / Roles", add: Nothing, content: [
+      UserDialog -> {title: "Select User / Group / Role", add: Nothing, content: [
             userSearch {onSelect: mkIOFn1 $ termsForUsers >>> runIOFn1 onAdd, onCancel: cancel}
           ]}
       IpDialog r@(IpRange i1 i2 i3 i4 im) ->

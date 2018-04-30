@@ -7,36 +7,34 @@ import Control.Monad.Aff.Console (log)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.IOEffFn (IOFn1, mkIOFn1, runIOFn1)
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
-import Control.Monad.State (State, execState, get, gets)
+import Control.Monad.State (State, execState, get, gets, modify)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
 import Control.Parallel (parallel, sequential)
-import Data.Argonaut (decodeJson, encodeJson)
-import Data.Array (deleteAt, find, fold, foldl, foldr, fromFoldable, index, insertAt, length, mapMaybe, mapWithIndex, nub, reverse, snoc, union, (!!))
-import Data.Bifunctor (bimap)
+import Data.Argonaut (decodeJson)
+import Data.Array (deleteAt, find, fold, foldr, fromFoldable, head, index, insertAt, last, length, mapWithIndex, nub, snoc, union, updateAt, (!!))
 import Data.Either (Either(..), either)
 import Data.Lens (Lens', Prism', Traversal', assign, filtered, foldMapOf, modifying, over, preview, previewOn, prism', set, traversed, use, view, (^?))
 import Data.Lens.Index (ix)
 import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
-import Data.List (List(..), null, uncons, (:))
+import Data.List (List(Cons, Nil), null, uncons)
 import Data.Maybe (Maybe(..), fromMaybe, isJust, isNothing, maybe)
 import Data.Newtype (class Newtype)
 import Data.Nullable (toMaybe)
 import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
 import Data.Traversable (traverse)
-import Data.Tuple (Tuple(Tuple), fst)
-import Debug.Trace (traceAnyA)
+import Data.Tuple (Tuple(Tuple))
 import Dispatcher (DispatchEff(DispatchEff))
 import Dispatcher.React (ReactProps(ReactProps), ReactState(ReactState), createLifecycleComponent, createLifecycleComponent', didMount, getProps, getState, modifyState)
 import DragNDrop.Beautiful (DropResult, dragDropContext, draggable, droppable)
 import EQUELLA.Environment (baseUrl)
+import Entities.BaseEntity (BaseEntity(..))
 import MaterialUI.Button (button, disableRipple, raised)
 import MaterialUI.ButtonBase (onClick)
 import MaterialUI.Checkbox (checkbox)
 import MaterialUI.Color (primary)
-import MaterialUI.Dialog (dialog)
 import MaterialUI.Divider (divider)
 import MaterialUI.ExpansionPanelSummary (disabled)
 import MaterialUI.FormControl (formControl)
@@ -54,7 +52,6 @@ import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
 import MaterialUI.ListItemText (disableTypography, listItemText)
 import MaterialUI.ListItemText (primary, secondary) as P
 import MaterialUI.MenuItem (menuItem)
-import MaterialUI.Modal (onClose, open)
 import MaterialUI.Paper (paper)
 import MaterialUI.PropTypes (Untyped, handle)
 import MaterialUI.Properties (IProp, className, color, component, mkProp, style, variant)
@@ -63,13 +60,13 @@ import MaterialUI.Styles (withStyles)
 import MaterialUI.SwitchBase (checked)
 import MaterialUI.TextStyle (body1, subheading)
 import MaterialUI.Typography (error, textSecondary, typography)
-import Network.HTTP.Affjax (get, put_) as A
+import Network.HTTP.Affjax (get) as A
 import React (ReactClass, ReactElement, createElement, createFactory)
 import React.DOM (div, div', text)
 import React.DOM.Props (className, ref, style) as P
-import Security.Expressions (AccessEntry(AccessEntry), Expression, ExpressionTerm(Role, Group, User, SharedSecretToken, Referrer, Ip, Owner, Guests, LoggedInUsers, Everyone), IpRange(IpRange), OpType(OR, AND), TargetList(TargetList), TargetListEntry(..), collapseZero, entryToTargetList, expressionText, parseWho, textForExpression, textForTerm, traverseExpr)
+import Security.Expressions (AccessEntry(AccessEntry), Expression, ExpressionTerm(Role, Group, User, Owner, Guests, LoggedInUsers, Everyone, SharedSecretToken, Referrer, Ip), IpRange(IpRange), OpType(OR, AND), TargetListEntry(TargetListEntry), collapseZero, entryToTargetList, expressionText, parseWho, textForExpression, textForTerm, traverseExpr)
 import Security.Expressions (Expression(..)) as SE
-import Security.Resolved (ResolvedExpression(..), ResolvedTerm(..))
+import Security.Resolved (ResolvedExpression(..), ResolvedTerm(..), findExprInsert, findExprModify)
 import Security.TermSelection (DialogType(..), termDialog)
 import Template (template')
 import UIComp.SpeedDial (speedDialActionU, speedDialIconU, speedDialU)
@@ -129,6 +126,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
   _unresolvedTerm = prism' UnresolvedTerm $ case _ of 
     UnresolvedTerm r -> Just r
     _ -> Nothing
+  
   _id = prop (SProxy :: SProxy "id")
   _changed = prop (SProxy :: SProxy "changed")
   _expr = prop (SProxy :: SProxy "expr")
@@ -455,7 +453,10 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
    Owner -> "account_box"
    Referrer _ -> "http"
    SharedSecretToken _ -> "apps"
-    
+
+  defaultOp :: Array ResolvedExpression -> ResolvedExpression
+  defaultOp e = Op OR e false
+  
   reorder :: forall a. Int -> Int -> Array a -> Array a 
   reorder sourceIndex destIndex a = fromMaybe a do
      let newdest = if destIndex < 1 then 0 else destIndex
@@ -463,37 +464,14 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
      d <- deleteAt sourceIndex a
      insertAt newdest o d
 
-  deleteFrom :: Int -> ResolvedExpression -> Either Int (Tuple (Maybe ResolvedExpression) ResolvedExpression)
-  deleteFrom i e = if i == 0 then pure (Tuple Nothing e) else case e of 
-    Term _ _ -> Left $ (i - 1)
-    origOp@(Op op exprs notted) -> 
-      let foldOp (Left {i,l}) e = deleteFrom i e # bimap {i: _, l: Cons e l} (\(Tuple m e) -> Tuple (maybe l (flip Cons l) m) e)
-          foldOp (Right (Tuple l me)) e = Right $ Tuple (Cons e l) me
-          mkOp l e = Right $ Tuple (Just $ (Op op (reverse $ fromFoldable $ l) notted)) e
-      in case foldl foldOp (Left {i: i - 1, l:Nil}) exprs of 
-        Left {i:0,l} -> mkOp l origOp
-        Left {i} -> Left $ i - 1
-        Right (Tuple r me) -> mkOp r me
-
-  insertInto :: ResolvedExpression -> Int -> ResolvedExpression -> ResolvedExpression
-  insertInto nt i e = let 
-    insertOrPos :: Int -> ResolvedExpression -> Either Int (List ResolvedExpression)
-    insertOrPos 0 e = pure $ e : nt : Nil
-    insertOrPos i e = case e of  
-        t1@(Term _ _) -> Left (i - 1)
-        (Op op exprs notted) -> 
-          let foldOp (Left {i,l}) e = insertOrPos i e # bimap {i: _, l: Cons e l} (\nl -> nl <> l)
-              foldOp o e = map (Cons e) o
-              mkOp l = Right $ (Op op (reverse $ fromFoldable $ l) notted) : Nil
-          in case foldl foldOp (Left {i:i - 1,l:Nil}) exprs of  
-              Left {i:0,l} -> mkOp $ nt : l
-              Left {i} -> Left $ i - 1
-              Right r -> mkOp r
-    in case insertOrPos i e of 
-      Left 0 -> Op OR [e, nt] false
-      Right (r : n : Nil) -> Op OR [n, r] false
-      Right (r : Nil) -> r
-      a -> e
+  appendExpr :: ResolvedExpression -> ResolvedExpression -> ResolvedExpression
+  appendExpr e = atEnd
+    where 
+    atEnd = case _ of 
+      t1@(Term _ _) -> defaultOp [t1, e]
+      (Op op exprs notted) | (Just lastop@(Op _ _ _)) <- last exprs -> 
+          Op op (fromMaybe exprs $ updateAt (length exprs - 1) (atEnd lastop) exprs) notted
+      (Op op exprs notted) -> Op op (snoc exprs e) notted
   
   addUndo :: (Array ResolvedEntry -> Array ResolvedEntry) -> State MyState Unit
   addUndo f = do 
@@ -521,15 +499,23 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
     guard (oldEx /= newEx)
     lift $ addUndo $ set curExpr newEx
 
+  setOrModifyExpr :: (ResolvedExpression -> ResolvedExpression -> ResolvedExpression) -> ResolvedTerm -> ExprType -> ExprType 
+  setOrModifyExpr f t = case _ of 
+    Resolved r -> Resolved $ f (Term t false) r 
+    InvalidExpr _ -> Resolved (Term t false)
+    o -> o 
+
+  insertInto :: Int -> ResolvedExpression -> ResolvedExpression -> ResolvedExpression
+  insertInto i e re = either (const re) singleExpr $ map (\f -> f [e]) $ findExprInsert i re 
+    where 
+    singleExpr [e] = e 
+    singleExpr exprs = defaultOp exprs
+
   copyToCurrent :: Int -> Int -> State MyState Unit
   copyToCurrent srcIx destIx = do 
-    let insertNew t = case _ of 
-         Resolved r -> Resolved $ insertInto (Term t false) destIx r
-         InvalidExpr _ -> Resolved (Term t false)
-         o -> o 
     ce <- use _terms
     case ce !! srcIx of 
-      Just (ResolvedTerm t) -> modifyExpression $ insertNew t
+      Just (ResolvedTerm t) -> modifyExpression $ setOrModifyExpr (insertInto destIx) t
       _ -> pure unit
 
   termQuery :: ExpressionTerm -> UserGroupRoles String String String
@@ -543,15 +529,19 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
   toQuery = traverseExpr (\t _ -> termQuery t) \{exprs} _ -> fold exprs
 
   eval = case _ of 
-    AddFromDialog dt -> 
-      modifyState \s -> s {terms = append s.terms $ ResolvedTerm <$> dt, showDialog=false,dialHidden=false}
+    AddFromDialog dt -> modifyState $ execState $ do 
+      modifying _terms $ flip append (ResolvedTerm <$> dt)
+      modify _{showDialog=false,dialHidden=false}
+      traverse (\t -> modifyExpression $ setOrModifyExpr appendExpr t) dt
 
     DialState open -> modifyState \s -> s {dialOpen = open s.dialOpen}
 
-    NewPriv -> modifyState $ execState $ do 
-      oldEntries <- use _acls
-      addUndo (flip snoc $ ResolvedEntry {priv:"", granted:true, override:false, expr: emptyExpr})
-      assign _selectedIndex $ Just $ length oldEntries
+    NewPriv -> do 
+      {allowedPrivs} <- getProps
+      modifyState $ execState $ do 
+        oldEntries <- use _acls
+        addUndo (flip snoc $ ResolvedEntry {priv:fromMaybe "" $ head allowedPrivs , granted:true, override:false, expr: emptyExpr})
+        assign _selectedIndex $ Just $ length oldEntries
 
     CloseDialog -> modifyState _{showDialog=false,dialHidden=false}
     OpenDialog dt -> modifyState _{openDialog=Just dt,showDialog=true, dialOpen=false,dialHidden=true}
@@ -562,14 +552,13 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
       modifyState $ execState $ addUndo $ over (ix ind <<< _Newtype) f
 
     ChangeOp ind op -> do 
-      let editOp (Op _ exprs n) | Just newOp <- valToOpType op = Op newOp exprs n 
-          editOp o = o
-          changeOp r (Right (Tuple _ e)) = editOp e
-          changeOp r _ = r
-      modifyState $ execState $ modifyResolved (\r -> changeOp r $ deleteFrom ind r)
+      let changeOp e | Right {get:(Op _ exprs n),modify} <- findExprModify ind e = 
+              fromMaybe e $ modify $ (\o -> Op o exprs n) <$> valToOpType op
+          changeOp e = e
+      modifyState $ execState $ modifyResolved changeOp 
 
     DeleteExpr i -> do 
-      let delExpr e@(Resolved r) = either (const e) (fst >>> maybe emptyExpr Resolved) $ deleteFrom i r
+      let delExpr e@(Resolved r) = either (const e) (\{modify} -> maybe emptyExpr Resolved $ modify Nothing) $ findExprModify i r
           delExpr o = o
       modifyState $ execState $ modifyExpression delExpr
     
@@ -618,8 +607,9 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
 
     HandleDrop dr@{source:{index:sourceIndex, droppableId:sourceId}} | Just {index:destIndex,droppableId:destId} <- toMaybe dr.destination -> 
       let handleDrop sId dId | sId == dId && sourceIndex /= destIndex = 
-            let reorderCurrent = modifyResolved $ (\e -> case deleteFrom sourceIndex e of 
-                    Right (Tuple (Just ne) re)-> insertInto re destIndex ne
+            let reorderCurrent = modifyResolved $ (\e ->                 
+                case findExprModify sourceIndex e of 
+                    Right {get,modify} -> fromMaybe e $ insertInto destIndex get <$> modify Nothing
                     _ -> e
                   )
                 l = case sId of 
@@ -691,13 +681,13 @@ testEditor = createFactory (createLifecycleComponent (didMount Init) {s:Nothing}
         title: "TEST", titleExtra:Nothing }
   eval Init = do 
     Tuple r1 r2 <- lift $ sequential $ Tuple <$> 
-      parallel (A.get $ baseUrl <> "api/acl") <*> 
-      parallel (A.get $ baseUrl <> "api/acl/privileges?node=INSTITUTION")
+      parallel (A.get $ baseUrl <> "api/course/313213e6-049a-8834-46d1-230be99f4490") <*> 
+      parallel (A.get $ baseUrl <> "api/acl/privileges?node=COURSE_INFO")
     either (lift <<< log) (\e -> modifyState _ {s=Just e}) do 
-      TargetList {entries} <- decodeJson r1.response
+      BaseEntity {security:{rules}} <- decodeJson r1.response
       allowedPrivs <- decodeJson r2.response
-      pure $ { entries, allowedPrivs}
+      pure $ { entries:rules, allowedPrivs}
     pure unit
   eval (SaveIt entries) = do 
-    r <- lift $ A.put_ (baseUrl <> "api/acl") (encodeJson (TargetList {entries}))
+    -- r <- lift $ A.put_ (baseUrl <> "api/course/313213e6-049a-8834-46d1-230be99f4490") (encodeJson (BaseEntity {security:{rules:entries}}))
     pure unit

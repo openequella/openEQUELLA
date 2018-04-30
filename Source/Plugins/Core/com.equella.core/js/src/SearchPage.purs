@@ -43,14 +43,17 @@ import Dispatcher (DispatchEff(DispatchEff), fromContext)
 import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMount, getState, modifyState)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
 import Facet (facetDisplay)
+import MaterialUI.Button (button)
 import MaterialUI.Chip (chip, onDelete)
 import MaterialUI.CircularProgress (circularProgress)
 import MaterialUI.Colors (fade) as C
+import MaterialUI.Dialog (dialog)
 import MaterialUI.Divider (divider) as C
 import MaterialUI.Fade (fade)
 import MaterialUI.Icon (icon_)
 import MaterialUI.List (disablePadding, list, list_)
-import MaterialUI.ListItem (button, disableGutters, divider, listItem)
+import MaterialUI.ListItem (button) as MP
+import MaterialUI.ListItem (disableGutters, divider, listItem)
 import MaterialUI.ListItemText (disableTypography, listItemText, primary, secondary)
 import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Paper (elevation, paper)
@@ -67,6 +70,7 @@ import Network.HTTP.Affjax (AJAX, get)
 import Partial.Unsafe (unsafePartial)
 import QueryString (queryString)
 import React (ReactElement, createFactory)
+import React.DOM (text)
 import React.DOM as D
 import React.DOM.Dynamic (em')
 import React.DOM.Props as DP
@@ -76,6 +80,7 @@ import Settings.UISettings (FacetSetting(..), NewUISettings(..), UISettings(..))
 import Template (template)
 import TimeAgo (timeAgo)
 import Unsafe.Coerce (unsafeCoerce)
+import Users.SearchUser (userSearch)
 
 newtype Attachment = Attachment {thumbnailHref::String}
 newtype DisplayField = DisplayField {name :: String, html::String}
@@ -238,12 +243,20 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
       paper [className classes.refinements, elevation 4] $ 
         intercalate [C.divider []] $ 
           (pure [ lastModifiedSelect ]) <> 
+          (pure [ userFilter ]) <> 
           (pure <<< makeFacet <$> facetSettings)
     ]
 
     progress = [
       let pbar = circularProgress [className classes.progress]
       in fade [in_ $ searching || loadingNew, timeout $ if loadingNew then 0 else 800] [ pbar ]
+    ]
+
+    userFilter = filterSection {name:"Filter by owner:"} [
+      button [] [ text "Select" ],
+      dialog [ ] [
+        -- userSearch {}
+      ]
     ]
 
     lastModifiedSelect = filterSection {name:string.filterLast.name} [ 
@@ -296,7 +309,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
           extraFields = (fieldDiv <$> displayFields) <> extraDeets
           itemContent = D.div [ DP.className classes.searchResultContent ] $ firstThumb <>
             [ D.div' $ fromFoldable (descMarkup <$> description) <> [ list [disablePadding true] extraFields ] ]
-      in listItem [button true, divider showDivider] [
+      in listItem [MP.button true, divider showDivider] [
           listItemText [ disableTypography true, primary titleLink, secondary itemContent ]
       ]
       where

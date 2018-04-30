@@ -12,6 +12,7 @@ import { Course } from '../api';
 import courseService from './index';
 import { StoreState } from '../store';
 import { Bridge } from '../api/bridge';
+import { TargetListEntry } from '../api/acleditor';
 
 //import List, { ListItem, ListItemText } from 'material-ui/List';
 /*
@@ -57,6 +58,7 @@ interface EditCourseState {
     versionSelection?: string;
     archived?: boolean;
     activeTab?: number;
+    rules?: [TargetListEntry];
 }
 
 class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
@@ -310,9 +312,8 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
                             </Grid>
                         </Typography>
 
-                        <Typography component="div" dir="ltr" style={{ padding: 8 * 3 }}><AclEditor acls={[
-                            {privilege: "TEST_IT", granted:true, override:false, who: "*"}
-                        ]} allowedPrivs={["TEST_IT"]}/></Typography>
+                        <Typography component="div" dir="ltr" style={{ padding: 8 * 3, position: "relative", width: "100%", height: "75%" }}>
+                        <AclEditor acls={this.state.rules ? this.state.rules : []} allowedPrivs={["TEST_IT"]}/></Typography>
                     </SwipeableViews>
 
             </div>

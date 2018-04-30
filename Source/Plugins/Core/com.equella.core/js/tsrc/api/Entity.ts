@@ -1,4 +1,5 @@
 import { User } from './User';
+import { TargetListEntry } from './acleditor';
 
 export interface Entity {
     uuid?: string;
@@ -15,7 +16,7 @@ export interface Entity {
 }
 
 export interface EntitySecurity {
-
+    rules: [TargetListEntry]
 }
 
 export interface EntityExport {

@@ -17,6 +17,7 @@ import Data.String.Regex (Regex, match, regex)
 import Data.String.Regex.Flags (noFlags)
 import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..), fst)
+import Debug.Trace (traceAny)
 import Global (decodeURIComponent, encodeURIComponent)
 import Partial.Unsafe (unsafePartial)
 
@@ -213,6 +214,7 @@ traverseExpr f fop =
 collapseZero :: forall e t. ExpressionDecode e t => e -> Maybe e
 collapseZero e = let (Tuple n w) = decodeExpr e in case w of 
   Right {exprs: []} -> Nothing
+  Right {exprs: [o]} | (Tuple _ (Right _)) <- decodeExpr o -> collapseZero o
   Right {op,exprs} -> case mapMaybe collapseZero exprs of 
     [] -> Nothing
     o -> Just $ fromOp op o n

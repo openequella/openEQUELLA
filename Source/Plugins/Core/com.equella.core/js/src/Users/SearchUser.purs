@@ -19,10 +19,13 @@ import MaterialUI.Icon (icon_)
 import MaterialUI.IconButton (iconButton)
 import MaterialUI.List (list, subheader)
 import MaterialUI.ListItem (listItem)
+import MaterialUI.ListItemIcon (listItemIcon_)
 import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction, listItemSecondaryAction_)
 import MaterialUI.ListItemText (listItemText, primary, secondary)
 import MaterialUI.ListSubheader (listSubheader, listSubheader_)
 import MaterialUI.PropTypes (handle)
+import MaterialUI.Properties (color)
+import MaterialUI.Color as C
 import MaterialUI.TextField (onChange, textField, value)
 import React (ReactElement, createFactory)
 import React.DOM (div', text)
@@ -40,7 +43,7 @@ userSearch = createFactory $ createComponent initial render eval
   initial = {q:"", results: mempty}
   render {q, results: UserGroupRoles {users,groups,roles}} (ReactProps p) (DispatchEff d) = div' [ 
       textField [value q, textChange d UpdateQuery ],
-      button [onClick $ handle $ d \_ -> Search] [text "search"],
+      iconButton [onClick $ handle $ d \_ -> Search] [icon_ [ text "search"] ],
       div' $ doUsers <> doGroups <> doRoles
   ]
     where 
@@ -51,17 +54,20 @@ userSearch = createFactory $ createComponent initial render eval
     doRoles = doSection roles "Roles" roleEntry
 
     selectAction ugr = listItemSecondaryAction_ [ 
-        iconButton [ onClick $ handle $ d \_ -> Select ugr ] [ icon_ [ text "add" ] ]
+        iconButton [ color C.primary, onClick $ handle $ d \_ -> Select ugr ] [ icon_ [ text "add" ] ]
     ]
     userEntry u@(UserDetails ud) = listItem [] [ 
+        listItemIcon_ [ icon_ [text "person"]],
         listItemText [primary ud.username, secondary $ ud.firstName <> " " <> ud.lastName],
         selectAction $ toUGR u
     ]
     groupEntry g@(GroupDetails {name}) = listItem [] [ 
+        listItemIcon_ [ icon_ [text "people"]],
         listItemText [primary name],
         selectAction $ toUGR g
     ]
     roleEntry r@(RoleDetails {name}) = listItem [] [ 
+        listItemIcon_ [ icon_ [text "people"]],
         listItemText [primary name ],
         selectAction $ toUGR r
     ]
