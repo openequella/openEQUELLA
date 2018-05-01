@@ -312,8 +312,9 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
                             </Grid>
                         </Typography>
 
-                        <Typography component="div" dir="ltr" style={{ padding: 8 * 3, position: "relative", width: "100%", height: "75%" }}>
-                        <AclEditor acls={this.state.rules ? this.state.rules : []} allowedPrivs={["TEST_IT"]}/></Typography>
+                        <Typography component="div" dir="ltr" style={{ padding: 8 * 3, height: "75%" }}>
+                            <AclEditor onChange={ (e) => console.log(e.canSave) } acls={this.state.rules ? this.state.rules : []} allowedPrivs={["TEST_IT"]}/>
+                        </Typography>
                     </SwipeableViews>
 
             </div>

@@ -171,13 +171,16 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
     ],
     content: cssList [ 
       mobile {
-        marginTop: 64
+        marginTop: 64, 
+        width: "100%"
       },
-      desktop { marginLeft: 240 },
+      desktop { 
+        marginLeft: 240,
+        width: "calc(100vw - 245px)"
+      },
       allQuery {
         marginTop: 56,
         backgroundColor: "#eee", -- theme.palette.background.default,
-        width: "100%",
         padding: theme.spacing.unit * 2
       }
     ],

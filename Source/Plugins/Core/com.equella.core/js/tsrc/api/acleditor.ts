@@ -8,5 +8,9 @@ export interface TargetListEntry {
 
 export interface AclEditorProps {
     acls : Array<TargetListEntry>,
+    onChange : (e: {
+        canSave: Boolean, 
+        getAcls: () => Array<TargetListEntry>
+    }) => void;
     allowedPrivs : Array<String>
 }

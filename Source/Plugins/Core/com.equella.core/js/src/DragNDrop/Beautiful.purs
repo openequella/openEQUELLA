@@ -32,7 +32,7 @@ type DraggableProvided = {
     placeholder :: ReactElement
 }
 type DraggableStateSnapshot = {
-    
+    isDragging :: Boolean
 }
 
 type DropResult = {

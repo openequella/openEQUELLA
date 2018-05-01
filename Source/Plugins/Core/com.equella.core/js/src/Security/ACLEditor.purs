@@ -3,16 +3,27 @@ module Security.ACLEditor where
 
 import Prelude hiding (div)
 
+import Control.Monad.Aff (Aff)
 import Control.Monad.Aff.Console (log)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.IOEffFn (IOFn1, mkIOFn1, runIOFn1)
+import Control.Monad.IOSync (IOSync(..), runIOSync, runIOSync')
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
-import Control.Monad.State (State, execState, get, gets, modify)
+import Control.Monad.Reader (ask, runReaderT)
+import Control.Monad.State (State, evalState, execState, get, gets, modify, runState)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
 import Control.Parallel (parallel, sequential)
+import DOM.HTML (window)
+import DOM.HTML.Document (body)
+import DOM.HTML.Types (HTMLElement, htmlDocumentToDocument, htmlElementToNode)
+import DOM.HTML.Window (document)
+import DOM.Node.Document as D
+import DOM.Node.Node (appendChild)
+import DOM.Node.ParentNode (QuerySelector(..), querySelector)
+import DOM.Node.Types (Element, Node, documentToParentNode, elementToNode)
 import Data.Argonaut (decodeJson)
-import Data.Array (deleteAt, find, fold, foldr, fromFoldable, head, index, insertAt, last, length, mapWithIndex, nub, snoc, union, updateAt, (!!))
+import Data.Array (any, deleteAt, find, fold, foldr, fromFoldable, head, index, insertAt, last, length, mapWithIndex, nub, snoc, union, updateAt, (!!))
 import Data.Either (Either(..), either)
 import Data.Lens (Lens', Prism', Traversal', assign, filtered, foldMapOf, modifying, over, preview, previewOn, prism', set, traversed, use, view, (^?))
 import Data.Lens.Index (ix)
@@ -24,8 +35,9 @@ import Data.Newtype (class Newtype)
 import Data.Nullable (toMaybe)
 import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
-import Data.Traversable (traverse)
+import Data.Traversable (oneOf, traverse, traverse_)
 import Data.Tuple (Tuple(Tuple))
+import Debug.Trace (traceAnyA)
 import Dispatcher (DispatchEff(DispatchEff))
 import Dispatcher.React (ReactProps(ReactProps), ReactState(ReactState), createLifecycleComponent, createLifecycleComponent', didMount, getProps, getState, modifyState)
 import DragNDrop.Beautiful (DropResult, dragDropContext, draggable, droppable)
@@ -58,10 +70,10 @@ import MaterialUI.Properties (IProp, className, color, component, mkProp, style,
 import MaterialUI.Select (select, value)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.SwitchBase (checked)
-import MaterialUI.TextStyle (body1, subheading)
+import MaterialUI.TextStyle (body1, caption, subheading, title)
 import MaterialUI.Typography (error, textSecondary, typography)
 import Network.HTTP.Affjax (get) as A
-import React (ReactClass, ReactElement, createElement, createFactory)
+import React (ReactClass, ReactElement, ReactThis, createElement, createFactory, preventDefault, readState, stopPropagation)
 import React.DOM (div, div', text)
 import React.DOM.Props (className, ref, style) as P
 import Security.Expressions (AccessEntry(AccessEntry), Expression, ExpressionTerm(Role, Group, User, Owner, Guests, LoggedInUsers, Everyone, SharedSecretToken, Referrer, Ip), IpRange(IpRange), OpType(OR, AND), TargetListEntry(TargetListEntry), collapseZero, entryToTargetList, expressionText, parseWho, textForExpression, textForTerm, traverseExpr)
@@ -70,7 +82,10 @@ import Security.Resolved (ResolvedExpression(..), ResolvedTerm(..), findExprInse
 import Security.TermSelection (DialogType(..), termDialog)
 import Template (template')
 import UIComp.SpeedDial (speedDialActionU, speedDialIconU, speedDialU)
+import Unsafe.Coerce (unsafeCoerce)
 import Users.UserLookup (GroupDetails(GroupDetails), RoleDetails(RoleDetails), UserDetails(UserDetails), UserGroupRoles(UserGroupRoles), lookupUsers)
+
+foreign import renderToPortal :: Node -> ReactElement -> ReactElement
 
 data ExprType = Unresolved Expression | Resolved ResolvedExpression | InvalidExpr String
 
@@ -90,7 +105,7 @@ mapResolved :: (ResolvedExpression -> ExprType) -> ExprType -> ExprType
 mapResolved f (Resolved r) = f r
 mapResolved _ o = o
 
-data Command = Resolve | HandleDrop DropResult | SelectEntry Int | SaveChanges | Undo 
+data Command = Resolve | HandleDrop DropResult | SelectEntry Int | Undo 
   | DeleteExpr Int | ChangeOp Int String | EditEntry Int (ResolvedEntryR -> ResolvedEntryR) | DeleteEntry Int
   | OpenDialog DialogType | AddFromDialog (Array ResolvedTerm) | CloseDialog 
   | NewPriv | DialState (Boolean -> Boolean)
@@ -102,14 +117,14 @@ type MyState = {
   undoList :: List (Tuple (Maybe Int) (Array ResolvedEntry)), 
   openDialog :: Maybe DialogType, 
   showDialog :: Boolean,
-  changed :: Boolean, 
   dialOpen :: Boolean, 
-  dialHidden :: Boolean
+  dialHidden :: Boolean, 
+  dragPortal :: Maybe Node
 }
 
 aclEditorClass :: ReactClass {
   acls :: Array TargetListEntry, 
-  applyChanges :: IOFn1 (Array TargetListEntry) Unit,
+  onChange :: IOFn1 {canSave :: Boolean, getAcls :: IOSync (Array TargetListEntry) } Unit,
   allowedPrivs :: Array String
 }
 aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve) initialState render eval
@@ -128,7 +143,6 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
     _ -> Nothing
   
   _id = prop (SProxy :: SProxy "id")
-  _changed = prop (SProxy :: SProxy "changed")
   _expr = prop (SProxy :: SProxy "expr")
   _priv = prop (SProxy :: SProxy "priv")
   _terms = prop (SProxy :: SProxy "terms")
@@ -152,41 +166,43 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
     },
     scrollable: {
       overflow: "auto",
-      height: "100%"
+      height: "100%", 
+      width: "100%",
+      display: "flex",
+      flexDirection: "column"
     },
-    overallPanel: {
-      display: "flex",
-      flexDirection: "column",
-      height: "100%", 
-      width: "100%"
-    }, 
     editorPanels: {
-      display: "flex",
+      display: "grid",
       height: "100%", 
-      width: "100%"
+      width: "100%", 
+      gridTemplateColumns: "40% 30% 30%"
     },
     entryList: {
       position: "relative",
-      width: "35vw",
-      flex: "0 0 auto"
+      gridColumnStart: 1,
+      display: "flex", 
+      flexDirection: "column"
     },
     currentEntryPanel: {
       position: "relative",
       display: "flex",
       flexDirection: "column",
       height: "100%",
-      flexBasis: "50%", 
+      gridColumnStart: 2, 
       marginLeft: theme.spacing.unit
     },
     commonPanel: {
       position: "relative",
       height: "100%",
-      flexBasis: "45%",
+      gridColumnStart: 3, 
+      display: "flex",
+      flexDirection: "column",
       marginLeft: theme.spacing.unit
     },
     currentEntryDrop: {
       padding: theme.spacing.unit, 
-      flexGrow: 1
+      flexGrow: 1, 
+      width: "100%"
     }, 
     opDrop: {
       height: 48
@@ -245,6 +261,16 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
     divideEntry: {
       marginTop: theme.spacing.unit * 2,
       marginBottom: theme.spacing.unit
+    }, 
+    flexCentered: {
+      alignSelf: "center",
+      margin: theme.spacing.unit
+    },
+    dropText: {
+      position: "absolute"
+    }, 
+    targetItem: {
+      
     }
   }
 
@@ -260,36 +286,34 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
       undoList: Nil, 
       openDialog: Nothing, 
       showDialog: false,
-      changed: false, 
       dialOpen: false, 
-      dialHidden: false
+      dialHidden: false,
+      dragPortal: Nothing
     }
     where  
     markForResolve (TargetListEntry {privilege:priv,granted,override,who}) = 
       ResolvedEntry {priv,granted,override, expr: either (InvalidExpr <<< show) Unresolved $ parseWho who}
 
-  render {acls,terms,selectedIndex,openDialog,showDialog,undoList,changed, dialOpen, dialHidden} 
+  render {acls,terms,selectedIndex,openDialog,showDialog,undoList,dialOpen, dialHidden,dragPortal} 
       (ReactProps {classes,allowedPrivs}) (DispatchEff d) = 
     let expressionM = selectedIndex >>= \i -> Tuple i <$> previewOn acls (currentEntry i)
     in dragDropContext { onDragEnd: mkIOFn1 (d HandleDrop) } $ [ 
-      div [P.className classes.overallPanel] [
-        div [P.className classes.editorPanels] [
-          div [P.className classes.entryList] [
-            paper [className classes.scrollable ] [
-              droppable {droppableId:"list", "type": "entry"} \p snap -> 
-                div [P.ref p.innerRef, p.droppableProps, P.className $ droppedOnClass snap ] [
-                  list [disablePadding true] $ mapWithIndex entryRow acls,
-                  p.placeholder
-                ]
-            ]
-          ],
-          paper [className classes.currentEntryPanel ] $ maybe createNewPriv expressionContents expressionM,
-          div [P.className classes.commonPanel] commonPanel 
+      div [P.className classes.editorPanels] [
+        paper [className classes.entryList] [
+          typography [variant title, className classes.flexCentered] [ text "Privileges"],
+          div [ P.className classes.scrollable ] [
+            droppable {droppableId:"list", "type": "entry"} \p snap -> 
+              div [P.ref p.innerRef, p.droppableProps, P.className $ droppedOnClass snap ] [
+                list [disablePadding true] $ mapWithIndex entryRow acls,
+                p.placeholder
+              ], 
+            createNewPriv
+          ]
         ],
-        div [P.className classes.buttons] [ 
-          button [variant raised, disabled cantSave, color primary, onClick $ command SaveChanges ] [ text "Save" ],
-          button [variant raised, disabled cantUndo, onClick $ command Undo ] [ text "Undo" ]
-        ]
+        paper [className classes.currentEntryPanel ] $ [ 
+          typography [variant title, className classes.flexCentered] [ text "Expression"]
+        ] <> maybe placeholderExpr expressionContents expressionM,
+        paper [className classes.commonPanel] commonPanel 
       ]
     ] <> (maybe [] renderDialog openDialog)
     where 
@@ -316,23 +340,25 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
           action "http" "HTTP Referrer" $ ReferrerDialog "http://*",
           action "apps" "Shared secret" $ SecretDialog "moodle"
         ],
-        paper [className classes.scrollable ] [
+        typography [variant title, className classes.flexCentered] [ text "Targets"],
+        div [P.className classes.scrollable ] [
           droppable {droppableId:"common"} \p _ -> 
-            div [P.ref p.innerRef, p.droppableProps] [
+            div [P.ref p.innerRef, p.droppableProps, P.style {width: "100%"}] [
               list [disablePadding true] $
-                mapWithIndex (commonExpr "common" [] []) terms,
-              p.placeholder
+                mapWithIndex (commonExpr "common" [className classes.targetItem] []) terms
             ]
         ]
       ]
       where action i title dt = speedDialActionU {icon: icon_ [text i], title, onClick: command $ OpenDialog dt }
 
     command c = handle $ d \_ -> c
-    createNewPriv = [ button [variant raised, className classes.privSelect, 
-          onClick $ command NewPriv ] [text "Add Privilege"] ]
+    placeholderExpr = [ typography [ variant caption, className classes.flexCentered ] [ text "Please select or create a privilege"] ]
+    createNewPriv = div' [ 
+      button [variant raised, className classes.privSelect, onClick $ command NewPriv ] [text "Add Privilege"], 
+      button [variant raised, disabled cantUndo, onClick $ command Undo ] [ text "Undo" ]
+    ]
     droppedOnClass snap = if snap.isDraggingOver then classes.beingDraggedOver else classes.notBeingDragged
     cantUndo = null undoList
-    cantSave = not changed || (isJust $ find (isNothing <<< backToAccessEntry) acls)
 
     expressionContents (Tuple i {expr:exprType, priv}) =
       let exprEntries = case exprType of 
@@ -348,20 +374,26 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
             (\p -> menuItem [mkProp "value" p] [text p]) <$> allowedPrivs
         ],
         divider [className classes.divideEntry],
-        droppable {droppableId:"currentEntry"} \p _ -> 
-          div [P.ref p.innerRef, p.droppableProps, P.className classes.currentEntryDrop] $ 
-              snoc exprEntries p.placeholder
+        div [ P.className classes.scrollable] $
+          (if length exprEntries == 0 then [
+            typography [ variant caption, className $ joinWith " " [classes.flexCentered, classes.dropText] 
+          ] [ text "Drop targets here"]] 
+          else [])
+          <> [
+            droppable {droppableId:"currentEntry"} \p _ -> 
+              div [P.ref p.innerRef, p.droppableProps, P.className classes.currentEntryDrop] $ 
+                  exprEntries
+          ]
       ]
 
-    stdDrag pfx content i = draggable {draggableId: pfx <> show i, index:i} \p _ -> 
-      div' [
-        div [P.ref p.innerRef, p.draggableProps, p.dragHandleProps] [
-          content i
-        ], 
-        p.placeholder
+    withPortal f p s = let child = f p s 
+      in if s.isDragging then maybe child (flip renderToPortal child) dragPortal else child
+    stdDrag pfx content i = draggable {draggableId: pfx <> show i, index:i} $ withPortal \p s -> 
+      div [P.ref p.innerRef, p.draggableProps, p.dragHandleProps] [
+            content i
       ]
     makeExpression indent expr l = case expr of 
-      Term t _ -> Cons (\i -> commonExpr "term" [style { marginLeft: indentPixels }] [
+      Term t _ -> Cons (\i -> commonExpr "term" [] [
         listItemSecondaryAction_ [ 
             iconButton [ onClick $ handle $ d \_ -> DeleteExpr i ] [ 
               icon_ [ text "delete" ] 
@@ -386,9 +418,9 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
         listTextForTermType rt
       ] <> actions) i
 
-    entryRow i (ResolvedEntry {granted,override,priv,expr}) = draggable { "type": "entry", draggableId: "entry" <> show i, index:i} \p _ -> 
-      div [P.className $ joinWith " " $ (guard (selectedIndex == Just i) $> classes.entrySelected) <> [classes.aclEntry]] [
-        div [P.ref p.innerRef, p.draggableProps, p.dragHandleProps] [
+    entryRow i (ResolvedEntry {granted,override,priv,expr}) = draggable { "type": "entry", draggableId: "entry" <> show i, index:i} $ withPortal \p _ -> 
+      div [P.ref p.innerRef, p.draggableProps, p.dragHandleProps] [
+        div [P.className $ joinWith " " $ (guard (selectedIndex == Just i) $> classes.entrySelected) <> [classes.aclEntry]] [
           let p = guard (eq i <$> selectedIndex # fromMaybe false) $> className classes.selectedEntry
           in listItem (p <> [ P.button true, disableRipple true, onClick $ handle $ d \_ -> SelectEntry i]) [ 
             div [P.className classes.exprLine ] [
@@ -400,13 +432,14 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
               ]
             ]
           ]
-        ],
-        p.placeholder
+        ]
       ]
       where privText = typography [ variant subheading, className classes.ellipsed ] [ text $ if granted then priv else "Revoke - " <> priv ] 
             secondLine = textForExprType expr
             check o l t = formControlLabel [control $ checkbox [checked o, toggler i l ], label t ]
-            toggler i l = onChange $ handle $ d \_ -> EditEntry i (over l not)
+            toggler i l = mkProp "onClick" $ handle $ \e -> do 
+              stopPropagation (unsafeCoerce e)
+              d (\_ -> EditEntry i (over l not)) unit
 
     stdExprLine t = typography [variant body1, className classes.ellipsed, color textSecondary ] [ text t ] 
 
@@ -473,24 +506,24 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
           Op op (fromMaybe exprs $ updateAt (length exprs - 1) (atEnd lastop) exprs) notted
       (Op op exprs notted) -> Op op (snoc exprs e) notted
   
-  addUndo :: (Array ResolvedEntry -> Array ResolvedEntry) -> State MyState Unit
+  addUndo :: (Array ResolvedEntry -> Array ResolvedEntry) -> State MyState Boolean
   addUndo f = do 
     oldEntries <- use _acls
     indx <- use _selectedIndex
     let newEntries = f oldEntries
-    if newEntries == oldEntries then pure unit else do 
-      assign _changed true
+    if newEntries == oldEntries then pure false else do 
       modifying _undoList $ Cons (Tuple indx oldEntries)
       assign _acls newEntries
+      pure true
 
-  modifyResolved :: (ResolvedExpression -> ResolvedExpression) -> State MyState Unit
+  modifyResolved :: (ResolvedExpression -> ResolvedExpression) -> State MyState Boolean
   modifyResolved f = modifyExpression (mapResolved (f >>> Resolved))
 
   emptyExpr :: ExprType
   emptyExpr = InvalidExpr "* Required"
 
-  modifyExpression :: (ExprType -> ExprType) -> State MyState Unit
-  modifyExpression f = void $ runMaybeT do 
+  modifyExpression :: (ExprType -> ExprType) -> State MyState Boolean
+  modifyExpression f = fromMaybe false <$> runMaybeT do 
     selectedIndex <- MaybeT (gets _.selectedIndex)
     let curExpr :: Traversal' (Array ResolvedEntry) ExprType
         curExpr = ix selectedIndex <<< _ResolvedEntry <<< _expr
@@ -511,12 +544,12 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
     singleExpr [e] = e 
     singleExpr exprs = defaultOp exprs
 
-  copyToCurrent :: Int -> Int -> State MyState Unit
+  copyToCurrent :: Int -> Int -> State MyState Boolean
   copyToCurrent srcIx destIx = do 
     ce <- use _terms
     case ce !! srcIx of 
       Just (ResolvedTerm t) -> modifyExpression $ setOrModifyExpr (insertInto destIx) t
-      _ -> pure unit
+      _ -> pure false
 
   termQuery :: ExpressionTerm -> UserGroupRoles String String String
   termQuery = UserGroupRoles <<< case _ of 
@@ -528,34 +561,49 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
   toQuery :: Expression -> UserGroupRoles String String String
   toQuery = traverseExpr (\t _ -> termQuery t) \{exprs} _ -> fold exprs
 
+  runChange f = do 
+    (Tuple c {acls}) <- runState f <$> getState
+    modifyState $ execState f
+    if c then do 
+      {onChange:oc} <- getProps
+      this <- ask 
+      liftEff $ runIOFn1 oc {canSave: not $ any isInvalid acls, getAcls : liftEff $ flip runReaderT this do 
+            {acls} <- getState
+            pure $ (traverse backToAccessEntry acls) # maybe ([]) \entries -> do 
+              entryToTargetList <$> entries
+        }
+      else pure unit
+
   eval = case _ of 
-    AddFromDialog dt -> modifyState $ execState $ do 
+    AddFromDialog dt -> runChange $ do 
       modifying _terms $ flip append (ResolvedTerm <$> dt)
       modify _{showDialog=false,dialHidden=false}
-      traverse (\t -> modifyExpression $ setOrModifyExpr appendExpr t) dt
+      traverse_ (\t -> modifyExpression $ setOrModifyExpr appendExpr t) dt
+      pure true
 
     DialState open -> modifyState \s -> s {dialOpen = open s.dialOpen}
 
     NewPriv -> do 
       {allowedPrivs} <- getProps
-      modifyState $ execState $ do 
+      runChange $ do 
         oldEntries <- use _acls
-        addUndo (flip snoc $ ResolvedEntry {priv:fromMaybe "" $ head allowedPrivs , granted:true, override:false, expr: emptyExpr})
+        changed <- addUndo (flip snoc $ ResolvedEntry {priv:fromMaybe "" $ head allowedPrivs , granted:true, override:false, expr: emptyExpr})
         assign _selectedIndex $ Just $ length oldEntries
+        pure changed
 
     CloseDialog -> modifyState _{showDialog=false,dialHidden=false}
     OpenDialog dt -> modifyState _{openDialog=Just dt,showDialog=true, dialOpen=false,dialHidden=true}
     
     DeleteEntry ind ->  
-      modifyState $ execState $ addUndo \l -> fromMaybe l $ deleteAt ind l  
+      runChange $ addUndo \l -> fromMaybe l $ deleteAt ind l  
     EditEntry ind f -> 
-      modifyState $ execState $ addUndo $ over (ix ind <<< _Newtype) f
+      runChange $ addUndo $ over (ix ind <<< _Newtype) f
 
     ChangeOp ind op -> do 
       let changeOp e | Right {get:(Op _ exprs n),modify} <- findExprModify ind e = 
               fromMaybe e $ modify $ (\o -> Op o exprs n) <$> valToOpType op
           changeOp e = e
-      modifyState $ execState $ modifyResolved changeOp 
+      runChange $ modifyResolved changeOp 
 
     DeleteExpr i -> do 
       let delExpr e@(Resolved r) = either (const e) (\{modify} -> maybe emptyExpr Resolved $ modify Nothing) $ findExprModify i r
@@ -563,19 +611,13 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
       modifyState $ execState $ modifyExpression delExpr
     
     Undo -> do 
-      modifyState $ execState do 
+      runChange $ do 
         undos <- use _undoList
-        uncons undos # maybe (pure unit) \{head:Tuple ix list, tail} -> do 
+        uncons undos # maybe (pure false) \{head:Tuple ix list, tail} -> do 
           assign _undoList tail
           assign _acls list
           assign _selectedIndex ix
-
-    SaveChanges -> do 
-      {applyChanges} <- getProps
-      {acls} <- getState
-      (traverse backToAccessEntry acls) # maybe (pure unit) \entries -> do 
-        liftEff $ runIOFn1 applyChanges $ entryToTargetList <$> entries
-        modifyState _{changed=false}
+          pure true
 
     SelectEntry entry -> do 
       modifyState $ over _selectedIndex case _ of 
@@ -584,6 +626,13 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
 
     Resolve -> do
       {terms,acls} <- getState
+      e <- liftEff $ do 
+        w <- window
+        d <- htmlDocumentToDocument <$> document w
+        e <- elementToNode <$> (D.createElement "div" d)
+        mb <- querySelector (QuerySelector "body") (documentToParentNode d)
+        maybe (pure e) (appendChild e <<< elementToNode) mb
+      modifyState _ {dragPortal=Just e}
       let ugr = foldMapOf (traversed <<< _ResolvedEntry <<< _expr <<< _unresolvedExpr) toQuery acls <> 
                 foldMapOf (traversed <<< _unresolvedTerm) termQuery terms
       (UserGroupRoles {users,groups,roles}) <- lift $ lookupUsers ugr
@@ -615,10 +664,10 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
                 l = case sId of 
                       "list" -> addUndo (reorder sourceIndex destIndex)
                       "currentEntry" -> reorderCurrent
-                      _       -> modifying _terms (reorder sourceIndex destIndex)
-            in modifyState $ execState l
+                      _       -> modifying _terms (reorder sourceIndex destIndex) *> pure false
+            in runChange l
           handleDrop "common" "currentEntry" = do 
-            modifyState $ execState $ copyToCurrent sourceIndex destIndex 
+            runChange $ copyToCurrent sourceIndex destIndex 
           handleDrop _ _ = pure unit
           
       in handleDrop sourceId destId
@@ -667,18 +716,24 @@ backToAccessEntry (ResolvedEntry {priv,granted,override,expr}) =
     in SE.Term seterm b
   convertRE (Op o exprs n) = SE.Op o (convertRE <$> exprs) n
 
-data TestCommand = Init | SaveIt (Array TargetListEntry)
+isInvalid :: ResolvedEntry -> Boolean 
+isInvalid (ResolvedEntry {priv,granted,override,expr:(InvalidExpr _)}) = true 
+isInvalid _ = false
+
+data TestCommand = Init | SaveIt | Changed {canSave::Boolean, getAcls :: IOSync (Array TargetListEntry)}
 
 testEditor :: ReactElement
-testEditor = createFactory (createLifecycleComponent (didMount Init) {s:Nothing} render eval) {}
+testEditor = createFactory (createLifecycleComponent (didMount Init) {s:Nothing, aclEditor:Nothing} render eval) {}
   where 
   render {s} (DispatchEff d) = 
     s # maybe (div' []) \{entries,allowedPrivs} -> 
       template' {fixedViewPort:true, menuExtra: [], 
-        mainContent: div [P.style {width: "100%", height: "100%"}] [
-          createElement aclEditorClass {acls:entries, allowedPrivs, applyChanges: mkIOFn1 $ d SaveIt} []
+        mainContent: div [P.style {width: "100%", height: "80%"}] [
+          createElement aclEditorClass {acls:entries, allowedPrivs,
+            onChange: mkIOFn1 $ d Changed} [],
+          button [variant raised, onClick $ handle $ d \_ -> SaveIt ] [ text "Save" ]
         ], 
-        title: "TEST", titleExtra:Nothing }
+        title: "ACL editor test", titleExtra:Nothing }
   eval Init = do 
     Tuple r1 r2 <- lift $ sequential $ Tuple <$> 
       parallel (A.get $ baseUrl <> "api/course/313213e6-049a-8834-46d1-230be99f4490") <*> 
@@ -688,6 +743,10 @@ testEditor = createFactory (createLifecycleComponent (didMount Init) {s:Nothing}
       allowedPrivs <- decodeJson r2.response
       pure $ { entries:rules, allowedPrivs}
     pure unit
-  eval (SaveIt entries) = do 
+  eval (Changed cs) = modifyState _ {aclEditor=Just cs}
+  eval (SaveIt) = do 
+    {aclEditor} <- getState
+    aclEditor # maybe (pure unit) \{getAcls} -> do 
+        entries <- liftEff $ runIOSync' getAcls
+        traceAnyA entries
     -- r <- lift $ A.put_ (baseUrl <> "api/course/313213e6-049a-8834-46d1-230be99f4490") (encodeJson (BaseEntity {security:{rules:entries}}))
-    pure unit

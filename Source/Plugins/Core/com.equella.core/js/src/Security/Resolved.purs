@@ -2,7 +2,7 @@ module Security.Resolved where
 
 import Prelude
 
-import Data.Array (alterAt, cons, foldl, index, tail, updateAt)
+import Data.Array (alterAt, cons, foldl, index, reverse, tail, updateAt)
 import Data.Bifunctor (bimap)
 import Data.Either (Either(..))
 import Data.Lens (Lens', ALens', lens, wander)
@@ -47,4 +47,4 @@ findExprInsert i (Term _ _) = Left $ i - 1
 findExprInsert i (Op op exprs notted) = 
   let foldOp (Left {i,before}) e = bimap {i: _, before: cons e before } {insert:_, after:[], before} $ findExprInsert i e
       foldOp (Right {before,insert,after}) e = Right {before,insert,after: cons e after}
-  in bimap _.i (\{before,insert,after} -> (\n -> [Op op (before <> insert n <> after) notted])) $ foldl foldOp (Left $ {i: i - 1, before:[]}) exprs 
+  in bimap _.i (\{before,insert,after} -> (\n -> [Op op (reverse before <> insert n <> reverse after) notted])) $ foldl foldOp (Left $ {i: i - 1, before:[]}) exprs 
