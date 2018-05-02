@@ -2,6 +2,7 @@ module Tools.GenLangStrings where
 
 import Prelude
 
+import Common.CommonStrings (commonRawStrings)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 import Control.Plus (empty)
@@ -12,6 +13,8 @@ import Data.StrMap (fromFoldable)
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Tuple (Tuple(..))
 import SearchPage (coreStrings, rawStrings) as SearchPage
+import Security.ACLEditor (aclRawStrings)
+import Security.TermSelection (termRawStrings)
 import Settings.UISettings (rawStrings) as UISettings
 import SettingsPage (coreStrings, rawStrings) as SettingsPage
 import Template (rawStrings, coreStrings) as Template
@@ -50,4 +53,7 @@ main = do
     genStrings "" SearchPage.coreStrings <>
     genStrings "" UISettings.rawStrings <>
     genStrings "" SettingsPage.rawStrings <>
-    genStrings "" SettingsPage.coreStrings
+    genStrings "" SettingsPage.coreStrings <>
+    genStrings "" commonRawStrings <> 
+    genStrings "" aclRawStrings <>
+    genStrings "" termRawStrings

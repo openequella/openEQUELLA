@@ -3,50 +3,48 @@ module Security.ACLEditor where
 
 import Prelude hiding (div)
 
-import Control.Monad.Aff (Aff)
+import Common.CommonStrings (commonString)
 import Control.Monad.Aff.Console (log)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.IOEffFn (IOFn1, mkIOFn1, runIOFn1)
-import Control.Monad.IOSync (IOSync(..), runIOSync, runIOSync')
+import Control.Monad.IOSync (IOSync, runIOSync')
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
 import Control.Monad.Reader (ask, runReaderT)
-import Control.Monad.State (State, evalState, execState, get, gets, modify, runState)
+import Control.Monad.State (State, execState, get, gets, modify, runState)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
 import Control.Parallel (parallel, sequential)
 import DOM.HTML (window)
-import DOM.HTML.Document (body)
-import DOM.HTML.Types (HTMLElement, htmlDocumentToDocument, htmlElementToNode)
+import DOM.HTML.Types (htmlDocumentToDocument)
 import DOM.HTML.Window (document)
 import DOM.Node.Document as D
 import DOM.Node.Node (appendChild)
 import DOM.Node.ParentNode (QuerySelector(..), querySelector)
-import DOM.Node.Types (Element, Node, documentToParentNode, elementToNode)
+import DOM.Node.Types (Node, documentToParentNode, elementToNode)
 import Data.Argonaut (decodeJson)
-import Data.Array (any, deleteAt, find, fold, foldr, fromFoldable, head, index, insertAt, last, length, mapWithIndex, nub, snoc, union, updateAt, (!!))
+import Data.Array (any, deleteAt, fold, foldr, fromFoldable, head, index, insertAt, last, length, mapWithIndex, nub, snoc, union, updateAt, (!!))
 import Data.Either (Either(..), either)
 import Data.Lens (Lens', Prism', Traversal', assign, filtered, foldMapOf, modifying, over, preview, previewOn, prism', set, traversed, use, view, (^?))
 import Data.Lens.Index (ix)
 import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
 import Data.List (List(Cons, Nil), null, uncons)
-import Data.Maybe (Maybe(..), fromMaybe, isJust, isNothing, maybe)
+import Data.Maybe (Maybe(Nothing, Just), fromMaybe, maybe)
 import Data.Newtype (class Newtype)
 import Data.Nullable (toMaybe)
 import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
-import Data.Traversable (oneOf, traverse, traverse_)
+import Data.Traversable (traverse, traverse_)
 import Data.Tuple (Tuple(Tuple))
 import Debug.Trace (traceAnyA)
 import Dispatcher (DispatchEff(DispatchEff))
 import Dispatcher.React (ReactProps(ReactProps), ReactState(ReactState), createLifecycleComponent, createLifecycleComponent', didMount, getProps, getState, modifyState)
 import DragNDrop.Beautiful (DropResult, dragDropContext, draggable, droppable)
-import EQUELLA.Environment (baseUrl)
+import EQUELLA.Environment (baseUrl, prepLangStrings)
 import Entities.BaseEntity (BaseEntity(..))
 import MaterialUI.Button (button, disableRipple, raised)
 import MaterialUI.ButtonBase (onClick)
 import MaterialUI.Checkbox (checkbox)
-import MaterialUI.Color (primary)
 import MaterialUI.Divider (divider)
 import MaterialUI.ExpansionPanelSummary (disabled)
 import MaterialUI.FormControl (formControl)
@@ -66,14 +64,14 @@ import MaterialUI.ListItemText (primary, secondary) as P
 import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Paper (paper)
 import MaterialUI.PropTypes (Untyped, handle)
-import MaterialUI.Properties (IProp, className, color, component, mkProp, style, variant)
+import MaterialUI.Properties (IProp, className, color, component, mkProp, variant)
 import MaterialUI.Select (select, value)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.SwitchBase (checked)
 import MaterialUI.TextStyle (body1, caption, subheading, title)
 import MaterialUI.Typography (error, textSecondary, typography)
 import Network.HTTP.Affjax (get) as A
-import React (ReactClass, ReactElement, ReactThis, createElement, createFactory, preventDefault, readState, stopPropagation)
+import React (ReactClass, ReactElement, createElement, createFactory, stopPropagation)
 import React.DOM (div, div', text)
 import React.DOM.Props (className, ref, style) as P
 import Security.Expressions (AccessEntry(AccessEntry), Expression, ExpressionTerm(Role, Group, User, Owner, Guests, LoggedInUsers, Everyone, SharedSecretToken, Referrer, Ip), IpRange(IpRange), OpType(OR, AND), TargetListEntry(TargetListEntry), collapseZero, entryToTargetList, expressionText, parseWho, textForExpression, textForTerm, traverseExpr)
@@ -108,7 +106,7 @@ mapResolved _ o = o
 data Command = Resolve | HandleDrop DropResult | SelectEntry Int | Undo 
   | DeleteExpr Int | ChangeOp Int String | EditEntry Int (ResolvedEntryR -> ResolvedEntryR) | DeleteEntry Int
   | OpenDialog DialogType | AddFromDialog (Array ResolvedTerm) | CloseDialog 
-  | NewPriv | DialState (Boolean -> Boolean)
+  | NewPriv | DialState (Boolean -> Boolean) | ToggleNot Int
 
 type MyState = {
   acls :: Array ResolvedEntry,
@@ -129,6 +127,7 @@ aclEditorClass :: ReactClass {
 }
 aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve) initialState render eval
   where 
+  aclString = prepLangStrings aclRawStrings
   _resolvedExpr :: Prism' ExprType ResolvedExpression
   _resolvedExpr = prism' Resolved $ case _ of 
     Resolved r -> Just r
@@ -165,17 +164,22 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
       display: "flex"
     },
     scrollable: {
-      overflow: "auto",
-      height: "100%", 
-      width: "100%",
+      overflow: "auto", 
       display: "flex",
+      height: "100%",
       flexDirection: "column"
+    },
+    overallPanel: {
+      display: "flex",
+      flexDirection: "column",
+      height: "100%"
     },
     editorPanels: {
       display: "grid",
       height: "100%", 
       width: "100%", 
-      gridTemplateColumns: "40% 30% 30%"
+      gridTemplateColumns: "40% 30% 30%",
+      gridTemplateRows: "100%"
     },
     entryList: {
       position: "relative",
@@ -187,16 +191,14 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
       position: "relative",
       display: "flex",
       flexDirection: "column",
-      height: "100%",
       gridColumnStart: 2, 
       marginLeft: theme.spacing.unit
     },
     commonPanel: {
       position: "relative",
-      height: "100%",
-      gridColumnStart: 3, 
       display: "flex",
       flexDirection: "column",
+      gridColumnStart: 3, 
       marginLeft: theme.spacing.unit
     },
     currentEntryDrop: {
@@ -298,22 +300,18 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
       (ReactProps {classes,allowedPrivs}) (DispatchEff d) = 
     let expressionM = selectedIndex >>= \i -> Tuple i <$> previewOn acls (currentEntry i)
     in dragDropContext { onDragEnd: mkIOFn1 (d HandleDrop) } $ [ 
-      div [P.className classes.editorPanels] [
-        paper [className classes.entryList] [
-          typography [variant title, className classes.flexCentered] [ text "Privileges"],
-          div [ P.className classes.scrollable ] [
-            droppable {droppableId:"list", "type": "entry"} \p snap -> 
-              div [P.ref p.innerRef, p.droppableProps, P.className $ droppedOnClass snap ] [
-                list [disablePadding true] $ mapWithIndex entryRow acls,
-                p.placeholder
-              ], 
-            createNewPriv
-          ]
-        ],
-        paper [className classes.currentEntryPanel ] $ [ 
-          typography [variant title, className classes.flexCentered] [ text "Expression"]
-        ] <> maybe placeholderExpr expressionContents expressionM,
-        paper [className classes.commonPanel] commonPanel 
+      div [P.className classes.overallPanel] [
+        div [P.className classes.editorPanels] [
+          paper [className classes.entryList] [
+            typography [variant title, className classes.flexCentered] [ text aclString.privileges],
+            createNewPriv,
+            div [ P.className classes.scrollable ] [aclEntries]
+          ],
+          paper [className classes.currentEntryPanel ] $ [ 
+            typography [variant title, className classes.flexCentered] [ text aclString.expression]
+          ] <> maybe placeholderExpr expressionContents expressionM,
+          paper [className classes.commonPanel] commonPanel 
+        ]
       ]
     ] <> (maybe [] renderDialog openDialog)
     where 
@@ -330,17 +328,17 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
         speedDialU {
           className: classes.addTerm, 
           icon: speedDialIconU {openIcon: icon_ [text "add"]}[], 
-          ariaLabel: "Add expression", 
+          ariaLabel: aclString.addexpression, 
           open:dialOpen, hidden: dialHidden,
           onClick: dialChange not, onClose: closeDial,
           onMouseEnter: openDial, onMouseLeave: closeDial } 
         [
-          action "people" "User/Group/Role" UserDialog,
-          action "dns" "IP Range" (IpDialog $ IpRange 0 0 0 0 32),
-          action "http" "HTTP Referrer" $ ReferrerDialog "http://*",
-          action "apps" "Shared secret" $ SecretDialog "moodle"
+          action "people" aclString.new.ugr UserDialog,
+          action "dns" aclString.new.ip (IpDialog $ IpRange 0 0 0 0 32),
+          action "http" aclString.new.referrer $ ReferrerDialog "http://*",
+          action "apps" aclString.new.token $ SecretDialog "moodle"
         ],
-        typography [variant title, className classes.flexCentered] [ text "Targets"],
+        typography [variant title, className classes.flexCentered] [ text aclString.targets],
         div [P.className classes.scrollable ] [
           droppable {droppableId:"common"} \p _ -> 
             div [P.ref p.innerRef, p.droppableProps, P.style {width: "100%"}] [
@@ -352,13 +350,19 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
       where action i title dt = speedDialActionU {icon: icon_ [text i], title, onClick: command $ OpenDialog dt }
 
     command c = handle $ d \_ -> c
-    placeholderExpr = [ typography [ variant caption, className classes.flexCentered ] [ text "Please select or create a privilege"] ]
+    placeholderExpr = [ typography [ variant caption, className classes.flexCentered ] [ text aclString.privplaceholder] ]
     createNewPriv = div' [ 
-      button [variant raised, className classes.privSelect, onClick $ command NewPriv ] [text "Add Privilege"], 
-      button [variant raised, disabled cantUndo, onClick $ command Undo ] [ text "Undo" ]
+      button [variant raised, className classes.privSelect, onClick $ command NewPriv ] [text aclString.addpriv], 
+      button [variant raised, disabled cantUndo, onClick $ command Undo ] [ text commonString.action.undo ]
     ]
     droppedOnClass snap = if snap.isDraggingOver then classes.beingDraggedOver else classes.notBeingDragged
     cantUndo = null undoList
+
+    aclEntries = droppable {droppableId:"list", "type": "entry"} \p snap -> 
+      div [P.ref p.innerRef, p.droppableProps, P.className $ droppedOnClass snap ] [
+        list [disablePadding true] $ mapWithIndex entryRow acls,
+        p.placeholder
+      ]
 
     expressionContents (Tuple i {expr:exprType, priv}) =
       let exprEntries = case exprType of 
@@ -367,47 +371,45 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
                 mapWithIndex (#) $ fromFoldable $ makeExpression 0 expression Nil 
             ]
             _ -> []
+          dropText = typography [ variant caption, className $ joinWith " " [classes.flexCentered, classes.dropText] ] 
+                        [ text aclString.dropplaceholder]
       in  [
         formControl [className classes.privSelect] [ 
-          inputLabel [mkProp "htmlFor" "privSelect"] [text "Privilege"],
+          inputLabel [mkProp "htmlFor" "privSelect"] [text aclString.privilege],
           select [value priv, P.id "privSelect", onChangeStr $ EditEntry i <<< set _priv] $ 
             (\p -> menuItem [mkProp "value" p] [text p]) <$> allowedPrivs
         ],
         divider [className classes.divideEntry],
-        div [ P.className classes.scrollable] $
-          (if length exprEntries == 0 then [
-            typography [ variant caption, className $ joinWith " " [classes.flexCentered, classes.dropText] 
-          ] [ text "Drop targets here"]] 
-          else [])
-          <> [
-            droppable {droppableId:"currentEntry"} \p _ -> 
-              div [P.ref p.innerRef, p.droppableProps, P.className classes.currentEntryDrop] $ 
-                  exprEntries
-          ]
+        div [ P.className classes.scrollable] $ (if length exprEntries == 0 then [dropText] else []) <> [
+          droppable {droppableId:"currentEntry"} \p _ -> 
+            div [P.ref p.innerRef, p.droppableProps, P.className classes.currentEntryDrop] exprEntries
+        ]
       ]
 
     withPortal f p s = let child = f p s 
       in if s.isDragging then maybe child (flip renderToPortal child) dragPortal else child
+
     stdDrag pfx content i = draggable {draggableId: pfx <> show i, index:i} $ withPortal \p s -> 
       div [P.ref p.innerRef, p.draggableProps, p.dragHandleProps] [
             content i
       ]
-    makeExpression indent expr l = case expr of 
-      Term t _ -> Cons (\i -> commonExpr "term" [] [
-        listItemSecondaryAction_ [ 
-            iconButton [ onClick $ handle $ d \_ -> DeleteExpr i ] [ 
+
+    makeExpression indent expr l = case expr of       
+        Term t n -> 
+          let termActions i = listItemSecondaryAction_ [ 
+            formControlLabel [control $ checkbox [checked n, mkProp "onClick" $ command $ ToggleNot i ], label aclString.not ],
+            iconButton [ onClick $ command $ DeleteExpr i ] [ 
               icon_ [ text "delete" ] 
             ] 
-        ]
-      ] i (ResolvedTerm t)) l
-      Op op exprs _ -> (Cons $ opEntry op ) (foldr (makeExpression (indent + 1)) l exprs)
+          ]
+          in Cons (\i -> commonExpr "term" [] [termActions i] i (ResolvedTerm t)) l
+        Op op exprs n -> (Cons $ opEntry op n) (foldr (makeExpression (indent + 1)) l exprs)
       where 
-      opEntry op = stdDrag "op" $ \i -> div [ P.className classes.opDrop, P.style {marginLeft: indentPixels} ] [ 
-        select [value $ opValue op, onChangeStr $ ChangeOp i ] opItems
+      opEntry op n = stdDrag "op" $ \i -> div [ P.className classes.opDrop, P.style {marginLeft: indentPixels} ] [ 
+        select [value $ opValue op n, onChangeStr $ ChangeOp i ] opItems
       ]
       indentPixels = indent * 16
     
-
     commonExpr pfx props actions i rt = stdDrag pfx (\_ -> 
       listItem props $ [ 
         listItemIcon_ [ 
@@ -426,15 +428,16 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
             div [P.className classes.exprLine ] [
               listItemText [ className classes.entryText, disableTypography true, P.primary $ privText, P.secondary secondLine ],
               div [ P.className classes.hoverActions ] [ 
-                check override _override "Override",
-                check (not granted) _granted "Revoked",
+                check override _override aclString.override,
+                check (not granted) _granted aclString.revoked,
                 iconButton [ onClick $ command $ DeleteEntry i ] [ icon_ [ text "delete" ] ] 
               ]
             ]
           ]
         ]
       ]
-      where privText = typography [ variant subheading, className classes.ellipsed ] [ text $ if granted then priv else "Revoke - " <> priv ] 
+      where privText = typography [ variant subheading, className classes.ellipsed ] 
+                          [ text $ if granted then priv else aclString.revoke <> " - " <> priv ] 
             secondLine = textForExprType expr
             check o l t = formControlLabel [control $ checkbox [checked o, toggler i l ], label t ]
             toggler i l = mkProp "onClick" $ handle $ \e -> do 
@@ -520,7 +523,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
   modifyResolved f = modifyExpression (mapResolved (f >>> Resolved))
 
   emptyExpr :: ExprType
-  emptyExpr = InvalidExpr "* Required"
+  emptyExpr = InvalidExpr aclString.required 
 
   modifyExpression :: (ExprType -> ExprType) -> State MyState Boolean
   modifyExpression f = fromMaybe false <$> runMaybeT do 
@@ -599,9 +602,15 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
     EditEntry ind f -> 
       runChange $ addUndo $ over (ix ind <<< _Newtype) f
 
+    ToggleNot ind -> do 
+      let toggleNot e | Right {get:(Term t n),modify} <- findExprModify ind e = 
+              fromMaybe e $ modify (Just $ Term t (not n))
+          toggleNot e = e
+      runChange $ modifyResolved toggleNot
+      
     ChangeOp ind op -> do 
-      let changeOp e | Right {get:(Op _ exprs n),modify} <- findExprModify ind e = 
-              fromMaybe e $ modify $ (\o -> Op o exprs n) <$> valToOpType op
+      let changeOp e | Right {get:(Op _ exprs _),modify} <- findExprModify ind e = 
+              fromMaybe e $ modify $ (\(Tuple o n) -> Op o exprs n) <$> valToOpType op
           changeOp e = e
       runChange $ modifyResolved changeOp 
 
@@ -656,11 +665,10 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
 
     HandleDrop dr@{source:{index:sourceIndex, droppableId:sourceId}} | Just {index:destIndex,droppableId:destId} <- toMaybe dr.destination -> 
       let handleDrop sId dId | sId == dId && sourceIndex /= destIndex = 
-            let reorderCurrent = modifyResolved $ (\e ->                 
+            let reorderCurrent = modifyResolved $ \e ->                 
                 case findExprModify sourceIndex e of 
                     Right {get,modify} -> fromMaybe e $ insertInto destIndex get <$> modify Nothing
                     _ -> e
-                  )
                 l = case sId of 
                       "list" -> addUndo (reorder sourceIndex destIndex)
                       "currentEntry" -> reorderCurrent
@@ -673,6 +681,19 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
       in handleDrop sourceId destId
     HandleDrop _ -> pure unit
 
+  matchStr = aclString.match
+
+  opName :: OpType -> Boolean -> String
+  opName AND false = matchStr.and 
+  opName OR false = matchStr.or
+  opName AND true = matchStr.notand
+  opName OR true = matchStr.notor
+
+  opItems :: Array ReactElement
+  opItems = mkOp <$> [ Tuple OR false, Tuple AND false, Tuple OR true, Tuple AND true ]
+    where 
+    mkOp (Tuple o n) = menuItem [mkProp "value" $ opValue o n] [ text $ opName o n]
+
 commonTerms :: Array ExpressionTerm
 commonTerms = [
   Everyone,
@@ -681,24 +702,19 @@ commonTerms = [
   Owner
 ]
 
-opValue :: OpType -> String 
-opValue AND = "and"
-opValue OR = "or"
+opValue :: OpType -> Boolean -> String 
+opValue AND false = "and"
+opValue OR false = "or"
+opValue AND true = "notand"
+opValue OR true = "notor"
 
-valToOpType :: String -> Maybe OpType 
+valToOpType :: String -> Maybe (Tuple OpType Boolean)
 valToOpType = case _ of 
-  "and" -> Just AND 
-  "or" -> Just OR 
+  "and" -> Just $ Tuple AND false
+  "or" -> Just $ Tuple OR false
+  "notand" -> Just $ Tuple AND true
+  "notor" -> Just $ Tuple OR true
   _ -> Nothing 
-
-opName :: OpType -> String
-opName AND = "Match all"
-opName OR = "Match one"
-
-opItems :: Array ReactElement
-opItems = mkOp <$> [ AND, OR ]
-  where 
-  mkOp o = menuItem [mkProp "value" $ opValue o] [ text $ opName o ]
 
 backToAccessEntry :: ResolvedEntry -> Maybe AccessEntry
 backToAccessEntry (ResolvedEntry {priv,granted,override,expr}) = 
@@ -719,6 +735,34 @@ backToAccessEntry (ResolvedEntry {priv,granted,override,expr}) =
 isInvalid :: ResolvedEntry -> Boolean 
 isInvalid (ResolvedEntry {priv,granted,override,expr:(InvalidExpr _)}) = true 
 isInvalid _ = false
+
+aclRawStrings = Tuple "acleditor" {
+  privilege: "Privilege",
+  privileges: "Privileges", 
+  expression: "Expression", 
+  privplaceholder: "Please select or add a privilege", 
+  dropplaceholder: "Drop targets here",
+  addpriv: "Add Privilege",
+  addexpression: "Add expression", 
+  targets: "Targets",
+  new: {
+    ugr: "User, Group or Role", 
+    ip: "IP Range",
+    referrer: "HTTP Referrer",
+    token: "Shared secret"
+  }, 
+  not: "Not", 
+  override: "Override", 
+  revoked: "Revoked",
+  revoke: "Revoke", 
+  required: "* Required",
+  match: {
+    and: "All match",
+    or: "At least one matches",
+    notand: "Not all match",
+    notor: "None match"
+  }
+}
 
 data TestCommand = Init | SaveIt | Changed {canSave::Boolean, getAcls :: IOSync (Array TargetListEntry)}
 

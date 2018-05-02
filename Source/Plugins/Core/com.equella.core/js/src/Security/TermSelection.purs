@@ -2,6 +2,7 @@ module Security.TermSelection where
 
 import Prelude hiding (div)
 
+import Common.CommonStrings (commonAction)
 import Control.Monad.IOEffFn (IOFn1, mkIOFn1, runIOFn1)
 import Control.Monad.IOSync (IOSync, runIOSync)
 import Control.Monad.State (modify)
@@ -9,12 +10,14 @@ import Control.Monad.Trans.Class (lift)
 import Data.Array (catMaybes)
 import Data.Int (fromString)
 import Data.Lens (Prism', prism', set)
-import Data.Maybe (Maybe(..), fromMaybe, maybe)
-import Debug.Trace (traceAnyA)
+import Data.Maybe (Maybe(Just, Nothing), fromMaybe)
+import Data.Tuple (Tuple(..))
 import Dispatcher (DispatchEff(..), effEval)
-import Dispatcher.React (ReactProps(..), ReactState(..), createComponent', createLifecycleComponent', didMount, getProps, getState, modifyState)
+import Dispatcher.React (ReactProps(ReactProps), ReactState(ReactState), createLifecycleComponent', getProps, getState, modifyState)
+import EQUELLA.Environment (prepLangStrings)
 import MaterialUI.Button (button, disabled)
 import MaterialUI.ButtonBase (onClick)
+import MaterialUI.Color as C
 import MaterialUI.Dialog (dialog)
 import MaterialUI.DialogActions (dialogActions_)
 import MaterialUI.DialogContent (dialogContent)
@@ -22,7 +25,6 @@ import MaterialUI.DialogTitle (dialogTitle_)
 import MaterialUI.ExpansionPanel (onChange)
 import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Modal (onClose, open)
-import MaterialUI.Color as C
 import MaterialUI.PropTypes (Untyped, handle)
 import MaterialUI.Properties (IProp, className, color, mkProp)
 import MaterialUI.Select (select)
@@ -84,6 +86,8 @@ termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRend
 
   initialState (ReactProps {dt}) = ReactState dt
 
+  termStrings = prepLangStrings termRawStrings
+  titles = termStrings.title
 
   eval = case _ of 
     Add -> do 
@@ -105,8 +109,8 @@ termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRend
       dialogTitle_ [text title],
       dialogContent [className dialogStyle] content,
       dialogActions_ $ catMaybes [
-        (\e -> button [color C.primary, onClick $ command Add, disabled $ not e ] [text "Add"]) <$> add,
-        Just $ button [color C.secondary, onClick $ handle $ \_ -> runIOSync cancel] [ text "Cancel" ]
+        (\e -> button [color C.primary, onClick $ command Add, disabled $ not e ] [text commonAction.add]) <$> add,
+        Just $ button [color C.secondary, onClick $ handle $ \_ -> runIOSync cancel] [ text commonAction.cancel ]
       ]
     ]
     where
@@ -115,7 +119,7 @@ termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRend
     onChangeStr f = onChange $ handle $ d $ \e -> f e.target.value
     stdText v l = textField [value v, onChangeStr $ Change <<< set l]
     dialogContents = case _ of 
-      UserDialog -> {title: "Select User / Group / Role", add: Nothing, content: [
+      UserDialog -> {title: titles.ugr, add: Nothing, content: [
             userSearch {onSelect: mkIOFn1 $ termsForUsers >>> runIOFn1 onAdd, onCancel: cancel}
           ]}
       IpDialog r@(IpRange i1 i2 i3 i4 im) ->
@@ -125,7 +129,7 @@ termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRend
               dot = ipSepText "."
               slash = ipSepText "/"
           in {
-            title: "Select IP range", 
+            title: titles.ip, 
             add: Just $ validRange r, 
             content: [ div [P.className classes.rangeContainer ] [ 
               ipField i1 _ip1, dot,
@@ -138,14 +142,23 @@ termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRend
                 (\m -> menuItem [mkProp "value" m] [text $ show m]) <$> validMasks
           ]]}
       ReferrerDialog referrer -> {
-        title: "HTTP referrer", 
+        title: titles.referrer, 
         content:[ stdText referrer _dialogReferrer], 
         add:Just true
       }
       SecretDialog secret -> {
-        title: "Select shared secret", 
+        title: titles.token, 
         content: [ stdText secret _dialogSecret], 
         add:Just true
       }
     termsForUsers (UserGroupRoles {users,groups,roles}) = 
       (ResolvedUser <$> users) <> (ResolvedGroup <$> groups) <> (ResolvedRole <$> roles)
+
+termRawStrings = Tuple "aclterms" {
+  title: {
+    ugr: "Select User / Group / Role",
+    ip: "Select IP range",
+    referrer: "HTTP referrer",
+    token: "Select shared secret"
+  }
+}
