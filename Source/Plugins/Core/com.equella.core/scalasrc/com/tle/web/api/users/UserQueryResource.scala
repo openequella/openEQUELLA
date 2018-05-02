@@ -76,9 +76,9 @@ class UserQueryResource {
   @GET
   @Path("search")
   def search(@QueryParam(value="q") q : String,
-             @QueryParam("users") @DefaultValue("true") @ApiParam(name = "Include users") susers: Boolean,
-             @QueryParam("groups") @DefaultValue("true") @ApiParam(name = "Include groups") sgroups: Boolean,
-             @QueryParam("roles") @DefaultValue("true") @ApiParam(name = "Include roles") sroles: Boolean) : LookupQueryResult = {
+             @QueryParam("users") @DefaultValue("true") @ApiParam("Include users") susers: Boolean,
+             @QueryParam("groups") @DefaultValue("true") @ApiParam("Include groups") sgroups: Boolean,
+             @QueryParam("roles") @DefaultValue("true") @ApiParam("Include roles") sroles: Boolean) : LookupQueryResult = {
     val us = LegacyGuice.userService
     val users = if (susers) us.searchUsers(q).asScala else Iterable.empty
     val groups = if (sgroups) us.searchGroups(q).asScala else Iterable.empty

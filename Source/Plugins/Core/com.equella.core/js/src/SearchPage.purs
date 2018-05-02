@@ -44,11 +44,12 @@ import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMo
 import EQUELLA.Environment (baseUrl, prepLangStrings)
 import Facet (facetDisplay)
 import MaterialUI.Button (button)
-import MaterialUI.Chip (chip, onDelete)
+import MaterialUI.Chip (chip)
 import MaterialUI.CircularProgress (circularProgress)
 import MaterialUI.Colors (fade) as C
 import MaterialUI.Dialog (dialog)
 import MaterialUI.Divider (divider) as C
+import MaterialUI.Drawer (open)
 import MaterialUI.Fade (fade)
 import MaterialUI.Icon (icon_)
 import MaterialUI.List (disablePadding, list, list_)
@@ -57,15 +58,13 @@ import MaterialUI.ListItem (disableGutters, divider, listItem)
 import MaterialUI.ListItemText (disableTypography, listItemText, primary, secondary)
 import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Paper (elevation, paper)
-import MaterialUI.PropTypes (handle)
-import MaterialUI.Properties (className, classes_, color, component, mkProp, style, variant)
+import MaterialUI.Properties (className, classes_, color, component, mkProp, onChange, onDelete, style, variant)
 import MaterialUI.Select (select)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.TextField (label, value)
 import MaterialUI.TextStyle as TS
 import MaterialUI.Transition (in_, timeout)
 import MaterialUI.Typography (textSecondary, typography)
-import MaterialUIPicker.DatePicker (onChange)
 import Network.HTTP.Affjax (AJAX, get)
 import Partial.Unsafe (unsafePartial)
 import QueryString (queryString)
@@ -80,7 +79,7 @@ import Settings.UISettings (FacetSetting(..), NewUISettings(..), UISettings(..))
 import Template (template)
 import TimeAgo (timeAgo)
 import Unsafe.Coerce (unsafeCoerce)
-import Users.SearchUser (userSearch)
+import Users.SearchUser (UGREnabled(..), userSearch)
 
 newtype Attachment = Attachment {thumbnailHref::String}
 newtype DisplayField = DisplayField {name :: String, html::String}
@@ -98,7 +97,8 @@ type State = {
   searchResults :: Maybe ItemSearchResults, 
   modifiedLast :: Maybe Milliseconds,
   after :: Tuple Boolean Date,
-  before :: Tuple Boolean Date
+  before :: Tuple Boolean Date, 
+  selectOwner :: Boolean
 }
 type DateLens = Lens' State (Tuple Boolean Date)
 
@@ -117,6 +117,7 @@ initialState = {
   , before:Tuple false currentDate
   , facetSettings: []
   , loadingNew: false
+  , selectOwner: false
 }
 
 currentDate :: Date
@@ -229,7 +230,8 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     }
   }
 
-  render {modifiedLast,searchResults,query,facets,facetSettings,searching,loadingNew} (ReactProps {classes}) (DispatchEff d) = 
+  render {modifiedLast,searchResults,query,facets,facetSettings,searching,loadingNew,selectOwner} 
+            (ReactProps {classes}) (DispatchEff d) = 
       template {mainContent,titleExtra:Just searchBar, title: coreString.title}
     where
 
@@ -254,15 +256,15 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
 
     userFilter = filterSection {name:"Filter by owner:"} [
       button [] [ text "Select" ],
-      dialog [ ] [
-        -- userSearch {}
+      dialog [ open selectOwner ] [
+        -- userSearch {onSelect: ?o, onCancel: ?o, enabled: UGREnabled {users:true, groups:false, roles:false}}
       ]
     ]
 
     lastModifiedSelect = filterSection {name:string.filterLast.name} [ 
       select [ className classes.selectFilter,
         value $ maybe 0.0 unwrap modifiedLast, 
-        onChange $ handle $ d \e -> SetLast $ Milliseconds $ e.target.value
+        onChange $ d \e -> SetLast $ Milliseconds $ unsafeCoerce $ e.target.value
       ] $ (agoItem <$> agoEntries)
     ]
       where
@@ -272,7 +274,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     facetChips = facetChip <$> (allVals =<< SM.toUnfoldable facets)
     allVals (Tuple node s) = {name:fromMaybe node $ unwrap >>> _.name <$> lookup node facetMap, node, value: _} <$> S.toUnfoldable s
     facetChip {name,node,value} = chip [className classes.chip, label $ name <> ": " <> value,
-                                          onDelete $ handle $ d \_ -> ToggledTerm node value]
+                                          onDelete $ d \_ -> ToggledTerm node value]
 
     searchBar = D.div [DP.className classes.queryWrapper] [
       D.div [DP.className classes.queryIcon ] [ icon_ [ D.text "search" ] ],

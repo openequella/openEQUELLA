@@ -9,7 +9,10 @@ commonRawStrings = Tuple "common" {
     cancel: "Cancel",
     undo: "Undo",
     add: "Add"
-  }
+  }, 
+  users : "Users", 
+  groups: "Groups", 
+  roles: "Roles"
 }
 
 commonString = prepLangStrings commonRawStrings

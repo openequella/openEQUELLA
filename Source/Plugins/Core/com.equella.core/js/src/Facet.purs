@@ -18,8 +18,8 @@ import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMo
 import EQUELLA.Environment (baseUrl)
 import Global (encodeURIComponent)
 import MaterialUI.ListItemText (primary, secondary)
+import MaterialUI.Properties (onChange)
 import MaterialUI.SwitchBase (checked)
-import MaterialUI.TextField (onChange)
 import Network.HTTP.Affjax (get)
 import React (ReactElement, createFactory)
 import React.DOM as D

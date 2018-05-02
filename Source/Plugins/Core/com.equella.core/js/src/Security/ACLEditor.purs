@@ -4,7 +4,9 @@ module Security.ACLEditor where
 import Prelude hiding (div)
 
 import Common.CommonStrings (commonString)
+import Common.Icons (groupIconName, roleIconName, userIconName)
 import Control.Monad.Aff.Console (log)
+import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.IOEffFn (IOFn1, mkIOFn1, runIOFn1)
 import Control.Monad.IOSync (IOSync, runIOSync')
@@ -43,16 +45,15 @@ import DragNDrop.Beautiful (DropResult, dragDropContext, draggable, droppable)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
 import Entities.BaseEntity (BaseEntity(..))
 import MaterialUI.Button (button, disableRipple, raised)
-import MaterialUI.ButtonBase (onClick)
 import MaterialUI.Checkbox (checkbox)
 import MaterialUI.Divider (divider)
+import MaterialUI.Event (Event)
 import MaterialUI.ExpansionPanelSummary (disabled)
 import MaterialUI.FormControl (formControl)
 import MaterialUI.FormControlLabel (control, formControlLabel, label)
 import MaterialUI.Icon (icon_)
 import MaterialUI.IconButton (iconButton)
 import MaterialUI.Input (id) as P
-import MaterialUI.Input (onChange)
 import MaterialUI.InputLabel (inputLabel)
 import MaterialUI.List (disablePadding, list)
 import MaterialUI.ListItem (button) as P
@@ -63,8 +64,8 @@ import MaterialUI.ListItemText (disableTypography, listItemText)
 import MaterialUI.ListItemText (primary, secondary) as P
 import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Paper (paper)
-import MaterialUI.PropTypes (Untyped, handle)
-import MaterialUI.Properties (IProp, className, color, component, mkProp, variant)
+import MaterialUI.PropTypes (EventHandler, Untyped, toHandler)
+import MaterialUI.Properties (IProp, className, color, component, mkProp, onChange, onClick, variant)
 import MaterialUI.Select (select, value)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.SwitchBase (checked)
@@ -81,6 +82,7 @@ import Security.TermSelection (DialogType(..), termDialog)
 import Template (template')
 import UIComp.SpeedDial (speedDialActionU, speedDialIconU, speedDialU)
 import Unsafe.Coerce (unsafeCoerce)
+import Users.SearchUser (UGREnabled(..))
 import Users.UserLookup (GroupDetails(GroupDetails), RoleDetails(RoleDetails), UserDetails(UserDetails), UserGroupRoles(UserGroupRoles), lookupUsers)
 
 foreign import renderToPortal :: Node -> ReactElement -> ReactElement
@@ -178,7 +180,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
       display: "grid",
       height: "100%", 
       width: "100%", 
-      gridTemplateColumns: "40% 30% 30%",
+      gridTemplateColumns: "37% 33% 30%",
       gridTemplateRows: "100%"
     },
     entryList: {
@@ -271,8 +273,22 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
     dropText: {
       position: "absolute"
     }, 
-    targetItem: {
-      
+    termEntry: {
+      width: "100%",
+      display: "flex",
+      position: "relative",
+      textAlign: "left",
+      alignItems: "center",
+      justifyContent: "flex-start",
+      textDecoration: "none", 
+      height: 48, 
+      paddingLeft: theme.spacing.unit * 2
+    }, 
+    exprActions: {
+      top: "50%",
+      right: 4,
+      position: "absolute",
+      transform: "translateY(-50%)"
     }
   }
 
@@ -317,8 +333,8 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
     where 
     renderDialog dt = [ termDialog {open:showDialog, onAdd: mkIOFn1 $ d AddFromDialog, cancel: liftEff $ (d \_ -> CloseDialog) unit, dt} ]
 
-    onChangeStr :: forall r. (String -> Command) -> IProp (onChange::Untyped|r)
-    onChangeStr f = onChange $ handle $ d $ \e -> f e.target.value
+    onChangeStr :: forall r. (String -> Command) -> IProp (onChange::EventHandler Event|r)
+    onChangeStr f = onChange $ d $ \e -> f e.target.value
 
     commonPanel = let 
       dialChange = command <<< DialState
@@ -333,7 +349,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
           onClick: dialChange not, onClose: closeDial,
           onMouseEnter: openDial, onMouseLeave: closeDial } 
         [
-          action "people" aclString.new.ugr UserDialog,
+          action "people" aclString.new.ugr $ UserDialog $ UGREnabled {users:true, groups:true, roles:true},
           action "dns" aclString.new.ip (IpDialog $ IpRange 0 0 0 0 32),
           action "http" aclString.new.referrer $ ReferrerDialog "http://*",
           action "apps" aclString.new.token $ SecretDialog "moodle"
@@ -341,15 +357,15 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
         typography [variant title, className classes.flexCentered] [ text aclString.targets],
         div [P.className classes.scrollable ] [
           droppable {droppableId:"common"} \p _ -> 
-            div [P.ref p.innerRef, p.droppableProps, P.style {width: "100%"}] [
-              list [disablePadding true] $
-                mapWithIndex (commonExpr "common" [className classes.targetItem] []) terms
-            ]
+            div [P.ref p.innerRef, p.droppableProps, P.style {width: "100%"}] $
+                mapWithIndex (commonExpr "common" []) terms
+            
         ]
       ]
       where action i title dt = speedDialActionU {icon: icon_ [text i], title, onClick: command $ OpenDialog dt }
 
-    command c = handle $ d \_ -> c
+    command :: forall a e. Command -> (a -> Eff e Unit)
+    command c = d \_ -> c
     placeholderExpr = [ typography [ variant caption, className classes.flexCentered ] [ text aclString.privplaceholder] ]
     createNewPriv = div' [ 
       button [variant raised, className classes.privSelect, onClick $ command NewPriv ] [text aclString.addpriv], 
@@ -389,42 +405,38 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
     withPortal f p s = let child = f p s 
       in if s.isDragging then maybe child (flip renderToPortal child) dragPortal else child
 
-    stdDrag pfx content i = draggable {draggableId: pfx <> show i, index:i} $ withPortal \p s -> 
-      div [P.ref p.innerRef, p.draggableProps, p.dragHandleProps] [
-            content i
-      ]
-
     makeExpression indent expr l = case expr of       
         Term t n -> 
-          let termActions i = listItemSecondaryAction_ [ 
-            formControlLabel [control $ checkbox [checked n, mkProp "onClick" $ command $ ToggleNot i ], label aclString.not ],
+          let termActions i = div [P.className classes.exprActions] [ 
+            formControlLabel [control $ checkbox [checked n, onChange $ command $ ToggleNot i ], label aclString.not ],
             iconButton [ onClick $ command $ DeleteExpr i ] [ 
               icon_ [ text "delete" ] 
             ] 
           ]
-          in Cons (\i -> commonExpr "term" [] [termActions i] i (ResolvedTerm t)) l
+          in Cons (\i -> commonExpr "term" [termActions i] i (ResolvedTerm t)) l
         Op op exprs n -> (Cons $ opEntry op n) (foldr (makeExpression (indent + 1)) l exprs)
       where 
-      opEntry op n = stdDrag "op" $ \i -> div [ P.className classes.opDrop, P.style {marginLeft: indentPixels} ] [ 
-        select [value $ opValue op n, onChangeStr $ ChangeOp i ] opItems
-      ]
-      indentPixels = indent * 16
+      opEntry op n i = draggable {draggableId: "op" <> show i, index:i} $ \p s -> 
+        div [P.ref p.innerRef, p.draggableProps] [
+          div [ P.className classes.opDrop, P.style {marginLeft: indentPixels} ] [ 
+              select [value $ opValue op n, onChangeStr $ ChangeOp i ] opItems,
+              div [P.style {display:"none"}, p.dragHandleProps] []
+          ]
+        ]
+      indentPixels = indent * 8
     
-    commonExpr pfx props actions i rt = stdDrag pfx (\_ -> 
-      listItem props $ [ 
-        listItemIcon_ [ 
-          icon_ [ 
-            text $ iconNameForTermType rt 
-          ] 
-        ], 
-        listTextForTermType rt
-      ] <> actions) i
+    commonExpr pfx actions i rt = draggable {draggableId: pfx <> show i, index:i} $ withPortal \p s -> 
+      div [P.ref p.innerRef, p.draggableProps, p.dragHandleProps] $ [
+        div [P.className classes.termEntry] $ [ 
+          listItemIcon_ [ icon_ [ text $ iconNameForTermType rt ] ], 
+          listTextForTermType rt ] <> actions
+      ]
 
     entryRow i (ResolvedEntry {granted,override,priv,expr}) = draggable { "type": "entry", draggableId: "entry" <> show i, index:i} $ withPortal \p _ -> 
       div [P.ref p.innerRef, p.draggableProps, p.dragHandleProps] [
         div [P.className $ joinWith " " $ (guard (selectedIndex == Just i) $> classes.entrySelected) <> [classes.aclEntry]] [
           let p = guard (eq i <$> selectedIndex # fromMaybe false) $> className classes.selectedEntry
-          in listItem (p <> [ P.button true, disableRipple true, onClick $ handle $ d \_ -> SelectEntry i]) [ 
+          in listItem (p <> [ P.button true, disableRipple true, onClick $ d \_ -> SelectEntry i]) [ 
             div [P.className classes.exprLine ] [
               listItemText [ className classes.entryText, disableTypography true, P.primary $ privText, P.secondary secondLine ],
               div [ P.className classes.hoverActions ] [ 
@@ -440,7 +452,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
                           [ text $ if granted then priv else aclString.revoke <> " - " <> priv ] 
             secondLine = textForExprType expr
             check o l t = formControlLabel [control $ checkbox [checked o, toggler i l ], label t ]
-            toggler i l = mkProp "onClick" $ handle $ \e -> do 
+            toggler i l = mkProp "onClick" $ toHandler $ \e -> do 
               stopPropagation (unsafeCoerce e)
               d (\_ -> EditEntry i (over l not)) unit
 
@@ -479,9 +491,9 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
     ResolvedRole (RoleDetails _) -> iconNameForTerm (Role "")
 
   iconNameForTerm = case _ of 
-   Group _ -> "people"
-   Role _ -> "people"
-   User _ -> "person"
+   Group _ -> groupIconName
+   Role _ -> roleIconName
+   User _ -> userIconName
    Everyone -> "public"
    LoggedInUsers -> "face"
    Ip _ -> "dns"
@@ -775,7 +787,7 @@ testEditor = createFactory (createLifecycleComponent (didMount Init) {s:Nothing,
         mainContent: div [P.style {width: "100%", height: "80%"}] [
           createElement aclEditorClass {acls:entries, allowedPrivs,
             onChange: mkIOFn1 $ d Changed} [],
-          button [variant raised, onClick $ handle $ d \_ -> SaveIt ] [ text "Save" ]
+          button [variant raised, onClick $ d \_ -> SaveIt ] [ text "Save" ]
         ], 
         title: "ACL editor test", titleExtra:Nothing }
   eval Init = do 

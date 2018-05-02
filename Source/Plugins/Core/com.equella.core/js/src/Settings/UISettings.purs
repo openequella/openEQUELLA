@@ -22,16 +22,14 @@ import Dispatcher (DispatchEff(..))
 import Dispatcher.React (ReactProps(..), createLifecycleComponent, didMount, getState, modifyState)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
 import MaterialUI.Button (button, fab)
-import MaterialUI.ButtonBase (onClick)
 import MaterialUI.ExpansionPanelDetails (expansionPanelDetails_)
 import MaterialUI.FormControl (formControl_)
 import MaterialUI.FormControlLabel (control, formControlLabel, label)
 import MaterialUI.Icon (icon_)
-import MaterialUI.PropTypes (handle)
-import MaterialUI.Properties (IProp, className, variant)
+import MaterialUI.Properties (IProp, className, mkProp, onChange, onClick, variant)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.Switch (switch)
-import MaterialUI.SwitchBase (checked, disabled, onChange)
+import MaterialUI.SwitchBase (checked, disabled)
 import MaterialUI.TextField (margin, placeholder, textField, value)
 import MaterialUI.TextStyle (subheading)
 import MaterialUI.Typography (typography)
@@ -143,7 +141,7 @@ uiSettingsEditor = createFactory (withStyles styles $ createLifecycleComponent (
         textField [dis, label $ string.facet.name, margin "normal", value name, changeField _name, placeholder string.facet.name],
         textField [className classes.pathField, dis, margin "normal", label "Path", value path, changeField _path,
           placeholder "/item/metadata/path" ],
-        button [dis, onClick $ handle $ d \_ -> RemoveFacet ind ] [ icon_ [ text "delete"] ]
+        button [dis, onClick $ d \_ -> RemoveFacet ind ] [ icon_ [ text "delete"] ]
       ]
         where changeField l = onChange $ mkEffFn1 (d $ \e -> ModifyFacet ind $ set (_Newtype <<< l) e.target.value)
     in
@@ -151,7 +149,7 @@ uiSettingsEditor = createFactory (withStyles styles $ createLifecycleComponent (
       D.div [DP.className classes.enableColumn] [
         formControl_ [
           formControlLabel [ label string.enableNew, control $ switch [checked newUI.enabled,
-                          disabled s.disabled, onChange $ mkEffFn2 \e -> d $ SetNewUI ]]
+                          disabled s.disabled, onChange $ mkEffFn2 $ \e -> d $ SetNewUI ]]
         ]
       ],
       D.div [DP.className classes.facetColumn] $ [
@@ -163,7 +161,7 @@ uiSettingsEditor = createFactory (withStyles styles $ createLifecycleComponent (
           typography [variant subheading] [text string.facet.title]
         ] <> (mapWithIndex facetEditor newUI.facets) <>
         [
-          button [dis, variant fab, className classes.fab, onClick $ handle $ d \e -> AddFacet] [ icon_ [text "add"] ]
+          button [dis, variant fab, className classes.fab, onClick $ d \e -> AddFacet] [ icon_ [text "add"] ]
         ]
       ]
     ]

@@ -34,7 +34,7 @@
     "date-fns": "^2.0.0-alpha.7",
     "es6-object-assign": "^1.1.0",
     "history": "^4.7.2",
-    "material-ui": "1.0.0-beta.38",
+    "material-ui": "^1.0.0-beta.44",
     "material-ui-pickers": "^1.0.0-rc.3",
     "react": "^16.2.0",
     "react-beautiful-dnd": "^7.1.2",

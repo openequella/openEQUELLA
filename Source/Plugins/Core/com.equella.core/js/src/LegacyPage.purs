@@ -12,14 +12,12 @@ import Data.Nullable (Nullable, toNullable)
 import Data.StrMap (StrMap, lookup)
 import Dispatcher (DispatchEff(..), effEval)
 import Dispatcher.React (ReactProps(ReactProps), createComponent, createLifecycleComponent, getProps, modifyState)
-import MaterialUI.ButtonBase (onClick)
 import MaterialUI.Color (inherit)
 import MaterialUI.Icon (icon_)
 import MaterialUI.IconButton (iconButton)
-import MaterialUI.Modal (onClose, open)
+import MaterialUI.Modal (open)
 import MaterialUI.Popover (anchorEl, anchorOrigin, marginThreshold, popover)
-import MaterialUI.PropTypes (handle)
-import MaterialUI.Properties (color)
+import MaterialUI.Properties (color, onClick, onClose)
 import MaterialUI.Styles (withStyles)
 import React (ReactElement, Ref, createFactory)
 import React.DOM (text)
@@ -57,10 +55,10 @@ legacy htmlMap = createFactory (withStyles styles $ createComponent {optionsAnch
             menuExtra: fromMaybe [] $ (options <$> lookup "so" htmlMap)}
     where
     options html = [ 
-        iconButton [color inherit, onClick $ handle $ d \e -> OptionsAnchor $ Just e.currentTarget] [ icon_ [text "more_vert"] ],
+        iconButton [color inherit, onClick $ d \e -> OptionsAnchor $ Just e.currentTarget] [ icon_ [text "more_vert"] ],
         popover [ open $ isJust s.optionsAnchor, marginThreshold 64
             , anchorOrigin {vertical:"bottom",horizontal:"left"}
-            , onClose (handle $ d \_ -> OptionsAnchor Nothing)
+            , onClose (d \_ -> OptionsAnchor Nothing)
             , anchorEl $ toNullable s.optionsAnchor ] 
         [ 
             divWithHtml {divProps:[DP.className $ classes.screenOptions], html}

@@ -2,43 +2,50 @@ module Security.TermSelection where
 
 import Prelude hiding (div)
 
-import Common.CommonStrings (commonAction)
+import Common.CommonStrings (commonAction, commonString)
+import Control.Monad.Eff (Eff)
 import Control.Monad.IOEffFn (IOFn1, mkIOFn1, runIOFn1)
 import Control.Monad.IOSync (IOSync, runIOSync)
 import Control.Monad.State (modify)
 import Control.Monad.Trans.Class (lift)
 import Data.Array (catMaybes)
 import Data.Int (fromString)
-import Data.Lens (Prism', prism', set)
+import Data.Lens (Prism', Lens', over, preview, prism', set, view)
+import Data.Lens.Iso.Newtype (_Newtype)
+import Data.Lens.Record (prop)
 import Data.Maybe (Maybe(Just, Nothing), fromMaybe)
+import Data.Symbol (SProxy(..))
 import Data.Tuple (Tuple(..))
 import Dispatcher (DispatchEff(..), effEval)
 import Dispatcher.React (ReactProps(ReactProps), ReactState(ReactState), createLifecycleComponent', getProps, getState, modifyState)
 import EQUELLA.Environment (prepLangStrings)
 import MaterialUI.Button (button, disabled)
-import MaterialUI.ButtonBase (onClick)
+import MaterialUI.Checkbox (checkbox)
 import MaterialUI.Color as C
 import MaterialUI.Dialog (dialog)
 import MaterialUI.DialogActions (dialogActions_)
 import MaterialUI.DialogContent (dialogContent)
 import MaterialUI.DialogTitle (dialogTitle_)
-import MaterialUI.ExpansionPanel (onChange)
+import MaterialUI.Event (Event)
+import MaterialUI.FormControlLabel (control, formControlLabel, label)
+import MaterialUI.FormGroup (formGroup, row)
 import MaterialUI.MenuItem (menuItem)
-import MaterialUI.Modal (onClose, open)
-import MaterialUI.PropTypes (Untyped, handle)
-import MaterialUI.Properties (IProp, className, color, mkProp)
+import MaterialUI.Modal (open)
+import MaterialUI.PropTypes (EventHandler, Untyped)
+import MaterialUI.Properties (IProp, className, color, mkProp, onChange, onClick, onClose)
 import MaterialUI.Select (select)
 import MaterialUI.Styles (withStyles)
+import MaterialUI.SwitchBase (checked)
 import MaterialUI.TextField (textField, value)
 import React (ReactElement, createFactory, writeState)
-import React.DOM (div, span, text)
+import React.DOM (div, div', span, text)
 import React.DOM.Props as P
 import Security.Expressions (ExpressionTerm(..), IpRange(..), _ip1, _ip2, _ip3, _ip4, _ipm, validMasks, validRange)
 import Security.Resolved (ResolvedTerm(..))
-import Users.SearchUser (userSearch)
+import Users.SearchUser (UGREnabled(..), userSearch)
 import Users.UserLookup (UserGroupRoles(..))
 
-data DialogType = UserDialog | IpDialog IpRange | ReferrerDialog String | SecretDialog String
+data DialogType = UserDialog UGREnabled | IpDialog IpRange | ReferrerDialog String | SecretDialog String
 
 data TermCommand = Add | Change (DialogType -> DialogType)
 
@@ -71,6 +78,13 @@ termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRend
 
     }
   }
+  _users :: forall r a. Lens' {users::a|r} a
+  _users = prop (SProxy :: SProxy "users")
+  _groups :: forall r a. Lens' {groups::a|r} a
+  _groups = prop (SProxy :: SProxy "groups")
+  _roles :: forall r a. Lens' {roles::a|r} a
+  _roles = prop (SProxy :: SProxy "roles")
+
   _ipRange :: Prism' DialogType IpRange
   _ipRange = prism' IpDialog $ case _ of 
     IpDialog r -> Just r
@@ -83,6 +97,12 @@ termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRend
   _dialogSecret = prism' SecretDialog $ case _ of 
     SecretDialog r -> Just r
     _ -> Nothing
+  _dialogUGR :: Prism' DialogType UGREnabled
+  _dialogUGR = prism' UserDialog $ case _ of 
+    UserDialog r -> Just r
+    _ -> Nothing
+  _UGREnabled :: Lens' UGREnabled {users::Boolean, groups::Boolean, roles::Boolean}
+  _UGREnabled = _Newtype
 
   initialState (ReactProps {dt}) = ReactState dt
 
@@ -103,25 +123,33 @@ termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRend
   render dt (ReactProps {classes,onAdd,cancel,open:o}) (DispatchEff d) = 
     let {title,content,add} = dialogContents dt 
         dialogStyle = case dt of 
-          UserDialog -> classes.dialog
+          UserDialog _ -> classes.dialog
           _ -> classes.smallDialog
-    in dialog [open o, onClose $ handle $ const $ runIOSync $ cancel] [ 
+    in dialog [open o, onClose $ const $ runIOSync $ cancel] [ 
       dialogTitle_ [text title],
       dialogContent [className dialogStyle] content,
       dialogActions_ $ catMaybes [
         (\e -> button [color C.primary, onClick $ command Add, disabled $ not e ] [text commonAction.add]) <$> add,
-        Just $ button [color C.secondary, onClick $ handle $ \_ -> runIOSync cancel] [ text commonAction.cancel ]
+        Just $ button [color C.secondary, onClick $ \_ -> runIOSync cancel] [ text commonAction.cancel ]
       ]
     ]
     where
-    command c = handle $ d \_ -> c
-    onChangeStr :: forall r. (String -> TermCommand) -> IProp (onChange::Untyped|r)
-    onChangeStr f = onChange $ handle $ d $ \e -> f e.target.value
+    command :: forall a e. TermCommand -> a -> Eff e Unit
+    command c = d \_ -> c
+    onChangeStr :: forall r. (String -> TermCommand) -> IProp (onChange::EventHandler Event|r)
+    onChangeStr f = onChange $ d $ \e -> f e.target.value
     stdText v l = textField [value v, onChangeStr $ Change <<< set l]
+    ugrCheck lab l b = formControlLabel [control $ checkbox [checked b, onChange $ 
+                  command $ Change (over (_dialogUGR <<< _Newtype <<< l) not) ], label lab]
     dialogContents = case _ of 
-      UserDialog -> {title: titles.ugr, add: Nothing, content: [
-            userSearch {onSelect: mkIOFn1 $ termsForUsers >>> runIOFn1 onAdd, onCancel: cancel}
-          ]}
+      UserDialog enabled@UGREnabled {users,groups,roles} -> {title: titles.ugr, add: Nothing, content: [
+          formGroup [row true] [ 
+            ugrCheck commonString.users _users users,
+            ugrCheck commonString.groups _groups groups,
+            ugrCheck commonString.roles _roles roles
+          ],
+          userSearch {onSelect: mkIOFn1 $ termsForUsers >>> runIOFn1 onAdd, onCancel: cancel, enabled}
+        ]}
       IpDialog r@(IpRange i1 i2 i3 i4 im) ->
           let ipField v l = textField [className classes.ipField, value $ if v == -1 then "" else show v, onChangeStr $ 
                             \t -> Change $ (set $ _ipRange <<< l) $ fromMaybe (-1) $ fromString t]

@@ -95,7 +95,9 @@ lookupUsers r = do
   resp <- post (baseUrl <> "api/userquery/lookup") (encodeJson r)
   either (throwError <<< error) pure $ decodeJson resp.response
 
-searchUGR :: forall e. String -> Aff (ajax::AJAX|e) UGRDetail
-searchUGR q =   do 
-  resp <- get $ baseUrl <> "api/userquery/search?q=" <> encodeURIComponent q
+searchUGR :: forall e. String -> {users::Boolean, groups :: Boolean, roles :: Boolean} -> Aff (ajax::AJAX|e) UGRDetail
+searchUGR q {users,groups,roles} =   do 
+  let param t b = "&" <> t <> "=" <> show b
+  resp <- get $ baseUrl <> "api/userquery/search?q=" <> encodeURIComponent q <> param "users" users 
+              <> param "groups" groups <> param "roles" roles 
   either (throwError <<< error) pure $ decodeJson resp.response

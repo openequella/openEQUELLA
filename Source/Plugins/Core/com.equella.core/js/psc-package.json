@@ -1,6 +1,6 @@
 {
   "name": "js",
-  "set": "equella-26042018",
+  "set": "equella-02052018",
   "source": "https://github.com/equella/package-sets.git",
   "depends": [
     "debug",

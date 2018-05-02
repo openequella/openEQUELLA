@@ -30,7 +30,6 @@ import EQUELLA.Environment (baseUrl, prepLangStrings)
 import MaterialUI.AppBar (appBar)
 import MaterialUI.Badge (badge, badgeContent)
 import MaterialUI.Button (disabled)
-import MaterialUI.ButtonBase (onClick)
 import MaterialUI.Color (inherit, secondary)
 import MaterialUI.Color as C
 import MaterialUI.CssBaseline (cssBaseline_)
@@ -45,10 +44,8 @@ import MaterialUI.ListItemIcon (listItemIcon_)
 import MaterialUI.ListItemText (listItemText, primary)
 import MaterialUI.Menu (anchorEl, menu)
 import MaterialUI.MenuItem (menuItem)
-import MaterialUI.Modal (onClose)
 import MaterialUI.Popover (anchorOrigin, transformOrigin)
-import MaterialUI.PropTypes (handle)
-import MaterialUI.Properties (className, classes_, color, component, mkProp, variant)
+import MaterialUI.Properties (className, classes_, color, component, mkProp, onClick, onClose, variant)
 import MaterialUI.Radio (default)
 import MaterialUI.Styles (MediaQuery, allQuery, cssList, mediaQuery, withStyles)
 import MaterialUI.TextStyle as TS
@@ -200,7 +197,7 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
     ]
     where 
       linkProps = case routeHref <$> (toMaybe route >>= matchRoute) of
-        (Just {href:hr,onClick:oc}) | newPage -> [mkProp "href" hr, onClick $ handle $ runIOFn1 oc]
+        (Just {href:hr,onClick:oc}) | newPage -> [mkProp "href" hr, onClick $ runIOFn1 oc]
         _ -> [ mkProp "href" href ]
 
 
@@ -234,7 +231,7 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
       topBar,
       hidden [ mdUp true ] [
         drawer [ variant temporary, anchor left, classes_ {paper: classes.drawerPaper},
-                  open mobileOpen, onClose (handle $ d \_ -> ToggleMenu) ] menuContent ],
+                  open mobileOpen, onClose (d \_ -> ToggleMenu) ] menuContent ],
       hidden [ smDown true, implementation css ] [
         drawer [variant permanent, anchor left, open true, classes_ {paper: classes.drawerPaper} ] menuContent
       ],
@@ -243,7 +240,7 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
     
     topBar = appBar [className $ classes.appBar] [
       toolbar [disableGutters true] [
-        iconButton [color C.inherit, className classes.navIconHide, onClick $ handle $ d \_ -> ToggleMenu] [ icon_ [D.text "menu" ] ],
+        iconButton [color C.inherit, className classes.navIconHide, onClick $ d \_ -> ToggleMenu] [ icon_ [D.text "menu" ] ],
         typography [variant TS.title, color C.inherit, className classes.title] [ D.text titleText ],
         D.div [DP.className classes.extraTool] (U.fromMaybe titleExtra),
         userMenu
@@ -256,13 +253,13 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
       [
         badgedLink "assignment" tasks "access/tasklist.do" topBarString.tasks , 
         badgedLink "notifications" notifications "access/notifications.do" topBarString.notifications,
-        iconButton [color inherit, onClick $ handle $ d \e -> UserMenuAnchor $ Just e.currentTarget] [
+        iconButton [color inherit, onClick $ d \e -> UserMenuAnchor $ Just e.currentTarget] [
           icon_ [ D.text "account_circle"]
         ],
         menu [
             anchorEl $ toNullable menuAnchor,
             open $ isJust menuAnchor,
-            onClose $ handle $ d \_ -> UserMenuAnchor Nothing,
+            onClose $ d \_ -> UserMenuAnchor Nothing,
             anchorOrigin $ { vertical: "top", horizontal: "right" },
             transformOrigin $ { vertical: "top", horizontal: "right" }
         ] $ catMaybes
