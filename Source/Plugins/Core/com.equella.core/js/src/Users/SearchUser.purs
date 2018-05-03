@@ -62,7 +62,7 @@ userSearch = createFactory $ createLifecycleComponent lc initial render eval
     doRoles = doSection roles commonString.roles roleEntry
 
     selectAction ugr = listItemSecondaryAction_ [ 
-        iconButton [ color C.primary, onClick $ d \_ -> Select ugr ] [ icon_ [ text "add" ] ]
+        iconButton [ color C.primary, onClick $ d \_ -> Select ugr ] [ icon_ [ text "add_circle" ] ]
     ]
     userEntry u@(UserDetails ud) = listItem [] [ 
         listItemIcon_ [ userIcon ],

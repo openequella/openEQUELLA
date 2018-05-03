@@ -69,7 +69,8 @@ import MaterialUI.Properties (IProp, className, color, component, mkProp, onChan
 import MaterialUI.Select (select, value)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.SwitchBase (checked)
-import MaterialUI.TextStyle (body1, caption, subheading, title)
+import MaterialUI.TextStyle (body1, caption, subheading, title) as TS
+import MaterialUI.Tooltip (tooltip, title)
 import MaterialUI.Typography (error, textSecondary, typography)
 import Network.HTTP.Affjax (get) as A
 import React (ReactClass, ReactElement, createElement, createFactory, stopPropagation)
@@ -108,7 +109,7 @@ mapResolved _ o = o
 data Command = Resolve | HandleDrop DropResult | SelectEntry Int | Undo 
   | DeleteExpr Int | ChangeOp Int String | EditEntry Int (ResolvedEntryR -> ResolvedEntryR) | DeleteEntry Int
   | OpenDialog DialogType | AddFromDialog (Array ResolvedTerm) | CloseDialog 
-  | NewPriv | DialState (Boolean -> Boolean) | ToggleNot Int
+  | NewPriv | DialState (Boolean -> Boolean) | ToggleNot Int | Expand Int
 
 type MyState = {
   acls :: Array ResolvedEntry,
@@ -319,12 +320,12 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
       div [P.className classes.overallPanel] [
         div [P.className classes.editorPanels] [
           paper [className classes.entryList] [
-            typography [variant title, className classes.flexCentered] [ text aclString.privileges],
+            typography [variant TS.title, className classes.flexCentered] [ text aclString.privileges],
             createNewPriv,
             div [ P.className classes.scrollable ] [aclEntries]
           ],
           paper [className classes.currentEntryPanel ] $ [ 
-            typography [variant title, className classes.flexCentered] [ text aclString.expression]
+            typography [variant TS.title, className classes.flexCentered] [ text aclString.expression]
           ] <> maybe placeholderExpr expressionContents expressionM,
           paper [className classes.commonPanel] commonPanel 
         ]
@@ -346,7 +347,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
           icon: speedDialIconU {openIcon: icon_ [text "add"]}[], 
           ariaLabel: aclString.addexpression, 
           open:dialOpen, hidden: dialHidden,
-          onClick: dialChange not, onClose: closeDial,
+          onClose: closeDial,
           onMouseEnter: openDial, onMouseLeave: closeDial } 
         [
           action "people" aclString.new.ugr $ UserDialog $ UGREnabled {users:true, groups:true, roles:true},
@@ -354,11 +355,11 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
           action "http" aclString.new.referrer $ ReferrerDialog "http://*",
           action "apps" aclString.new.token $ SecretDialog "moodle"
         ],
-        typography [variant title, className classes.flexCentered] [ text aclString.targets],
+        typography [variant TS.title, className classes.flexCentered] [ text aclString.targets],
         div [P.className classes.scrollable ] [
           droppable {droppableId:"common"} \p _ -> 
             div [P.ref p.innerRef, p.droppableProps, P.style {width: "100%"}] $
-                mapWithIndex (commonExpr "common" []) terms
+                mapWithIndex (commonExpr "common" [] []) terms
             
         ]
       ]
@@ -366,7 +367,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
 
     command :: forall a e. Command -> (a -> Eff e Unit)
     command c = d \_ -> c
-    placeholderExpr = [ typography [ variant caption, className classes.flexCentered ] [ text aclString.privplaceholder] ]
+    placeholderExpr = [ typography [ variant TS.caption, className classes.flexCentered ] [ text aclString.privplaceholder] ]
     createNewPriv = div' [ 
       button [variant raised, className classes.privSelect, onClick $ command NewPriv ] [text aclString.addpriv], 
       button [variant raised, disabled cantUndo, onClick $ command Undo ] [ text commonString.action.undo ]
@@ -384,10 +385,10 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
       let exprEntries = case exprType of 
             Resolved expression -> [ 
               list [disablePadding true] $ 
-                mapWithIndex (#) $ fromFoldable $ makeExpression 0 expression Nil 
+                mapWithIndex (#) $ fromFoldable $ makeExpression 0 false expression Nil 
             ]
             _ -> []
-          dropText = typography [ variant caption, className $ joinWith " " [classes.flexCentered, classes.dropText] ] 
+          dropText = typography [ variant TS.caption, className $ joinWith " " [classes.flexCentered, classes.dropText] ] 
                         [ text aclString.dropplaceholder]
       in  [
         formControl [className classes.privSelect] [ 
@@ -405,16 +406,15 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
     withPortal f p s = let child = f p s 
       in if s.isDragging then maybe child (flip renderToPortal child) dragPortal else child
 
-    makeExpression indent expr l = case expr of       
+    makeExpression indent multi expr l = case expr of       
         Term t n -> 
-          let termActions i = div [P.className classes.exprActions] [ 
+          let termActions i = div [P.className classes.exprActions] $
+            (guard  multi $> tooltip [title aclString.convertGroup] [ iconButton [ onClick $ command $ Expand i ] [ icon_ [ text "keyboard_arrow_right" ] ] ]) <> [
             formControlLabel [control $ checkbox [checked n, onChange $ command $ ToggleNot i ], label aclString.not ],
-            iconButton [ onClick $ command $ DeleteExpr i ] [ 
-              icon_ [ text "delete" ] 
-            ] 
+            iconButton [ onClick $ command $ DeleteExpr i ] [ icon_ [ text "delete" ] ] 
           ]
-          in Cons (\i -> commonExpr "term" [termActions i] i (ResolvedTerm t)) l
-        Op op exprs n -> (Cons $ opEntry op n) (foldr (makeExpression (indent + 1)) l exprs)
+          in Cons (\i -> commonExpr "term" [P.style {paddingLeft: indentPixels}] [termActions i] i (ResolvedTerm t)) l
+        Op op exprs n -> (Cons $ opEntry op n) (foldr (makeExpression (indent + 1) (length exprs > 1)) l exprs)
       where 
       opEntry op n i = draggable {draggableId: "op" <> show i, index:i} $ \p s -> 
         div [P.ref p.innerRef, p.draggableProps] [
@@ -425,9 +425,9 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
         ]
       indentPixels = indent * 12
     
-    commonExpr pfx actions i rt = draggable {draggableId: pfx <> show i, index:i} $ withPortal \p s -> 
+    commonExpr pfx props actions i rt = draggable {draggableId: pfx <> show i, index:i} $ withPortal \p s -> 
       div [P.ref p.innerRef, p.draggableProps, p.dragHandleProps] $ [
-        div [P.className classes.termEntry] $ [ 
+        div ([P.className classes.termEntry] <> props) $ [ 
           listItemIcon_ [ icon_ [ text $ iconNameForTermType rt ] ], 
           listTextForTermType rt ] <> actions
       ]
@@ -448,7 +448,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
           ]
         ]
       ]
-      where privText = typography [ variant subheading, className classes.ellipsed ] 
+      where privText = typography [ variant TS.subheading, className classes.ellipsed ] 
                           [ text $ if granted then priv else aclString.revoke <> " - " <> priv ] 
             secondLine = textForExprType expr
             check o l t = formControlLabel [control $ checkbox [checked o, toggler i l ], label t ]
@@ -456,7 +456,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
               stopPropagation (unsafeCoerce e)
               d (\_ -> EditEntry i (over l not)) unit
 
-    stdExprLine t = typography [variant body1, className classes.ellipsed, color textSecondary ] [ text t ] 
+    stdExprLine t = typography [variant TS.body1, className classes.ellipsed, color textSecondary ] [ text t ] 
 
     textForExprType (Unresolved std) = stdExprLine $ textForExpression std 
     textForExprType (Resolved rexpr) = stdExprLine $ expressionText textForResolved rexpr
@@ -620,6 +620,10 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
           toggleNot e = e
       runChange $ modifyResolved toggleNot
       
+    Expand ind -> do 
+      let expandIt e | Right {get, modify} <- findExprModify ind e = fromMaybe e $ modify $ Just $ defaultOp [get]
+          expandIt e = e
+      runChange $ modifyResolved expandIt 
     ChangeOp ind op -> do 
       let changeOp e | Right {get:(Op _ exprs _),modify} <- findExprModify ind e = 
               fromMaybe e $ modify $ (\(Tuple o n) -> Op o exprs n) <$> valToOpType op
@@ -773,7 +777,8 @@ aclRawStrings = Tuple "acleditor" {
     or: "At least one matches",
     notand: "Not all match",
     notor: "None match"
-  }
+  },
+  convertGroup: "Convert to group"
 }
 
 data TestCommand = Init | SaveIt | Changed {canSave::Boolean, getAcls :: IOSync (Array TargetListEntry)}
