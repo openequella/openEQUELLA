@@ -2,7 +2,7 @@ import * as React from 'react'
 import { ListItem, ListItemText } from 'material-ui/List';
 import { Theme, withStyles, WithStyles } from 'material-ui/styles';
 
-const styles = (theme: Theme) => (
+const styles = withStyles((theme: Theme) => (
 {
     searchResultContent: {
         display: "flex",
@@ -16,7 +16,7 @@ const styles = (theme: Theme) => (
     displayNode: {
         padding: 0
     }
-});
+}));
 
 export interface SearchResultProps {
     href: string;
@@ -38,4 +38,4 @@ class SearchResult extends React.Component<PropsWithStyles> {
     }
 }
 
-export default withStyles(styles)(SearchResult);
+export default styles<SearchResultProps>(SearchResult);
