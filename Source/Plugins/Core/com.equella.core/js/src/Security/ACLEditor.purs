@@ -337,7 +337,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
     onChangeStr f = onChange $ d $ \e -> f e.target.value
 
     commonPanel = let 
-      dialChange = command <<< DialState
+      dialChange = toHandler <<< command <<< DialState
       closeDial = dialChange $ const false
       openDial = dialChange $ const true
       in [ 
@@ -362,7 +362,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
             
         ]
       ]
-      where action i title dt = speedDialActionU {icon: icon_ [text i], title, onClick: command $ OpenDialog dt }
+      where action i title dt = speedDialActionU {icon: icon_ [text i], title, onClick: toHandler $ command $ OpenDialog dt }
 
     command :: forall a e. Command -> (a -> Eff e Unit)
     command c = d \_ -> c
@@ -423,7 +423,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
               div [P.style {display:"none"}, p.dragHandleProps] []
           ]
         ]
-      indentPixels = indent * 8
+      indentPixels = indent * 12
     
     commonExpr pfx actions i rt = draggable {draggableId: pfx <> show i, index:i} $ withPortal \p s -> 
       div [P.ref p.innerRef, p.draggableProps, p.dragHandleProps] $ [
