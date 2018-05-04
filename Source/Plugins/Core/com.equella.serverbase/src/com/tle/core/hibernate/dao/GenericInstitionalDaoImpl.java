@@ -22,7 +22,6 @@ import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.opensaml.xml.signature.P;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tle.common.Check;
@@ -81,6 +80,58 @@ public class GenericInstitionalDaoImpl<T, ID extends Serializable> extends Gener
 		});
 	}
 
+	protected Query createEnumerateQuery(Session session, boolean countOnly, ListCallback callback)
+	{
+		// NOTE: Don't order by name here - use NumberStringComparator
+		// on the returned list.
+		StringBuilder hql = new StringBuilder();
+		hql.append("SELECT ");
+		if (countOnly)
+        {
+            hql.append("COUNT (*)");
+        }
+        else
+        {
+		    if( callback != null && callback.isDistinct() )
+            {
+                hql.append("DISTINCT ");
+            }
+            hql.append("be");
+        }
+		hql.append(" FROM ");
+		hql.append(getPersistentClass().getName());
+		hql.append(" be ");
+		if( callback != null && !Check.isEmpty(callback.getAdditionalJoins()) )
+		{
+			hql.append(" ");
+			hql.append(callback.getAdditionalJoins());
+			hql.append(" ");
+		}
+		hql.append("WHERE be.institution = :institution");
+
+		if( callback != null && !Check.isEmpty(callback.getAdditionalWhere()) )
+		{
+			hql.append(" AND ");
+			hql.append(callback.getAdditionalWhere());
+		}
+
+		if( callback != null && callback.getOrderBy() != null )
+		{
+			hql.append(callback.getOrderBy());
+		}
+
+		Query query = session.createQuery(hql.toString());
+		query.setParameter("institution", CurrentInstitution.get());
+		query.setCacheable(true);
+		query.setReadOnly(true);
+
+		if( callback != null )
+		{
+			callback.processQuery(query);
+		}
+		return query;
+	}
+
 	@SuppressWarnings({"unchecked", "nls"})
 	protected List<T> enumerateAll(final ListCallback callback)
 	{
@@ -89,48 +140,7 @@ public class GenericInstitionalDaoImpl<T, ID extends Serializable> extends Gener
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException
 			{
-				// NOTE: Don't order by name here - use NumberStringComparator
-				// on the returned list.
-				StringBuilder hql = new StringBuilder();
-				hql.append("SELECT ");
-				if( callback != null && callback.isDistinct() )
-				{
-					hql.append("DISTINCT ");
-				}
-				hql.append("be FROM ");
-				hql.append(getPersistentClass().getName());
-				hql.append(" be ");
-				if( callback != null && !Check.isEmpty(callback.getAdditionalJoins()) )
-				{
-					hql.append(" ");
-					hql.append(callback.getAdditionalJoins());
-					hql.append(" ");
-				}
-				hql.append("WHERE be.institution = :institution");
-
-				if( callback != null && !Check.isEmpty(callback.getAdditionalWhere()) )
-				{
-					hql.append(" AND ");
-					hql.append(callback.getAdditionalWhere());
-				}
-
-				if( callback != null && callback.getOrderBy() != null )
-				{
-					hql.append(callback.getOrderBy());
-				}
-
-				Query query = session.createQuery(hql.toString());
-				query.setParameter("institution", CurrentInstitution.get());
-				query.setCacheable(true);
-				query.setReadOnly(true);
-
-				if( callback != null )
-				{
-					callback.processQuery(query);
-				}
-
-				List<T> res = query.list();
-				return res;
+				return createEnumerateQuery(session, false, callback).list();
 			}
 		});
 	}

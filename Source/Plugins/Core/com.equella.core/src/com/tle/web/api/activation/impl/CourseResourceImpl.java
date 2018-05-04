@@ -42,6 +42,7 @@ import com.tle.web.api.activation.CourseBeanSerializer;
 import com.tle.web.api.activation.CourseResource;
 import com.tle.web.api.baseentity.serializer.BaseEntitySerializer;
 import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
+import com.tle.web.api.interfaces.beans.PagingBean;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.remoting.rest.service.RestImportExportHelper;
@@ -70,22 +71,22 @@ public class CourseResourceImpl extends AbstractBaseEntityResource<CourseInfo, B
 	 * Provide the full course data in the results
 	 */
 	@Override
-	protected CourseBean serialize(CourseInfo entity, Object data, boolean heavy)
+	public CourseBean serialize(CourseInfo entity, Object data, boolean heavy)
 	{
 		return super.serialize(entity, data, true);
 	}
 
-	@Override
-	public SearchBean<CourseBean> list(UriInfo uriInfo, String code, String q)
-	{
-		final boolean isExport = RestImportExportHelper.isExport(uriInfo);
-		final EnumerateOptions opts = new EnumerateOptions(q, 0, 100000, isExport, null);
-		if (!Check.isEmpty(code))
-		{
-			opts.addParameter("code", code);
-		}
-		return list(opts, isExport);
-	}
+//	@Override
+//	public PagingBean<CourseBean> list(UriInfo uriInfo, String code, String q)
+//	{
+//		final boolean isExport = RestImportExportHelper.isExport(uriInfo);
+//		final EnumerateOptions opts = new EnumerateOptions(q, null, 0, 100000, isExport, null);
+//		if (!Check.isEmpty(code))
+//		{
+//			opts.addParameter("code", code);
+//		}
+//		return list(opts, isExport);
+//	}
 
 	@Override
 	protected void validate(String uuid, CourseBean bean, boolean isNew) throws InvalidDataException
@@ -103,6 +104,13 @@ public class CourseResourceImpl extends AbstractBaseEntityResource<CourseInfo, B
 		}
 	}
 
+	@Override
+	public PagingBean<CourseBean> list(UriInfo uriInfo, String code, String q, String privilege,
+									   String resumptionToken, int length, boolean full)
+	{
+		return super.list(uriInfo, q, privilege, resumptionToken, length, full);
+	}
+
 	public List<String> citation(UriInfo uriInfo, String uuid)
 	{
 		return courseService.getAllCitations();
@@ -115,7 +123,7 @@ public class CourseResourceImpl extends AbstractBaseEntityResource<CourseInfo, B
 	}
 
 	@Override
-	protected CourseInfoService getEntityService()
+	public CourseInfoService getEntityService()
 	{
 		return courseService;
 	}

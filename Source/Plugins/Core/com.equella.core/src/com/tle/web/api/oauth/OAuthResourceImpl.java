@@ -47,7 +47,7 @@ public class OAuthResourceImpl extends AbstractBaseEntityResource<OAuthClient, B
 
 	// WTF, tests expect *heavy* results on the list endpoint
 	@Override
-	protected OAuthClientBean serialize(OAuthClient entity, Object data, boolean heavy)
+	public OAuthClientBean serialize(OAuthClient entity, Object data, boolean heavy)
 	{
 		return super.serialize(entity, data, true);
 	}
@@ -59,7 +59,7 @@ public class OAuthResourceImpl extends AbstractBaseEntityResource<OAuthClient, B
 	}
 
 	@Override
-	protected AbstractEntityService<?, OAuthClient> getEntityService()
+	public AbstractEntityService<?, OAuthClient> getEntityService()
 	{
 		return oauthService;
 	}

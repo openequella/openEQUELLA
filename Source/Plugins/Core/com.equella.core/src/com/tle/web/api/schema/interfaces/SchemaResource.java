@@ -16,19 +16,13 @@
 
 package com.tle.web.api.schema.interfaces;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import com.tle.web.api.interfaces.BaseEntityResource;
+import com.tle.web.api.interfaces.beans.PagingBean;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.schema.interfaces.beans.SchemaBean;
@@ -53,7 +47,13 @@ public interface SchemaResource extends BaseEntityResource<SchemaBean, BaseEntit
 
 	@GET
 	@ApiOperation(value = "List all schemas")
-	public SearchBean<SchemaBean> list(@Context UriInfo uriInfo, @ApiParam("Search name and description") @QueryParam("q") String q);
+	public PagingBean<SchemaBean> list(
+			@Context UriInfo uriInfo,
+			@ApiParam("Search name and description") @QueryParam("q") String q,
+			@ApiParam("Privilege to filter by") @QueryParam("privilege") String privilege,
+			@QueryParam("resumption") @ApiParam("Resumption token for paging") String resumptionToken,
+			@QueryParam("length") @ApiParam("Number of results") @DefaultValue("10") int length,
+			@QueryParam("full") @ApiParam("Return full entity (needs VIEW or EDIT privilege)") boolean full);
 
 	@GET
 	@Path("/{uuid}")

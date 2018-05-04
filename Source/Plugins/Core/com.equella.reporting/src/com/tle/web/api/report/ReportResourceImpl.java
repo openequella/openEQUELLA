@@ -52,7 +52,8 @@ import java.util.UUID;
 @Bind(ReportResource.class)
 @Singleton
 public class ReportResourceImpl extends
-        AbstractBaseEntityResource<Report, BaseEntitySecurityBean, ReportBean> implements ReportResource {
+        AbstractBaseEntityResource<Report, BaseEntitySecurityBean, ReportBean>
+        implements ReportResource {
 
     private static final Logger LOGGER = Logger.getLogger(ReportResourceImpl.class);
 
@@ -70,12 +71,6 @@ public class ReportResourceImpl extends
 
     @Inject
     private UrlLinkService urlLinkService;
-
-    @Override
-    public SearchBean<ReportBean> list(UriInfo uriInfo, String q)
-    {
-        return super.list(uriInfo, q);
-    }
 
     @Override
     public Response create(UriInfo uriInfo, ReportBean bean, String staginguuid, String packagename) {
@@ -136,7 +131,7 @@ public class ReportResourceImpl extends
     }
 
     @Override
-    protected ReportingService getEntityService() {
+    public ReportingService getEntityService() {
         return reportingService;
     }
 

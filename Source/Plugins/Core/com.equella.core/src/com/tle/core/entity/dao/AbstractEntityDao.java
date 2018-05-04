@@ -35,6 +35,8 @@ public interface AbstractEntityDao<T extends BaseEntity> extends GenericInstitut
 
 	List<T> enumerateAll(EnumerateOptions options);
 
+	long countAll(EnumerateOptions options);
+
 	List<T> enumerateEnabled();
 
 	List<Long> enumerateAllIdsIncludingSystem();

@@ -58,7 +58,7 @@ public class LtiConsumerResourceImpl
 	}
 
 	@Override
-	protected AbstractEntityService<?, LtiConsumer> getEntityService()
+	public AbstractEntityService<?, LtiConsumer> getEntityService()
 	{
 		return ltiConsumerService;
 	}

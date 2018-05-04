@@ -67,6 +67,8 @@ public interface AbstractEntityService<B extends EntityEditingBean, T extends Ba
 
 	String getEditPrivilege();
 
+	String getPrivilegeType();
+
 	T getWithNoSecurity(long id);
 
 	T getForComparison(long id, @Nullable ComparisonEntityInitialiser<T> init);
@@ -83,9 +85,9 @@ public interface AbstractEntityService<B extends EntityEditingBean, T extends Ba
 
 	List<T> enumerate();
 
-	List<T> enumerateListable(EnumerateOptions options);
+	List<T> query(EnumerateOptions options);
 
-	List<T> enumerateDeletable();
+	long countAll(EnumerateOptions options);
 
 	EntityPack<T> startEdit(T entity);
 

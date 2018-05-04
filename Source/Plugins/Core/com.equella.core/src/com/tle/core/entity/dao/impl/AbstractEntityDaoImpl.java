@@ -20,7 +20,6 @@ import java.util.*;
 
 import javax.inject.Inject;
 
-import com.tle.common.Pair;
 import com.tle.core.entity.EnumerateOptions;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -210,6 +209,19 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity> extends Generi
 	@Transactional
 	public List<T> enumerateAll(EnumerateOptions options)
 	{
+		ListCallback callback = createListCallback(options);
+		return super.enumerateAll(callback);
+	}
+
+	@Override
+	public long countAll(EnumerateOptions options)
+	{
+		return (Long) getHibernateTemplate().execute(session ->
+				super.createEnumerateQuery(session, true, createListCallback(options)).uniqueResult());
+	}
+
+	private ListCallback createListCallback(EnumerateOptions options)
+	{
 		ListCallback callback = null;
 		if (options != null)
 		{
@@ -223,7 +235,7 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity> extends Generi
 				callback = new SystemCallback(callback, options.isIncludeSystem());
 			}
 		}
-		return super.enumerateAll(callback);
+		return callback;
 	}
 
 	@Override

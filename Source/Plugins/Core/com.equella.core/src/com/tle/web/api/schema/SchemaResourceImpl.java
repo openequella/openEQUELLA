@@ -64,7 +64,7 @@ public class SchemaResourceImpl extends AbstractBaseEntityResource<Schema, BaseE
 	}
 
 	@Override
-	protected AbstractEntityService<?, Schema> getEntityService()
+	public AbstractEntityService<?, Schema> getEntityService()
 	{
 		return schemaService;
 	}

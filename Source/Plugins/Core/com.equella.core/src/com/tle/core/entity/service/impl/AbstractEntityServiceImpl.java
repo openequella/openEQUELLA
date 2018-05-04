@@ -35,7 +35,6 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 import com.tle.core.entity.EnumerateOptions;
-import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.Criterion;
@@ -528,18 +527,16 @@ public abstract class AbstractEntityServiceImpl<B extends EntityEditingBean, T e
 	}
 
 	@Override
-	@SecureOnReturn(priv = SecurityConstants.DELETE_VIRTUAL_BASE)
-	public List<T> enumerateDeletable()
-	{
-		return entityDao.enumerateAll();
-	}
-
-	@Override
-	@SecureOnReturn(priv = SecurityConstants.LIST_VIRTUAL_BASE)
-	public List<T> enumerateListable(EnumerateOptions options)
+	public List<T> query(EnumerateOptions options)
 	{
 		return entityDao.enumerateAll(options);
 	}
+
+    @Override
+    public long countAll(EnumerateOptions options)
+    {
+        return entityDao.countAll(options);
+    }
 
 	@Override
 	public List<BaseEntityLabel> listAll()

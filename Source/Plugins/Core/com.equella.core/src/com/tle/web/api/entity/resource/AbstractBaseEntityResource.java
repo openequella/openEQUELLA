@@ -29,6 +29,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import com.tle.core.entity.EnumerateOptions;
+import com.tle.web.api.entity.PagedResults;
+import com.tle.web.api.interfaces.beans.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dytech.edge.common.LockedException;
@@ -56,10 +58,6 @@ import com.tle.core.security.impl.RequiresPrivilege;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.baseentity.serializer.BaseEntitySerializer;
 import com.tle.web.api.interfaces.BaseEntityResource;
-import com.tle.web.api.interfaces.beans.BaseEntityBean;
-import com.tle.web.api.interfaces.beans.EntityLockBean;
-import com.tle.web.api.interfaces.beans.SearchBean;
-import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.interfaces.beans.security.TargetListEntryBean;
 import com.tle.web.remoting.rest.service.RestImportExportHelper;
@@ -85,13 +83,18 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 
 	protected abstract SB createAllSecurityBean();
 
-	protected abstract AbstractEntityService<?, BE> getEntityService();
+	public abstract AbstractEntityService<?, BE> getEntityService();
 
 	protected abstract int getSecurityPriority();
 
 	protected abstract BaseEntitySerializer<BE, B> getSerializer();
 
 	protected abstract Class<?> getResourceClass();
+
+	public String getPrivilegeType()
+	{
+		return getEntityService().getPrivilegeType();
+	}
 
 	@Inject
 	private AclDao aclDao;
@@ -173,35 +176,13 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	}
 
 	@Transactional
-	public SearchBean<B> list(UriInfo uriInfo, String q)
-	{
-		final boolean isExport = RestImportExportHelper.isExport(uriInfo);
-		return list(new EnumerateOptions(q, 0, 100000, isExport, null), isExport);
-	}
+	public PagingBean<B> list(UriInfo uriInfo, String q, String privilege, String resumption, int length, boolean full)
+    {
+        final boolean isExport = RestImportExportHelper.isExport(uriInfo);
+        return PagedResults.pagedResults(this, q, privilege, resumption, length, full | isExport, isExport);
+    }
 
-	protected SearchBean<B> list(EnumerateOptions opts, boolean isExport)
-	{
-		final AbstractEntityService<?, BE> entityService = getEntityService();
-		final List<BE> allEntities = entityService.enumerateListable(opts);
-		final List<B> retBeans = new ArrayList<B>(allEntities.size());
-
-		for( BE entity : allEntities )
-		{
-			// if isExport is true, we also set a flag for 'heavy' beans which
-			// include export data
-			final B bean = serialize(entity, null, isExport);
-			retBeans.add(bean);
-		}
-
-		final SearchBean<B> results = new SearchBean<B>();
-		results.setStart(0);
-		results.setLength(retBeans.size());
-		results.setResults(retBeans);
-		results.setAvailable(retBeans.size());
-		return results;
-	}
-
-	protected B serialize(BE entity, Object data, boolean heavy)
+	public B serialize(BE entity, Object data, boolean heavy)
 	{
 		B bean = getSerializer().serialize(entity, data, heavy);
 		final Map<String, String> links = Collections.singletonMap("self", getGetUri(entity.getUuid()).toString());

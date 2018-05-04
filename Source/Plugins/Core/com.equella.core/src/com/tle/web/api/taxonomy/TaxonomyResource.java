@@ -100,7 +100,7 @@ public class TaxonomyResource
 		SearchBean<TaxonomyBean> results = new SearchBean<TaxonomyBean>();
 		boolean isExport = RestImportExportHelper.isExport(uriInfo);
 		List<TaxonomyBean> beans = Lists.newArrayList();
-		List<Taxonomy> taxonomies = taxonomyService.enumerateListable(new EnumerateOptions().setIncludeSystem(isExport));
+		List<Taxonomy> taxonomies = taxonomyService.query(new EnumerateOptions().setIncludeSystem(isExport));
 		for( Taxonomy taxonomy : taxonomies )
 		{
 			TaxonomyBean bean = taxonomySerializer.serialize(taxonomy, null, false);

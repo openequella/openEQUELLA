@@ -58,7 +58,7 @@ public class WorkflowResourceImpl extends AbstractBaseEntityResource<Workflow, B
 	}
 
 	@Override
-	protected AbstractEntityService<?, Workflow> getEntityService()
+	public AbstractEntityService<?, Workflow> getEntityService()
 	{
 		return workflowService;
 	}
