@@ -48,6 +48,9 @@ legacy htmlMap = createFactory (withStyles styles $ createComponent {optionsAnch
   styles t = {
     screenOptions: {
         margin: 20
+    },
+    main: {
+      padding: t.spacing.unit * 2
     }
   }
   render s (ReactProps {classes}) (DispatchEff d) = 
@@ -64,7 +67,7 @@ legacy htmlMap = createFactory (withStyles styles $ createComponent {optionsAnch
             divWithHtml {divProps:[DP.className $ classes.screenOptions], html}
         ]
     ]
-    mainContent = D.div' $ catMaybes [ 
+    mainContent = D.div [DP.className classes.main] $ catMaybes [ 
       (divWithHtml <<< {divProps:[_id "breadcrumbs"], html: _} <$> lookup "crumbs" htmlMap),
       (divWithHtml <<< {divProps:[], html: _} <$> lookup "upperbody" htmlMap),
       (divWithHtml <<< {divProps:[], html: _} <$> lookup "body" htmlMap)

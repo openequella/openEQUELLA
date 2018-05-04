@@ -14,9 +14,6 @@ const styles = withStyles((theme: Theme) => (
         maxHeight: "66px",
         marginRight: "12px"
     },
-    displayNode: {
-        padding: 0
-    },
     resultLink: {
         textDecoration: "none",
         fontSize: "1.3125rem",
@@ -33,14 +30,15 @@ export interface SearchResultProps {
     secondaryText?: string;
 }
 
-type PropsWithStyles = SearchResultProps & WithStyles<"searchResultContent" | "itemThumb" | "displayNode" | "resultLink">
+type PropsWithStyles = SearchResultProps & WithStyles<"searchResultContent" | "itemThumb" | "resultLink">
 
 class SearchResult extends React.Component<PropsWithStyles> {
     render() {
         const {classes} = this.props
-    const link: any = <a href={this.props.href} className={classes.resultLink} onClick={this.props.onClick}>{this.props.primaryText}</a>
+        const link: any = <a href={this.props.href} className={classes.resultLink} 
+                onClick={this.props.onClick}>{this.props.primaryText}</a>
         //
-        const content: any = <div className={classes.displayNode}>{this.props.secondaryText}</div>;
+        const content: any = <Typography variant="body1">{this.props.secondaryText}</Typography>;
         return <ListItem button onClick={this.props.onClick}>
                 <ListItemText disableTypography primary={link} secondary={content} />
         </ListItem>;
