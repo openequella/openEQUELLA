@@ -1,10 +1,12 @@
 module TSComponents where 
 
+import Prelude
+
+import Bridge (tsBridge)
 import Data.Maybe (Maybe(..))
+import Data.Nullable (toNullable)
 import React (ReactClass, ReactElement, createElement)
 import Template (template)
-import Bridge (tsBridge)
-import Prelude
  
 foreign import data Store :: Type
 foreign import store :: Store
@@ -19,7 +21,8 @@ coursesPage = template {mainContent:createElement searchCourses {store:store, br
     title: "Courses", titleExtra:Just $ createElement searchCoursesTitleBar {store:store, bridge: tsBridge} []}
 
 courseEdit :: String -> ReactElement
-courseEdit cid = template {mainContent:createElement editCourse {store:store,bridge: tsBridge,course:{uuid:cid}} [],
+courseEdit cid = template {mainContent:createElement editCourse {store:store, bridge: tsBridge, 
+    uuid: toNullable $ Just cid} [],
     title: "Course Edit", titleExtra:Nothing}
 
 schemasPage :: ReactElement

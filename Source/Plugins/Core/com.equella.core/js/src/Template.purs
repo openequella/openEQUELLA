@@ -176,9 +176,9 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
         width: "calc(100vw - 245px)"
       },
       allQuery {
-        marginTop: 56,
-        backgroundColor: "#eee", -- theme.palette.background.default,
-        padding: theme.spacing.unit * 2
+        marginTop: 56
+        -- backgroundColor: "red", --theme.palette.background.default,
+        -- padding: theme.spacing.unit * 2
       }
     ],
     logo: {

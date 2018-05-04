@@ -41,6 +41,7 @@ interface EditCourseProps {
     bridge: Bridge;
     loadCourse: (uuid: string) => void;
     saveCourse: (course: Course) => void;
+    uuid?: string;
     course: Course;
 }
 
@@ -78,10 +79,9 @@ class EditCourse extends React.Component<EditCourseProps, EditCourseState> {
             versionSelection: 'DEFAULT',
             activeTab: 0
         };
-
-        var uuids = window.location.href.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
-        if (uuids){
-            this.props.loadCourse(uuids[0]);
+        if (this.props.uuid)
+        {
+            this.props.loadCourse(this.props.uuid);
         }
     }
 

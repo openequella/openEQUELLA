@@ -5,6 +5,7 @@ import { connect, Dispatch } from 'react-redux';
 import List from 'material-ui/List';
 import SearchResult from '../components/SearchResult';
 import { Bridge } from '../api/bridge';
+import { Paper } from 'material-ui';
 /*
 import withStyles, { StyleRulesCallback } from 'material-ui/styles/withStyles';
 const styles: StyleRulesCallback<'root'> = (theme: Theme) => ({
@@ -34,23 +35,24 @@ class SearchCourse extends React.Component<SearchCourseProps, object> {
 
     render() {
         const {routes,router} = this.props.bridge;
-        return <div className={this.classes.root}><div className="courses">
-                <List>
-                {
-                    (this.props.courses ?
-                        this.props.courses.map((course) => {
-                            const courseEditRoute = router(routes.CourseEdit(course.uuid));
-                            return <SearchResult key={course.uuid} 
-                                href={courseEditRoute.href}
-                                onClick={courseEditRoute.onClick}
-                                primaryText={course.code + " - " + course.name}
-                                secondaryText={course.description} />
-                        })
-                        : <div>No Results</div>
-                    )
-                }
-                </List>
-            </div>
+        return <div className={this.classes.root}>
+                <Paper>
+                    <List>
+                    {
+                        (this.props.courses ?
+                            this.props.courses.map((course) => {
+                                const courseEditRoute = router(routes.CourseEdit(course.uuid));
+                                return <SearchResult key={course.uuid} 
+                                    href={courseEditRoute.href}
+                                    onClick={courseEditRoute.onClick}
+                                    primaryText={course.code + " - " + course.name}
+                                    secondaryText={course.description} />
+                            })
+                            : <div>No Results</div>
+                        )
+                    }
+                    </List>
+                </Paper>
             </div>
     }
 }
