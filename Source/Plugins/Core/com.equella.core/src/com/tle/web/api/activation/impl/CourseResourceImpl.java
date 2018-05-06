@@ -103,11 +103,6 @@ public class CourseResourceImpl extends AbstractBaseEntityResource<CourseInfo, B
 		}
 	}
 
-	public List<String> citation(UriInfo uriInfo, String uuid)
-	{
-		return courseService.getAllCitations();
-	}
-
 	@Override
 	protected int getSecurityPriority()
 	{

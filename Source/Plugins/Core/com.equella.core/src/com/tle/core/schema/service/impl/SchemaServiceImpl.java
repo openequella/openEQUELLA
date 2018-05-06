@@ -207,4 +207,10 @@ public class SchemaServiceImpl extends AbstractEntityServiceImpl<EntityEditingBe
 		super.prepareImport(importFolder, entity, params);
 		entity.setDefinition(entity.withDefinition(new CloneDefinition()));
 	}
+
+	@Override
+	public List<String> getAllCitations()
+	{
+		return schemaDao.getAllCitations();
+	}
 }

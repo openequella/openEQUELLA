@@ -44,15 +44,6 @@ public class CourseInfoDaoImpl extends AbstractEntityDaoImpl<CourseInfo> impleme
 
 	@Override
 	@SuppressWarnings({"unchecked", "nls"})
-	public List<String> getAllCitations()
-	{
-		return getHibernateTemplate().findByNamedParam(
-			"select distinct c.name from Schema s join s.citations c where s.institution = :inst", "inst",
-			CurrentInstitution.get());
-	}
-
-	@Override
-	@SuppressWarnings({"unchecked", "nls"})
 	public List<Class<?>> getReferencingClasses(long id)
 	{
 		List<Class<?>> classes = new ArrayList<Class<?>>();

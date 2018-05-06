@@ -1,5 +1,5 @@
 import { Dispatch } from 'redux';
-import { AsyncActionCreators } from 'typescript-fsa';
+import { AsyncActionCreators, ActionCreator } from 'typescript-fsa';
 import axios from 'axios';
 import { reducerWithInitialState, ReducerBuilder } from "typescript-fsa-reducers";
 
@@ -17,6 +17,8 @@ export interface EntityCrudActions<E extends Entity> {
     read: AsyncActionCreators<{uuid: string}, {uuid: string, result: E}, {uuid: string}>;
     delete: AsyncActionCreators<{uuid: string}, {uuid: string}, {uuid: string}>;
     search: AsyncActionCreators<{query?: string}, {query?: string, results: SearchResults<E>}, {query?: string}>;
+    // This is for temp modifications.  E.g. uncommitted changes before save
+    modify: ActionCreator<{entity: E}>;
 }
   
 export interface EntityWorkers<E extends Entity> {
@@ -54,7 +56,8 @@ function entityCrudActions<E extends Entity>(entityType: string): EntityCrudActi
       update: createUpdate,
       read: actionCreator.async<{uuid: string}, {uuid: string, result: E}, {uuid: string}>('LOAD_' + entityType),
       delete: actionCreator.async<{uuid: string}, {uuid: string}, {uuid: string}>('DELETE_' + entityType),
-      search: actionCreator.async<{query?: string}, {query?: string, results: SearchResults<E>}, {query?: string}>('SEARCH_' + entityType)
+      search: actionCreator.async<{query?: string}, {query?: string, results: SearchResults<E>}, {query?: string}>('SEARCH_' + entityType),
+      modify: actionCreator<{entity: E}>('MODIFY_' + entityType)
     };
   }
   
@@ -120,5 +123,8 @@ const entityReducerBuilder = function<E extends Entity>(entityCrudActions: Entit
         })
         .case(entityCrudActions.update.done, (state, success) => {
             return state;
+        })
+        .case(entityCrudActions.modify, (state, payload) => {
+            return { ...state, editingEntity: payload.entity }
         });
 } 

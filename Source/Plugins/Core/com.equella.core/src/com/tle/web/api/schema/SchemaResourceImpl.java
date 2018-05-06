@@ -18,6 +18,7 @@ package com.tle.web.api.schema;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.core.UriInfo;
 
 import com.tle.beans.entity.Schema;
 import com.tle.common.security.PrivilegeTree.Node;
@@ -30,6 +31,8 @@ import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.schema.interfaces.SchemaResource;
 import com.tle.web.api.schema.interfaces.beans.SchemaBean;
+
+import java.util.List;
 
 /**
  * @author larry
@@ -79,5 +82,11 @@ public class SchemaResourceImpl extends AbstractBaseEntityResource<Schema, BaseE
 	protected Class<?> getResourceClass()
 	{
 		return SchemaResource.class;
+	}
+
+	@Override
+	public List<String> citation(UriInfo uriInfo)
+	{
+		return schemaService.getAllCitations();
 	}
 }

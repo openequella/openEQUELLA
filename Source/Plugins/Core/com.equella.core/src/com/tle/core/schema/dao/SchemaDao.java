@@ -28,4 +28,6 @@ public interface SchemaDao extends AbstractEntityDao<Schema>
 	List<String> getImportSchemaTypes(long id);
 
 	List<Schema> getSchemasForExportSchemaType(String type);
+
+	List<String> getAllCitations();
 }

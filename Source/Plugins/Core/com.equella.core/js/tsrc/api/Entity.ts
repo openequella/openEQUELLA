@@ -16,7 +16,7 @@ export interface Entity {
 }
 
 export interface EntitySecurity {
-    rules: [TargetListEntry]
+    rules: TargetListEntry[];
 }
 
 export interface EntityExport {

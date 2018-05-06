@@ -29,6 +29,7 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.core.schema.service.SchemaService;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,6 +88,8 @@ public class CourseInfoServiceImpl extends AbstractEntityServiceImpl<EntityEditi
 
 	@Inject
 	private ConfigurationService configurationService;
+	@Inject
+	private SchemaService schemaService;
 
 	@Inject
 	public CourseInfoServiceImpl(CourseInfoDao dao)
@@ -130,7 +133,7 @@ public class CourseInfoServiceImpl extends AbstractEntityServiceImpl<EntityEditi
 	@Override
 	public List<String> getAllCitations()
 	{
-		return dao.getAllCitations();
+		return schemaService.getAllCitations();
 	}
 
 	@Override
