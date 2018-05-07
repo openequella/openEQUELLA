@@ -1,16 +1,18 @@
 
 export interface TargetListEntry {
-    granted:Boolean;
-    override:Boolean;
-    privilege:String;
-    who:String;
+    granted: boolean;
+    override: boolean;
+    privilege: string;
+    who: string;
+}
+
+export interface AclEditorChangeEvent {
+    canSave: boolean;
+    getAcls: () => TargetListEntry[];
 }
 
 export interface AclEditorProps {
-    acls : Array<TargetListEntry>,
-    onChange : (e: {
-        canSave: Boolean, 
-        getAcls: () => Array<TargetListEntry>
-    }) => void;
-    allowedPrivs : Array<String>
+    acls: TargetListEntry[];
+    onChange: (e: AclEditorChangeEvent) => void;
+    allowedPrivs: string[];
 }

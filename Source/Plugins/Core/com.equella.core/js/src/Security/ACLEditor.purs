@@ -218,8 +218,8 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
     addTerm: {
       zIndex: 2000,
       position: "absolute",
-      bottom: - theme.spacing.unit * 2,
-      right: theme.spacing.unit * 1
+      bottom: theme.spacing.unit,
+      right: theme.spacing.unit
     }, 
     dialog: {
       width: 600,
@@ -788,13 +788,13 @@ testEditor = createFactory (createLifecycleComponent (didMount Init) {s:Nothing,
   where 
   render {s} (DispatchEff d) = 
     s # maybe (div' []) \{entries,allowedPrivs} -> 
-      template' {fixedViewPort:true, menuExtra: [], 
-        mainContent: div [P.style {width: "100%", height: "80%"}] [
+      template' {fixedViewPort:true, tabs:Nothing, menuExtra: [], title: "ACL editor test", titleExtra:Nothing } [ 
+        div [P.style {width: "100%", height: "80%"}] [
           createElement aclEditorClass {acls:entries, allowedPrivs,
             onChange: mkIOFn1 $ d Changed} [],
           button [variant raised, onClick $ d \_ -> SaveIt ] [ text "Save" ]
-        ], 
-        title: "ACL editor test", titleExtra:Nothing }
+        ]
+      ]
   eval Init = do 
     Tuple r1 r2 <- lift $ sequential $ Tuple <$> 
       parallel (A.get $ baseUrl <> "api/course/313213e6-049a-8834-46d1-230be99f4490") <*> 

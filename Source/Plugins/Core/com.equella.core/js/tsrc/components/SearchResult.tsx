@@ -1,7 +1,7 @@
-import * as React from 'react'
+import * as React from 'react';
+import Typography from 'material-ui/Typography';
 import { ListItem, ListItemText } from 'material-ui/List';
 import { Theme, withStyles, WithStyles } from 'material-ui/styles';
-import { Typography } from 'material-ui';
 
 const styles = withStyles((theme: Theme) => (
 {

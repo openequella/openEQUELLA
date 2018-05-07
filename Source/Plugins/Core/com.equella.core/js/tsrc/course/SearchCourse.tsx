@@ -6,6 +6,8 @@ import List from 'material-ui/List';
 import SearchResult from '../components/SearchResult';
 import { Bridge } from '../api/bridge';
 import { Paper } from 'material-ui';
+import AppBarQuery from '../components/AppBarQuery';
+import { courseService } from '../services';
 /*
 import withStyles, { StyleRulesCallback } from 'material-ui/styles/withStyles';
 const styles: StyleRulesCallback<'root'> = (theme: Theme) => ({
@@ -18,24 +20,33 @@ const styles: StyleRulesCallback<'root'> = (theme: Theme) => ({
 
 interface SearchCourseProps {
     bridge: Bridge;
-    query?: string;
     courses: Course[];
-    root: any;
+    onSearch: (query?: string) => void
 }
 
-class SearchCourse extends React.Component<SearchCourseProps, object> {
+interface SearchCourseState {
+    query: string;
+}
 
-    textInput: HTMLInputElement;
-    classes: any;
+class SearchCourse extends React.Component<SearchCourseProps, SearchCourseState> {
 
     constructor(props: SearchCourseProps){
         super(props);
-        this.classes = props;
+        this.props.onSearch("");
+        this.state = {
+            query: ""
+        }
+    }
+
+    handleQuery = (q: string) => {
+        this.setState({query:q});
+        this.props.onSearch(q);
     }
 
     render() {
-        const {routes,router} = this.props.bridge;
-        return <div className={this.classes.root}>
+        const {routes,router, Template} = this.props.bridge;
+        const {query} = this.state;
+        return <Template title="Search Courses" titleExtra={<AppBarQuery query={query} onChange={this.handleQuery}/>}>
                 <Paper>
                     <List>
                     {
@@ -53,7 +64,7 @@ class SearchCourse extends React.Component<SearchCourseProps, object> {
                     }
                     </List>
                 </Paper>
-            </div>
+            </Template>
     }
 }
 
@@ -66,9 +77,9 @@ function mapStateToProps(state: StoreState) {
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>) {
-    //const { workers } = courseService;
+    const { workers } = courseService;
     return {
-        //onSearch: (query?: string) => workers.search(dispatch, {query})
+        onSearch: (query?: string) => workers.search(dispatch, {query})
     }
 }
 

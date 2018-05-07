@@ -38,4 +38,6 @@ public interface SchemaService extends AbstractEntityService<EntityEditingBean, 
 	String transformForExport(long id, String type, PropBagEx itemxml, boolean omitXmlDeclaration);
 
 	String transformForImport(long id, String type, PropBagEx foreignXml);
+
+	List<String> getAllCitations();
 }

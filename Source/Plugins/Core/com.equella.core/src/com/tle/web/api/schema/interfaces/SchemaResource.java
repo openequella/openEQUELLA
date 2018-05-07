@@ -30,6 +30,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
+import java.util.List;
+
 @Produces({"application/json"})
 @Path("schema/")
 @Api(value = "Schemas", description = "schema")
@@ -92,4 +94,9 @@ public interface SchemaResource extends BaseEntityResource<SchemaBean, BaseEntit
 	@Path("/{uuid}/lock")
 	@ApiOperation("Unlock a schema")
 	public Response unlock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+
+	@GET
+	@Path("/citation")
+	@ApiOperation("Retrieve all available citations across all schemas")
+	public List<String> citation(@Context UriInfo uriInfo);
 }

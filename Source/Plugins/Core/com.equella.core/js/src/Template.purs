@@ -16,16 +16,18 @@ import DOM.HTML.Window (document)
 import DOM.Node.NonElementParentNode (getElementById)
 import DOM.Node.Types (ElementId(ElementId), documentToNonElementParentNode)
 import Data.Argonaut (decodeJson)
-import Data.Array (catMaybes, intercalate)
+import Data.Array (catMaybes, concat, intercalate)
 import Data.Either (either)
 import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, isJust, isNothing)
 import Data.Nullable (Nullable, toMaybe, toNullable)
+import Data.StrMap (fromFoldable)
 import Data.StrMap as M
 import Data.String (joinWith)
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable as U
+import Debug.Trace (traceAny)
 import Dispatcher (DispatchEff(DispatchEff))
-import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMount, getProps, modifyState)
+import Dispatcher.React (ReactChildren(..), ReactProps(ReactProps), createLifecycleComponent, didMount, getProps, modifyState)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
 import MaterialUI.AppBar (appBar)
 import MaterialUI.Badge (badge, badgeContent)
@@ -56,12 +58,13 @@ import MaterialUIPicker.DateFns (dateFnsUtils)
 import MaterialUIPicker.MuiPickersUtilsProvider (muiPickersUtilsProvider, utils)
 import Network.HTTP.Affjax (get)
 import Partial.Unsafe (unsafePartial)
-import React (ReactElement, createFactory)
+import React (ReactClass, ReactElement, createElement, createFactory)
 import React.DOM as D
 import React.DOM.Props as DP
 import ReactDOM (render)
 import Routes (matchRoute, routeHref)
 import SearchResults (SearchResultsMeta(SearchResultsMeta))
+import Unsafe.Coerce (unsafeCoerce)
 
 newtype MenuItem = MenuItem {href::String, title::String, systemIcon::Nullable String, route:: Nullable String}
 
@@ -96,27 +99,45 @@ type State = {mobileOpen::Boolean, menuAnchor::Maybe HTMLElement, tasks :: Maybe
 initialState :: State
 initialState = {mobileOpen:false, menuAnchor:Nothing, tasks:Nothing, notifications:Nothing}
 
-template :: {mainContent :: ReactElement, title::String, titleExtra::Maybe ReactElement} -> ReactElement
-template {mainContent,title,titleExtra} = template' {fixedViewPort : false, mainContent,title,titleExtra,menuExtra:[]}
+template :: {title::String, titleExtra::Maybe ReactElement} -> Array ReactElement -> ReactElement
+template {title,titleExtra} = template' {fixedViewPort : false, title,titleExtra,menuExtra:[], tabs:Nothing}
 
-template' :: {fixedViewPort :: Boolean, mainContent :: ReactElement, title::String, titleExtra::Maybe ReactElement, 
-  menuExtra::Array ReactElement} -> ReactElement
-template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMount Init) initialState render eval))
+template' :: {fixedViewPort :: Boolean, title::String, titleExtra::Maybe ReactElement, 
+  menuExtra::Array ReactElement, tabs :: Maybe ReactElement} -> Array ReactElement -> ReactElement
+template' p@{titleExtra,menuExtra,fixedViewPort} = 
+  createElement templateClass p {titleExtra = toNullable titleExtra, menuExtra = toNullable $ Just menuExtra, 
+    fixedViewPort = toNullable $ Just fixedViewPort, tabs = toNullable Nothing}
+
+templateClass :: ReactClass {fixedViewPort :: Nullable Boolean, title::String, titleExtra::Nullable ReactElement, 
+  menuExtra:: Nullable (Array ReactElement), tabs :: Nullable ReactElement}
+templateClass = withStyles ourStyles (createLifecycleComponent (didMount Init) initialState render eval)
   where
   newPage = isNothing $ toMaybe renderData.html
   strings = prepLangStrings rawStrings
   coreString = prepLangStrings coreStrings
   drawerWidth = 240
+  mobileAppBar = 64 
+  desktopAppBar = 56 
+  tabHeight = 48 
   ourStyles theme = 
     let desktop :: forall a. {|a} -> MediaQuery
         desktop = mediaQuery $ theme.breakpoints.up "md"
         mobile :: forall a. {|a} -> MediaQuery
         mobile = mediaQuery $ theme.breakpoints.up "sm"
+        barVars h = cssList [ 
+          mobile {
+            "--top-bar": show (mobileAppBar + h) <> "px"
+          },
+          allQuery {
+            "--top-bar": show (desktopAppBar + h) <> "px"
+          }
+        ]
     in {
     root: {
       width: "100%",
       zIndex: 1
     },
+    something: unsafeCoerce (\p -> traceAny p \_ -> {}),
     title: cssList [ 
       desktop {
         marginLeft: theme.spacing.unit * 4
@@ -125,9 +146,6 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
         marginLeft: theme.spacing.unit
       }
     ],
-    extraTool: {
-      flex: 1
-    },
     appFrame: {
       position: "relative",
       display: "flex"
@@ -150,25 +168,16 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
         width: 250 
       }
     ],
-    contentNoScroll: cssList [
-      mobile {
-        height: "calc(100vh - 64px)"
-      }, 
-      allQuery {
-        height: "calc(100vh - 56px)"
-      }
-    ],
-    contentScroll: cssList [
-      mobile { 
-        minHeight: "calc(100vh - 64px)"
-      }, 
-      allQuery {
-        minHeight: "calc(100vh - 56px)"
-      }
-    ],
+    topBar: barVars 0,
+    topBarTabs: barVars tabHeight,
+    contentMinHeight: {
+      minHeight: "calc(100vh - var(--top-bar))"
+    },
+    contentFixedHeight: {
+      height: "calc(100vh - var(--top-bar))"
+    },
     content: cssList [ 
       mobile {
-        marginTop: 64, 
         width: "100%"
       },
       desktop { 
@@ -176,9 +185,8 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
         width: "calc(100vw - 245px)"
       },
       allQuery {
-        marginTop: 56
-        -- backgroundColor: "red", --theme.palette.background.default,
-        -- padding: theme.spacing.unit * 2
+        marginTop: "var(--top-bar)",
+        overflowX: "hidden"
       }
     ],
     logo: {
@@ -187,6 +195,10 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
       justifyContent: "center",
       marginTop: theme.spacing.unit * 2,
       marginBottom: theme.spacing.unit
+    }, 
+    titleArea: {
+      flexGrow: 1,
+      display: "flex"
     }
   }
 
@@ -212,7 +224,7 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
   eval ToggleMenu = modifyState \(s :: State) -> s {mobileOpen = not s.mobileOpen}
   eval (UserMenuAnchor el) = modifyState \(s :: State) -> s {menuAnchor = el}
 
-  render {mobileOpen,menuAnchor,tasks,notifications} (ReactProps {fixedViewPort, classes, mainContent, 
+  render {mobileOpen,menuAnchor,tasks,notifications} (ReactChildren children) (ReactProps props@{fixedViewPort:fvp, classes, 
               title:titleText,titleExtra,menuExtra}) 
     (DispatchEff d) = muiPickersUtilsProvider [utils dateFnsUtils] [
     D.div [DP.className classes.root] $ [
@@ -221,9 +233,18 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
     ]
   ]
     where
-    contentClass = if fixedViewPort then classes.contentNoScroll else classes.contentScroll
-    content = D.main [ DP.className $ joinWith " " [classes.content, contentClass] ] [ mainContent]
-    fullscreen = D.main' [ mainContent ]
+    tabsM = toMaybe props.tabs
+    fixedViewPort = fromMaybe false $ toMaybe fvp 
+    -- dynamicStyles = 
+    --   let plusTabs = if isJust tabsM then tabHeight else 0
+    --   in fromFoldable [
+    --     Tuple ""
+    --   ]
+
+    contentClass = if fixedViewPort then classes.contentFixedHeight else classes.contentMinHeight
+    contentTabClass = if isJust tabsM then classes.topBarTabs else classes.topBar
+    content = D.main [ DP.className $ joinWith " " $ [classes.content, contentClass, contentTabClass] ] children
+    fullscreen = D.main' children
     layout "YES" _ _ = fullscreen
     layout "YES_WITH_TOOLBAR" _ _ = fullscreen 
     layout _ _ true = fullscreen
@@ -238,17 +259,20 @@ template' = createFactory (withStyles ourStyles (createLifecycleComponent (didMo
       content 
     ]
     
-    topBar = appBar [className $ classes.appBar] [
-      toolbar [disableGutters true] [
+    topBar = appBar [className $ classes.appBar] $ catMaybes [
+      Just $ toolbar [disableGutters true] $ [
         iconButton [color C.inherit, className classes.navIconHide, onClick $ d \_ -> ToggleMenu] [ icon_ [D.text "menu" ] ],
-        typography [variant TS.title, color C.inherit, className classes.title] [ D.text titleText ],
-        D.div [DP.className classes.extraTool] (U.fromMaybe titleExtra),
-        userMenu
-      ]
+        D.div [DP.className classes.titleArea] $ catMaybes [
+          Just $ typography [variant TS.title, color C.inherit, className classes.title] [ D.text titleText ], 
+          toMaybe titleExtra
+        ],
+        userMenu 
+      ], 
+      tabsM
     ]
     topBarString = coreString.topbar.link
 
-    userMenu = D.div' $ menuExtra <>
+    userMenu = D.div' $ (fromMaybe [] $ toMaybe menuExtra) <>
       (guard (not renderData.user.guest) *>
       [
         badgedLink "assignment" tasks "access/tasklist.do" topBarString.tasks , 

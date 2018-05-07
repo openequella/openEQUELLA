@@ -26,7 +26,5 @@ import com.tle.core.entity.dao.AbstractEntityDao;
  */
 public interface CourseInfoDao extends AbstractEntityDao<CourseInfo>
 {
-	List<String> getAllCitations();
-
 	List<Class<?>> getReferencingClasses(long id);
 }

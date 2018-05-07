@@ -8,6 +8,7 @@ import Control.Monad.Aff.Console (log)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Now (now, nowDate)
 import Control.Monad.Eff.Unsafe (unsafePerformEff)
+import Control.Monad.IOEffFn (mkIOFn1)
 import Control.Monad.Reader (ask)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
@@ -76,6 +77,7 @@ import React.DOM.Props as DP
 import SearchFilters (filterSection)
 import SearchResults (SearchResults(..))
 import Settings.UISettings (FacetSetting(..), NewUISettings(..), UISettings(..))
+import TSComponents (appBarQuery)
 import Template (template)
 import TimeAgo (timeAgo)
 import Unsafe.Coerce (unsafeCoerce)
@@ -181,37 +183,6 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
       display: "flex",
       justifyContent: "space-around"
     },
-    queryWrapper: {
-      fontFamily: theme.typography.fontFamily,
-      position: "relative",
-      marginRight: theme.spacing.unit * 2,
-      marginLeft: theme.spacing.unit * 2,
-      borderRadius: 2,
-      background: C.fade theme.palette.common.white 0.15,
-      width: "400px"
-    },
-    queryIcon: {
-      width: theme.spacing.unit * 9,
-      height: "100%",
-      position: "absolute",
-      pointerEvents: "none",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    },
-    queryField: {
-      font: "inherit",
-      padding: show theme.spacing.unit <> "px " <> show theme.spacing.unit <> "px "
-            <> show theme.spacing.unit <> "px " <> (show $ theme.spacing.unit * 9) <> "px",
-      border: 0,
-      display: "block",
-      verticalAlign: "middle",
-      whiteSpace: "normal",
-      background: "none",
-      margin: 0,
-      color: "inherit",
-      width: "100%"
-    },
     facetContainer: {
       display: "flex",
       flexWrap: "wrap"
@@ -232,7 +203,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
 
   render {modifiedLast,searchResults,query,facets,facetSettings,searching,loadingNew,selectOwner} 
             (ReactProps {classes}) (DispatchEff d) = 
-      template {mainContent,titleExtra:Just searchBar, title: coreString.title}
+      template {titleExtra:Just $ appBarQuery {query, onChange: mkIOFn1 $ d QueryUpdate}, title: coreString.title} [ mainContent ]
     where
 
     facetMap = SM.fromFoldable $ (\fac@(FacetSetting {path}) -> Tuple path fac) <$> facetSettings
@@ -275,11 +246,6 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     allVals (Tuple node s) = {name:fromMaybe node $ unwrap >>> _.name <$> lookup node facetMap, node, value: _} <$> S.toUnfoldable s
     facetChip {name,node,value} = chip [className classes.chip, label $ name <> ": " <> value,
                                           onDelete $ d \_ -> ToggledTerm node value]
-
-    searchBar = D.div [DP.className classes.queryWrapper] [
-      D.div [DP.className classes.queryIcon ] [ icon_ [ D.text "search" ] ],
-      D.input [DP._type "text", DP.className classes.queryField, DP.value $ query, DP.onChange $ d \e -> QueryUpdate (unsafeCoerce e).target.value ] []
-    ]
 
     makeFacet details@(FacetSetting {path}) = facetDisplay {facet:details, onClickTerm: d $ ToggledTerm path,
      selectedTerms: fromMaybe S.empty $ SM.lookup path facets, query:queryWithout path }

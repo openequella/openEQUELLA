@@ -86,7 +86,7 @@ settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didM
     }
   }
   render {settings} (ReactProps {legacyMode,classes})= if not legacyMode
-                      then template {mainContent, title:coreString.title, titleExtra:Nothing}
+                      then template {title:coreString.title, titleExtra:Nothing} [ mainContent ]
                       else mainContent
     where
     mainContent = maybe (D.div' []) renderSettings settings

@@ -54,8 +54,8 @@ legacy htmlMap = createFactory (withStyles styles $ createComponent {optionsAnch
     }
   }
   render s (ReactProps {classes}) (DispatchEff d) = 
-        template' {fixedViewPort:false,  title:renderData.title, mainContent, titleExtra:Nothing, 
-            menuExtra: fromMaybe [] $ (options <$> lookup "so" htmlMap)}
+        template' {fixedViewPort:false,  title:renderData.title, tabs:Nothing, titleExtra:Nothing, 
+            menuExtra: fromMaybe [] $ (options <$> lookup "so" htmlMap)} [ mainContent ]
     where
     options html = [ 
         iconButton [color inherit, onClick $ d \e -> OptionsAnchor $ Just e.currentTarget] [ icon_ [text "more_vert"] ],

@@ -61,4 +61,13 @@ public class SchemaDaoImpl extends AbstractEntityDaoImpl<Schema> implements Sche
 			"SELECT s FROM Schema s INNER JOIN s.expTransforms t WHERE s.institution = ? AND LOWER(t.type) = ?",
 			new Object[]{CurrentInstitution.get(), type.toLowerCase()});
 	}
+
+	@Override
+	@SuppressWarnings({"unchecked", "nls"})
+	public List<String> getAllCitations()
+	{
+		return getHibernateTemplate().findByNamedParam(
+				"select distinct c.name from Schema s join s.citations c where s.institution = :inst", "inst",
+				CurrentInstitution.get());
+	}
 }

@@ -8,11 +8,13 @@ import MaterialUI.Event (Event)
 import React (ReactClass)
 import Routes (Route(..), routeHref)
 import Security.ACLEditor (aclEditorClass)
+import Template (templateClass)
 import Unsafe.Coerce (unsafeCoerce)
 
 type Bridge = {
     routes :: Foreign,
     router :: Route -> {href::String, onClick :: IOFn1 Event Unit},
+    "Template" :: forall p. ReactClass p,
     "AclEditor" :: forall p. ReactClass p
 }
 
@@ -24,5 +26,6 @@ tsBridge = {
         "SchemaEdit": SchemaEdit, 
         "SchemasPage": SchemasPage},
     router : routeHref,
+    "Template" : unsafeCoerce templateClass,
     "AclEditor" : unsafeCoerce aclEditorClass
 } 

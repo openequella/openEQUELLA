@@ -92,9 +92,4 @@ public interface CourseResource extends BaseEntityResource<CourseBean, BaseEntit
 	@Path("/{uuid}/lock")
 	@ApiOperation("Unlock a workflow")
 	public Response unlock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
-
-	@GET
-	@Path("/{uuid}/citation")
-	@ApiOperation("Retrieve all available citations")
-	public List<String> citation(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 }
