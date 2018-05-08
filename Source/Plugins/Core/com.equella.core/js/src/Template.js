@@ -10,3 +10,8 @@ exports.setTitle = function(title) {
         document.title = title;
     }
 }
+
+exports.preventUnload = function(e) {
+    e.returnValue = "Are you sure?";
+    return "Are you sure?";
+}

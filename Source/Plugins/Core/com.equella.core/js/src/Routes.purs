@@ -3,11 +3,15 @@ module Routes where
 import Prelude
 
 import Control.Alt ((<|>))
+import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Ref (REF, Ref, newRef, readRef, writeRef)
 import Control.Monad.Eff.Unsafe (unsafePerformEff)
-import Control.Monad.IOEffFn (IOFn1, mkIOFn1)
+import Control.Monad.IOEffFn (IOFn1, mkIOFn1, runIOFn1)
+import DOM (DOM)
+import DOM.HTML.Types (HISTORY)
 import Data.Either (either)
 import Data.Foreign (toForeign)
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(Just, Nothing))
 import MaterialUI.Event (Event)
 import React (preventDefault)
 import Routing (match)
@@ -21,11 +25,19 @@ data Route = SearchPage |
     CoursesPage | 
     CourseEdit String |
     SchemasPage |
-    SchemaEdit String |
-    TestACLS
+    SchemaEdit String
+
+navGlobals :: forall eff. {nav::PushStateInterface (PushStateEffects eff), preventNav :: Ref (IOFn1 Route Boolean)}
+navGlobals = unsafePerformEff do 
+    nav <- makeInterface 
+    preventNav <- newRef emptyPreventNav
+    pure {nav, preventNav}
 
 nav :: forall eff. PushStateInterface (PushStateEffects eff)
-nav = unsafePerformEff makeInterface
+nav = navGlobals.nav
+
+emptyPreventNav :: IOFn1 Route Boolean
+emptyPreventNav = mkIOFn1 $ const $ pure false
 
 homeSlash :: Match Unit
 homeSlash = lit ""
@@ -36,18 +48,28 @@ routeMatch =
     SettingsPage <$ (lit "settings") <|>
     CourseEdit <$> (lit "course" *> str <* lit "edit") <|>
     SchemaEdit <$> (lit "schema" *> str <* lit "edit") <|>
-    TestACLS <$ (lit "testacls") <|>
     CoursesPage <$ (lit "course") <|>
     SchemasPage <$ (lit "schema")
 
 matchRoute :: String -> Maybe Route 
 matchRoute = match routeMatch >>> (either (const Nothing) Just)
 
+setPreventNav :: forall eff. IOFn1 Route Boolean -> Eff (ref::REF|eff) Unit
+setPreventNav preventNav = writeRef navGlobals.preventNav preventNav
+
+forcePushRoute :: forall eff. Route -> Eff ( ref :: REF, dom :: DOM, history :: HISTORY | eff) Unit
+forcePushRoute r = do 
+    let href = append "page" $ routeHash r
+    writeRef navGlobals.preventNav emptyPreventNav
+    nav.pushState (toForeign {}) href
+
 routeHref :: forall eff. Route -> {href::String, onClick :: IOFn1 Event Unit}
 routeHref r = 
     let href = append "page" $ routeHash r
-        onClick = mkIOFn1 $ \e -> preventDefault (unsafeCoerce e) *> 
-            nav.pushState (toForeign {}) href
+        onClick = mkIOFn1 $ \e -> do 
+            preventDefault (unsafeCoerce e)
+            preventNav <- readRef navGlobals.preventNav >>= flip runIOFn1 r
+            if preventNav then pure unit else forcePushRoute r
     in { href, onClick }
 
 routeHash :: Route -> String
@@ -58,5 +80,4 @@ routeHash r = "/" <> ( case r of
     CourseEdit cid -> "course/" <> cid <> "/edit"
     SchemasPage -> "schema"
     SchemaEdit cid -> "schema/" <> cid <> "/edit"
-    TestACLS -> "testacls"
   )

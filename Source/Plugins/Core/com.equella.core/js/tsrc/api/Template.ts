@@ -7,4 +7,5 @@ export interface TemplateProps {
     menuExtra?: [ReactChild];
     children: ReactNode;
     tabs?: ReactNode;
+    preventNavigation?: Boolean;
 }

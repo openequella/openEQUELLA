@@ -5,17 +5,15 @@ import Prelude hiding (div)
 
 import Common.CommonStrings (commonString)
 import Common.Icons (groupIconName, roleIconName, userIconName)
-import Control.Monad.Aff.Console (log)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.IOEffFn (IOFn1, mkIOFn1, runIOFn1)
-import Control.Monad.IOSync (IOSync, runIOSync')
+import Control.Monad.IOSync (IOSync)
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
 import Control.Monad.Reader (ask, runReaderT)
 import Control.Monad.State (State, execState, get, gets, modify, runState)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
-import Control.Parallel (parallel, sequential)
 import DOM.HTML (window)
 import DOM.HTML.Types (htmlDocumentToDocument)
 import DOM.HTML.Window (document)
@@ -23,7 +21,6 @@ import DOM.Node.Document as D
 import DOM.Node.Node (appendChild)
 import DOM.Node.ParentNode (QuerySelector(..), querySelector)
 import DOM.Node.Types (Node, documentToParentNode, elementToNode)
-import Data.Argonaut (decodeJson)
 import Data.Array (any, deleteAt, fold, foldr, fromFoldable, head, index, insertAt, last, length, mapWithIndex, nub, snoc, union, updateAt, (!!))
 import Data.Either (Either(..), either)
 import Data.Lens (Lens', Prism', Traversal', assign, filtered, foldMapOf, modifying, over, preview, previewOn, prism', set, traversed, use, view, (^?))
@@ -38,12 +35,10 @@ import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
 import Data.Traversable (traverse, traverse_)
 import Data.Tuple (Tuple(Tuple))
-import Debug.Trace (traceAnyA)
 import Dispatcher (DispatchEff(DispatchEff))
-import Dispatcher.React (ReactProps(ReactProps), ReactState(ReactState), createLifecycleComponent, createLifecycleComponent', didMount, getProps, getState, modifyState)
+import Dispatcher.React (ReactProps(ReactProps), ReactState(ReactState), createLifecycleComponent', didMount, getProps, getState, modifyState)
 import DragNDrop.Beautiful (DropResult, dragDropContext, draggable, droppable)
-import EQUELLA.Environment (baseUrl, prepLangStrings)
-import Entities.BaseEntity (BaseEntity(..))
+import EQUELLA.Environment (prepLangStrings)
 import MaterialUI.Button (button, disableRipple, raised)
 import MaterialUI.Checkbox (checkbox)
 import MaterialUI.Divider (divider)
@@ -59,12 +54,11 @@ import MaterialUI.List (disablePadding, list)
 import MaterialUI.ListItem (button) as P
 import MaterialUI.ListItem (listItem)
 import MaterialUI.ListItemIcon (listItemIcon_)
-import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
 import MaterialUI.ListItemText (disableTypography, listItemText)
 import MaterialUI.ListItemText (primary, secondary) as P
 import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Paper (paper)
-import MaterialUI.PropTypes (EventHandler, Untyped, toHandler)
+import MaterialUI.PropTypes (EventHandler, toHandler)
 import MaterialUI.Properties (IProp, className, color, component, mkProp, onChange, onClick, variant)
 import MaterialUI.Select (select, value)
 import MaterialUI.Styles (withStyles)
@@ -72,15 +66,13 @@ import MaterialUI.SwitchBase (checked)
 import MaterialUI.TextStyle (body1, caption, subheading, title) as TS
 import MaterialUI.Tooltip (tooltip, title)
 import MaterialUI.Typography (error, textSecondary, typography)
-import Network.HTTP.Affjax (get) as A
-import React (ReactClass, ReactElement, createElement, createFactory, stopPropagation)
+import React (ReactClass, ReactElement, stopPropagation)
 import React.DOM (div, div', text)
 import React.DOM.Props (className, ref, style) as P
 import Security.Expressions (AccessEntry(AccessEntry), Expression, ExpressionTerm(Role, Group, User, Owner, Guests, LoggedInUsers, Everyone, SharedSecretToken, Referrer, Ip), IpRange(IpRange), OpType(OR, AND), TargetListEntry(TargetListEntry), collapseZero, entryToTargetList, expressionText, parseWho, textForExpression, textForTerm, traverseExpr)
 import Security.Expressions (Expression(..)) as SE
 import Security.Resolved (ResolvedExpression(..), ResolvedTerm(..), findExprInsert, findExprModify)
 import Security.TermSelection (DialogType(..), termDialog)
-import Template (template')
 import UIComp.SpeedDial (speedDialActionU, speedDialIconU, speedDialU)
 import Unsafe.Coerce (unsafeCoerce)
 import Users.SearchUser (UGREnabled(..))
@@ -780,34 +772,3 @@ aclRawStrings = Tuple "acleditor" {
   },
   convertGroup: "Convert to group"
 }
-
-data TestCommand = Init | SaveIt | Changed {canSave::Boolean, getAcls :: IOSync (Array TargetListEntry)}
-
-testEditor :: ReactElement
-testEditor = createFactory (createLifecycleComponent (didMount Init) {s:Nothing, aclEditor:Nothing} render eval) {}
-  where 
-  render {s} (DispatchEff d) = 
-    s # maybe (div' []) \{entries,allowedPrivs} -> 
-      template' {fixedViewPort:true, tabs:Nothing, menuExtra: [], title: "ACL editor test", titleExtra:Nothing } [ 
-        div [P.style {width: "100%", height: "80%"}] [
-          createElement aclEditorClass {acls:entries, allowedPrivs,
-            onChange: mkIOFn1 $ d Changed} [],
-          button [variant raised, onClick $ d \_ -> SaveIt ] [ text "Save" ]
-        ]
-      ]
-  eval Init = do 
-    Tuple r1 r2 <- lift $ sequential $ Tuple <$> 
-      parallel (A.get $ baseUrl <> "api/course/313213e6-049a-8834-46d1-230be99f4490") <*> 
-      parallel (A.get $ baseUrl <> "api/acl/privileges?node=COURSE_INFO")
-    either (lift <<< log) (\e -> modifyState _ {s=Just e}) do 
-      BaseEntity {security:{rules}} <- decodeJson r1.response
-      allowedPrivs <- decodeJson r2.response
-      pure $ { entries:rules, allowedPrivs}
-    pure unit
-  eval (Changed cs) = modifyState _ {aclEditor=Just cs}
-  eval (SaveIt) = do 
-    {aclEditor} <- getState
-    aclEditor # maybe (pure unit) \{getAcls} -> do 
-        entries <- liftEff $ runIOSync' getAcls
-        traceAnyA entries
-    -- r <- lift $ A.put_ (baseUrl <> "api/course/313213e6-049a-8834-46d1-230be99f4490") (encodeJson (BaseEntity {security:{rules:entries}}))

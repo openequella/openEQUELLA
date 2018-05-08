@@ -8,7 +8,9 @@ commonRawStrings = Tuple "common" {
     save: "Save",
     cancel: "Cancel",
     undo: "Undo",
-    add: "Add"
+    add: "Add", 
+    ok: "OK",
+    continue: "Continue"
   }, 
   users : "Users", 
   groups: "Groups", 

@@ -3,7 +3,7 @@ module TSComponents where
 import Prelude
 
 import Bridge (tsBridge)
-import Control.Monad.IOEffFn (IOFn1(..))
+import Control.Monad.IOEffFn (IOFn1)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (toNullable)
 import React (ReactClass, ReactElement, createElement, createFactory)

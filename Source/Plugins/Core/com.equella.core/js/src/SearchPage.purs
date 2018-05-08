@@ -31,6 +31,7 @@ import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
 import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, maybe)
 import Data.Newtype (unwrap)
+import Data.Nullable (toNullable)
 import Data.Set (isEmpty)
 import Data.Set as S
 import Data.StrMap (lookup)
@@ -47,12 +48,10 @@ import Facet (facetDisplay)
 import MaterialUI.Button (button)
 import MaterialUI.Chip (chip)
 import MaterialUI.CircularProgress (circularProgress)
-import MaterialUI.Colors (fade) as C
 import MaterialUI.Dialog (dialog)
 import MaterialUI.Divider (divider) as C
 import MaterialUI.Drawer (open)
 import MaterialUI.Fade (fade)
-import MaterialUI.Icon (icon_)
 import MaterialUI.List (disablePadding, list, list_)
 import MaterialUI.ListItem (button) as MP
 import MaterialUI.ListItem (disableGutters, divider, listItem)
@@ -78,10 +77,9 @@ import SearchFilters (filterSection)
 import SearchResults (SearchResults(..))
 import Settings.UISettings (FacetSetting(..), NewUISettings(..), UISettings(..))
 import TSComponents (appBarQuery)
-import Template (template)
+import Template (template', templateDefaults)
 import TimeAgo (timeAgo)
 import Unsafe.Coerce (unsafeCoerce)
-import Users.SearchUser (UGREnabled(..), userSearch)
 
 newtype Attachment = Attachment {thumbnailHref::String}
 newtype DisplayField = DisplayField {name :: String, html::String}
@@ -203,7 +201,8 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
 
   render {modifiedLast,searchResults,query,facets,facetSettings,searching,loadingNew,selectOwner} 
             (ReactProps {classes}) (DispatchEff d) = 
-      template {titleExtra:Just $ appBarQuery {query, onChange: mkIOFn1 $ d QueryUpdate}, title: coreString.title} [ mainContent ]
+      template' (templateDefaults coreString.title) 
+        {titleExtra= toNullable $ Just $ appBarQuery {query, onChange: mkIOFn1 $ d QueryUpdate} } [ mainContent ]
     where
 
     facetMap = SM.fromFoldable $ (\fac@(FacetSetting {path}) -> Tuple path fac) <$> facetSettings

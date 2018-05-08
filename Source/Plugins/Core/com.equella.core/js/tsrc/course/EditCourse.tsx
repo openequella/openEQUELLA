@@ -80,6 +80,7 @@ type Props = EditCourseProps &
 interface EditCourseState {
     activeTab?: number;
     canSave: boolean;
+    changed: boolean;
 }
 
 class EditCourse extends React.Component<Props, EditCourseState> {
@@ -89,7 +90,8 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
         this.state = {
             activeTab: 0,
-            canSave: true
+            canSave: true,
+            changed: false
         };
         if (this.props.uuid)
         {
@@ -102,6 +104,11 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                 name: ''
             });
         }
+    }
+
+    modifyEntity = (c:Course) => {
+        this.props.modifyEntity(c);
+        this.setState({changed:true});
     }
 
     handleSave() {
@@ -117,23 +124,24 @@ class EditCourse extends React.Component<Props, EditCourseState> {
             versionSelection: vs
         };
         this.props.saveEntity(course);
+        this.setState({changed:false});
     }
 
     handleChange(stateFieldName: string): (event: React.ChangeEvent<any>) => void {
         return (event: React.ChangeEvent<any>) => {
-            this.props.modifyEntity({ ...this.props.entity, [stateFieldName]: event.target.value });
+            this.modifyEntity({ ...this.props.entity, [stateFieldName]: event.target.value });
         };
     }
 
     handleCheckboxChange(stateFieldName: string): (event: React.ChangeEvent<any>) => void {
         return (event: React.ChangeEvent<any>) => {
-            this.props.modifyEntity({ ...this.props.entity, [stateFieldName]: event.target.checked });
+            this.modifyEntity({ ...this.props.entity, [stateFieldName]: event.target.checked });
         };
     }
 
     handleDateChange(stateFieldName: string): (date: string) => void {
         return (date: string) => {
-            this.props.modifyEntity({ ...this.props.entity, [stateFieldName]: date });
+            this.modifyEntity({ ...this.props.entity, [stateFieldName]: date });
         };
     }
 
@@ -152,7 +160,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
     handleAclChange(): (e: AclEditorChangeEvent) => void {
         return (e: AclEditorChangeEvent) => {
             this.setState({ canSave: e.canSave });
-            this.props.modifyEntity({ ...this.props.entity, security: { rules: e.getAcls() } })
+            this.modifyEntity({ ...this.props.entity, security: { rules: e.getAcls() } })
         }
     }
 
@@ -163,7 +171,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
         const { code, name, description, type, departmentName, citation, students, from, 
             until, versionSelection, archived, security } = this.props.entity;
-        const { activeTab } = this.state;
+        const { activeTab, changed, canSave } = this.state;
         const { classes } = this.props;
         const vs = (versionSelection ? versionSelection : "DEFAULT");
         const fromDate = (from ? parse(from!, 'YYYY-MM-DDTHH:mm:ss.SSSZ', new Date()) : null);
@@ -181,7 +189,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                     </IconButton>*/
 
 
-        return <Template title="Edit Course" tabs={
+        return <Template title="Edit Course" preventNavigation={changed} tabs={
                 <Tabs value={activeTab} onChange={this.handleTabChange()} fullWidth>
                     <Tab label="Course Details" />
                     <Tab label="Permissions" />
@@ -320,7 +328,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                         </Grid>
                     </div>
 
-                    <div className={this.state.activeTab === 1 ? "" : classes.hiddenTab } style={{ height: "100%", overflowY: "hidden" }}>
+                    <div className={this.state.activeTab === 1 ? "" : classes.hiddenTab } style={{ height: "100%", overflowY: "hidden", padding: 24 }}>
                         { /* TODO: priv list from API */ }
                         <AclEditor 
                             onChange={ this.handleAclChange() }
@@ -334,7 +342,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                 <div className={classes.footerActions}>
                     <Button onClick={router(routes.CoursesPage).onClick} color="primary">Cancel</Button>
                     <Button onClick={this.handleSave.bind(this)} color="primary"
-                        disabled={!this.state.canSave}>Save</Button>
+                        disabled={!canSave || !changed}>Save</Button>
                 </div>               
             </Paper>
         </Template>

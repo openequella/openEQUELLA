@@ -7,7 +7,7 @@ import Control.Monad.State (modify)
 import Control.Monad.Trans.Class (lift)
 import DOM.HTML.Types (HTMLElement)
 import Data.Array (catMaybes)
-import Data.Maybe (Maybe(Nothing, Just), fromMaybe, isJust)
+import Data.Maybe (Maybe(Nothing, Just), isJust)
 import Data.Nullable (Nullable, toNullable)
 import Data.StrMap (StrMap, lookup)
 import Dispatcher (DispatchEff(..), effEval)
@@ -24,7 +24,7 @@ import React.DOM (text)
 import React.DOM as D
 import React.DOM.Props (Props, _id)
 import React.DOM.Props as DP
-import Template (renderData, template')
+import Template (renderData, template', templateDefaults)
 
 foreign import setInnerHtml :: forall eff. String -> Nullable Ref -> Eff eff Unit
 
@@ -54,8 +54,7 @@ legacy htmlMap = createFactory (withStyles styles $ createComponent {optionsAnch
     }
   }
   render s (ReactProps {classes}) (DispatchEff d) = 
-        template' {fixedViewPort:false,  title:renderData.title, tabs:Nothing, titleExtra:Nothing, 
-            menuExtra: fromMaybe [] $ (options <$> lookup "so" htmlMap)} [ mainContent ]
+        template' (templateDefaults renderData.title) {menuExtra = toNullable $ options <$> lookup "so" htmlMap} [ mainContent ]
     where
     options html = [ 
         iconButton [color inherit, onClick $ d \e -> OptionsAnchor $ Just e.currentTarget] [ icon_ [text "more_vert"] ],

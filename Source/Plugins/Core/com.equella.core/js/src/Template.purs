@@ -2,46 +2,54 @@ module Template where
 
 import Prelude
 
+import Common.CommonStrings (commonString)
 import Control.Monad.Aff.Console (log)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Console (CONSOLE)
-import Control.Monad.IOEffFn (runIOFn1)
+import Control.Monad.IOEffFn (mkIOFn1, runIOFn1)
+import Control.Monad.Reader (ask)
+import Control.Monad.State (modify)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
 import DOM (DOM)
+import DOM.Event.EventTarget (EventListener, addEventListener, removeEventListener)
 import DOM.HTML (window)
-import DOM.HTML.Types (HTMLElement, htmlDocumentToDocument)
+import DOM.HTML.Event.EventTypes (beforeunload)
+import DOM.HTML.Types (HTMLElement, htmlDocumentToDocument, windowToEventTarget)
 import DOM.HTML.Window (document)
 import DOM.Node.NonElementParentNode (getElementById)
 import DOM.Node.Types (ElementId(ElementId), documentToNonElementParentNode)
 import Data.Argonaut (decodeJson)
-import Data.Array (catMaybes, concat, intercalate)
+import Data.Array (catMaybes, intercalate)
 import Data.Either (either)
-import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, isJust, isNothing)
+import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, isJust, isNothing, maybe)
 import Data.Nullable (Nullable, toMaybe, toNullable)
-import Data.StrMap (fromFoldable)
 import Data.StrMap as M
 import Data.String (joinWith)
 import Data.Tuple (Tuple(..))
-import Data.Unfoldable as U
-import Debug.Trace (traceAny)
-import Dispatcher (DispatchEff(DispatchEff))
-import Dispatcher.React (ReactChildren(..), ReactProps(ReactProps), createLifecycleComponent, didMount, getProps, modifyState)
+import Dispatcher (DispatchEff(DispatchEff), fromContext)
+import Dispatcher.React (ReactChildren(..), ReactProps(ReactProps), createLifecycleComponent, didMount, getProps, getState, modifyState)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
 import MaterialUI.AppBar (appBar)
 import MaterialUI.Badge (badge, badgeContent)
-import MaterialUI.Button (disabled)
+import MaterialUI.Button (button)
 import MaterialUI.Color (inherit, secondary)
 import MaterialUI.Color as C
 import MaterialUI.CssBaseline (cssBaseline_)
+import MaterialUI.Dialog (dialog)
+import MaterialUI.DialogActions (dialogActions_)
+import MaterialUI.DialogContent (dialogContent_)
+import MaterialUI.DialogContentText (dialogContentText_)
+import MaterialUI.DialogTitle (dialogTitle_)
 import MaterialUI.Divider (divider)
 import MaterialUI.Drawer (anchor, drawer, left, open, permanent, temporary)
 import MaterialUI.Hidden (css, hidden, implementation, mdUp, smDown)
 import MaterialUI.Icon (icon, icon_)
 import MaterialUI.IconButton (iconButton)
 import MaterialUI.List (list_)
-import MaterialUI.ListItem (button, listItem)
+import MaterialUI.ListItem (button) as LI
+import MaterialUI.ListItem (listItem)
 import MaterialUI.ListItemIcon (listItemIcon_)
 import MaterialUI.ListItemText (listItemText, primary)
 import MaterialUI.Menu (anchorEl, menu)
@@ -57,18 +65,19 @@ import MaterialUI.Typography (typography)
 import MaterialUIPicker.DateFns (dateFnsUtils)
 import MaterialUIPicker.MuiPickersUtilsProvider (muiPickersUtilsProvider, utils)
 import Network.HTTP.Affjax (get)
-import Partial.Unsafe (unsafePartial)
-import React (ReactClass, ReactElement, createElement, createFactory)
+import Partial.Unsafe (unsafePartial) 
+import React (ReactClass, ReactElement, createElement)
+import React.DOM (text)
 import React.DOM as D
 import React.DOM.Props as DP
 import ReactDOM (render)
-import Routes (matchRoute, routeHref)
+import Routes (Route, forcePushRoute, matchRoute, routeHref, setPreventNav)
 import SearchResults (SearchResultsMeta(SearchResultsMeta))
-import Unsafe.Coerce (unsafeCoerce)
 
 newtype MenuItem = MenuItem {href::String, title::String, systemIcon::Nullable String, route:: Nullable String}
 
-data Command = Init | ToggleMenu | UserMenuAnchor (Maybe HTMLElement)
+data Command = Init | Updated {preventNavigation :: Nullable Boolean} | AttemptRoute Route | NavAway Boolean
+  | ToggleMenu | UserMenuAnchor (Maybe HTMLElement) 
 
 type UserData = {
   id::String, 
@@ -89,29 +98,43 @@ type RenderData = {
   user::UserData
 }
 
+foreign import preventUnload :: forall e. EventListener e
 
 foreign import renderData :: RenderData
 
 foreign import setTitle :: forall e. String -> Eff (dom::DOM|e) Unit
 
-type State = {mobileOpen::Boolean, menuAnchor::Maybe HTMLElement, tasks :: Maybe Int, notifications :: Maybe Int}
+nullAny :: forall a. Nullable a
+nullAny = toNullable Nothing
+
+type TemplateProps = {fixedViewPort :: Nullable Boolean, preventNavigation :: Nullable Boolean, title::String, titleExtra::Nullable ReactElement, 
+  menuExtra:: Nullable (Array ReactElement), tabs :: Nullable ReactElement}
+
+type State = {mobileOpen::Boolean, menuAnchor::Maybe HTMLElement, tasks :: Maybe Int, notifications :: Maybe Int, attempt :: Maybe Route}
 
 initialState :: State
-initialState = {mobileOpen:false, menuAnchor:Nothing, tasks:Nothing, notifications:Nothing}
+initialState = {mobileOpen:false, menuAnchor:Nothing, tasks:Nothing, notifications:Nothing, attempt : Nothing}
 
-template :: {title::String, titleExtra::Maybe ReactElement} -> Array ReactElement -> ReactElement
-template {title,titleExtra} = template' {fixedViewPort : false, title,titleExtra,menuExtra:[], tabs:Nothing}
+template :: String -> Array ReactElement -> ReactElement
+template title = template' $ templateDefaults title
 
-template' :: {fixedViewPort :: Boolean, title::String, titleExtra::Maybe ReactElement, 
-  menuExtra::Array ReactElement, tabs :: Maybe ReactElement} -> Array ReactElement -> ReactElement
-template' p@{titleExtra,menuExtra,fixedViewPort} = 
-  createElement templateClass p {titleExtra = toNullable titleExtra, menuExtra = toNullable $ Just menuExtra, 
-    fixedViewPort = toNullable $ Just fixedViewPort, tabs = toNullable Nothing}
+template' :: TemplateProps -> Array ReactElement -> ReactElement
+template' = createElement templateClass
 
-templateClass :: ReactClass {fixedViewPort :: Nullable Boolean, title::String, titleExtra::Nullable ReactElement, 
-  menuExtra:: Nullable (Array ReactElement), tabs :: Nullable ReactElement}
-templateClass = withStyles ourStyles (createLifecycleComponent (didMount Init) initialState render eval)
+templateDefaults ::  String -> TemplateProps
+templateDefaults title = {title,titleExtra:nullAny, fixedViewPort:nullAny,preventNavigation:nullAny, menuExtra:nullAny, tabs:nullAny}
+
+templateClass :: ReactClass TemplateProps
+templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initialState render eval)
   where
+  lifecycle = do 
+    didMount Init
+    modify _ {
+      componentDidUpdate = \this {preventNavigation} _ -> do
+        (DispatchEff d) <- fromContext eval this
+        d Updated {preventNavigation}, 
+      componentWillUnmount = \this -> setUnloadListener false 
+    }
   newPage = isNothing $ toMaybe renderData.html
   strings = prepLangStrings rawStrings
   coreString = prepLangStrings coreStrings
@@ -137,7 +160,6 @@ templateClass = withStyles ourStyles (createLifecycleComponent (didMount Init) i
       width: "100%",
       zIndex: 1
     },
-    something: unsafeCoerce (\p -> traceAny p \_ -> {}),
     title: cssList [ 
       desktop {
         marginLeft: theme.spacing.unit * 4
@@ -202,7 +224,7 @@ templateClass = withStyles ourStyles (createLifecycleComponent (didMount Init) i
     }
   }
 
-  navItem (MenuItem {title,href,systemIcon,route}) = listItem (linkProps <> [button true, component "a" ])
+  navItem (MenuItem {title,href,systemIcon,route}) = listItem (linkProps <> [LI.button true, component "a" ])
     [
       listItemIcon_ [icon [ color C.inherit ] [ D.text $ fromMaybe "folder" $ toMaybe systemIcon ] ],
       listItemText [primary title]
@@ -212,10 +234,35 @@ templateClass = withStyles ourStyles (createLifecycleComponent (didMount Init) i
         (Just {href:hr,onClick:oc}) | newPage -> [mkProp "href" hr, onClick $ runIOFn1 oc]
         _ -> [ mkProp "href" href ]
 
+  setUnloadListener :: forall e. Boolean -> Eff (dom::DOM|e) Unit
+  setUnloadListener add = do 
+    w <- window
+    (if add then addEventListener else removeEventListener) beforeunload preventUnload false $ windowToEventTarget w 
 
+  setPreventUnload add = do 
+    (DispatchEff d) <- ask >>= fromContext eval 
+    liftEff $ setPreventNav (mkIOFn1 \r -> do 
+      if add then d AttemptRoute r else pure unit
+      pure add
+    )
+    liftEff $ setUnloadListener add
+
+  eval (NavAway n) = do 
+    {attempt} <- getState
+    liftEff $ guard n *> attempt # maybe (pure unit) forcePushRoute
+    modifyState _{attempt = Nothing}
+  eval (AttemptRoute r) = do 
+    modifyState _{attempt = Just r}
+  eval (Updated {preventNavigation:oldpn}) = do 
+    {preventNavigation} <- getProps
+    let isTrue = fromMaybe false <<< toMaybe
+        newPN = isTrue preventNavigation
+    if isTrue oldpn /= newPN then setPreventUnload newPN else pure unit
+    pure unit
   eval Init = do 
-    {title} <- getProps
+    {title,preventNavigation:pn} <- getProps
     liftEff $ setTitle $ title <> coreString.windowtitlepostfix
+    if fromMaybe false $ toMaybe pn then setPreventUnload true else pure unit
     r <- lift $ get $ baseUrl <> "api/task"
     either (lift <<< log) (\(SearchResultsMeta {available}) -> modifyState _ {tasks = Just available})  (decodeJson r.response)
     r2 <- lift $ get $ baseUrl <> "api/notification"
@@ -224,22 +271,27 @@ templateClass = withStyles ourStyles (createLifecycleComponent (didMount Init) i
   eval ToggleMenu = modifyState \(s :: State) -> s {mobileOpen = not s.mobileOpen}
   eval (UserMenuAnchor el) = modifyState \(s :: State) -> s {menuAnchor = el}
 
-  render {mobileOpen,menuAnchor,tasks,notifications} (ReactChildren children) (ReactProps props@{fixedViewPort:fvp, classes, 
+  render {mobileOpen,menuAnchor,tasks,notifications,attempt} (ReactChildren children) (ReactProps props@{fixedViewPort:fvp, classes, 
               title:titleText,titleExtra,menuExtra}) 
     (DispatchEff d) = muiPickersUtilsProvider [utils dateFnsUtils] [
     D.div [DP.className classes.root] $ [
       cssBaseline_ [],
-      layout renderData.fullscreenMode renderData.menuMode renderData.hideAppBar
+      layout renderData.fullscreenMode renderData.menuMode renderData.hideAppBar, 
+      dialog [ open $ isJust attempt] [
+        dialogTitle_ [ text strings.navaway.title], 
+        dialogContent_ [
+          dialogContentText_ [ text strings.navaway.content ]
+        ], 
+        dialogActions_ [
+          button [onClick $ d \_ -> NavAway false, color C.primary] [text commonString.action.cancel],
+          button [onClick $ d \_ -> NavAway true, color C.secondary] [text commonString.action.continue]
+        ]
+      ]
     ]
   ]
     where
     tabsM = toMaybe props.tabs
     fixedViewPort = fromMaybe false $ toMaybe fvp 
-    -- dynamicStyles = 
-    --   let plusTabs = if isJust tabsM then tabHeight else 0
-    --   in fromFoldable [
-    --     Tuple ""
-    --   ]
 
     contentClass = if fixedViewPort then classes.contentFixedHeight else classes.contentMinHeight
     contentTabClass = if isJust tabsM then classes.topBarTabs else classes.topBar
@@ -321,15 +373,14 @@ renderReact divId main = do
 renderMain :: forall eff. ReactElement -> Eff (dom :: DOM, console::CONSOLE | eff) Unit
 renderMain = renderReact "mainDiv"
 
-rawStrings :: Tuple String
-  { menu :: { logout :: String
-            , prefs :: String
-            }
-  }
 rawStrings = Tuple "template" {
   menu: {
     logout:"Logout",
     prefs:"My preferences"
+  }, 
+  navaway: {
+    title:  "You have unsaved changes", 
+    content: "If you leave this page you will lose your changes."
   }
 }
 
