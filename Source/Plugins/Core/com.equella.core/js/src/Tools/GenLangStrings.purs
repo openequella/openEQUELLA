@@ -44,16 +44,19 @@ instance stringString :: ConvertToStrings String where
 instance prefixed :: ConvertToStrings a => ConvertToStrings (Tuple String a) where
   genStrings pfx (Tuple prefix r) = genStrings (pfx<>prefix) r
 
+genTopLevel :: forall r. ConvertToStrings r => {prefix::String, strings:: r} -> List (Tuple String String)
+genTopLevel {prefix,strings} = genStrings "" (Tuple prefix strings)
+
 main :: forall eff. Eff ( console :: CONSOLE | eff) Unit
 main = do
   log $ stringify $ encodeJson $ fromFoldable $
-    genStrings "" Template.rawStrings <>
-    genStrings "" Template.coreStrings <>
-    genStrings "" SearchPage.rawStrings <>
-    genStrings "" SearchPage.coreStrings <>
-    genStrings "" UISettings.rawStrings <>
-    genStrings "" SettingsPage.rawStrings <>
-    genStrings "" SettingsPage.coreStrings <>
-    genStrings "" commonRawStrings <> 
-    genStrings "" aclRawStrings <>
-    genStrings "" termRawStrings
+    genTopLevel Template.rawStrings <>
+    genTopLevel Template.coreStrings <>
+    genTopLevel SearchPage.rawStrings <>
+    genTopLevel SearchPage.coreStrings <> 
+    genTopLevel UISettings.rawStrings <>
+    genTopLevel SettingsPage.rawStrings <>
+    genTopLevel SettingsPage.coreStrings <>
+    genTopLevel commonRawStrings <> 
+    genTopLevel aclRawStrings <>
+    genTopLevel termRawStrings 

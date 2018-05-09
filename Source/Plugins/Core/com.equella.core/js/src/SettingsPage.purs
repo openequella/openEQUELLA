@@ -121,24 +121,15 @@ settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didM
 
 type GroupStrings = { name :: String, desc :: String }
 
-rawStrings :: Tuple String
-  { general :: GroupStrings
-  , integration :: GroupStrings
-  , diagnostics :: GroupStrings
-  , ui :: GroupStrings
-  , entities :: GroupStrings
+
+rawStrings = {prefix: "settings", 
+  strings: {
+    general: {name:"General",desc:"General settings"},
+    integration: {name:"Integrations",desc:"Settings for integrating with external systems"},
+    diagnostics: {name:"Diagnostics",desc:"Diagnostic pages"},
+    ui: {name:"UI",desc:"UI settings"},
+    entities: {name:"Entities",desc:"All manner of different things"}
   }
-rawStrings = Tuple "settings" {
-  general: {name:"General",desc:"General settings"},
-  integration: {name:"Integrations",desc:"Settings for integrating with external systems"},
-  diagnostics: {name:"Diagnostics",desc:"Diagnostic pages"},
-  ui: {name:"UI",desc:"UI settings"},
-  entities: {name:"Entities",desc:"All manner of different things"}
 }
 
-coreStrings :: Tuple String
-  { title :: String
-  }
-coreStrings = Tuple "com.equella.core" {
-  title: "Settings"
-}
+coreStrings = {prefix: "com.equella.core", strings: { title: "Settings" }}

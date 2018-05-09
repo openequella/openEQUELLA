@@ -1,6 +1,6 @@
 module SearchPage where
 
-import Prelude
+import Prelude hiding (div)
 
 import Control.Comonad (extract)
 import Control.Monad.Aff (Aff)
@@ -19,7 +19,7 @@ import DOM.HTML.Document (body)
 import DOM.HTML.HTMLElement (offsetHeight)
 import DOM.HTML.Window (document, innerHeight, scrollY)
 import Data.Argonaut (class DecodeJson, decodeJson, (.?), (.??))
-import Data.Array (catMaybes, filter, findMap, fromFoldable, intercalate, length, mapMaybe, mapWithIndex)
+import Data.Array (catMaybes, filter, findMap, fromFoldable, head, intercalate, length, mapMaybe, mapWithIndex)
 import Data.DateTime (Date, DateTime(DateTime))
 import Data.DateTime.Instant (instant, toDateTime, unInstant)
 import Data.Either (Either, either, fromRight)
@@ -49,6 +49,8 @@ import MaterialUI.Button (button)
 import MaterialUI.Chip (chip)
 import MaterialUI.CircularProgress (circularProgress)
 import MaterialUI.Dialog (dialog)
+import MaterialUI.DialogContent (dialogContent)
+import MaterialUI.DialogTitle (dialogTitle_)
 import MaterialUI.Divider (divider) as C
 import MaterialUI.Drawer (open)
 import MaterialUI.Fade (fade)
@@ -58,7 +60,7 @@ import MaterialUI.ListItem (disableGutters, divider, listItem)
 import MaterialUI.ListItemText (disableTypography, listItemText, primary, secondary)
 import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Paper (elevation, paper)
-import MaterialUI.Properties (className, classes_, color, component, mkProp, onChange, onDelete, style, variant)
+import MaterialUI.Properties (className, classes_, color, component, mkProp, onChange, onClick, onClose, onDelete, style, variant)
 import MaterialUI.Select (select)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.TextField (label, value)
@@ -69,9 +71,7 @@ import Network.HTTP.Affjax (AJAX, get)
 import Partial.Unsafe (unsafePartial)
 import QueryString (queryString)
 import React (ReactElement, createFactory)
-import React.DOM (text)
-import React.DOM as D
-import React.DOM.Dynamic (em')
+import React.DOM (em', div, text, div', img)
 import React.DOM.Props as DP
 import SearchFilters (filterSection)
 import SearchResults (SearchResults(..))
@@ -80,6 +80,8 @@ import TSComponents (appBarQuery)
 import Template (template', templateDefaults)
 import TimeAgo (timeAgo)
 import Unsafe.Coerce (unsafeCoerce)
+import Users.SearchUser (UGREnabled(..), userSearch)
+import Users.UserLookup (UserDetails(..), UserGroupRoles(..))
 
 newtype Attachment = Attachment {thumbnailHref::String}
 newtype DisplayField = DisplayField {name :: String, html::String}
@@ -98,13 +100,14 @@ type State = {
   modifiedLast :: Maybe Milliseconds,
   after :: Tuple Boolean Date,
   before :: Tuple Boolean Date, 
+  owner :: Maybe UserDetails,
   selectOwner :: Boolean
 }
 type DateLens = Lens' State (Tuple Boolean Date)
 
 data Command = InitSearch | Search | QueryUpdate String | ToggledTerm String String 
   | SetDate DateLens JSDate | ToggleDate DateLens | SetLast Milliseconds
-  | Scrolled Event
+  | Scrolled Event | SelectOwner | OwnerSelected (Maybe UserDetails)
 
 initialState :: State
 initialState = {
@@ -118,6 +121,7 @@ initialState = {
   , facetSettings: []
   , loadingNew: false
   , selectOwner: false
+  , owner: Nothing
 }
 
 currentDate :: Date
@@ -129,6 +133,7 @@ dateFormat = unsafePartial $ fromRight $ parseFormatString "YYYY-MM-DDTHH:mm:ss"
 searchPage :: ReactElement
 searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMount InitSearch) initialState render eval) {}
   where
+  _id = prop (SProxy :: SProxy "id")
   _before :: DateLens
   _before = prop (SProxy :: SProxy "before")
   _after :: DateLens
@@ -196,10 +201,14 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     }, 
     progress: {
       alignSelf: "center"
+    }, 
+    ownerDialog: {
+      width: 600,
+      height: 600
     }
   }
 
-  render {modifiedLast,searchResults,query,facets,facetSettings,searching,loadingNew,selectOwner} 
+  render {modifiedLast,searchResults,query,facets,facetSettings,searching,loadingNew,selectOwner,owner} 
             (ReactProps {classes}) (DispatchEff d) = 
       template' (templateDefaults coreString.title) 
         {titleExtra= toNullable $ Just $ appBarQuery {query, onChange: mkIOFn1 $ d QueryUpdate} } [ mainContent ]
@@ -209,7 +218,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
 
     queryWithout exclude = joinWith " AND " $ mapMaybe whereClause $ filter (fst >>> notEq exclude) $ SM.toUnfoldable facets
 
-    mainContent = D.div [DP.className classes.layoutDiv] [
+    mainContent = div [DP.className classes.layoutDiv] [
       paper [className classes.results, elevation 4] $ 
         renderResults searchResults <> progress,
       paper [className classes.refinements, elevation 4] $ 
@@ -224,12 +233,22 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
       in fade [in_ $ searching || loadingNew, timeout $ if loadingNew then 0 else 800] [ pbar ]
     ]
 
-    userFilter = filterSection {name:"Filter by owner:"} [
-      button [] [ text "Select" ],
-      dialog [ open selectOwner ] [
-        -- userSearch {onSelect: ?o, onCancel: ?o, enabled: UGREnabled {users:true, groups:false, roles:false}}
+    userFilter = filterSection {name:"Filter by owner:"} $
+      (maybe [] (\(UserDetails {username}) -> [text username]) owner) <> [
+      button [ onClick $ d \_ -> SelectOwner ] [ text "Select" ],
+      dialog [ open selectOwner, onClose $ d \_ -> OwnerSelected Nothing] [
+        dialogTitle_ [ text "Select user to filter by"],
+        dialogContent [className classes.ownerDialog  ] [
+          userSearch {
+            onSelect: mkIOFn1 $ d ownerSelected, 
+            onCancel: liftEff $ d OwnerSelected Nothing, 
+            enabled: UGREnabled {users:true, groups:false, roles:false}
+          }
+        ]
       ]
     ]
+      where 
+      ownerSelected (UserGroupRoles {users}) = OwnerSelected $ head users
 
     lastModifiedSelect = filterSection {name:string.filterLast.name} [ 
       select [ className classes.selectFilter,
@@ -239,7 +258,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     ]
       where
       agoItem {name,emmed,duration:(Milliseconds ms)} = menuItem [mkProp "value" ms] $ 
-        (if emmed then pure <<< em' else id) [D.text name]
+        (if emmed then pure <<< em' else id) [text name]
 
     facetChips = facetChip <$> (allVals =<< SM.toUnfoldable facets)
     allVals (Tuple node s) = {name:fromMaybe node $ unwrap >>> _.name <$> lookup node facetMap, node, value: _} <$> S.toUnfoldable s
@@ -252,37 +271,37 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     renderResults (Just (SearchResults {results,available})) =
       let resultLen = length results
       in [
-        typography [variant TS.subheading] [ D.text $ show available <> " " <> string.resultsAvailable],
-        D.div [ DP.className classes.facetContainer ] $ facetChips,
+        typography [variant TS.subheading] [ text $ show available <> " " <> string.resultsAvailable],
+        div [ DP.className classes.facetContainer ] $ facetChips,
         list_ (mapWithIndex (\i -> oneResult $ i /= (resultLen - 1)) results)
       ]
     renderResults Nothing = []
 
     oneResult showDivider (Result {name,description,displayFields,uuid,version,attachments,modifiedDate}) =
-      let descMarkup descText = typography [color textSecondary] [ D.text descText ]
+      let descMarkup descText = typography [color textSecondary] [ text descText ]
           titleLink = typography [variant TS.title, style {textDecoration:"none", color:"blue"},
-                        component "a", mkProp "href" $ baseUrl <> "items/" <> uuid <> "/" <> show version <> "/"] [ D.text name ]
-          attachThumb (Attachment {thumbnailHref}) = Just $ D.img [DP.className classes.itemThumb, DP.src thumbnailHref] []
+                        component "a", mkProp "href" $ baseUrl <> "items/" <> uuid <> "/" <> show version <> "/"] [ text name ]
+          attachThumb (Attachment {thumbnailHref}) = Just $ img [DP.className classes.itemThumb, DP.src thumbnailHref] []
           firstThumb = fromFoldable $ findMap attachThumb attachments
           extraDeets = [
             listItem [classes_ {default: classes.displayNode}, disableGutters true] [
-              typography [variant TS.body1] [ D.text string.modifiedDate ],
+              typography [variant TS.body1] [ text string.modifiedDate ],
               typography [component "div", color textSecondary] [
-                D.text "\xa0-\xa0",
+                text "\xa0-\xa0",
                 timeAgo modifiedDate []
               ]
             ]
           ]
           extraFields = (fieldDiv <$> displayFields) <> extraDeets
-          itemContent = D.div [ DP.className classes.searchResultContent ] $ firstThumb <>
-            [ D.div' $ fromFoldable (descMarkup <$> description) <> [ list [disablePadding true] extraFields ] ]
+          itemContent = div [ DP.className classes.searchResultContent ] $ firstThumb <>
+            [ div' $ fromFoldable (descMarkup <$> description) <> [ list [disablePadding true] extraFields ] ]
       in listItem [MP.button true, divider showDivider] [
           listItemText [ disableTypography true, primary titleLink, secondary itemContent ]
       ]
       where
       fieldDiv (DisplayField {name:n,html}) = listItem [classes_ {default: classes.displayNode}, disableGutters true] [
-        typography [variant TS.body1] [ D.text n ],
-        typography [component "div", color textSecondary] [ D.div [DP.dangerouslySetInnerHTML {__html: "\xa0-\xa0" <> html}] [] ]
+        typography [variant TS.body1] [ text n ],
+        typography [component "div", color textSecondary] [ div [DP.dangerouslySetInnerHTML {__html: "\xa0-\xa0" <> html}] [] ]
       ]
 
   modifySearchFlag searchFlag f = modifyState $ _{searching=searchFlag} <<< f
@@ -309,6 +328,9 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     where
     toggle set = if S.member term set then S.delete term set else S.insert term set
 
+  eval (SelectOwner) = modifyState _{selectOwner=true}
+  eval (OwnerSelected o) = do 
+    searchWith _ {owner=o, selectOwner=false}
   eval InitSearch = do
     searchWith id
     (DispatchEff d) <- ask >>= fromContext eval
@@ -348,7 +370,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     searchWith $ over (l <<< _1) not
 
 callSearch :: forall e. Int -> State -> Aff (ajax :: AJAX |e) (Either String ItemSearchResults)
-callSearch offset {facets,query,before,after,modifiedLast} = do
+callSearch offset {facets,query,before,after,modifiedLast,owner} = do
   let
     whereXpath = mapMaybe whereClause $ SM.toUnfoldable facets
     beforeLast ms = 
@@ -364,7 +386,8 @@ callSearch offset {facets,query,before,after,modifiedLast} = do
     ] <> catMaybes [
       beforeLast <$> modifiedLast,
       dateParam "modifiedBefore" before,
-      dateParam "modifiedAfter" after
+      dateParam "modifiedAfter" after,
+      (\(UserDetails {id}) -> Tuple "owner" id) <$> owner
     ]
   )
   pure $ decodeJson result.response
@@ -402,34 +425,25 @@ instance rDecode :: DecodeJson Result where
     attachments <- o .? "attachments"
     pure $ Result {uuid,version,name:fromMaybe uuid nameO, description, thumbnail, modifiedDate, displayFields:fromMaybe [] df, attachments}
 
-rawStrings :: Tuple String
-  { resultsAvailable :: String
-  , modifiedDate :: String
-  , filterLast :: { name :: String
-                  , none :: String
-                  , month :: String
-                  , year :: String
-                  , fiveyear :: String
-                  , week :: String
-                  , day :: String
-                  }
-  }
-rawStrings = Tuple "searchpage" {
-  resultsAvailable: "results available",
-  modifiedDate: "Modified",
-  filterLast: {
-    name: "Resources modified within last:",
-    none: "None",
-    month: "Month",
-    year: "Year",
-    fiveyear: "Five years",
-    week: "Week",
-    day: "Day"
+rawStrings = {prefix: "searchpage", 
+  strings: {
+    resultsAvailable: "results available",
+    modifiedDate: "Modified",
+    filterLast: {
+      name: "Resources modified within last:",
+      none: "None",
+      month: "Month",
+      year: "Year",
+      fiveyear: "Five years",
+      week: "Week",
+      day: "Day"
+    }
   }
 }
-coreStrings :: Tuple String
-  { title :: String
+
+coreStrings = {
+  prefix: "com.equella.core.searching.search", 
+  strings: {
+    title: "Search"
   }
-coreStrings = Tuple "com.equella.core.searching.search" {
-  title: "Search"
 }

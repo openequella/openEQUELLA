@@ -182,11 +182,13 @@ termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRend
     termsForUsers (UserGroupRoles {users,groups,roles}) = 
       (ResolvedUser <$> users) <> (ResolvedGroup <$> groups) <> (ResolvedRole <$> roles)
 
-termRawStrings = Tuple "aclterms" {
-  title: {
-    ugr: "Select User / Group / Role",
-    ip: "Select IP range",
-    referrer: "HTTP referrer",
-    token: "Select shared secret"
+termRawStrings = {prefix: "aclterms", 
+  strings: {
+    title: {
+      ugr: "Select User / Group / Role",
+      ip: "Select IP range",
+      referrer: "HTTP referrer",
+      token: "Select shared secret"
+    }
   }
 }

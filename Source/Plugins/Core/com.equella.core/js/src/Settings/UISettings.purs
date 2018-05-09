@@ -198,20 +198,16 @@ uiSettingsEditor = createFactory (withStyles styles $ createLifecycleComponent (
     modifyState $ set (_newUISettings <<< _newSearch) v
     save
 
-rawStrings :: Tuple String
-  { facet :: { name :: String
-             , path :: String
-             , title :: String
-             }
-  , enableNew :: String
-  , enableSearch :: String
+
+rawStrings = {
+  prefix: "uiconfig", 
+  strings: {
+    facet: {
+      name: "Name",
+      path: "Path",
+      title: "Search facets"
+    },
+    enableNew: "Enable new UI",
+    enableSearch: "Enable new search page"
   }
-rawStrings = Tuple "uiconfig" {
-  facet: {
-    name: "Name",
-    path: "Path",
-    title: "Search facets"
-  },
-  enableNew: "Enable new UI",
-  enableSearch: "Enable new search page"
 }

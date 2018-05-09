@@ -168,8 +168,6 @@ public interface AbstractEntityService<B extends EntityEditingBean, T extends Ba
 
 	boolean canCreate();
 
-	boolean canList();
-
 	boolean canEdit(BaseEntityLabel entity);
 
 	boolean canEdit(T entity);
@@ -179,6 +177,8 @@ public interface AbstractEntityService<B extends EntityEditingBean, T extends Ba
 	boolean canDelete(T entity);
 
 	boolean canView(T entity);
+
+	boolean canViewOrEdit(T entity);
 
 	class ComparisonEntityInitialiser<T>
 	{

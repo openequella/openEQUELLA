@@ -29,6 +29,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import com.tle.core.entity.EnumerateOptions;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.web.api.entity.PagedResults;
 import com.tle.web.api.interfaces.beans.*;
 import org.springframework.transaction.annotation.Transactional;
@@ -316,7 +317,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 		{
 			throw entityNotFound(uuid);
 		}
-		if( !entityService.canView(entity) )
+		if( !entityService.canViewOrEdit(entity) )
 		{
 			throw new AccessDeniedException(getString("error.entity.viewpriv"));
 		}
@@ -398,6 +399,6 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 
 	private String getString(String keyPart, Object... params)
 	{
-		return CurrentLocale.get("com.tle.web.api.baseentity." + keyPart, params);
+		return CoreStrings.lookup().getString(keyPart, params);
 	}
 }

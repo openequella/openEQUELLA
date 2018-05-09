@@ -63,13 +63,15 @@ forcePushRoute r = do
     writeRef navGlobals.preventNav emptyPreventNav
     nav.pushState (toForeign {}) href
 
+pushRoute :: forall eff. Route -> Eff ( ref :: REF, dom :: DOM, history :: HISTORY | eff) Unit
+pushRoute r = do 
+    preventNav <- readRef navGlobals.preventNav >>= flip runIOFn1 r
+    if preventNav then pure unit else forcePushRoute r
+
 routeHref :: forall eff. Route -> {href::String, onClick :: IOFn1 Event Unit}
 routeHref r = 
     let href = append "page" $ routeHash r
-        onClick = mkIOFn1 $ \e -> do 
-            preventDefault (unsafeCoerce e)
-            preventNav <- readRef navGlobals.preventNav >>= flip runIOFn1 r
-            if preventNav then pure unit else forcePushRoute r
+        onClick = mkIOFn1 $ \e -> preventDefault (unsafeCoerce e) *> pushRoute r
     in { href, onClick }
 
 routeHash :: Route -> String

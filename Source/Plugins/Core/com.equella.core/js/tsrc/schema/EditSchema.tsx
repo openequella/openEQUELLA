@@ -22,8 +22,6 @@ interface EditSchemaProps {
     saveSchema: (schema: Schema) => void;
     onCancel: () => void;
     schema: Schema;
-    //fixme: remove
-    doSearchAgain: (query?: string) => void;
     //root: any;
 }
 
@@ -160,8 +158,7 @@ function mapDispatchToProps(dispatch: Dispatch<any>) {
     return {
         loadSchema: (uuid: string) => workers.read(dispatch, {uuid}),
         saveSchema: (entity: Schema) => workers.update(dispatch, {entity}),
-        onCancel: () => dispatch(push('/')),
-        doSearchAgain: (query?: string) => workers.search(dispatch, {query})
+        onCancel: () => dispatch(push('/'))
     };
 }
 

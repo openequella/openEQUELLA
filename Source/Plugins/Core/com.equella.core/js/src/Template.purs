@@ -65,19 +65,19 @@ import MaterialUI.Typography (typography)
 import MaterialUIPicker.DateFns (dateFnsUtils)
 import MaterialUIPicker.MuiPickersUtilsProvider (muiPickersUtilsProvider, utils)
 import Network.HTTP.Affjax (get)
-import Partial.Unsafe (unsafePartial) 
+import Partial.Unsafe (unsafePartial)
 import React (ReactClass, ReactElement, createElement)
 import React.DOM (text)
 import React.DOM as D
 import React.DOM.Props as DP
 import ReactDOM (render)
-import Routes (Route, forcePushRoute, matchRoute, routeHref, setPreventNav)
+import Routes (Route, forcePushRoute, matchRoute, pushRoute, routeHref, setPreventNav)
 import SearchResults (SearchResultsMeta(SearchResultsMeta))
 
 newtype MenuItem = MenuItem {href::String, title::String, systemIcon::Nullable String, route:: Nullable String}
 
 data Command = Init | Updated {preventNavigation :: Nullable Boolean} | AttemptRoute Route | NavAway Boolean
-  | ToggleMenu | UserMenuAnchor (Maybe HTMLElement) 
+  | ToggleMenu | UserMenuAnchor (Maybe HTMLElement)  | GoBack
 
 type UserData = {
   id::String, 
@@ -107,8 +107,14 @@ foreign import setTitle :: forall e. String -> Eff (dom::DOM|e) Unit
 nullAny :: forall a. Nullable a
 nullAny = toNullable Nothing
 
-type TemplateProps = {fixedViewPort :: Nullable Boolean, preventNavigation :: Nullable Boolean, title::String, titleExtra::Nullable ReactElement, 
-  menuExtra:: Nullable (Array ReactElement), tabs :: Nullable ReactElement}
+type TemplateProps = {fixedViewPort :: Nullable Boolean, 
+  preventNavigation :: Nullable Boolean, 
+  title::String, 
+  titleExtra::Nullable ReactElement, 
+  menuExtra:: Nullable (Array ReactElement), 
+  tabs :: Nullable ReactElement, 
+  backRoute :: Nullable Route
+}
 
 type State = {mobileOpen::Boolean, menuAnchor::Maybe HTMLElement, tasks :: Maybe Int, notifications :: Maybe Int, attempt :: Maybe Route}
 
@@ -122,7 +128,8 @@ template' :: TemplateProps -> Array ReactElement -> ReactElement
 template' = createElement templateClass
 
 templateDefaults ::  String -> TemplateProps
-templateDefaults title = {title,titleExtra:nullAny, fixedViewPort:nullAny,preventNavigation:nullAny, menuExtra:nullAny, tabs:nullAny}
+templateDefaults title = {title,titleExtra:nullAny, fixedViewPort:nullAny,preventNavigation:nullAny, menuExtra:nullAny, 
+  tabs:nullAny, backRoute: nullAny}
 
 templateClass :: ReactClass TemplateProps
 templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initialState render eval)
@@ -220,7 +227,8 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
     }, 
     titleArea: {
       flexGrow: 1,
-      display: "flex"
+      display: "flex", 
+      alignItems: "center"
     }
   }
 
@@ -247,6 +255,9 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
     )
     liftEff $ setUnloadListener add
 
+  eval (GoBack) = do 
+    {backRoute} <- getProps 
+    liftEff $ maybe (pure unit) pushRoute $ toMaybe backRoute  
   eval (NavAway n) = do 
     {attempt} <- getState
     liftEff $ guard n *> attempt # maybe (pure unit) forcePushRoute
@@ -272,7 +283,7 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
   eval (UserMenuAnchor el) = modifyState \(s :: State) -> s {menuAnchor = el}
 
   render {mobileOpen,menuAnchor,tasks,notifications,attempt} (ReactChildren children) (ReactProps props@{fixedViewPort:fvp, classes, 
-              title:titleText,titleExtra,menuExtra}) 
+              title:titleText,titleExtra,menuExtra,backRoute}) 
     (DispatchEff d) = muiPickersUtilsProvider [utils dateFnsUtils] [
     D.div [DP.className classes.root] $ [
       cssBaseline_ [],
@@ -284,7 +295,7 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
         ], 
         dialogActions_ [
           button [onClick $ d \_ -> NavAway false, color C.primary] [text commonString.action.cancel],
-          button [onClick $ d \_ -> NavAway true, color C.secondary] [text commonString.action.continue]
+          button [onClick $ d \_ -> NavAway true, color C.secondary] [text commonString.action.discard]
         ]
       ]
     ]
@@ -313,8 +324,9 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
     
     topBar = appBar [className $ classes.appBar] $ catMaybes [
       Just $ toolbar [disableGutters true] $ [
-        iconButton [color C.inherit, className classes.navIconHide, onClick $ d \_ -> ToggleMenu] [ icon_ [D.text "menu" ] ],
+        iconButton [color C.inherit, className classes.navIconHide, onClick $ d \_ -> ToggleMenu] [ icon_ [D.text "menu" ] ] ,
         D.div [DP.className classes.titleArea] $ catMaybes [
+          toMaybe backRoute $> iconButton [color C.inherit, onClick $ d \_ -> GoBack] [ icon_ [D.text "arrow_back" ] ],
           Just $ typography [variant TS.title, color C.inherit, className classes.title] [ D.text titleText ], 
           toMaybe titleExtra
         ],
@@ -373,23 +385,27 @@ renderReact divId main = do
 renderMain :: forall eff. ReactElement -> Eff (dom :: DOM, console::CONSOLE | eff) Unit
 renderMain = renderReact "mainDiv"
 
-rawStrings = Tuple "template" {
-  menu: {
-    logout:"Logout",
-    prefs:"My preferences"
-  }, 
-  navaway: {
-    title:  "You have unsaved changes", 
-    content: "If you leave this page you will lose your changes."
+rawStrings = {prefix: "template", 
+  strings: {
+    menu: {
+      logout:"Logout",
+      prefs:"My preferences"
+    }, 
+    navaway: {
+      title:  "You have unsaved changes", 
+      content: "If you leave this page you will lose your changes."
+    }
   }
 }
 
-coreStrings = Tuple "com.equella.core" {
-  windowtitlepostfix: " | EQUELLA",
-  topbar: { 
-    link: {
-      notifications: "Notifications",
-      tasks: "Tasks"
+coreStrings = {prefix: "com.equella.core",
+  strings: {
+    windowtitlepostfix: " | EQUELLA",
+    topbar: { 
+      link: {
+        notifications: "Notifications",
+        tasks: "Tasks"
+      }
     }
   }
 }

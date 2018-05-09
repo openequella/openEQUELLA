@@ -1746,27 +1746,27 @@ public abstract class AbstractEntityServiceImpl<B extends EntityEditingBean, T e
 	@Override
 	public boolean canView(T entity)
 	{
-		return canView((Object) entity);
-	}
-
-	@Override
-	public boolean canList()
-	{
-		return !aclManager.filterNonGrantedPrivileges("LIST_" + privilegeNode.toString()).isEmpty();
+		return canPrivs(entity, "VIEW");
 	}
 
 	private boolean canDelete(Object entity)
 	{
-		Set<String> privs = new HashSet<String>();
-		privs.add("DELETE_" + privilegeNode.toString());
-		return !aclManager.filterNonGrantedPrivileges(entity, privs).isEmpty();
+		return canPrivs(entity, "DELETE");
 	}
 
-	private boolean canView(Object entity)
+	@Override
+	public boolean canViewOrEdit(T entity)
 	{
-		Set<String> privs = new HashSet<String>();
-		privs.add("VIEW_" + privilegeNode.toString());
-		return !aclManager.filterNonGrantedPrivileges(entity, privs).isEmpty();
+		return canPrivs(entity, "VIEW", "EDIT");
+	}
+
+	private boolean canPrivs(Object entity, String... privs)
+	{
+		Set<String> privSet = new HashSet<String>();
+		for (String priv : privs) {
+			privSet.add(priv +"_" + privilegeType);
+		}
+		return !aclManager.filterNonGrantedPrivileges(entity, privSet).isEmpty();
 	}
 
 	public String getPrivilegeType()

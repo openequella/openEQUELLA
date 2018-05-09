@@ -744,31 +744,33 @@ isInvalid :: ResolvedEntry -> Boolean
 isInvalid (ResolvedEntry {priv,granted,override,expr:(InvalidExpr _)}) = true 
 isInvalid _ = false
 
-aclRawStrings = Tuple "acleditor" {
-  privilege: "Privilege",
-  privileges: "Privileges", 
-  expression: "Expression", 
-  privplaceholder: "Please select or add a privilege", 
-  dropplaceholder: "Drop targets here",
-  addpriv: "Add Privilege",
-  addexpression: "Add expression", 
-  targets: "Targets",
-  new: {
-    ugr: "User, Group or Role", 
-    ip: "IP Range",
-    referrer: "HTTP Referrer",
-    token: "Shared secret"
-  }, 
-  not: "Not", 
-  override: "Override", 
-  revoked: "Revoked",
-  revoke: "Revoke", 
-  required: "* Required",
-  match: {
-    and: "All match",
-    or: "At least one matches",
-    notand: "Not all match",
-    notor: "None match"
-  },
-  convertGroup: "Convert to group"
+aclRawStrings = {prefix:"acleditor",
+  strings: {
+    privilege: "Privilege",
+    privileges: "Privileges", 
+    expression: "Expression", 
+    privplaceholder: "Please select or add a privilege", 
+    dropplaceholder: "Drop targets here",
+    addpriv: "Add Privilege",
+    addexpression: "Add expression", 
+    targets: "Targets",
+    new: {
+      ugr: "User, Group or Role", 
+      ip: "IP Range",
+      referrer: "HTTP Referrer",
+      token: "Shared secret"
+    }, 
+    not: "Not", 
+    override: "Override", 
+    revoked: "Revoked",
+    revoke: "Revoke", 
+    required: "* Required",
+    match: {
+      and: "All match",
+      or: "At least one matches",
+      notand: "Not all match",
+      notor: "None match"
+    },
+    convertGroup: "Convert to group"
+  }
 }
