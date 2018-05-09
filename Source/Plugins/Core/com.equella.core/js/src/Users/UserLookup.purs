@@ -101,3 +101,8 @@ searchUGR q {users,groups,roles} =   do
   resp <- get $ baseUrl <> "api/userquery/search?q=" <> encodeURIComponent q <> param "users" users 
               <> param "groups" groups <> param "roles" roles 
   either (throwError <<< error) pure $ decodeJson resp.response
+
+listTokens :: forall e. Aff (ajax::AJAX|e) (Array String)
+listTokens =  do 
+  resp <- get $ baseUrl <> "api/userquery/tokens"
+  either (throwError <<< error) pure $ decodeJson resp.response

@@ -4,6 +4,7 @@ import Prelude hiding (div)
 
 import Common.CommonStrings (commonAction, commonString)
 import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.IOEffFn (IOFn1, mkIOFn1, runIOFn1)
 import Control.Monad.IOSync (IOSync, runIOSync)
 import Control.Monad.State (modify)
@@ -13,18 +14,18 @@ import Data.Int (fromString)
 import Data.Lens (Lens', Prism', over, prism', set)
 import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
-import Data.Maybe (Maybe(Just, Nothing), fromMaybe)
+import Data.Maybe (Maybe(Just, Nothing), fromMaybe, maybe)
+import Data.String (length)
 import Data.Symbol (SProxy(..))
-import Data.Tuple (Tuple(..))
-import Dispatcher (DispatchEff(..), effEval)
-import Dispatcher.React (ReactProps(ReactProps), ReactState(ReactState), createLifecycleComponent', getProps, getState, modifyState)
+import Dispatcher (DispatchEff(DispatchEff), dispatch)
+import Dispatcher.React (ReactProps(ReactProps), ReactState(ReactState), createLifecycleComponent', didMount, getProps, getState, modifyState)
 import EQUELLA.Environment (prepLangStrings)
 import MaterialUI.Button (button, disabled)
 import MaterialUI.Checkbox (checkbox)
 import MaterialUI.Color as C
 import MaterialUI.Dialog (dialog)
 import MaterialUI.DialogActions (dialogActions_)
-import MaterialUI.DialogContent (dialogContent) 
+import MaterialUI.DialogContent (dialogContent)
 import MaterialUI.DialogTitle (dialogTitle_)
 import MaterialUI.Event (Event)
 import MaterialUI.FormControlLabel (control, formControlLabel, label)
@@ -37,22 +38,26 @@ import MaterialUI.Select (select)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.SwitchBase (checked)
 import MaterialUI.TextField (textField, value)
-import React (ReactElement, createFactory, writeState)
+import React (ReactElement, createFactory)
 import React.DOM (div, span, text)
 import React.DOM.Props as P
 import Security.Expressions (ExpressionTerm(..), IpRange(..), _ip1, _ip2, _ip3, _ip4, _ipm, validMasks, validRange)
 import Security.Resolved (ResolvedTerm(..))
 import Users.SearchUser (UGREnabled(..), userSearch)
-import Users.UserLookup (UserGroupRoles(..))
+import Users.UserLookup (UserGroupRoles(..), listTokens)
 
 data DialogType = UserDialog UGREnabled | IpDialog IpRange | ReferrerDialog String | SecretDialog String
 
-data TermCommand = Add | Change (DialogType -> DialogType)
+data TermCommand = Add | Change (DialogType -> DialogType) | Init
 
 termDialog :: {open::Boolean, onAdd :: IOFn1 (Array ResolvedTerm) Unit, cancel :: IOSync Unit,  dt :: DialogType} -> ReactElement
-termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRenderOnProps initialState render $ effEval eval)
+termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRenderOnProps initialState render $ eval)
   where 
-  reRenderOnProps =  modify _ {componentWillReceiveProps = \this p -> void $ writeState this p.dt}
+  reRenderOnProps = do 
+    didMount Init 
+    modify _ {
+      componentWillReceiveProps = \this {dt} -> dispatch eval this (Change $ const dt)
+    }
   styles theme = {
     dialog: {
       height: 600,
@@ -76,6 +81,10 @@ termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRend
     }, 
     ipSep: {
 
+    }, 
+    secretField: {
+      width: "10em",
+      margin: theme.spacing.unit
     }
   }
   _users :: forall r a. Lens' {users::a|r} a
@@ -104,25 +113,28 @@ termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRend
   _UGREnabled :: Lens' UGREnabled {users::Boolean, groups::Boolean, roles::Boolean}
   _UGREnabled = _Newtype
 
-  initialState (ReactProps {dt}) = ReactState dt
+  initialState (ReactProps {dt}) = ReactState {dt, tokens:Nothing}
 
   termStrings = prepLangStrings termRawStrings
   titles = termStrings.title
 
   eval = case _ of 
+    Init -> do 
+        t <- lift $ listTokens
+        modifyState _{tokens = Just t}
     Add -> do 
       {onAdd} <- getProps
-      s <- getState
-      lift $ runIOFn1 onAdd $ pure $ Already case s of 
+      {dt} <- getState
+      liftEff $ runIOFn1 onAdd $ pure $ Already case dt of 
         IpDialog range -> Ip range
         ReferrerDialog referrer -> Referrer referrer
         SecretDialog secret -> SharedSecretToken secret
         _ -> Everyone
-    Change f -> modifyState f
+    Change f -> modifyState \s -> s {dt = f s.dt}
 
-  render dt (ReactProps {classes,onAdd,cancel,open:o}) (DispatchEff d) = 
-    let {title,content,add} = dialogContents dt 
-        dialogStyle = case dt of 
+  render s (ReactProps {classes,onAdd,cancel,open:o}) (DispatchEff d) = 
+    let {title,content,add} = dialogContents s 
+        dialogStyle = case s.dt of 
           UserDialog _ -> classes.dialog
           _ -> classes.smallDialog
     in dialog [open o, onClose $ const $ runIOSync $ cancel] [ 
@@ -141,7 +153,7 @@ termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRend
     stdText v l = textField [value v, onChangeStr $ Change <<< set l]
     ugrCheck lab l b = formControlLabel [control $ checkbox [checked b, onChange $ 
                   command $ Change (over (_dialogUGR <<< _Newtype <<< l) not) ], label lab]
-    dialogContents = case _ of 
+    dialogContents s = case s.dt of 
       UserDialog enabled@UGREnabled {users,groups,roles} -> {title: titles.ugr, add: Nothing, content: [
           formGroup [row true] [ 
             ugrCheck commonString.users _users users,
@@ -176,8 +188,10 @@ termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRend
       }
       SecretDialog secret -> {
         title: titles.token, 
-        content: [ stdText secret _dialogSecret], 
-        add:Just true
+        content: [ select [value secret, className classes.secretField, onChangeStr $ Change <<< set _dialogSecret] $  
+          maybe [] (map (\m -> menuItem [mkProp "value" m] [text m])) s.tokens 
+        ], 
+        add:Just $ length secret > 0
       }
     termsForUsers (UserGroupRoles {users,groups,roles}) = 
       (ResolvedUser <$> users) <> (ResolvedGroup <$> groups) <> (ResolvedRole <$> roles)

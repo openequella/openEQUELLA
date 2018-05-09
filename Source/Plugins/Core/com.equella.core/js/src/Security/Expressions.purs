@@ -60,6 +60,8 @@ newtype AccessEntry = AccessEntry {priv::String, granted::Boolean, override::Boo
 newtype TargetList = TargetList {entries:: Array TargetListEntry}
 newtype TargetListEntry = TargetListEntry {granted::Boolean, override::Boolean, privilege::String, who::String} 
 
+derive instance eqTLE :: Eq TargetListEntry
+
 data Expression = Term ExpressionTerm Boolean | Op OpType (Array Expression) Boolean
 
 derive instance eqEx :: Eq Expression

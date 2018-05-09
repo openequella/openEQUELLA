@@ -16,6 +16,7 @@
 
 package com.tle.web.api.users
 
+import com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings
 import com.tle.common.security.SecurityConstants
 import com.tle.common.usermanagement.user.valuebean.{GroupBean, RoleBean, UserBean}
 import com.tle.legacy.LegacyGuice
@@ -88,5 +89,12 @@ class UserQueryResource {
       roles.filterNot(r => exclude(r.getUniqueID)).map(RoleQueryResult.apply))
   }
 
-
+  @GET
+  @Path("tokens")
+  def listTokens = {
+    Option(LegacyGuice.userService.getReadOnlyPluginConfig("com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings")) match {
+      case Some(s: SharedSecretSettings) => s.getSharedSecrets.asScala.map(_.getId)
+      case _ => Iterable()
+    }
+  }
 }

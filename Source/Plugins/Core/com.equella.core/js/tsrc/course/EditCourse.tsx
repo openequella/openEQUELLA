@@ -77,6 +77,7 @@ interface EditCourseState {
     activeTab?: number;
     canSave: boolean;
     changed: boolean;
+    editSecurity?: () => TargetListEntry[];
 }
 const strings = prepLangStrings("courseedit",{
         title: "Edit Course",
@@ -125,7 +126,8 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                 ...this.props.entity,
                 from: fromStr,
                 until: untilStr,
-                versionSelection: vs
+                versionSelection: vs,
+                security: this.state.editSecurity ? {rules: this.state.editSecurity()} : this.props.entity.security
             };
             this.props.saveEntity(course);
             this.setState({changed:false});
@@ -164,8 +166,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
     handleAclChange(): (e: AclEditorChangeEvent) => void {
         return (e: AclEditorChangeEvent) => {
-            this.setState({ canSave: e.canSave });
-            this.modifyEntity({security: { rules: e.getAcls() } })
+            this.setState({ canSave: e.canSave, changed: true, editSecurity: e.getAcls });
         }
     }
 

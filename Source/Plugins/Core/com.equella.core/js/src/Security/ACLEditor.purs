@@ -35,7 +35,7 @@ import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
 import Data.Traversable (traverse, traverse_)
 import Data.Tuple (Tuple(Tuple))
-import Dispatcher (DispatchEff(DispatchEff))
+import Dispatcher (DispatchEff(DispatchEff), dispatch)
 import Dispatcher.React (ReactProps(ReactProps), ReactState(ReactState), createLifecycleComponent', didMount, getProps, getState, modifyState)
 import DragNDrop.Beautiful (DropResult, dragDropContext, draggable, droppable)
 import EQUELLA.Environment (prepLangStrings)
@@ -101,7 +101,7 @@ mapResolved _ o = o
 data Command = Resolve | HandleDrop DropResult | SelectEntry Int | Undo 
   | DeleteExpr Int | ChangeOp Int String | EditEntry Int (ResolvedEntryR -> ResolvedEntryR) | DeleteEntry Int
   | OpenDialog DialogType | AddFromDialog (Array ResolvedTerm) | CloseDialog 
-  | NewPriv | DialState (Boolean -> Boolean) | ToggleNot Int | Expand Int
+  | NewPriv | DialState (Boolean -> Boolean) | ToggleNot Int | Expand Int | Updated (Array TargetListEntry)
 
 type MyState = {
   acls :: Array ResolvedEntry,
@@ -120,8 +120,12 @@ aclEditorClass :: ReactClass {
   onChange :: IOFn1 {canSave :: Boolean, getAcls :: IOSync (Array TargetListEntry) } Unit,
   allowedPrivs :: Array String
 }
-aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve) initialState render eval
+aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initialState render eval
   where 
+  lifeCycle = do 
+    didMount Resolve
+    modify _ {componentDidUpdate = \this {acls:oldAcls} _ -> dispatch eval this (Updated oldAcls)}
+    
   aclString = prepLangStrings aclRawStrings
   _resolvedExpr :: Prism' ExprType ResolvedExpression
   _resolvedExpr = prism' Resolved $ case _ of 
@@ -285,14 +289,21 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
     }
   }
 
-  initialState (ReactProps {acls:a}) = 
+  convertToInternal a = 
     let acls = markForResolve <$> a
         collectTerm (ResolvedEntry {expr:Unresolved e}) = 
-          traverseExpr (\rt _ -> [UnresolvedTerm rt]) (\{exprs} _ -> join exprs) e 
+              traverseExpr (\rt _ -> [UnresolvedTerm rt]) (\{exprs} _ -> join exprs) e 
         collectTerm _ = []
+    in {terms: union (UnresolvedTerm <$> commonTerms) $ nub (acls >>= collectTerm), acls}
+    where 
+    markForResolve (TargetListEntry {privilege:priv,granted,override,who}) = 
+          ResolvedEntry {priv,granted,override, expr: either (InvalidExpr <<< show) Unresolved $ parseWho who}
+
+  initialState (ReactProps {acls:a}) = 
+    let {acls,terms} = convertToInternal a
     in ReactState {
       acls, 
-      terms: union (UnresolvedTerm <$> commonTerms) $ nub (acls >>= collectTerm),
+      terms,
       selectedIndex: Nothing, 
       undoList: Nil, 
       openDialog: Nothing, 
@@ -301,9 +312,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
       dialHidden: false,
       dragPortal: Nothing
     }
-    where  
-    markForResolve (TargetListEntry {privilege:priv,granted,override,who}) = 
-      ResolvedEntry {priv,granted,override, expr: either (InvalidExpr <<< show) Unresolved $ parseWho who}
+    
 
   render {acls,terms,selectedIndex,openDialog,showDialog,undoList,dialOpen, dialHidden,dragPortal} 
       (ReactProps {classes,allowedPrivs}) (DispatchEff d) = 
@@ -345,7 +354,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
           action "people" aclString.new.ugr $ UserDialog $ UGREnabled {users:true, groups:true, roles:true},
           action "dns" aclString.new.ip (IpDialog $ IpRange 0 0 0 0 32),
           action "http" aclString.new.referrer $ ReferrerDialog "http://*",
-          action "apps" aclString.new.token $ SecretDialog "moodle"
+          action "apps" aclString.new.token $ SecretDialog ""
         ],
         typography [variant TS.title, className classes.flexCentered] [ text aclString.targets],
         div [P.className classes.scrollable ] [
@@ -582,6 +591,12 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' (didMount Resolve
       else pure unit
 
   eval = case _ of 
+    Updated oldAcls -> do
+      {acls} <- getProps
+      if (acls /= oldAcls) 
+        then let {acls:nacls,terms} = convertToInternal acls
+              in modifyState _{acls = nacls, terms = terms} *> eval Resolve
+        else pure unit
     AddFromDialog dt -> runChange $ do 
       modifying _terms $ flip append (ResolvedTerm <$> dt)
       modify _{showDialog=false,dialHidden=false}

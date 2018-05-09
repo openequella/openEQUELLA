@@ -106,6 +106,8 @@ public interface RemoteUserService
 
 	UserManagementSettings getPluginConfig(String settingsConfig);
 
+	UserManagementSettings getReadOnlyPluginConfig(String settingsConfig);
+
 	void setPluginConfig(UserManagementSettings config);
 
 	void removeFromCache(String userid);

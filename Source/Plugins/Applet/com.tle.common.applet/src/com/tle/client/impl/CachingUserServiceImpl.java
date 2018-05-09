@@ -188,6 +188,12 @@ public class CachingUserServiceImpl implements RemoteUserService
 	}
 
 	@Override
+	public UserManagementSettings getReadOnlyPluginConfig(String settingsConfig)
+	{
+		return remoteUserService.getReadOnlyPluginConfig(settingsConfig);
+	}
+
+	@Override
 	public void setPluginConfig(UserManagementSettings config)
 	{
 		remoteUserService.setPluginConfig(config);

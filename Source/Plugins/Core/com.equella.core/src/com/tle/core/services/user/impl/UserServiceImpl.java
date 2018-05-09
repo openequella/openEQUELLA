@@ -587,6 +587,12 @@ public class UserServiceImpl
 		return getPluginConfigInternal(settingsClass);
 	}
 
+	@Override
+	public UserManagementSettings getReadOnlyPluginConfig(String settingsConfig)
+	{
+		return getPluginConfigInternal(settingsConfig);
+	}
+
 	private UserManagementSettings getPluginConfigInternal(String settingsClass)
 	{
 		PluginTracker<?> tracker = umpTracker;
