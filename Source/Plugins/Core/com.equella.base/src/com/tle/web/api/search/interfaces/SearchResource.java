@@ -58,6 +58,15 @@ public interface SearchResource
 					required = false)
 		@QueryParam("where")
 			String where,
+		@ApiParam(value = "An ISO date format (yyyy-MM-dd)", required = false)
+		@QueryParam("modifiedAfter")
+				String modifiedAfter,
+		@ApiParam(value = "An ISO date format (yyyy-MM-dd)", required = false)
+		@QueryParam("modifiedBefore")
+				String modifiedBefore,
+		@ApiParam(value = "An ID (not a username) of a user", required = false)
+		@QueryParam("owner")
+				String owner,
 		@ApiParam(value="If true then includes items that are not live", allowableValues = "true,false", defaultValue = "false", required = false)
 		@QueryParam("showall")
 			String showall

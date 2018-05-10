@@ -106,8 +106,6 @@ type State = {
   facets :: SM.StrMap (S.Set String),
   searchResults :: Maybe ItemSearchResults, 
   modifiedLast :: Maybe Milliseconds,
-  after :: Tuple Boolean Date,
-  before :: Tuple Boolean Date, 
   owner :: Maybe UserDetails,
   selectOwner :: Boolean, 
   order :: Maybe Order
@@ -125,8 +123,6 @@ initialState = {
   , searchResults:Nothing
   , facets:SM.empty
   , modifiedLast: Nothing
-  , after:Tuple false currentDate
-  , before:Tuple false currentDate
   , facetSettings: []
   , loadingNew: false
   , selectOwner: false
@@ -144,10 +140,6 @@ searchPage :: ReactElement
 searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMount InitSearch) initialState render eval) {}
   where
   _id = prop (SProxy :: SProxy "id")
-  _before :: DateLens
-  _before = prop (SProxy :: SProxy "before")
-  _after :: DateLens
-  _after = prop (SProxy :: SProxy "after")
   _modifiedLast = prop (SProxy :: SProxy "modifiedLast")
   _searchResults = prop (SProxy :: SProxy "searchResults")
   _results = prop (SProxy :: SProxy "results")
@@ -305,15 +297,19 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
 
     stdChip l c = chip [className classes.chip, label l, onDelete $ d \_ -> c]
 
+    fullQuery = searchQuery {query,modifiedLast,owner}
+
     makeFacet details@(FacetSetting {path}) = facetDisplay {facet:details, onClickTerm: d $ ToggledTerm path,
-     selectedTerms: fromMaybe S.empty $ SM.lookup path facets, query:queryWithout path }
+      selectedTerms: fromMaybe S.empty $ SM.lookup path facets, 
+      query: fullQuery <> [ Tuple "where" $ queryWithout path ] }
 
     renderResults (Just (SearchResults {results,available})) =
       let resultLen = length results
           orderItem o = menuItem [mkProp "value" $ orderValue o] [ text $ orderName o ]
       in [
         div [ DP.className classes.resultHeader ] [
-          typography [className classes.available, variant TS.subheading] [ text $ show available <> " " <> string.resultsAvailable],
+          typography [className classes.available, variant TS.subheading] [ 
+              text $ show available <> " " <> string.resultsAvailable ],
           select [ className classes.ordering, 
                   value $ orderValue $ fromMaybe Relevance order, 
                   onChange $ d \e -> SetOrder e.target.value
@@ -443,26 +439,29 @@ orderValue = case _ of
 orderEntries :: Array Order
 orderEntries = [Relevance, Name, DateModified, DateCreated ]
 
+beforeLast ms = 
+  let nowInst = unsafePerformEff now
+  in Tuple "modifiedAfter" $ format dateFormat $ toDateTime $ fromMaybe nowInst $ instant $ (unInstant nowInst) - ms
+
+searchQuery {query,modifiedLast,owner} = [
+  Tuple "q" query 
+] <> catMaybes [
+  beforeLast <$> modifiedLast,
+  (\(UserDetails {id}) -> Tuple "owner" id) <$> owner
+]
+
 callSearch :: forall e. Int -> State -> Aff (ajax :: AJAX |e) (Either String ItemSearchResults)
-callSearch offset {facets,query,before,after,modifiedLast,owner,order} = do
+callSearch offset {facets,query,modifiedLast,owner,order} = do
   let
     whereXpath = mapMaybe whereClause $ SM.toUnfoldable facets
-    beforeLast ms = 
-      let nowInst = unsafePerformEff now
-      in Tuple "modifiedAfter" $ format dateFormat $ toDateTime $ fromMaybe nowInst $ instant $ (unInstant nowInst) - ms
     dateParam p (Tuple true d) = Just $ Tuple p $ format dateFormat (DateTime d bottom)
     dateParam _ _ = Nothing
   result <- get $ baseUrl <> "api/search?" <> (queryString $ [
       Tuple "info" "basic,detail,attachment,display",
-      Tuple "q" query,        
       Tuple "start" $ show offset,
       Tuple "where" $ joinWith " AND " whereXpath
-    ] <> catMaybes [
-      (orderValue >>> Tuple "order") <$> order,
-      beforeLast <$> modifiedLast,
-      dateParam "modifiedBefore" before,
-      dateParam "modifiedAfter" after,
-      (\(UserDetails {id}) -> Tuple "owner" id) <$> owner
+    ] <> searchQuery {query,modifiedLast,owner} <> catMaybes [
+      (orderValue >>> Tuple "order") <$> order
     ]
   )
   pure $ decodeJson result.response

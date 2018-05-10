@@ -184,7 +184,7 @@ public class SearchResourceImpl implements EquellaSearchResource
 
 	@Override
 	public FacetSearchBean searchFacets(CsvList nodes, String nestLevel, String q, int breadth, CsvList collections,
-		String where, String showall)
+		String where, String modifiedAfter, String modifiedBefore, String owner, String showall)
 	{
 		final String whereClause = where;
 		final boolean onlyLive = !(showall != null && Utils.parseLooseBool(showall, false));
@@ -192,8 +192,8 @@ public class SearchResourceImpl implements EquellaSearchResource
 		final int width = (breadth < 0 ? 10 : breadth);
 		final List<String> nodeList = CsvList.asList(nodes);
 
-		final DefaultSearch search = createSearch(q, cols, whereClause, onlyLive, SortType.RANK, false, null, null,
-			null, null, null, new DefaultSearch());
+		final DefaultSearch search = createSearch(q, cols, whereClause, onlyLive, SortType.RANK, false, modifiedAfter, modifiedBefore,
+			null, null, owner, new DefaultSearch());
 
 		final MatrixResults matrixResults = freetextService.matrixSearch(search, nodeList, true, width);
 
