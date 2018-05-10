@@ -2,6 +2,7 @@ module SettingsPage where
 
 import Prelude
 
+import Common.Icons (expandMoreIcon)
 import Control.Monad.Aff.Console (log)
 import Control.Monad.Trans.Class (lift)
 import Data.Argonaut (class DecodeJson, decodeJson, (.?), (.??))
@@ -100,7 +101,7 @@ settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didM
       in D.div [_id "settingsPage"] $ mapMaybe renderGroup groupDetails
 
     settingGroup {name,desc} contents = expansionPanel_ [
-      expansionPanelSummary [expandIcon $ icon_ [D.text "expand_more"] ] [
+      expansionPanelSummary [expandIcon expandMoreIcon ] [
         typography [className classes.heading] [ D.text name ],
         typography [className classes.secondaryHeading] [ D.text desc ]
       ],

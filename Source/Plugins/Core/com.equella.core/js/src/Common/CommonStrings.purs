@@ -10,7 +10,8 @@ commonRawStrings = {prefix:"common",
       undo: "Undo",
       add: "Add", 
       ok: "OK",
-      discard: "Discard"
+      discard: "Discard", 
+      select: "Select"
     }, 
     users : "Users", 
     groups: "Groups", 

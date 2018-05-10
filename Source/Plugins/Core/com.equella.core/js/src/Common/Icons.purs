@@ -21,3 +21,9 @@ groupIcon = icon_ [text groupIconName]
 
 roleIcon :: ReactElement
 roleIcon = icon_ [text roleIconName]
+
+expandMoreIcon :: ReactElement
+expandMoreIcon = icon_ [text "expand_more"]
+
+searchIcon :: ReactElement
+searchIcon = icon_ [ text "search"]

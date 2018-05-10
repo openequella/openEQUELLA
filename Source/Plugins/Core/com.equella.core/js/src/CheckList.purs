@@ -8,7 +8,7 @@ import MaterialUI.List (disablePadding, list)
 import MaterialUI.ListItem (disableGutters, listItem)
 import MaterialUI.ListItemText (ListItemTextProps, listItemText)
 import MaterialUI.Properties (IProp, className, classes_)
-import MaterialUI.Styles (withStyles)
+import MaterialUI.Styles (withStyles) 
  
 import React (ReactElement, createFactory)
 
@@ -23,7 +23,8 @@ checkList = createFactory $ withStyles styles $ createComponent {} render unit
       padding: 0
     },
     smallerCheckbox: {
-      height: theme.spacing.unit * 4
+      height: "auto",
+      width: "auto"
     },
     listText: {
       display: "flex",
@@ -33,6 +34,6 @@ checkList = createFactory $ withStyles styles $ createComponent {} render unit
 
   render _ (ReactProps {entries,classes}) = list [disablePadding true] $ entry <$> entries  
     where entry {checkProps, textProps} = listItem [classes_ {default:classes.reallyDense}, disableGutters true] [
-        checkbox $ [classes_ {default:classes.smallerCheckbox} ] <> checkProps,
+        checkbox $ [classes_ {root:classes.smallerCheckbox} ] <> checkProps,
         listItemText $ [className classes.listText] <> textProps
     ]

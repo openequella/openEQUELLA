@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.UriInfo;
 
+import com.tle.core.i18n.CoreStrings;
 import org.apache.log4j.Logger;
 
 import com.google.common.base.Function;
@@ -121,8 +122,7 @@ public class SearchResourceImpl implements EquellaSearchResource
 			final PowerSearch ps = powerSearchService.getByUuid(advancedSearch);
 			if( ps == null )
 			{
-				throw new NotFoundException(
-					CurrentLocale.get("com.tle.web.api.search.error.advancedsearch.notfound", advancedSearch), true);
+				throw new NotFoundException(CoreStrings.lookup().getString("error.advancedsearch.notfound", advancedSearch), true);
 			}
 			collectionUuids = new HashSet<String>();
 			for( ItemDefinition collection : ps.getItemdefs() )

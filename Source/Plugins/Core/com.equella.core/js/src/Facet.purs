@@ -17,11 +17,13 @@ import Dispatcher (dispatch)
 import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMount, getProps, modifyState)
 import EQUELLA.Environment (baseUrl)
 import Global (encodeURIComponent)
+import MaterialUI.Icon (icon_)
 import MaterialUI.ListItemText (primary, secondary)
 import MaterialUI.Properties (onChange)
 import MaterialUI.SwitchBase (checked)
 import Network.HTTP.Affjax (get)
 import React (ReactElement, createFactory)
+import React.DOM (text)
 import React.DOM as D
 import SearchFilters (filterSection)
 import Settings.UISettings (FacetSetting(..))
@@ -65,9 +67,10 @@ facetDisplay = createFactory (createLifecycleComponent (do
     modify _ { componentWillReceiveProps = \c {query} -> dispatch eval c (UpdatedProps query) }
     ) initialState render eval)
   where
-  render {searchResults} (ReactProps {facet:(FacetSetting {name}), onClickTerm,selectedTerms}) = filterSection {name} [
-    renderResults searchResults
-  ]
+  render {searchResults} (ReactProps {facet:(FacetSetting {name}), onClickTerm,selectedTerms}) = 
+    filterSection {name, icon: icon_ [text "view_list"] } [
+      renderResults searchResults
+    ]
     where
     renderResults (Just (FacetResults results)) = checkList {entries: result <$> results}
       where 

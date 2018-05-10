@@ -160,7 +160,7 @@ termDialog = createFactory (withStyles styles $ createLifecycleComponent' reRend
             ugrCheck commonString.groups _groups groups,
             ugrCheck commonString.roles _roles roles
           ],
-          userSearch {onSelect: mkIOFn1 $ termsForUsers >>> runIOFn1 onAdd, onCancel: cancel, enabled}
+          userSearch {onSelect: mkIOFn1 $ termsForUsers >>> runIOFn1 onAdd, clickEntry:true, onCancel: cancel, enabled}
         ]}
       IpDialog r@(IpRange i1 i2 i3 i4 im) ->
           let ipField v l = textField [className classes.ipField, value $ if v == -1 then "" else show v, onChangeStr $ 
