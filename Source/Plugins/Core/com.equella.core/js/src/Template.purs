@@ -214,8 +214,7 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
         width: "calc(100vw - 245px)"
       },
       allQuery {
-        marginTop: "var(--top-bar)",
-        overflowX: "hidden"
+        marginTop: "var(--top-bar)"
       }
     ],
     logo: {

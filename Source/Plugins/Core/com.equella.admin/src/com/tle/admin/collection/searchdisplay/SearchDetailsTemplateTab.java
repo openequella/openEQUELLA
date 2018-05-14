@@ -187,8 +187,7 @@ public class SearchDetailsTemplateTab extends AbstractItemdefTab
 				if( notTheCaseTheyAllEmpty && incomplete )
 				{
 					throw new EditorException(
-						CurrentLocale
-							.get("com.tle.admin.collection.tool.searchdetailstemplatetab.validation.incomplete"));
+							getString("validation.incomplete"));
 				}
 			}
 		}

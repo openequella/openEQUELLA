@@ -10,6 +10,8 @@ import Data.Array (catMaybes)
 import Data.Maybe (Maybe(Nothing, Just), isJust)
 import Data.Nullable (Nullable, toNullable)
 import Data.StrMap (StrMap, lookup)
+import Data.String (joinWith)
+import Debug.Trace (traceAny)
 import Dispatcher (DispatchEff(..), effEval)
 import Dispatcher.React (ReactProps(ReactProps), createComponent, createLifecycleComponent, getProps, modifyState)
 import MaterialUI.Color (inherit)
@@ -49,13 +51,19 @@ legacy htmlMap = createFactory (withStyles styles $ createComponent {optionsAnch
     screenOptions: {
         margin: 20
     },
-    main: {
+    withPadding: {
       padding: t.spacing.unit * 2
     }
   }
   render s (ReactProps {classes}) (DispatchEff d) = 
         template' (templateDefaults renderData.title) {menuExtra = toNullable $ options <$> lookup "so" htmlMap} [ mainContent ]
     where
+    extraClass = case renderData.fullscreenMode of 
+      "YES" -> []
+      "YES_WITH_TOOLBAR" -> []
+      _ -> case renderData.menuMode of 
+        "HIDDEN" -> []
+        _ -> [classes.withPadding]
     options html = [ 
         iconButton [color inherit, onClick $ d \e -> OptionsAnchor $ Just e.currentTarget] [ icon_ [text "more_vert"] ],
         popover [ open $ isJust s.optionsAnchor, marginThreshold 64
@@ -66,7 +74,7 @@ legacy htmlMap = createFactory (withStyles styles $ createComponent {optionsAnch
             divWithHtml {divProps:[DP.className $ classes.screenOptions], html}
         ]
     ]
-    mainContent = D.div [DP.className classes.main] $ catMaybes [ 
+    mainContent = D.div [DP.className $ joinWith " " $ ["content"] <> extraClass] $ catMaybes [ 
       (divWithHtml <<< {divProps:[_id "breadcrumbs"], html: _} <$> lookup "crumbs" htmlMap),
       (divWithHtml <<< {divProps:[], html: _} <$> lookup "upperbody" htmlMap),
       (divWithHtml <<< {divProps:[], html: _} <$> lookup "body" htmlMap)

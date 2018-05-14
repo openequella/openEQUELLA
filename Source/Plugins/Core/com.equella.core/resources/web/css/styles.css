@@ -334,6 +334,21 @@ kbd {
 	background: url(../images/box-beige-bottom.gif) left bottom no-repeat;
 }
 
+#mainDiv #content-inner {
+    min-height: 250px;
+    background: none;
+    float: none;
+    width: 100%;
+}
+
+#mainDiv .content {
+    box-sizing: content-box;
+}
+
+#mainDiv button, #fancybox-inner button {
+    box-sizing: border-box;
+}
+
 #content-inner {
 	width: 953px;
 	min-height: 250px;
@@ -449,6 +464,11 @@ DIV.tooltip {
 /*****************************************************************************
  Breadcrumbs
 *****************************************************************************/
+
+#mainDiv #breadcrumbs {
+    position: initial;
+}
+
 #breadcrumbs {
 	position: absolute;
 	top: 11px;
@@ -482,6 +502,13 @@ DIV.tooltip {
 /*****************************************************************************
  Container for the actual page content
 *****************************************************************************/
+
+#mainDiv #content-body {
+    float: none;
+    width: auto;
+    padding: 8px 0 32px 0;
+}
+
 #content-body {
 	float: right;
 	padding: 32px 18px 32px 0;
@@ -497,6 +524,26 @@ DIV.tooltip {
 
 .page-layout-menu-hidden #content-body {
 	width: 917px;
+}
+
+#mainDiv .mainCols
+{
+    display: flex;
+    justify-content: space-between;
+}
+
+#mainDiv #col1, #mainDiv #col {
+    flex-grow: 1;
+    width: auto;
+    float: none;
+}
+
+#fancybox-wrap, #fancybox-overlay, #fancybox-outer,  #fancybox-inner, #fancybox-tmp {
+    box-sizing: content-box;
+}
+
+#mainDiv #col2 {
+    margin-left: 16px;
 }
 
 #col1 {
@@ -780,6 +827,7 @@ fieldset.float {
 	-moz-text-shadow: 0 1px 1px #fff;
 	-webkit-text-shadow: 0 1px 1px #fff;
 	background-image: url("../images/action-button.ltr.png");
+	box-sizing: border-box;
 }
 
 .action-button:hover,.action-button:focus {
@@ -1286,6 +1334,11 @@ Bootstrap overrides
 }
 
 /* this rule is from a later version of bootstrap.css - delete after upgrade */
+#mainDiv #affix-div {
+    position: fixed;
+    top: auto;
+}
+
 .affix {
 	position: fixed;
 }
@@ -1366,4 +1419,13 @@ Expandable button
 .button-expandable:hover i {
 	margin-left: 0px;
 	margin-right:0px;
+}
+
+#mainDiv .dashboard #topwide {
+    width: auto;
+}
+
+#mainDiv .dashboard #col2 {
+    width: auto;
+    flex-grow: 1;
 }

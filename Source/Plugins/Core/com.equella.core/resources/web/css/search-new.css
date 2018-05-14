@@ -1,11 +1,13 @@
+.search-layout {
+	width: 750px;
+}
+
 .search-layout #col1 {
-    min-width: 510px;
-    width: calc(100% - 240px);
+	width: 515px;
 }
 
 .search-layout #col2 {
-    margin-left: 16px;
-    width: 240px;
+	width: 221px;
 }
 
 .search-layout #col .area {
@@ -14,6 +16,22 @@
 
 .search-layout #col1 .area {
 	padding: 25px 17px 33px;
+}
+
+.search-layout .box {
+	width: 219px;
+}
+
+.search-layout .box-head {
+	width: 219px;
+}
+
+.search-layout .box-content {
+	width: 219px;
+}
+
+.search-layout .box-content-inner {
+	width: 183px;
 }
 
 .search-layout #col2 .box hr {
@@ -121,7 +139,7 @@
 
 .searchresults-header,
 .repo-onecol .searchresults-header,
-.search-layout .searchresults-header 
+.search-layout .searchresults-header
 {
 	position: relative;
 	background-color: #D7D6D2;
@@ -214,39 +232,32 @@ div.skinnysearch {
 }
 
 #querycontainer {
-    height: 27px;
 	display: flex;
-	align-items: stretch;
-}
-
-#searchform-search {
-    height: 27px;
 }
 
 #querycontainer .autocomplete-container {
-	display: flex;
-    height: 27px;
-    width: 100%;
+	width: 100%;
 }
 
-#querycontainer input[type="text"] {
-    height: 27px;
-    width: 100%;
+#searchform-search {
+	height: 27px;
+	 padding-left: 8px;
+}
+
+#searchform .query-wrapper #querycontainer input[type="text"] {
+	width: 439px;
 	-webkit-border-radius: 4px 0 0 4px;
 	-moz-border-radius: 4px 0 0 4px;
 	border-radius: 4px 0 0 4px;
 	border-right: none;
+	height: 17px;
 }
 
-#withincontainer {
-    width: 100%;
+#col #searchform .query-wrapper #querycontainer input[type="text"] {
+	width: 671px;
 }
 
-#withincontainer .selectedcontainer {
-    width: 100%;
-}
-
-#q {
+#searchform .query-wrapper #querycontainer #q {
 	/* Autocomplete + bootstrap fix */
 	z-index: 999;
 	/* Bootstrap input-append input styles  */
@@ -255,32 +266,35 @@ div.skinnysearch {
 	*margin-left: 0;
 }
 
-#withincontainer select {
-    width: 75%;
-    maxWidth: 1024px;
+#searchform .query-wrapper SELECT {
+	width: 465px;
 }
 
-#searchform-where {
+#col #searchform .query-wrapper SELECT {
+	width: 700px;
+}
+
+#searchform #wherecontainer #searchform-where {
 	margin: 5px 0;
 }
 
-#searchform-where ul {
+#searchform #wherecontainer #searchform-where ul {
 	padding: 5px 2px 0;
 	font-size: 12px;
 }
 
-#searchform-where ul li {
+#searchform #wherecontainer #searchform-where ul li {
 	background: none;
 	padding: 0;
 	margin: 2px 0;
 	line-height: 1.2em;
 }
 
-#searchform-where ul li:first-child {
+#searchform #wherecontainer #searchform-where ul li:first-child {
 	margin-top: 0;
 }
 
-#searchform-where ul li:last-child {
+#searchform #wherecontainer #searchform-where ul li:last-child {
 	margin-bottom: 4px;
 }
 

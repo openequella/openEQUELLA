@@ -17,7 +17,8 @@ var WizardCtrl = {
 	},
 	affixDiv: function() {
 	    var ad = $("#affix-div");
+	    ad.attr("data-spy", "affix");
 	    var offset = (ad.offset().top) - 55;
-	    ad.attr("data-offset-top",offset, "data-spy", "affix");
+	    ad.attr("data-offset-top",offset);
 	}
 };

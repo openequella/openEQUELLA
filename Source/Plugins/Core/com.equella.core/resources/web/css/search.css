@@ -59,14 +59,13 @@
     padding: 3px 0 2px 18px;
 }
 
-.search-layout #searchtabs a.cloud {
-	background: url("../images/cloud16.png") no-repeat scroll 0 1px rgba(0, 0, 0, 0);
-    cursor: pointer;
-    padding: 3px 0 2px 32px;
+#cloudy {
+	display: flex;
+	align-items: center;
 }
 
-.search-layout #searchtabs #cloudy {
-	display: inline-block
+#cloudy img {
+    margin-right: 8px;
 }
 
 .search-layout .sortandfilter div.input h4 {
@@ -245,16 +244,12 @@ div.skinnysearch {
 }
 
 #searchform .query-wrapper #querycontainer input[type="text"] {
-	width: 439px;
+	width: calc(100% - 14px);
 	-webkit-border-radius: 4px 0 0 4px;
 	-moz-border-radius: 4px 0 0 4px;
 	border-radius: 4px 0 0 4px;
 	border-right: none;
 	height: 17px;
-}
-
-#col #searchform .query-wrapper #querycontainer input[type="text"] {
-	width: 671px;
 }
 
 #searchform .query-wrapper #querycontainer #q {

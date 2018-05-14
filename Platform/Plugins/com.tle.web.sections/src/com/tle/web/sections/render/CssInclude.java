@@ -163,7 +163,7 @@ public class CssInclude implements PreRenderable, Comparable<CssInclude>
 
 	public boolean isHasNew()
 	{
-		return hasNew;
+		return false;
 	}
 
 	public Browser getBrowser()

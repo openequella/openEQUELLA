@@ -2,8 +2,17 @@
 	display: flex;
 }
 
+.compactQuery .autocomplete-container
+{
+    margin-right: 8px;
+}
+
 #col .compactQuery .autocomplete-container {
     width: 677px;
+}
+
+.quick-search .compactQuery .autocomplete-container {
+	width: 280px;
 }
 
 #col1 .compactQuery .autocomplete-container {
@@ -13,6 +22,7 @@
 .compactQuery input {
 	margin: 0 3px 0 0;
 	padding: 5px 5px 4px;
+	box-sizing: border-box;
 }
 
 .compactQuery .compactQueryButton {
@@ -24,5 +34,5 @@
 }
 
 .compactQuery input {
-	width: 95%;
+	width: 100%;
 }
