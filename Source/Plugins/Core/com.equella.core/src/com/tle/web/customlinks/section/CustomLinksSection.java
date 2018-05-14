@@ -34,6 +34,8 @@ import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tle.web.resources.PluginResourceHelper;
+import com.tle.web.resources.ResourceHelper;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpStatus;
@@ -129,8 +131,9 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksModel>
 
 	private static final int MAX_BYTES = GeneralConstants.BYTES_PER_MEGABYTE;
 
+	private static final PluginResourceHelper R = ResourcesService.getResourceHelper(CustomLinksSection.class);
 	private static final JSCallable SETUP_LINKS = new ExternallyDefinedFunction("setupLinks", JQuerySortable.PRERENDER,
-		new IncludeFile(ResourcesService.getResourceHelper(CustomLinksSection.class).url("js/setuplinks.js")));
+		new IncludeFile(R.url("js/setuplinks.js")));
 
 	@PlugKey("edit.delete")
 	private static Label DELETE_LABEL;
@@ -430,20 +433,19 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksModel>
 		}
 		catch( UnknownHostException ex )
 		{
-			session.getValidationErrors().put("urlField",
-				CurrentLocale.get("com.tle.web.customlinks.edit.download.error.host"));
+			session.getValidationErrors().put("urlField", R.getString("edit.download.error.host"));
 			return;
 		}
 		catch( IllegalArgumentException ex )
 		{
 			session.getValidationErrors().put("urlField",
-				CurrentLocale.get("com.tle.web.customlinks.edit.download.error.invalid", ex.getLocalizedMessage()));
+					R.getString("edit.download.error.invalid", ex.getLocalizedMessage()));
 			return;
 		}
 		catch( ConnectException ex )
 		{
 			session.getValidationErrors().put("urlField",
-				CurrentLocale.get("com.tle.web.customlinks.edit.download.error.connect", ex.getLocalizedMessage()));
+					R.getString("edit.download.error.connect", ex.getLocalizedMessage()));
 			return;
 		}
 		catch( Exception ex )
@@ -455,7 +457,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksModel>
 		if( method.getStatusCode() != HttpStatus.SC_OK )
 		{
 			session.getValidationErrors().put("urlField",
-				CurrentLocale.get("com.tle.web.customlinks.edit.download.error.notfound"));
+					R.getString("edit.download.error.notfound"));
 			return;
 		}
 
@@ -473,7 +475,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksModel>
 			if( !imageMagickService.supported(mimeTypeService.getMimeTypeForFilename(filename)) )
 			{
 				session.getValidationErrors().put("urlField",
-					CurrentLocale.get("com.tle.web.customlinks.edit.download.error.process"));
+						R.getString("edit.download.error.process"));
 				return;
 			}
 
@@ -548,7 +550,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksModel>
 				return;
 			}
 			session.getValidationErrors().put("upload",
-				CurrentLocale.get("com.tle.web.customlinks.edit.upload.error.empty"));
+					R.getString("edit.upload.error.empty"));
 			return;
 		}
 		removeIcon(context);
@@ -563,7 +565,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksModel>
 			if( !imageMagickService.supported(mimeTypeService.getMimeTypeForFilename(filename)) )
 			{
 				session.getValidationErrors().put("upload",
-					CurrentLocale.get("com.tle.web.customlinks.edit.upload.error.unsupported"));
+						R.getString("edit.upload.error.unsupported"));
 				return;
 			}
 			Dimension dimensions = imageMagickService.getImageDimensions(stagingFile, tempFilename);
