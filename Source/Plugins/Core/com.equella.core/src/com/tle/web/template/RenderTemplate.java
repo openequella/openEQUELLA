@@ -96,7 +96,7 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 
 	private static final CssInclude BOOTSTRAP_CSS = Bootstrap.CSS;
 	public static final CssInclude STYLES_CSS = include(RESOURCES.url("css/styles.css")).prerender(BOOTSTRAP_CSS)
-		.hasRtl().hasNew().priority(Priority.LOWEST).make();
+		.hasRtl().priority(Priority.LOWEST).make();
 	public static final CssInclude CUSTOMER_CSS = include("css/customer.css").priority(Priority.HIGHEST).make();
 
 	private static final String KEY_IGNORE_STANDARD_TEMPLATE = "IGNORE_STANDARD_TEMPLATE";

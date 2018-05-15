@@ -1,6 +1,6 @@
 <#include "/com.tle.web.freemarker@/macro/sections.ftl">
 
-<@css path="selection.css" hasRtl=true hasNew=true />
+<@css path="selection.css" hasRtl=true />
 
 <#assign d = m.decorations />
 

@@ -24,7 +24,7 @@ lazy val jql = Seq("jquery.fancybox.js", "jquery.ui.datepicker.js", "jquery.ui.d
   "jquery.ui.autocomplete.js", "jquery.ui.core.js", "jquery.ui.effect.js", "jquery.ui.menu.js", "jquery.ui.position.js",
   "jquery.ui.widget.js"
 )
-lazy val jqlc = Seq("fancybox/jquery.fancybox.css", "fancybox/jquery.fancybox-new.css", "jquery.stylish-select.css")
+lazy val jqlc = Seq("fancybox/jquery.fancybox.css", "jquery.stylish-select.css")
 lazy val jqc = Seq("jquery-migrate.js", "jquery.js")
 lazy val others = Seq("css/themes/equella/jquery-ui.css")
 

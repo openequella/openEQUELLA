@@ -30,7 +30,7 @@ public class JQueryFancyBox implements JavascriptModule
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final CssInclude CSS = JQueryLibraryInclude.cssb("fancybox/jquery.fancybox.css").hasMin().hasNew().make();
+	public static final CssInclude CSS = JQueryLibraryInclude.cssb("fancybox/jquery.fancybox.css").hasMin().make();
 	public static final PreRenderable PRERENDER = new JQueryLibraryInclude("jquery.fancybox.js", CSS).hasMin();
 
 	public static final JSCallAndReference FANCYBOX = new ExternallyDefinedFunction("fancybox", -1, PRERENDER);

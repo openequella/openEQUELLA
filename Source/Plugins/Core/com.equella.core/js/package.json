@@ -1,22 +1,18 @@
 {
   "private": true,
   "config": {
-    "buildcss": "target/resources/web/css",
-    "devcss": "../target/scala-2.12/classes/web/css",
     "buildlang": "target/resources/lang",
     "devlang": "../target/scala-2.12/classes/lang"
   },
   "scripts": {
-    "install": "cross-env-shell \"psc-package install && mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang} ${npm_package_config_devcss} ${npm_package_config_buildcss}\"",
+    "install": "cross-env-shell \"psc-package install && mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
     "clean": "rm -rf target/ output/ node_modules/ bower_components/ && yarn install",
-    "build": "yarn install && tsc && yarn run build:pages && yarn run build:scss && yarn run build:langbundle",
+    "build": "yarn install && tsc && yarn run build:pages && yarn run build:langbundle",
     "build:pages": "yarn run build:index && yarn run build:uploadlist",
     "build:index": "node build-bundle.js IndexPage index.js",
     "dev:index": "node build-bundle.js --dev IndexPage index.js",
     "build:uploadlist": "node build-bundle.js --lib Uploads.UploadList uploadlist.js",
     "dev:uploadlist": "node build-bundle.js --dev --lib Uploads.UploadList uploadlist.js",
-    "build:scss": "cross-env-shell \"node-sass sass/styles.scss ${npm_package_config_buildcss}/styles-new.css\"",
-    "dev:scss": "cross-env-shell \"node-sass --watch sass/styles.scss ${npm_package_config_devcss}/styles-new.css\"",
     "build:langbundle": "cross-env-shell \"pulp build -O --to output/genlang.js -m Tools.GenLangStrings && node output/genlang.js > ${npm_package_config_buildlang}/jsbundle.json\"",
     "dev:langbundle": "cross-env-shell \"pulp build -O --to output/genlang.js -m Tools.GenLangStrings && node output/genlang.js > ${npm_package_config_devlang}/jsbundle.json\""
   },

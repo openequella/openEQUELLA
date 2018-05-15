@@ -16,11 +16,11 @@ ${nested}
 </#macro>
 
 <#-- See CssInclude.java for a list of supported browser and media names -->
-<#macro css path base="css/" plugin="" browser="ANY" media="ALL" hasRtl=false hasNew=false priority="NORMAL">
+<#macro css path base="css/" plugin="" browser="ANY" media="ALL" hasRtl=false priority="NORMAL">
 <#if plugin == "">
-	${head.addCss(p.url(base + path), browser, media, hasRtl, hasNew, priority)}
+	${head.addCss(p.url(base + path), browser, media, hasRtl, priority)}
 <#else>
-	${head.addCss(p.plugUrl(plugin, base + path), browser, media, hasRtl, hasNew, priority)}
+	${head.addCss(p.plugUrl(plugin, base + path), browser, media, hasRtl, priority)}
 </#if>
 </#macro>
 
@@ -29,8 +29,8 @@ ${head.addJs('scripts/' + path)}
 </#macro>
 
 <#-- See CssInclude.java for a list of supported browser and media names -->
-<#macro globalcss path browser="ANY" media="ALL" hasRtl=false hasNew=false priority="NORMAL">
-${head.addCss('css/' + path, browser, media, hasRtl, hasNew, priority)}
+<#macro globalcss path browser="ANY" media="ALL" hasRtl=false priority="NORMAL">
+${head.addCss('css/' + path, browser, media, hasRtl, priority)}
 </#macro>
 
 <#macro namedscript name>

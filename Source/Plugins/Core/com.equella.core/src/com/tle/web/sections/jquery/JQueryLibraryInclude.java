@@ -65,7 +65,7 @@ public class JQueryLibraryInclude extends IncludeFile
 	public JQueryLibraryInclude(String js, String css, boolean hasNew, PreRenderable... preRenderables)
 	{
 		this(js, preRenderables);
-		addPreRenderer(cssb(css).hasNew(hasNew).make()); //$NON-NLS-1$
+		addPreRenderer(cssb(css).make()); //$NON-NLS-1$
 	}
 
 	public JQueryLibraryInclude(String js, String css, PreRenderable... preRenderables)

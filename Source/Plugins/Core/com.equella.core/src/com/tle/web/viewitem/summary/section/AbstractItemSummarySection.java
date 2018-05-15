@@ -105,7 +105,7 @@ public abstract class AbstractItemSummarySection<I extends IItem<?>> extends Two
 
 	protected List<CssInclude> getCssUrls(SectionInfo info)
 	{
-		return Lists.newArrayList(CssInclude.include(LAYOUT_CSS).hasRtl().hasNew().make());
+		return Lists.newArrayList(CssInclude.include(LAYOUT_CSS).hasRtl().make());
 	}
 
 	@Override

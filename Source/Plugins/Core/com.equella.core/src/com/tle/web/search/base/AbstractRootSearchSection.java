@@ -74,7 +74,7 @@ public abstract class AbstractRootSearchSection<M extends AbstractRootSearchSect
 
 	protected void createCssIncludes(List<CssInclude> includes)
 	{
-		includes.add(CssInclude.include(URL_CSS).hasRtl().hasNew().make());
+		includes.add(CssInclude.include(URL_CSS).hasRtl().make());
 	}
 
 	@Override

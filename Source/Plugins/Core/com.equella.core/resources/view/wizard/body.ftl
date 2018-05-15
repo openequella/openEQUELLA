@@ -2,7 +2,7 @@
 <#include "/com.tle.web.sections.equella@/component/button.ftl"/>
 <#import "/com.tle.web.sections.standard@/ajax.ftl" as a/>
 
-<@css path="wizard.css" hasRtl=true hasNew=true/>
+<@css path="wizard.css" hasRtl=true />
 
 <#assign TEMP_body>
 	<@renderList list=m.sections/>

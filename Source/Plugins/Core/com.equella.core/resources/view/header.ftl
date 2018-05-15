@@ -15,9 +15,7 @@
 		<#if stylesheet.browser.conditionStart??><#t/>
 			${stylesheet.browser.conditionStart}<#lt/>
 		</#if><#t/>
-		<#if m.newLayout && stylesheet.hasNew>
-		    <link rel="stylesheet" type="text/css" href="${stylesheet.getNewHref(_info)}" media="${stylesheet.media?string?lower_case}"><#lt/>
-	  	<#elseif m.includeRtlStyles && stylesheet.hasRtl>
+		<#if m.includeRtlStyles && stylesheet.hasRtl>
 	  		<link rel="stylesheet" type="text/css" href="${stylesheet.getRtlHref(_info)}" media="${stylesheet.media?string?lower_case}"><#lt/>
 	  	<#else>
 	  		<link rel="stylesheet" type="text/css" href="${stylesheet.getHref(_info)}" media="${stylesheet.media?string?lower_case}"><#lt/>

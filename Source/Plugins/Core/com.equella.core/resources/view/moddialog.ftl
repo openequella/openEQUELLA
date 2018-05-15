@@ -1,6 +1,6 @@
 <#include "/com.tle.web.freemarker@/macro/sections.ftl">
 
-<@css path="moderate.css" hasRtl=true hasNew=true/>
+<@css path="moderate.css" hasRtl=true/>
 <div id="moderate-allmods">
 	<div class="moddialog-list">
 		<h2>${b.key('moddialog.remaining')}</h2>

@@ -2,7 +2,7 @@
 <#include "/com.tle.web.sections.equella@/component/button.ftl">
 <#import "/com.tle.web.sections.standard@/ajax.ftl" as a>
 
-<@css path="selection.css" hasRtl=true hasNew=true />
+<@css path="selection.css" hasRtl=true />
 <@css plugin="com.tle.web.sections.equella" path="selectionreview.css"/>
 
 <@a.div id="checkout-div" class="area">

@@ -211,11 +211,7 @@ public class StandardAjaxRenderContext extends WrappedSectionInfo implements Aja
 		boolean newLayout = RenderNewTemplate.isNewLayout(this);
 		for( CssInclude ci : cssFiles )
 		{
-			if (newLayout && ci.isHasNew())
-			{
-				css.add(ci.getNewHref(this));
-			}
-			else if( rtl && ci.isHasRtl() )
+			if( rtl && ci.isHasRtl() )
 			{
 				css.add(ci.getRtlHref(this));
 			}

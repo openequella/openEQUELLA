@@ -151,19 +151,9 @@ public class CssInclude implements PreRenderable, Comparable<CssInclude>
 		return minified(info, cssFile.replace(".css", ".rtl.css"));
 	}
 
-	public String getNewHref(SectionInfo info)
-	{
-		return minified(info, cssFile.replace(".css", "-new.css"));
-	}
-
 	public boolean isHasRtl()
 	{
 		return hasRtl;
-	}
-
-	public boolean isHasNew()
-	{
-		return false;
 	}
 
 	public Browser getBrowser()
@@ -240,17 +230,6 @@ public class CssInclude implements PreRenderable, Comparable<CssInclude>
 		{
 			inc.preRenderables = prs;
 			return this;
-		}
-
-		public CssIncludeBuilder hasNew(boolean hasNew)
-		{
-			inc.hasNew = hasNew;
-			return this;
-		}
-
-		public CssIncludeBuilder hasNew()
-		{
-			return hasNew(true);
 		}
 
 		public CssIncludeBuilder hasRtl()
