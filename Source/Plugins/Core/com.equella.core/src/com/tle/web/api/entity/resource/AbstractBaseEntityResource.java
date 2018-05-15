@@ -177,7 +177,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	}
 
 	@Transactional
-	public PagingBean<B> list(UriInfo uriInfo, String q, String privilege, String resumption, int length, boolean full)
+	public PagingBean<B> list(UriInfo uriInfo, String q, List<String> privilege, String resumption, int length, boolean full)
     {
         final boolean isExport = RestImportExportHelper.isExport(uriInfo);
         return PagedResults.pagedResults(this, q, privilege, resumption, length, full | isExport, isExport);

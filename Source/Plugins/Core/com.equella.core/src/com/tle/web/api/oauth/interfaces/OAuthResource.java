@@ -28,6 +28,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.util.List;
 
 @Produces({"application/json"})
 @Path("oauth/")
@@ -49,7 +50,7 @@ public interface OAuthResource extends BaseEntityResource<OAuthClientBean, BaseE
 	public PagingBean<OAuthClientBean> list(
 			@Context UriInfo uriInfo,
 			@ApiParam("Search name and description") @QueryParam("q") String q,
-			@ApiParam("Privilege to filter by") @QueryParam("privilege") String privilege,
+			@ApiParam("Privilege(s) to filter by") @QueryParam("privilege") List<String> privilege,
 			@QueryParam("resumption") @ApiParam("Resumption token for paging") String resumptionToken,
 			@QueryParam("length") @ApiParam("Number of results") @DefaultValue("10") int length,
 			@QueryParam("full") @ApiParam("Return full entity (needs VIEW or EDIT privilege)") boolean full);

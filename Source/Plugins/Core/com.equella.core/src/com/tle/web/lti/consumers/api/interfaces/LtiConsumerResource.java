@@ -30,6 +30,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
+import java.util.List;
+
 /**
  * @author Aaron
  *
@@ -54,7 +56,7 @@ public interface LtiConsumerResource extends BaseEntityResource<LtiConsumerBean,
 	public PagingBean<LtiConsumerBean> list(
 			@Context UriInfo uriInfo,
 			@ApiParam("Search name and description") @QueryParam("q") String q,
-			@ApiParam("Privilege to filter by") @QueryParam("privilege") String privilege,
+			@ApiParam("Privilege(s) to filter by") @QueryParam("privilege") List<String> privilege,
 			@QueryParam("resumption") @ApiParam("Resumption token for paging") String resumptionToken,
 			@QueryParam("length") @ApiParam("Number of results") @DefaultValue("10") int length,
 			@QueryParam("full") @ApiParam("Return full entity (needs VIEW or EDIT privilege)") boolean full);

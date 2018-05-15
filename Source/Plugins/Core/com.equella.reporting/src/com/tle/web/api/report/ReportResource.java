@@ -28,6 +28,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.util.List;
 
 @Path("report/")
 @Api(value = "Report management", description = "report")
@@ -51,7 +52,7 @@ public interface ReportResource  extends BaseEntityResource<ReportBean, BaseEnti
     PagingBean<ReportBean> list(
             @Context UriInfo uriInfo,
             @ApiParam("Search name and description") @QueryParam("q") String q,
-            @ApiParam("Privilege to filter by") @QueryParam("privilege") String privilege,
+            @ApiParam("Privilege(s) to filter by") @QueryParam("privilege") List<String> privilege,
             @QueryParam("resumption") @ApiParam("Resumption token for paging") String resumptionToken,
             @QueryParam("length") @ApiParam("Number of results") @DefaultValue("10") int length,
             @QueryParam("full") @ApiParam("Return full entity (needs VIEW or EDIT privilege)") boolean full);

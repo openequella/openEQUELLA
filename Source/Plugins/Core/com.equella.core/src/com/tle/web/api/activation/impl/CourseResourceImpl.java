@@ -105,7 +105,7 @@ public class CourseResourceImpl extends AbstractBaseEntityResource<CourseInfo, B
 	}
 
 	@Override
-	public PagingBean<CourseBean> list(UriInfo uriInfo, String code, String q, String privilege,
+	public PagingBean<CourseBean> list(UriInfo uriInfo, String code, String q, List<String> privilege,
 									   String resumptionToken, int length, boolean full)
 	{
 		return super.list(uriInfo, q, privilege, resumptionToken, length, full);

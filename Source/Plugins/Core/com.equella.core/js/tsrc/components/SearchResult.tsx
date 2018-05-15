@@ -39,7 +39,7 @@ class SearchResult extends React.Component<PropsWithStyles> {
                 onClick={this.props.onClick}>{this.props.primaryText}</a>
         //
         const content: any = <Typography variant="body1">{this.props.secondaryText}</Typography>;
-        return <ListItem button onClick={this.props.onClick}>
+        return <ListItem button onClick={this.props.onClick} divider>
                 <ListItemText disableTypography primary={link} secondary={content} />
         </ListItem>;
     }

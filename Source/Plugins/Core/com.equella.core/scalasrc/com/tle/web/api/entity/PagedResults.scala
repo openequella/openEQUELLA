@@ -16,6 +16,7 @@
 
 package com.tle.web.api.entity
 
+import java.util
 import java.util.Collections
 
 import com.google.common.collect.ImmutableCollection
@@ -23,7 +24,7 @@ import com.tle.beans.entity.BaseEntity
 import com.tle.core.entity.EnumerateOptions
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.entity.resource.AbstractBaseEntityResource
-import com.tle.web.api.interfaces.beans.{BaseEntityBean, PagingBean}
+import com.tle.web.api.interfaces.beans.{BaseEntityBean, BaseEntityReadOnly, PagingBean}
 
 import scala.collection.JavaConverters._
 import scala.annotation.tailrec
@@ -36,21 +37,24 @@ object PagedResults {
     }.getOrElse((0, 0))
   }
 
+  val MaxEntities = 200
+
   def pagedResults[BE <: BaseEntity, BEB <: BaseEntityBean]
   (res: AbstractBaseEntityResource[BE, _, BEB], q: String,
-   _privilege: String, resumption: String, length: Int, full: Boolean, system: Boolean) : PagingBean[BEB] = {
+   _privilege: java.util.List[String], resumption: String, length: Int, full: Boolean, system: Boolean) : PagingBean[BEB] = {
     val (firstOffset, start) = decodeOffsetStart(resumption)
 
+    val privilege = if (_privilege.isEmpty) Set("LIST_"+res.getPrivilegeType) else _privilege.asScala.toSet
     val forFull = Set("VIEW_"+res.getPrivilegeType, "EDIT_" + res.getPrivilegeType)
 
-    val privilege = Option(_privilege).getOrElse("LIST_"+res.getPrivilegeType)
-    val allReqPriv = if (full) (forFull + privilege).asJavaCollection else Collections.singleton(privilege)
+    val allReqPriv  = if (full) forFull ++ privilege else privilege
 
     @tailrec
-    def collectMore(len: Int, offset: Int, vec: Vector[(BE, Boolean)]): (Int, Vector[(BE, Boolean)]) = {
-      if (len <= 0) (offset, vec)
+    def collectMore(len: Int, offset: Int, tried: Int, vec: Vector[(BE, Boolean, Set[String])]): (Int, Vector[(BE, Boolean, Set[String])]) = {
+      if (len <= 0 || tried >= MaxEntities) (offset, vec)
       else {
-        val nextLot = res.getEntityService.query(new EnumerateOptions(q, offset, len, system, null))
+        val amountToTry = if (tried == 0) len * 2 else MaxEntities - tried
+        val nextLot = res.getEntityService.query(new EnumerateOptions(q, offset, amountToTry, system, null))
         val nextOffset = offset + nextLot.size()
         if (nextOffset == offset)
         {
@@ -58,26 +62,35 @@ object PagedResults {
         }
         else
         {
-          val privMap = LegacyGuice.aclManager.getPrivilegesForObjects(allReqPriv, nextLot).asScala
-          val withPriv = nextLot.asScala.collect {
-            case be if privMap.get(be).exists(_.get(privilege)) =>
-              (be, full &&
-                privMap.get(be).exists(privs => forFull.exists(p => privs.asScala.getOrElse(p,
-                  java.lang.Boolean.FALSE).booleanValue()))
-              )
+          val privMap = LegacyGuice.aclManager.getPrivilegesForObjects(allReqPriv.asJavaCollection, nextLot).asScala
+          object ExtraPrivs
+          {
+            def unapply(be: BE): Option[(BE, Set[String])] = {
+              privMap.get(be).map {
+                p => (be, allReqPriv & p.asScala.keySet)
+              }
+            }
           }
-          collectMore(len - withPriv.size, nextOffset, vec ++ withPriv)
+          val withPriv = nextLot.asScala.collect {
+            case ExtraPrivs(be, privs) if privs.count(privilege) > 0 => (be, full && privs.exists(forFull), privs)
+          }.take(len)
+          collectMore(len - withPriv.size, nextOffset, tried + amountToTry, vec ++ withPriv)
         }
       }
     }
-    val (nextOffset, results) = collectMore(length, firstOffset, Vector.empty)
+    def addPrivs(privs: Set[String], b: BEB): BEB = {
+      b.setReadOnly(new BaseEntityReadOnly(privs.asJavaCollection))
+      b
+    }
+
+    val (nextOffset, results) = collectMore(length, firstOffset, 0, Vector.empty)
     val pb = new PagingBean[BEB]
     val actualLen = results.length
     pb.setStart(start)
     pb.setLength(actualLen)
     pb.setAvailable(res.getEntityService.countAll(new EnumerateOptions(q, 0, -1, system, null)).toInt)
-    pb.setResumptionToken(s"$nextOffset:${start+actualLen}")
-    pb.setResults(results.map { case (be,canFull) => res.serialize(be, null, canFull) }.asJava)
+    if (actualLen == length) pb.setResumptionToken(s"$nextOffset:${start+actualLen}")
+    pb.setResults(results.map { case (be,canFull,privs) => addPrivs(privs, res.serialize(be, null, canFull)) }.asJava)
     pb
   }
 }

@@ -12,7 +12,7 @@ import withStyles, { WithStyles } from 'material-ui/styles/withStyles';
 
 const styles = (theme: Theme) => ({
     overall: {
-    //   padding: theme.spacing.unit * 3, 
+      padding: theme.spacing.unit * 3, 
       height: "100%"
     }, 
     results: {
