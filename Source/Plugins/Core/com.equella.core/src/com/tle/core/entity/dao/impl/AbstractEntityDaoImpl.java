@@ -225,10 +225,7 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity> extends Generi
 		ListCallback callback = null;
 		if (options != null)
 		{
-			if (!Check.isEmpty(options.getQuery()) || options.getMax() != -1 || options.getOffset() != 0)
-			{
-				callback = getSearchListCallback(callback, options);
-			}
+			callback = getSearchListCallback(callback, options);
 			Boolean includeSystem = options.isIncludeSystem();
 			if (includeSystem != null)
 			{
@@ -322,7 +319,7 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity> extends Generi
 
 	protected DefaultSearchListCallback getSearchListCallback(final ListCallback nestedCallback, final EnumerateOptions options)
 	{
-		ListCallback callback = null;
+		ListCallback callback = nestedCallback;
 		final Boolean includeDisabled = options.isIncludeDisabled();
 		if (includeDisabled != null)
 		{

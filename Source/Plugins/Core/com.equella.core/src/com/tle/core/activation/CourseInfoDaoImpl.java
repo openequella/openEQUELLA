@@ -59,7 +59,7 @@ public class CourseInfoDaoImpl extends AbstractEntityDaoImpl<CourseInfo> impleme
 	@Override
 	protected DefaultSearchListCallback getSearchListCallback(final ListCallback nestedCallback, final EnumerateOptions options)
 	{
-		ListCallback callback = null;
+		ListCallback callback = nestedCallback;
 		final Boolean includeDisabled = options.isIncludeDisabled();
 		if (includeDisabled != null)
 		{

@@ -35,6 +35,7 @@ import com.tle.core.activation.service.ActivationService;
 import com.tle.core.activation.service.CourseInfoService;
 import com.tle.core.activation.workflow.OperationFactory;
 import com.tle.core.activation.workflow.RolloverOperation;
+import com.tle.core.entity.EnumerateOptions;
 import com.tle.core.guice.Bind;
 import com.tle.core.guice.BindFactory;
 import com.tle.core.i18n.BundleCache;
@@ -272,7 +273,7 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object> impl
 	@Nullable
 	protected List<CourseInfo> listCourses(SectionInfo info)
 	{
-		List<CourseInfo> courseList = courseInfoService.enumerate();
+		List<CourseInfo> courseList = courseInfoService.query(new EnumerateOptions().setIncludeDisabled(true));
 		if( courseList.isEmpty() )
 		{
 			return null; // fatalError(context, null,
