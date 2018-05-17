@@ -79,7 +79,7 @@ object PagedResults {
       }
     }
     def addPrivs(privs: Set[String], b: BEB): BEB = {
-      b.setReadOnly(new BaseEntityReadOnly(privs.asJavaCollection))
+      b.setReadonly(new BaseEntityReadOnly(privs.asJavaCollection))
       b
     }
 

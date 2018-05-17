@@ -334,21 +334,6 @@ kbd {
 	background: url(../images/box-beige-bottom.gif) left bottom no-repeat;
 }
 
-#mainDiv #content-inner {
-    min-height: 250px;
-    background: none;
-    float: none;
-    width: 100%;
-}
-
-#mainDiv .content {
-    box-sizing: content-box;
-}
-
-#mainDiv button, #fancybox-inner button {
-    box-sizing: border-box;
-}
-
 #content-inner {
 	width: 953px;
 	min-height: 250px;
@@ -465,10 +450,6 @@ DIV.tooltip {
  Breadcrumbs
 *****************************************************************************/
 
-#mainDiv #breadcrumbs {
-    position: initial;
-}
-
 #breadcrumbs {
 	position: absolute;
 	top: 11px;
@@ -503,12 +484,6 @@ DIV.tooltip {
  Container for the actual page content
 *****************************************************************************/
 
-#mainDiv #content-body {
-    float: none;
-    width: auto;
-    padding: 8px 0 32px 0;
-}
-
 #content-body {
 	float: right;
 	padding: 32px 18px 32px 0;
@@ -524,26 +499,6 @@ DIV.tooltip {
 
 .page-layout-menu-hidden #content-body {
 	width: 917px;
-}
-
-#mainDiv .mainCols
-{
-    display: flex;
-    justify-content: space-between;
-}
-
-#mainDiv #col1, #mainDiv #col {
-    flex-grow: 1;
-    width: auto;
-    float: none;
-}
-
-#fancybox-wrap, #fancybox-overlay, #fancybox-outer,  #fancybox-inner, #fancybox-tmp {
-    box-sizing: content-box;
-}
-
-#mainDiv #col2 {
-    margin-left: 16px;
 }
 
 #col1 {
@@ -1426,6 +1381,72 @@ Expandable button
 }
 
 #mainDiv .dashboard #col2 {
-    width: auto;
+    width: "50%";
     flex-grow: 1;
+}
+
+#mainDiv .dashboard #col1 {
+    width: "50%";
+}
+
+#mainDiv #moderate {
+    float: none;
+    width: auto;
+}
+
+#mainDiv #selection-content-inner {
+    padding: 16px 17px 0;;
+}
+
+#mainDiv #selection-content #breadcrumbs {
+     margin-top: 10px;
+}
+
+#mainDiv #breadcrumbs {
+     position: initial;
+     width: auto;
+     margin-top: 6px;
+     margin-bottom: 6px;
+     height: auto;
+}
+
+#mainDiv #content-inner {
+    min-height: 250px;
+    background: none;
+    float: none;
+    width: 100%;
+}
+
+#mainDiv .content {
+    box-sizing: content-box;
+}
+
+#mainDiv button, #fancybox-inner button {
+    box-sizing: border-box;
+}
+
+#mainDiv #content-body {
+    float: none;
+    width: auto;
+    padding: 8px 0 32px 0;
+}
+
+#mainDiv .mainCols
+{
+    display: flex;
+    justify-content: space-between;
+}
+
+#mainDiv #col1, #mainDiv #col {
+    flex-grow: 1;
+    width: auto;
+    float: none;
+}
+
+#fancybox-wrap, #fancybox-overlay, #fancybox-outer,  #fancybox-inner, #fancybox-tmp {
+    box-sizing: content-box;
+}
+
+#mainDiv #col2 {
+    margin-left: 16px;
 }

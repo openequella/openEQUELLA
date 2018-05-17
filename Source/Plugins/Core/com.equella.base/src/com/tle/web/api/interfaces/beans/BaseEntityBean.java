@@ -40,7 +40,7 @@ public abstract class BaseEntityBean extends AbstractExtendableBean
 	private UserBean owner;
 
 	private BaseEntitySecurityBean security;
-	private BaseEntityReadOnly readOnly;
+	private BaseEntityReadOnly readonly;
 
 	@JsonProperty(value = "_export")
 	private BaseEntityExportBean exportDetails;
@@ -145,13 +145,13 @@ public abstract class BaseEntityBean extends AbstractExtendableBean
 		this.exportDetails = exportDetails;
 	}
 
-	public BaseEntityReadOnly getReadOnly()
+	public BaseEntityReadOnly getReadonly()
 	{
-		return readOnly;
+		return readonly;
 	}
 
-	public void setReadOnly(BaseEntityReadOnly readOnly)
+	public void setReadonly(BaseEntityReadOnly readonly)
 	{
-		this.readOnly = readOnly;
+		this.readonly = readonly;
 	}
 }

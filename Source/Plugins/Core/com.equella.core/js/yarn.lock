@@ -2360,6 +2360,10 @@ css-selector-tokenizer@^0.7.0:
     fastparse "^1.1.1"
     regexpu-core "^1.0.0"
 
+css-vars-ponyfill@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/css-vars-ponyfill/-/css-vars-ponyfill-1.4.0.tgz#88e455003eda5d352b78c560fc4f6a7791d83bf3"
+
 css-vendor@^0.3.8:
   version "0.3.8"
   resolved "https://registry.yarnpkg.com/css-vendor/-/css-vendor-0.3.8.tgz#6421cfd3034ce664fe7673972fd0119fc28941fa"
@@ -5392,6 +5396,10 @@ jsonparse@^1.2.0:
 jsonpointer@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/jsonpointer/-/jsonpointer-4.0.1.tgz#4fd92cb34e0e9db3c89c8622ecf51f9b978c6cb9"
+
+jspolyfill-array.prototype.find@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/jspolyfill-array.prototype.find/-/jspolyfill-array.prototype.find-0.1.3.tgz#e809cef20ff5b6d9f1d36bbef12a4bdee84ae8e5"
 
 jsprim@^1.2.2:
   version "1.4.1"

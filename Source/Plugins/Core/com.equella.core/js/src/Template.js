@@ -2,6 +2,9 @@
 exports.renderData = function()
 {
     require('es6-object-assign').polyfill();
+    require('jspolyfill-array.prototype.find');
+    require('css-vars-ponyfill')({variables: {"--top-bar": "64px"}});
+    require('promise/polyfill');
     return typeof renderData != "undefined" ? renderData : {newUI:false};
 }();
 

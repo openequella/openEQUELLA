@@ -21,13 +21,14 @@ import DOM.HTML.Window (document)
 import DOM.Node.NonElementParentNode (getElementById)
 import DOM.Node.Types (ElementId(ElementId), documentToNonElementParentNode)
 import Data.Argonaut (decodeJson)
-import Data.Array (catMaybes, intercalate)
+import Data.Array (catMaybes, concat, intercalate)
 import Data.Either (either)
 import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, isJust, isNothing, maybe)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.StrMap as M
 import Data.String (joinWith)
 import Data.Tuple (Tuple(..))
+import Debug.Trace (traceAny)
 import Dispatcher (DispatchEff(DispatchEff), fromContext)
 import Dispatcher.React (ReactChildren(..), ReactProps(ReactProps), createLifecycleComponent, didMount, getProps, getState, modifyState)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
@@ -320,16 +321,22 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
       ],
       content 
     ]
-    
+    hasMenu = case renderData.menuMode of 
+      "HIDDEN" -> false 
+      _ -> true
     topBar = appBar [className $ classes.appBar] $ catMaybes [
-      Just $ toolbar [disableGutters true] $ [
-        iconButton [color C.inherit, className classes.navIconHide, onClick $ d \_ -> ToggleMenu] [ icon_ [D.text "menu" ] ] ,
-        D.div [DP.className classes.titleArea] $ catMaybes [
-          toMaybe backRoute $> iconButton [color C.inherit, onClick $ d \_ -> GoBack] [ icon_ [D.text "arrow_back" ] ],
-          Just $ typography [variant TS.title, color C.inherit, className classes.title] [ D.text titleText ], 
-          toMaybe titleExtra
-        ],
-        userMenu 
+      Just $ toolbar [disableGutters true] $ concat [
+        guard hasMenu $> iconButton [
+            color C.inherit, className classes.navIconHide, 
+            onClick $ d \_ -> ToggleMenu] [ icon_ [D.text "menu" ] 
+        ], [
+          D.div [DP.className classes.titleArea] $ catMaybes [
+            toMaybe backRoute $> iconButton [color C.inherit, onClick $ d \_ -> GoBack] [ icon_ [D.text "arrow_back" ] ],
+            Just $ typography [variant TS.title, color C.inherit, className classes.title] [ D.text titleText ], 
+            toMaybe titleExtra
+          ],
+          userMenu 
+        ]
       ], 
       tabsM
     ]

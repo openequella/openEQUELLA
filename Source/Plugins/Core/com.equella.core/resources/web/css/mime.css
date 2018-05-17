@@ -37,7 +37,6 @@
 
 .itemresult-content {
 	margin: 0;
-	width: 479px;
 }
 
 .itemresult-content img {
@@ -70,7 +69,6 @@
 
 .itemresult.selected .itemresult-content {
 	margin: 0;
-	width: 459px;
 }
 
 .itemresult.selected .itemresult-meta {
