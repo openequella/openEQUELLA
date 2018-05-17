@@ -45,4 +45,14 @@ public class ServerResource
 	{
 		return Response.ok(new ServerInfo()).build();
 	}
+
+	@GET
+	@Path("heartbeat")
+	@Produces({"text/plain"})
+	@ApiOperation("Keep your session alive")
+	public String heartbeat()
+	{
+		return "OK";
+	}
+
 }

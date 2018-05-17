@@ -219,11 +219,8 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
       }
     ],
     logo: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      marginTop: theme.spacing.unit * 2,
-      marginBottom: theme.spacing.unit
+      textAlign: "center",
+      marginTop: theme.spacing.unit * 2
     }, 
     titleArea: {
       flexGrow: 1,
