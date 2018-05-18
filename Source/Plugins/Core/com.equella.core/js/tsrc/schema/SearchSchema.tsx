@@ -75,7 +75,7 @@ function mapStateToProps(state: StoreState) {
 function mapDispatchToProps(dispatch: Dispatch<any>) {
     const { workers } = schemaService;
     return {
-        onSearch: (query: string) => workers.search(dispatch, {query, privilege:"EDIT_SCHEMA"})
+        onSearch: (query: string) => workers.search(dispatch, {query, privilege:["EDIT_SCHEMA", "DELETE_SCHEMA"]})
     }
 }
 

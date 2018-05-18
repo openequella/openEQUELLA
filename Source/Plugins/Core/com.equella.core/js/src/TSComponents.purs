@@ -4,7 +4,7 @@ import Prelude
 
 import Bridge (tsBridge)
 import Control.Monad.IOEffFn (IOFn1)
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe)
 import Data.Nullable (toNullable)
 import React (ReactClass, ReactElement, createElement, createFactory)
  
@@ -19,8 +19,8 @@ foreign import appBarQueryClass ::  ReactClass {query :: String, onChange :: IOF
 coursesPage :: ReactElement
 coursesPage = createElement searchCourses {store:store, bridge: tsBridge} []
 
-courseEdit :: String -> ReactElement
-courseEdit cid = createElement editCourse {store:store, bridge: tsBridge, uuid: toNullable $ Just cid} []
+courseEdit :: Maybe String -> ReactElement
+courseEdit cid = createElement editCourse {store:store, bridge: tsBridge, uuid: toNullable $ cid} []
 
 schemasPage :: ReactElement
 schemasPage = createElement searchSchemas {store:store,bridge: tsBridge} []

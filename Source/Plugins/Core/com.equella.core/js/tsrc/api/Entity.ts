@@ -14,8 +14,10 @@ export interface Entity {
 
 	security?: EntitySecurity;
     exportDetails?: EntityExport;
-    
     validationErrors?: IDictionary<string>;
+    readonly?: {
+        granted: string[]
+    }
 }
 
 export interface EntitySecurity {

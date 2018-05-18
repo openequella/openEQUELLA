@@ -24,6 +24,7 @@ data Route = SearchPage |
     SettingsPage | 
     CoursesPage | 
     CourseEdit String |
+    NewCourse |
     SchemasPage |
     SchemaEdit String
 
@@ -46,9 +47,10 @@ routeMatch :: Match Route
 routeMatch = 
     SearchPage <$ (lit "search") <|>
     SettingsPage <$ (lit "settings") <|>
+    NewCourse <$ (lit "course" *> lit "new") <|>
     CourseEdit <$> (lit "course" *> str <* lit "edit") <|>
-    SchemaEdit <$> (lit "schema" *> str <* lit "edit") <|>
     CoursesPage <$ (lit "course") <|>
+    SchemaEdit <$> (lit "schema" *> str <* lit "edit") <|>
     SchemasPage <$ (lit "schema")
 
 matchRoute :: String -> Maybe Route 
@@ -79,6 +81,7 @@ routeHash r = "/" <> ( case r of
     SearchPage -> "search"
     SettingsPage -> "settings"
     CoursesPage -> "course"
+    NewCourse -> "course/new"
     CourseEdit cid -> "course/" <> cid <> "/edit"
     SchemasPage -> "schema"
     SchemaEdit cid -> "schema/" <> cid <> "/edit"

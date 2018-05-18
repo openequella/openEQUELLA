@@ -32,7 +32,7 @@ import Network.HTTP.Affjax (AJAX, get)
 import Partial.Unsafe (unsafePartial)
 import React (createFactory)
 import React.DOM (div')
-import Routes (Route(SchemaEdit, SchemasPage, CourseEdit, CoursesPage, SettingsPage, SearchPage), matchRoute, nav)
+import Routes (Route(..), matchRoute, nav)
 import Routing.PushState (matchesWith)
 import SearchPage (searchPage)
 import SettingsPage (settingsPage)
@@ -67,7 +67,8 @@ main = do
         SearchPage -> searchPage
         SettingsPage -> settingsPage {legacyMode:false}
         CoursesPage -> coursesPage
-        CourseEdit cid -> courseEdit cid
+        NewCourse -> courseEdit Nothing
+        CourseEdit cid -> courseEdit $ Just cid
         SchemasPage -> schemasPage
         SchemaEdit cid -> schemaEdit cid
       render _ = maybe (div' []) legacy $ toMaybe renderData.html

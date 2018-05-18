@@ -81,7 +81,7 @@ interface EntityCrudActions<E extends Entity> {
     update: AsyncActionCreators<{entity: E}, {result: E}, void>;
     read: AsyncActionCreators<{uuid: string}, {result: E}, void>;
     delete: AsyncActionCreators<{uuid: string}, {uuid: string}, void>;
-    search: AsyncActionCreators<{query: string, privilege: string}, {results: SearchResults<E>}, void>;
+    search: AsyncActionCreators<{query: string, privilege: string[]}, {results: SearchResults<E>}, void>;
     validate: AsyncActionCreators<{entity: E}, IDictionary<string>, void>;
     // This is for temp modifications.  E.g. uncommitted changes before save
     modify: ActionCreator<{entity: E}>;
@@ -92,7 +92,7 @@ interface EntityWorkers<E extends Entity> {
     create: (dispatch: Dispatch<any>, params: { entity: E; }) => Promise<{ result: E; }>;
     update: (dispatch: Dispatch<any>, params: { entity: E; }) => Promise<{ result: E; }>;
     read: (dispatch: Dispatch<any>, params: { uuid: string; }) => Promise<{ result: E; }>;
-    search: (dispatch: Dispatch<any>, params: { query: string; privilege: string }) => Promise<{ results: SearchResults<E>; }>;
+    search: (dispatch: Dispatch<any>, params: { query: string; privilege: string[] }) => Promise<{ results: SearchResults<E>; }>;
     validate: (dispatch: Dispatch<any>, params: { entity: E }) => Promise<IDictionary<string>>;
 }
   
@@ -110,7 +110,7 @@ function entityCrudActions<E extends Entity>(entityType: string): EntityCrudActi
       update: createUpdate,
       read: actionCreator.async<{uuid: string}, {result: E}, void>('LOAD_' + entityType),
       delete: actionCreator.async<{uuid: string}, {uuid: string}, void>('DELETE_' + entityType),
-      search: actionCreator.async<{query: string, privilege: string}, {results: SearchResults<E>}, void>('SEARCH_' + entityType),
+      search: actionCreator.async<{query: string, privilege: string[]}, {results: SearchResults<E>}, void>('SEARCH_' + entityType),
       modify: actionCreator<{entity: E}>('MODIFY_' + entityType),
       validate: actionCreator.async<{entity: E}, IDictionary<string>, void>('VALIDATE_' + entityType)
     };
