@@ -1,21 +1,22 @@
-import * as React from 'react';
-import { Button, TextField, Grid, Select, InputLabel, Input, 
-    MenuItem, Switch, FormGroup, FormControl, FormControlLabel, FormHelperText,
-    /*IconButton, Icon,*/ Tabs, Tab, /*Typography,*/ Theme, Paper } from 'material-ui';
-import withStyles, { WithStyles, StyleRules } from 'material-ui/styles/withStyles';
+import { format, parse } from 'date-fns';
+import {
+Button, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Input, InputLabel, MenuItem, Paper, Select, Switch, Tab,
+/*IconButton, Icon,*/ Tabs, TextField, /*Typography,*/ Theme
+} from 'material-ui';
 //import SwipeableViews from 'react-swipeable-views';
 import { DatePicker } from 'material-ui-pickers';
-import { connect, Dispatch } from 'react-redux';
-import { format, parse } from 'date-fns';
-
-import { Course, Entity } from '../api';
-import courseService from './index';
+import withStyles, { StyleRules, WithStyles } from 'material-ui/styles/withStyles';
+import * as React from 'react';
+import { Dispatch, connect } from 'react-redux';
+import aclService from '../acl/index';
+import { Course } from '../api';
+import { AclEditorChangeEvent, TargetListEntry } from '../api/acleditor';
+import { Loader } from '../components/index';
+import { EditEntityDispatchProps, EditEntityProps, EditEntityStateProps, entityStrings } from '../entity';
+import schemaService from '../schema/index';
 import { StoreState } from '../store';
-import { Bridge } from '../api/bridge';
-import { TargetListEntry, AclEditorChangeEvent } from '../api/acleditor';
-import { Action } from 'typescript-fsa';
 import { prepLangStrings } from '../util/langstrings';
-import { entityStrings } from '../entity';
+import courseService from './index';
 
 const styles = (theme: Theme) => {
     //TODO: get drawerWidth passed in somehow
@@ -36,10 +37,11 @@ const styles = (theme: Theme) => {
             marginBottom: 2 * theme.spacing.unit
         },
         body: {
-            height: `calc(100% - ${footerHeight}px)`
+            height: `calc(100% - ${footerHeight}px)`,
+            paddingBottom: '24px'
         },
         footer: {
-            position: 'absolute',
+            position: 'fixed',
             bottom: 0,
             left: 0,
             width: "100%",
@@ -56,18 +58,17 @@ const styles = (theme: Theme) => {
     } as StyleRules;
 };
 
-interface EditEntityProps<E extends Entity>
-{
-    bridge: Bridge;
-    uuid?: string;
-    loadEntity: (uuid: string) => Promise<{result: E}>;
-    saveEntity: (entity: E) => Promise<{result: E}>;
-    modifyEntity: (entity: E) => Action<{entity: E}>;
-    entity: E | undefined;
+interface EditCourseStateProps extends EditEntityStateProps<Course> {
+    citations?: string[];
+    availablePrivileges?: string[];
 }
 
-interface EditCourseProps extends EditEntityProps<Course> {
-    
+interface EditCourseDispatchProps extends EditEntityDispatchProps<Course> {
+    loadCitations: () => Promise<string[]>;
+    listPrivileges: (node: string) => Promise<{node: string, result: string[]}>;
+}
+
+interface EditCourseProps extends EditEntityProps<Course>, EditCourseStateProps, EditCourseDispatchProps {
 }
 
 type Props = EditCourseProps & 
@@ -83,6 +84,8 @@ const strings = prepLangStrings("courseedit",{
         title: "Edit Course",
         tab: "Course Details"
     });
+
+
 class EditCourse extends React.Component<Props, EditCourseState> {
 
     constructor(props: Props){
@@ -104,6 +107,8 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                 name: ''
             });
         }
+        this.props.loadCitations();
+        this.props.listPrivileges('COURSE_INFO');
     }
 
     modifyEntity = (c: Partial<Course>) => {
@@ -171,18 +176,22 @@ class EditCourse extends React.Component<Props, EditCourseState> {
     }
 
     render() {
-        if (!this.props.entity){
-            return <div></div>
+        const { entity, citations, availablePrivileges, classes } = this.props;
+        const { AclEditor, Template, router, routes } = this.props.bridge;
+
+        if (!entity || !citations || !availablePrivileges){
+            return <Template title={strings.title} backRoute={routes.CoursesPage}>
+                    <Loader />
+                </Template>
         }
 
+
         const { code, name, description, type, departmentName, citation, students, from, 
-            until, versionSelection, archived, security } = this.props.entity;
+            until, versionSelection, archived, security } = entity;
         const { activeTab, changed, canSave } = this.state;
-        const { classes } = this.props;
         const vs = (versionSelection ? versionSelection : "DEFAULT");
         const fromDate = (from ? parse(from!, 'YYYY-MM-DDTHH:mm:ss.SSSZ', new Date()) : null);
         const untilDate = (until ? parse(until!, 'YYYY-MM-DDTHH:mm:ss.SSSZ', new Date()) : null);
-        const { AclEditor, Template, router, routes } = this.props.bridge;
 
         let rules: TargetListEntry[] = [];
         if (security){
@@ -260,9 +269,11 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                                     input={<Input id="citation-inp" />}
                                     onChange={this.handleChange('citation')}
                                 >
-                                    <MenuItem key={"harvard"} value={"harvard"}>
-                                        harvard
+                                    {citations.map((citation) =>
+                                    <MenuItem key={citation} value={citation}>
+                                        {citation}
                                     </MenuItem>
+                                    )}
                                 </Select>
                             </FormControl>
 
@@ -329,7 +340,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                     <AclEditor 
                         onChange={ this.handleAclChange() }
                         acls={rules} 
-                        allowedPrivs={["EDIT_COURSE_INFO", "DELETE_COURSE_INFO", "LIST_COURSE_INFO", "VIEW_COURSE_INFO"]}/>
+                        allowedPrivs={availablePrivileges}/>
                 </div>
             </div>
 
@@ -344,19 +355,24 @@ class EditCourse extends React.Component<Props, EditCourseState> {
     }
 }
 
-function mapStateToProps(state: StoreState) {
-    const { course } = state;
+function mapStateToProps(state: StoreState): EditCourseStateProps {
+    const { course, schema, acl } = state;
     return {
-        entity: course.editingEntity
+        entity: course.editingEntity,
+        citations: schema.citations,
+        availablePrivileges: acl.nodes['COURSE_INFO']
     };
 }
 
-function mapDispatchToProps(dispatch: Dispatch<any>) {
+function mapDispatchToProps(dispatch: Dispatch<any>): EditCourseDispatchProps {
     const { workers, actions } = courseService;
+    
     return {
         loadEntity: (uuid: string) => workers.read(dispatch, {uuid}),
         saveEntity: (entity: Course) => workers.update(dispatch, {entity}),
-        modifyEntity: (entity: Course) => dispatch(actions.modify({entity: entity}))
+        modifyEntity: (entity: Course) => dispatch(actions.modify({entity: entity})),
+        loadCitations: () => schemaService.workers.citations(dispatch, {}),
+        listPrivileges: (node: string) => aclService.workers.listPrivileges(dispatch, {node})
     };
 }
 

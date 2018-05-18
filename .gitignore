@@ -10,6 +10,7 @@ generated.keystore
 .project
 .cache-main
 .cache-tests
+.code-workspace
 # Remove this one day
 Source/Plugins/Kaltura
 server.xml

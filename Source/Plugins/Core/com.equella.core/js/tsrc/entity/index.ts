@@ -1,18 +1,72 @@
-import { Dispatch } from 'redux';
-import { AsyncActionCreators, ActionCreator } from 'typescript-fsa';
 import axios from 'axios';
-import { reducerWithInitialState, ReducerBuilder } from "typescript-fsa-reducers";
-
+import { Dispatch } from 'redux';
+import { Action, ActionCreator, AsyncActionCreators } from 'typescript-fsa';
+import { ReducerBuilder, reducerWithInitialState } from "typescript-fsa-reducers";
 import { Entity } from '../api/Entity';
 import { SearchResults } from '../api/General';
+import { Bridge } from '../api/bridge';
 import { Config } from '../config';
 import { actionCreator, wrapAsyncWorker } from '../util/actionutil';
-import { PartialEntityState } from '../store';
 import { encodeQuery } from '../util/encodequery';
 import { prepLangStrings } from '../util/langstrings';
 
 
-export interface EntityCrudActions<E extends Entity> {
+export function extendedEntityService<E extends Entity, XC extends {}, XW extends {}>(entityType: string, extCrud?: XC, extWorkers?: XW): EntityService<E, XC, XW> {
+    const baseActions = entityCrudActions<E>(entityType);
+    const baseWorkers = entityWorkers(baseActions);
+    const actions: EntityCrudActions<E> & XC = Object.assign({}, baseActions, extCrud);
+    const workers: EntityWorkers<E> & XW = Object.assign({}, baseWorkers, extWorkers);
+
+    return {
+        actions: actions,
+        workers: workers,
+        reducer: entityReducerBuilder(baseActions)
+    };
+}
+
+export function entityService<E extends Entity>(entityType: string): EntityService<E, {}, {}> {
+    return extendedEntityService<E, {}, {}>(entityType, {}, {});
+}
+
+export const entityStrings = prepLangStrings("entity", {
+    edit: {
+        tab: {
+            permissions: "Permissions"
+        }
+    }
+});
+
+export interface EditEntityStateProps<E extends Entity> {
+    entity: E | undefined;
+}
+
+export interface EditEntityDispatchProps<E extends Entity> {
+    loadEntity: (uuid: string) => Promise<{result: E}>;
+    saveEntity: (entity: E) => Promise<{result: E}>;
+    modifyEntity: (entity: E) => Action<{entity: E}>;
+}
+
+export interface EditEntityProps<E extends Entity> extends EditEntityStateProps<E>, EditEntityDispatchProps<E>
+{
+    bridge: Bridge;
+    uuid?: string;
+}
+
+export interface PartialEntityState<E extends Entity> {
+    query?: string;
+    entities?: E[];
+    editingEntity?: E;
+    loading?: boolean;
+}
+
+export interface EntityState<E extends Entity> extends PartialEntityState<E> {
+    entities: E[];
+    loading: boolean;
+}
+
+
+
+interface EntityCrudActions<E extends Entity> {
     entityType: string;
     create: AsyncActionCreators<{entity: E}, {result: E}, void>;
     update: AsyncActionCreators<{entity: E}, {result: E}, void>;
@@ -23,7 +77,7 @@ export interface EntityCrudActions<E extends Entity> {
     modify: ActionCreator<{entity: E}>;
 }
   
-export interface EntityWorkers<E extends Entity> {
+interface EntityWorkers<E extends Entity> {
     entityType: string;
     create: (dispatch: Dispatch<any>, params: { entity: E; }) => Promise<{ result: E; }>;
     update: (dispatch: Dispatch<any>, params: { entity: E; }) => Promise<{ result: E; }>;
@@ -31,24 +85,11 @@ export interface EntityWorkers<E extends Entity> {
     search: (dispatch: Dispatch<any>, params: { query: string; privilege: string }) => Promise<{ results: SearchResults<E>; }>;
 }
   
-export interface EntityService<E extends Entity> {
-    actions: EntityCrudActions<E>;
-    workers: EntityWorkers<E>;
+interface EntityService<E extends Entity, XC extends {}, XW extends {}> {
+    actions: EntityCrudActions<E> & XC;
+    workers: EntityWorkers<E> & XW;
     reducer: ReducerBuilder<PartialEntityState<E>, PartialEntityState<E>>;
 }
-
-export function entityService<E extends Entity>(entityType: string): EntityService<E> {
-    const actions = entityCrudActions<E>(entityType);
-    return {
-        actions: actions,
-        workers: entityWorkers(actions),
-        reducer: entityReducerBuilder(actions)
-    };
-}
-
-
-
-
   
 function entityCrudActions<E extends Entity>(entityType: string): EntityCrudActions<E> {
     const createUpdate = actionCreator.async<{entity: E}, {result: E}, void>('SAVE_' + entityType);
@@ -98,9 +139,9 @@ function entityWorkers<E extends Entity>(entityCrudActions: EntityCrudActions<E>
         }
       )
     };
-  }
+}
 
-const entityReducerBuilder = function<E extends Entity>(entityCrudActions: EntityCrudActions<E>): ReducerBuilder<PartialEntityState<E>, PartialEntityState<E>> {
+function entityReducerBuilder<E extends Entity>(entityCrudActions: EntityCrudActions<E>): ReducerBuilder<PartialEntityState<E>, PartialEntityState<E>> {
     let initialEntityState: PartialEntityState<E> = {
         query: '',
         entities: [] as E[],
@@ -129,12 +170,4 @@ const entityReducerBuilder = function<E extends Entity>(entityCrudActions: Entit
         .case(entityCrudActions.modify, (state, payload) => {
             return { ...state, editingEntity: payload.entity }
         });
-}
-
-export const entityStrings = prepLangStrings("entity", {
-    edit: {
-        tab: {
-            permissions: "Permissions"
-        }
-    }
-})
+};
