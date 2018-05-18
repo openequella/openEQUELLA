@@ -2,13 +2,13 @@ import * as React from 'react';
 import { Course, SearchResults } from '../api';
 import { StoreState } from '../store';
 import { connect, Dispatch } from 'react-redux';
-import List from 'material-ui/List';
+import List from '@material-ui/core/List';
 import SearchResult from '../components/SearchResult';
 import { Bridge } from '../api/bridge';
-import { Paper, Theme, Typography } from 'material-ui';
+import { Paper, Theme, Typography } from '@material-ui/core';
 import AppBarQuery from '../components/AppBarQuery';
 import { courseService } from '../services';
-import withStyles, { WithStyles } from 'material-ui/styles/withStyles';
+import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 
 const styles = (theme: Theme) => ({
     overall: {

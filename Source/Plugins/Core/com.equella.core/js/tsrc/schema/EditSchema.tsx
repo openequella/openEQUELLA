@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, TextField, Grid } from 'material-ui';
+import { Button, TextField, Grid } from '@material-ui/core';
 import { Schema } from '../api';
 import schemaService from './index';
 import { StoreState } from '../store';

@@ -1,6 +1,6 @@
 {
   "name": "js",
-  "set": "equella-10052018",
+  "set": "equella-18052018",
   "source": "https://github.com/equella/package-sets.git",
   "depends": [
     "js-timers",

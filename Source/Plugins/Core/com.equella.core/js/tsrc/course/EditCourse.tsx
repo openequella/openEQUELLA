@@ -1,11 +1,6 @@
 import { format, parse } from 'date-fns';
-import {
-Button, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Input, InputLabel, MenuItem, Paper, Select, Switch, Tab,
-/*IconButton, Icon,*/ Tabs, TextField, /*Typography,*/ Theme
-} from 'material-ui';
 //import SwipeableViews from 'react-swipeable-views';
 import { DatePicker } from 'material-ui-pickers';
-import withStyles, { StyleRules, WithStyles } from 'material-ui/styles/withStyles';
 import * as React from 'react';
 import { Dispatch, connect } from 'react-redux';
 import aclService from '../acl/index';
@@ -16,7 +11,10 @@ import { EditEntityDispatchProps, EditEntityProps, EditEntityStateProps, entityS
 import schemaService from '../schema/index';
 import { StoreState } from '../store';
 import { prepLangStrings } from '../util/langstrings';
-import courseService from './index';
+import { Theme, Tabs, Tab, Grid, TextField, MenuItem, Paper, Button, FormGroup, FormControlLabel, FormControl, InputLabel, Input, FormHelperText, Switch } from '@material-ui/core';
+import { StyleRules, WithStyles, withStyles } from '@material-ui/core/styles';
+import Select from '@material-ui/core/Select'
+import courseService from '.';
 
 const styles = (theme: Theme) => {
     //TODO: get drawerWidth passed in somehow
@@ -322,7 +320,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                                 />
 
                             <FormGroup className={classes.formControl}>
-                                <FormControlLabel 
+                                <FormControlLabel
                                     label="Archived"
                                     control={<Switch
                                         checked={archived || false}

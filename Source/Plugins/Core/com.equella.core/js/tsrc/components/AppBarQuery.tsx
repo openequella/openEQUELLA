@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { WithStyles, Icon, withStyles, Theme } from "material-ui";
-import { fade } from 'material-ui/styles/colorManipulator';
-import { StyleRules } from 'material-ui/styles';
+import { WithStyles, Icon, withStyles, Theme } from "@material-ui/core";
+import { fade } from '@material-ui/core/styles/colorManipulator';
+import { StyleRules } from '@material-ui/core/styles';
 
 interface AppBarQueryProps {
     onSearch?: (query?: string) => void;

@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { Button, TextField } from 'material-ui';
+import { Button, TextField } from '@material-ui/core';
 import { Schema } from '../api';
 import schemaService from './index';
 import { StoreState } from '../store';
 import { connect, Dispatch } from 'react-redux';
-import List from 'material-ui/List';
+import List from '@material-ui/core/List';
 import SearchResult from '../components/SearchResult';
 import { Bridge } from '../api/bridge';
 /*
