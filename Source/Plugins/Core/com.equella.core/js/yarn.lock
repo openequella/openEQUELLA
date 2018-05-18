@@ -1687,8 +1687,8 @@ caniuse-db@^1.0.30000529, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639:
   resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000843.tgz#4f7e8501f557dc9bcd37dd33ac85905c765efec2"
 
 caniuse-lite@^1.0.30000748, caniuse-lite@^1.0.30000792:
-  version "1.0.30000842"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000842.tgz#7a198e3181a207f4b5749b8f5a1817685bf3d7df"
+  version "1.0.30000843"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000843.tgz#4fdec258dc641c385744cdd49d23c5459c3d4411"
 
 capture-exit@^1.2.0:
   version "1.2.0"

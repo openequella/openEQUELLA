@@ -1,8 +1,12 @@
+import { Button, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Input, InputLabel, MenuItem, Paper, Switch, Tab, Tabs, TextField, Theme } from '@material-ui/core';
+import Select from '@material-ui/core/Select';
+import { StyleRules, WithStyles, withStyles } from '@material-ui/core/styles';
 import { format, parse } from 'date-fns';
 //import SwipeableViews from 'react-swipeable-views';
 import { DatePicker } from 'material-ui-pickers';
 import * as React from 'react';
 import { Dispatch, connect } from 'react-redux';
+import courseService from '.';
 import aclService from '../acl/index';
 import { Course } from '../api';
 import { AclEditorChangeEvent, TargetListEntry } from '../api/acleditor';
@@ -12,10 +16,6 @@ import schemaService from '../schema/index';
 import { StoreState } from '../store';
 import { properties } from '../util/dictionary';
 import { prepLangStrings } from '../util/langstrings';
-import { Theme, Tabs, Tab, Grid, TextField, MenuItem, Paper, Button, FormGroup, FormControlLabel, FormControl, InputLabel, Input, FormHelperText, Switch } from '@material-ui/core';
-import { StyleRules, WithStyles, withStyles } from '@material-ui/core/styles';
-import Select from '@material-ui/core/Select'
-import courseService from '.';
 
 const styles = (theme: Theme) => {
     //TODO: get drawerWidth passed in somehow

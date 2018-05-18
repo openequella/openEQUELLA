@@ -121,12 +121,14 @@ function entityWorkers<E extends Entity>(entityCrudActions: EntityCrudActions<E>
     const createUpdate = wrapAsyncWorker(entityCrudActions.update, 
       (param): Promise<{result: E}> => { 
           const { entity } = param;
+          // FIXME: edit a specific locale:
+          const postEntity = Object.assign({}, entity, { nameStrings: { en: entity.name }, descriptionStrings: { en: entity.description }});
           if (entity.uuid){
-              return axios.put<E>(`${Config.baseUrl}api/${entityLower}/${entity.uuid}`, entity)
+              return axios.put<E>(`${Config.baseUrl}api/${entityLower}/${entity.uuid}`, postEntity)
                   .then(res => ({ result: res.data})); 
           }
           else {
-              return axios.post<E>(`${Config.baseUrl}api/${entityLower}/`, entity)
+              return axios.post<E>(`${Config.baseUrl}api/${entityLower}/`, postEntity)
                   .then(res => ({ result: res.data})); 
           }   
       }
