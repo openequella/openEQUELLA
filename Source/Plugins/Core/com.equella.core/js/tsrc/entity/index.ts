@@ -7,16 +7,16 @@ import { SearchResults } from '../api/General';
 import { Bridge } from '../api/bridge';
 import { Config } from '../config';
 import { actionCreator, wrapAsyncWorker } from '../util/actionutil';
+import { IDictionary } from '../util/dictionary';
 import { encodeQuery } from '../util/encodequery';
 import { prepLangStrings } from '../util/langstrings';
 
-
-export function extendedEntityService<E extends Entity, XC extends {}, XW extends {}>(entityType: string, extCrud?: XC, extWorkers?: XW): EntityService<E, XC, XW> {
+export function extendedEntityService<E extends Entity, XC extends {}, XW extends {}>(entityType: string, extCrud?: XC, extWorkers?: XW, extValidate?: (entity: E, errors: IDictionary<string>) => void): EntityService<E, XC, XW> {
     const baseActions = entityCrudActions<E>(entityType);
-    const baseWorkers = entityWorkers(baseActions);
+    const baseWorkers = entityWorkers(baseActions, extValidate);
     const actions: EntityCrudActions<E> & XC = Object.assign({}, baseActions, extCrud);
     const workers: EntityWorkers<E> & XW = Object.assign({}, baseWorkers, extWorkers);
-
+    
     return {
         actions: actions,
         workers: workers,
@@ -25,7 +25,7 @@ export function extendedEntityService<E extends Entity, XC extends {}, XW extend
 }
 
 export function entityService<E extends Entity>(entityType: string): EntityService<E, {}, {}> {
-    return extendedEntityService<E, {}, {}>(entityType, {}, {});
+    return extendedEntityService<E, {}, {}>(entityType);
 }
 
 export const entityStrings = prepLangStrings("entity", {
@@ -44,6 +44,7 @@ export interface EditEntityDispatchProps<E extends Entity> {
     loadEntity: (uuid: string) => Promise<{result: E}>;
     saveEntity: (entity: E) => Promise<{result: E}>;
     modifyEntity: (entity: E) => Action<{entity: E}>;
+    validateEntity: (entity: E) => Promise<IDictionary<string>>;
 }
 
 export interface EditEntityProps<E extends Entity> extends EditEntityStateProps<E>, EditEntityDispatchProps<E>
@@ -65,6 +66,14 @@ export interface EntityState<E extends Entity> extends PartialEntityState<E> {
 }
 
 
+function baseValidate<E extends Entity>(entity: E): IDictionary<string> {
+    const validationErrors = {};
+    if (!entity.name){
+        validationErrors['name'] = 'Name is required';
+    }
+    return validationErrors;
+}
+
 
 interface EntityCrudActions<E extends Entity> {
     entityType: string;
@@ -73,6 +82,7 @@ interface EntityCrudActions<E extends Entity> {
     read: AsyncActionCreators<{uuid: string}, {result: E}, void>;
     delete: AsyncActionCreators<{uuid: string}, {uuid: string}, void>;
     search: AsyncActionCreators<{query: string, privilege: string}, {results: SearchResults<E>}, void>;
+    validate: AsyncActionCreators<{entity: E}, IDictionary<string>, void>;
     // This is for temp modifications.  E.g. uncommitted changes before save
     modify: ActionCreator<{entity: E}>;
 }
@@ -83,6 +93,7 @@ interface EntityWorkers<E extends Entity> {
     update: (dispatch: Dispatch<any>, params: { entity: E; }) => Promise<{ result: E; }>;
     read: (dispatch: Dispatch<any>, params: { uuid: string; }) => Promise<{ result: E; }>;
     search: (dispatch: Dispatch<any>, params: { query: string; privilege: string }) => Promise<{ results: SearchResults<E>; }>;
+    validate: (dispatch: Dispatch<any>, params: { entity: E }) => Promise<IDictionary<string>>;
 }
   
 interface EntityService<E extends Entity, XC extends {}, XW extends {}> {
@@ -90,7 +101,7 @@ interface EntityService<E extends Entity, XC extends {}, XW extends {}> {
     workers: EntityWorkers<E> & XW;
     reducer: ReducerBuilder<PartialEntityState<E>, PartialEntityState<E>>;
 }
-  
+
 function entityCrudActions<E extends Entity>(entityType: string): EntityCrudActions<E> {
     const createUpdate = actionCreator.async<{entity: E}, {result: E}, void>('SAVE_' + entityType);
     return {
@@ -100,11 +111,12 @@ function entityCrudActions<E extends Entity>(entityType: string): EntityCrudActi
       read: actionCreator.async<{uuid: string}, {result: E}, void>('LOAD_' + entityType),
       delete: actionCreator.async<{uuid: string}, {uuid: string}, void>('DELETE_' + entityType),
       search: actionCreator.async<{query: string, privilege: string}, {results: SearchResults<E>}, void>('SEARCH_' + entityType),
-      modify: actionCreator<{entity: E}>('MODIFY_' + entityType)
+      modify: actionCreator<{entity: E}>('MODIFY_' + entityType),
+      validate: actionCreator.async<{entity: E}, IDictionary<string>, void>('VALIDATE_' + entityType)
     };
   }
   
-function entityWorkers<E extends Entity>(entityCrudActions: EntityCrudActions<E>): any {
+function entityWorkers<E extends Entity>(entityCrudActions: EntityCrudActions<E>, extValidate?: (entity: E, errors: IDictionary<string>) => void): any {
     const entityLower = entityCrudActions.entityType.toLowerCase();
     const createUpdate = wrapAsyncWorker(entityCrudActions.update, 
       (param): Promise<{result: E}> => { 
@@ -119,6 +131,14 @@ function entityWorkers<E extends Entity>(entityCrudActions: EntityCrudActions<E>
           }   
       }
     );
+    
+    const validate = function(entity: E): IDictionary<string> {
+        const errors = baseValidate(entity);
+        if (extValidate){
+            extValidate(entity, errors);
+        }
+        return errors;
+    };
   
     return {
       create: createUpdate,
@@ -137,7 +157,11 @@ function entityWorkers<E extends Entity>(entityCrudActions: EntityCrudActions<E>
             return axios.get<SearchResults<E>>(`${Config.baseUrl}api/${entityLower}${qs}`)
                 .then(res => ({ results: res.data})); 
         }
-      )
+      ),
+      validate: wrapAsyncWorker(entityCrudActions.validate, 
+        (param): Promise<IDictionary<string>> => {
+            return Promise.resolve(validate(param.entity));
+        })
     };
 }
 
@@ -169,5 +193,9 @@ function entityReducerBuilder<E extends Entity>(entityCrudActions: EntityCrudAct
         })
         .case(entityCrudActions.modify, (state, payload) => {
             return { ...state, editingEntity: payload.entity }
+        })
+        .case(entityCrudActions.validate.done, (state, success) => {
+            const editingEntity = Object.assign({}, state.editingEntity, { validationErrors: success.result });
+            return { ...state, editingEntity }
         });
 };

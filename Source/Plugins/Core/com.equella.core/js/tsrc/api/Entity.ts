@@ -1,3 +1,4 @@
+import { IDictionary } from '../util/dictionary';
 import { User } from './User';
 import { TargetListEntry } from './acleditor';
 
@@ -12,7 +13,9 @@ export interface Entity {
 	owner?: User;
 
 	security?: EntitySecurity;
-	exportDetails?: EntityExport;
+    exportDetails?: EntityExport;
+    
+    validationErrors?: IDictionary<string>;
 }
 
 export interface EntitySecurity {

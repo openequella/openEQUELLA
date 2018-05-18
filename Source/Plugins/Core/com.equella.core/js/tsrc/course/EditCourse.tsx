@@ -10,6 +10,7 @@ import { Loader } from '../components/index';
 import { EditEntityDispatchProps, EditEntityProps, EditEntityStateProps, entityStrings } from '../entity';
 import schemaService from '../schema/index';
 import { StoreState } from '../store';
+import { properties } from '../util/dictionary';
 import { prepLangStrings } from '../util/langstrings';
 import { Theme, Tabs, Tab, Grid, TextField, MenuItem, Paper, Button, FormGroup, FormControlLabel, FormControl, InputLabel, Input, FormHelperText, Switch } from '@material-ui/core';
 import { StyleRules, WithStyles, withStyles } from '@material-ui/core/styles';
@@ -132,8 +133,15 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                 versionSelection: vs,
                 security: this.state.editSecurity ? {rules: this.state.editSecurity()} : this.props.entity.security
             };
-            this.props.saveEntity(course);
-            this.setState({changed:false});
+            
+            const { saveEntity } = this.props;
+            const { setState } = this;
+            this.props.validateEntity(course).then(function(valErrors){
+                if (properties(valErrors).length === 0){
+                    saveEntity(course);
+                    setState({changed:false});
+                }
+            });
         }
     }
 
@@ -185,11 +193,12 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
 
         const { code, name, description, type, departmentName, citation, students, from, 
-            until, versionSelection, archived, security } = entity;
+            until, versionSelection, archived, security, validationErrors } = entity;
         const { activeTab, changed, canSave } = this.state;
         const vs = (versionSelection ? versionSelection : "DEFAULT");
         const fromDate = (from ? parse(from!, 'YYYY-MM-DDTHH:mm:ss.SSSZ', new Date()) : null);
         const untilDate = (until ? parse(until!, 'YYYY-MM-DDTHH:mm:ss.SSSZ', new Date()) : null);
+        const val = validationErrors || {};
 
         let rules: TargetListEntry[] = [];
         if (security){
@@ -215,6 +224,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                                 margin="normal"
                                 className={classes.formControl2}
                                 required
+                                error={(val['name'] ? true : false)}
                                 />
 
                             <TextField id="description" 
@@ -236,6 +246,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                                 margin="normal"
                                 className={classes.formControl}
                                 required
+                                error={(val['code'] ? true : false)}
                                     />
 
                             <FormControl margin="normal" className={classes.formControl}>
@@ -370,7 +381,8 @@ function mapDispatchToProps(dispatch: Dispatch<any>): EditCourseDispatchProps {
         saveEntity: (entity: Course) => workers.update(dispatch, {entity}),
         modifyEntity: (entity: Course) => dispatch(actions.modify({entity: entity})),
         loadCitations: () => schemaService.workers.citations(dispatch, {}),
-        listPrivileges: (node: string) => aclService.workers.listPrivileges(dispatch, {node})
+        listPrivileges: (node: string) => aclService.workers.listPrivileges(dispatch, {node}),
+        validateEntity: (entity: Course) => workers.validate(dispatch, { entity })
     };
 }
 

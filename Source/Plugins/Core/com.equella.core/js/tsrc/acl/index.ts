@@ -4,6 +4,7 @@ import { AsyncActionCreators } from 'typescript-fsa';
 import { ReducerBuilder, reducerWithInitialState } from "typescript-fsa-reducers";
 import { Config } from '../config';
 import { actionCreator, wrapAsyncWorker } from '../util/actionutil';
+import { IDictionary } from '../util/dictionary';
 
 const acl = aclService();
 export default acl;
@@ -30,9 +31,7 @@ interface AclWorkers {
 }
 
 interface PartialAclState {
-    nodes: {
-        [node:string]: string[] | undefined;
-    }
+    nodes: IDictionary<string[]>
 }
 
 function aclActions(): AclActions {
