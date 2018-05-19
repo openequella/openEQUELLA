@@ -43,9 +43,10 @@ public class PlainTextExtracter extends AbstractTextExtracterExtension
 	}
 
 	@Override
-	public void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize)
+	public void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration, int durationCheckFrequency)
 		throws IOException
 	{
+		// Ignore parseDuration and durationCheckFrequency for now.
 		int done = 0;
 		byte[] filebytes = new byte[maxSize];
 		while( done < maxSize )

@@ -21,12 +21,12 @@ import java.io.InputStream;
 
 import javax.inject.Singleton;
 
+import com.tle.core.freetext.extracter.handler.CappedBodyContentHandler;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
-import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.sax.WriteOutContentHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,11 +53,11 @@ public class PdfExtracter extends AbstractTextExtracterExtension
 	}
 
 	@Override
-	public void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize)
+	public void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration, int durationCheckFrequency)
 		throws IOException
 	{
 		WriteOutContentHandler wrapped = new WriteOutContentHandler(maxSize);
-		ContentHandler handler = new BodyContentHandler(wrapped);
+		ContentHandler handler = new CappedBodyContentHandler(wrapped, parseDuration, durationCheckFrequency);
 		try
 		{
 			Metadata meta = new Metadata();
@@ -65,6 +65,7 @@ public class PdfExtracter extends AbstractTextExtracterExtension
 			parser.parse(input, handler, meta, new ParseContext());
 
 			appendText(handler, outputText, maxSize);
+		
 		}
 		catch( Exception t )
 		{

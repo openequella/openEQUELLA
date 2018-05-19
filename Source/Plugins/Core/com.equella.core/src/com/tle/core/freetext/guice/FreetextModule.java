@@ -35,6 +35,8 @@ public class FreetextModule extends PropertiesModule
 		bindProp("freetextIndex.defaultOperator");
 		bindBoolean("textExtracter.indexAttachments");
 		bindBoolean("textExtracter.indexImsPackages");
+		bindLong("textExtracter.parseDurationCap");
+		bindInt("textExtracter.durationCheckFrequency");
 		install(new FreetextMandatoryModule());
 	}
 
