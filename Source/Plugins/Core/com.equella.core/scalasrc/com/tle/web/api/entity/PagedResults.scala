@@ -65,10 +65,8 @@ object PagedResults {
           val privMap = LegacyGuice.aclManager.getPrivilegesForObjects(allReqPriv.asJavaCollection, nextLot).asScala
           object ExtraPrivs
           {
-            def unapply(be: BE): Option[(BE, Set[String])] = {
-              privMap.get(be).map {
-                p => (be, allReqPriv & p.asScala.keySet)
-              }
+            def unapply(be: BE): Option[(BE, Set[String])] = privMap.get(be).map {
+              p => (be, allReqPriv & p.asScala.keySet)
             }
           }
           val withPriv = nextLot.asScala.collect {

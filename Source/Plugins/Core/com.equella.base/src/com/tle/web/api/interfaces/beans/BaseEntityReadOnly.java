@@ -16,13 +16,17 @@
 
 package com.tle.web.api.interfaces.beans;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Collection;
 
 public class BaseEntityReadOnly {
 
     private final Collection<String> granted;
 
-    public BaseEntityReadOnly(Collection<String> granted)
+    @JsonCreator
+    public BaseEntityReadOnly(@JsonProperty("granted") Collection<String> granted)
     {
         this.granted = granted;
     }

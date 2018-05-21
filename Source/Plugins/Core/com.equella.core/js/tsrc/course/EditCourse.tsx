@@ -135,11 +135,10 @@ class EditCourse extends React.Component<Props, EditCourseState> {
             };
             
             const { saveEntity } = this.props;
-            const { setState } = this;
+            const thiss = this;
             this.props.validateEntity(course).then(function(valErrors){
                 if (properties(valErrors).length === 0){
-                    saveEntity(course);
-                    setState({changed:false});
+                    saveEntity(course).then(_ => thiss.setState({changed:false}));
                 }
             });
         }

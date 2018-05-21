@@ -2,7 +2,7 @@ module Tools.GenLangStrings where
 
 import Prelude
 
-import Common.CommonStrings (commonRawStrings)
+import Common.CommonStrings (commonString)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 import Control.Plus (empty)
@@ -57,6 +57,6 @@ main = do
     genTopLevel UISettings.rawStrings <>
     genTopLevel SettingsPage.rawStrings <>
     genTopLevel SettingsPage.coreStrings <>
-    genTopLevel commonRawStrings <> 
+    genTopLevel {prefix:"common", strings:commonString} <> 
     genTopLevel aclRawStrings <>
     genTopLevel termRawStrings 

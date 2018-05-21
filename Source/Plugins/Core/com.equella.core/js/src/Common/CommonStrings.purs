@@ -1,23 +1,18 @@
 module Common.CommonStrings where 
 
-import EQUELLA.Environment (prepLangStrings)
-
-commonRawStrings = {prefix:"common", 
-  strings:{
-    action: {
-      save: "Save",
-      cancel: "Cancel",
-      undo: "Undo",
-      add: "Add", 
-      ok: "OK",
-      discard: "Discard", 
-      select: "Select"
-    }, 
-    users : "Users", 
-    groups: "Groups", 
-    roles: "Roles"
-  }
+foreign import commonString :: { 
+  action :: { save :: String
+            , cancel :: String
+            , undo :: String
+            , add :: String
+            , ok :: String
+            , discard :: String
+            , select :: String
+            , delete :: String
+            }
+  , users :: String
+  , groups :: String
+  , roles :: String
 }
 
-commonString = prepLangStrings commonRawStrings
 commonAction = commonString.action

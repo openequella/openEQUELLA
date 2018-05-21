@@ -92,6 +92,7 @@ interface EntityWorkers<E extends Entity> {
     create: (dispatch: Dispatch<any>, params: { entity: E; }) => Promise<{ result: E; }>;
     update: (dispatch: Dispatch<any>, params: { entity: E; }) => Promise<{ result: E; }>;
     read: (dispatch: Dispatch<any>, params: { uuid: string; }) => Promise<{ result: E; }>;
+    delete: (dispatch: Dispatch<any>, params: { uuid: string; }) => Promise<{ uuid: string }>;
     search: (dispatch: Dispatch<any>, params: { query: string; privilege: string[] }) => Promise<{ results: SearchResults<E>; }>;
     validate: (dispatch: Dispatch<any>, params: { entity: E }) => Promise<IDictionary<string>>;
 }
@@ -116,7 +117,7 @@ function entityCrudActions<E extends Entity>(entityType: string): EntityCrudActi
     };
   }
   
-function entityWorkers<E extends Entity>(entityCrudActions: EntityCrudActions<E>, extValidate?: (entity: E, errors: IDictionary<string>) => void): any {
+function entityWorkers<E extends Entity>(entityCrudActions: EntityCrudActions<E>, extValidate?: (entity: E, errors: IDictionary<string>) => void): EntityWorkers<E> {
     const entityLower = entityCrudActions.entityType.toLowerCase();
     const createUpdate = wrapAsyncWorker(entityCrudActions.update, 
       (param): Promise<{result: E}> => { 
@@ -143,6 +144,7 @@ function entityWorkers<E extends Entity>(entityCrudActions: EntityCrudActions<E>
     };
   
     return {
+      entityType: entityCrudActions.entityType,
       create: createUpdate,
       update: createUpdate,
       read: wrapAsyncWorker(entityCrudActions.read, 
@@ -152,6 +154,11 @@ function entityWorkers<E extends Entity>(entityCrudActions: EntityCrudActions<E>
                 .then(res => ({ result: res.data})); 
         }
       ),
+      delete: wrapAsyncWorker(entityCrudActions.delete, 
+        (param): Promise<{uuid:string}> => {
+            const { uuid } = param;
+            return axios.delete(`${Config.baseUrl}api/${entityLower}/${uuid}`).then(res => ({uuid}));
+        }),
       search: wrapAsyncWorker(entityCrudActions.search, 
         (param): Promise<{results: SearchResults<E>}> => { 
             const { query, privilege } = param;
