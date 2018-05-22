@@ -41,11 +41,13 @@ import com.tle.web.api.activation.CourseBean;
 import com.tle.web.api.activation.CourseBeanSerializer;
 import com.tle.web.api.activation.CourseResource;
 import com.tle.web.api.baseentity.serializer.BaseEntitySerializer;
+import com.tle.web.api.entity.PagedResults;
 import com.tle.web.api.entity.resource.AbstractBaseEntityResource;
 import com.tle.web.api.interfaces.beans.PagingBean;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.remoting.rest.service.RestImportExportHelper;
+import scala.Option;
 
 /**
  * @author larry
@@ -105,10 +107,11 @@ public class CourseResourceImpl extends AbstractBaseEntityResource<CourseInfo, B
 	}
 
 	@Override
-	public PagingBean<CourseBean> list(UriInfo uriInfo, String code, String q, List<String> privilege,
+	public PagingBean<CourseBean> list(UriInfo uriInfo, String code, String q, Boolean archived, List<String> privilege,
 									   String resumptionToken, int length, boolean full)
 	{
-		return super.list(uriInfo, q, privilege, resumptionToken, length, full);
+		final boolean isExport = RestImportExportHelper.isExport(uriInfo);
+		return PagedResults.pagedResults(this, q, privilege, resumptionToken, length, full | isExport, isExport, archived);
 	}
 
 	public List<String> citation(UriInfo uriInfo, String uuid)

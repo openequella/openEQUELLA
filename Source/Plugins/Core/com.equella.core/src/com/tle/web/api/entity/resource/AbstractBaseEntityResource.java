@@ -63,6 +63,7 @@ import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.interfaces.beans.security.TargetListEntryBean;
 import com.tle.web.remoting.rest.service.RestImportExportHelper;
 import com.tle.web.remoting.rest.service.UrlLinkService;
+import scala.Option;
 
 /**
  * FIXME: I'm not sure about having all these Transactionals in the REST
@@ -180,7 +181,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	public PagingBean<B> list(UriInfo uriInfo, String q, List<String> privilege, String resumption, int length, boolean full)
     {
         final boolean isExport = RestImportExportHelper.isExport(uriInfo);
-        return PagedResults.pagedResults(this, q, privilege, resumption, length, full | isExport, isExport);
+        return PagedResults.pagedResults(this, q, privilege, resumption, length, full | isExport, isExport, true);
     }
 
 	public B serialize(BE entity, Object data, boolean heavy)

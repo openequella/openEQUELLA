@@ -41,7 +41,7 @@ object PagedResults {
 
   def pagedResults[BE <: BaseEntity, BEB <: BaseEntityBean]
   (res: AbstractBaseEntityResource[BE, _, BEB], q: String,
-   _privilege: java.util.List[String], resumption: String, length: Int, full: Boolean, system: Boolean) : PagingBean[BEB] = {
+   _privilege: java.util.List[String], resumption: String, length: Int, full: Boolean, system: Boolean, includeDisabled: Boolean) : PagingBean[BEB] = {
     val (firstOffset, start) = decodeOffsetStart(resumption)
 
     val privilege = if (_privilege.isEmpty) Set("LIST_"+res.getPrivilegeType) else _privilege.asScala.toSet
@@ -54,7 +54,7 @@ object PagedResults {
       if (len <= 0 || tried >= MaxEntities) (offset, vec)
       else {
         val amountToTry = if (tried == 0) len * 2 else MaxEntities - tried
-        val nextLot = res.getEntityService.query(new EnumerateOptions(q, offset, amountToTry, system, null))
+        val nextLot = res.getEntityService.query(new EnumerateOptions(q, offset, amountToTry, system, if (includeDisabled) null else true))
         val nextOffset = offset + nextLot.size()
         if (nextOffset == offset)
         {
@@ -86,7 +86,7 @@ object PagedResults {
     val actualLen = results.length
     pb.setStart(start)
     pb.setLength(actualLen)
-    pb.setAvailable(res.getEntityService.countAll(new EnumerateOptions(q, 0, -1, system, null)).toInt)
+    pb.setAvailable(res.getEntityService.countAll(new EnumerateOptions(q, 0, -1, system, if (includeDisabled) null else true)).toInt)
     if (actualLen == length) pb.setResumptionToken(s"$nextOffset:${start+actualLen}")
     pb.setResults(results.map { case (be,canFull,privs) => addPrivs(privs, res.serialize(be, null, canFull)) }.asJava)
     pb

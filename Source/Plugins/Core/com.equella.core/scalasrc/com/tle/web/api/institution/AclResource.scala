@@ -42,6 +42,12 @@ class AclResource {
 	}
 
 	@GET
+	@ApiOperation(value = "Determine if you have non-entity specific privilege(s)")
+	@Path("/privilegecheck") def checkPrivilege(@QueryParam("privilege") privs: Array[String]) : Iterable[String]  = {
+		aclManager.filterNonGrantedPrivileges(privs: _*).asScala
+	}
+
+	@GET
 	@ApiOperation(value = "Get all institution level acls")
 	@Path("/")
 	def getEntries: TargetListBean = {

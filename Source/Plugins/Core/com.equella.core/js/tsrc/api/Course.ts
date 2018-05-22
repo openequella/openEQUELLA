@@ -1,5 +1,4 @@
 import { Entity } from './Entity'
-import { SearchResults } from './General'
 
 export interface Course extends Entity {
     code: string;
@@ -11,8 +10,4 @@ export interface Course extends Entity {
     until?: string;
     versionSelection?: string;
     archived?: boolean;
-}
-
-export interface CourseList extends SearchResults<Course> {
-    
 }

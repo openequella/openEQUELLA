@@ -48,7 +48,7 @@ main = do
   w <- window
   l <- location w
   p <- pathname l
-  _ <- setInterval (floor $ unwrap $ fromDuration $ Minutes 1.0) $ runAff_ (\_ -> pure unit) $ void $ do 
+  _ <- setInterval (floor $ unwrap $ fromDuration $ Minutes 2.0) $ runAff_ (\_ -> pure unit) $ void $ do 
     {response} <- get $ baseUrl <> "api/status/heartbeat"
     if response == "OK" then pure unit else log response
   let 

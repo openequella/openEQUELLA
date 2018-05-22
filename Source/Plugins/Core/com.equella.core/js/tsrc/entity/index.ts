@@ -3,7 +3,6 @@ import { Dispatch } from 'redux';
 import { Action, ActionCreator, AsyncActionCreators } from 'typescript-fsa';
 import { ReducerBuilder, reducerWithInitialState } from "typescript-fsa-reducers";
 import { Entity } from '../api/Entity';
-import { SearchResults } from '../api/General';
 import { Bridge } from '../api/bridge';
 import { Config } from '../config';
 import { actionCreator, wrapAsyncWorker } from '../util/actionutil';
@@ -55,13 +54,11 @@ export interface EditEntityProps<E extends Entity> extends EditEntityStateProps<
 
 export interface PartialEntityState<E extends Entity> {
     query?: string;
-    entities?: E[];
     editingEntity?: E;
     loading?: boolean;
 }
 
 export interface EntityState<E extends Entity> extends PartialEntityState<E> {
-    entities: E[];
     loading: boolean;
 }
 
@@ -78,10 +75,10 @@ function baseValidate<E extends Entity>(entity: E): IDictionary<string> {
 interface EntityCrudActions<E extends Entity> {
     entityType: string;
     create: AsyncActionCreators<{entity: E}, {result: E}, void>;
+    checkPrivs: AsyncActionCreators<{privilege: string[]}, string[], void>;
     update: AsyncActionCreators<{entity: E}, {result: E}, void>;
     read: AsyncActionCreators<{uuid: string}, {result: E}, void>;
     delete: AsyncActionCreators<{uuid: string}, {uuid: string}, void>;
-    search: AsyncActionCreators<{query: string, privilege: string[]}, {results: SearchResults<E>}, void>;
     validate: AsyncActionCreators<{entity: E}, IDictionary<string>, void>;
     // This is for temp modifications.  E.g. uncommitted changes before save
     modify: ActionCreator<{entity: E}>;
@@ -93,8 +90,8 @@ interface EntityWorkers<E extends Entity> {
     update: (dispatch: Dispatch<any>, params: { entity: E; }) => Promise<{ result: E; }>;
     read: (dispatch: Dispatch<any>, params: { uuid: string; }) => Promise<{ result: E; }>;
     delete: (dispatch: Dispatch<any>, params: { uuid: string; }) => Promise<{ uuid: string }>;
-    search: (dispatch: Dispatch<any>, params: { query: string; privilege: string[] }) => Promise<{ results: SearchResults<E>; }>;
     validate: (dispatch: Dispatch<any>, params: { entity: E }) => Promise<IDictionary<string>>;
+    checkPrivs: (dispatch: Dispatch<any>, params: { privilege: string[] }) => Promise<string[]>;
 }
   
 interface EntityService<E extends Entity, XC extends {}, XW extends {}> {
@@ -111,9 +108,9 @@ function entityCrudActions<E extends Entity>(entityType: string): EntityCrudActi
       update: createUpdate,
       read: actionCreator.async<{uuid: string}, {result: E}, void>('LOAD_' + entityType),
       delete: actionCreator.async<{uuid: string}, {uuid: string}, void>('DELETE_' + entityType),
-      search: actionCreator.async<{query: string, privilege: string[]}, {results: SearchResults<E>}, void>('SEARCH_' + entityType),
       modify: actionCreator<{entity: E}>('MODIFY_' + entityType),
-      validate: actionCreator.async<{entity: E}, IDictionary<string>, void>('VALIDATE_' + entityType)
+      validate: actionCreator.async<{entity: E}, IDictionary<string>, void>('VALIDATE_' + entityType),
+      checkPrivs: actionCreator.async<{privilege:string[]}, string[], void>('CHECKPRIVS_' + entityType)
     };
   }
   
@@ -159,35 +156,27 @@ function entityWorkers<E extends Entity>(entityCrudActions: EntityCrudActions<E>
             const { uuid } = param;
             return axios.delete(`${Config.baseUrl}api/${entityLower}/${uuid}`).then(res => ({uuid}));
         }),
-      search: wrapAsyncWorker(entityCrudActions.search, 
-        (param): Promise<{results: SearchResults<E>}> => { 
-            const { query, privilege } = param;
-            const qs = encodeQuery({q: query, privilege})
-            return axios.get<SearchResults<E>>(`${Config.baseUrl}api/${entityLower}${qs}`)
-                .then(res => ({ results: res.data})); 
-        }
-      ),
       validate: wrapAsyncWorker(entityCrudActions.validate, 
         (param): Promise<IDictionary<string>> => {
             return Promise.resolve(validate(param.entity));
-        })
+        }), 
+      checkPrivs: wrapAsyncWorker(entityCrudActions.checkPrivs,
+        (param): Promise<string[]> => {
+            const {privilege} = param;
+            const qs = encodeQuery({privilege});
+            return axios.get<string[]>(`${Config.baseUrl}api/acl/privilegecheck${qs}`).then(res => (res.data));
+        }
+    )
     };
 }
 
 function entityReducerBuilder<E extends Entity>(entityCrudActions: EntityCrudActions<E>): ReducerBuilder<PartialEntityState<E>, PartialEntityState<E>> {
     let initialEntityState: PartialEntityState<E> = {
         query: '',
-        entities: [] as E[],
         loading: false
     };
 
     return reducerWithInitialState(initialEntityState)
-        .case(entityCrudActions.search.started, (state, data) => {
-            return state;
-        })
-        .case(entityCrudActions.search.done, (state, success) => {
-            return { ...state, entities: success.result.results.results };
-        })
         .case(entityCrudActions.read.started, (state, data) => {
             return state;
         })

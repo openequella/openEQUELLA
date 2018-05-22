@@ -68,8 +68,7 @@ settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didM
     Tuple "general" string.general,
     Tuple "integration" string.integration,
     Tuple "diagnostics" string.diagnostics,
-    Tuple "ui" string.ui,
-    Tuple "entities" string.entities
+    Tuple "ui" string.ui
   ]
 
   string = prepLangStrings rawStrings
@@ -128,8 +127,7 @@ rawStrings = {prefix: "settings",
     general: {name:"General",desc:"General settings"},
     integration: {name:"Integrations",desc:"Settings for integrating with external systems"},
     diagnostics: {name:"Diagnostics",desc:"Diagnostic pages"},
-    ui: {name:"UI",desc:"UI settings"},
-    entities: {name:"Entities",desc:"All manner of different things"}
+    ui: {name:"UI",desc:"UI settings"}
   }
 }
 

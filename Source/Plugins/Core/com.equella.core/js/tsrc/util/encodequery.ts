@@ -1,19 +1,24 @@
-export function encodeQuery(params: {[key: string]: string|string[]|undefined}): string {
+export function encodeQuery(params: {[key: string]: string|string[]|boolean|number|undefined}): string {
     let s = "";
+    function addOne(key: string, element: any)
+    {
+        if (s.length > 0)
+            s += "&";
+        s += encodeURIComponent(key) + "=" + encodeURIComponent(element.toString());                    
+    }
     for (const key in params) {
         if (params.hasOwnProperty(key)) {
             var paramValue = params[key];
-            if (paramValue)
+            if (typeof paramValue != "undefined")
             {
-                if (typeof paramValue == "string")
+                if (typeof paramValue == "object")
                 {
-                    paramValue = [paramValue]
+                    paramValue.forEach(element => addOne(key, element));
                 }
-                paramValue.forEach(element => {
-                    if (s.length > 0)
-                        s += "&";
-                    s += encodeURIComponent(key) + "=" + encodeURIComponent(element);                    
-                });
+                else 
+                {
+                    addOne(key, paramValue)
+                }
             }
         }
     }
