@@ -7,6 +7,7 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 import Control.Plus (empty)
 import Data.Argonaut (encodeJson, stringify)
+import Data.StrMap (fromFoldable) as SM
 import Data.List (List, fromFoldable, singleton)
 import Data.Record (get)
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
@@ -56,7 +57,7 @@ genTopLevel {prefix,strings} = genStrings "" (Tuple prefix strings)
 
 main :: forall eff. Eff ( console :: CONSOLE | eff) Unit
 main = do
-  log $ stringify $ encodeJson $ fromFoldable $
+  log $ stringify $ encodeJson $ SM.fromFoldable $
     genTopLevel Template.rawStrings <>
     genTopLevel Template.coreStrings <>
     genTopLevel SearchPage.rawStrings <>
