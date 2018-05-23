@@ -439,10 +439,15 @@ orderValue = case _ of
 orderEntries :: Array Order
 orderEntries = [Relevance, Name, DateModified, DateCreated ]
 
+beforeLast :: Milliseconds -> Tuple String String
 beforeLast ms = 
   let nowInst = unsafePerformEff now
   in Tuple "modifiedAfter" $ format dateFormat $ toDateTime $ fromMaybe nowInst $ instant $ (unInstant nowInst) - ms
 
+searchQuery :: { owner :: Maybe UserDetails
+  , modifiedLast :: Maybe Milliseconds
+  , query :: String}
+  -> Array (Tuple String String)
 searchQuery {query,modifiedLast,owner} = [
   Tuple "q" query 
 ] <> catMaybes [

@@ -24,9 +24,7 @@ data Route = SearchPage |
     SettingsPage | 
     CoursesPage | 
     CourseEdit String |
-    NewCourse |
-    SchemasPage |
-    SchemaEdit String
+    NewCourse
 
 navGlobals :: forall eff. {nav::PushStateInterface (PushStateEffects eff), preventNav :: Ref (IOFn1 Route Boolean)}
 navGlobals = unsafePerformEff do 
@@ -49,9 +47,7 @@ routeMatch =
     SettingsPage <$ (lit "settings") <|>
     NewCourse <$ (lit "course" *> lit "new") <|>
     CourseEdit <$> (lit "course" *> str <* lit "edit") <|>
-    CoursesPage <$ (lit "course") <|>
-    SchemaEdit <$> (lit "schema" *> str <* lit "edit") <|>
-    SchemasPage <$ (lit "schema")
+    CoursesPage <$ (lit "course")
 
 matchRoute :: String -> Maybe Route 
 matchRoute = match routeMatch >>> (either (const Nothing) Just)
@@ -83,6 +79,4 @@ routeHash r = "/" <> ( case r of
     CoursesPage -> "course"
     NewCourse -> "course/new"
     CourseEdit cid -> "course/" <> cid <> "/edit"
-    SchemasPage -> "schema"
-    SchemaEdit cid -> "schema/" <> cid <> "/edit"
   )

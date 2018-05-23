@@ -36,7 +36,7 @@ import Routes (Route(..), matchRoute, nav)
 import Routing.PushState (matchesWith)
 import SearchPage (searchPage)
 import SettingsPage (settingsPage)
-import TSComponents (courseEdit, coursesPage, schemaEdit, schemasPage)
+import TSComponents (courseEdit, coursesPage)
 import Template (renderData, renderMain, renderReact)
 
 data RouterCommand = Init | ChangeRoute Route
@@ -69,8 +69,6 @@ main = do
         CoursesPage -> coursesPage
         NewCourse -> courseEdit Nothing
         CourseEdit cid -> courseEdit $ Just cid
-        SchemasPage -> schemasPage
-        SchemaEdit cid -> schemaEdit cid
       render _ = maybe (div' []) legacy $ toMaybe renderData.html
 
       eval Init = do 
