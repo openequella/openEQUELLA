@@ -6,5 +6,5 @@ interface Config {
 }
 
 export const Config: Config = {
-    baseUrl: document.getElementsByTagName('base')[0].href!
+    baseUrl: typeof document == "undefined" ? "" : document.getElementsByTagName('base')[0].href!
 };

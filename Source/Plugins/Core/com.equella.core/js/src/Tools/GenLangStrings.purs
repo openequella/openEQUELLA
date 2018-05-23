@@ -7,9 +7,8 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 import Control.Plus (empty)
 import Data.Argonaut (encodeJson, stringify)
-import Data.List (List, singleton)
+import Data.List (List, fromFoldable, singleton)
 import Data.Record (get)
-import Data.StrMap (fromFoldable)
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Tuple (Tuple(..))
 import SearchPage (coreStrings, rawStrings) as SearchPage
@@ -20,8 +19,13 @@ import SettingsPage (coreStrings, rawStrings) as SettingsPage
 import Template (rawStrings, coreStrings) as Template
 import Type.Row (class RowToList, Cons, Nil, RLProxy(..))
 
+foreign import data DynamicString :: Type
+
 class ConvertToStrings a where
   genStrings :: String -> a -> List (Tuple String String)
+
+foreign import courseString :: DynamicString
+foreign import genStringsDynamic :: (String -> String -> Tuple String String) -> String -> DynamicString -> Array (Tuple String String)
 
 instance nilStrings :: ConvertToStrings (Tuple (RLProxy Nil) (Record r)) where
   genStrings _ _ = empty
@@ -44,6 +48,9 @@ instance stringString :: ConvertToStrings String where
 instance prefixed :: ConvertToStrings a => ConvertToStrings (Tuple String a) where
   genStrings pfx (Tuple prefix r) = genStrings (pfx<>prefix) r
 
+instance dynamic :: ConvertToStrings DynamicString where 
+  genStrings pfx d = fromFoldable $ genStringsDynamic Tuple pfx d
+
 genTopLevel :: forall r. ConvertToStrings r => {prefix::String, strings:: r} -> List (Tuple String String)
 genTopLevel {prefix,strings} = genStrings "" (Tuple prefix strings)
 
@@ -58,5 +65,6 @@ main = do
     genTopLevel SettingsPage.rawStrings <>
     genTopLevel SettingsPage.coreStrings <>
     genTopLevel {prefix:"common", strings:commonString} <> 
+    genTopLevel {prefix:"courses", strings:courseString} <> 
     genTopLevel aclRawStrings <>
     genTopLevel termRawStrings 
