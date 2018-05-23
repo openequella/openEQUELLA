@@ -16,7 +16,10 @@
 
 package com.tle.core.auditlog;
 
+import com.tle.beans.Institution;
 import com.tle.beans.audit.AuditLogEntry;
+
+import java.util.Iterator;
 
 /**
  * @author Nicholas Read
@@ -24,4 +27,7 @@ import com.tle.beans.audit.AuditLogEntry;
 public interface AuditLogDao extends AuditLogExtensionDao<AuditLogEntry>
 {
 	// move along
+    Iterator<AuditLogEntry> listForUser(Institution inst, String userId);
+
+    void deleteForUser(Institution inst, String userId);
 }

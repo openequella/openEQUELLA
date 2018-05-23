@@ -17,9 +17,19 @@
 package com.tle.core.auditlog.impl;
 
 import com.google.inject.Singleton;
+import com.tle.beans.Institution;
 import com.tle.beans.audit.AuditLogEntry;
 import com.tle.core.auditlog.AuditLogDao;
 import com.tle.core.guice.Bind;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
 
 @Bind(AuditLogDao.class)
 @Singleton
@@ -29,4 +39,37 @@ public class AuditLogDaoImpl extends AbstractAuditLogDaoImpl<AuditLogEntry> impl
 	{
 		super(AuditLogEntry.class);
 	}
+
+	@Override
+	public Iterator<AuditLogEntry> listForUser(Institution inst, String userId)
+	{
+		return (Iterator<AuditLogEntry>) getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException, SQLException
+			{
+				Query q = session.createQuery("from AuditLogEntry where institution = :inst and userId = :user");
+				q.setParameter("inst", inst);
+				q.setParameter("user", userId);
+				return q.iterate();
+			}
+		});
+	}
+
+	@Override
+	@Transactional
+	public void deleteForUser(Institution inst, String userId)
+	{
+		getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException, SQLException
+			{
+				Query q = session.createQuery("delete from AuditLogEntry where institution = :inst and userId = :user");
+				q.setParameter("inst", inst);
+				q.setParameter("user", userId);
+				return q.executeUpdate();
+			}
+		});
+	}
+
+
 }

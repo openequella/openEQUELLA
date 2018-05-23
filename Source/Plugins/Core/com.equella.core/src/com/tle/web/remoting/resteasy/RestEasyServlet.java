@@ -34,6 +34,7 @@ import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.DebugSettings;
 import com.tle.web.api.institution.AclResource;
+import com.tle.web.api.institution.GdprResource;
 import com.tle.web.api.language.LanguageResource;
 import com.tle.web.api.users.UserQueryResource;
 import com.tle.web.remoting.rest.resource.InstitutionSecurityFilter;
@@ -118,6 +119,8 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 		classes.add(UserQueryResource.class);
 		dispatcher.getRegistry().addSingletonResource(new AclResource());
 		classes.add(AclResource.class);
+		dispatcher.getRegistry().addSingletonResource(new GdprResource());
+		classes.add(GdprResource.class);
 		ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
 		providerFactory.registerProvider(SwaggerSerializers.class);
 		providerFactory.registerProviderInstance(new JsonContextResolver());
