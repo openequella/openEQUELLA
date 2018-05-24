@@ -1,1 +1,1 @@
-exports.dateFnsUtils = require('material-ui-pickers/utils/date-fns-utils').default;
+exports.momentUtils = require('material-ui-pickers/utils/moment-utils').default;

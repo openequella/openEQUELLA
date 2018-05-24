@@ -1,7 +1,6 @@
 import { Button, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Input, InputLabel, MenuItem, Paper, Switch, Tab, Tabs, TextField, Theme } from '@material-ui/core';
 import Select from '@material-ui/core/Select';
 import { StyleRules, WithStyles, withStyles } from '@material-ui/core/styles';
-import { format, parse } from 'date-fns';
 //import SwipeableViews from 'react-swipeable-views';
 import { DatePicker } from 'material-ui-pickers';
 import * as React from 'react';
@@ -16,6 +15,7 @@ import schemaService from '../schema/index';
 import { StoreState } from '../store';
 import { properties } from '../util/dictionary';
 import { prepLangStrings } from '../util/langstrings';
+import { formatISO, parseISO } from '../util/dates';
 
 const styles = (theme: Theme) => {
     //TODO: get drawerWidth passed in somehow
@@ -121,15 +121,11 @@ class EditCourse extends React.Component<Props, EditCourseState> {
     handleSave() {
         if (this.props.entity)
         {
-            const { from, until, versionSelection } = this.props.entity;
-            const fromStr = (from ? format(from, 'YYYY-MM-DDTHH:mm:ss.SSSZ') : undefined);
-            const untilStr = (until ? format(until, 'YYYY-MM-DDTHH:mm:ss.SSSZ') : undefined);
+            const { versionSelection } = this.props.entity;
             const vs = (versionSelection === "DEFAULT" ? undefined : versionSelection);
             
             let course = {
                 ...this.props.entity,
-                from: fromStr,
-                until: untilStr,
                 versionSelection: vs,
                 security: this.state.editSecurity ? {rules: this.state.editSecurity()} : this.props.entity.security
             };
@@ -156,9 +152,9 @@ class EditCourse extends React.Component<Props, EditCourseState> {
         };
     }
 
-    handleDateChange(stateFieldName: string): (date: string) => void {
-        return (date: string) => {
-            this.modifyEntity({ [stateFieldName]: date });
+    handleDateChange(stateFieldName: string): (date?: Date) => void {
+        return (date?: Date) => {
+            this.modifyEntity({ [stateFieldName]: date ? formatISO(date) : null});
         };
     }
 
@@ -195,9 +191,12 @@ class EditCourse extends React.Component<Props, EditCourseState> {
             until, versionSelection, archived, security, validationErrors } = entity;
         const { activeTab, changed, canSave } = this.state;
         const vs = (versionSelection ? versionSelection : "DEFAULT");
-        const fromDate = (from ? parse(from!, 'YYYY-MM-DDTHH:mm:ss.SSSZ', new Date()) : null);
-        const untilDate = (until ? parse(until!, 'YYYY-MM-DDTHH:mm:ss.SSSZ', new Date()) : null);
+        const fromDate = (from ? parseISO(from) : null);
+        const untilDate = (until ? parseISO(until) : null);
         const val = validationErrors || {};
+        function orBlank(s: string|undefined) {
+            return s ? s : "";
+        }
 
         let rules: TargetListEntry[] = [];
         if (security){
@@ -218,7 +217,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                             <TextField id="name" 
                                 label="Name" 
                                 helperText="Course name, e.g. Advanced EQUELLA studies"
-                                value={name}
+                                value={orBlank(name)}
                                 onChange={this.handleChange('name')}
                                 margin="normal"
                                 className={classes.formControl2}
@@ -229,7 +228,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                             <TextField id="description" 
                                 label="Description" 
                                 helperText="A brief description"
-                                value={description}
+                                value={orBlank(description)}
                                 onChange={this.handleChange('description')}
                                 multiline
                                 rows={3}
@@ -264,7 +263,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                             <TextField id="departmentName" 
                                 label="Department Name" 
                                 //helperText=""
-                                value={departmentName}
+                                value={orBlank(departmentName)}
                                 onChange={this.handleChange('departmentName')}
                                 margin="normal"
                                 className={classes.formControl}
@@ -287,6 +286,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
                             <DatePicker id="from"
                                 label="Start Date"
+                                format="MMMM Do YYYY"
                                 value={fromDate}
                                 onChange={this.handleDateChange('from')}
                                 clearable 
@@ -296,6 +296,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                             
                             <DatePicker id="until"
                                 label="End Date"
+                                format="MMMM Do YYYY"
                                 value={untilDate}
                                 onChange={this.handleDateChange('until')}
                                 clearable

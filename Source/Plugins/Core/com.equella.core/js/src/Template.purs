@@ -63,7 +63,7 @@ import MaterialUI.TextStyle as TS
 import MaterialUI.Toolbar (disableGutters, toolbar)
 import MaterialUI.Tooltip (tooltip, title)
 import MaterialUI.Typography (typography)
-import MaterialUIPicker.DateFns (dateFnsUtils)
+import MaterialUIPicker.DateFns (momentUtils)
 import MaterialUIPicker.MuiPickersUtilsProvider (muiPickersUtilsProvider, utils)
 import Network.HTTP.Affjax (get)
 import Partial.Unsafe (unsafePartial)
@@ -206,6 +206,12 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
     contentFixedHeight: {
       height: "calc(100vh - var(--top-bar))"
     },
+    "@global": {
+        a: {
+          textDecoration: "none",
+          color: "blue"
+        }
+    },
     content: cssList [ 
       mobile {
         width: "100%"
@@ -281,7 +287,7 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
 
   render {mobileOpen,menuAnchor,tasks,notifications,attempt} (ReactChildren children) (ReactProps props@{fixedViewPort:fvp, classes, 
               title:titleText,titleExtra,menuExtra,backRoute}) 
-    (DispatchEff d) = muiPickersUtilsProvider [utils dateFnsUtils] [
+    (DispatchEff d) = muiPickersUtilsProvider [utils momentUtils] [
     D.div [DP.className classes.root] $ [
       cssBaseline_ [],
       layout renderData.fullscreenMode renderData.menuMode renderData.hideAppBar, 
