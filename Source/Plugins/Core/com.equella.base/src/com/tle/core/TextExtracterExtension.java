@@ -26,7 +26,7 @@ import com.tle.beans.mime.MimeEntry;
  */
 public interface TextExtracterExtension
 {
-	void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDurationCap, int durationCheckFrequency) throws IOException;
+	void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDurationCap) throws IOException;
 
 	void setEnabledForMimeEntry(MimeEntry mimeType, boolean enabled);
 

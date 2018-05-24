@@ -53,11 +53,11 @@ public class PdfExtracter extends AbstractTextExtracterExtension
 	}
 
 	@Override
-	public void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration, int durationCheckFrequency)
+	public void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration)
 		throws IOException
 	{
 		WriteOutContentHandler wrapped = new WriteOutContentHandler(maxSize);
-		ContentHandler handler = new CappedBodyContentHandler(wrapped, parseDuration, durationCheckFrequency);
+		ContentHandler handler = new CappedBodyContentHandler(wrapped, parseDuration);
 		try
 		{
 			Metadata meta = new Metadata();
@@ -65,7 +65,7 @@ public class PdfExtracter extends AbstractTextExtracterExtension
 			parser.parse(input, handler, meta, new ParseContext());
 
 			appendText(handler, outputText, maxSize);
-		
+
 		}
 		catch( Exception t )
 		{

@@ -23,25 +23,24 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 public class CappedBodyContentHandler extends BodyContentHandler {
-	private long parseDurationCap = Long.MAX_VALUE;
+	private long parseDurationCap;
 
 	private long start = 0L;
 
 	private int durationCheckCounter = 0;
 
-	private int durationCheckFrequency = Integer.MAX_VALUE;
+	private static final int DURATION_CHECK_FREQUENCY = 200;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CappedBodyContentHandler.class);
 
-	public CappedBodyContentHandler(ContentHandler handler, long parseDurationCap, int durationCheckFrequency) {
+	public CappedBodyContentHandler(ContentHandler handler, long parseDurationCap) {
 		super(handler);
 		this.parseDurationCap = parseDurationCap;
-		this.durationCheckFrequency = durationCheckFrequency;
 	}
 
 	@Override
 	public void startDocument() throws SAXException {
-		LOGGER.debug("Beginning startDocument of parse with a durationCheckFrequencyk=[" + durationCheckFrequency + "] and parseDurationCap=[" + parseDurationCap + "].");
+		LOGGER.debug("Beginning startDocument of parse with a parseDurationCap=[" + parseDurationCap + "].");
 		start = System.currentTimeMillis();
 		super.startDocument();
 	}
@@ -67,11 +66,11 @@ public class CappedBodyContentHandler extends BodyContentHandler {
 	}
 
 	private void checkIfOverCappedDuration() throws SAXException{
-		if(durationCheckCounter++ > durationCheckFrequency) {
+		if(durationCheckCounter++ > DURATION_CHECK_FREQUENCY) {
 			long dur = System.currentTimeMillis() - start;
 			LOGGER.debug("Checking if parser is past capped duration - time spent so far: " + dur);
 			if(parseDurationCap < dur) {
-				throw new SAXException("Parser exceeding maximum duration of parse max="+parseDurationCap);
+				throw new SAXException("Parser exceeded maximum duration of parse.  max="+parseDurationCap);
 			} else {
 				durationCheckCounter = 0;
 			}

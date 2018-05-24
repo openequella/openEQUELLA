@@ -44,10 +44,10 @@ public class HtmlExtracter extends AbstractTextExtracterExtension
 	}
 
 	@Override
-	public void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration, int durationCheckFrequency)
+	public void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration)
 		throws IOException
 	{
-		// Ignore parseDuration and durationCheckFrequency for now.
+		// Ignore parseDuration for now.
 		String summary = new HTMLFilter(input).getSummary(maxSize);
 		outputText.append(summary);
 		if( LOGGER.isDebugEnabled() )
