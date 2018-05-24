@@ -1,5 +1,5 @@
 exports.courseString = require("course/SearchCourse").strings;
-
+exports.courseEditString = require("course/EditCourse").strings;
 exports.genStringsDynamic = function(t)
 {
     var strings = [];

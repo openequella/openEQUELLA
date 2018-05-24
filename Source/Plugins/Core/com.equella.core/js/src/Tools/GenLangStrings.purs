@@ -26,6 +26,7 @@ class ConvertToStrings a where
   genStrings :: String -> a -> List (Tuple String String)
 
 foreign import courseString :: DynamicString
+foreign import courseEditString :: DynamicString
 foreign import genStringsDynamic :: (String -> String -> Tuple String String) -> String -> DynamicString -> Array (Tuple String String)
 
 instance nilStrings :: ConvertToStrings (Tuple (RLProxy Nil) (Record r)) where
@@ -67,5 +68,6 @@ main = do
     genTopLevel SettingsPage.coreStrings <>
     genTopLevel {prefix:"common", strings:commonString} <> 
     genTopLevel {prefix:"courses", strings:courseString} <> 
+    genTopLevel {prefix:"courseedit", strings:courseEditString} <>
     genTopLevel aclRawStrings <>
     genTopLevel termRawStrings 

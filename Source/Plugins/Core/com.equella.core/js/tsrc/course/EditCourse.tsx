@@ -1,4 +1,4 @@
-import { Button, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Input, InputLabel, MenuItem, Paper, Switch, Tab, Tabs, TextField, Theme } from '@material-ui/core';
+import { Button, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Input, InputLabel, MenuItem, Paper, Switch, Tab, Tabs, TextField, Theme, Snackbar, IconButton } from '@material-ui/core';
 import Select from '@material-ui/core/Select';
 import { StyleRules, WithStyles, withStyles } from '@material-ui/core/styles';
 //import SwipeableViews from 'react-swipeable-views';
@@ -16,6 +16,8 @@ import { StoreState } from '../store';
 import { properties } from '../util/dictionary';
 import { prepLangStrings } from '../util/langstrings';
 import { formatISO, parseISO } from '../util/dates';
+import { commonString } from '../util/commonstrings';
+import CloseIcon from '@material-ui/icons/Close'
 
 const styles = (theme: Theme) => {
     //TODO: get drawerWidth passed in somehow
@@ -77,12 +79,62 @@ interface EditCourseState {
     activeTab?: number;
     canSave: boolean;
     changed: boolean;
+    justSaved: boolean;
     editSecurity?: () => TargetListEntry[];
 }
-const strings = prepLangStrings("courseedit",{
+export const strings = prepLangStrings("courseedit",
+    {
         title: "Edit Course",
-        tab: "Course Details"
-    });
+        tab: "Course Details",
+        name: {
+            label: "Name",
+            help: "Course name, e.g. Advanced EQUELLA studies"
+        }, 
+        description:
+        {
+            label: "Description",
+            help: "A brief description"
+        }, 
+        code: {
+            label: "Code",
+            help: "Course code, e.g. EQ101"
+        }, 
+        type: {
+            label: "Course Type",
+            i: "Internal" ,
+            e: "External",
+            s: "Staff"
+        }, 
+        department: {
+            label: "Department Name"
+        }, 
+        citation: {
+            label: "Citation"
+        }, 
+        startdate: {
+            label: "Start Date" 
+        }, 
+        enddate: {
+            label: "End Date"
+        }, 
+        version: {
+            label: "Version Selection",
+            default: "Default",
+            forcelatest: "Force selection to be the resource version the user is viewing",
+            forcecurrent: "Force selection to always be the latest live resource version",
+            defaultlatest: "User can choose, but default to be the resource version the user is viewing",
+            defaultcurrent: "User can choose, but default to be the latest live resource version",
+            help: "When accessing EQUELLA via this course in an external system, all resources added to the external system will use this version selection strategy"
+        },
+        students: {
+            label: "Unique Individuals"
+        }, 
+        archived: {
+            label: "Archived"
+        },
+        saved: "Successfully saved"
+    }
+);
 
 
 class EditCourse extends React.Component<Props, EditCourseState> {
@@ -93,7 +145,8 @@ class EditCourse extends React.Component<Props, EditCourseState> {
         this.state = {
             activeTab: 0,
             canSave: true,
-            changed: false
+            changed: false, 
+            justSaved: false
         };
         if (this.props.uuid)
         {
@@ -134,7 +187,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
             const thiss = this;
             this.props.validateEntity(course).then(function(valErrors){
                 if (properties(valErrors).length === 0){
-                    saveEntity(course).then(_ => thiss.setState({changed:false}));
+                    saveEntity(course).then(_ => thiss.setState({changed:false, justSaved: true}));
                 }
             });
         }
@@ -176,9 +229,15 @@ class EditCourse extends React.Component<Props, EditCourseState> {
         }
     }
 
+    hideSnack = () => {
+        this.setState({justSaved:false})
+    }
+
     render() {
         const { entity, citations, availablePrivileges, classes } = this.props;
         const { AclEditor, Template, router, routes } = this.props.bridge;
+        const typeval = strings.type;
+        const versionval = strings.version;
 
         if (!entity || !citations || !availablePrivileges){
             return <Template title={strings.title} backRoute={routes.CoursesPage}>
@@ -189,14 +248,11 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
         const { code, name, description, type, departmentName, citation, students, from, 
             until, versionSelection, archived, security, validationErrors } = entity;
-        const { activeTab, changed, canSave } = this.state;
+        const { activeTab, changed, canSave, justSaved } = this.state;
         const vs = (versionSelection ? versionSelection : "DEFAULT");
         const fromDate = (from ? parseISO(from) : null);
         const untilDate = (until ? parseISO(until) : null);
         const val = validationErrors || {};
-        function orBlank(s: string|undefined) {
-            return s ? s : "";
-        }
 
         let rules: TargetListEntry[] = [];
         if (security){
@@ -209,15 +265,20 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                     <Tab label={entityStrings.edit.tab.permissions} />
                 </Tabs>}>
                     
+            <Snackbar open={justSaved} 
+                autoHideDuration={5000} 
+                onClose={this.hideSnack} message={<span>{strings.saved}</span>}
+                action={<IconButton color="inherit" onClick={this.hideSnack} ><CloseIcon/></IconButton>}
+            />
             <div className={classes.body}>
                 <div className={this.state.activeTab === 0 ? "" : classes.hiddenTab} style={{ padding: 24 }}>
                     <Grid>
                         <div className={classes.form}>
 
                             <TextField id="name" 
-                                label="Name" 
-                                helperText="Course name, e.g. Advanced EQUELLA studies"
-                                value={orBlank(name)}
+                                label={strings.name.label}
+                                helperText={strings.name.help} 
+                                value={name || ''}
                                 onChange={this.handleChange('name')}
                                 margin="normal"
                                 className={classes.formControl2}
@@ -226,9 +287,9 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                                 />
 
                             <TextField id="description" 
-                                label="Description" 
-                                helperText="A brief description"
-                                value={orBlank(description)}
+                                label={strings.description.label} 
+                                helperText={strings.description.help} 
+                                value={description || ''}
                                 onChange={this.handleChange('description')}
                                 multiline
                                 rows={3}
@@ -237,8 +298,8 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                                 />
 
                             <TextField id="code" 
-                                label="Code" 
-                                helperText="Course code, e.g. EQ101"
+                                label={strings.code.label} 
+                                helperText={strings.code.help} 
                                 value={code}
                                 onChange={this.handleChange('code')}
                                 margin="normal"
@@ -248,29 +309,29 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                                     />
 
                             <FormControl margin="normal" className={classes.formControl}>
-                                <InputLabel htmlFor="type">Course Type</InputLabel>
+                                <InputLabel htmlFor="type">{strings.type.label}</InputLabel>
                                 <Select id="type" 
                                     value={type}
                                     input={<Input id="type-inp" />}
                                     onChange={this.handleChange('type')}
                                 >
-                                    <MenuItem key={"i"} value={"i"}>Internal</MenuItem>
-                                    <MenuItem key={"e"} value={"e"}>External</MenuItem>
-                                    <MenuItem key={"s"} value={"s"}>Staff</MenuItem>
+                                    <MenuItem key={"i"} value={"i"}>{typeval.i}</MenuItem>
+                                    <MenuItem key={"e"} value={"e"}>{typeval.e}</MenuItem>
+                                    <MenuItem key={"s"} value={"s"}>{typeval.s}</MenuItem>
                                 </Select>
                             </FormControl>
 
                             <TextField id="departmentName" 
-                                label="Department Name" 
+                                label={strings.department.label}
                                 //helperText=""
-                                value={orBlank(departmentName)}
+                                value={departmentName || ''}
                                 onChange={this.handleChange('departmentName')}
                                 margin="normal"
                                 className={classes.formControl}
                                 />
 
                             <FormControl margin="normal" className={classes.formControl}>
-                                <InputLabel htmlFor="citation">Citation</InputLabel>
+                                <InputLabel htmlFor="citation">{strings.citation.label}</InputLabel>
                                 <Select id="citation" 
                                     value={citation || ''}
                                     input={<Input id="citation-inp" />}
@@ -285,7 +346,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                             </FormControl>
 
                             <DatePicker id="from"
-                                label="Start Date"
+                                label={strings.startdate.label} 
                                 format="MMMM Do YYYY"
                                 value={fromDate}
                                 onChange={this.handleDateChange('from')}
@@ -295,7 +356,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                                 />
                             
                             <DatePicker id="until"
-                                label="End Date"
+                                label={strings.enddate.label} 
                                 format="MMMM Do YYYY"
                                 value={untilDate}
                                 onChange={this.handleDateChange('until')}
@@ -305,24 +366,24 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                                 />
                             
                             <FormControl margin="normal" className={classes.formControl}>
-                                <InputLabel htmlFor="versionSelection">Version Selection</InputLabel>
+                                <InputLabel htmlFor="versionSelection">{strings.version.label}</InputLabel>
                                 <Select id="versionSelection" 
                                     value={vs}
                                     input={<Input id="versionSelection-inp" />}
                                     onChange={this.handleChange('versionSelection')}
                                     
                                 >
-                                    <MenuItem key={"DEFAULT"} value={"DEFAULT"}>Default</MenuItem>
-                                    <MenuItem key={"FORCE_LATEST"} value={"FORCE_LATEST"}>Force selection to be the resource version the user is viewing</MenuItem>
-                                    <MenuItem key={"FORCE_CURRENT"} value={"FORCE_CURRENT"}>Force selection to always be the latest live resource version</MenuItem>
-                                    <MenuItem key={"DEFAULT_TO_LATEST"} value={"DEFAULT_TO_LATEST"}>User can choose, but default to be the resource version the user is viewing</MenuItem>
-                                    <MenuItem key={"DEFAULT_TO_CURRENT"} value={"DEFAULT_TO_CURRENT"}>User can choose, but default to be the latest live resource version</MenuItem>
+                                    <MenuItem key={"DEFAULT"} value={"DEFAULT"}>{versionval.default}</MenuItem>
+                                    <MenuItem key={"FORCE_LATEST"} value={"FORCE_LATEST"}>{versionval.forcelatest}</MenuItem>
+                                    <MenuItem key={"FORCE_CURRENT"} value={"FORCE_CURRENT"}>{versionval.forcecurrent}</MenuItem>
+                                    <MenuItem key={"DEFAULT_TO_LATEST"} value={"DEFAULT_TO_LATEST"}>{versionval.defaultlatest}</MenuItem>
+                                    <MenuItem key={"DEFAULT_TO_CURRENT"} value={"DEFAULT_TO_CURRENT"}>{versionval.defaultcurrent}</MenuItem>
                                 </Select>
-                                <FormHelperText>When accessing EQUELLA via this course in an external system, all resources added to the external system will use this version selection strategy</FormHelperText>
+                                <FormHelperText>{strings.version.help}</FormHelperText>
                             </FormControl>
 
                             <TextField id="students" 
-                                label="Unique Individuals" 
+                                label={strings.students.label}
                                 //helperText=""
                                 value={students || ''}
                                 onChange={this.handleChange('students')}
@@ -332,7 +393,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
                             <FormGroup className={classes.formControl}>
                                 <FormControlLabel
-                                    label="Archived"
+                                    label={strings.archived.label}
                                     control={<Switch
                                         checked={archived || false}
                                         onChange={this.handleCheckboxChange('archived')}
@@ -355,9 +416,9 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
             <Paper component="footer" className={classes.footer}>
                 <div className={classes.footerActions}>
-                    <Button onClick={router(routes.CoursesPage).onClick} color="secondary">Cancel</Button>
+                    <Button onClick={router(routes.CoursesPage).onClick} color="secondary">{commonString.action.cancel}</Button>
                     <Button onClick={this.handleSave.bind(this)} color="primary"
-                        disabled={!canSave || !changed}>Save</Button>
+                        disabled={!canSave || !changed}>{commonString.action.save}</Button>
                 </div>               
             </Paper>
         </Template>
