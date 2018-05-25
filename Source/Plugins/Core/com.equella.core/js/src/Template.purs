@@ -335,7 +335,7 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
         ], [
           D.div [DP.className classes.titleArea] $ catMaybes [
             toMaybe backRoute $> iconButton [color C.inherit, onClick $ d \_ -> GoBack] [ icon_ [D.text "arrow_back" ] ],
-            Just $ typography [variant TS.title, color C.inherit, className classes.title] [ D.text titleText ], 
+            Just $ typography [variant TS.headline, color C.inherit, className classes.title] [ D.text titleText ], 
             toMaybe titleExtra
           ],
           userMenu 
