@@ -103,33 +103,37 @@ interface EntityService<E extends Entity, XC extends {}, XW extends {}> {
 function entityCrudActions<E extends Entity>(entityType: string): EntityCrudActions<E> {
     const createUpdate = actionCreator.async<{entity: E}, {result: E}, void>('SAVE_' + entityType);
     return {
-      entityType,
-      create: createUpdate,
-      update: createUpdate,
-      read: actionCreator.async<{uuid: string}, {result: E}, void>('LOAD_' + entityType),
-      delete: actionCreator.async<{uuid: string}, {uuid: string}, void>('DELETE_' + entityType),
-      modify: actionCreator<{entity: E}>('MODIFY_' + entityType),
-      validate: actionCreator.async<{entity: E}, IDictionary<string>, void>('VALIDATE_' + entityType),
-      checkPrivs: actionCreator.async<{privilege:string[]}, string[], void>('CHECKPRIVS_' + entityType)
+        entityType,
+        create: createUpdate,
+        update: createUpdate,
+        read: actionCreator.async<{uuid: string}, {result: E}, void>('LOAD_' + entityType),
+        delete: actionCreator.async<{uuid: string}, {uuid: string}, void>('DELETE_' + entityType),
+        modify: actionCreator<{entity: E}>('MODIFY_' + entityType),
+        validate: actionCreator.async<{entity: E}, IDictionary<string>, void>('VALIDATE_' + entityType),
+        checkPrivs: actionCreator.async<{privilege:string[]}, string[], void>('CHECKPRIVS_' + entityType)
     };
   }
   
 function entityWorkers<E extends Entity>(entityCrudActions: EntityCrudActions<E>, extValidate?: (entity: E, errors: IDictionary<string>) => void): EntityWorkers<E> {
     const entityLower = entityCrudActions.entityType.toLowerCase();
     const createUpdate = wrapAsyncWorker(entityCrudActions.update, 
-      (param): Promise<{result: E}> => { 
-          const { entity } = param;
-          // FIXME: edit a specific locale:
-          const postEntity = Object.assign({}, entity, { nameStrings: { en: entity.name }, descriptionStrings: { en: entity.description }});
-          if (entity.uuid){
-              return axios.put<E>(`${Config.baseUrl}api/${entityLower}/${entity.uuid}`, postEntity)
-                  .then(res => ({ result: res.data})); 
-          }
-          else {
-              return axios.post<E>(`${Config.baseUrl}api/${entityLower}/`, postEntity)
-                  .then(res => ({ result: res.data})); 
-          }   
-      }
+        (param): Promise<{result: E}> => { 
+            const { entity } = param;
+            // FIXME: edit a specific locale:
+            let descriptionStrings: IDictionary<string> = {};
+            if (entity.description){
+                descriptionStrings = { en: entity.description };
+            }
+            const postEntity = Object.assign({}, entity, { nameStrings: { en: entity.name }, descriptionStrings });
+            if (entity.uuid){
+                return axios.put<E>(`${Config.baseUrl}api/${entityLower}/${entity.uuid}`, postEntity)
+                    .then(res => ({ result: res.data})); 
+            }
+            else {
+                return axios.post<E>(`${Config.baseUrl}api/${entityLower}/`, postEntity)
+                    .then(res => ({ result: res.data})); 
+            }   
+        }
     );
     
     const validate = function(entity: E): IDictionary<string> {
