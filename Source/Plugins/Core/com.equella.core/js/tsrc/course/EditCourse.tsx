@@ -1,6 +1,7 @@
-import { Button, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Input, InputLabel, MenuItem, Paper, Switch, Tab, Tabs, TextField, Theme, Snackbar, IconButton } from '@material-ui/core';
+import { Button, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, Input, InputLabel, MenuItem, Paper, Snackbar, Switch, Tab, Tabs, TextField, Theme } from '@material-ui/core';
 import Select from '@material-ui/core/Select';
 import { StyleRules, WithStyles, withStyles } from '@material-ui/core/styles';
+import CloseIcon from '@material-ui/icons/Close';
 //import SwipeableViews from 'react-swipeable-views';
 import { DatePicker } from 'material-ui-pickers';
 import * as React from 'react';
@@ -9,15 +10,14 @@ import courseService from '.';
 import aclService from '../acl/index';
 import { Course } from '../api';
 import { AclEditorChangeEvent, TargetListEntry } from '../api/acleditor';
-import { Loader } from '../components/index';
+import { Error, Loader } from '../components/index';
 import { EditEntityDispatchProps, EditEntityProps, EditEntityStateProps, entityStrings } from '../entity';
 import schemaService from '../schema/index';
 import { StoreState } from '../store';
+import { commonString } from '../util/commonstrings';
+import { formatISO, parseISO } from '../util/dates';
 import { properties } from '../util/dictionary';
 import { prepLangStrings } from '../util/langstrings';
-import { formatISO, parseISO } from '../util/dates';
-import { commonString } from '../util/commonstrings';
-import CloseIcon from '@material-ui/icons/Close'
 
 const styles = (theme: Theme) => {
     //TODO: get drawerWidth passed in somehow
@@ -234,17 +234,22 @@ class EditCourse extends React.Component<Props, EditCourseState> {
     }
 
     render() {
-        const { entity, citations, availablePrivileges, classes } = this.props;
+        const { loading, entity, citations, availablePrivileges, classes } = this.props;
         const { AclEditor, Template, router, routes } = this.props.bridge;
         const typeval = strings.type;
         const versionval = strings.version;
 
-        if (!entity || !citations || !availablePrivileges){
+        if (loading || !citations || !availablePrivileges){
             return <Template title={strings.title} backRoute={routes.CoursesPage}>
                     <Loader />
                 </Template>
         }
 
+        if (!entity){
+            return <Template title={strings.title} backRoute={routes.CoursesPage}>
+                    <Error>Error loading entity</Error>
+                </Template>
+        }
 
         const { code, name, description, type, departmentName, citation, students, from, 
             until, versionSelection, archived, security, validationErrors } = entity;
@@ -428,6 +433,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 function mapStateToProps(state: StoreState): EditCourseStateProps {
     const { course, schema, acl } = state;
     return {
+        loading: course.loading,
         entity: course.editingEntity,
         citations: schema.citations,
         availablePrivileges: acl.nodes['COURSE_INFO']

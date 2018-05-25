@@ -36,6 +36,7 @@ export const entityStrings = prepLangStrings("entity", {
 });
 
 export interface EditEntityStateProps<E extends Entity> {
+    loading?: boolean;
     entity: E | undefined;
 }
 
@@ -182,15 +183,21 @@ function entityReducerBuilder<E extends Entity>(entityCrudActions: EntityCrudAct
 
     return reducerWithInitialState(initialEntityState)
         .case(entityCrudActions.read.started, (state, data) => {
-            return state;
+            return { ...state, editingEntity: undefined, loading: true };
         })
         .case(entityCrudActions.read.done, (state, success) => {
-            return { ...state, editingEntity: success.result.result };
+            return { ...state, editingEntity: success.result.result, loading: false };
+        })
+        .case(entityCrudActions.read.failed, (state, failure) => {
+            return { ...state, loading: false }
         })
         .case(entityCrudActions.update.started, (state, data) => {
             return state;
         })
         .case(entityCrudActions.update.done, (state, success) => {
+            return state;
+        })
+        .case(entityCrudActions.update.failed, (state, failure) => {
             return state;
         })
         .case(entityCrudActions.modify, (state, payload) => {
