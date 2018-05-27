@@ -326,8 +326,8 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
 
 
     oneResult showDivider (Result {name,description,displayFields,uuid,version,attachments,modifiedDate}) =
-      let descMarkup descText = typography [color textSecondary] [ text descText ]
-          titleLink = typography [variant TS.title, style {textDecoration:"none", color:"blue"},
+      let descMarkup descText = typography [] [ text descText ]
+          titleLink = typography [variant TS.subheading, style {textDecoration:"none", color:"blue"},
                         component "a", mkProp "href" $ baseUrl <> "items/" <> uuid <> "/" <> show version <> "/"] [ text name ]
           attachThumb (Attachment {thumbnailHref}) = Just $ img [DP.className classes.itemThumb, DP.src thumbnailHref] []
           firstThumb = fromFoldable $ findMap attachThumb attachments

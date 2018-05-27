@@ -1,19 +1,19 @@
-import * as React from 'react';
-import { Course } from '../api';
-import { StoreState } from '../store';
-import { connect, Dispatch } from 'react-redux';
+import { Button, Checkbox, CircularProgress, FormControlLabel, Paper, Theme, Typography } from '@material-ui/core';
 import List from '@material-ui/core/List';
-import SearchResult from '../components/SearchResult';
-import { Bridge } from '../api/bridge';
-import { Paper, Theme, Typography, Button, Checkbox, FormControlLabel, CircularProgress } from '@material-ui/core';
-import AppBarQuery from '../components/AppBarQuery';
-import { courseService } from '../services';
-import withStyles, { WithStyles, StyleRules } from '@material-ui/core/styles/withStyles';
+import withStyles, { StyleRules, WithStyles } from '@material-ui/core/styles/withStyles';
 import AddIcon from '@material-ui/icons/Add';
-import ConfirmDialog from '../components/ConfirmDialog';
+import * as React from 'react';
+import { Dispatch, connect } from 'react-redux';
 import { searchCourses } from '.';
-import VisibilitySensor = require('react-visibility-sensor');
+import { Course } from '../api';
+import { Bridge } from '../api/bridge';
+import AppBarQuery from '../components/AppBarQuery';
+import ConfirmDialog from '../components/ConfirmDialog';
+import SearchResult from '../components/SearchResult';
+import { courseService } from '../services';
+import { StoreState } from '../store';
 import { prepLangStrings } from '../util/langstrings';
+import VisibilitySensor = require('react-visibility-sensor');
 
 const styles = (theme: Theme) => ({
     overall: {
@@ -76,7 +76,8 @@ export const strings = prepLangStrings("courses", {
     nocourses: "No results available",
     confirmDelete: "It will be permanently deleted.", 
     coursesAvailable: "{0} Courses", 
-    includeArchived: "Include archived"
+    includeArchived: "Include archived",
+    archived: "Archived"
 });
 
 class SearchCourse extends React.Component<SearchCourseProps, SearchCourseState> {
@@ -215,13 +216,18 @@ class SearchCourse extends React.Component<SearchCourseProps, SearchCourseState>
                             if (course.uuid && course.readonly && course.readonly.granted.indexOf("DELETE_COURSE_INFO") != -1)
                             {
                                 const deleteDetails = {uuid: course.uuid, name: course.name};
-                                onDelete = () => this.setState({confirmOpen:true, deleteDetails})
+                                onDelete = () => this.setState({confirmOpen:true, deleteDetails});
+                            }
+                            var text = course.code + " - " + course.name;
+                            if (course.archived){
+                                text = text + ' (' + strings.archived + ')';
                             }
                             return <SearchResult key={course.uuid} 
                                 href={courseEditRoute.href}
                                 onClick={courseEditRoute.onClick}
-                                primaryText={course.code + " - " + course.name}
-                                secondaryText={course.description} onDelete={onDelete}/>
+                                primaryText={text}
+                                secondaryText={course.description} 
+                                onDelete={onDelete} />
                         })
                     }
                     <VisibilitySensor onChange={this.visiblityCheck}/>

@@ -101,6 +101,12 @@ public class CourseInfoDaoImpl extends AbstractEntityDaoImpl<CourseInfo> impleme
 		}
 
 		@Override
+		public String createOrderBy()
+		{
+			return "LOWER(be.code)";
+		}
+
+		@Override
 		public void processQuery(Query query)
 		{
 			super.processQuery(query);

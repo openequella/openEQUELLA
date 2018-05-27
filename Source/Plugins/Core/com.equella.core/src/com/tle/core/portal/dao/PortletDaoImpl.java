@@ -175,7 +175,7 @@ public class PortletDaoImpl extends AbstractEntityDaoImpl<Portlet> implements Po
 
 				if( callback != null && callback.getOrderBy() != null )
 				{
-					hql.append(callback.getOrderBy());
+					hql.append(" ORDER BY " + callback.getOrderBy());
 				}
 
 				Query query = session.createQuery(hql.toString());

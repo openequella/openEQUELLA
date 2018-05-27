@@ -1,13 +1,12 @@
-import * as React from 'react';
+import { IconButton, ListItem, ListItemSecondaryAction, ListItemText, Theme, WithStyles, withStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
-import DeleteIcon from '@material-ui/icons/Delete'
-import { withStyles, Theme, WithStyles, ListItem, ListItemText, ListItemSecondaryAction, IconButton } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
+import * as React from 'react';
 
 const styles = withStyles((theme: Theme) => (
 {
     searchResultContent: {
-        display: "flex",
-        marginTop: "8px"
+        marginTop: theme.spacing.unit
     },
     itemThumb: {
         maxWidth: "88px",
@@ -16,12 +15,20 @@ const styles = withStyles((theme: Theme) => (
     },
     resultLink: {
         textDecoration: "none",
-        fontSize: "1.3125rem",
-        // fontWeight: 500,
-        fontFamily: "Roboto, Helvetica, Arial, sans-serif",
-        lineHeight: "1.16667em"
+        fontFamily: "Roboto, Helvetica, Arial, sans-serif"
+    },
+    displayNode: {
+        padding: 0
+    },
+    details: {
+        marginTop: theme.spacing.unit
     }
 }));
+
+export interface SearchResultExtraDetail {
+    label: string;
+    value: string;
+}
 
 export interface SearchResultProps {
     href: string;
@@ -29,19 +36,42 @@ export interface SearchResultProps {
     onDelete?: () => void;
     primaryText: string;
     secondaryText?: string;
+    //extraDetails?: SearchResultExtraDetail[];
+    //indicators?: string[];
 }
 
-type PropsWithStyles = SearchResultProps & WithStyles<"searchResultContent" | "itemThumb" | "resultLink">
+type PropsWithStyles = SearchResultProps & WithStyles<"searchResultContent" | "itemThumb" | "resultLink" | "displayNode" | "details">
 
 class SearchResult extends React.Component<PropsWithStyles> {
     render() {
-        const {classes, onDelete} = this.props
+        const { classes, onDelete } = this.props
         const link: any = <a href={this.props.href} className={classes.resultLink} 
-                onClick={this.props.onClick}>{this.props.primaryText}</a>
-        //
-        const content: any = <Typography variant="body1">{this.props.secondaryText}</Typography>;
+                onClick={this.props.onClick}>{this.props.primaryText}
+                </a>
+        /*
+        var details: JSX.Element | undefined;
+        if (extraDetails){
+            details = <List className={ classes.details } disablePadding>
+                    { extraDetails.map((detail: SearchResultExtraDetail, index: number) => 
+                    <ListItem key={index} className={classes.displayNode } disableGutters>
+                        <Typography variant="body1">{detail.label}</Typography>
+                        { (detail.value ? 
+                            <Typography component="div" color="textSecondary"> - {detail.value}</Typography> 
+                            : null) }
+                    </ListItem>) }
+                </List>;
+        }
+        var indic: JSX.Element | undefined;
+        if (indicators){
+            indic = <div>
+                    { indicators.map((ind, index: number) => <Chip key={index} label={ind} />) }
+                </div>;
+        }*/
+
+        const content = <Typography variant="body1" className={this.props.classes.searchResultContent}>{this.props.secondaryText}</Typography>;
+
         return <ListItem button onClick={this.props.onClick} divider>
-                <ListItemText disableTypography primary={link} secondary={content} />
+                <ListItemText primary={link} secondary={content} />
                 <ListItemSecondaryAction>
                 { onDelete && <IconButton onClick={onDelete}><DeleteIcon/></IconButton> }
                 </ListItemSecondaryAction>

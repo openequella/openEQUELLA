@@ -115,9 +115,9 @@ public class GenericInstitionalDaoImpl<T, ID extends Serializable> extends Gener
 			hql.append(callback.getAdditionalWhere());
 		}
 
-		if( callback != null && callback.getOrderBy() != null )
+		if( !countOnly && callback != null && callback.getOrderBy() != null )
 		{
-			hql.append(callback.getOrderBy());
+			hql.append(" ORDER BY " + callback.getOrderBy());
 		}
 
 		Query query = session.createQuery(hql.toString());
