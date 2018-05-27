@@ -318,7 +318,7 @@ public class AttachmentsSection extends AbstractAttachmentsSection<Item, Attachm
 				final PropBagEx xml = vitem.getItemxml();
 				for( String target : metadataTargets )
 				{
-					for( String val : xml.getNodeList(target) )
+					for( String val : xml.iterateAllValues(target) )
 					{
 						if( val.equals(attachmentUuid) )
 						{
