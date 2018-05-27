@@ -43,9 +43,10 @@ public abstract class AbstractOffice2007Extracter extends AbstractTextExtracterE
 	public abstract String getNameOfElementToIndex();
 
 	@Override
-	public void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize)
+	public void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration)
 		throws IOException
 	{
+		// Ignore parseDuration for now.
 		try
 		{
 			ArchiveExtractor extractor = ArchiveType.ZIP.createExtractor(input);

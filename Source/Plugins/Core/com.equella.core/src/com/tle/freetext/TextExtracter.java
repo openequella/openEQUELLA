@@ -90,6 +90,9 @@ public class TextExtracter
 	@Inject(optional = true)
 	@Named("textExtracter.indexImsPackages")
 	private boolean indexImsPackages = true;
+	@Inject(optional = true)
+	@Named("textExtracter.parseDurationCap")
+	private long parseDurationCap = 60000;
 
 	@SuppressWarnings("nls")
 	public List<Fieldable> indexAttachments(IndexedItem indexedItem, SearchSettings searchSettings)
@@ -357,7 +360,7 @@ public class TextExtracter
 		String mimeType = mimeEntry != null ? mimeEntry.getType() : null;
 		if( extracters.size() > 0 )
 		{
-			extracters.get(0).extractText(mimeType, inp, outputText, SUMMARY_SIZE);
+			extracters.get(0).extractText(mimeType, inp, outputText, SUMMARY_SIZE, parseDurationCap);
 			outputText.append(' ');
 		}
 		else

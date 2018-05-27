@@ -48,10 +48,10 @@ public class MsExcelExtracter extends AbstractTextExtracterExtension
 	}
 
 	@Override
-	public void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize)
+	public void extractText(String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration)
 		throws IOException
 	{
-
+		// Ignore parseDuration for now.
 		try
 		{
 			Metadata meta = new Metadata();
