@@ -48,6 +48,12 @@ public class TextI18NStrings implements I18NStrings
 		return Collections.singletonMap("", text);
 	}
 
+	@Override
+	public I18NStrings maybeNull()
+	{
+		return text != null ? this : null;
+	}
+
 	@Nullable
 	@Override
 	public I18NString asI18NString(@Nullable String defaultText)

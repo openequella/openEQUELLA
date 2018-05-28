@@ -88,8 +88,8 @@ public class WorkflowBeanSerializer extends AbstractEquellaBaseEntitySerializer<
 		final char type = node.getType();
 		nodeBean.setType(type);
 		nodeBean.setUuid(node.getUuid());
-		nodeBean.setName(getI18NStrings(node.getName(), true).asI18NString(node.getUuid()));
-		nodeBean.setNameStrings(getI18NStrings(node.getName(), true));
+		nodeBean.setName(getI18NStrings(node.getName()).asI18NString(node.getUuid()));
+		nodeBean.setNameStrings(getI18NStrings(node.getName()));
 		nodeBean.setRejectPoint(node.isRejectPoint());
 
 		switch( type )
@@ -114,7 +114,7 @@ public class WorkflowBeanSerializer extends AbstractEquellaBaseEntitySerializer<
 
 			case WorkflowNode.ITEM_TYPE:
 				final WorkflowItem itemNode = (WorkflowItem) node;
-				I18NStrings descStrings = getI18NStrings(itemNode.getDescription(), true);
+				I18NStrings descStrings = getI18NStrings(itemNode.getDescription());
 				nodeBean.setDescription(descStrings.asI18NString(null));
 				nodeBean.setDescriptionStrings(descStrings);
 				nodeBean.setActionDays(itemNode.getActionDays());

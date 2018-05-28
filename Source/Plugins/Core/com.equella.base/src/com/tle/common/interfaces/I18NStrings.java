@@ -27,6 +27,8 @@ public interface I18NStrings
 
 	I18NString asI18NString(String defaultText);
 
+	I18NStrings maybeNull();
+
 	@Override
 	String toString();
 }

@@ -50,6 +50,11 @@ public class SimpleI18NStrings implements I18NStrings
 		return nameStrings;
 	}
 
+	public I18NStrings maybeNull()
+	{
+		return !strings.isEmpty() ? this : null;
+	}
+
 	@Nullable
 	@Override
 	public I18NString asI18NString(@Nullable String defaultText)

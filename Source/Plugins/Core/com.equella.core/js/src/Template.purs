@@ -209,7 +209,7 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
     "@global": {
         a: {
           textDecoration: "none",
-          color: theme.palette.primary
+          color: theme.palette.primary.main
         }
     },
     content: cssList [ 

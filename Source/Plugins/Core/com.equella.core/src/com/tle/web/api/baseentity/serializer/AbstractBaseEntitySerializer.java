@@ -191,17 +191,14 @@ public abstract class AbstractBaseEntitySerializer<BE extends BaseEntity, BEB ex
 	{
 		target.setUuid(source.getUuid());
 
-		I18NStrings nameStrings = getI18NStrings(source.getName(), true);
+		I18NStrings nameStrings = getI18NStrings(source.getName());
 		target.setNameStrings(nameStrings);
 		target.setName(nameStrings.asI18NString(source.getUuid()));
 		if( heavy )
 		{
-			I18NStrings descStrings = getI18NStrings(source.getDescription(), false);
-			if (descStrings != null)
-			{
-				target.setDescription(descStrings.asI18NString(null));
-				target.setDescriptionStrings(descStrings);
-			}
+			I18NStrings descStrings = getI18NStrings(source.getDescription());
+			target.setDescription(descStrings.asI18NString(null));
+			target.setDescriptionStrings(descStrings.maybeNull());
 
 			target.setOwner(new UserBean(source.getOwner()));
 			target.setCreatedDate(source.getDateCreated());
@@ -239,7 +236,7 @@ public abstract class AbstractBaseEntitySerializer<BE extends BaseEntity, BEB ex
 	}
 
 	@Nullable
-	protected I18NStrings getI18NStrings(@Nullable LanguageBundle bundle, boolean emptyDefault)
+	protected I18NStrings getI18NStrings(@Nullable LanguageBundle bundle)
 	{
 		if( bundle != null )
 		{
@@ -249,16 +246,6 @@ public abstract class AbstractBaseEntitySerializer<BE extends BaseEntity, BEB ex
 				return new SimpleI18NStrings(strings);
 			}
 		}
-		if( emptyDefault )
-		{
-			return new SimpleI18NStrings(new HashMap<String, LanguageString>());
-		}
-		// if (defaultValue != null)
-		// {
-		// final Map<String, LanguageString> strings = new HashMap<>();
-		// strings.put(CurrentLocale.getLocale().getLanguage(), defaultValue);
-		// return new SimpleI18NStrings(strings);
-		// }
-		return null;
+		return new SimpleI18NStrings(new HashMap<>());
 	}
 }
