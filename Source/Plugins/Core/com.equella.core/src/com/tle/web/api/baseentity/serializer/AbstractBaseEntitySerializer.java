@@ -197,8 +197,11 @@ public abstract class AbstractBaseEntitySerializer<BE extends BaseEntity, BEB ex
 		if( heavy )
 		{
 			I18NStrings descStrings = getI18NStrings(source.getDescription(), false);
-			target.setDescription(descStrings.asI18NString(null));
-			target.setDescriptionStrings(descStrings);
+			if (descStrings != null)
+			{
+				target.setDescription(descStrings.asI18NString(null));
+				target.setDescriptionStrings(descStrings);
+			}
 
 			target.setOwner(new UserBean(source.getOwner()));
 			target.setCreatedDate(source.getDateCreated());
