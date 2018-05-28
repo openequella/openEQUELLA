@@ -61,12 +61,6 @@ public class SchemaResourceImpl extends AbstractBaseEntityResource<Schema, BaseE
 	}
 
 	@Override
-	protected int getSecurityPriority()
-	{
-		return SecurityConstants.PRIORITY_SCHEMA;
-	}
-
-	@Override
 	public AbstractEntityService<?, Schema> getEntityService()
 	{
 		return schemaService;

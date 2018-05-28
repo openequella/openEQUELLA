@@ -136,11 +136,6 @@ public class ReportResourceImpl extends
     }
 
     @Override
-    protected int getSecurityPriority() {
-        return SecurityConstants.PRIORITY_ALL_REPORTS;
-    }
-
-    @Override
     protected BaseEntitySerializer<Report, ReportBean> getSerializer() {
         return reportSerializer;
     }

@@ -64,12 +64,6 @@ public class LtiConsumerResourceImpl
 	}
 
 	@Override
-	protected int getSecurityPriority()
-	{
-		return SecurityConstants.PRIORITY_LTI_CONSUMER;
-	}
-
-	@Override
 	protected BaseEntitySerializer<LtiConsumer, LtiConsumerBean> getSerializer()
 	{
 		return ltiConsumerSerializer;

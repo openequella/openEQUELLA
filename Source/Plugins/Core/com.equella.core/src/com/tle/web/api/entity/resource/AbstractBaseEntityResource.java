@@ -28,6 +28,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import com.tle.common.security.TargetList;
+import com.tle.common.security.TargetListEntry;
 import com.tle.core.entity.EnumerateOptions;
 import com.tle.core.i18n.CoreStrings;
 import com.tle.web.api.entity.PagedResults;
@@ -87,8 +89,6 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 
 	public abstract AbstractEntityService<?, BE> getEntityService();
 
-	protected abstract int getSecurityPriority();
-
 	protected abstract BaseEntitySerializer<BE, B> getSerializer();
 
 	protected abstract Class<?> getResourceClass();
@@ -139,42 +139,15 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 
 	@RequiresPrivilege(priv = "EDIT_SECURITY_TREE")
 	@Transactional
-	protected void updateAcls(SB securityBean, int priority)
+	protected void updateAcls(SB securityBean)
 	{
-		List<AccessEntry> entries = Lists.newArrayList();
+		List<TargetListEntry> entries = new ArrayList<>();
 		List<TargetListEntryBean> rules = securityBean.getRules();
 		for( TargetListEntryBean rule : rules )
 		{
-			AccessEntry newEntry = new AccessEntry();
-			if( rule.isGranted() )
-			{
-				newEntry.setGrantRevoke(SecurityConstants.GRANT);
-			}
-			else
-			{
-				newEntry.setGrantRevoke(SecurityConstants.REVOKE);
-			}
-			newEntry.setPrivilege(rule.getPrivilege());
-			newEntry.setTargetObject(SecurityConstants.TARGET_EVERYTHING);
-			newEntry.setAclPriority(priority);
-			newEntry.setAclOrder(0);
-			newEntry.setExpression(null);
-			newEntry.setInstitution(CurrentInstitution.get());
-
-			String who = rule.getWho().trim();
-			if( Check.isEmpty(who) )
-			{
-				throw new InvalidDataException(new ValidationError("who", getString("validation.acls.who")));
-			}
-			AccessExpression exprObj = accessExpressionDao.retrieveOrCreate(who);
-			newEntry.setExpression(exprObj);
-
-			entries.add(newEntry);
-			aclDao.save(newEntry);
+			entries.add(new TargetListEntry(rule.isGranted(), rule.isOverride(), rule.getPrivilege(), rule.getWho()));
 		}
-
-		aclDao.flush();
-		aclDao.clear();
+		aclManager.setTargetList(getAllNodes()[0], null, new TargetList(entries));
 	}
 
 	@Transactional
@@ -199,7 +172,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 
 	public Response editAcls(UriInfo uriInfo, SB security)
 	{
-		updateAcls(security, getSecurityPriority());
+		updateAcls(security);
 		return Response.ok().build();
 	}
 

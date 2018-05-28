@@ -75,9 +75,4 @@ public class WorkflowResourceImpl extends AbstractBaseEntityResource<Workflow, B
 		return WorkflowResource.class;
 	}
 
-	@Override
-	protected int getSecurityPriority()
-	{
-		return SecurityConstants.PRIORITY_WORKFLOW;
-	}
 }

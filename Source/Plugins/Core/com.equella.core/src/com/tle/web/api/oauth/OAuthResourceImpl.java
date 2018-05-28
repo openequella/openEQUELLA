@@ -53,12 +53,6 @@ public class OAuthResourceImpl extends AbstractBaseEntityResource<OAuthClient, B
 	}
 
 	@Override
-	protected int getSecurityPriority()
-	{
-		return SecurityConstants.PRIORITY_OAUTH_CLIENT;
-	}
-
-	@Override
 	public AbstractEntityService<?, OAuthClient> getEntityService()
 	{
 		return oauthService;

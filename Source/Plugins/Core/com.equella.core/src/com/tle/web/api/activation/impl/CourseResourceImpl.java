@@ -120,12 +120,6 @@ public class CourseResourceImpl extends AbstractBaseEntityResource<CourseInfo, B
 	}
 
 	@Override
-	protected int getSecurityPriority()
-	{
-		return SecurityConstants.PRIORITY_COURSE_INFO;
-	}
-
-	@Override
 	public CourseInfoService getEntityService()
 	{
 		return courseService;

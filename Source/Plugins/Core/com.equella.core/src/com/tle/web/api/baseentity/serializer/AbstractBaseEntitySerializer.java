@@ -191,12 +191,14 @@ public abstract class AbstractBaseEntitySerializer<BE extends BaseEntity, BEB ex
 	{
 		target.setUuid(source.getUuid());
 
-		target.setName(getI18NString(source.getName(), source.getUuid()));
-		target.setNameStrings(getI18NStrings(source.getName(), true));
+		I18NStrings nameStrings = getI18NStrings(source.getName(), true);
+		target.setNameStrings(nameStrings);
+		target.setName(nameStrings.asI18NString(source.getUuid()));
 		if( heavy )
 		{
-			target.setDescription(getI18NString(source.getDescription(), null));
-			target.setDescriptionStrings(getI18NStrings(source.getDescription(), false));
+			I18NStrings descStrings = getI18NStrings(source.getDescription(), false);
+			target.setDescription(descStrings.asI18NString(null));
+			target.setDescriptionStrings(descStrings);
 
 			target.setOwner(new UserBean(source.getOwner()));
 			target.setCreatedDate(source.getDateCreated());
@@ -231,20 +233,6 @@ public abstract class AbstractBaseEntitySerializer<BE extends BaseEntity, BEB ex
 		}
 
 		return targetListEntryBean.isEmpty() ? Collections.emptyList() : targetListEntryBean;
-	}
-
-	@Nullable
-	protected I18NString getI18NString(@Nullable LanguageBundle bundle, @Nullable String defaultValue)
-	{
-		if( bundle != null )
-		{
-			return new BundleString(bundle, defaultValue);
-		}
-		if( defaultValue != null )
-		{
-			return new SimpleI18NString(defaultValue);
-		}
-		return null;
 	}
 
 	@Nullable

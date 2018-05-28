@@ -46,12 +46,6 @@ public class CollectionResourceImpl
 	private CollectionBeanSerializer collectionSerializer;
 
 	@Override
-	protected int getSecurityPriority()
-	{
-		return SecurityConstants.PRIORITY_COLLECTION;
-	}
-
-	@Override
 	protected Class<?> getResourceClass()
 	{
 		return CollectionResource.class;

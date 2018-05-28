@@ -24,6 +24,7 @@ import javax.inject.Singleton;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.interfaces.BaseEntityReference;
+import com.tle.common.interfaces.I18NStrings;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.workflow.Workflow;
 import com.tle.common.workflow.node.DecisionNode;
@@ -87,7 +88,7 @@ public class WorkflowBeanSerializer extends AbstractEquellaBaseEntitySerializer<
 		final char type = node.getType();
 		nodeBean.setType(type);
 		nodeBean.setUuid(node.getUuid());
-		nodeBean.setName(getI18NString(node.getName(), node.getUuid()));
+		nodeBean.setName(getI18NStrings(node.getName(), true).asI18NString(node.getUuid()));
 		nodeBean.setNameStrings(getI18NStrings(node.getName(), true));
 		nodeBean.setRejectPoint(node.isRejectPoint());
 
@@ -113,8 +114,9 @@ public class WorkflowBeanSerializer extends AbstractEquellaBaseEntitySerializer<
 
 			case WorkflowNode.ITEM_TYPE:
 				final WorkflowItem itemNode = (WorkflowItem) node;
-				nodeBean.setDescription(getI18NString(itemNode.getDescription(), null));
-				nodeBean.setDescriptionStrings(getI18NStrings(itemNode.getDescription(), false));
+				I18NStrings descStrings = getI18NStrings(itemNode.getDescription(), true);
+				nodeBean.setDescription(descStrings.asI18NString(null));
+				nodeBean.setDescriptionStrings(descStrings);
 				nodeBean.setActionDays(itemNode.getActionDays());
 				nodeBean.setAllowEditing(itemNode.isAllowEditing());
 				nodeBean.setAutoAction(itemNode.getAutoAction().toString().toLowerCase());
