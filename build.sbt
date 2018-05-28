@@ -58,7 +58,7 @@ name := "Equella"
 
 equellaMajorMinor in ThisBuild := "6.6"
 equellaStream in ThisBuild := "Stable"
-equellaBuild in ThisBuild := "RC1" + buildConfig.value.getString("build.buildname")
+equellaBuild in ThisBuild := buildConfig.value.getString("build.buildname") + "_RC1"
 
 git.useGitDescribe := true
 
