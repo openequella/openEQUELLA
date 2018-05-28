@@ -156,7 +156,8 @@ class EditCourse extends React.Component<Props, EditCourseState> {
         {
             this.props.modifyEntity({
                 code: '',
-                name: ''
+                name: '', 
+                description: ''
             });
         }
         this.props.loadCitations();

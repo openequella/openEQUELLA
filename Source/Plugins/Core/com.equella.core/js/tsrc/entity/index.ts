@@ -121,11 +121,7 @@ function entityWorkers<E extends Entity>(entityCrudActions: EntityCrudActions<E>
         (param): Promise<{result: E}> => { 
             const { entity } = param;
             // FIXME: edit a specific locale:
-            let descriptionStrings: IDictionary<string> = {};
-            if (entity.description){
-                descriptionStrings = { en: entity.description };
-            }
-            const postEntity = Object.assign({}, entity, { nameStrings: { en: entity.name }, descriptionStrings });
+            const postEntity = Object.assign({}, entity, { nameStrings: { en: entity.name }, descriptionStrings: {en: entity.description } });
             if (entity.uuid){
                 return axios.put<E>(`${Config.baseUrl}api/${entityLower}/${entity.uuid}`, postEntity)
                     .then(res => ({ result: res.data})); 

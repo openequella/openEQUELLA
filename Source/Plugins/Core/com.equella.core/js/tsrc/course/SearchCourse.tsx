@@ -12,7 +12,7 @@ import ConfirmDialog from '../components/ConfirmDialog';
 import SearchResult from '../components/SearchResult';
 import { courseService } from '../services';
 import { StoreState } from '../store';
-import { prepLangStrings } from '../util/langstrings';
+import { prepLangStrings, sizedString } from '../util/langstrings';
 import VisibilitySensor = require('react-visibility-sensor');
 
 const styles = (theme: Theme) => ({
@@ -73,9 +73,12 @@ const MaxCourses = 200;
 export const strings = prepLangStrings("courses", {
     title: "Courses",
     sure: "Are you sure you want to delete - '{0}'?", 
-    nocourses: "No results available",
     confirmDelete: "It will be permanently deleted.", 
-    coursesAvailable: "{0} Courses", 
+    coursesAvailable: {
+        zero: "No courses available",
+        one: "{0} course",
+        more: "{0} courses"
+    }, 
     includeArchived: "Include archived",
     archived: "Archived"
 });
@@ -202,7 +205,8 @@ class SearchCourse extends React.Component<SearchCourseProps, SearchCourseState>
                 <Paper className={classes.results}>
                     <div className={classes.resultHeader}>
                         <Typography className={classes.resultText} variant="subheading">{
-                            courses.length == 0 ? strings.nocourses : strings.coursesAvailable.replace("{0}", totalAvailable ? totalAvailable.toString() : "")
+                            courses.length == 0 ? strings.coursesAvailable.zero : 
+                            sizedString(totalAvailable||0, strings.coursesAvailable).replace("{0}", totalAvailable ? totalAvailable.toString() : "")
                         }</Typography>
                         <FormControlLabel 
                         control={<Checkbox onChange={(e,includeArchived) => this.handleArchived(includeArchived)}/>} 

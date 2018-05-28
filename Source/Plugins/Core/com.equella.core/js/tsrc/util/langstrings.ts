@@ -2,6 +2,20 @@
 
 declare var bundle : any;
 
+export interface Sizes {
+    zero: string;
+    one: string;
+    more: string;
+}
+export function sizedString(size: number, strings: Sizes): string {
+    switch (size)
+    {
+        case 0: return strings.zero;
+        case 1: return strings.one;
+    }
+    return strings.more;
+}
+
 export function prepLangStrings<A>(prefix:string, strings: A) : A {
     if (typeof bundle == "undefined")
       return strings;

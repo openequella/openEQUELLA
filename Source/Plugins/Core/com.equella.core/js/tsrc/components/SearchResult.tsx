@@ -13,10 +13,6 @@ const styles = withStyles((theme: Theme) => (
         maxHeight: "66px",
         marginRight: "12px"
     },
-    resultLink: {
-        textDecoration: "none",
-        fontFamily: "Roboto, Helvetica, Arial, sans-serif"
-    },
     displayNode: {
         padding: 0
     },
@@ -40,14 +36,13 @@ export interface SearchResultProps {
     //indicators?: string[];
 }
 
-type PropsWithStyles = SearchResultProps & WithStyles<"searchResultContent" | "itemThumb" | "resultLink" | "displayNode" | "details">
+type PropsWithStyles = SearchResultProps & WithStyles<"searchResultContent" | "itemThumb" | "displayNode" | "details">
 
 class SearchResult extends React.Component<PropsWithStyles> {
     render() {
-        const { classes, onDelete } = this.props
-        const link: any = <a href={this.props.href} className={classes.resultLink} 
-                onClick={this.props.onClick}>{this.props.primaryText}
-                </a>
+        const { onDelete } = this.props
+        const link: any = <Typography color="primary" variant="subheading" component={(p) => 
+            <a {...p} href={this.props.href} onClick={this.props.onClick}>{this.props.primaryText}</a>}/>
         /*
         var details: JSX.Element | undefined;
         if (extraDetails){
@@ -71,7 +66,7 @@ class SearchResult extends React.Component<PropsWithStyles> {
         const content = <Typography variant="body1" className={this.props.classes.searchResultContent}>{this.props.secondaryText}</Typography>;
 
         return <ListItem button onClick={this.props.onClick} divider>
-                <ListItemText primary={link} secondary={content} />
+                <ListItemText disableTypography primary={link} secondary={content} />
                 <ListItemSecondaryAction>
                 { onDelete && <IconButton onClick={onDelete}><DeleteIcon/></IconButton> }
                 </ListItemSecondaryAction>
