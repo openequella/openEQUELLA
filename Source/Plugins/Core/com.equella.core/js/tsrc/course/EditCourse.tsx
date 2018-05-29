@@ -157,7 +157,8 @@ class EditCourse extends React.Component<Props, EditCourseState> {
             this.props.modifyEntity({
                 code: '',
                 name: '', 
-                description: ''
+                description: '', 
+                type: 'Internal'
             });
         }
         this.props.loadCitations();
@@ -321,9 +322,9 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                                     input={<Input id="type-inp" />}
                                     onChange={this.handleChange('type')}
                                 >
-                                    <MenuItem key={"i"} value={"i"}>{typeval.i}</MenuItem>
-                                    <MenuItem key={"e"} value={"e"}>{typeval.e}</MenuItem>
-                                    <MenuItem key={"s"} value={"s"}>{typeval.s}</MenuItem>
+                                    <MenuItem key={"i"} value={"Internal"}>{typeval.i}</MenuItem>
+                                    <MenuItem key={"e"} value={"External"}>{typeval.e}</MenuItem>
+                                    <MenuItem key={"s"} value={"Staff"}>{typeval.s}</MenuItem>
                                 </Select>
                             </FormControl>
 
