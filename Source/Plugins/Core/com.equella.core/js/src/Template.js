@@ -5,6 +5,7 @@ exports.renderData = function()
     require('jspolyfill-array.prototype.find');
     require('css-vars-ponyfill')({variables: {"--top-bar": "64px"}});
     require('promise/polyfill');
+    require('sprintf-js');
     return typeof renderData != "undefined" ? renderData : {newUI:false};
 }();
 

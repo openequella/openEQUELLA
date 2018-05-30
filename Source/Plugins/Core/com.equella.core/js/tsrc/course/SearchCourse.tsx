@@ -72,12 +72,12 @@ const MaxCourses = 200;
 
 export const strings = prepLangStrings("courses", {
     title: "Courses",
-    sure: "Are you sure you want to delete - '{0}'?", 
+    sure: "Are you sure you want to delete - '%s'?", 
     confirmDelete: "It will be permanently deleted.", 
     coursesAvailable: {
         zero: "No courses available",
-        one: "{0} course",
-        more: "{0} courses"
+        one: "%d course",
+        more: "%d courses"
     }, 
     includeArchived: "Include archived",
     archived: "Archived"
@@ -198,7 +198,7 @@ class SearchCourse extends React.Component<SearchCourseProps, SearchCourseState>
             <div className={classes.overall}>
                 {this.state.deleteDetails && 
                     <ConfirmDialog open={confirmOpen} 
-                        title={strings.sure.replace("{0}", this.state.deleteDetails.name)} 
+                        title={sprintf(strings.sure, this.state.deleteDetails.name)} 
                         onConfirm={this.handleDelete} onCancel={this.handleClose}>
                         {strings.confirmDelete}
                     </ConfirmDialog>}
@@ -206,7 +206,7 @@ class SearchCourse extends React.Component<SearchCourseProps, SearchCourseState>
                     <div className={classes.resultHeader}>
                         <Typography className={classes.resultText} variant="subheading">{
                             courses.length == 0 ? strings.coursesAvailable.zero : 
-                            sizedString(totalAvailable||0, strings.coursesAvailable).replace("{0}", totalAvailable ? totalAvailable.toString() : "")
+                            sprintf(sizedString(totalAvailable||0, strings.coursesAvailable), totalAvailable||0)
                         }</Typography>
                         <FormControlLabel 
                         control={<Checkbox onChange={(e,includeArchived) => this.handleArchived(includeArchived)}/>} 

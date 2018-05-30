@@ -3,7 +3,7 @@ module Security.ACLEditor where
 
 import Prelude hiding (div)
 
-import Common.CommonStrings (commonString)
+import Common.CommonStrings (commonAction, commonString)
 import Common.Icons (groupIconName, roleIconName, userIconName)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
@@ -21,14 +21,14 @@ import DOM.Node.Document as D
 import DOM.Node.Node (appendChild)
 import DOM.Node.ParentNode (QuerySelector(..), querySelector)
 import DOM.Node.Types (Node, documentToParentNode, elementToNode)
-import Data.Array (any, deleteAt, fold, foldr, fromFoldable, head, index, insertAt, last, length, mapWithIndex, nub, snoc, union, updateAt, (!!))
+import Data.Array (any, catMaybes, deleteAt, fold, foldr, fromFoldable, index, insertAt, last, length, mapWithIndex, nub, snoc, union, updateAt, (!!))
 import Data.Either (Either(..), either)
 import Data.Lens (Lens', Prism', Traversal', assign, filtered, foldMapOf, modifying, over, preview, previewOn, prism', set, traversed, use, view, (^?))
 import Data.Lens.Index (ix)
 import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
 import Data.List (List(Cons, Nil), null, uncons)
-import Data.Maybe (Maybe(Nothing, Just), fromMaybe, maybe)
+import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Newtype (class Newtype)
 import Data.Nullable (toMaybe)
 import Data.String (joinWith)
@@ -41,6 +41,10 @@ import DragNDrop.Beautiful (DropResult, dragDropContext, draggable, droppable)
 import EQUELLA.Environment (prepLangStrings)
 import MaterialUI.Button (button, disableRipple, raised)
 import MaterialUI.Checkbox (checkbox)
+import MaterialUI.Color as C
+import MaterialUI.Dialog (dialog)
+import MaterialUI.DialogActions (dialogActions_)
+import MaterialUI.DialogContent (dialogContent)
 import MaterialUI.Divider (divider)
 import MaterialUI.Event (Event)
 import MaterialUI.ExpansionPanelSummary (disabled)
@@ -50,20 +54,21 @@ import MaterialUI.Icon (icon_)
 import MaterialUI.IconButton (iconButton)
 import MaterialUI.Input (id) as P
 import MaterialUI.InputLabel (inputLabel)
-import MaterialUI.List (disablePadding, list)
+import MaterialUI.List (disablePadding, list, list_)
 import MaterialUI.ListItem (button) as P
 import MaterialUI.ListItem (listItem)
 import MaterialUI.ListItemIcon (listItemIcon_)
 import MaterialUI.ListItemText (disableTypography, listItemText)
 import MaterialUI.ListItemText (primary, secondary) as P
 import MaterialUI.MenuItem (menuItem)
+import MaterialUI.Modal (open)
 import MaterialUI.Paper (paper)
 import MaterialUI.PropTypes (EventHandler, toHandler)
-import MaterialUI.Properties (IProp, className, color, component, mkProp, onChange, onClick, variant)
+import MaterialUI.Properties (IProp, className, color, component, mkProp, onChange, onClick, onClose, variant)
 import MaterialUI.Select (select, value)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.SwitchBase (checked)
-import MaterialUI.TextStyle (body1, caption, subheading, title) as TS
+import MaterialUI.TextStyle (body1, caption, headline, subheading, title) as TS
 import MaterialUI.Tooltip (tooltip, title)
 import MaterialUI.Typography (error, textSecondary, typography)
 import React (ReactClass, ReactElement, stopPropagation)
@@ -101,13 +106,14 @@ mapResolved _ o = o
 data Command = Resolve | HandleDrop DropResult | SelectEntry Int | Undo 
   | DeleteExpr Int | ChangeOp Int String | EditEntry Int (ResolvedEntryR -> ResolvedEntryR) | DeleteEntry Int
   | OpenDialog DialogType | AddFromDialog (Array ResolvedTerm) | CloseDialog 
-  | NewPriv | DialState (Boolean -> Boolean) | ToggleNot Int | Expand Int | Updated (Array TargetListEntry)
+  | NewPriv | FinishNewPriv (Maybe String) | DialState (Boolean -> Boolean) | ToggleNot Int | Expand Int | Updated (Array TargetListEntry)
 
 type MyState = {
   acls :: Array ResolvedEntry,
   selectedIndex :: Maybe Int,
   terms :: Array TermType,
   undoList :: List (Tuple (Maybe Int) (Array ResolvedEntry)), 
+  newPrivDialog :: Boolean,
   openDialog :: Maybe DialogType, 
   showDialog :: Boolean,
   dialOpen :: Boolean, 
@@ -286,6 +292,10 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
       right: 4,
       position: "absolute",
       transform: "translateY(-50%)"
+    }, 
+    privDialog: {
+      width: "30em",
+      minHeight: "20em"
     }
   }
 
@@ -310,11 +320,12 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
       showDialog: false,
       dialOpen: false, 
       dialHidden: false,
-      dragPortal: Nothing
+      dragPortal: Nothing, 
+      newPrivDialog: false
     }
     
 
-  render {acls,terms,selectedIndex,openDialog,showDialog,undoList,dialOpen, dialHidden,dragPortal} 
+  render s@{acls,terms,selectedIndex,openDialog,showDialog,undoList,dialOpen, dialHidden,dragPortal} 
       (ReactProps {classes,allowedPrivs}) (DispatchEff d) = 
     let expressionM = selectedIndex >>= \i -> Tuple i <$> previewOn acls (currentEntry i)
     in dragDropContext { onDragEnd: mkIOFn1 (d HandleDrop) } $ [ 
@@ -331,9 +342,27 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
           paper [className classes.commonPanel] commonPanel 
         ]
       ]
-    ] <> (maybe [] renderDialog openDialog)
+    ] <> (catMaybes [ 
+      map renderDialog openDialog, 
+      Just renderNewPriv
+    ])
     where 
-    renderDialog dt = [ termDialog {open:showDialog, onAdd: mkIOFn1 $ d AddFromDialog, cancel: liftEff $ (d \_ -> CloseDialog) unit, dt} ]
+    renderDialog dt = termDialog {open:showDialog, onAdd: mkIOFn1 $ d AddFromDialog, cancel: liftEff $ (d \_ -> CloseDialog) unit, dt}
+    renderNewPriv = dialog [open s.newPrivDialog, onClose close] [
+        dialogContent [className classes.privDialog] [
+          typography [variant TS.headline] [ text aclString.selectpriv],
+          list_ $ privItem <$> allowedPrivs
+        ], 
+        dialogActions_ [
+          button [color C.secondary, onClick $ close] [ text commonAction.cancel ]
+        ]
+      ]
+      where 
+      close = d \_ -> FinishNewPriv Nothing
+      privItem i = listItem [P.button true, onClick $ d \_ -> FinishNewPriv (Just i)] [
+        listItemText [P.primary i]
+      ]
+
 
     onChangeStr :: forall r. (String -> Command) -> IProp (onChange::EventHandler Event|r)
     onChangeStr f = onChange $ d $ \e -> f e.target.value
@@ -605,14 +634,16 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
 
     DialState open -> modifyState \s -> s {dialOpen = open s.dialOpen}
 
-    NewPriv -> do 
-      {allowedPrivs} <- getProps
-      runChange $ do 
+    NewPriv -> modifyState _ {newPrivDialog = true}
+    FinishNewPriv (Just priv) -> runChange $ do 
+        modify _{newPrivDialog=false}
         oldEntries <- use _acls
-        changed <- addUndo (flip snoc $ ResolvedEntry {priv:fromMaybe "" $ head allowedPrivs , granted:true, override:false, expr: emptyExpr})
+        changed <- addUndo (flip snoc $ ResolvedEntry {priv, granted:true, override:false, expr: emptyExpr})
         assign _selectedIndex $ Just $ length oldEntries
         pure changed
 
+    FinishNewPriv _ -> modifyState _ {newPrivDialog = false}
+    
     CloseDialog -> modifyState _{showDialog=false,dialHidden=false}
     OpenDialog dt -> modifyState _{openDialog=Just dt,showDialog=true, dialOpen=false,dialHidden=true}
     
@@ -763,6 +794,7 @@ aclRawStrings = {prefix:"acleditor",
   strings: {
     privilege: "Privilege",
     privileges: "Privileges", 
+    selectpriv: "Select privilege",
     expression: "Expression", 
     privplaceholder: "Please select or add a privilege", 
     dropplaceholder: "Drop targets here",

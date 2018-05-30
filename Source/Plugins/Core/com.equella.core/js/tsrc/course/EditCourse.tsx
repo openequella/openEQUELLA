@@ -80,11 +80,13 @@ interface EditCourseState {
     canSave: boolean;
     changed: boolean;
     justSaved: boolean;
+    editing: boolean;
     editSecurity?: () => TargetListEntry[];
 }
 export const strings = prepLangStrings("courseedit",
     {
-        title: "Edit Course",
+        title: "Editing Course - %s",
+        newtitle: "Creating new course",
         tab: "Course Details",
         name: {
             label: "Name",
@@ -146,7 +148,8 @@ class EditCourse extends React.Component<Props, EditCourseState> {
             activeTab: 0,
             canSave: true,
             changed: false, 
-            justSaved: false
+            justSaved: false,
+            editing: this.props.uuid ? true : false
         };
         if (this.props.uuid)
         {
@@ -238,17 +241,19 @@ class EditCourse extends React.Component<Props, EditCourseState> {
     render() {
         const { loading, entity, citations, availablePrivileges, classes } = this.props;
         const { AclEditor, Template, router, routes } = this.props.bridge;
+        const { editing } = this.state;
         const typeval = strings.type;
         const versionval = strings.version;
+        const title = sprintf(editing ? strings.title : strings.newtitle, entity ? entity.name : "");
 
         if (loading || !citations || !availablePrivileges){
-            return <Template title={strings.title} backRoute={routes.CoursesPage}>
+            return <Template title={title} backRoute={routes.CoursesPage}>
                     <Loader />
                 </Template>
         }
 
         if (!entity){
-            return <Template title={strings.title} backRoute={routes.CoursesPage}>
+            return <Template title={title} backRoute={routes.CoursesPage}>
                     <Error>Error loading entity</Error>
                 </Template>
         }
@@ -266,7 +271,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
             rules = security!.rules;
         } 
 
-        return <Template title={strings.title} preventNavigation={changed} backRoute={routes.CoursesPage} tabs={
+        return <Template title={title} preventNavigation={changed} backRoute={routes.CoursesPage} tabs={
                 <Tabs value={activeTab} onChange={this.handleTabChange()} fullWidth>
                     <Tab label={strings.tab} />
                     <Tab label={entityStrings.edit.tab.permissions} />

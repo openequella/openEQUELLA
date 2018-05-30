@@ -172,6 +172,9 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
         marginLeft: theme.spacing.unit * 4
       }, 
       allQuery {
+        overflow: "hidden", 
+        whiteSpace: "nowrap", 
+        textOverflow: "ellipsis",
         marginLeft: theme.spacing.unit
       }
     ],
@@ -230,7 +233,11 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
     titleArea: {
       flexGrow: 1,
       display: "flex", 
-      alignItems: "center"
+      alignItems: "center", 
+      overflow: "hidden"
+    }, 
+    userMenu: {
+      flexShrink: 0
     }
   }
 
@@ -334,7 +341,7 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
     ]
     topBarString = coreString.topbar.link
 
-    userMenu = D.div' $ (fromMaybe [] $ toMaybe menuExtra) <>
+    userMenu = D.div [DP.className classes.userMenu ] $ (fromMaybe [] $ toMaybe menuExtra) <>
       (guard (not renderData.user.guest) *>
       [
         badgedLink "assignment" tasks "access/tasklist.do" topBarString.tasks , 
