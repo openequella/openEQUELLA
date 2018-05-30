@@ -13,10 +13,10 @@ import Data.StrMap as SM
 import Data.Tuple (Tuple(..))
 import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMount, modifyState)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
+import MaterialUI.CircularProgress (circularProgress)
 import MaterialUI.ExpansionPanel (expansionPanel_)
 import MaterialUI.ExpansionPanelDetails (expansionPanelDetails_)
 import MaterialUI.ExpansionPanelSummary (expandIcon, expansionPanelSummary)
-import MaterialUI.Icon (icon_)
 import MaterialUI.List (list_)
 import MaterialUI.ListItem (listItem_)
 import MaterialUI.ListItemText (listItemText, primary, secondary)
@@ -27,7 +27,7 @@ import Network.HTTP.Affjax (get)
 import React (ReactElement, createFactory)
 import React.DOM (a, div, div', text) as D
 import React.DOM.Props (_id)
-import React.DOM.Props (href) as D
+import React.DOM.Props as DP
 import Settings.UISettings (uiSettingsEditor)
 import Template (template)
 
@@ -83,13 +83,18 @@ settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didM
     secondaryHeading: {
       fontSize: theme.typography.pxToRem 15,
       color: theme.palette.text.secondary
+    }, 
+    progress: {
+      display: "flex", 
+      marginTop: theme.spacing.unit * 4,
+      justifyContent: "center"
     }
   }
   render {settings} (ReactProps {legacyMode,classes})= if not legacyMode
                       then template coreString.title [ mainContent ]
                       else mainContent
     where
-    mainContent = maybe (D.div' []) renderSettings settings
+    mainContent = maybe (D.div [DP.className classes.progress] [ circularProgress [] ]) renderSettings settings
     renderSettings allSettings =
       let groupMap = SM.fromFoldableWith append $ (\(Setting s) -> Tuple s.group [s]) <$> allSettings
           renderGroup (Tuple "ui" details) = Just $ settingGroup details uiSettingsEditor
@@ -109,7 +114,7 @@ settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didM
 
     pageLink s@{pageUrl:Just pageUrl} = Just $ listItem_ [
       listItemText [
-        primary $ D.a [D.href pageUrl] [ D.text s.name ],
+        primary $ D.a [DP.href pageUrl] [ D.text s.name ],
         secondary s.description
       ]
     ]
