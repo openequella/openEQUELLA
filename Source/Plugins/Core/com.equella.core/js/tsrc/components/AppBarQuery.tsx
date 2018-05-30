@@ -2,6 +2,7 @@ import * as React from 'react';
 import { WithStyles, Icon, withStyles, Theme } from "@material-ui/core";
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { StyleRules } from '@material-ui/core/styles';
+import { commonString } from '../util/commonstrings';
 
 interface AppBarQueryProps {
     onSearch?: (query?: string) => void;
@@ -56,7 +57,7 @@ class AppBarQuery extends React.Component<AppBarQueryProps & WithStyles<'queryWr
         const {classes, onChange, query} = this.props;
         return <div className={classes.queryWrapper}>
             <div className={classes.queryIcon}><Icon>search</Icon></div>
-            <input type="text" className={classes.queryField} value={query} onChange={e => onChange(e.target.value)}/>
+            <input type="text" aria-label={commonString.action.search} className={classes.queryField} value={query} onChange={e => onChange(e.target.value)}/>
         </div>
     }
 }

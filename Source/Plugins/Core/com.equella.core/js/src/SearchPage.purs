@@ -229,6 +229,10 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
     },
     available: {
       flexGrow: 1
+    }, 
+    metaLabel: {
+      alignSelf: "flex-start", 
+      marginRight: theme.spacing.unit
     }
   }
 
@@ -308,7 +312,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
           orderItem o = menuItem [mkProp "value" $ orderValue o] [ text $ orderName o ]
       in [
         div [ DP.className classes.resultHeader ] [
-          typography [className classes.available, variant TS.subheading] [ 
+          typography [className classes.available, component "div", variant TS.subheading] [ 
               text $ show available <> " " <> string.resultsAvailable ],
           select [ className classes.ordering, 
                   value $ orderValue $ fromMaybe Relevance order, 
@@ -320,7 +324,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
             (\(UserDetails {username}) -> stdChip (string.filterOwner.chip <> username) $ OwnerSelected Nothing) <$> owner,
             (\s -> stdChip (string.filterLast.chip <> milliToAgo s) $ SetLast $ Milliseconds 0.0) <$> modifiedLast
           ]),
-        list_ (mapWithIndex (\i -> oneResult $ i /= (resultLen - 1)) results)
+        list [component "section"] (mapWithIndex (\i -> oneResult $ i /= (resultLen - 1)) results)
       ]
     renderResults Nothing = []
 
@@ -329,13 +333,12 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
       let descMarkup descText = typography [] [ text descText ]
           titleLink = typography [variant TS.subheading, style {textDecoration:"none", color:"blue"},
                         component "a", mkProp "href" $ baseUrl <> "items/" <> uuid <> "/" <> show version <> "/"] [ text name ]
-          attachThumb (Attachment {thumbnailHref}) = Just $ img [DP.className classes.itemThumb, DP.src thumbnailHref] []
+          attachThumb (Attachment {thumbnailHref}) = Just $ img [DP.aria {hidden:true}, DP.className classes.itemThumb, DP.src thumbnailHref] []
           firstThumb = fromFoldable $ findMap attachThumb attachments
           extraDeets = [
             listItem [classes_ {default: classes.displayNode}, disableGutters true] [
-              typography [variant TS.body1] [ text string.modifiedDate ],
-              typography [component "div", color textSecondary] [
-                text "\xa0-\xa0",
+              metaTitle string.modifiedDate,
+              metaContent [
                 timeAgo modifiedDate []
               ]
             ]
@@ -347,9 +350,11 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
           listItemText [ disableTypography true, primary titleLink, secondary itemContent ]
       ]
       where
+      metaTitle n = typography [variant TS.body1, className classes.metaLabel ] [ text n ]
+      metaContent c = typography [component "div", color textSecondary] c 
       fieldDiv (DisplayField {name:n,html}) = listItem [classes_ {default: classes.displayNode}, disableGutters true] [
-        typography [variant TS.body1] [ text n ],
-        typography [component "div", color textSecondary] [ div [DP.dangerouslySetInnerHTML {__html: "\xa0-\xa0" <> html}] [] ]
+        metaTitle n,
+        metaContent [ div [DP.dangerouslySetInnerHTML {__html: html}] [] ]
       ]
 
   modifySearchFlag searchFlag f = modifyState $ _{searching=searchFlag} <<< f

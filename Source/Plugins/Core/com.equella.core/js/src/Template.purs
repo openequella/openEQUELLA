@@ -27,8 +27,6 @@ import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, isJust, isNothing,
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.StrMap as M
 import Data.String (joinWith)
-import Data.Tuple (Tuple(..))
-import Debug.Trace (traceAny)
 import Dispatcher (DispatchEff(DispatchEff), fromContext)
 import Dispatcher.React (ReactChildren(..), ReactProps(ReactProps), createLifecycleComponent, didMount, getProps, getState, modifyState)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
@@ -48,17 +46,18 @@ import MaterialUI.Drawer (anchor, drawer, left, open, permanent, temporary)
 import MaterialUI.Hidden (css, hidden, implementation, mdUp, smDown)
 import MaterialUI.Icon (icon, icon_)
 import MaterialUI.IconButton (iconButton)
-import MaterialUI.List (list_)
+import MaterialUI.List (list)
 import MaterialUI.ListItem (button) as LI
 import MaterialUI.ListItem (listItem)
 import MaterialUI.ListItemIcon (listItemIcon_)
-import MaterialUI.ListItemText (listItemText, primary)
+import MaterialUI.ListItemText (disableTypography, listItemText, primary)
 import MaterialUI.Menu (anchorEl, menu)
 import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Popover (anchorOrigin, transformOrigin)
 import MaterialUI.Properties (className, classes_, color, component, mkProp, onClick, onClose, variant)
 import MaterialUI.Radio (default)
 import MaterialUI.Styles (MediaQuery, allQuery, cssList, mediaQuery, withStyles)
+import MaterialUI.TextStyle (subheading)
 import MaterialUI.TextStyle as TS
 import MaterialUI.Toolbar (disableGutters, toolbar)
 import MaterialUI.Tooltip (tooltip, title)
@@ -235,16 +234,6 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
     }
   }
 
-  navItem (MenuItem {title,href,systemIcon,route}) = listItem (linkProps <> [LI.button true, component "a" ])
-    [
-      listItemIcon_ [icon [ color C.inherit ] [ D.text $ fromMaybe "folder" $ toMaybe systemIcon ] ],
-      listItemText [primary title]
-    ]
-    where 
-      linkProps = case routeHref <$> (toMaybe route >>= matchRoute) of
-        (Just {href:hr,onClick:oc}) | newPage -> [mkProp "href" hr, onClick $ runIOFn1 oc]
-        _ -> [ mkProp "href" href ]
-
   setUnloadListener :: forall e. Boolean -> Eff (dom::DOM|e) Unit
   setUnloadListener add = do 
     w <- window
@@ -350,8 +339,10 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
       [
         badgedLink "assignment" tasks "access/tasklist.do" topBarString.tasks , 
         badgedLink "notifications" notifications "access/notifications.do" topBarString.notifications,
-        iconButton [color inherit, onClick $ d \e -> UserMenuAnchor $ Just e.currentTarget] [
-          icon_ [ D.text "account_circle"]
+        tooltip [title strings.menu.title] [ 
+          iconButton [color inherit, mkProp "aria-label" strings.menu.title, onClick $ d \e -> UserMenuAnchor $ Just e.currentTarget] [
+            icon_ [ D.text "account_circle"]
+          ]
         ],
         menu [
             anchorEl $ toNullable menuAnchor,
@@ -366,17 +357,26 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
       ])
     badgedLink iconName count uri tip = 
       let iconOnly = icon_ [ D.text iconName ]
-          buttonLink col content = iconButton [mkProp "href" uri, color col] [ content ]
+          buttonLink col content = iconButton [mkProp "href" uri, color col, mkProp "aria-label" tip ] [ content ]
        in tooltip [ title tip ] [ 
          case fromMaybe 0 count of
             0 -> buttonLink default iconOnly
             c -> buttonLink inherit $ badge [badgeContent c, color secondary] [iconOnly]
        ]
-    menuContent = [D.div [DP.className classes.logo] [ D.img [ DP.src logoSrc] []]] <>
+    menuContent = [D.div [DP.className classes.logo] [ D.img [ DP.role "presentation", DP.src logoSrc] []]] <>
                   intercalate [divider []] (group <$> renderData.menuItems)
       where
         logoSrc = renderData.baseResources <> "images/new-equella-logo.png"
-        group items = [list_ (navItem <$> items)]
+        group items = [list [component "nav"] (navItem <$> items)]
+        navItem (MenuItem {title,href,systemIcon,route}) = listItem (linkProps <> [LI.button true, component "a"])
+          [
+            listItemIcon_ [icon [ color C.inherit ] [ D.text $ fromMaybe "folder" $ toMaybe systemIcon ] ],
+            listItemText [disableTypography true, primary $ typography [variant subheading, component "div"] [text title]]
+          ]
+          where 
+            linkProps = case routeHref <$> (toMaybe route >>= matchRoute) of
+              (Just {href:hr,onClick:oc}) | newPage -> [mkProp "href" hr, onClick $ runIOFn1 oc]
+              _ -> [ mkProp "href" href ]
 
 
 renderReact :: forall eff. String -> ReactElement -> Eff (dom :: DOM, console::CONSOLE | eff) Unit
@@ -397,6 +397,7 @@ renderMain = renderReact "mainDiv"
 rawStrings = {prefix: "template", 
   strings: {
     menu: {
+      title: "My Account",
       logout:"Logout",
       prefs:"My preferences"
     }, 
