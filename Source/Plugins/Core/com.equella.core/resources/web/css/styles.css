@@ -1437,6 +1437,11 @@ Expandable button
     justify-content: space-between;
 }
 
+#mainDiv .selectiondashboard #col1
+{
+    width: 368px;
+}
+
 #mainDiv #col1, #mainDiv #col {
     flex-grow: 1;
     width: auto;
@@ -1450,4 +1455,9 @@ Expandable button
 #mainDiv #col2 {
     margin-left: 16px;
     flex-shrink: 0;
+}
+
+#mainDiv #selection-content-inner
+{
+    display: flex;
 }

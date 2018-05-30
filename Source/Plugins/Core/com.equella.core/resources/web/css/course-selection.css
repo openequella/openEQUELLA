@@ -446,3 +446,7 @@
 	{
 	width: 395px;
 }
+
+#selection-content-inner.search-layout #col2 {
+    width: 0px;
+}
