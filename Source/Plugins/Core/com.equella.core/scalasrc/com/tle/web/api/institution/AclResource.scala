@@ -18,13 +18,17 @@ package com.tle.web.api.institution
 
 import com.tle.common.security.PrivilegeTree.Node
 import com.tle.common.security.{PrivilegeTree, TargetList, TargetListEntry}
+import com.tle.core.security.AclPrefs
+import com.tle.core.settings.UserPrefs
 import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.security.{TargetListBean, TargetListEntryBean}
+import io.circe.Decoder
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.Status
 import javax.ws.rs._
+import sbt.io.Path
 
 import scala.collection.JavaConverters._
 
@@ -34,6 +38,8 @@ import scala.collection.JavaConverters._
 class AclResource {
 
 	val aclManager = LegacyGuice.aclManager
+	val userPrefs = LegacyGuice.userPreferenceService
+
 
 	@GET
 	@ApiOperation(value = "Get allowed privileges for tree node")
@@ -81,4 +87,18 @@ class AclResource {
 		aclManager.setTargetList(Node.INSTITUTION, null, new TargetList(tle.asJava))
 		Response.status(Status.OK).build
 	}
+
+	@GET
+	@ApiOperation(value = "Get recently used expression targets")
+	@Path("/recent") def getRecent : Iterable[String] = {
+		AclPrefs.getRecentTargets
+	}
+
+	@POST
+	@ApiOperation(value = "Add an expression target to the recently used")
+	@Path("/recent/add")
+	def addRecent(@QueryParam("target") target : String) : Unit = {
+		AclPrefs.addRecent(target)
+	}
+
 }

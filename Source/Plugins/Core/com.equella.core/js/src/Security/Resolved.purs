@@ -2,16 +2,13 @@ module Security.Resolved where
 
 import Prelude
 
-import Data.Array (alterAt, cons, foldl, index, reverse, tail, updateAt)
+import Data.Array (alterAt, cons, foldl, reverse)
 import Data.Bifunctor (bimap)
 import Data.Either (Either(..))
-import Data.Lens (Lens', ALens', lens, wander)
-import Data.Lens.At (class At)
-import Data.Lens.Index (class Index)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Tuple (Tuple(..))
-import Security.Expressions (class ExpressionDecode, ExpressionTerm, OpType(..))
-import Users.UserLookup (GroupDetails, RoleDetails, UserDetails)
+import Security.Expressions (class ExpressionDecode, ExpressionTerm(..), OpType)
+import Users.UserLookup (GroupDetails(..), RoleDetails(..), UserDetails(..))
 
 data ResolvedTerm = Already ExpressionTerm | ResolvedUser UserDetails | ResolvedGroup GroupDetails | ResolvedRole RoleDetails
 
@@ -26,6 +23,13 @@ instance rexDecode :: ExpressionDecode ResolvedExpression ResolvedTerm where
   decodeExpr (Op op exprs n) = Tuple n (Right {op,exprs})
   fromTerm = Term 
   fromOp = Op
+
+resolvedToTerm :: ResolvedTerm -> ExpressionTerm 
+resolvedToTerm = case _ of 
+  Already e -> e 
+  ResolvedUser (UserDetails {id}) -> User id
+  ResolvedGroup (GroupDetails {id}) -> Group id
+  ResolvedRole (RoleDetails {id}) -> Role id
 
 findExprModify :: Int -> ResolvedExpression -> Either Int { get :: ResolvedExpression, modify :: Maybe ResolvedExpression -> Maybe ResolvedExpression }
 findExprModify 0 e = Right $ {get:e, modify: id}

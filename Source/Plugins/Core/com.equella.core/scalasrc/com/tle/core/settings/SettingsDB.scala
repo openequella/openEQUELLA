@@ -16,20 +16,14 @@
 
 package com.tle.core.settings
 
-import cats.arrow.Arrow
 import cats.data.{Kleisli, OptionT}
-import com.tle.beans.Institution
-import com.tle.common.institution.CurrentInstitution
-import com.tle.common.usermanagement.user.UserState
+import cats.syntax.applicative._
 import com.tle.core.db.{DB, UserContext}
-import io.circe.{Decoder, Encoder}
 import io.circe.parser._
 import io.circe.syntax._
-import io.doolse.simpledba.{RelationModel, UniqueQuery, WriteQueries}
-import io.doolse.simpledba._
+import io.circe.{Decoder, Encoder}
 import io.doolse.simpledba.jdbc._
-import cats.syntax.applicativeError._
-import cats.syntax.applicative._
+import io.doolse.simpledba.{RelationModel, UniqueQuery, WriteQueries, _}
 
 case class Setting(institution_id: Long, property: String, value: String)
 
