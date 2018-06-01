@@ -17,7 +17,7 @@ import Control.Monad.State (State, execState, get, gets, modify, runState)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
 import DOM.HTML (window)
-import DOM.HTML.Types (htmlDocumentToDocument)
+import DOM.HTML.Types (HTMLElement, htmlDocumentToDocument)
 import DOM.HTML.Window (document)
 import DOM.Node.Document as D
 import DOM.Node.Node (appendChild)
@@ -31,9 +31,9 @@ import Data.Lens.Index (ix)
 import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
 import Data.List (List(Cons, Nil), null, uncons)
-import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Maybe (Maybe(..), fromMaybe, isJust, maybe)
 import Data.Newtype (class Newtype)
-import Data.Nullable (toMaybe)
+import Data.Nullable (toMaybe, toNullable)
 import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
 import Data.Traversable (traverse, traverse_)
@@ -65,7 +65,8 @@ import MaterialUI.ListItem (listItem)
 import MaterialUI.ListItemIcon (listItemIcon_)
 import MaterialUI.ListItemText (disableTypography, listItemText)
 import MaterialUI.ListItemText (primary, secondary) as P
-import MaterialUI.MenuItem (menuItem)
+import MaterialUI.Menu (anchorEl, menu)
+import MaterialUI.MenuItem (menuItem, menuItem_)
 import MaterialUI.Modal (open)
 import MaterialUI.Paper (paper)
 import MaterialUI.PropTypes (EventHandler, toHandler)
@@ -112,7 +113,8 @@ mapResolved _ o = o
 data Command = Init | Resolve | HandleDrop DropResult | SelectEntry Int | Undo 
   | DeleteExpr Int | ChangeOp Int String | EditEntry Int (ResolvedEntryR -> ResolvedEntryR) | DeleteEntry Int
   | OpenDialog DialogType | AddFromDialog (Array ResolvedTerm) | CloseDialog 
-  | NewPriv | FinishNewPriv (Maybe String) | DialState (Boolean -> Boolean) | ToggleNot Int | Expand Int | Updated (Array TargetListEntry)
+  | NewPriv | FinishNewPriv (Maybe String) | DialState (Boolean -> Boolean) | ToggleNot Int | Expand Int 
+  | Updated (Array TargetListEntry) | EntryMenuAnchor (Maybe HTMLElement)
 
 type MyState = {
   acls :: Array ResolvedEntry,
@@ -124,7 +126,8 @@ type MyState = {
   showDialog :: Boolean,
   dialOpen :: Boolean, 
   dialHidden :: Boolean, 
-  dragPortal :: Maybe Node
+  dragPortal :: Maybe Node, 
+  entryMenu :: Maybe HTMLElement
 }
 
 aclEditorClass :: ReactClass {
@@ -232,22 +235,14 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
     dialog: {
       width: 600,
       height: 600
-    }, 
+    },
     notBeingDragged: {
 
     }, 
     beingDraggedOver: {
 
     },
-    entrySelected: {
-    },
-    aclEntry: {
-      "$notBeingDragged &:hover $hoverActions": {
-        display: "block"
-      }
-    },
-    hoverActions : {
-      display: "none",
+    termActions : {
       flexShrink: 0
     },
     exprLine: {
@@ -289,10 +284,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
       justifyContent: "flex-start",
       textDecoration: "none", 
       height: 48, 
-      paddingLeft: theme.spacing.unit * 2,
-      "&:hover $hoverActions": {
-        display: "block"
-      }      
+      paddingLeft: theme.spacing.unit * 2
     }, 
     privDialog: {
       width: "30em",
@@ -308,7 +300,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
     in {terms: union (UnresolvedTerm <$> commonTerms) $ nub (acls >>= collectTerm), acls}
     where 
     markForResolve (TargetListEntry {privilege:priv,granted,override,who}) = 
-          ResolvedEntry {priv,granted,override, expr: either (InvalidExpr <<< show) Unresolved $ parseWho who}
+          ResolvedEntry {priv, granted, override, expr: either (InvalidExpr <<< show) Unresolved $ parseWho who}
 
   initialState (ReactProps {acls:a}) = 
     let {acls,terms} = convertToInternal a
@@ -322,7 +314,8 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
       dialOpen: false, 
       dialHidden: false,
       dragPortal: Nothing, 
-      newPrivDialog: false
+      newPrivDialog: false, 
+      entryMenu: Nothing
     }
     
 
@@ -439,8 +432,10 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
 
     makeExpression indent multi expr l = case expr of       
         Term t n -> 
-          let termActions i = div [P.className classes.hoverActions] $
-            (guard  multi $> tooltip [title aclString.convertGroup] [ iconButton [ onClick $ command $ Expand i ] [ icon_ [ text "keyboard_arrow_right" ] ] ]) <> [
+          let termActions i = div [P.className classes.termActions] $
+            (guard  multi $> tooltip [title aclString.convertGroup] [ 
+              iconButton [ onClick $ command $ Expand i ] [ icon_ [ text "keyboard_arrow_right" ] ] 
+            ]) <> [
             formControlLabel [control $ checkbox [checked n, onChange $ command $ ToggleNot i ], label aclString.not ],
             iconButton [ onClick $ command $ DeleteExpr i ] [ icon_ [ text "delete" ] ] 
           ]
@@ -465,15 +460,18 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
 
     entryRow i (ResolvedEntry {granted,override,priv,expr}) = draggable { "type": "entry", draggableId: "entry" <> show i, index:i} $ withPortal \p _ -> 
       div [P.ref p.innerRef, p.draggableProps, p.dragHandleProps] [
-        div [P.className $ joinWith " " $ (guard (selectedIndex == Just i) $> classes.entrySelected) <> [classes.aclEntry]] [
+        div' [
           let p = guard (eq i <$> selectedIndex # fromMaybe false) $> className classes.selectedEntry
           in listItem (p <> [ P.button true, disableRipple true, onClick $ d \_ -> SelectEntry i]) [ 
             div [P.className classes.exprLine ] [
               listItemText [ className classes.entryText, disableTypography true, P.primary $ privText, P.secondary secondLine ],
-              div [ P.className classes.hoverActions ] [ 
-                check override _override aclString.override,
-                check (not granted) _granted aclString.revoked,
-                iconButton [ onClick $ command $ DeleteEntry i ] [ icon_ [ text "delete" ] ] 
+              div [ P.className classes.termActions ] [ 
+                iconButton [ onClick $ command $ DeleteEntry i ] [ icon_ [ text "delete" ] ], 
+                iconButton [ onClick $ d \e -> EntryMenuAnchor $ Just e.currentTarget ] [ icon_ [text "more_vert"]],
+                menu [open $ isJust s.entryMenu, anchorEl $ toNullable s.entryMenu, onClose $ d $ \_ -> EntryMenuAnchor Nothing] [
+                  menuItem_ [ check (not granted) _granted aclString.revoked ],
+                  menuItem_ [ check override _override aclString.override ]
+                ]
               ]
             ]
           ]
@@ -636,6 +634,8 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
       let ok = decodeJson r.response <#> mapMaybe (parseRecent <<< parseTerm)
       either (const $ pure unit) (\t -> modifyState \s -> s {terms = s.terms <> t}) ok
       eval Resolve
+    EntryMenuAnchor el -> 
+      modifyState _{entryMenu = el}
     Updated oldAcls -> do
       {acls} <- getProps
       if (acls /= oldAcls) 
@@ -705,9 +705,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
           pure true
 
     SelectEntry entry -> do 
-      modifyState $ over _selectedIndex case _ of 
-        Just e | e == entry -> Nothing
-        _ -> Just entry
+      modifyState $ set _selectedIndex $ Just entry
 
     Resolve -> do
       {terms,acls} <- getState

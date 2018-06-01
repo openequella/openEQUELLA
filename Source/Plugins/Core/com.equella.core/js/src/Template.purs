@@ -116,7 +116,13 @@ type TemplateProps = {fixedViewPort :: Nullable Boolean,
   backRoute :: Nullable Route
 }
 
-type State = {mobileOpen::Boolean, menuAnchor::Maybe HTMLElement, tasks :: Maybe Int, notifications :: Maybe Int, attempt :: Maybe Route}
+type State = {
+  mobileOpen::Boolean, 
+  menuAnchor::Maybe HTMLElement, 
+  tasks :: Maybe Int, 
+  notifications :: Maybe Int, 
+  attempt :: Maybe Route
+}
 
 initialState :: State
 initialState = {mobileOpen:false, menuAnchor:Nothing, tasks:Nothing, notifications:Nothing, attempt : Nothing}
@@ -293,8 +299,8 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
           dialogContentText_ [ text strings.navaway.content ]
         ], 
         dialogActions_ [
-          button [onClick $ d \_ -> NavAway false, color C.primary] [text commonString.action.cancel],
-          button [onClick $ d \_ -> NavAway true, color C.secondary] [text commonString.action.discard]
+          button [onClick $ d \_ -> NavAway false, color C.secondary] [text commonString.action.cancel],
+          button [onClick $ d \_ -> NavAway true, color C.primary] [text commonString.action.discard]
         ]
       ]
     ]
