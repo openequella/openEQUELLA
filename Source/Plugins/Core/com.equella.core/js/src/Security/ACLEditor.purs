@@ -693,7 +693,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
     DeleteExpr i -> do 
       let delExpr e@(Resolved r) = either (const e) (\{modify} -> maybe emptyExpr Resolved $ modify Nothing) $ findExprModify i r
           delExpr o = o
-      modifyState $ execState $ modifyExpression delExpr
+      runChange $ modifyExpression delExpr
     
     Undo -> do 
       runChange $ do 
