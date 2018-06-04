@@ -53,6 +53,7 @@ import MaterialUI.ListItemIcon (listItemIcon_)
 import MaterialUI.ListItemText (disableTypography, listItemText, primary)
 import MaterialUI.Menu (anchorEl, menu)
 import MaterialUI.MenuItem (menuItem)
+import MaterialUI.Paper (paper)
 import MaterialUI.Popover (anchorOrigin, transformOrigin)
 import MaterialUI.Properties (className, classes_, color, component, mkProp, onClick, onClose, variant)
 import MaterialUI.Radio (default)
@@ -67,7 +68,7 @@ import MaterialUIPicker.MuiPickersUtilsProvider (muiPickersUtilsProvider, utils)
 import Network.HTTP.Affjax (get)
 import Partial.Unsafe (unsafePartial)
 import React (ReactClass, ReactElement, createElement)
-import React.DOM (text)
+import React.DOM (footer, text)
 import React.DOM as D
 import React.DOM.Props as DP
 import ReactDOM (render)
@@ -113,6 +114,7 @@ type TemplateProps = {fixedViewPort :: Nullable Boolean,
   titleExtra::Nullable ReactElement, 
   menuExtra:: Nullable (Array ReactElement), 
   tabs :: Nullable ReactElement, 
+  footer :: Nullable ReactElement,
   backRoute :: Nullable Route
 }
 
@@ -135,7 +137,7 @@ template' = createElement templateClass
 
 templateDefaults ::  String -> TemplateProps
 templateDefaults title = {title,titleExtra:nullAny, fixedViewPort:nullAny,preventNavigation:nullAny, menuExtra:nullAny, 
-  tabs:nullAny, backRoute: nullAny}
+  tabs:nullAny, backRoute: nullAny, footer: nullAny}
 
 templateClass :: ReactClass TemplateProps
 templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initialState render eval)
@@ -160,14 +162,6 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
         desktop = mediaQuery $ theme.breakpoints.up "md"
         mobile :: forall a. {|a} -> MediaQuery
         mobile = mediaQuery $ theme.breakpoints.up "sm"
-        barVars h = cssList [ 
-          mobile {
-            "--top-bar": show (mobileAppBar + h) <> "px"
-          },
-          allQuery {
-            "--top-bar": show (desktopAppBar + h) <> "px"
-          }
-        ]
     in {
     root: {
       width: "100%",
@@ -185,51 +179,76 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
       }
     ],
     appFrame: {
-      position: "relative",
+      position: "relative", 
       display: "flex"
     },
-    appBar: desktop { 
-      width: "calc(100% - " <> show drawerWidth <> "px)"
-    },
+    appBar: cssList [ 
+      allQuery {
+        position: "fixed",
+        marginLeft: drawerWidth
+      },
+      desktop { 
+        width: "calc(100% - " <> show drawerWidth <> "px)"
+      }
+    ],
     navIconHide: desktop { 
       display: "none" 
     },
-    drawerHeader: theme.mixins.toolbar,
+    toolbar: theme.mixins.toolbar,
     drawerPaper: cssList [ 
       desktop {
-        width: drawerWidth,
-        position: "fixed",
-        height: "100%",
-        zIndex: 0
+        position: "fixed"
       },
       allQuery { 
-        width: 250 
+        width: drawerWidth 
       }
     ],
-    topBar: barVars 0,
-    topBarTabs: barVars tabHeight,
-    contentMinHeight: {
-      minHeight: "calc(100vh - var(--top-bar))"
+    tabs: {
+      "&$content": cssList [
+        allQuery { 
+          marginTop: desktopAppBar + tabHeight
+        }
+      ],
+      "&$contentFixedHeight": cssList [
+        allQuery { 
+          height: "calc(100vh - " <> show (desktopAppBar + tabHeight) <> "px)"
+        }        
+      ]
     },
-    contentFixedHeight: {
-      height: "calc(100vh - var(--top-bar))"
-    },
-    "@global": {
+    contentMinHeight: cssList [ 
+      mobile {
+        minHeight: "calc(100vh - " <> show mobileAppBar <> "px)"
+      }, 
+      allQuery {
+        minHeight: "calc(100vh - " <> show desktopAppBar <> "px)"
+      }
+    ],
+    contentFixedHeight: cssList [
+      mobile {
+        height: "calc(100vh - " <> show mobileAppBar <> "px)"
+      }, 
+      allQuery {
+        height: "calc(100vh - " <> show desktopAppBar <> "px)"
+      }
+    ],
+    "@global": cssList [
+      allQuery {
         a: {
           textDecoration: "none",
           color: theme.palette.primary.main
         }
-    },
-    content: cssList [ 
-      mobile {
-        width: "100%"
-      },
-      desktop { 
-        marginLeft: 240,
-        width: "calc(100vw - 245px)"
-      },
+      }
+    ],
+    content: cssList [
       allQuery {
-        marginTop: "var(--top-bar)"
+        flexGrow: 1
+      },
+      mobile {
+        marginTop: mobileAppBar
+      },
+      desktop {
+        marginLeft: drawerWidth,
+        marginTop: desktopAppBar
       }
     ],
     logo: {
@@ -244,7 +263,19 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
     }, 
     userMenu: {
       flexShrink: 0
-    }
+    }, 
+    footer: cssList [
+      allQuery {
+        position: "fixed", 
+        right: 0,
+        bottom: 0, 
+        zIndex: 1000,
+        width: "100%"
+      }, 
+      desktop {
+        width: "calc(100% - " <> show drawerWidth <> "px)"
+      }
+    ]
   }
 
   setUnloadListener :: forall e. Boolean -> Eff (dom::DOM|e) Unit
@@ -310,13 +341,13 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
     fixedViewPort = fromMaybe false $ toMaybe fvp 
 
     contentClass = if fixedViewPort then classes.contentFixedHeight else classes.contentMinHeight
-    contentTabClass = if isJust tabsM then classes.topBarTabs else classes.topBar
-    content = D.main [ DP.className $ joinWith " " $ [classes.content, contentClass, contentTabClass] ] children
+    tabClass = if isJust tabsM then classes.tabs else ""
+    content = D.main [ DP.className $ joinWith " " $ [classes.content, contentClass, tabClass] ] children
     fullscreen = D.main' children
     layout "YES" _ _ = fullscreen
     layout "YES_WITH_TOOLBAR" _ _ = fullscreen 
     layout _ _ true = fullscreen
-    layout _ _ _ = D.div [DP.className classes.appFrame] [
+    layout _ _ _ = D.div [DP.className classes.appFrame] $ [
       topBar,
       hidden [ mdUp true ] [
         drawer [ variant temporary, anchor left, classes_ {paper: classes.drawerPaper},
@@ -324,7 +355,11 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
       hidden [ smDown true, implementation css ] [
         drawer [variant permanent, anchor left, open true, classes_ {paper: classes.drawerPaper} ] menuContent
       ],
-      content 
+      content
+    ] <> catMaybes [
+      toMaybe props.footer <#> \fc -> footer [DP.className classes.footer] [ 
+        fc
+      ]
     ]
     hasMenu = case renderData.menuMode of 
       "HIDDEN" -> false 

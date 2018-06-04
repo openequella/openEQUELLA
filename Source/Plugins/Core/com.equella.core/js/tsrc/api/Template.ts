@@ -10,4 +10,5 @@ export interface TemplateProps {
     tabs?: ReactNode;
     preventNavigation?: Boolean;
     backRoute?: Route;
+    footer?: ReactNode;
 }

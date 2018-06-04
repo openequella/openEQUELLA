@@ -62,7 +62,6 @@ function buildBundle(bundle, devpath, dev)
             bargs.push("--standalone", "PS");
             booter = mainModule+";";
         } else {
-            bargs.push("-r", "jspolyfill-array.prototype.find")
             booter = mainModule+ '["'+main+'"].main();';
         }
         console.log("* Browserify+uglify-ing bundle");

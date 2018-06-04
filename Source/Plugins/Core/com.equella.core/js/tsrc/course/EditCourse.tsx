@@ -1,4 +1,4 @@
-import { Button, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, Input, InputLabel, MenuItem, Paper, Snackbar, Switch, Tab, Tabs, TextField, Theme } from '@material-ui/core';
+import { Button, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, Input, Paper, InputLabel, MenuItem, Snackbar, Switch, Tab, Tabs, TextField, Theme } from '@material-ui/core';
 import Select from '@material-ui/core/Select';
 import { StyleRules, WithStyles, withStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
@@ -38,20 +38,14 @@ const styles = (theme: Theme) => {
             marginBottom: 2 * theme.spacing.unit
         },
         body: {
-            height: `calc(100% - ${footerHeight}px)`,
-            paddingBottom: '24px'
-        },
-        footer: {
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            width: "100%",
-            height: `${footerHeight}px`
+            padding: `${theme.spacing.unit * 2}px`,
+            paddingBottom: footerHeight
         },
         footerActions: {
-            float: 'right',
             padding: '4px',
-            paddingRight: '20px'
+            paddingRight: '20px', 
+            display: "flex", 
+            justifyContent: "flex-end"
         }, 
         hiddenTab: {
             display: "none"
@@ -271,11 +265,17 @@ class EditCourse extends React.Component<Props, EditCourseState> {
             rules = security!.rules;
         } 
 
-        return <Template title={title} preventNavigation={changed} backRoute={routes.CoursesPage} tabs={
+        const saveOrCancel = <Paper className={classes.footerActions}>
+            <Button onClick={router(routes.CoursesPage).onClick} color="secondary">{commonString.action.cancel}</Button>
+            <Button onClick={this.handleSave.bind(this)} color="primary"
+                disabled={!canSave || !changed}>{commonString.action.save}</Button>
+        </Paper>               
+
+        return <Template title={title} preventNavigation={changed} fixedViewPort={true} backRoute={routes.CoursesPage} tabs={
                 <Tabs value={activeTab} onChange={this.handleTabChange()} fullWidth>
                     <Tab label={strings.tab} />
                     <Tab label={entityStrings.edit.tab.permissions} />
-                </Tabs>}>
+                </Tabs>} footer={saveOrCancel}>
                     
             <Snackbar open={justSaved} 
                 autoHideDuration={5000} 
@@ -283,7 +283,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                 action={<IconButton color="inherit" onClick={this.hideSnack} ><CloseIcon/></IconButton>}
             />
             <div className={classes.body}>
-                <div className={this.state.activeTab === 0 ? "" : classes.hiddenTab} style={{ padding: 24 }}>
+                <div className={this.state.activeTab === 0 ? "" : classes.hiddenTab}>
                     <Grid>
                         <div className={classes.form}>
 
@@ -417,7 +417,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                     </Grid>
                 </div>
 
-                <div className={this.state.activeTab === 1 ? "" : classes.hiddenTab } style={{ height: "100%", overflowY: "hidden", padding: 24 }}>
+                <div className={this.state.activeTab === 1 ? "" : classes.hiddenTab } style={{ height: "100%" }}>
                     { /* TODO: priv list from API */ }
                     <AclEditor 
                         onChange={ this.handleAclChange() }
@@ -426,13 +426,6 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                 </div>
             </div>
 
-            <Paper component="footer" className={classes.footer}>
-                <div className={classes.footerActions}>
-                    <Button onClick={router(routes.CoursesPage).onClick} color="secondary">{commonString.action.cancel}</Button>
-                    <Button onClick={this.handleSave.bind(this)} color="primary"
-                        disabled={!canSave || !changed}>{commonString.action.save}</Button>
-                </div>               
-            </Paper>
         </Template>
     }
 }

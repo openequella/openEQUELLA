@@ -42,8 +42,11 @@ import Template (renderData, renderMain, renderReact)
 data RouterCommand = Init | ChangeRoute Route
 type State = {route::Maybe Route}
 
+foreign import polyfill :: forall e. Eff e Unit
+
 main :: forall eff. Eff (dom :: DOM, timer::TIMER, ajax::AJAX, console::CONSOLE | eff) Unit
 main = do
+  polyfill
   let basePath = unsafePartial $ fromJust $ printPath <$> (fromRight (parse baseUrl) ^. (_hierPart <<< _path))
   w <- window
   l <- location w

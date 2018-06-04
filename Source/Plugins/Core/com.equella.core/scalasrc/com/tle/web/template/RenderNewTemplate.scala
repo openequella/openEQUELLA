@@ -101,6 +101,10 @@ object RenderNewTemplate {
     }
 
     context.preRender(JQueryCore.PRERENDER)
+    if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident")))
+    {
+      context.getPreRenderContext.addJs("https://cdn.polyfill.io/v2/polyfill.min.js?features=es6")
+    }
     context.preRender(bundleJs)
 
     val decs = Decorations.getDecorations(context)

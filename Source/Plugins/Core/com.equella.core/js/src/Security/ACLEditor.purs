@@ -54,7 +54,6 @@ import MaterialUI.Event (Event)
 import MaterialUI.ExpansionPanelSummary (disabled)
 import MaterialUI.FormControl (formControl)
 import MaterialUI.FormControlLabel (control, formControlLabel, label)
-import MaterialUI.FormHelperText (formHelperText, formHelperText_)
 import MaterialUI.Icon (icon_)
 import MaterialUI.IconButton (iconButton)
 import MaterialUI.Input (id) as P
@@ -77,7 +76,7 @@ import MaterialUI.SwitchBase (checked)
 import MaterialUI.TextStyle (body1, caption, headline, subheading, title) as TS
 import MaterialUI.Tooltip (tooltip, title)
 import MaterialUI.Typography (error, textSecondary, typography)
-import Network.HTTP.Affjax (get, post_, post_') as AJ
+import Network.HTTP.Affjax (get, post_') as AJ
 import React (ReactClass, ReactElement, stopPropagation)
 import React.DOM (div, div', text)
 import React.DOM.Props (className, ref, style) as P
@@ -193,11 +192,14 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
       height: "100%", 
       width: "100%", 
       gridTemplateColumns: "37% 33% 30%",
-      gridTemplateRows: "100%"
+      gridTemplateRows: "100%", 
+      "-ms-grid-columns": "37% 33% 30%",
+      "-ms-grid-rows": "80vh"
     },
     entryList: {
       position: "relative",
       gridColumnStart: 1,
+      "-ms-grid-column": 1,
       display: "flex", 
       flexDirection: "column"
     },
@@ -205,6 +207,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
       position: "relative",
       display: "flex",
       flexDirection: "column",
+      "-ms-grid-column": 2,
       gridColumnStart: 2, 
       marginLeft: theme.spacing.unit
     },
@@ -212,6 +215,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
       position: "relative",
       display: "flex",
       flexDirection: "column",
+      "-ms-grid-column": 3,
       gridColumnStart: 3, 
       marginLeft: theme.spacing.unit
     },
@@ -631,8 +635,8 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
       r <- liftAff $ AJ.get (baseUrl <> "api/acl/recent")
       let parseRecent (Right (StdTerm t)) = Just $ UnresolvedTerm t
           parseRecent _ = Nothing
-      let ok = decodeJson r.response <#> mapMaybe (parseRecent <<< parseTerm)
-      either (const $ pure unit) (\t -> modifyState \s -> s {terms = s.terms <> t}) ok
+      decodeJson r.response <#> mapMaybe (parseRecent <<< parseTerm) # 
+        either (const $ pure unit) (\t -> modifyState \s -> s {terms = s.terms <> t})
       eval Resolve
     EntryMenuAnchor el -> 
       modifyState _{entryMenu = el}
