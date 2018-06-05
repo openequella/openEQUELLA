@@ -31,9 +31,10 @@ object AclPrefs {
     UserPrefs.jsonPref[Iterable[String]](RECENT_TARGETS).getOrElse(Iterable.empty)
 
 
-  def addRecent(target: String): Option[ExpressionError] = {
-    if (target.contains(" ")) Some(InvalidTarget("Contains space")) else {
-      UserPrefs.setJsonPref(RECENT_TARGETS, (target :: getRecentTargets.toList).distinct.take(MAX_RECENT))
+  def addAndRemoveRecent(add: Iterable[String], remove: Iterable[String]): Option[ExpressionError] = {
+    if (add.exists(_.contains(" "))) Some(InvalidTarget("Target contains space")) else {
+      UserPrefs.setJsonPref(RECENT_TARGETS, (add.toList ::: getRecentTargets.toList.
+        filterNot(remove.toSet)).distinct.take(MAX_RECENT))
       None
     }
 

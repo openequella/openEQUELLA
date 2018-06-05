@@ -17,7 +17,7 @@ import VisibilitySensor = require('react-visibility-sensor');
 
 const styles = (theme: Theme) => ({
     overall: {
-      padding: theme.spacing.unit * 3, 
+      padding: theme.spacing.unit * 2, 
       height: "100%"
     }, 
     results: {

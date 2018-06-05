@@ -154,8 +154,6 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
   strings = prepLangStrings rawStrings
   coreString = prepLangStrings coreStrings
   drawerWidth = 240
-  mobileAppBar = 64 
-  desktopAppBar = 56 
   tabHeight = 48 
   ourStyles theme = 
     let desktop :: forall a. {|a} -> MediaQuery
@@ -179,8 +177,7 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
       }
     ],
     appFrame: {
-      position: "relative", 
-      display: "flex"
+      position: "relative"
     },
     appBar: cssList [ 
       allQuery {
@@ -204,33 +201,14 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
       }
     ],
     tabs: {
-      "&$content": cssList [
-        allQuery { 
-          marginTop: desktopAppBar + tabHeight
-        }
-      ],
-      "&$contentFixedHeight": cssList [
-        allQuery { 
-          height: "calc(100vh - " <> show (desktopAppBar + tabHeight) <> "px)"
-        }        
-      ]
+      height: tabHeight
     },
-    contentMinHeight: cssList [ 
-      mobile {
-        minHeight: "calc(100vh - " <> show mobileAppBar <> "px)"
-      }, 
-      allQuery {
-        minHeight: "calc(100vh - " <> show desktopAppBar <> "px)"
-      }
-    ],
-    contentFixedHeight: cssList [
-      mobile {
-        height: "calc(100vh - " <> show mobileAppBar <> "px)"
-      }, 
-      allQuery {
-        height: "calc(100vh - " <> show desktopAppBar <> "px)"
-      }
-    ],
+    contentMinHeight: { 
+      minHeight: "100vh"
+    },
+    contentFixedHeight: {
+      height: "100vh"
+    },
     "@global": cssList [
       allQuery {
         a: {
@@ -241,14 +219,11 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
     ],
     content: cssList [
       allQuery {
-        flexGrow: 1
-      },
-      mobile {
-        marginTop: mobileAppBar
+        display: "flex",
+        flexDirection: "column"
       },
       desktop {
-        marginLeft: drawerWidth,
-        marginTop: desktopAppBar
+        marginLeft: drawerWidth
       }
     ],
     logo: {
@@ -261,6 +236,11 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
       alignItems: "center", 
       overflow: "hidden"
     }, 
+    contentArea: {
+      flexGrow: 1, 
+      flexBasis: 0,
+      minHeight: 0
+    },
     userMenu: {
       flexShrink: 0
     }, 
@@ -341,8 +321,12 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
     fixedViewPort = fromMaybe false $ toMaybe fvp 
 
     contentClass = if fixedViewPort then classes.contentFixedHeight else classes.contentMinHeight
-    tabClass = if isJust tabsM then classes.tabs else ""
-    content = D.main [ DP.className $ joinWith " " $ [classes.content, contentClass, tabClass] ] children
+    content = D.main [ DP.className $ joinWith " " $ [classes.content, contentClass] ] $  
+      catMaybes [
+        Just $ D.div [DP.className classes.toolbar] [],
+        tabsM $> D.div [DP.className classes.tabs] [],
+        Just $ D.div [DP.className classes.contentArea] children
+      ]
     fullscreen = D.main' children
     layout "YES" _ _ = fullscreen
     layout "YES_WITH_TOOLBAR" _ _ = fullscreen 

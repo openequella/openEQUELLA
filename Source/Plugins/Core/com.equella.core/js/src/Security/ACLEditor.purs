@@ -23,10 +23,10 @@ import DOM.Node.Document as D
 import DOM.Node.Node (appendChild)
 import DOM.Node.ParentNode (QuerySelector(..), querySelector)
 import DOM.Node.Types (Node, documentToParentNode, elementToNode)
-import Data.Argonaut (decodeJson)
-import Data.Array (any, catMaybes, deleteAt, fold, foldr, fromFoldable, index, insertAt, last, length, mapMaybe, mapWithIndex, nub, snoc, union, updateAt, (!!))
+import Data.Argonaut (class EncodeJson, decodeJson, encodeJson, jsonEmptyObject, (:=), (~>))
+import Data.Array (any, catMaybes, deleteAt, fold, foldr, fromFoldable, index, insertAt, last, length, mapMaybe, mapWithIndex, nubBy, snoc, unionBy, updateAt, (!!))
 import Data.Either (Either(..), either)
-import Data.Lens (Lens', Prism', Traversal', assign, filtered, foldMapOf, modifying, over, preview, previewOn, prism', set, traversed, use, view, (^?))
+import Data.Lens (Lens', Prism', Traversal', _2, assign, filtered, foldMapOf, modifying, over, preview, previewOn, prism', set, traversed, use, view, (^?))
 import Data.Lens.Index (ix)
 import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
@@ -37,12 +37,11 @@ import Data.Nullable (toMaybe, toNullable)
 import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
 import Data.Traversable (traverse, traverse_)
-import Data.Tuple (Tuple(Tuple))
+import Data.Tuple (Tuple(Tuple), snd)
 import Dispatcher (DispatchEff(DispatchEff), dispatch)
 import Dispatcher.React (ReactProps(ReactProps), ReactState(ReactState), createLifecycleComponent', didMount, getProps, getState, modifyState)
 import DragNDrop.Beautiful (DropResult, dragDropContext, draggable, droppable)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
-import Global (encodeURIComponent)
 import MaterialUI.Button (button, disableRipple, raised)
 import MaterialUI.Checkbox (checkbox)
 import MaterialUI.Color as C
@@ -76,16 +75,18 @@ import MaterialUI.SwitchBase (checked)
 import MaterialUI.TextStyle (body1, caption, headline, subheading, title) as TS
 import MaterialUI.Tooltip (tooltip, title)
 import MaterialUI.Typography (error, textSecondary, typography)
-import Network.HTTP.Affjax (get, post_') as AJ
+import Network.HTTP.Affjax (get, post_) as AJ
 import React (ReactClass, ReactElement, stopPropagation)
+import React as R
 import React.DOM (div, div', text)
 import React.DOM.Props (className, ref, style) as P
-import Security.Expressions (AccessEntry(AccessEntry), Expression, ExpressionTerm(Role, Group, User, Owner, Guests, LoggedInUsers, Everyone, SharedSecretToken, Referrer, Ip), IpRange(IpRange), OpType(OR, AND), ParsedTerm(..), TargetListEntry(TargetListEntry), collapseZero, entryToTargetList, expressionText, parseTerm, parseWho, termToWho, textForExpression, textForTerm, traverseExpr)
+import Security.Expressions (AccessEntry(AccessEntry), Expression, ExpressionTerm(Role, Group, User, Owner, Guests, LoggedInUsers, Everyone, SharedSecretToken, Referrer, Ip), IpRange(IpRange), OpType(OR, AND), ParsedTerm(StdTerm), TargetListEntry(TargetListEntry), collapseZero, entryToTargetList, expressionText, parseTerm, parseWho, termToWho, textForExpression, textForTerm, traverseExpr)
 import Security.Expressions (Expression(..)) as SE
-import Security.Resolved (ResolvedExpression(..), ResolvedTerm(..), findExprInsert, findExprModify, resolvedToTerm)
+import Security.Resolved (ResolvedExpression(Op, Term), ResolvedTerm(ResolvedRole, ResolvedGroup, ResolvedUser, Already), findExprInsert, findExprModify, resolvedToTerm)
 import Security.TermSelection (DialogType(..), termDialog)
 import UIComp.SpeedDial (speedDialActionU, speedDialIconU, speedDialU)
 import Unsafe.Coerce (unsafeCoerce)
+import Unsafe.Reference (unsafeRefEq)
 import Users.SearchUser (UGREnabled(..))
 import Users.UserLookup (GroupDetails(GroupDetails), RoleDetails(RoleDetails), UserDetails(UserDetails), UserGroupRoles(UserGroupRoles), lookupUsers)
 
@@ -94,6 +95,14 @@ foreign import renderToPortal :: Node -> ReactElement -> ReactElement
 data ExprType = Unresolved Expression | Resolved ResolvedExpression | InvalidExpr String
 
 data TermType = UnresolvedTerm ExpressionTerm | ResolvedTerm ResolvedTerm
+
+exprTermOnly :: TermType -> ExpressionTerm
+exprTermOnly (UnresolvedTerm t) = t 
+exprTermOnly (ResolvedTerm rt) = resolvedToTerm rt
+
+newtype AddRemoveRecent = AddRemove {add :: Array String, remove :: Array String }
+
+type TermListType = Tuple Boolean TermType
 
 derive instance ttEQ :: Eq TermType 
 
@@ -114,11 +123,12 @@ data Command = Init | Resolve | HandleDrop DropResult | SelectEntry Int | Undo
   | OpenDialog DialogType | AddFromDialog (Array ResolvedTerm) | CloseDialog 
   | NewPriv | FinishNewPriv (Maybe String) | DialState (Boolean -> Boolean) | ToggleNot Int | Expand Int 
   | Updated (Array TargetListEntry) | EntryMenuAnchor (Maybe HTMLElement)
+  | ClearTarget Int
 
 type MyState = {
   acls :: Array ResolvedEntry,
   selectedIndex :: Maybe Int,
-  terms :: Array TermType,
+  terms :: Array TermListType,
   undoList :: List (Tuple (Maybe Int) (Array ResolvedEntry)), 
   newPrivDialog :: Boolean,
   openDialog :: Maybe DialogType, 
@@ -129,6 +139,8 @@ type MyState = {
   entryMenu :: Maybe HTMLElement
 }
 
+newtype EqMyState = EqMyState MyState
+
 aclEditorClass :: ReactClass {
   acls :: Array TargetListEntry, 
   onChange :: IOFn1 {canSave :: Boolean, getAcls :: IOSync (Array TargetListEntry) } Unit,
@@ -138,6 +150,11 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
   where 
   lifeCycle = do 
     didMount Init
+    modify _ {shouldComponentUpdate = \this {acls} nextState -> do 
+      {acls:oldAcls} <- R.getProps this 
+      oldState <- R.readState this 
+      pure $ acls /= oldAcls || (not $ unsafeRefEq nextState oldState)
+    }
     modify _ {componentDidUpdate = \this {acls:oldAcls} _ -> dispatch eval this (Updated oldAcls)}
     
   aclString = prepLangStrings aclRawStrings
@@ -298,10 +315,11 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
 
   convertToInternal a = 
     let acls = markForResolve <$> a
+        sameTerm (Tuple _ t) (Tuple _ t2) = t == t2
         collectTerm (ResolvedEntry {expr:Unresolved e}) = 
-              traverseExpr (\rt _ -> [UnresolvedTerm rt]) (\{exprs} _ -> join exprs) e 
+              traverseExpr (\rt _ -> [deletable $ UnresolvedTerm rt]) (\{exprs} _ -> join exprs) e 
         collectTerm _ = []
-    in {terms: union (UnresolvedTerm <$> commonTerms) $ nub (acls >>= collectTerm), acls}
+    in {terms: unionBy sameTerm (notdeletable <<< UnresolvedTerm <$> commonTerms) $ nubBy sameTerm (acls >>= collectTerm), acls}
     where 
     markForResolve (TargetListEntry {privilege:priv,granted,override,who}) = 
           ResolvedEntry {priv, granted, override, expr: either (InvalidExpr <<< show) Unresolved $ parseWho who}
@@ -387,11 +405,16 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
         div [P.className classes.scrollable ] [
           droppable {droppableId:"common"} \p _ -> 
             div [P.ref p.innerRef, p.droppableProps, P.style {width: "100%"}] $
-                mapWithIndex (commonExpr "common" [] [] false) terms
+                mapWithIndex (\i (Tuple d t) -> commonExpr "common" [] (guard d $> targetActions i) false i t) terms
             
         ]
       ]
-      where action i title dt = speedDialActionU {icon: icon_ [text i], title, onClick: toHandler $ command $ OpenDialog dt }
+      where 
+      action i title dt = speedDialActionU {icon: icon_ [text i], title, onClick: toHandler $ command $ OpenDialog dt }
+      targetActions i = div [P.className classes.termActions] $ [
+            tooltip [ title commonAction.clear ] [ iconButton [ onClick $ command $ ClearTarget i ] [ icon_ [ text "clear" ] ] ]
+          ]
+
 
     command :: forall a e. Command -> (a -> Eff e Unit)
     command c = d \_ -> c
@@ -604,7 +627,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
   copyToCurrent srcIx destIx = do 
     ce <- use _terms
     case ce !! srcIx of 
-      Just (ResolvedTerm t) -> modifyExpression $ setOrModifyExpr (insertInto destIx) t
+      Just (Tuple _ (ResolvedTerm t)) -> modifyExpression $ setOrModifyExpr (insertInto destIx) t
       _ -> pure false
 
   termQuery :: ExpressionTerm -> UserGroupRoles String String String
@@ -630,10 +653,18 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
         }
       else pure unit
 
+  deletable = Tuple true
+  notdeletable = Tuple false 
+
+  addRemoveRecent {add,remove} =  
+    if length add + length remove > 0 
+    then void $ forkAff $ AJ.post_ (baseUrl <> "api/acl/recent") $ encodeJson (AddRemove {add,remove})
+    else pure unit
+
   eval = case _ of 
     Init -> do 
       r <- liftAff $ AJ.get (baseUrl <> "api/acl/recent")
-      let parseRecent (Right (StdTerm t)) = Just $ UnresolvedTerm t
+      let parseRecent (Right (StdTerm t)) = Just $ deletable $ UnresolvedTerm t
           parseRecent _ = Nothing
       decodeJson r.response <#> mapMaybe (parseRecent <<< parseTerm) # 
         either (const $ pure unit) (\t -> modifyState \s -> s {terms = s.terms <> t})
@@ -647,13 +678,9 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
               in modifyState _{acls = nacls, terms = terms} *> eval Resolve
         else pure unit
     AddFromDialog dt -> do 
-      _ <- case dt of 
-            [k] -> void $ liftAff $ forkAff $ 
-                AJ.post_' (baseUrl <> "api/acl/recent/add?target=" <> 
-                  (encodeURIComponent $ termToWho $ resolvedToTerm $ k) ) (Nothing :: Maybe Unit)
-            _ -> pure unit
+      liftAff $ addRemoveRecent {add: resolvedToTerm >>> termToWho <$> dt,remove:[]}
       runChange $ do 
-        modifying _terms $ flip append (ResolvedTerm <$> dt)
+        modifying _terms $ flip append (deletable <<< ResolvedTerm <$> dt)
         modify _{showDialog=false,dialHidden=false}
         traverse_ (\t -> modifyExpression $ setOrModifyExpr appendExpr t) dt
         pure true
@@ -694,6 +721,10 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
           changeOp e = e
       runChange $ modifyResolved changeOp 
 
+    ClearTarget i -> do
+      {terms} <- getState
+      liftAff $ addRemoveRecent {add:[],remove: fromFoldable $ snd >>> exprTermOnly >>> termToWho <$> terms !! i }
+      modifyState $ over _terms (\t -> fromMaybe t $ deleteAt i t)
     DeleteExpr i -> do 
       let delExpr e@(Resolved r) = either (const e) (\{modify} -> maybe emptyExpr Resolved $ modify Nothing) $ findExprModify i r
           delExpr o = o
@@ -721,7 +752,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
         maybe (pure e) (appendChild e <<< elementToNode) mb
       modifyState _ {dragPortal=Just e}
       let ugr = foldMapOf (traversed <<< _ResolvedEntry <<< _expr <<< _unresolvedExpr) toQuery acls <> 
-                foldMapOf (traversed <<< _unresolvedTerm) termQuery terms
+                foldMapOf (traversed <<< _2 <<< _unresolvedTerm) termQuery terms
       (UserGroupRoles {users,groups,roles}) <- lift $ lookupUsers ugr
       let filterById :: forall a r. Newtype a {id::String|r} => Array a -> String -> Maybe a
           filterById arr uid = arr ^? (traversed <<< (filtered $ view ((_Newtype :: Lens' a {id::String|r}) <<< _id) >>> eq uid))
@@ -735,7 +766,7 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
           resolveAcls = over (_acls <<< traversed <<< _ResolvedEntry <<< _expr) case _ of 
             Unresolved u -> Resolved (resolve u)
             o -> o
-          resolveTerms = over (_terms <<< traversed) case _ of 
+          resolveTerms = over (_terms <<< traversed <<< _2) case _ of 
             UnresolvedTerm u -> ResolvedTerm (resolveTerm u)
             o -> o
       modifyState $ resolveAcls <<< resolveTerms
@@ -814,6 +845,35 @@ isInvalid :: ResolvedEntry -> Boolean
 isInvalid (ResolvedEntry {priv,granted,override,expr:(InvalidExpr _)}) = true 
 isInvalid _ = false
 
+aclRawStrings :: { prefix :: String
+, strings :: { privilege :: String
+             , privileges :: String
+             , selectpriv :: String
+             , expression :: String
+             , privplaceholder :: String
+             , dropplaceholder :: String
+             , addpriv :: String
+             , addexpression :: String
+             , targets :: String
+             , new :: { ugr :: String
+                      , ip :: String
+                      , referrer :: String
+                      , token :: String
+                      }
+             , notted :: String
+             , not :: String
+             , override :: String
+             , revoked :: String
+             , revoke :: String
+             , required :: String
+             , match :: { and :: String
+                        , or :: String
+                        , notand :: String
+                        , notor :: String
+                        }
+             , convertGroup :: String
+             }
+}
 aclRawStrings = {prefix:"acleditor",
   strings: {
     privilege: "Privilege",
@@ -839,10 +899,14 @@ aclRawStrings = {prefix:"acleditor",
     required: "* Required",
     match: {
       and: "All match",
-      or: "At least one matches",
+      or: "At least one match",
       notand: "Not all match",
       notor: "None match"
     },
     convertGroup: "Convert to group"
   }
 }
+
+instance encAddRemove :: EncodeJson AddRemoveRecent where 
+  encodeJson (AddRemove {add,remove}) = "add" := add ~> 
+    "remove" := remove ~> jsonEmptyObject

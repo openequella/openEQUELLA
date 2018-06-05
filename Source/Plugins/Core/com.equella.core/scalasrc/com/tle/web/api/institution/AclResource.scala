@@ -32,6 +32,9 @@ import sbt.io.Path
 
 import scala.collection.JavaConverters._
 
+
+case class AddRemoveRecent(add: Iterable[String], remove: Iterable[String])
+
 @Produces(value =Array("application/json"))
 @Path("acl/")
 @Api(value = "ACLs")
@@ -95,10 +98,10 @@ class AclResource {
 	}
 
 	@POST
-	@ApiOperation(value = "Add an expression target to the recently used")
-	@Path("/recent/add")
-	def addRecent(@QueryParam("target") target : String) : Unit = {
-		AclPrefs.addRecent(target)
+	@ApiOperation(value = "Add/Remove an expression target from the recently used list")
+	@Path("/recent")
+	def addRemoveRecent(addRemove: AddRemoveRecent) : Unit = {
+		AclPrefs.addAndRemoveRecent(addRemove.add, addRemove.remove)
 	}
 
 }

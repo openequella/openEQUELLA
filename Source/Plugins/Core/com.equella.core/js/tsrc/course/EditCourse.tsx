@@ -39,7 +39,11 @@ const styles = (theme: Theme) => {
         },
         body: {
             padding: `${theme.spacing.unit * 2}px`,
-            paddingBottom: footerHeight
+            paddingBottom: footerHeight,
+            height: "100%"
+        },
+        footer: {
+            minHeight: footerHeight
         },
         footerActions: {
             padding: '4px',
@@ -304,7 +308,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                                 value={description || ''}
                                 onChange={this.handleChange('description')}
                                 multiline
-                                rows={3}
+                                rows={2}
                                 margin="normal"
                                 className={classes.formControl2}
                                 />
@@ -423,6 +427,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                         onChange={ this.handleAclChange() }
                         acls={rules} 
                         allowedPrivs={availablePrivileges}/>
+                    <div className={classes.footer}/>
                 </div>
             </div>
 

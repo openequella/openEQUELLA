@@ -3,6 +3,7 @@
   "set": "equella-18052018",
   "source": "https://github.com/equella/package-sets.git",
   "depends": [
+    "unsafe-reference",
     "js-timers",
     "debug",
     "io",

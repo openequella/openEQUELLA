@@ -9,6 +9,7 @@ foreign import commonString :: {
             , discard :: String
             , select :: String
             , delete :: String
+            , clear :: String
             }
   , users :: String
   , groups :: String

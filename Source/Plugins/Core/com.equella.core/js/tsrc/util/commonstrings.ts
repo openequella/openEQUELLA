@@ -10,7 +10,8 @@ export const commonString = prepLangStrings("common", {
       discard: "Discard", 
       select: "Select", 
       delete: "Delete", 
-      search: "Search"
+      search: "Search",
+      clear: "Clear"
     }, 
     users : "Users", 
     groups: "Groups", 
