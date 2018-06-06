@@ -57,7 +57,9 @@ As of the time of writing the build was tested with yarn 1.3.2 and Node v6.11.4.
 
 **Install psc-package**
 
-Binary releases for linux/windows/mac can be found [here](https://github.com/purescript/psc-package/releases)
+<https://github.com/purescript/psc-package>
+
+Binary releases for linux/windows/mac can be found [here](https://github.com/purescript/psc-package/releases).
 The binary file must be put onto your PATH somewhere.
 
 Latest release tested was 0.3.3.
