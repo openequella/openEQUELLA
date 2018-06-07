@@ -202,6 +202,17 @@ class EditCourse extends React.Component<Props, EditCourseState> {
         };
     }
 
+    handleIntChange(stateFieldName: string): (event: React.ChangeEvent<any>) => void {
+        return (event: React.ChangeEvent<any>) => {
+            let val = event.target.value;
+            let intVal: number | undefined = parseInt(val);
+            if (!Number.isInteger(intVal)){
+                intVal = undefined;
+            }
+            this.modifyEntity({ [stateFieldName]: intVal });   
+        };
+    }
+
     handleCheckboxChange(stateFieldName: string): (event: React.ChangeEvent<any>) => void {
         return (event: React.ChangeEvent<any>) => {
             this.modifyEntity({ [stateFieldName]: event.target.checked });
@@ -402,9 +413,11 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                                 label={strings.students.label}
                                 //helperText=""
                                 value={students || ''}
-                                onChange={this.handleChange('students')}
+                                onInput={this.handleIntChange('students')}
                                 margin="normal"
                                 className={classes.formControl}
+                                type="number"
+                                error={(val['students'] ? true : false)}
                                 />
 
                             <FormGroup className={classes.formControl}>

@@ -1,9 +1,10 @@
+import Axios from 'axios';
 import { Course, PagingResults } from '../api';
+import { Config } from '../config';
 import { EntityState, extendedEntityService } from '../entity/index';
 import { IDictionary } from '../util/dictionary';
-import Axios from 'axios';
-import { Config } from '../config';
 import { encodeQuery } from '../util/encodequery';
+import * as validation from '../util/validation';
 
 const courseService = extendedEntityService<Course, {}, {}>('COURSE', {}, {}, validate);
 export default courseService;
@@ -11,8 +12,13 @@ export default courseService;
 export interface CourseState extends EntityState<Course> {}
 
 function validate(entity: Course, errors: IDictionary<string>): void {
-    if (!entity.code){
+    const { code, students } = entity;
+    if (!code){
         errors['code'] = 'Code is required';
+    }
+    
+    if (!validation.isInteger(students, false, true)){
+        errors['students'] = 'Unique Individuals must be a positive whole number, or leave blank.';
     }
 }
 
