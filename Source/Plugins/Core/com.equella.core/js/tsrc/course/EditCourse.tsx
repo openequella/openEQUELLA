@@ -1,4 +1,4 @@
-import { Button, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, Input, Paper, InputLabel, MenuItem, Snackbar, Switch, Tab, Tabs, TextField, Theme } from '@material-ui/core';
+import { Button, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, Input, InputLabel, MenuItem, Paper, Snackbar, Switch, Tab, Tabs, TextField, Theme } from '@material-ui/core';
 import Select from '@material-ui/core/Select';
 import { StyleRules, WithStyles, withStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
@@ -39,6 +39,10 @@ const styles = (theme: Theme) => {
         },
         body: {
             padding: `${theme.spacing.unit * 2}px`,
+            paddingBottom: footerHeight
+        },
+        bodyFullHeight: {
+            padding: `${theme.spacing.unit * 2}px`,
             paddingBottom: footerHeight,
             height: "100%"
         },
@@ -71,7 +75,7 @@ interface EditCourseProps extends EditEntityProps<Course>, EditCourseStateProps,
 }
 
 type Props = EditCourseProps & 
-    WithStyles<'hiddenTab' | 'body' | 'formControl' | 'formControl2' | 'form' | 'footerActions' | 'footer'>;
+    WithStyles<'hiddenTab' | 'body' | 'bodyFullHeight' | 'formControl' | 'formControl2' | 'form' | 'footerActions' | 'footer'>;
 
 interface EditCourseState {
     activeTab?: number;
@@ -297,7 +301,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                 onClose={this.hideSnack} message={<span>{strings.saved}</span>}
                 action={<IconButton color="inherit" onClick={this.hideSnack} ><CloseIcon/></IconButton>}
             />
-            <div className={classes.body}>
+            <div className={(activeTab == 0 ? classes.body : classes.bodyFullHeight)}>
                 <div className={this.state.activeTab === 0 ? "" : classes.hiddenTab}>
                     <Grid>
                         <div className={classes.form}>
