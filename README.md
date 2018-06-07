@@ -51,18 +51,9 @@ In ubuntu (17.10):
 ~$ curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 ~$ echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 ~$ sudo apt-get update && sudo apt-get install yarn
-``` 
+```
 
 As of the time of writing the build was tested with yarn 1.3.2 and Node v6.11.4.
-
-**Install psc-package**
-
-<https://github.com/purescript/psc-package>
-
-Binary releases for linux/windows/mac can be found [here](https://github.com/purescript/psc-package/releases).
-The binary file must be put onto your PATH somewhere.
-
-Latest release tested was 0.3.3.
 
 **Download and install Java 8 JDK**
 
