@@ -119,11 +119,11 @@ export const strings = prepLangStrings("courseedit",
         }, 
         version: {
             label: "Version Selection",
-            default: "Default",
-            forcelatest: "Force selection to be the resource version the user is viewing",
-            forcecurrent: "Force selection to always be the latest live resource version",
-            defaultlatest: "User can choose, but default to be the resource version the user is viewing",
-            defaultcurrent: "User can choose, but default to be the latest live resource version",
+            default: "Institution default",
+            forcecurrent: "Force selection to be the resource version the user is viewing",
+            forcelatest: "Force selection to always be the latest live resource version",
+            defaultcurrent: "User can choose, but default to be the resource version the user is viewing",
+            defaultlatest: "User can choose, but default to be the latest live resource version",
             help: "When accessing EQUELLA via this course in an external system, all resources added to the external system will use this version selection strategy"
         },
         students: {
@@ -159,7 +159,8 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                 code: '',
                 name: '', 
                 description: '', 
-                type: 'Internal'
+                type: 'Internal', 
+                versionSelection: 'INSTITUTION_DEFAULT'
             });
         }
         this.props.loadCitations();
@@ -400,7 +401,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                                     onChange={this.handleChange('versionSelection')}
                                     
                                 >
-                                    <MenuItem key={"DEFAULT"} value={"DEFAULT"}>{versionval.default}</MenuItem>
+                                    <MenuItem key={"DEFAULT"} value={"INSTITUTION_DEFAULT"}>{versionval.default}</MenuItem>
                                     <MenuItem key={"FORCE_LATEST"} value={"FORCE_LATEST"}>{versionval.forcelatest}</MenuItem>
                                     <MenuItem key={"FORCE_CURRENT"} value={"FORCE_CURRENT"}>{versionval.forcecurrent}</MenuItem>
                                     <MenuItem key={"DEFAULT_TO_LATEST"} value={"DEFAULT_TO_LATEST"}>{versionval.defaultlatest}</MenuItem>
