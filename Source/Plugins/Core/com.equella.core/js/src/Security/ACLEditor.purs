@@ -37,7 +37,7 @@ import Data.Nullable (toMaybe, toNullable)
 import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
 import Data.Traversable (traverse, traverse_)
-import Data.Tuple (Tuple(Tuple), snd)
+import Data.Tuple (Tuple(Tuple), fst, snd)
 import Dispatcher (DispatchEff(DispatchEff), dispatch)
 import Dispatcher.React (ReactProps(ReactProps), ReactState(ReactState), createLifecycleComponent', didMount, getProps, getState, modifyState)
 import DragNDrop.Beautiful (DropResult, dragDropContext, draggable, droppable)
@@ -122,7 +122,7 @@ data Command = Init | Resolve | HandleDrop DropResult | SelectEntry Int | Undo
   | DeleteExpr Int | ChangeOp Int String | EditEntry Int (ResolvedEntryR -> ResolvedEntryR) | DeleteEntry Int
   | OpenDialog DialogType | AddFromDialog (Array ResolvedTerm) | CloseDialog 
   | NewPriv | FinishNewPriv (Maybe String) | DialState (Boolean -> Boolean) | ToggleNot Int | Expand Int 
-  | Updated (Array TargetListEntry) | EntryMenuAnchor (Maybe HTMLElement)
+  | Updated (Array TargetListEntry) | EntryMenuAnchor (Maybe (Tuple Int HTMLElement))
   | ClearTarget Int
 
 type MyState = {
@@ -136,7 +136,7 @@ type MyState = {
   dialOpen :: Boolean, 
   dialHidden :: Boolean, 
   dragPortal :: Maybe Node, 
-  entryMenu :: Maybe HTMLElement
+  entryMenu :: Maybe (Tuple Int HTMLElement)
 }
 
 newtype EqMyState = EqMyState MyState
@@ -488,14 +488,16 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
     entryRow i (ResolvedEntry {granted,override,priv,expr}) = draggable { "type": "entry", draggableId: "entry" <> show i, index:i} $ withPortal \p _ -> 
       div [P.ref p.innerRef, p.draggableProps, p.dragHandleProps] [
         div' [
-          let p = guard (eq i <$> selectedIndex # fromMaybe false) $> className classes.selectedEntry
+          let selected = eq i <$> selectedIndex # fromMaybe false
+              menuOpen = (fst >>> eq i <$> s.entryMenu) # fromMaybe false
+              p = guard selected $> className classes.selectedEntry
           in listItem (p <> [ P.button true, disableRipple true, onClick $ d \_ -> SelectEntry i]) [ 
             div [P.className classes.exprLine ] [
               listItemText [ className classes.entryText, disableTypography true, P.primary $ privText, P.secondary secondLine ],
               div [ P.className classes.termActions ] [ 
                 iconButton [ onClick $ command $ DeleteEntry i ] [ icon_ [ text "delete" ] ], 
-                iconButton [ onClick $ d \e -> EntryMenuAnchor $ Just e.currentTarget ] [ icon_ [text "more_vert"]],
-                menu [open $ isJust s.entryMenu, anchorEl $ toNullable s.entryMenu, onClose $ d $ \_ -> EntryMenuAnchor Nothing] [
+                iconButton [ onClick $ d \e -> EntryMenuAnchor $ Just $ Tuple i e.currentTarget ] [ icon_ [text "more_vert"]],
+                menu [open menuOpen, anchorEl $ toNullable $ snd <$> s.entryMenu, onClose $ d $ \_ -> EntryMenuAnchor Nothing] [
                   menuItem_ [ check (not granted) _granted aclString.revoked ],
                   menuItem_ [ check override _override aclString.override ]
                 ]
@@ -504,10 +506,15 @@ aclEditorClass = withStyles styles $ createLifecycleComponent' lifeCycle initial
           ]
         ]
       ]
-      where privText = firstLine $ if granted then priv else aclString.revoke <> " - " <> priv
+      where privText = firstLine $ case catMaybes [
+                    (guard $ not granted) $> aclString.revoke, 
+                    guard override $> aclString.override
+                  ] of 
+                  [] -> priv 
+                  o -> joinWith ", " o <> " - " <> priv
             secondLine = textForExprType expr
-            check o l t = formControlLabel [control $ checkbox [checked o, toggler i l ], label t ]
-            toggler i l = mkProp "onClick" $ toHandler $ \e -> do 
+            check o l t = formControlLabel [control $ checkbox [checked o, toggler l ], label t ]
+            toggler l = mkProp "onClick" $ toHandler $ \e -> do 
               stopPropagation (unsafeCoerce e)
               d (\_ -> EditEntry i (over l not)) unit
 

@@ -155,7 +155,6 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
   coreString = prepLangStrings coreStrings
   drawerWidth = 240
   tabHeight = 48 
-  footerHeight = 48
   ourStyles theme = 
     let desktop :: forall a. {|a} -> MediaQuery
         desktop = mediaQuery $ theme.breakpoints.up "md"
@@ -251,8 +250,7 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
         right: 0,
         bottom: 0, 
         zIndex: 1000,
-        width: "100%",
-        height: footerHeight
+        width: "100%"
       }, 
       desktop {
         width: "calc(100% - " <> show drawerWidth <> "px)"
