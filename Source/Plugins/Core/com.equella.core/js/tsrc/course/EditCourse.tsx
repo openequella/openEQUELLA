@@ -1,7 +1,6 @@
-import { Button, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, IconButton, Input, Paper, InputLabel, MenuItem, Snackbar, Switch, Tab, Tabs, TextField, Theme } from '@material-ui/core';
+import { Button, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, Input, Paper, InputLabel, MenuItem, Switch, Tab, Tabs, TextField, Theme } from '@material-ui/core';
 import Select from '@material-ui/core/Select';
 import { StyleRules, WithStyles, withStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
 //import SwipeableViews from 'react-swipeable-views';
 import { DatePicker } from 'material-ui-pickers';
 import * as React from 'react';
@@ -18,6 +17,7 @@ import { commonString } from '../util/commonstrings';
 import { formatISO, parseISO } from '../util/dates';
 import { properties } from '../util/dictionary';
 import { prepLangStrings } from '../util/langstrings';
+import MessageInfo from '../components/MessageInfo';
 
 const styles = (theme: Theme) => {
     //TODO: get drawerWidth passed in somehow
@@ -79,6 +79,7 @@ interface EditCourseState {
     changed: boolean;
     justSaved: boolean;
     editing: boolean;
+    errored: boolean;
     editSecurity?: () => TargetListEntry[];
 }
 export const strings = prepLangStrings("courseedit",
@@ -132,7 +133,8 @@ export const strings = prepLangStrings("courseedit",
         archived: {
             label: "Archived"
         },
-        saved: "Successfully saved"
+        saved: "Successfully saved", 
+        errored: "Save failed due to server error"
     }
 );
 
@@ -147,6 +149,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
             canSave: true,
             changed: false, 
             justSaved: false,
+            errored: false,
             editing: this.props.uuid ? true : false
         };
         if (this.props.uuid)
@@ -191,7 +194,9 @@ class EditCourse extends React.Component<Props, EditCourseState> {
             const thiss = this;
             this.props.validateEntity(course).then(function(valErrors){
                 if (properties(valErrors).length === 0){
-                    saveEntity(course).then(_ => thiss.setState({changed:false, justSaved: true}));
+                    saveEntity(course)
+                    .then(_ => thiss.setState({changed:false, justSaved: true}))
+                    .catch(r => thiss.setState({errored: true}))
                 }
             });
         }
@@ -244,10 +249,6 @@ class EditCourse extends React.Component<Props, EditCourseState> {
         }
     }
 
-    hideSnack = () => {
-        this.setState({justSaved:false})
-    }
-
     render() {
         const { loading, entity, citations, availablePrivileges, classes } = this.props;
         const { AclEditor, Template, router, routes } = this.props.bridge;
@@ -270,7 +271,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
         const { code, name, description, type, departmentName, citation, students, from, 
             until, versionSelection, archived, security, validationErrors } = entity;
-        const { activeTab, changed, canSave, justSaved } = this.state;
+        const { activeTab, changed, canSave, justSaved, errored } = this.state;
         const vs = (versionSelection ? versionSelection : "DEFAULT");
         const fromDate = (from ? parseISO(from) : null);
         const untilDate = (until ? parseISO(until) : null);
@@ -281,23 +282,27 @@ class EditCourse extends React.Component<Props, EditCourseState> {
             rules = security!.rules;
         } 
 
-        const saveOrCancel = <Paper className={classes.footerActions}>
-            <Button onClick={router(routes.CoursesPage).onClick} color="secondary">{commonString.action.cancel}</Button>
-            <Button onClick={this.handleSave.bind(this)} color="primary"
-                disabled={!canSave || !changed}>{commonString.action.save}</Button>
-        </Paper>               
+        const saveOrCancel = 
+            <Paper className={classes.footerActions}>
+                <Button onClick={router(routes.CoursesPage).onClick} color="secondary">{commonString.action.cancel}</Button>
+                <Button onClick={this.handleSave.bind(this)} color="primary"
+                    disabled={!canSave || !changed}>{commonString.action.save}</Button>
+            </Paper>               
 
-        return <Template title={title} preventNavigation={changed} fixedViewPort={true} backRoute={routes.CoursesPage} tabs={
-                <Tabs value={activeTab} onChange={this.handleTabChange()} fullWidth>
-                    <Tab label={strings.tab} />
-                    <Tab label={entityStrings.edit.tab.permissions} />
-                </Tabs>} footer={saveOrCancel}>
-                    
-            <Snackbar open={justSaved} 
-                autoHideDuration={5000} 
-                onClose={this.hideSnack} message={<span>{strings.saved}</span>}
-                action={<IconButton color="inherit" onClick={this.hideSnack} ><CloseIcon/></IconButton>}
-            />
+        return <Template title={title} preventNavigation={changed} 
+                fixedViewPort={true} 
+                backRoute={routes.CoursesPage} 
+                footer={saveOrCancel} 
+                tabs={
+                    <Tabs value={activeTab} onChange={this.handleTabChange()} fullWidth>
+                        <Tab label={strings.tab} />
+                        <Tab label={entityStrings.edit.tab.permissions} />
+                    </Tabs>
+                } >
+            <MessageInfo title={strings.saved} open={justSaved} 
+                onClose={() => this.setState({justSaved:false})} variant="success"/>
+            <MessageInfo title={strings.errored} open={errored} 
+                onClose={() => this.setState({errored:false})} variant="error"/>
             <div className={classes.body}>
                 <div className={this.state.activeTab === 0 ? "" : classes.hiddenTab}>
                     <Grid>

@@ -17,9 +17,9 @@
     "dev:langbundle": "cross-env-shell NODE_PATH=target/ts \"pulp build -O --to output/genlang.js -m Tools.GenLangStrings && node output/genlang.js > ${npm_package_config_devlang}/jsbundle.json\""
   },
   "dependencies": {
-    "@material-ui/core": "^1.0.0",
-    "@material-ui/icons": "^1.0.0",
-    "@material-ui/lab": "^1.0.0-alpha.2",
+    "@material-ui/core": "1.2.0",
+    "@material-ui/icons": "^1.1.0",
+    "@material-ui/lab": "^1.0.0-alpha.4",
     "@types/react-redux": "^5.0.7",
     "@types/react-router": "^4.0.22",
     "@types/react-router-dom": "^4.2.4",

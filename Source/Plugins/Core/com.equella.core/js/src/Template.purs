@@ -53,7 +53,6 @@ import MaterialUI.ListItemIcon (listItemIcon_)
 import MaterialUI.ListItemText (disableTypography, listItemText, primary)
 import MaterialUI.Menu (anchorEl, menu)
 import MaterialUI.MenuItem (menuItem)
-import MaterialUI.Paper (paper)
 import MaterialUI.Popover (anchorOrigin, transformOrigin)
 import MaterialUI.Properties (className, classes_, color, component, mkProp, onClick, onClose, variant)
 import MaterialUI.Radio (default)
@@ -127,7 +126,10 @@ type State = {
 }
 
 initialState :: State
-initialState = {mobileOpen:false, menuAnchor:Nothing, tasks:Nothing, notifications:Nothing, attempt : Nothing}
+initialState = {
+  mobileOpen: false, menuAnchor: Nothing, tasks: Nothing, 
+  notifications: Nothing, attempt: Nothing
+}
 
 template :: String -> Array ReactElement -> ReactElement
 template title = template' $ templateDefaults title
@@ -142,6 +144,7 @@ templateDefaults title = {title,titleExtra:nullAny, fixedViewPort:nullAny,preven
 templateClass :: ReactClass TemplateProps
 templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initialState render eval)
   where
+  boolNull = fromMaybe false <<< toMaybe
   lifecycle = do 
     didMount Init
     modify _ {
@@ -298,7 +301,7 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
   eval ToggleMenu = modifyState \(s :: State) -> s {mobileOpen = not s.mobileOpen}
   eval (UserMenuAnchor el) = modifyState \(s :: State) -> s {menuAnchor = el}
 
-  render {mobileOpen,menuAnchor,tasks,notifications,attempt} (ReactChildren children) (ReactProps props@{fixedViewPort:fvp, classes, 
+  render state@{mobileOpen,menuAnchor,tasks,notifications,attempt} (ReactChildren children) (ReactProps props@{fixedViewPort:fvp, classes, 
               title:titleText,titleExtra,menuExtra,backRoute}) 
     (DispatchEff d) = muiPickersUtilsProvider [utils momentUtils] [
     D.div [DP.className classes.root] $ [

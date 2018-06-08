@@ -43,6 +43,7 @@ import Data.Symbol (SProxy(..))
 import Data.Time.Duration (class Duration, Days(..), Milliseconds(..), fromDuration)
 import Data.Tuple (Tuple(..), fst)
 import DateUtils (localJSToDate)
+import Debug.Trace (traceAnyA)
 import Dispatcher (DispatchEff(DispatchEff), fromContext)
 import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMount, getState, modifyState)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
@@ -462,10 +463,9 @@ searchQuery {query,modifiedLast,owner} = [
 
 callSearch :: forall e. Int -> State -> Aff (ajax :: AJAX |e) (Either String ItemSearchResults)
 callSearch offset {facets,query,modifiedLast,owner,order} = do
-  let
-    whereXpath = mapMaybe whereClause $ SM.toUnfoldable facets
-    dateParam p (Tuple true d) = Just $ Tuple p $ format dateFormat (DateTime d bottom)
-    dateParam _ _ = Nothing
+  let whereXpath = mapMaybe whereClause $ SM.toUnfoldable facets
+      dateParam p (Tuple true d) = Just $ Tuple p $ format dateFormat (DateTime d bottom)
+      dateParam _ _ = Nothing
   result <- get $ baseUrl <> "api/search?" <> (queryString $ [
       Tuple "info" "basic,detail,attachment,display",
       Tuple "start" $ show offset,
@@ -474,6 +474,7 @@ callSearch offset {facets,query,modifiedLast,owner,order} = do
       (orderValue >>> Tuple "order") <$> order
     ]
   )
+  traceAnyA result
   pure $ decodeJson result.response
 
 whereClause :: Tuple String (S.Set String) -> Maybe String
