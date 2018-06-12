@@ -57,7 +57,7 @@ oracleDriverJar in ThisBuild := {
 name := "Equella"
 
 equellaMajorMinor in ThisBuild := "6.6"
-equellaStream in ThisBuild := "RC2"
+equellaStream in ThisBuild := "Stable"
 equellaBuild in ThisBuild := buildConfig.value.getString("build.buildname")
 
 git.useGitDescribe := true
