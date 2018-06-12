@@ -11,7 +11,8 @@ export const commonString = prepLangStrings("common", {
       select: "Select", 
       delete: "Delete", 
       search: "Search",
-      clear: "Clear"
+      clear: "Clear", 
+      close: "Close"
     }, 
     users : "Users", 
     groups: "Groups", 

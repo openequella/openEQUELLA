@@ -8,6 +8,7 @@ import ErrorIcon from '@material-ui/icons/Error';
 import InfoIcon from '@material-ui/icons/Info';
 import WarningIcon from '@material-ui/icons/Warning';
 import * as React from 'react';
+import { commonString } from '../util/commonstrings';
 
 const variantIcon = {
     success: CheckCircleIcon,
@@ -71,7 +72,7 @@ export default withStyles(styles)(class MessageInfo extends React.Component<Mess
                 action={
                     <IconButton
                     key="close"
-                    aria-label="Close"
+                    aria-label={commonString.action.close}
                     color="inherit"
                     onClick={onClose}
                     ><CloseIcon className={classes.icon} /></IconButton>
