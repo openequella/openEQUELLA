@@ -46,6 +46,7 @@ import com.tle.web.sections.render.TagRenderer;
 import com.tle.web.sections.render.TagState;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.render.WrappedLabel;
+import com.tle.web.sections.result.util.CountLabel;
 import com.tle.web.sections.standard.renderers.SpanRenderer;
 import com.tle.web.stream.ContentStream;
 import com.tle.web.viewurl.AttachmentDetail;
@@ -74,6 +75,8 @@ public class FileSummariser
 	private static Label FILENAME;
 	@PlugKey("fileresource.details.filesize")
 	private static Label SIZE;
+	@PlugKey("fileresource.details.views")
+	private static Label VIEWS;
 
 	@PlugKey("file.msoffice.details.author")
 	private static Label AUTHOR;
@@ -186,6 +189,16 @@ public class FileSummariser
 			if( !Check.isEmpty(wcount) )
 			{
 				commonDetails.add(makeDetail(WORDS, new TextLabel(wcount)));
+			}
+
+			if (attachment instanceof Attachment)
+			{
+				final Attachment att = (Attachment)attachment;
+				final com.tle.beans.item.attachments.AttachmentView views = att.getAttachmentView();
+				if (views != null)
+				{
+					commonDetails.add(makeDetail(VIEWS, new CountLabel(views.getViews())));
+				}
 			}
 
 			return commonDetails;

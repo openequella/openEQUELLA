@@ -17,21 +17,16 @@
 package com.tle.core.item.service.impl;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.beans.item.*;
+import com.tle.beans.item.attachments.AttachmentView;
+import com.tle.core.item.dao.AttachmentViewDao;
+import com.tle.core.item.dao.ItemViewDao;
 import org.apache.log4j.MDC;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
@@ -62,16 +57,6 @@ import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.itemdef.DynamicMetadataRule;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.ItemMetadataRule;
-import com.tle.beans.item.IItem;
-import com.tle.beans.item.Item;
-import com.tle.beans.item.ItemId;
-import com.tle.beans.item.ItemIdKey;
-import com.tle.beans.item.ItemKey;
-import com.tle.beans.item.ItemKeyExtension;
-import com.tle.beans.item.ItemPack;
-import com.tle.beans.item.ItemSelect;
-import com.tle.beans.item.ItemStatus;
-import com.tle.beans.item.ItemXml;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.workflow.SecurityStatus;
@@ -162,6 +147,11 @@ public class ItemServiceImpl
 
 	@Inject
 	private ItemDao dao;
+	@Inject
+	private ItemViewDao itemViewDao;
+	@Inject
+	private AttachmentViewDao attachmentViewDao;
+
 	@Inject
 	private ItemLockingService lockingService;
 	@Inject
@@ -313,6 +303,38 @@ public class ItemServiceImpl
 	public Item getItemWithViewAttachmentPriv(ItemKey key)
 	{
 		return getInternal(key, false);
+	}
+
+	@Transactional
+	@Override
+	public void incrementViews(Item item)
+	{
+		ItemView iv = item.getItemView();
+		if (iv == null)
+		{
+			iv = new ItemView();
+			iv.setItem(item);
+		}
+		iv.setViews(iv.getViews() + 1);
+		iv.setLastViewed(new Date());
+		itemViewDao.save(iv);
+		item.setItemView(iv);
+	}
+
+	@Transactional
+	@Override
+	public void incrementViews(Attachment attachment)
+	{
+		AttachmentView av = attachment.getAttachmentView();
+		if (av == null)
+		{
+			av = new AttachmentView();
+			av.setAttachment(attachment);
+		}
+		av.setViews(av.getViews() + 1);
+		av.setLastViewed(new Date());
+		attachmentViewDao.save(av);
+		attachment.setAttachmentView(av);
 	}
 
 	@Override

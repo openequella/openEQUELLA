@@ -23,6 +23,11 @@ import java.util.Date;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.beans.item.ItemView;
+import com.tle.beans.item.attachments.Attachment;
+import com.tle.beans.item.attachments.AttachmentView;
+import com.tle.core.item.dao.AttachmentViewDao;
+import com.tle.core.item.dao.ItemViewDao;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tle.beans.Institution;
@@ -67,6 +72,7 @@ public class AuditLogServiceImpl implements AuditLogService
 
 	@Inject
 	private AuditLogDao dao;
+
 	private PluginTracker<AuditLogExtension> extensionTracker;
 
 	@Override
@@ -151,9 +157,9 @@ public class AuditLogServiceImpl implements AuditLogService
 
 	@Override
 	@Transactional
-	public void logItemSummaryViewed(ItemKey item)
+	public void logItemSummaryViewed(Item item)
 	{
-		logSummaryViewed(ITEM_CATEGORY, item);
+		logSummaryViewed(ITEM_CATEGORY, item.getItemId());
 	}
 
 	@Override
@@ -166,7 +172,7 @@ public class AuditLogServiceImpl implements AuditLogService
 
 	@Override
 	@Transactional
-	public void logItemContentViewed(ItemKey itemId, String contentType, String path)
+	public void logItemContentViewed(ItemKey itemId, String contentType, String path, Attachment attachment)
 	{
 		logContentViewed(ITEM_CATEGORY, itemId, contentType, path);
 	}

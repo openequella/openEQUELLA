@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.ItemTaskId;
+import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.collection.AttachmentConfigConstants;
@@ -93,6 +94,8 @@ public class ItemFilestoreServlet extends HttpServlet
 		ItemKey itemId = null;
 		try
 		{
+			Attachment attachment = null;
+
 			if( version.equals("$") )
 			{
 				fileHandle = new StagingFile(uuid);
@@ -100,6 +103,16 @@ public class ItemFilestoreServlet extends HttpServlet
 			else
 			{
 				itemId = ItemTaskId.parse(uuid + '/' + version);
+				if( path.contains(FileSystemService.GALLERY_PREVIEW_EXTENSION) )
+				{
+					String sourcePath = path.replace(FileSystemService.GALLERY_PREVIEW_EXTENSION, "");
+					sourcePath = sourcePath.replace(FileSystemService.THUMBS_FOLDER + "/", "");
+					attachment = ((Attachment)getAttachmentWithDifferentPriv(itemId, sourcePath));
+				}
+				else
+				{
+					attachment = ((Attachment)getAttachmentWithDifferentPriv(itemId, path));
+				}
 				fileHandle = itemFileService.getItemFile(ItemId.fromKey(itemId), null);
 				Set<String> privs = itemService.getCachedPrivileges(itemId);
 				if( privs == null )
@@ -117,17 +130,6 @@ public class ItemFilestoreServlet extends HttpServlet
 				// getCachedPrivileges)
 				if( !privs.contains(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS) )
 				{
-					final IAttachment attachment;
-					if( path.contains(FileSystemService.GALLERY_PREVIEW_EXTENSION) )
-					{
-						String sourcePath = path.replace(FileSystemService.GALLERY_PREVIEW_EXTENSION, "");
-						sourcePath = sourcePath.replace(FileSystemService.THUMBS_FOLDER + "/", "");
-						attachment = getAttachmentWithDifferentPriv(itemId, sourcePath);
-					}
-					else
-					{
-						attachment = getAttachmentWithDifferentPriv(itemId, path);
-					}
 					if( attachment != null && attachment.isRestricted() )
 					{
 						throw new AccessDeniedException(urlHelper.getString("viewitem.missingprivileges",
@@ -155,7 +157,7 @@ public class ItemFilestoreServlet extends HttpServlet
 			}
 			if( itemId != null )
 			{
-				auditor.audit(new ViewAuditEntry("file:" + mimeType, path), itemId); //$NON-NLS-1$
+				auditor.audit(new ViewAuditEntry("file:" + mimeType, path), itemId, attachment);
 			}
 			contentStreamWriter.outputStream(request, response, filteredStream);
 		}

@@ -21,8 +21,10 @@ import java.util.Collection;
 import com.tle.beans.Institution;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
+import com.tle.beans.item.attachments.Attachment;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.WebAuthenticationDetails;
+import com.tle.web.viewable.ViewableItem;
 
 /**
  * @author Nicholas Read
@@ -55,14 +57,18 @@ public interface AuditLogService
 	void logFederatedSearch(String freeText, String searchId);
 
 	/**
+	 * Exists solely for the purpose of non-item items.  Ie. CloudItem
+	 *
 	 * @param category E.g. CLOUD_ITEM
 	 * @param itemId
 	 */
 	void logSummaryViewed(String category, ItemKey itemId);
 
-	void logItemSummaryViewed(ItemKey itemId);
+	void logItemSummaryViewed(Item item);
 
 	/**
+	 * Exists solely for the purpose of non-item item attachments.  Ie. CloudAttachment
+	 *
 	 * @param category E.g. CLOUD_ITEM
 	 * @param itemId
 	 * @param contentType
@@ -70,7 +76,9 @@ public interface AuditLogService
 	 */
 	void logContentViewed(String category, ItemKey itemId, String contentType, String path);
 
-	void logItemContentViewed(ItemKey itemId, String contentType, String path);
+	//void logItemContentViewed(ItemKey itemId, String contentType, String path);
+
+	void logItemContentViewed(ItemKey itemId, String contentType, String path, Attachment attachment);
 
 	void logItemPurged(Item item);
 

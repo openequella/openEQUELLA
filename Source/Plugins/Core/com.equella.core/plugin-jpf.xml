@@ -1734,6 +1734,11 @@
     <parameter id="depends" value="com.tle.core.migration.initial.EnsureForeignKeyIndexes2" />
     <parameter id="date" value="2013-03-21" />
   </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="viewsTablesMigration">
+    <parameter id="id" value="com.tle.core.item.convert.migration.ItemAndAttachmentViewsMigration" />
+    <parameter id="bean" value="bean:com.tle.core.item.convert.migration.ItemAndAttachmentViewsMigration" />
+    <parameter id="date" value="2018-06-08" />
+  </extension>
   <extension plugin-id="com.tle.web.viewurl" point-id="attachmentResource" id="itunesuResource">
     <parameter id="type" value="custom/itunesu" />
     <parameter id="class" value="bean:com.tle.web.controls.itunesu.ITunesUResource" />
@@ -6205,5 +6210,9 @@
     <parameter id="path" value="/newpage.do" />
     <parameter id="root" value="bean:com.tle.web.template.SinglePageApp" />
     <parameter id="url" value="false" />
+  </extension>
+  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="viewsObjects">
+    <parameter id="class" value="com.tle.beans.item.ItemView" />
+    <parameter id="class" value="com.tle.beans.item.attachments.AttachmentView" />
   </extension>
 </plugin>

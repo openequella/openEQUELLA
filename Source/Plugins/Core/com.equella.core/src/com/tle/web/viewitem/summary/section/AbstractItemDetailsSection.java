@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.SummaryDisplayTemplate;
 import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemView;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -121,6 +122,11 @@ public abstract class AbstractItemDetailsSection<M extends AbstractItemDetailsSe
 
 		model.setStatus(CurrentLocale.get(ItemStatusKeys.get(item.getStatus())));
 		model.setVersion(new NumberLabel(item.getVersion()));
+		final ItemView views = item.getItemView();
+		if (views != null)
+		{
+			model.setViews(views.getViews());
+		}
 
 		List<SectionRenderable> sections = renderChildren(context, new ResultListCollector()).getResultList();
 		model.setSections(sections);
@@ -185,6 +191,7 @@ public abstract class AbstractItemDetailsSection<M extends AbstractItemDetailsSe
 		private Label version;
 		private List<SectionRenderable> sections;
 		private boolean hide;
+		private Integer views;
 
 		public HtmlLinkState getOwnerLink()
 		{
@@ -254,6 +261,16 @@ public abstract class AbstractItemDetailsSection<M extends AbstractItemDetailsSe
 		public void setHide(boolean hide)
 		{
 			this.hide = hide;
+		}
+
+		public Integer getViews()
+		{
+			return views;
+		}
+
+		public void setViews(Integer views)
+		{
+			this.views = views;
 		}
 	}
 }

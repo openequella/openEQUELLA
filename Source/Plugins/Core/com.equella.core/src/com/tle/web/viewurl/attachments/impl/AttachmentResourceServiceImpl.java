@@ -30,6 +30,7 @@ import java.util.Map.Entry;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.web.sections.equella.annotation.PlugKey;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.java.plugin.registry.Extension;
@@ -86,6 +87,10 @@ import com.tle.web.viewurl.resource.AbstractWrappedResource;
 @Singleton
 public class AttachmentResourceServiceImpl implements AttachmentResourceService
 {
+	@PlugKey("fileresource.details.views")
+	private static Label VIEWS;
+
+
 	@Inject
 	private PluginTracker<AttachmentResourceExtension<IAttachment>> attachmentResources;
 
