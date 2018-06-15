@@ -421,11 +421,11 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
       // Can move on if there are no uploading files and at least one successful upload
       if (uploads.forall(_.finished)) {
         val allValidated = allValidatedUploads
-        if (allValidated.size == 1 && false /* todo: allValidated[0] is a zip? */) {
+        if (allValidated.size == 1 && fileOptions.defaultResolve(singleUpload).isEmpty) {
           optionsButton.setClickHandler(context, events.getNamedHandler("nextPage"))
           renderOptions.addAction(optionsButton)
         }
-        else if (allValidated.size > 1) {
+        else if (allValidated.size > 0) {
           renderOptions.setShowSave(true)
           renderOptions.setShowAddReplace(true)
         }
