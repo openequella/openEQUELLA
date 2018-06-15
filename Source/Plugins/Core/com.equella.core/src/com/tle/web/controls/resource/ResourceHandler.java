@@ -182,6 +182,7 @@ public class ResourceHandler
 		// session.setSelectPackage(as.isPackages());
 		session.setSelectMultiple(isMultipleAllowed(context));
 		session.setSelectDraft(true);
+		session.setSkipCheckoutPage(resourceSettings.isSkipCheckoutPage());
 
 		session.setAllCollections(!resourceSettings.isRestricted(ResourceSettings.KEY_RESTRICT_COLLECTIONS));
 
