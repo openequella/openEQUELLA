@@ -16,8 +16,6 @@
 
 package com.tle.common.i18n;
 
-import javassist.compiler.ast.StringL;
-
 public interface StringLookup {
 
     String text(String key, Object... vals);

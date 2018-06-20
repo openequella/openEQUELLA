@@ -16,6 +16,7 @@
 
 package com.tle.core.cache
 
+import java.sql.Connection
 import java.util.concurrent.ConcurrentHashMap
 
 import cats.data.{Kleisli, StateT}
@@ -25,7 +26,6 @@ import com.tle.core.events.ApplicationEvent
 import com.tle.core.events.ApplicationEvent.PostTo
 import com.tle.core.events.listeners.ApplicationListener
 import com.tle.legacy.LegacyGuice
-import io.doolse.simpledba.jdbc.JDBCSession
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -54,7 +54,7 @@ object Cache extends CacheInvalidation {
   private val concurrentMap = new ConcurrentHashMap[String, IO[Any]]()
 
   def invalidate[A](implicit c: Cacheable[A]): DB[IO[Unit]] =
-    Kleisli { (uc: UserContext) =>
+    Kleisli { uc: UserContext =>
       StateT.liftF(IO.pure(IO {
         val key = c.key(uc)
         concurrentMap.remove(key)
@@ -62,8 +62,8 @@ object Cache extends CacheInvalidation {
       }))
     }
 
-  def get[A](implicit c: Cacheable[A]): DB[A] = Kleisli { (uc: UserContext) =>
-    StateT.inspectF { (s: JDBCSession) =>
+  def get[A](implicit c: Cacheable[A]): DB[A] = Kleisli { uc: UserContext =>
+    StateT.inspectF { s: Connection =>
       val key = c.key(uc)
       concurrentMap.computeIfAbsent(key,
         k => fs2.async.once(RunWithDB.executeTransaction(uc, c.query.run(uc).map(IO.pure))).unsafeRunSync()

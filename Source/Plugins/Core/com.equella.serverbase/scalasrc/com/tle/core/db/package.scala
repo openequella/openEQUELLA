@@ -17,10 +17,10 @@
 package com.tle.core
 
 import cats.data.Kleisli
-import io.doolse.simpledba.jdbc.Effect
+import io.doolse.simpledba.jdbc._
 
 package object db {
-  type DB[A] = Kleisli[Effect, UserContext, A]
+  type DB[A] = Kleisli[JDBCIO, UserContext, A]
 
 
 }

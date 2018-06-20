@@ -24,6 +24,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.core.db.DBSchema;
+import com.tle.core.db.DBSchema$;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 import org.hibernate.classic.Session;
@@ -105,7 +107,7 @@ public class InitialSchema extends AbstractCreateMigration
 
 	private static Class<?>[] clazzes = new Class<?>[]{ConfigurationProperty.class, ItemDefinitionScript.class,
 			SchemaScript.class, Institution.class, Language.class, Staging.class, UserPreference.class,
-			UserPreference.UserPrefKey.class, AuditLogEntry.class, BaseEntity.class, LanguageBundle.class,
+			UserPreference.UserPrefKey.class, BaseEntity.class, LanguageBundle.class,
 			LanguageString.class, EntityLock.class, ItemDefinition.class, ItemdefBlobs.class, Workflow.class,
 			WorkflowNodeStatus.class, WorkflowItemStatus.class, DecisionNode.class, ScriptNode.class,
 			ParallelNode.class, SerialNode.class, WorkflowItem.class, WorkflowNode.class, ReferencedURL.class,
@@ -151,6 +153,7 @@ public class InitialSchema extends AbstractCreateMigration
 	@Override
 	protected void addExtraStatements(HibernateMigrationHelper helper, List<String> sql)
 	{
+		sql.addAll(DBSchema$.MODULE$.schemaForDBType().creationSQL());
 		sql.addAll(helper.getAddIndexesRaw("bookmark_keywords", "bookkeywords", "bookmark_id"));
 
 		sql.addAll(helper.getAddIndexesRaw("tlegroup_users", new String[]{"tleguGroup", "tlegroup_id"}, new String[]{

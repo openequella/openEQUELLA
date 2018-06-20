@@ -16,11 +16,14 @@
 
 package com.tle.core.db
 
+import java.sql.Connection
+
 import cats.effect.IO
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.hibernate.CurrentDataSource
-import io.doolse.simpledba.jdbc.{Effect, JDBCSQLConfig, JDBCSession}
+import io.doolse.simpledba.jdbc._
+import javax.sql.DataSource
 import org.slf4j.LoggerFactory
 
 
@@ -28,14 +31,15 @@ object RunWithDB {
 
   val logger = LoggerFactory.getLogger(getClass)
 
-  def executeTransaction[A](uc: UserContext, jdbc: Effect[IO[A]]): IO[A] = {
-    val connection = uc.dataSource.getConnection
-    val session = JDBCSession(connection, JDBCSQLConfig.postgresConfig, logger = msg => logger.info(msg()))
-    jdbc.runA(session).attempt.unsafeRunSync() match {
+  def executeTransaction[A](ds: DataSource, jdbc: JDBCIO[A]): A = {
+    val connection = ds.getConnection
+    jdbc.runA(connection).attempt.unsafeRunSync() match {
       case Left(e) => connection.rollback(); connection.close(); throw e
       case Right(v) => connection.commit(); connection.close(); v
     }
   }
+  def executeTransaction[A](uc: UserContext, jdbc: JDBCIO[A]): A =
+    executeTransaction(uc.dataSource, jdbc)
 
   def executeIfInInstitution[A](db: DB[Option[A]]): Option[A] = {
     Option(CurrentInstitution.get).flatMap(_ => execute(db))

@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import com.tle.core.migration.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -45,15 +46,6 @@ import com.tle.core.guice.BindFactory;
 import com.tle.core.hibernate.DataSourceHolder;
 import com.tle.core.hibernate.DataSourceService;
 import com.tle.core.hibernate.ExtendedDialect;
-import com.tle.core.migration.InstallSettings;
-import com.tle.core.migration.Migration;
-import com.tle.core.migration.MigrationErrorReport;
-import com.tle.core.migration.MigrationInfo;
-import com.tle.core.migration.MigrationService;
-import com.tle.core.migration.MigrationStatus;
-import com.tle.core.migration.MigrationStatusLog;
-import com.tle.core.migration.SchemaInfo;
-import com.tle.core.migration.SchemaInfoImpl;
 import com.tle.core.migration.impl.MigrationMessage.AddMessage;
 import com.tle.core.migration.impl.MigrationMessage.InstallMessage;
 import com.tle.core.migration.impl.MigrationMessage.MigrateMessage;
@@ -61,7 +53,6 @@ import com.tle.core.migration.impl.MigrationMessage.MigrationResponse;
 import com.tle.core.migration.impl.MigrationMessage.SchemaMessage;
 import com.tle.core.migration.impl.MigrationMessage.SetOnlineMessage;
 import com.tle.core.migration.impl.MigrationMessage.Type;
-import com.tle.core.migration.impl.MigrationServiceImpl.MigrationState;
 import com.tle.core.migration.log.MigrationLog;
 import com.tle.core.migration.log.MigrationLog.LogStatus;
 import com.tle.core.plugins.impl.PluginServiceImpl;

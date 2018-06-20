@@ -26,6 +26,8 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import com.tle.core.migration.MigrationExt;
+import com.tle.core.migration.MigrationState;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -50,8 +52,6 @@ import com.tle.core.hibernate.impl.TablesOnlyFilter;
 import com.tle.core.migration.MigrationService;
 import com.tle.core.migration.beans.SchemaId;
 import com.tle.core.migration.beans.SystemConfig;
-import com.tle.core.migration.impl.MigrationServiceImpl.MigrationExt;
-import com.tle.core.migration.impl.MigrationServiceImpl.MigrationState;
 import com.tle.core.migration.log.MigrationLog;
 import com.tle.core.migration.log.MigrationLog.LogStatus;
 import com.tle.exceptions.BadCredentialsException;
@@ -175,9 +175,9 @@ public class HibernateMigrationService
 		Set<MigrationExt> migrations = migrationService.getOrderedMigrations();
 		for( MigrationExt mig : migrations )
 		{
-			if( mig.isInitial() && mig.isSystem() == system )
+			if( mig.initial() && mig.system() == system )
 			{
-				String migId = mig.getId();
+				String migId = mig.id();
 				MigrationLog log = statuses.get(migId);
 				if( log == null || log.getStatus() == LogStatus.ERRORED )
 				{
@@ -187,26 +187,26 @@ public class HibernateMigrationService
 			}
 		}
 		boolean executions = false;
-		List<MigrationState> toRun = new ArrayList<MigrationServiceImpl.MigrationState>();
-		Map<String, MigrationState> stateMap = new HashMap<String, MigrationServiceImpl.MigrationState>();
+		List<MigrationState> toRun = new ArrayList<MigrationState>();
+		Map<String, MigrationState> stateMap = new HashMap<String, MigrationState>();
 		for( MigrationExt mig : migrations )
 		{
-			String migId = mig.getId();
+			String migId = mig.id();
 			MigrationState state = new MigrationState(mig, statuses.remove(migId));
 			stateMap.put(migId, state);
 
-			if( state.needsProcessing() && system == mig.isSystem() )
+			if( state.needsProcessing() && system == mig.system() )
 			{
 				if( initial )
 				{
-					if( !mig.isInitial() )
+					if( !mig.initial() )
 					{
 						state.setObsoleted(true);
 					}
 				}
 				else
 				{
-					if( mig.isInitial() )
+					if( mig.initial() )
 					{
 						state.setSkip(true);
 					}

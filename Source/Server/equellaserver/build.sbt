@@ -18,7 +18,7 @@ val axis2Version = "1.6.2"
 val TomcatVersion = "8.5.23"
 val SwaggerVersion = "1.5.16"
 val RestEasyVersion = "3.5.0.Final"
-val simpledbaVersion = "0.1.3-SNAPSHOT"
+val simpledbaVersion = "0.1.4-SNAPSHOT"
 val fs2Version = "0.10.2"
 val circeVersion = "0.9.1"
 
