@@ -2,7 +2,7 @@
 
 [![Travis build](https://travis-ci.org/equella/Equella.svg?branch=master)](https://travis-ci.org/equella/Equella)
 
-Builds for each openEQUELLA Release can be found here: https://github.com/equella/Equella/releases
+Builds for each openEQUELLA Release can be found on the [Releases page](https://github.com/equella/Equella/releases "EQUELLA Releases") 
 
 More in-depth documentation can be found in [Docs](https://equella.github.io/) repo.
 
