@@ -23,16 +23,16 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.core.auditlog.AuditLogJavaDao;
+import com.tle.core.db.tables.AuditLogEntry;
 import org.hibernate.criterion.Restrictions;
 
 import com.tle.beans.Institution;
-import com.tle.beans.audit.AuditLogEntry;
 import com.tle.beans.audit.AuditLogTable;
 import com.tle.common.filesystem.handle.BucketFile;
 import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.auditlog.AuditLogDao;
 import com.tle.core.auditlog.AuditLogExtension;
 import com.tle.core.auditlog.AuditLogService;
 import com.tle.core.guice.Bind;
@@ -58,8 +58,6 @@ public class AuditLogConverter extends AbstractConverter<Object>
 	private static final String KEY_NAME = "com.tle.core.entity.services.auditlogs.converter";
 
 	@Inject
-	private AuditLogDao auditLogDao;
-	@Inject
 	private AuditLogService auditLogService;
 
 	@Override
@@ -70,7 +68,7 @@ public class AuditLogConverter extends AbstractConverter<Object>
 
 	private long getExportCount(final Institution institution)
 	{
-		long auditLogEntryCount = auditLogDao.countByCriteria(null, Restrictions.eq("institution", institution));
+		long auditLogEntryCount = AuditLogJavaDao.countForInstitution(institution);
 
 		long numberOfLogs = (long) Math.ceil((double) auditLogEntryCount / PER_XML_FILE);
 
@@ -102,8 +100,7 @@ public class AuditLogConverter extends AbstractConverter<Object>
 		xmlHelper.writeExportFormatXmlFile(auditFolder, true);
 		do
 		{
-			List<AuditLogEntry> entries = auditLogDao.findAllByCriteria(null, offs, PER_XML_FILE,
-				Restrictions.eq("institution", institution));
+			List<AuditLogEntry> entries = AuditLogJavaDao.listEntries(offs, PER_XML_FILE, institution);
 			size = entries.size();
 			if( size != 0 )
 			{
@@ -160,11 +157,11 @@ public class AuditLogConverter extends AbstractConverter<Object>
 			final List<AuditLogEntry> entries = xmlHelper.readXmlFile(auditImportFolder, xmlFilename);
 			for( AuditLogEntry entry : entries )
 			{
-				entry.setInstitution(institution);
-				entry.setId(0);
-				auditLogDao.save(entry);
-				auditLogDao.flush();
-				auditLogDao.clear();
+//				entry.setInstitution(institution);
+//				entry.setId(0);
+//				auditLogDao.save(entry);
+//				auditLogDao.flush();
+//				auditLogDao.clear();
 			}
 			message.incrementCurrent();
 		}

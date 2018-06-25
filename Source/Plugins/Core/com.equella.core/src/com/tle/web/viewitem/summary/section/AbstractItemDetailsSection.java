@@ -24,9 +24,9 @@ import javax.inject.Inject;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.SummaryDisplayTemplate;
 import com.tle.beans.item.Item;
-import com.tle.beans.item.ItemView;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.core.item.ViewCountJavaDao;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.navigation.BreadcrumbService;
@@ -122,11 +122,8 @@ public abstract class AbstractItemDetailsSection<M extends AbstractItemDetailsSe
 
 		model.setStatus(CurrentLocale.get(ItemStatusKeys.get(item.getStatus())));
 		model.setVersion(new NumberLabel(item.getVersion()));
-		final ItemView views = item.getItemView();
-		if (views != null)
-		{
-			model.setViews(views.getViews());
-		}
+
+		model.setViews(ViewCountJavaDao.getSummaryViewCount(item.getItemId()));
 
 		List<SectionRenderable> sections = renderChildren(context, new ResultListCollector()).getResultList();
 		model.setSections(sections);

@@ -29,7 +29,6 @@ import com.tle.beans.Language;
 import com.tle.beans.ReferencedURL;
 import com.tle.beans.SchemaScript;
 import com.tle.beans.activation.ActivateRequest;
-import com.tle.beans.audit.AuditLogEntry;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.LanguageString;
@@ -142,7 +141,7 @@ public class EnsureForeignKeyIndexes extends AbstractHibernateMigration
 				ItemDefinition.class, Schema.class, ItemXml.class, ModerationStatus.class, ItemdefBlobs.class,
 				Workflow.class, WorkflowNode.class, WorkflowNodeStatus.class, ItemNavigationNode.class,
 				HistoryEvent.class, ReferencedURL.class, Attachment.class, DrmAcceptance.class, Comment.class,
-				SharePass.class, LanguageString.class, ItemNavigationTab.class, AuditLogEntry.class, Bookmark.class,
+				SharePass.class, LanguageString.class, ItemNavigationTab.class, Bookmark.class,
 				CourseInfo.class, HierarchyTopic.class, PowerSearch.class, TLEGroup.class, WorkflowItem.class,
 				ActivateRequest.class, AccessEntry.class, AccessExpression.class, Language.class, Relation.class,
 				WorkflowMessage.class, BaseEntity.class, BaseEntity.Attribute.class, VersionSelection.class,

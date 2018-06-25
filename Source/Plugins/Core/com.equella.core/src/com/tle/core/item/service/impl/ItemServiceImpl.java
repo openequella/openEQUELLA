@@ -24,9 +24,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.tle.beans.item.*;
-import com.tle.beans.item.attachments.AttachmentView;
-import com.tle.core.item.dao.AttachmentViewDao;
-import com.tle.core.item.dao.ItemViewDao;
+import com.tle.core.item.ViewCountJavaDao;
 import org.apache.log4j.MDC;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
@@ -147,10 +145,6 @@ public class ItemServiceImpl
 
 	@Inject
 	private ItemDao dao;
-	@Inject
-	private ItemViewDao itemViewDao;
-	@Inject
-	private AttachmentViewDao attachmentViewDao;
 
 	@Inject
 	private ItemLockingService lockingService;
@@ -309,32 +303,14 @@ public class ItemServiceImpl
 	@Override
 	public void incrementViews(Item item)
 	{
-		ItemView iv = item.getItemView();
-		if (iv == null)
-		{
-			iv = new ItemView();
-			iv.setItem(item);
-		}
-		iv.setViews(iv.getViews() + 1);
-		iv.setLastViewed(new Date());
-		itemViewDao.save(iv);
-		item.setItemView(iv);
+		ViewCountJavaDao.incrementSummaryViews(item.getItemId());
 	}
 
 	@Transactional
 	@Override
 	public void incrementViews(Attachment attachment)
 	{
-		AttachmentView av = attachment.getAttachmentView();
-		if (av == null)
-		{
-			av = new AttachmentView();
-			av.setAttachment(attachment);
-		}
-		av.setViews(av.getViews() + 1);
-		av.setLastViewed(new Date());
-		attachmentViewDao.save(av);
-		attachment.setAttachmentView(av);
+		ViewCountJavaDao.incrementAttachmentViews(attachment.getItem().getItemId(), attachment.getUuid());
 	}
 
 	@Override

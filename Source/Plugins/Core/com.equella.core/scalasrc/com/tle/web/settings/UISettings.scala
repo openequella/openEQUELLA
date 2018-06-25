@@ -17,12 +17,12 @@
 package com.tle.web.settings
 
 import cats.effect.IO
-import com.fasterxml.jackson.annotation.{JsonCreator, JsonProperty}
+import cats.syntax.apply._
 import com.tle.core.cache.{Cache, InstCacheable}
 import com.tle.core.db.DB
 import com.tle.core.settings.SettingsDB
-import cats.syntax.apply._
-import io.circe.generic.extras.Configuration, io.circe.generic.extras.auto._
+import io.circe.generic.extras.Configuration
+import io.circe.generic.extras.auto._
 
 case class FacetSetting(name: String, path: String)
 

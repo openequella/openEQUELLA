@@ -2,26 +2,25 @@ package com.tle.core.db
 
 import com.tle.core.db.migration.DBSchemaMigration
 import com.tle.core.db.tables.AuditLogEntry
-import com.tle.core.db.types.{JsonColumn, UserId}
+import com.tle.core.db.types.JsonColumn
 import com.tle.core.migration.MigrationResult
 import fs2.Stream
 import io.doolse.simpledba.Iso
 import io.doolse.simpledba.jdbc._
-import io.doolse.simpledba.jdbc.postgres._
 import io.doolse.simpledba.syntax._
-import shapeless.HNil
-import shapeless._
+import io.doolse.simpledba.jdbc.oracle._
+import shapeless.HList
 import shapeless.syntax.singleton._
 
-object PostgresSchema extends DBSchemaMigration with DBSchema with DBQueries {
+object OracleSchema extends DBSchemaMigration with DBSchema with DBQueries {
 
-  implicit val config = postgresConfig
+  implicit val config = oracleConfig
   val schemaSQL = config.schemaSQL
 
   val hibSeq = Sequence[Long]("hibernate_sequence")
 
-  implicit def jsonColumns[A <: JsonColumn](implicit c: Iso[A, Option[String]]): PostgresColumn[A] = {
-    PostgresColumn(StdJDBCColumn.optionalColumn(StdJDBCColumn.stringCol).isoMap(c), ColumnType("JSONB", nullable = true))
+  implicit def jsonColumns[A <: JsonColumn](implicit c: Iso[A, Option[String]]): OracleColumn[A] = {
+    OracleColumn(StdJDBCColumn.optionalColumn(StdJDBCColumn.stringCol).isoMap(c), OracleColumn.oracleString.columnType)
   }
 
   val auditLog = TableMapper[AuditLogEntry].table("audit_log_entry").key('id)

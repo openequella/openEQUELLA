@@ -205,10 +205,6 @@ public class Item implements Serializable, IdCloneable, FieldEquality<Item>, IIt
 	@XStreamOmitField
 	private ItemXml itemXml;
 
-	@OneToOne(mappedBy = "item", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@XStreamOmitField
-	private ItemView itemView;
-
 	@SuppressWarnings("nls")
 	@Column(length = 512, nullable = false)
 	private String thumb = "initial";
@@ -602,15 +598,5 @@ public class Item implements Serializable, IdCloneable, FieldEquality<Item>, IIt
 	public void setThumb(String thumb)
 	{
 		this.thumb = thumb;
-	}
-
-	public ItemView getItemView()
-	{
-		return itemView;
-	}
-
-	public void setItemView(ItemView itemView)
-	{
-		this.itemView = itemView;
 	}
 }

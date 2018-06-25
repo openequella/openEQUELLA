@@ -17,45 +17,44 @@
 package com.tle.web.api.institution
 
 import java.io.{OutputStream, PrintStream}
-import java.util.Date
 import java.util.zip.{ZipEntry, ZipOutputStream}
 
+import cats.data.Kleisli
 import com.fasterxml.jackson.databind.util.StdDateFormat
-import com.tle.beans.audit.AuditLogEntry
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.CurrentUser
-import com.tle.common.util.Dates
+import com.tle.core.db.{DBSchema, RunWithDB}
+import com.tle.core.db.tables.AuditLogEntry
+import com.tle.core.db.types.UserId
 import com.tle.exceptions.AccessDeniedException
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.users.UserQueryResult
-import com.tle.web.remoting.resteasy.ISO8061DateFormatWithTZ
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.swagger.annotations.Api
 import javax.ws.rs._
 import javax.ws.rs.core.{Response, StreamingOutput}
 
-import scala.collection.JavaConverters._
-
 @Produces(value = Array("application/json"))
 @Path("userdata/")
 @Api(value = "Privacy")
 class GdprResource {
 
-  val auditLogDao = LegacyGuice.auditLogDao
   val tleUserDao = LegacyGuice.tleUserDao
+  val queries = DBSchema.queries.auditLogQueries
 
   case class AuditEntry(category: String, `type`: String, timestamp: String, sessionId: String, data: Map[String, String])
 
   object AuditEntry {
     def apply(ale: AuditLogEntry): AuditEntry = {
-      val data = Map("1" -> Option(ale.getData1),
-        "2" -> Option(ale.getData2),
-        "3" -> Option(ale.getData3),
-        "4" -> Option(ale.getData4)).collect {
+      val data = Map("1" -> ale.data1.map(_.value),
+        "2" -> ale.data2.map(_.value),
+        "3" -> ale.data3.map(_.value),
+        "4" -> ale.data4).collect {
         case (k, Some(v)) => (k, v)
       }
-      AuditEntry(ale.getEventCategory, ale.getEventType, StdDateFormat.instance.clone().format(ale.getTimestamp), ale.getSessionId, data)
+      AuditEntry(ale.event_category.value, ale.event_type.value, StdDateFormat.instance.clone().format(ale.timestamp.toEpochMilli),
+        ale.session_id.value, data)
     }
   }
 
@@ -67,7 +66,9 @@ class GdprResource {
   @Path("{user}")
   def delete(@PathParam("user") user: String): Response = {
     checkPriv()
-    auditLogDao.deleteForUser(CurrentInstitution.get(), user)
+    RunWithDB.execute(Kleisli { uc =>
+      queries.deleteForUser(UserId(user), uc.inst.getDatabaseId).compile.drain
+    })
     Response.ok().build()
   }
 
@@ -95,12 +96,14 @@ class GdprResource {
           def writeLogs() = {
             print.println("\"auditlog\": [")
             var first = true
-            auditLogDao.listForUser(CurrentInstitution.get, user).asScala.foreach { ale =>
-              if (!first) print.print(", ");
-              print.print(AuditEntry(ale).asJson.spaces2)
-              first = false
-              auditLogDao.clear()
+            RunWithDB.execute( Kleisli { uc =>
+              queries.listForUser(UserId(user), uc.inst.getDatabaseId).map { ale =>
+                if (!first) print.print(", ")
+                print.print(AuditEntry(ale).asJson.spaces2)
+                first = false
+              }.compile.drain
             }
+            )
             print.print("]")
           }
           writeUser()

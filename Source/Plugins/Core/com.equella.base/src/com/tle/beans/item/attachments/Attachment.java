@@ -87,10 +87,6 @@ public abstract class Attachment implements IAttachment, Serializable, Cloneable
 
 	private boolean restricted;
 
-	@OneToOne(mappedBy = "attachment", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@XStreamOmitField
-	private AttachmentView attachmentView;
-
 	// Explicit catch of CloneNotSupportedException from super.clone()
 	@Override
 	public Object clone() // NOSONAR
@@ -330,15 +326,5 @@ public abstract class Attachment implements IAttachment, Serializable, Cloneable
 	
 	public String getAttachmentSignature() {
 		return item.getIdString() + "/" + this.uuid + " [" + this.description + "]";
-	}
-
-	public AttachmentView getAttachmentView()
-	{
-		return attachmentView;
-	}
-
-	public void setAttachmentView(AttachmentView attachmentView)
-	{
-		this.attachmentView = attachmentView;
 	}
 }

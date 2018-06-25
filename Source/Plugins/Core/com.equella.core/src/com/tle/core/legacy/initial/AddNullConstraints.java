@@ -29,7 +29,6 @@ import com.tle.beans.Language;
 import com.tle.beans.ReferencedURL;
 import com.tle.beans.SchemaScript;
 import com.tle.beans.activation.ActivateRequest;
-import com.tle.beans.audit.AuditLogEntry;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.LanguageString;
@@ -166,7 +165,7 @@ public class AddNullConstraints extends AbstractHibernateMigration
 				Schema.class, ItemXml.class, ModerationStatus.class, ItemdefBlobs.class, Workflow.class,
 				WorkflowNode.class, WorkflowNodeStatus.class, ItemNavigationNode.class, HistoryEvent.class,
 				ReferencedURL.class, Attachment.class, DrmAcceptance.class, Comment.class, SharePass.class,
-				LanguageString.class, ItemNavigationTab.class, AuditLogEntry.class, Bookmark.class,
+				LanguageString.class, ItemNavigationTab.class, Bookmark.class,
 				HierarchyTopic.class, PowerSearch.class, Language.class, MimeEntry.class, Relation.class,
 				SharePass.class, TLEGroup.class, TLEUser.class, WorkflowMessage.class, NavigationSettings.class,
 				SchemaTransform.class, ItemDefinitionScript.class, HierarchyTopic.Attribute.class, Citation.class,

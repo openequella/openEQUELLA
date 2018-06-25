@@ -32,6 +32,7 @@ import com.tle.beans.mime.MimeEntry;
 import com.tle.common.Check;
 import com.tle.common.FileSizeUtils;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.ViewCountJavaDao;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.mimetypes.RegisterMimeTypeExtension;
 import com.tle.core.services.FileSystemService;
@@ -194,10 +195,10 @@ public class FileSummariser
 			if (attachment instanceof Attachment)
 			{
 				final Attachment att = (Attachment)attachment;
-				final com.tle.beans.item.attachments.AttachmentView views = att.getAttachmentView();
+				Integer views = ViewCountJavaDao.getAttachmentViewCount(att.getItem().getItemId(), att.getUuid());
 				if (views != null)
 				{
-					commonDetails.add(makeDetail(VIEWS, new CountLabel(views.getViews())));
+					commonDetails.add(makeDetail(VIEWS, new CountLabel(views)));
 				}
 			}
 

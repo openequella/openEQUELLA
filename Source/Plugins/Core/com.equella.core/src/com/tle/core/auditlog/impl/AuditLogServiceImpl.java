@@ -16,35 +16,28 @@
 
 package com.tle.core.auditlog.impl;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import com.tle.beans.item.ItemView;
-import com.tle.beans.item.attachments.Attachment;
-import com.tle.beans.item.attachments.AttachmentView;
-import com.tle.core.item.dao.AttachmentViewDao;
-import com.tle.core.item.dao.ItemViewDao;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.tle.beans.Institution;
-import com.tle.beans.audit.AuditLogEntry;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
+import com.tle.beans.item.attachments.Attachment;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.WebAuthenticationDetails;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
-import com.tle.core.auditlog.AuditLogDao;
 import com.tle.core.auditlog.AuditLogExtension;
+import com.tle.core.auditlog.AuditLogJavaDao;
 import com.tle.core.auditlog.AuditLogService;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
 
 /**
  * Generic audit logging service.
@@ -70,9 +63,6 @@ public class AuditLogServiceImpl implements AuditLogService
 
 	private static final String TRUNCED = "...";
 
-	@Inject
-	private AuditLogDao dao;
-
 	private PluginTracker<AuditLogExtension> extensionTracker;
 
 	@Override
@@ -85,7 +75,7 @@ public class AuditLogServiceImpl implements AuditLogService
 		c.add(Calendar.DAY_OF_YEAR, -daysOld);
 
 		Date date = c.getTime();
-		dao.removeEntriesBeforeDate(date);
+		AuditLogJavaDao.removeEntriesBeforeDate(date);
 		for( AuditLogExtension extension : getExtensions() )
 		{
 			extension.getDao().removeEntriesBeforeDate(date);
@@ -214,18 +204,20 @@ public class AuditLogServiceImpl implements AuditLogService
 	private void log(String userId, String sessionId, String category, String type, String d1, String d2, String d3,
 		String d4, Institution institution)
 	{
-		AuditLogEntry entry = new AuditLogEntry();
-		entry.setUserId(userId);
-		entry.setSessionId(sessionId);
-		entry.setInstitution(institution);
-		entry.setTimestamp(new Date());
-		entry.setEventCategory(trunc(category, 20, null));
-		entry.setEventType(type);
-		entry.setData1(trunc(d1, 255, TRUNCED));
-		entry.setData2(trunc(d2, 255, TRUNCED));
-		entry.setData3(trunc(d3, 255, TRUNCED));
-		entry.setData4(d4);
-		dao.save(entry);
+		AuditLogJavaDao.log(userId, sessionId, category, type, d1, d2, d3, d4, institution);
+
+//		AuditLogEntry entry = new AuditLogEntry();
+//		entry.setUserId(userId);
+//		entry.setSessionId(sessionId);
+//		entry.setInstitution(institution);
+//		entry.setTimestamp(new Date());
+//		entry.setEventCategory(trunc(category, 20, null));
+//		entry.setEventType(type);
+//		entry.setData1(trunc(d1, 255, TRUNCED));
+//		entry.setData2(trunc(d2, 255, TRUNCED));
+//		entry.setData3(trunc(d3, 255, TRUNCED));
+//		entry.setData4(d4);
+//		dao.save(entry);
 	}
 
 	private String trunc(String s, int length, String dotdotdot)
@@ -270,7 +262,7 @@ public class AuditLogServiceImpl implements AuditLogService
 	@Transactional
 	public void removeEntriesForInstitution(Institution institution)
 	{
-		dao.removeEntriesForInstitution(institution);
+		AuditLogJavaDao.removeEntriesForInstitution(institution);
 		for( AuditLogExtension extension : getExtensions() )
 		{
 			extension.getDao().removeEntriesForInstitution(institution);
