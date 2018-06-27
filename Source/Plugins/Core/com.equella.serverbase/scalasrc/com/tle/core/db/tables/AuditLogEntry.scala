@@ -16,4 +16,4 @@ object AuditLogMeta
 case class AuditLogEntry(id: Long, data1: Option[String255], data2: Option[String255], data3: Option[String255], data4: Option[String],
                          event_category: String20, event_type: String20,
                          session_id: String40, meta: AuditLogMeta,
-                         timestamp: Instant, user_id: UserId, institution_id: Long)
+                         timestamp: Instant, user_id: UserId, institution_id: InstId)

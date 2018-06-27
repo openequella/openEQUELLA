@@ -527,7 +527,7 @@ public class UserServiceImpl
 		CurrentUser.setUserState(userState);
 		if( userState.isAuditable() )
 		{
-			auditLogService.logUserLoggedIn(userState);
+			auditLogService.logUserLoggedIn(userState, userSessionService.getAssociatedRequest());
 		}
 		eventService.publishApplicationEvent(new UserSessionLoginEvent(userState));
 		if( forceSession )
@@ -543,7 +543,7 @@ public class UserServiceImpl
 		UserState userState = event.getUserState();
 		if( userState.isAuditable() )
 		{
-			auditLogService.logUserLoggedOut(userState);
+			auditLogService.logUserLoggedOut(userState, userSessionService.getAssociatedRequest());
 		}
 		getCurrentPlugin().logout(userState);
 	}

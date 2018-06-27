@@ -21,16 +21,17 @@ import java.util.zip.{ZipEntry, ZipOutputStream}
 
 import cats.data.Kleisli
 import com.fasterxml.jackson.databind.util.StdDateFormat
-import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.CurrentUser
-import com.tle.core.db.{DBSchema, RunWithDB}
 import com.tle.core.db.tables.AuditLogEntry
 import com.tle.core.db.types.UserId
+import com.tle.core.db.{DBSchema, RunWithDB}
 import com.tle.exceptions.AccessDeniedException
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.users.UserQueryResult
 import io.circe.generic.auto._
 import io.circe.syntax._
+import io.doolse.simpledba.jdbc._
+import io.doolse.simpledba.syntax._
 import io.swagger.annotations.Api
 import javax.ws.rs._
 import javax.ws.rs.core.{Response, StreamingOutput}
@@ -67,7 +68,7 @@ class GdprResource {
   def delete(@PathParam("user") user: String): Response = {
     checkPriv()
     RunWithDB.execute(Kleisli { uc =>
-      queries.deleteForUser(UserId(user), uc.inst.getDatabaseId).compile.drain
+      queries.deleteForUser((UserId(user), uc.inst)).flush.compile.drain
     })
     Response.ok().build()
   }
@@ -97,7 +98,7 @@ class GdprResource {
             print.println("\"auditlog\": [")
             var first = true
             RunWithDB.execute( Kleisli { uc =>
-              queries.listForUser(UserId(user), uc.inst.getDatabaseId).map { ale =>
+              queries.listForUser((UserId(user), uc.inst)).map { ale =>
                 if (!first) print.print(", ")
                 print.print(AuditEntry(ale).asJson.spaces2)
                 first = false

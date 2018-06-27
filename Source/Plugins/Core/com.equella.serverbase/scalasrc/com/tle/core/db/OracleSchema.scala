@@ -1,33 +1,31 @@
 package com.tle.core.db
 
 import com.tle.core.db.migration.DBSchemaMigration
-import com.tle.core.db.tables.AuditLogEntry
-import com.tle.core.db.types.JsonColumn
-import com.tle.core.migration.MigrationResult
-import fs2.Stream
-import io.doolse.simpledba.Iso
+import com.tle.core.db.tables.{AttachmentViewCount, AuditLogEntry, ItemViewCount}
+import com.tle.core.db.types.InstId
 import io.doolse.simpledba.jdbc._
-import io.doolse.simpledba.syntax._
 import io.doolse.simpledba.jdbc.oracle._
 import shapeless.HList
 import shapeless.syntax.singleton._
 
 object OracleSchema extends DBSchemaMigration with DBSchema with DBQueries {
 
-  implicit val config = oracleConfig
+  type C[A] = OracleColumn[A]
+  implicit val config = setupLogging(oracleConfig)
   val schemaSQL = config.schemaSQL
 
   val hibSeq = Sequence[Long]("hibernate_sequence")
 
-  implicit def jsonColumns[A <: JsonColumn](implicit c: Iso[A, Option[String]]): OracleColumn[A] = {
-    OracleColumn(StdJDBCColumn.optionalColumn(StdJDBCColumn.stringCol).isoMap(c), OracleColumn.oracleString.columnType)
-  }
-
   val auditLog = TableMapper[AuditLogEntry].table("audit_log_entry").key('id)
   val userAndInst = auditLog.cols(HList('user_id.narrow, 'institution_id.narrow))
   val auditLogQueries = AuditLogQueries(insertWith(auditLog, hibSeq),
-    auditLog.delete.where(userAndInst, EQ).build,
-    auditLog.query.whereEQ(userAndInst).build)
+    auditLog.delete.where(userAndInst, BinOp.EQ).build,
+    auditLog.query.where(userAndInst, BinOp.EQ).build,
+    auditLog.delete.where('institution_id, BinOp.EQ).build,
+    auditLog.delete.where('timestamp, BinOp.LT).build,
+    auditLog.select.count.where('institution_id, BinOp.EQ).buildAs[InstId, Int],
+    auditLog.query.where('institution_id, BinOp.EQ).build
+  )
 
   val auditLogTable = auditLog.definition
 
@@ -36,8 +34,13 @@ object OracleSchema extends DBSchemaMigration with DBSchema with DBQueries {
 
   val auditLogNewColumns = auditLog.subset('meta)
 
-  def addColumns(columns: TableColumns, progress: MigrationResult): JDBCIO[Unit] = {
-    progress.setCanRetry(true)
-    Stream.emits(schemaSQL.addColumns(columns).map(rawSQL)).covary[JDBCIO].flush.compile.drain
-  }
+  val itemViewCount = TableMapper[ItemViewCount].table("viewcount_item")
+    .keys('inst, 'item_uuid, 'item_version)
+  val attachmentViewCount = TableMapper[AttachmentViewCount].table("viewcount_attachment")
+    .keys('inst, 'item_uuid, 'item_version, 'attachment)
+
+  val viewCountTables = Seq(itemViewCount.definition, attachmentViewCount.definition)
+
+  val viewCountQueries = ViewCountQueries(itemViewCount.writes, attachmentViewCount.writes,
+    itemViewCount.byPK, attachmentViewCount.byPK)
 }

@@ -2,6 +2,7 @@ package com.tle.core.db
 
 import java.util
 
+import com.tle.core.db.migration.DBSchemaMigration
 import com.tle.core.hibernate.factory.guice.HibernateFactoryModule
 import io.doolse.simpledba.jdbc.{JDBCSchemaSQL, NamedColumn, TableColumns, TableDefinition}
 
@@ -16,20 +17,21 @@ trait DBSchema {
       schemaSQL.createIndex(TableColumns(cols.name, Seq(cb)), name(cb))
     }
 
-  val auditLogTable : TableDefinition
-  val auditLogIndexColumns: TableColumns
+  def auditLogTable : TableDefinition
+  def auditLogIndexColumns: TableColumns
+  def viewCountTables: Seq[TableDefinition]
 
   def creationSQL: util.Collection[String] = {
-    (Seq(schemaSQL.createTable(auditLogTable)) ++
-      indexEach(auditLogIndexColumns, "audit_" + _.name))
-      .asJava
-  }
+    Seq(schemaSQL.createTable(auditLogTable)) ++
+      indexEach(auditLogIndexColumns, "audit_" + _.name) ++
+      viewCountTables.map(schemaSQL.createTable)
+  }.asJava
 
 }
 
 object DBSchema
 {
-  lazy private val schemaForDBType: DBSchema with DBQueries = {
+  lazy private val schemaForDBType: DBSchema with DBQueries with DBSchemaMigration = {
     val p = new HibernateFactoryModule
     p.getProperty("hibernate.connection.driver_class") match {
       case "org.postgresql.Driver" => PostgresSchema
@@ -39,6 +41,8 @@ object DBSchema
   }
 
   def schema : DBSchema = schemaForDBType
+
+  def schemaMigration : DBSchemaMigration = schemaForDBType
 
   def queries : DBQueries = schemaForDBType
 }

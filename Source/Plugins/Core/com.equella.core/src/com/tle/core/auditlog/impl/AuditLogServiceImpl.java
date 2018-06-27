@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -82,18 +83,18 @@ public class AuditLogServiceImpl implements AuditLogService
 		}
 	}
 
-	private void logUserEvent(String type, UserState us)
+	private void logUserEvent(String type, UserState us, HttpServletRequest request)
 	{
 		UserBean ub = us.getUserBean();
-		log(ub.getUniqueID(), us.getSessionID(), USER_CATEGORY, type, us.getIpAddress(), ub.getUniqueID(),
-			ub.getUsername(), us.getTokenSecretId(), us.getInstitution());
+		AuditLogJavaDao.logWithRequest(ub.getUniqueID(), us.getSessionID(), USER_CATEGORY, type, us.getIpAddress(), ub.getUniqueID(),
+			ub.getUsername(), us.getTokenSecretId(), us.getInstitution(), request);
 	}
 
 	@Override
 	@Transactional
-	public void logUserLoggedIn(UserState us)
+	public void logUserLoggedIn(UserState us, HttpServletRequest request)
 	{
-		logUserEvent("LOGIN", us);
+		logUserEvent("LOGIN", us, request);
 	}
 
 	@Override
@@ -105,9 +106,9 @@ public class AuditLogServiceImpl implements AuditLogService
 
 	@Override
 	@Transactional
-	public void logUserLoggedOut(UserState us)
+	public void logUserLoggedOut(UserState us, HttpServletRequest request)
 	{
-		logUserEvent("LOGOUT", us);
+		logUserEvent("LOGOUT", us, request);
 	}
 
 	@Override
@@ -140,31 +141,31 @@ public class AuditLogServiceImpl implements AuditLogService
 
 	@Override
 	@Transactional
-	public void logSummaryViewed(String category, ItemKey item)
+	public void logSummaryViewed(String category, ItemKey item, HttpServletRequest request)
 	{
-		logGeneric(category, SUMMARY_VIEWED_TYPE, item.getUuid(), Integer.toString(item.getVersion()), null, null);
+		AuditLogJavaDao.logHttp(category, SUMMARY_VIEWED_TYPE, item.getUuid(), Integer.toString(item.getVersion()), null, null, request);
 	}
 
 	@Override
 	@Transactional
-	public void logItemSummaryViewed(Item item)
+	public void logItemSummaryViewed(Item item, HttpServletRequest request)
 	{
-		logSummaryViewed(ITEM_CATEGORY, item.getItemId());
+		logSummaryViewed(ITEM_CATEGORY, item.getItemId(), request);
 	}
 
 	@Override
 	@Transactional
-	public void logContentViewed(String category, ItemKey itemId, String contentType, String path)
+	public void logContentViewed(String category, ItemKey itemId, String contentType, String path, HttpServletRequest request)
 	{
-		logGeneric(category, CONTENT_VIEWED_TYPE, itemId.getUuid(), Integer.toString(itemId.getVersion()), contentType,
-			path);
+		AuditLogJavaDao.logHttp(category, CONTENT_VIEWED_TYPE, itemId.getUuid(), Integer.toString(itemId.getVersion()), contentType,
+			path, request);
 	}
 
 	@Override
 	@Transactional
-	public void logItemContentViewed(ItemKey itemId, String contentType, String path, Attachment attachment)
+	public void logItemContentViewed(ItemKey itemId, String contentType, String path, Attachment attachment, HttpServletRequest request)
 	{
-		logContentViewed(ITEM_CATEGORY, itemId, contentType, path);
+		logContentViewed(ITEM_CATEGORY, itemId, contentType, path, request);
 	}
 
 	@Override
@@ -205,43 +206,6 @@ public class AuditLogServiceImpl implements AuditLogService
 		String d4, Institution institution)
 	{
 		AuditLogJavaDao.log(userId, sessionId, category, type, d1, d2, d3, d4, institution);
-
-//		AuditLogEntry entry = new AuditLogEntry();
-//		entry.setUserId(userId);
-//		entry.setSessionId(sessionId);
-//		entry.setInstitution(institution);
-//		entry.setTimestamp(new Date());
-//		entry.setEventCategory(trunc(category, 20, null));
-//		entry.setEventType(type);
-//		entry.setData1(trunc(d1, 255, TRUNCED));
-//		entry.setData2(trunc(d2, 255, TRUNCED));
-//		entry.setData3(trunc(d3, 255, TRUNCED));
-//		entry.setData4(d4);
-//		dao.save(entry);
-	}
-
-	private String trunc(String s, int length, String dotdotdot)
-	{
-		if( s == null )
-		{
-			return null;
-		}
-
-		if( s.length() < length )
-		{
-			return s;
-		}
-		else
-		{
-			String postfix = (dotdotdot == null ? "" : dotdotdot);
-			int t = length - postfix.length();
-			if( t < 0 )
-			{
-				t = length;
-				postfix = "";
-			}
-			return s.substring(0, t) + postfix;
-		}
 	}
 
 	@Override
