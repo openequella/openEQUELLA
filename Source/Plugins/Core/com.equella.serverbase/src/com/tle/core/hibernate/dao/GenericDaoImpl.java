@@ -205,6 +205,21 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
 		})).longValue();
 	}
 
+	@Transactional
+	public long sumByCriteria(final String propertyName, final Criterion... criterion)
+	{
+		return ((Number) getHibernateTemplate().execute(new TLEHibernateCallback()
+		{
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException
+			{
+				Criteria criteria = createCriteria(session, criterion);
+				criteria.setProjection(Projections.sum(propertyName));
+				return criteria.uniqueResult();
+			}
+		})).longValue();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see

@@ -16,20 +16,26 @@
 
 package com.tle.common.scripting.types;
 
+import java.io.Serializable;
+import java.util.List;
+
 /**
- * A collection type for use in scripts
+ * A MIME type object for scripts
  */
-public interface CollectionScriptType extends BaseEntityScriptType
+public interface MimeTypeScriptType extends Serializable
 {
 	/**
-	 * @return The number of item views this collection has had, proided the current user has permissions.
-	 * Otherwise will return null.
+	 * @return The MIME type E.g. text/plain
 	 */
-	Integer getItemViewCount();
+	String getType();
 
 	/**
-	 * @return The number of attachment views this collection has had, proided the current user has permissions.
-	 * Otherwise will return null.
+	 * @return A friendly name for the MIME type
 	 */
-	Integer getAttachmentViewCount();
+	String getDescription();
+
+	/**
+	 * @return The list of known file extensions for this MIME type
+	 */
+	List<String> getFileExtensions();
 }

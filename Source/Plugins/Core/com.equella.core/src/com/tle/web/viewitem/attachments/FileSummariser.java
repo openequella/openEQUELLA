@@ -17,6 +17,7 @@
 package com.tle.web.viewitem.attachments;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -31,10 +32,12 @@ import com.tle.beans.item.attachments.ZipAttachment;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.Check;
 import com.tle.common.FileSizeUtils;
+import com.tle.common.security.SecurityConstants;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.ViewCountJavaDao;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.mimetypes.RegisterMimeTypeExtension;
+import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
 import com.tle.freetext.SupportedVideoMimeTypeExtension;
 import com.tle.web.sections.SectionInfo;
@@ -97,6 +100,8 @@ public class FileSummariser
 	private ViewItemUrlFactory urlFactory;
 	@Inject
 	private FileSystemService fileSystemService;
+	@Inject
+	private TLEAclManager aclService;
 
 	@Override
 	public ViewableResource process(SectionInfo info, ViewableResource resource, Attachment attachment)
@@ -195,10 +200,13 @@ public class FileSummariser
 			if (attachment instanceof Attachment)
 			{
 				final Attachment att = (Attachment)attachment;
-				Integer views = ViewCountJavaDao.getAttachmentViewCount(getViewableItem().getItemId(), att.getUuid());
-				if (views != null)
+				if (!aclService.filterNonGrantedPrivileges(att.getItem(), Collections.singleton(SecurityConstants.VIEW_VIEWCOUNT)).isEmpty())
 				{
-					commonDetails.add(makeDetail(VIEWS, new CountLabel(views)));
+					Integer views = ViewCountJavaDao.getAttachmentViewCount(getViewableItem().getItemId(), att.getUuid());
+					if (views != null)
+					{
+						commonDetails.add(makeDetail(VIEWS, new CountLabel(views)));
+					}
 				}
 			}
 

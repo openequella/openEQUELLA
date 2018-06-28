@@ -23,7 +23,7 @@ import com.google.common.collect.Lists;
 import com.tle.common.Check;
 import com.tle.common.scripting.types.MapScriptType;
 import com.tle.core.metadata.scripting.types.MetadataScriptType;
-import com.tle.web.scripting.impl.MapScriptTypeImpl;
+import com.tle.web.scripting.types.MapScriptTypeImpl;
 
 public class MetadataScriptTypeImpl implements MetadataScriptType
 {

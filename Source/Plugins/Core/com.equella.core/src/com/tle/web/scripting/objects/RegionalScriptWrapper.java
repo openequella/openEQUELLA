@@ -14,27 +14,41 @@
  * limitations under the License.
  */
 
-package com.tle.core.metadata.scripting.contributor;
+package com.tle.web.scripting.objects;
 
-import com.tle.common.scripting.service.ScriptContextCreationParams;
+import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.CurrentTimeZone;
 import com.tle.core.guice.Bind;
-import com.tle.core.metadata.scripting.objects.MetadataScriptObject;
-import com.tle.core.scripting.service.ScriptObjectContributor;
+import com.tle.common.scripting.objects.RegionalScriptObject;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Map;
+import java.util.Locale;
+import java.util.TimeZone;
 
-@Bind
+/**
+ * @author aholland
+ */
+@Bind(RegionalScriptObject.class)
 @Singleton
-public class MetadataScriptContributor implements ScriptObjectContributor
+public class RegionalScriptWrapper extends AbstractScriptWrapper implements RegionalScriptObject
 {
-	@Inject
-	private MetadataScriptObject metadataScriptObject;
+	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void addScriptObjects(Map<String, Object> objects, ScriptContextCreationParams params)
+	public Locale getLocale()
 	{
-		objects.put(MetadataScriptObject.DEFAULT_VARIABLE, metadataScriptObject);
+		return CurrentLocale.getLocale();
+	}
+
+	@Override
+	public String getString(String key)
+	{
+		return CurrentLocale.get(key);
+	}
+
+	@Override
+	public TimeZone getTimeZone()
+	{
+		return CurrentTimeZone.get();
 	}
 }

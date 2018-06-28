@@ -14,22 +14,38 @@
  * limitations under the License.
  */
 
-package com.tle.common.scripting.types;
+package com.tle.web.scripting.types;
 
-/**
- * A collection type for use in scripts
- */
-public interface CollectionScriptType extends BaseEntityScriptType
+import java.util.List;
+import java.util.Map;
+
+import com.google.common.collect.Lists;
+import com.tle.common.scripting.types.MapScriptType;
+
+public class MapScriptTypeImpl implements MapScriptType
 {
-	/**
-	 * @return The number of item views this collection has had, proided the current user has permissions.
-	 * Otherwise will return null.
-	 */
-	Integer getItemViewCount();
+	private Map<?, ?> map;
 
-	/**
-	 * @return The number of attachment views this collection has had, proided the current user has permissions.
-	 * Otherwise will return null.
-	 */
-	Integer getAttachmentViewCount();
+	public MapScriptTypeImpl(Map<?, ?> map)
+	{
+		this.map = map;
+	}
+
+	@Override
+	public Object get(Object key)
+	{
+		return map.get(key);
+	}
+
+	@Override
+	public List<Object> listKeys()
+	{
+		return Lists.newArrayList(map.keySet());
+	}
+
+	@Override
+	public boolean isEmpty()
+	{
+		return map.isEmpty();
+	}
 }

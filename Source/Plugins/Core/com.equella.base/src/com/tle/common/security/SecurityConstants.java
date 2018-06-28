@@ -36,30 +36,17 @@ public final class SecurityConstants
 
 	public static final String VIRTUAL_BASE_ENTITY = "%VIRTUAL_BASE%";
 
-	// The following are deprecated. These should be declared as constants in
-	// the plug-ins that handle those "things". For example, COMMENT_*_ITEM
-	// should be in the com.tle.web.viewitem plug-in.
-
-	@Deprecated
 	public static final String CREATE_ITEM = "CREATE_ITEM";
-	@Deprecated
 	public static final String EDIT_ITEM = "EDIT_ITEM";
-	@Deprecated
 	public static final String VIEW_ITEM = "VIEW_ITEM";
-	@Deprecated
 	public static final String CLONE_ITEM = "CLONE_ITEM";
-	@Deprecated
 	public static final String MOVE_ITEM = "MOVE_ITEM";
-	@Deprecated
 	public static final String COMMENT_CREATE_ITEM = "COMMENT_CREATE_ITEM";
-	@Deprecated
 	public static final String COMMENT_DELETE_ITEM = "COMMENT_DELETE_ITEM";
-	@Deprecated
 	public static final String COMMENT_VIEW_ITEM = "COMMENT_VIEW_ITEM";
-	@Deprecated
 	public static final String DISCOVER_ITEM = "DISCOVER_ITEM";
-	@Deprecated
 	public static final String ARCHIVE_ITEM = "ARCHIVE_ITEM";
+	public static final String VIEW_VIEWCOUNT = "VIEW_VIEWCOUNT";
 
 	public static final String CREATE_VIRTUAL_BASE = "CREATE_" + SecurityConstants.VIRTUAL_BASE_ENTITY;
 	public static final String EDIT_VIRTUAL_BASE = "EDIT_" + SecurityConstants.VIRTUAL_BASE_ENTITY;
@@ -143,8 +130,6 @@ public final class SecurityConstants
 	public static final int PRIORITY_FILTER_GROUP = 800;
 	public static final int PRIORITY_ALL_REPORTS = 525;
 	public static final int PRIORITY_REPORT = 500;
-	public static final int PRIORITY_ALL_EMAIL_TEMPLATES = 425;
-	public static final int PRIORITY_EMAIL_TEMPLATE = 400;
 	public static final int PRIORITY_ALL_MANAGING = 375;
 	public static final int PRIORITY_MANAGING = 350;
 	public static final int PRIORITY_ALL_SYSTEM_SETTINGS = 325;

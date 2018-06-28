@@ -1797,10 +1797,6 @@
     <parameter id="nameKey" value="com.equella.core.bspace.connector.name" />
     <parameter id="descriptionKey" value="com.equella.core.bspace.connector.description" />
   </extension>
-  <extension plugin-id="com.tle.core.scripting" point-id="scriptObjects" id="advancedScriptObjects">
-    <parameter id="id" value="advancedScriptObjects" />
-    <parameter id="class" value="bean:com.tle.web.scripting.advanced.contributors.AdvancedScriptObjectContributor" />
-  </extension>
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="mapping">
     <parameter id="bean" value="bean:com.tle.web.scripting.advanced.proxy.HttpProxyServlet" />
     <parameter id="url-pattern" value="/p/geturl" />

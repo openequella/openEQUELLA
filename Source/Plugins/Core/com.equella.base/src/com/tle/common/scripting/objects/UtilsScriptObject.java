@@ -94,7 +94,9 @@ public interface UtilsScriptObject extends ScriptObject
 	 * 
 	 * @param collectionUuid The UUID of the collection to locate
 	 * @return A CollectionScriptType object or null if not found
+	 * @deprecated Use {@link com.tle.common.scripting.objects.CollectionScriptObject#getFromUuid(String)} instead.
 	 */
+	@Deprecated
 	CollectionScriptType getCollectionFromUuid(String collectionUuid);
 
 	/**

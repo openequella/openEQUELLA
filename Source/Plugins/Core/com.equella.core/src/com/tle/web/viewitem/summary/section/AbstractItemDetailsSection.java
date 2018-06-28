@@ -16,6 +16,7 @@
 
 package com.tle.web.viewitem.summary.section;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -26,7 +27,9 @@ import com.tle.beans.entity.itemdef.SummaryDisplayTemplate;
 import com.tle.beans.item.Item;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.security.SecurityConstants;
 import com.tle.core.item.ViewCountJavaDao;
+import com.tle.core.security.TLEAclManager;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.navigation.BreadcrumbService;
@@ -70,6 +73,8 @@ public abstract class AbstractItemDetailsSection<M extends AbstractItemDetailsSe
 	private UserLinkSection userLinkSection;
 	@Inject
 	private BreadcrumbService breadcrumbService;
+	@Inject
+	private TLEAclManager aclService;
 
 	@EventFactory
 	private EventGenerator events;
@@ -122,8 +127,10 @@ public abstract class AbstractItemDetailsSection<M extends AbstractItemDetailsSe
 
 		model.setStatus(CurrentLocale.get(ItemStatusKeys.get(item.getStatus())));
 		model.setVersion(new NumberLabel(item.getVersion()));
-
-		model.setViews(ViewCountJavaDao.getSummaryViewCount(item.getItemId()));
+		if (!aclService.filterNonGrantedPrivileges(item, SecurityConstants.VIEW_VIEWCOUNT).isEmpty())
+		{
+			model.setViews(ViewCountJavaDao.getSummaryViewCount(item.getItemId()));
+		}
 
 		List<SectionRenderable> sections = renderChildren(context, new ResultListCollector()).getResultList();
 		model.setSections(sections);

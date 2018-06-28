@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-package com.tle.common.scripting.types;
+package com.tle.web.scripting.objects;
+
+import com.google.inject.assistedinject.Assisted;
+import com.tle.common.scripting.objects.LoggingScriptObject;
+import com.tle.common.util.Logger;
+
+import javax.inject.Inject;
 
 /**
- * A collection type for use in scripts
+ * @author aholland
  */
-public interface CollectionScriptType extends BaseEntityScriptType
+public class LoggingScriptWrapper extends AbstractScriptWrapper implements LoggingScriptObject
 {
-	/**
-	 * @return The number of item views this collection has had, proided the current user has permissions.
-	 * Otherwise will return null.
-	 */
-	Integer getItemViewCount();
+	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @return The number of attachment views this collection has had, proided the current user has permissions.
-	 * Otherwise will return null.
-	 */
-	Integer getAttachmentViewCount();
+	private final Logger logger;
+
+	@Inject
+	protected LoggingScriptWrapper(@Assisted("logger") Logger logger)
+	{
+		this.logger = logger;
+	}
+
+	@Override
+	public void log(String text)
+	{
+		logger.info(text);
+	}
 }

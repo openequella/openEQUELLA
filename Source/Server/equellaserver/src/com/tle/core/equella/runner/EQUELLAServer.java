@@ -18,6 +18,7 @@ package com.tle.core.equella.runner;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -170,6 +171,12 @@ public class EQUELLAServer
 			Class<?> clazz = plugLoader.loadClass("com.tle.core.application.ApplicationStarter");
 			Method method = clazz.getMethod("start", PluginManager.class, Collection.class, Collection.class);
 			method.invoke(null, manager, alreadyRegistered, STARTUP_ROLES);
+		}
+		catch (InvocationTargetException ite )
+		{
+			final Throwable tgt = ite.getTargetException();
+			tgt.printStackTrace();
+			throw new RuntimeException(tgt);
 		}
 		catch( Exception e )
 		{

@@ -302,6 +302,7 @@ public final class PrivilegeTree
 		item.registerPrivilege("VIEW_RESTRICTED_ATTACHMENTS");
 		item.registerPrivilege("RESTRICT_ATTACHMENTS");
 		item.registerPrivilege("VIEW_ATTACHMENTS");
+		item.registerPrivilege(SecurityConstants.VIEW_VIEWCOUNT);
 
 		// CAL TODO: plugin
 		item.registerPrivilege("COPYRIGHT_ITEM");

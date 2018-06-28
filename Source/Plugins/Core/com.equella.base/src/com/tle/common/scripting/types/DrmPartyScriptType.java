@@ -16,20 +16,26 @@
 
 package com.tle.common.scripting.types;
 
-/**
- * A collection type for use in scripts
- */
-public interface CollectionScriptType extends BaseEntityScriptType
-{
-	/**
-	 * @return The number of item views this collection has had, proided the current user has permissions.
-	 * Otherwise will return null.
-	 */
-	Integer getItemViewCount();
+import java.io.Serializable;
 
-	/**
-	 * @return The number of attachment views this collection has had, proided the current user has permissions.
-	 * Otherwise will return null.
-	 */
-	Integer getAttachmentViewCount();
+/**
+ * @author aholland
+ */
+public interface DrmPartyScriptType extends Serializable
+{
+	String getEmail();
+
+	void setEmail(String email);
+
+	String getName();
+
+	void setName(String name);
+
+	String getUserID();
+
+	void setUserID(String uid);
+
+	boolean isOwner();
+
+	void setOwner(boolean owner);
 }

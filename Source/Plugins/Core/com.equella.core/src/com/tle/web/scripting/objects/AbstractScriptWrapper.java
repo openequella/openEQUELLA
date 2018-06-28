@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-package com.tle.common.scripting.types;
+package com.tle.web.scripting.objects;
+
+import com.tle.common.scripting.ScriptObject;
+import com.tle.web.scripting.ScriptTypeFactory;
+
+import javax.inject.Inject;
 
 /**
- * A collection type for use in scripts
+ * @author aholland
  */
-public interface CollectionScriptType extends BaseEntityScriptType
+public abstract class AbstractScriptWrapper implements ScriptObject
 {
-	/**
-	 * @return The number of item views this collection has had, proided the current user has permissions.
-	 * Otherwise will return null.
-	 */
-	Integer getItemViewCount();
+	private static final long serialVersionUID = -2982385813518349536L;
 
-	/**
-	 * @return The number of attachment views this collection has had, proided the current user has permissions.
-	 * Otherwise will return null.
-	 */
-	Integer getAttachmentViewCount();
+	@Inject
+	protected ScriptTypeFactory scriptTypeFactory;
+
+	@Override
+	public void scriptEnter()
+	{
+		// Nothing by default
+	}
+
+	@Override
+	public void scriptExit()
+	{
+		// Nothing by default
+	}
 }

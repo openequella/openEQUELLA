@@ -16,20 +16,27 @@
 
 package com.tle.common.scripting.types;
 
+import java.io.Serializable;
+import java.util.List;
+
 /**
- * A collection type for use in scripts
+ * NavigationNode in script
  */
-public interface CollectionScriptType extends BaseEntityScriptType
+public interface NavigationNodeScriptType extends Serializable
 {
 	/**
-	 * @return The number of item views this collection has had, proided the current user has permissions.
-	 * Otherwise will return null.
+	 * @return The display name of the node
 	 */
-	Integer getItemViewCount();
+	String getDescription();
 
 	/**
-	 * @return The number of attachment views this collection has had, proided the current user has permissions.
-	 * Otherwise will return null.
+	 * @param description The display name of the node
 	 */
-	Integer getAttachmentViewCount();
+	void setDescription(String description);
+
+	/**
+	 * @return An unmodifiable list. Use addTab(String, AttachmentScriptType,
+	 *         NavigationNodeScriptType) if you want to add a tab to this list.
+	 */
+	List<NavigationTabScriptType> getTabs();
 }

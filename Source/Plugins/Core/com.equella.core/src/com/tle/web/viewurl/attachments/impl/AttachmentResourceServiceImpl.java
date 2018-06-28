@@ -87,10 +87,6 @@ import com.tle.web.viewurl.resource.AbstractWrappedResource;
 @Singleton
 public class AttachmentResourceServiceImpl implements AttachmentResourceService
 {
-	@PlugKey("fileresource.details.views")
-	private static Label VIEWS;
-
-
 	@Inject
 	private PluginTracker<AttachmentResourceExtension<IAttachment>> attachmentResources;
 

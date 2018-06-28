@@ -123,4 +123,10 @@ public interface ItemScriptType extends Serializable
 	 * @return The thumbnail to show in gallery view and search results.
 	 */
 	String getThumbnail();
+
+	/**
+	 * @return The number of views this item has had, proided the current user has permissions.
+	 * Otherwise will return null.
+	 */
+	Integer getViewCount();
 }
