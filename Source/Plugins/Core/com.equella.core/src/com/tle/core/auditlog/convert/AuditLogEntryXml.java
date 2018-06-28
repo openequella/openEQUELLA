@@ -1,7 +1,5 @@
 package com.tle.core.auditlog.convert;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import java.util.Date;
 
 public class AuditLogEntryXml {
