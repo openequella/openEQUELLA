@@ -195,7 +195,7 @@ public class FileSummariser
 			if (attachment instanceof Attachment)
 			{
 				final Attachment att = (Attachment)attachment;
-				Integer views = ViewCountJavaDao.getAttachmentViewCount(att.getItem().getItemId(), att.getUuid());
+				Integer views = ViewCountJavaDao.getAttachmentViewCount(getViewableItem().getItemId(), att.getUuid());
 				if (views != null)
 				{
 					commonDetails.add(makeDetail(VIEWS, new CountLabel(views)));
