@@ -110,6 +110,7 @@
     <parameter id="class" value="com.tle.core.schema.guice.SchemaModule" />
     <parameter id="class" value="com.tle.core.security.guice.SecurityModule" />
     <parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+    <parameter id="class" value="com.tle.core.services.http.HttpConfigModule"/>
     <parameter id="class" value="com.tle.core.services.item.relation.RelationModule" />
     <parameter id="class" value="com.tle.core.services.user.guice.UserManagementModule" />
     <parameter id="class" value="com.tle.core.settings.guice.ConfigModule" />
