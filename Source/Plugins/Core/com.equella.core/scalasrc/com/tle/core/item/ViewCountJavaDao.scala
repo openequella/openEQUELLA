@@ -48,5 +48,9 @@ object ViewCountJavaDao {
     }.map(_.getOrElse(0))
   }
 
-  def getSummaryViewsForCollection(col: ItemDefinition): Int = 0
+  def getSummaryViewsForCollection(col: ItemDefinition): Int = RunWithDB.execute {
+    Kleisli { uc : UserContext =>
+      queries.countForCollectionId(col.getId).compile.last
+    }.map(_.getOrElse(0))
+  }
 }

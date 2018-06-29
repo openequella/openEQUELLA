@@ -20,7 +20,8 @@ case class AuditLogQueries(insertNew: (Long => AuditLogEntry) => Stream[JDBCIO, 
 case class ViewCountQueries(writeItemCounts: WriteQueries[JDBCIO, ItemViewCount],
                             writeAttachmentCounts: WriteQueries[JDBCIO, AttachmentViewCount],
                             itemCount: ((InstId, DbUUID, Int)) => Stream[JDBCIO, ItemViewCount],
-                            attachmentCount: ((InstId, DbUUID, Int, DbUUID)) => Stream[JDBCIO, AttachmentViewCount]
+                            attachmentCount: ((InstId, DbUUID, Int, DbUUID)) => Stream[JDBCIO, AttachmentViewCount],
+                            countForCollectionId: Long => Stream[JDBCIO, Int]
                            )
 
 object DBQueries

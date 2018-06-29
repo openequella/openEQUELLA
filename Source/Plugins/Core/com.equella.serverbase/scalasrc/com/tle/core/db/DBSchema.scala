@@ -7,9 +7,10 @@ import com.tle.core.db.tables.{AttachmentViewCount, AuditLogEntry, ItemViewCount
 import com.tle.core.db.types.{DbUUID, InstId, JsonColumn}
 import com.tle.core.hibernate.factory.guice.HibernateFactoryModule
 import fs2.Stream
-import io.doolse.simpledba.Iso
+import io.doolse.simpledba._
+import io.doolse.simpledba.syntax._
 import io.doolse.simpledba.jdbc._
-import shapeless.HList
+import shapeless._
 import shapeless.syntax.singleton._
 
 import scala.collection.JavaConverters._
@@ -64,8 +65,15 @@ trait DBSchema extends StdColumns {
 
   val viewCountTables = Seq(itemViewCount.definition, attachmentViewCount.definition)
 
+  val countByCol = JDBCQueries.queryRawSQL("select sum(\"count\") from viewcount_item vci " +
+    "inner join item i on vci.item_uuid = i.uuid and vci.item_version = i.version " +
+    "inner join base_entity be on be.id = i.item_definition_id where be.id = ?",
+    config.record[Long :: HNil], config.record[Int :: HNil])
+
   val viewCountQueries = ViewCountQueries(itemViewCount.writes, attachmentViewCount.writes,
-    itemViewCount.byPK, attachmentViewCount.byPK)
+    itemViewCount.byPK, attachmentViewCount.byPK,
+    countByCol.as[Long => Stream[JDBCIO, Int]]
+  )
 
   def creationSQL: util.Collection[String] = {
     Seq(schemaSQL.createTable(auditLogTable)) ++
