@@ -21,7 +21,8 @@ case class ViewCountQueries(writeItemCounts: WriteQueries[JDBCIO, ItemViewCount]
                             writeAttachmentCounts: WriteQueries[JDBCIO, AttachmentViewCount],
                             itemCount: ((InstId, DbUUID, Int)) => Stream[JDBCIO, ItemViewCount],
                             attachmentCount: ((InstId, DbUUID, Int, DbUUID)) => Stream[JDBCIO, AttachmentViewCount],
-                            countForCollectionId: Long => Stream[JDBCIO, Int]
+                            countForCollectionId: Long => Stream[JDBCIO, Int],
+                            attachmentCountForCollectionId: Long => Stream[JDBCIO, Int]
                            )
 
 object DBQueries

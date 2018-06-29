@@ -70,5 +70,9 @@ object ViewCountJavaDao {
     }.map(_.getOrElse(0))
   }
 
-  def getAttachmentViewsForCollection(col: ItemDefinition): Int = 0
+  def getAttachmentViewsForCollection(col: ItemDefinition): Int = RunWithDB.execute {
+    Kleisli { uc : UserContext =>
+      queries.attachmentCountForCollectionId(col.getId).compile.last
+    }.map(_.getOrElse(0))
+  }
 }
