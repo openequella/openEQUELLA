@@ -68,11 +68,11 @@ trait DBSchema extends StdColumns {
   val countByCol = JDBCQueries.queryRawSQL("select sum(\"count\") from viewcount_item vci " +
     "inner join item i on vci.item_uuid = i.uuid and vci.item_version = i.version " +
     "inner join base_entity be on be.id = i.item_definition_id where be.id = ?",
-    config.record[Long :: HNil], config.record[Int :: HNil])
+    config.record[Long :: HNil], config.record[Option[Int] :: HNil])
 
   val viewCountQueries = ViewCountQueries(itemViewCount.writes, attachmentViewCount.writes,
     itemViewCount.byPK, attachmentViewCount.byPK,
-    countByCol.as[Long => Stream[JDBCIO, Int]]
+    countByCol.as[Long => Stream[JDBCIO, Option[Int]]].andThen(_.map(_.getOrElse(0)))
   )
 
   def creationSQL: util.Collection[String] = {
