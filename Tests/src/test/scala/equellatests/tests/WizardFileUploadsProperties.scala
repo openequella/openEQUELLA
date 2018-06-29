@@ -338,7 +338,7 @@ object WizardFileUploadsProperties extends StatefulProperties("Wizard file uploa
     all(
       (ad.description ?= attachment.description) :| "description",
       if (uc.canRestrict) (ad.restricted ?= Some(attachment.restricted)) :| "restricted flag" else Prop(ad.restricted.isEmpty) :| "no restrict flag",
-      (ad.details ?= attachment.details.filterNot(_._1 == "Views:")) :| "details",
+      (ad.details.filterNot(_._1 == "Views:") ?= attachment.details) :| "details",
       (ad.viewers ?= attachment.viewerOptions) :| "viewers",
       if (uc.canSuppress && !attachment.ispackage) (ad.suppressThumb ?= Some(attachment.suppressThumb)) :| "thumb supression flag" else Prop(ad.suppressThumb.isEmpty) :| "no suppress flag"
     ).label(attachment.description)
