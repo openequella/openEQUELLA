@@ -3,6 +3,7 @@ package com.tle.core.item
 import java.time.Instant
 
 import cats.data.Kleisli
+import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.beans.item.{ItemId, ItemKey}
 import com.tle.core.db.tables.{AttachmentViewCount, ItemViewCount}
 import com.tle.core.db.{DBSchema, RunWithDB, UserContext}
@@ -46,4 +47,6 @@ object ViewCountJavaDao {
       queries.attachmentCount((uc.inst, itemKey.getUuid, itemKey.getVersion, attachment)).map(_.count).compile.last
     }.map(_.getOrElse(0))
   }
+
+  def getSummaryViewsForCollection(col: ItemDefinition): Int = 0
 }

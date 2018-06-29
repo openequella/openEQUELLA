@@ -4,7 +4,7 @@ import java.util
 
 import com.tle.core.db.migration.DBSchemaMigration
 import com.tle.core.db.tables.{AttachmentViewCount, AuditLogEntry, ItemViewCount}
-import com.tle.core.db.types.{InstId, JsonColumn}
+import com.tle.core.db.types.{DbUUID, InstId, JsonColumn}
 import com.tle.core.hibernate.factory.guice.HibernateFactoryModule
 import fs2.Stream
 import io.doolse.simpledba.Iso
@@ -17,6 +17,8 @@ import scala.collection.JavaConverters._
 trait DBSchema extends StdColumns {
 
   implicit def config: JDBCConfig.Aux[C]
+
+  implicit def dbUuidCol: C[DbUUID]
 
   def schemaSQL : JDBCSchemaSQL = config.schemaSQL
 
@@ -38,6 +40,7 @@ trait DBSchema extends StdColumns {
   def insertAuditLog: (Long => AuditLogEntry) => Stream[JDBCIO, AuditLogEntry]
 
   val userAndInst = auditLog.cols(HList('user_id.narrow, 'institution_id.narrow))
+
   val auditLogQueries = AuditLogQueries(insertAuditLog,
     auditLog.delete.where(userAndInst, BinOp.EQ).build,
     auditLog.query.where(userAndInst, BinOp.EQ).build,
