@@ -57,7 +57,7 @@ setPreventNav preventNav = writeRef navGlobals.preventNav preventNav
 
 forcePushRoute :: forall eff. Route -> Eff ( ref :: REF, dom :: DOM, history :: HISTORY | eff) Unit
 forcePushRoute r = do 
-    let href = append "page" $ routeHash r
+    let href = append "page" $ routeURI r
     writeRef navGlobals.preventNav emptyPreventNav
     nav.pushState (toForeign {}) href
 
@@ -68,12 +68,12 @@ pushRoute r = do
 
 routeHref :: forall eff. Route -> {href::String, onClick :: IOFn1 Event Unit}
 routeHref r = 
-    let href = append "page" $ routeHash r
+    let href = append "page" $ routeURI r
         onClick = mkIOFn1 $ \e -> preventDefault (unsafeCoerce e) *> pushRoute r
     in { href, onClick }
 
-routeHash :: Route -> String
-routeHash r = "/" <> ( case r of 
+routeURI :: Route -> String
+routeURI r = "/" <> ( case r of 
     SearchPage -> "search"
     SettingsPage -> "settings"
     CoursesPage -> "course"

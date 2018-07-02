@@ -43,8 +43,8 @@ class SettingsResource {
 
   @GET
   def settings : Iterable[SettingType] = {
+    val instUri = CurrentInstitution.get().getUrlAsUri
     SettingsList.allSettings.filter(_.isEditable).map { s =>
-      val instUri = CurrentInstitution.get().getUrlAsUri
       SettingType(s.id, s.name, s.description, s.group, SettingTypeLinks(instUri, s))
     }
   }

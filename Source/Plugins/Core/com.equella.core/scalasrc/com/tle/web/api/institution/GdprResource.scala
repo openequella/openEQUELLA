@@ -39,7 +39,7 @@ import scala.collection.JavaConverters._
 
 @Produces(value = Array("application/json"))
 @Path("userdata/")
-@Api(value = "Privacy")
+@Api("Privacy")
 class GdprResource {
 
   val auditLogDao = LegacyGuice.auditLogDao

@@ -107,14 +107,15 @@ foreign import setTitle :: forall e. String -> Eff (dom::DOM|e) Unit
 nullAny :: forall a. Nullable a
 nullAny = toNullable Nothing
 
-type TemplateProps = {fixedViewPort :: Nullable Boolean, 
-  preventNavigation :: Nullable Boolean, 
+type TemplateProps = {
   title::String, 
-  titleExtra::Nullable ReactElement, 
-  menuExtra:: Nullable (Array ReactElement), 
-  tabs :: Nullable ReactElement, 
-  footer :: Nullable ReactElement,
-  backRoute :: Nullable Route
+  fixedViewPort :: Nullable Boolean, -- Fix the height of the main content, otherwise use min-height
+  preventNavigation :: Nullable Boolean, -- Prevent navigation away from this page (e.g. Unsaved data) 
+  titleExtra::Nullable ReactElement, -- Extra part of the App bar (e.g. Search control)
+  menuExtra:: Nullable (Array ReactElement), -- Extra menu options
+  tabs :: Nullable ReactElement, -- Additional markup for displaying tabs which integrate with the App bar
+  footer :: Nullable ReactElement, -- Markup to show at the bottom of the main area. E.g. save/cancel options
+  backRoute :: Nullable Route -- An optional Route for showing a back icon button
 }
 
 type State = {

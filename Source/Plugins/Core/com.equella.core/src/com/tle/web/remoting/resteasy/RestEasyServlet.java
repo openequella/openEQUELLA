@@ -18,6 +18,7 @@ package com.tle.web.remoting.resteasy;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -110,17 +111,20 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 		RestEasyApplication application = (RestEasyApplication) dispatcher.getDefaultContextObjects()
 			.get(Application.class);
 
+		PluginBeanLocator coreLocator = pluginService.getBeanLocator("com.equella.core");
 		Set<Class<?>> classes = application.getClasses();
-		dispatcher.getRegistry().addSingletonResource(new SettingsResource());
+
+		registry.addSingletonResource(new SettingsResource());
 		classes.add(SettingsResource.class);
-		dispatcher.getRegistry().addSingletonResource(new LanguageResource());
+		registry.addSingletonResource(new LanguageResource());
 		classes.add(LanguageResource.class);
-		dispatcher.getRegistry().addSingletonResource(new UserQueryResource());
+		registry.addSingletonResource(new UserQueryResource());
 		classes.add(UserQueryResource.class);
-		dispatcher.getRegistry().addSingletonResource(new AclResource());
+		registry.addSingletonResource(new AclResource());
 		classes.add(AclResource.class);
-		dispatcher.getRegistry().addSingletonResource(new GdprResource());
+		registry.addSingletonResource(new GdprResource());
 		classes.add(GdprResource.class);
+
 		ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
 		providerFactory.registerProvider(SwaggerSerializers.class);
 		providerFactory.registerProviderInstance(new JsonContextResolver());
@@ -171,6 +175,7 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 			objectMapper = objectMapperService.createObjectMapper("rest");
 			scalaObjectMapper = objectMapperService.createObjectMapper("rest");
 			scalaObjectMapper.registerModule(new DefaultScalaModule());
+			scalaObjectMapper.configure(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES, true);
 		}
 
 		@Override
