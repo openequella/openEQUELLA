@@ -36,7 +36,7 @@ and the other is for the file upload control.
 
 ## Single page app
 
-The single page app is a bundle which is served from a [servlet](../../Source/Plugins/Core/com.equella.core/src/com/tle/web/template/SinglePageApp.scala) in openEQUELLA registered at `"/page/*"`. 
+The single page app is a bundle which is served from a [servlet](../../Source/Plugins/Core/com.equella.core/scalasrc/com/tle/web/template/SinglePageApp.scala) in openEQUELLA registered at `"/page/*"`. 
 
 Based on the given path, a [purescript-routing](https://github.com/slamdata/purescript-routing) 
 based router selects a root React component.
@@ -158,11 +158,11 @@ routeMatch =
     HelloWorldPage <$ (lit "hello")
 ```
 
-Add a conversion from Route to URI path in `routeHash`:
+Add a conversion from Route to URI path in `routeURI`:
 
 ```purescript
-routeHash :: Route -> String
-routeHash r = "/" <> ( case r of 
+routeURI :: Route -> String
+routeURI r = "/" <> ( case r of 
     SearchPage -> "search"
     ...
     HelloWorldPage -> "hello"

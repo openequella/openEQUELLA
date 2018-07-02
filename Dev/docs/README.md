@@ -5,7 +5,8 @@ openEQUELLA began life a long time ago in 2002 and as such has had fair share of
 ## Legacy architecture
 
 * Written in Java (some Java 8 features)
-* In house web framework called Sections for server side rendering with some facicility for doing AJAX updates
+* In house web framework called Sections for server side rendering with 
+some facility for doing AJAX DOM updates somewhat transparently
 * XML based extension declarations (JPF)
 * Freemarker, JQuery, Boostrap
 * Hibernate (3.6)
@@ -47,6 +48,6 @@ Usually `com.equella.core` is the place where new architecture classes will be p
 ## Guides
 
 * [REST endpoint creation](restendpoint.md)
-* [Using security](security.md)
+* Using security - TODO
 * [React based web pages](reactjs.md)
 
