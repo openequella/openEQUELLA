@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.tle.beans.DatabaseSchema;
-import com.tle.core.migration.impl.MigrationServiceImpl.MigrationExt;
-import com.tle.core.migration.impl.MigrationServiceImpl.MigrationState;
 
 public interface MigrationService
 {

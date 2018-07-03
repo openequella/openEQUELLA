@@ -110,11 +110,11 @@ public class CloudViewItemAuditor
 	{
 		if( entry.isSummary() )
 		{
-			auditService.logSummaryViewed(CLOUD_ITEM, itemId);
+			auditService.logSummaryViewed(CLOUD_ITEM, itemId, sessionService.getAssociatedRequest());
 		}
 		else
 		{
-			auditService.logContentViewed(CLOUD_ITEM, itemId, entry.getContentType(), entry.getPath());
+			auditService.logContentViewed(CLOUD_ITEM, itemId, entry.getContentType(), entry.getPath(), sessionService.getAssociatedRequest());
 		}
 	}
 }

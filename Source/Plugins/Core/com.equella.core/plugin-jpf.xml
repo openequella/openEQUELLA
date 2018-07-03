@@ -110,6 +110,7 @@
     <parameter id="class" value="com.tle.core.schema.guice.SchemaModule" />
     <parameter id="class" value="com.tle.core.security.guice.SecurityModule" />
     <parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+    <parameter id="class" value="com.tle.core.services.http.HttpConfigModule"/>
     <parameter id="class" value="com.tle.core.services.item.relation.RelationModule" />
     <parameter id="class" value="com.tle.core.services.user.guice.UserManagementModule" />
     <parameter id="class" value="com.tle.core.settings.guice.ConfigModule" />
@@ -1795,10 +1796,6 @@
     <parameter id="id" value="brightspace" />
     <parameter id="nameKey" value="com.equella.core.bspace.connector.name" />
     <parameter id="descriptionKey" value="com.equella.core.bspace.connector.description" />
-  </extension>
-  <extension plugin-id="com.tle.core.scripting" point-id="scriptObjects" id="advancedScriptObjects">
-    <parameter id="id" value="advancedScriptObjects" />
-    <parameter id="class" value="bean:com.tle.web.scripting.advanced.contributors.AdvancedScriptObjectContributor" />
   </extension>
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="mapping">
     <parameter id="bean" value="bean:com.tle.web.scripting.advanced.proxy.HttpProxyServlet" />
@@ -5541,9 +5538,6 @@
     <parameter id="id" value="com.tle.core.notification.migrate.ConstraintToAvoidDuplicateNotificationsMigration" />
     <parameter id="bean" value="bean:com.tle.core.notification.migrate.ConstraintToAvoidDuplicateNotificationsMigration" />
     <parameter id="date" value="2013-04-08" />
-  </extension>
-  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="objects_6">
-    <parameter id="class" value="com.tle.beans.audit.AuditLogEntry" />
   </extension>
   <extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="auditLogConverter">
     <parameter id="id" value="AUDITLOGS" />

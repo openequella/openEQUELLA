@@ -60,84 +60,100 @@
 /************************/
 .wizard-controls .input.text input[type="text"],.wizard-controls .input.text textarea,.wizard-controls select.listbox
 	{
-	width: 584px;
+	box-sizing: border-box;
+	width: 100%;
 }
 
 .wizard-controls .indent1 .input.text input[type="text"],.wizard-controls .indent1 .input.text textarea,.wizard-controls .indent1 select.listbox
 	{
-	width: 542px;
+	box-sizing: border-box;
+    width: 100%;
 }
 
 .wizard-controls .indent2 .input.text input[type="text"],.wizard-controls .indent2 .input.text textarea,.wizard-controls .indent2 select.listbox
 	{
-	width: 502px;
+	box-sizing: border-box;
+    width: 100%;
 }
 
 .wizard-controls .indent3 .input.text input[type="text"],.wizard-controls .indent3 .input.text textarea,.wizard-controls .indent3 select.listbox
 	{
-	width: 462px;
+	box-sizing: border-box;
+        width: 100%;
 }
 
 /************************/
 .wizard-controls .multieditbox input[type="text"],.wizard-controls .multieditbox select,.wizard-controls .multieditbox textarea
 	{
-	width: 280px;
+	box-sizing: border-box;
+        width: 100%;
 }
 
 .wizard-controls .indent1 .multieditbox input[type="text"],.wizard-controls .indent1 .multieditbox select,.wizard-controls .indent1 .multieditbox textarea
 	{
-	width: 260px;
+	box-sizing: border-box;
+        width: 100%;
 }
 
 .wizard-controls .indent2 .multieditbox input[type="text"],.wizard-controls .indent2 .multieditbox select,.wizard-controls .indent2 .multieditbox textarea
 	{
-	width: 240px;
+	box-sizing: border-box;
+        width: 100%;
 }
 
 .wizard-controls .indent3 .multieditbox input[type="text"],.wizard-controls .indent3 .multieditbox select,.wizard-controls .indent3 .multieditbox textarea
 	{
-	width: 220px;
+	box-sizing: border-box;
+        width: 100%;
 }
 
 .wizard-controls .multieditbox DIV.singletranslation input[type="text"],.wizard-controls .multieditbox DIV.singletranslation textarea
 	{
-	width: 584px;
+	box-sizing: border-box;
+        width: 100%;
 }
 
 .wizard-controls .indent1 .multieditbox DIV.singletranslation input[type="text"],.wizard-controls .indent1 .multieditbox DIV.singletranslation textarea
 	{
-	width: 542px;
+	box-sizing: border-box;
+        width: 100%;
 }
 
 .wizard-controls .indent2 .multieditbox DIV.singletranslation input[type="text"],.wizard-controls .indent2 .multieditbox DIV.singletranslation textarea
 	{
-	width: 502px;
+	box-sizing: border-box;
+        width: 100%;
 }
 
 .wizard-controls .indent3 .multieditbox DIV.singletranslation input[type="text"],.wizard-controls .indent3 .multieditbox DIV.singletranslation textarea
 	{
-	width: 462px;
+	box-sizing: border-box;
+        width: 100%;
 }
 
 /************************/
 .wizard-controls .shuffle input[type="text"],.wizard-controls .shuffle select
 	{
-	width: 525px;
+	box-sizing: border-box;
+        width: 100%;
 }
 
 .wizard-controls .indent1 .shuffle input[type="text"],.wizard-controls .indent1 .shuffle select
 	{
-	width: 485px;
+	box-sizing: border-box;
+        width: 100%;
 }
 
 .wizard-controls .indent2 .shuffle input[type="text"],.wizard-controls .indent2 .shuffle select
 	{
-	width: 465px;
+	box-sizing: border-box;
+        width: 100%;
 }
 
 .wizard-controls .indent3 .shuffle input[type="text"],.wizard-controls .indent3 .shuffle select
 	{
-	width: 445px;
+	box-sizing: border-box;
+        width: 100%;
 }
 
 /************************/

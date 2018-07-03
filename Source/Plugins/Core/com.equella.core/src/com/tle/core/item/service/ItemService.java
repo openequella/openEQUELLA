@@ -89,9 +89,6 @@ public interface ItemService extends RemoteItemService, ScriptEvaluator, Workflo
 
 	/**
 	 * Use the other version if possible
-	 * 
-	 * @param item
-	 * @return
 	 */
 	PropBagEx getItemXmlPropBag(ItemKey key);
 
@@ -153,6 +150,10 @@ public interface ItemService extends RemoteItemService, ScriptEvaluator, Workflo
 	List<String> getNavReferencedAttachmentUuids(List<Item> items);
 
 	Item getItemWithViewAttachmentPriv(ItemKey key);
+
+	void incrementViews(Item item);
+
+	void incrementViews(Attachment attachment);
 
 	/*
 	 * OPERATIONS

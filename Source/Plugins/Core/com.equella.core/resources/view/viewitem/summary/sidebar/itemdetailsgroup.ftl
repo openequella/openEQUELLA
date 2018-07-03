@@ -13,6 +13,9 @@
 		<li>${b.key("summary.sidebar.itemdetailsgroup.collection")}: <@render m.collectionLink /></li>
 		<li>${b.key("summary.sidebar.itemdetailsgroup.version")}: ${m.version} (<@render s.showVersionsLink/>) </li>
 		<li>${b.key("summary.sidebar.itemdetailsgroup.status")}: ${m.status}</li>
+		<#if m.views??>
+            <li>${b.key("summary.sidebar.itemdetailsgroup.views")}: ${m.views}</li>
+		</#if>
 	</ul>
 	<#if m.sections?size gt 0 >
 		<@renderAsHtmlList list=m.sections class="itemdetails-right" />

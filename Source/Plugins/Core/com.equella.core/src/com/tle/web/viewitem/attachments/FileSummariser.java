@@ -17,6 +17,7 @@
 package com.tle.web.viewitem.attachments;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -31,9 +32,12 @@ import com.tle.beans.item.attachments.ZipAttachment;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.Check;
 import com.tle.common.FileSizeUtils;
+import com.tle.common.security.SecurityConstants;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.ViewCountJavaDao;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.mimetypes.RegisterMimeTypeExtension;
+import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
 import com.tle.freetext.SupportedVideoMimeTypeExtension;
 import com.tle.web.sections.SectionInfo;
@@ -46,6 +50,7 @@ import com.tle.web.sections.render.TagRenderer;
 import com.tle.web.sections.render.TagState;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.render.WrappedLabel;
+import com.tle.web.sections.result.util.CountLabel;
 import com.tle.web.sections.standard.renderers.SpanRenderer;
 import com.tle.web.stream.ContentStream;
 import com.tle.web.viewurl.AttachmentDetail;
@@ -74,6 +79,8 @@ public class FileSummariser
 	private static Label FILENAME;
 	@PlugKey("fileresource.details.filesize")
 	private static Label SIZE;
+	@PlugKey("fileresource.details.views")
+	private static Label VIEWS;
 
 	@PlugKey("file.msoffice.details.author")
 	private static Label AUTHOR;
@@ -93,6 +100,8 @@ public class FileSummariser
 	private ViewItemUrlFactory urlFactory;
 	@Inject
 	private FileSystemService fileSystemService;
+	@Inject
+	private TLEAclManager aclService;
 
 	@Override
 	public ViewableResource process(SectionInfo info, ViewableResource resource, Attachment attachment)
@@ -186,6 +195,19 @@ public class FileSummariser
 			if( !Check.isEmpty(wcount) )
 			{
 				commonDetails.add(makeDetail(WORDS, new TextLabel(wcount)));
+			}
+
+			if (attachment instanceof Attachment)
+			{
+				final Attachment att = (Attachment)attachment;
+				if (!aclService.filterNonGrantedPrivileges(att.getItem(), Collections.singleton(SecurityConstants.VIEW_VIEWCOUNT)).isEmpty())
+				{
+					Integer views = ViewCountJavaDao.getAttachmentViewCount(getViewableItem().getItemId(), att.getUuid());
+					if (views != null)
+					{
+						commonDetails.add(makeDetail(VIEWS, new CountLabel(views)));
+					}
+				}
 			}
 
 			return commonDetails;

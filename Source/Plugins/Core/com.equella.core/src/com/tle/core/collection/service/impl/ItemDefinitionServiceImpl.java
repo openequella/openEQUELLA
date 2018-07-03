@@ -33,6 +33,7 @@ import java.util.TreeSet;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.core.security.TLEAclManager;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
@@ -95,6 +96,9 @@ public class ItemDefinitionServiceImpl
 	private static final String CONTROL_XML = "_control.xml"; //$NON-NLS-1$
 
 	private final ItemDefinitionDao itemDefinitionDao;
+
+	@Inject
+	private TLEAclManager aclService;
 
 	@Inject
 	private PluginTracker<CollectionSaveExtension> saveExtensions;

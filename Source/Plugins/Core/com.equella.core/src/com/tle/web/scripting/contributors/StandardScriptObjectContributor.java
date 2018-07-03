@@ -16,43 +16,26 @@
 
 package com.tle.web.scripting.contributors;
 
-import java.util.Map;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.dytech.edge.common.Constants;
 import com.dytech.edge.common.PropBagWrapper;
+import com.tle.beans.item.DrmSettings;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemPack;
 import com.tle.beans.item.ItemStatus;
 import com.tle.beans.item.attachments.ModifiableAttachments;
-import com.tle.common.scripting.objects.AttachmentsScriptObject;
-import com.tle.common.scripting.objects.FileScriptObject;
-import com.tle.common.scripting.objects.ItemScriptObject;
-import com.tle.common.scripting.objects.LoggingScriptObject;
-import com.tle.common.scripting.objects.SystemScriptObject;
-import com.tle.common.scripting.objects.UserScriptObject;
-import com.tle.common.scripting.objects.UtilsScriptObject;
+import com.tle.common.scripting.objects.*;
 import com.tle.common.scripting.service.ScriptContextCreationParams;
 import com.tle.common.scripting.types.ItemScriptType;
 import com.tle.common.util.Logger;
 import com.tle.core.guice.Bind;
-import com.tle.core.item.helper.ItemHelper;
-import com.tle.core.item.service.ItemFileService;
-import com.tle.core.item.service.ItemService;
 import com.tle.core.scripting.service.ScriptObjectContributor;
-import com.tle.core.services.FileSystemService;
-import com.tle.core.services.user.UserService;
 import com.tle.core.util.script.SearchScriptWrapper;
-import com.tle.web.scripting.impl.AttachmentsScriptWrapper;
-import com.tle.web.scripting.impl.FileScriptingObjectImpl;
-import com.tle.web.scripting.impl.ItemScriptWrapper;
-import com.tle.web.scripting.impl.ItemScriptWrapper.ItemScriptTypeImpl;
-import com.tle.web.scripting.impl.LoggingScriptWrapper;
-import com.tle.web.scripting.impl.SystemScriptWrapper;
-import com.tle.web.scripting.impl.UserScriptWrapper;
-import com.tle.web.scripting.impl.UtilsScriptWrapper;
+import com.tle.web.scripting.ScriptObjectFactory;
+import com.tle.web.scripting.ScriptTypeFactory;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Map;
 
 /**
  * @author aholland
@@ -61,34 +44,34 @@ import com.tle.web.scripting.impl.UtilsScriptWrapper;
 @Singleton
 public class StandardScriptObjectContributor implements ScriptObjectContributor
 {
-	private static final String ITEM = "item"; //$NON-NLS-1$
-	private static final String XML = "xml"; //$NON-NLS-1$
-	private static final String ITEM_STATUS = "status"; //$NON-NLS-1$
+	private static final String ITEM = "item"; 
+	private static final String XML = "xml"; 
+	private static final String ITEM_STATUS = "status"; 
 
 	@Deprecated
-	private static final String SEARCH_WRAPPER = "search"; //$NON-NLS-1$
+	private static final String SEARCH_WRAPPER = "search"; 
 
 	@Inject
-	private FileSystemService fileSystemService;
+	private ScriptTypeFactory scriptTypeFactory;
 	@Inject
-	private ItemService itemService;
-	@Inject
-	private ItemFileService itemFileService;
-	@Inject
-	private ItemHelper itemHelper;
-	@Inject
-	private UserService userService;
+	private ScriptObjectFactory scriptObjectFactory;
 
-	// Context insensitive objects
+	// Context insensitive objects (singletons)
 	@Inject
 	@Deprecated
 	private SearchScriptWrapper search;
 	@Inject
-	private UtilsScriptWrapper utils;
+	private UtilsScriptObject utils;
 	@Inject
-	private SystemScriptWrapper system;
+	private SystemScriptObject system;
 	@Inject
-	private ItemScriptWrapper items;
+	private ItemScriptObject items;
+	@Inject
+	private MimeScriptObject mimeScriptObject;
+	@Inject
+	private RegionalScriptObject regionalScriptObject;
+	@Inject
+	private CollectionScriptObject collectionScriptObject;
 
 	@Override
 	public void addScriptObjects(Map<String, Object> objects, ScriptContextCreationParams params)
@@ -103,12 +86,11 @@ public class StandardScriptObjectContributor implements ScriptObjectContributor
 			objects.put(SystemScriptObject.DEFAULT_VARIABLE, system);
 		}
 
-		objects.put(UserScriptObject.DEFAULT_VARIABLE, new UserScriptWrapper(userService));
+		objects.put(UserScriptObject.DEFAULT_VARIABLE, scriptObjectFactory.createUser());
 
 		if( params.getFileHandle() != null )
 		{
-			objects.put(FileScriptObject.DEFAULT_VARIABLE,
-				new FileScriptingObjectImpl(fileSystemService, itemFileService, params.getFileHandle()));
+			objects.put(FileScriptObject.DEFAULT_VARIABLE, scriptObjectFactory.createFile(params.getFileHandle()));
 		}
 
 		final PropBagWrapper wrapper = new PropBagWrapper();
@@ -135,21 +117,41 @@ public class StandardScriptObjectContributor implements ScriptObjectContributor
 				objects.put(ITEM_STATUS, s);
 
 				objects.put(AttachmentsScriptObject.DEFAULT_VARIABLE,
-					new AttachmentsScriptWrapper(new ModifiableAttachments(item), fileSystemService, itemService,
-						itemHelper, params.getFileHandle()));
+						scriptObjectFactory.createAttachments(new ModifiableAttachments(item), params.getFileHandle()));
 
-				objects.put(ItemScriptType.CURRENT_ITEM, new ItemScriptTypeImpl(itemService, itemHelper, item));
+				objects.put(ItemScriptType.CURRENT_ITEM, scriptTypeFactory.createItem(item));
+
+				objects.put(NavigationScriptObject.DEFAULT_VARIABLE,
+						scriptObjectFactory.createNavigation(item));
+
+				// Script functionality expanded to provide for setting as well as
+				// getting DrmSetting values, so a DrmSettings object must not
+				// be null
+				DrmSettings drmSettings = item.getDrmSettings();
+				if( drmSettings == null )
+				{
+					drmSettings = new DrmSettings();
+				}
+				objects.put(DrmScriptObject.DEFAULT_VARIABLE, scriptObjectFactory.createDrm(item, drmSettings));
 			}
 		}
 
 		objects.put(XML, wrapper);
+
+		objects.put(ImagesScriptObject.DEFAULT_VARIABLE,
+				scriptObjectFactory.createImages(params.getFileHandle()));
+
+		objects.put(MimeScriptObject.DEFAULT_VARIABLE, mimeScriptObject);
+		objects.put(RegionalScriptObject.DEFAULT_VARIABLE, regionalScriptObject);
 
 		// logger is an attribute - not important enough
 		final Map<String, Object> attributes = params.getAttributes();
 		final Logger logger = (Logger) attributes.get(LoggingScriptObject.DEFAULT_VARIABLE);
 		if( logger != null )
 		{
-			objects.put(LoggingScriptObject.DEFAULT_VARIABLE, new LoggingScriptWrapper(logger));
+			objects.put(LoggingScriptObject.DEFAULT_VARIABLE, scriptObjectFactory.createLogger(logger));
 		}
+
+		objects.put(CollectionScriptObject.DEFAULT_VARIABLE, collectionScriptObject);
 	}
 }

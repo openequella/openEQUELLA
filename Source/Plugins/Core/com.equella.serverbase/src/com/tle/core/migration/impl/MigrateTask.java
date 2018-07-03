@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import com.tle.core.migration.*;
 import com.tle.core.plugins.AbstractPluginService;
 import org.hibernate.Transaction;
 import org.hibernate.classic.Session;
@@ -33,12 +34,6 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.tle.core.hibernate.CurrentDataSource;
 import com.tle.core.hibernate.DataSourceHolder;
 import com.tle.core.hibernate.DataSourceService;
-import com.tle.core.migration.Migration;
-import com.tle.core.migration.MigrationInfo;
-import com.tle.core.migration.MigrationResult;
-import com.tle.core.migration.MigrationService;
-import com.tle.core.migration.MigrationSubTaskStatus;
-import com.tle.core.migration.impl.MigrationServiceImpl.MigrationState;
 import com.tle.core.migration.log.MigrationLog;
 import com.tle.core.migration.log.MigrationLog.LogStatus;
 import com.tle.core.services.impl.SingleShotTask;

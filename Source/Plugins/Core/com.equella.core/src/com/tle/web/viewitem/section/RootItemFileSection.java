@@ -268,17 +268,17 @@ public class RootItemFileSection extends AbstractPrototypeSection<RootItemFileSe
 			{
 				ensureOnePrivilege(resource.getPrivileges(), ViewItemViewer.VIEW_ITEM_AND_VIEW_ATTACHMENTS_PRIV);
 				ViewAuditEntry vae = resource.getViewAuditEntry();
-				if( viewableItem.isItemForReal() && vae != null )
+				if( viewableItem.isItemForReal() && vae != null && viewableItem.getItemExtensionType() == null)
 				{
-					auditor.audit(vae, viewableItem.getItemId());
+					auditor.audit(vae, ((ViewableItem<Item>) viewableItem));
 				}
 				info.forwardToUrl(resource.createCanonicalURL().getHref(), resource.getForwardCode());
 				return null;
 			}
 			ensureOnePrivilege(resource.getPrivileges(), viewer.ensureOnePrivilege());
-			if( viewableItem.isItemForReal() )
+			if( viewableItem.isItemForReal() && viewableItem.getItemExtensionType() == null )
 			{
-				auditor.audit(viewer.getAuditEntry(info, resource), viewableItem.getItemId());
+				auditor.audit(viewer.getAuditEntry(info, resource), ((ViewableItem<Item>) viewableItem));
 			}
 			return viewer.view(info, resource);
 		}

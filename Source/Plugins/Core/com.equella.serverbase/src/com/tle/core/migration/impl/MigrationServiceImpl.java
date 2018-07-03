@@ -33,6 +33,8 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.core.db.migration.Migrations;
+import com.tle.core.migration.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.java.plugin.registry.Extension;
@@ -53,15 +55,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.DataSourceService;
 import com.tle.core.hibernate.SystemDatabase;
 import com.tle.core.hibernate.event.SchemaEvent;
-import com.tle.core.migration.InstallSettings;
-import com.tle.core.migration.Migration;
-import com.tle.core.migration.MigrationErrorReport;
-import com.tle.core.migration.MigrationService;
-import com.tle.core.migration.MigrationStatus;
-import com.tle.core.migration.MigrationStatusLog;
 import com.tle.core.migration.MigrationStatusLog.LogType;
-import com.tle.core.migration.SchemaInfo;
-import com.tle.core.migration.SchemaInfoImpl;
 import com.tle.core.migration.impl.MigrationMessage.AddMessage;
 import com.tle.core.migration.impl.MigrationMessage.InstallMessage;
 import com.tle.core.migration.impl.MigrationMessage.MigrateMessage;
@@ -69,8 +63,6 @@ import com.tle.core.migration.impl.MigrationMessage.MigrationResponse;
 import com.tle.core.migration.impl.MigrationMessage.SchemaMessage;
 import com.tle.core.migration.impl.MigrationMessage.SetOnlineMessage;
 import com.tle.core.migration.impl.MigrationMessage.Type;
-import com.tle.core.migration.log.MigrationLog;
-import com.tle.core.migration.log.MigrationLog.LogStatus;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.security.impl.SecureOnCallSystem;
@@ -200,7 +192,8 @@ public class MigrationServiceImpl implements MigrationService, StartupBean, Task
 	{
 		if( orderedMigrations == null || migrateTracker.needsUpdate() )
 		{
-			List<MigrationExt> migrationList = new ArrayList<MigrationServiceImpl.MigrationExt>();
+			List<MigrationExt> migrationList = new ArrayList<MigrationExt>();
+			migrationList.addAll(Migrations.migrationList());
 			for( Extension extension : migrateTracker.getExtensions() )
 			{
 				String id = extension.getParameter("id").valueAsString();
@@ -214,7 +207,7 @@ public class MigrationServiceImpl implements MigrationService, StartupBean, Task
 				{
 					date = dateParam.valueAsDate();
 				}
-				MigrationExt ext = new MigrationExt(id, extension, date, initial, system);
+				MigrationExtExt ext = new MigrationExtExt(id, extension, date, initial, system);
 				ext.setDepends(idSet(extension, "depends"));
 				ext.setFixes(idSet(extension, "fixes"));
 				ext.setObsoletedBy(idSet(extension, "obsoletedby"));
@@ -226,21 +219,21 @@ public class MigrationServiceImpl implements MigrationService, StartupBean, Task
 				@Override
 				public int compare(MigrationExt o1, MigrationExt o2)
 				{
-					int comparison = o1.getDate().compareTo(o2.getDate());
+					int comparison = o1.date().compareTo(o2.date());
 					if( comparison == 0 )
 					{
-						return o1.getId().compareTo(o2.getId());
+						return o1.id().compareTo(o2.id());
 					}
 					return comparison;
 				}
 			});
-			Map<String, MigrationExt> mappedMigrations = new HashMap<String, MigrationServiceImpl.MigrationExt>();
+			Map<String, MigrationExt> mappedMigrations = new HashMap<String, MigrationExt>();
 			for( MigrationExt mext : migrationList )
 			{
-				mappedMigrations.put(mext.getId(), mext);
+				mappedMigrations.put(mext.id(), mext);
 			}
 			Set<MigrationExt> processing = new HashSet<MigrationExt>();
-			orderedMigrations = new LinkedHashSet<MigrationServiceImpl.MigrationExt>();
+			orderedMigrations = new LinkedHashSet<MigrationExt>();
 			for( MigrationExt mig : migrationList )
 			{
 				processDependencies(mig, processing, orderedMigrations, mappedMigrations);
@@ -256,7 +249,7 @@ public class MigrationServiceImpl implements MigrationService, StartupBean, Task
 		{
 			return;
 		}
-		String migId = mig.getId();
+		String migId = mig.id();
 		if( processing.contains(mig) )
 		{
 			throw new RuntimeException("Cyclic dependency found:" + migId);
@@ -326,13 +319,13 @@ public class MigrationServiceImpl implements MigrationService, StartupBean, Task
 	@Override
 	public Migration getMigration(MigrationState ext)
 	{
-		return migrateTracker.getBeanByExtension(ext.getExtension());
+		return ext.getMigration();
 	}
 
-	public static class MigrationExt
+	public class MigrationExtExt implements MigrationExt
 	{
 		private final String id;
-		private final Extension extension;
+		private final Extension ext;
 		private final boolean initial;
 		private final boolean system;
 		private final Date date;
@@ -341,31 +334,32 @@ public class MigrationServiceImpl implements MigrationService, StartupBean, Task
 		private Set<String> fixes;
 		private Set<String> ifSkipped;
 
-		public MigrationExt(String id, Extension ext, Date date, boolean initial, boolean system)
+		public MigrationExtExt(String id, Extension ext, Date date, boolean initial, boolean system)
 		{
 			this.id = id;
-			this.extension = ext;
+			this.ext = ext;
 			this.initial = initial;
 			this.date = date;
 			this.system = system;
 		}
 
-		public boolean isSystem()
+		public boolean system()
 		{
 			return system;
 		}
 
-		public String getId()
+		public String id()
 		{
 			return id;
 		}
 
-		public Extension getExtension()
+		@Override
+		public boolean placeholder()
 		{
-			return extension;
+			return ext.getParameter("bean") == null; //$NON-NLS-1$
 		}
 
-		public boolean isInitial()
+		public boolean initial()
 		{
 			return initial;
 		}
@@ -410,7 +404,7 @@ public class MigrationServiceImpl implements MigrationService, StartupBean, Task
 			this.ifSkipped = ifSkipped;
 		}
 
-		public Date getDate()
+		public Date date()
 		{
 			return date;
 		}
@@ -420,99 +414,10 @@ public class MigrationServiceImpl implements MigrationService, StartupBean, Task
 		{
 			return id;
 		}
-	}
 
-	public static class MigrationState
-	{
-		private final MigrationExt extension;
-		private final MigrationLog logEntry;
-		private boolean skip;
-		private boolean execute;
-		private boolean obsoleted;
-
-		public MigrationState(MigrationExt extension, MigrationLog logEntry)
+		public Migration migration()
 		{
-			this.extension = extension;
-			this.logEntry = logEntry;
-		}
-
-		public boolean isPlaceHolder()
-		{
-			return extension.getExtension().getParameter("bean") == null; //$NON-NLS-1$
-		}
-
-		public boolean needsProcessing()
-		{
-			return logEntry == null || logEntry.getStatus() == LogStatus.ERRORED;
-		}
-
-		public boolean wasSkippedAlready()
-		{
-			return logEntry != null && logEntry.getStatus() == LogStatus.SKIPPED;
-		}
-
-		public boolean wasExecutedAlready()
-		{
-			return logEntry != null && logEntry.getStatus() == LogStatus.EXECUTED;
-		}
-
-		public Extension getExtension()
-		{
-			return extension.getExtension();
-		}
-
-		public String getId()
-		{
-			return extension.getId();
-		}
-
-		public boolean isCanRetry()
-		{
-			return logEntry != null && logEntry.isCanRetry();
-		}
-
-		public LogStatus getStatus()
-		{
-			if( logEntry == null )
-			{
-				return null;
-			}
-			return logEntry.getStatus();
-		}
-
-		public MigrationLog getLogEntry()
-		{
-			return logEntry;
-		}
-
-		public boolean isSkip()
-		{
-			return skip;
-		}
-
-		public void setSkip(boolean skip)
-		{
-			this.skip = skip;
-		}
-
-		public boolean isObsoleted()
-		{
-			return obsoleted;
-		}
-
-		public void setObsoleted(boolean obsoleted)
-		{
-			this.obsoleted = obsoleted;
-		}
-
-		public boolean isExecute()
-		{
-			return execute;
-		}
-
-		public void setExecute(boolean execute)
-		{
-			this.execute = execute;
+			return migrateTracker.getBeanByExtension(ext);
 		}
 	}
 

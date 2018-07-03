@@ -16,10 +16,11 @@
 
 package com.tle.core.migration.impl;
 
+import com.tle.core.migration.MigrationState;
+
 import java.io.Serializable;
 import java.util.List;
 
-import com.tle.core.migration.impl.MigrationServiceImpl.MigrationState;
 
 public class MigrationsToRun implements Serializable
 {

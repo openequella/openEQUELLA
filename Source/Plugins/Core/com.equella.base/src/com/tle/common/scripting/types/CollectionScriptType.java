@@ -21,4 +21,15 @@ package com.tle.common.scripting.types;
  */
 public interface CollectionScriptType extends BaseEntityScriptType
 {
+	/**
+	 * @return The number of item views this collection has had, proided the current user has permissions.
+	 * Otherwise will return null.
+	 */
+	Integer getItemViewCount();
+
+	/**
+	 * @return The number of attachment views this collection has had, proided the current user has permissions.
+	 * Otherwise will return null.
+	 */
+	Integer getAttachmentViewCount();
 }

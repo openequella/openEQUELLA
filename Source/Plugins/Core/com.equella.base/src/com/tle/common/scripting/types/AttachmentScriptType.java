@@ -170,4 +170,10 @@ public interface AttachmentScriptType extends Serializable
 	 * @return a list of all keys
 	 */
 	List<String> getAllCustomDisplayProperties();
+
+	/**
+	 * @return The number of views this attachment has had, proided the current user has permissions.
+	 * Otherwise will return null.
+	 */
+	Integer getViewCount();
 }

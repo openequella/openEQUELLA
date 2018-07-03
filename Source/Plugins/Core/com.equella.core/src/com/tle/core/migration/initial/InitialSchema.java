@@ -24,6 +24,10 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.beans.item.*;
+import com.tle.beans.item.attachments.*;
+import com.tle.core.db.DBSchema;
+import com.tle.core.db.DBSchema$;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 import org.hibernate.classic.Session;
@@ -39,35 +43,12 @@ import com.tle.beans.SchemaScript;
 import com.tle.beans.Staging;
 import com.tle.beans.UserPreference;
 import com.tle.beans.activation.ActivateRequest;
-import com.tle.beans.audit.AuditLogEntry;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.EntityLock;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.LanguageString;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.ItemdefBlobs;
-import com.tle.beans.item.Bookmark;
-import com.tle.beans.item.Comment;
-import com.tle.beans.item.DrmAcceptance;
-import com.tle.beans.item.DrmSettings;
-import com.tle.beans.item.HistoryEvent;
-import com.tle.beans.item.Item;
-import com.tle.beans.item.ItemLock;
-import com.tle.beans.item.ItemXml;
-import com.tle.beans.item.ModerationStatus;
-import com.tle.beans.item.Relation;
-import com.tle.beans.item.VersionSelection;
-import com.tle.beans.item.attachments.Attachment;
-import com.tle.beans.item.attachments.CustomAttachment;
-import com.tle.beans.item.attachments.FileAttachment;
-import com.tle.beans.item.attachments.HtmlAttachment;
-import com.tle.beans.item.attachments.IMSResourceAttachment;
-import com.tle.beans.item.attachments.ImsAttachment;
-import com.tle.beans.item.attachments.ItemNavigationNode;
-import com.tle.beans.item.attachments.ItemNavigationTab;
-import com.tle.beans.item.attachments.LinkAttachment;
-import com.tle.beans.item.attachments.NavigationSettings;
-import com.tle.beans.item.attachments.ZipAttachment;
 import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.beans.security.ACLEntryMapping;
@@ -105,7 +86,7 @@ public class InitialSchema extends AbstractCreateMigration
 
 	private static Class<?>[] clazzes = new Class<?>[]{ConfigurationProperty.class, ItemDefinitionScript.class,
 			SchemaScript.class, Institution.class, Language.class, Staging.class, UserPreference.class,
-			UserPreference.UserPrefKey.class, AuditLogEntry.class, BaseEntity.class, LanguageBundle.class,
+			UserPreference.UserPrefKey.class, BaseEntity.class, LanguageBundle.class,
 			LanguageString.class, EntityLock.class, ItemDefinition.class, ItemdefBlobs.class, Workflow.class,
 			WorkflowNodeStatus.class, WorkflowItemStatus.class, DecisionNode.class, ScriptNode.class,
 			ParallelNode.class, SerialNode.class, WorkflowItem.class, WorkflowNode.class, ReferencedURL.class,
@@ -115,7 +96,7 @@ public class InitialSchema extends AbstractCreateMigration
 			LinkAttachment.class, ZipAttachment.class, ItemNavigationNode.class, ItemNavigationTab.class,
 			NavigationSettings.class, AccessEntry.class, AccessExpression.class, SharePass.class, TLEUser.class,
 			TLEGroup.class, Relation.class, Bookmark.class, MimeEntry.class, ActivateRequest.class,
-			TargetListEntry.class, VersionSelection.class, BaseEntity.Attribute.class, ACLEntryMapping.class};
+			TargetListEntry.class, VersionSelection.class, BaseEntity.Attribute.class, ACLEntryMapping.class };
 
 	@SuppressWarnings("nls")
 	@Override
@@ -151,6 +132,7 @@ public class InitialSchema extends AbstractCreateMigration
 	@Override
 	protected void addExtraStatements(HibernateMigrationHelper helper, List<String> sql)
 	{
+		sql.addAll(DBSchema$.MODULE$.schema().creationSQL());
 		sql.addAll(helper.getAddIndexesRaw("bookmark_keywords", "bookkeywords", "bookmark_id"));
 
 		sql.addAll(helper.getAddIndexesRaw("tlegroup_users", new String[]{"tleguGroup", "tlegroup_id"}, new String[]{

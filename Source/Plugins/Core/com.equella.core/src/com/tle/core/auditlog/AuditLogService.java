@@ -21,17 +21,21 @@ import java.util.Collection;
 import com.tle.beans.Institution;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
+import com.tle.beans.item.attachments.Attachment;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.WebAuthenticationDetails;
+import com.tle.web.viewable.ViewableItem;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Nicholas Read
  */
 public interface AuditLogService
 {
-	void logUserLoggedIn(UserState us);
+	void logUserLoggedIn(UserState us, HttpServletRequest request);
 
-	void logUserLoggedOut(UserState us);
+	void logUserLoggedOut(UserState us, HttpServletRequest request);
 
 	void logUserFailedAuthentication(String username, WebAuthenticationDetails wad);
 
@@ -55,22 +59,28 @@ public interface AuditLogService
 	void logFederatedSearch(String freeText, String searchId);
 
 	/**
+	 * Exists solely for the purpose of non-item items.  Ie. CloudItem
+	 *
 	 * @param category E.g. CLOUD_ITEM
 	 * @param itemId
 	 */
-	void logSummaryViewed(String category, ItemKey itemId);
+	void logSummaryViewed(String category, ItemKey itemId, HttpServletRequest request);
 
-	void logItemSummaryViewed(ItemKey itemId);
+	void logItemSummaryViewed(Item item, HttpServletRequest request);
 
 	/**
+	 * Exists solely for the purpose of non-item item attachments.  Ie. CloudAttachment
+	 *
 	 * @param category E.g. CLOUD_ITEM
 	 * @param itemId
 	 * @param contentType
 	 * @param path
 	 */
-	void logContentViewed(String category, ItemKey itemId, String contentType, String path);
+	void logContentViewed(String category, ItemKey itemId, String contentType, String path, HttpServletRequest request);
 
-	void logItemContentViewed(ItemKey itemId, String contentType, String path);
+	//void logItemContentViewed(ItemKey itemId, String contentType, String path);
+
+	void logItemContentViewed(ItemKey itemId, String contentType, String path, Attachment attachment, HttpServletRequest request);
 
 	void logItemPurged(Item item);
 

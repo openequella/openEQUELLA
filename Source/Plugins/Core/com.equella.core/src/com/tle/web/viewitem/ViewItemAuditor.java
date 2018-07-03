@@ -19,6 +19,10 @@ package com.tle.web.viewitem;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.beans.item.Item;
+import com.tle.beans.item.attachments.Attachment;
+import com.tle.core.item.service.ItemService;
+import com.tle.web.viewable.ViewableItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -29,6 +33,9 @@ import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.sections.equella.SectionAuditable.AuditLevel;
 import com.tle.web.viewurl.ViewAuditEntry;
+
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 @SuppressWarnings("nls")
 @Bind
@@ -44,6 +51,8 @@ public class ViewItemAuditor
 	private UserSessionService sessionService;
 	@Inject
 	private AuditLogService auditService;
+	@Inject
+	private ItemService itemService;
 
 	private AuditLevel auditLevel;
 
@@ -61,7 +70,17 @@ public class ViewItemAuditor
 		}
 	}
 
-	public void audit(ViewAuditEntry auditEntry, ItemKey itemId)
+	public void audit(ViewAuditEntry auditEntry, ItemKey itemId, Attachment attachment)
+	{
+		audit(auditEntry, itemId, () -> logViewed(itemId, attachment, auditEntry));
+	}
+
+	public void audit(ViewAuditEntry auditEntry, ViewableItem<Item> vitem)
+	{
+		audit(auditEntry, vitem.getItemId(), () -> logViewed(vitem, auditEntry));
+	}
+
+	public void audit(ViewAuditEntry auditEntry, ItemKey itemId, AuditCall doAudit)
 	{
 		if( auditLevel != AuditLevel.NONE && auditEntry != null )
 		{
@@ -69,14 +88,14 @@ public class ViewItemAuditor
 			{
 				if( auditLevel == AuditLevel.NORMAL )
 				{
-					logViewed(itemId, auditEntry);
+					doAudit.call();
 				}
 				else if( auditLevel == AuditLevel.SMART )
 				{
 					// log it if it hasn't been already
 					if( !isAlreadyViewed(itemId, auditEntry) )
 					{
-						logViewed(itemId, auditEntry);
+						doAudit.call();
 						registerViewed(itemId, auditEntry);
 					}
 				}
@@ -105,15 +124,21 @@ public class ViewItemAuditor
 		return KEY_VIEWED + (summary ? KEY_SUMMARY : KEY_CONTENT) + (summary ? "" : auditEntry.getPath()) + itemId;
 	}
 
-	private void logViewed(ItemKey itemId, ViewAuditEntry entry)
+	private void logViewed(ItemKey itemId, Attachment attachment, ViewAuditEntry entry)
 	{
-		if( entry.isSummary() )
-		{
-			auditService.logItemSummaryViewed(itemId);
-		}
-		else
-		{
-			auditService.logItemContentViewed(itemId, entry.getContentType(), entry.getPath());
-		}
+		auditService.logItemContentViewed(itemId, entry.getContentType(), entry.getPath(), attachment, sessionService.getAssociatedRequest());
+		itemService.incrementViews(attachment);
+	}
+
+	private void logViewed(ViewableItem<Item> vitem, ViewAuditEntry entry)
+	{
+		auditService.logItemSummaryViewed(vitem.getItem(), sessionService.getAssociatedRequest());
+		itemService.incrementViews(vitem.getItem());
+	}
+
+	@FunctionalInterface
+	interface AuditCall
+	{
+		void call();
 	}
 }

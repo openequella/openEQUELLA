@@ -83,7 +83,7 @@ public abstract class PropertiesModule extends AbstractModule
 	 * @param property
 	 * @return
 	 */
-	protected String getProperty(String property)
+	public String getProperty(String property)
 	{
 		String rawString = getPropString(property);
 		return rawString == null ? null : rawString.trim();

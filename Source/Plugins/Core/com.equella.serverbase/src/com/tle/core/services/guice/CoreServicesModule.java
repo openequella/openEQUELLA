@@ -46,8 +46,6 @@ public class CoreServicesModule extends MandatoryConfigModule
 		{
 			bindInt("taskService.maxConcurrentTasks", 26);
 
-			bindBoolean("can.access.internet");
-
 			if( Check.isEmpty(getProperty("zookeeper.instances")) )
 			{
 				bind(TaskService.class).to(LocalTaskServiceImpl.class).in(Singleton.class);

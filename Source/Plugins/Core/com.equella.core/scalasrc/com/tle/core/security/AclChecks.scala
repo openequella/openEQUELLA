@@ -17,13 +17,13 @@
 package com.tle.core.security
 
 import cats.data.{Kleisli, StateT}
+import cats.effect.IO
 import cats.syntax.applicative._
 import com.tle.common.security.SecurityConstants
 import com.tle.common.security.SecurityConstants.GRANT
 import com.tle.core.db.{DB, UserContext}
 import com.tle.exceptions.PrivilegeRequiredException
-import io.doolse.simpledba.PhysicalValue
-import io.doolse.simpledba.jdbc.{Effect, JDBCColumn, JDBCIO, JDBCRawSQL, JDBCSession}
+import io.doolse.simpledba.jdbc._
 
 import scala.collection.JavaConverters._
 
@@ -50,9 +50,9 @@ object AclChecks {
                        revokedPerObj: Map[String, Set[String]] = Map.empty)
 
   def filterNonGrantedPrivileges(privileges: Iterable[String], includePossibleOwnerAcls: Boolean): DB[Set[String]] = Kleisli {
-    (uc: UserContext) =>
+    uc: UserContext =>
       val currentUser = uc.user
-      if (currentUser.isSystem || privileges.isEmpty) privileges.toSet.pure[Effect]
+      if (currentUser.isSystem || privileges.isEmpty) privileges.toSet.pure[JDBCIO]
       else {
         val _exps = currentUser.getCommonAclExpressions.asScala ++ currentUser.getNotOwnerAclExpressions.asScala
         val exps = if (includePossibleOwnerAcls) _exps ++ currentUser.getOwnerAclExpressions.asScala else _exps
@@ -68,14 +68,17 @@ object AclChecks {
             s.revokedPerObj.getOrElse(target, Set.empty) + priv))
         }
 
-        JDBCIO.rowsStream {
-          JDBCIO.sessionIO {
-            _.execQuery(JDBCRawSQL(createSQL(privileges, exps)), Seq(
-              PhysicalValue("inst", JDBCColumn.longColumn, uc.inst.getDatabaseId)
-            ) ++ privileges.map(p => PhysicalValue("p", JDBCColumn.stringColumn, p))
-              ++ exps.map(e => PhysicalValue("exp", JDBCColumn.longColumn, e.toLong)))
+        JDBCQueries.rowsStream(
+          StateT.inspectF { con =>
+            IO {
+              val ps = con.prepareStatement(createSQL(privileges, exps))
+              ps.setLong(1, uc.inst.getDatabaseId)
+              privileges.zipWithIndex.foreach { case (p, i) => ps.setString(2 + i, p) }
+              exps.zipWithIndex.foreach { case (e, i) => ps.setLong(2 + privileges.size + i, e) }
+              ps.executeQuery()
+            }
           }
-        }.map { rs =>
+        ).map { rs =>
           PrivEntry(rs.getString(1),
             rs.getString(2),
             rs.getString(3))

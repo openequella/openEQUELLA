@@ -22,23 +22,23 @@ import com.tle.core.db.{DB, UserContext}
 import io.circe.parser._
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder}
+import io.doolse.simpledba.WriteQueries
 import io.doolse.simpledba.jdbc._
-import io.doolse.simpledba.{RelationModel, UniqueQuery, WriteQueries, _}
+import io.doolse.simpledba.syntax._
+import fs2.Stream
 
 case class Setting(institution_id: Long, property: String, value: String)
 
-
-case class SettingsQueries[F[_]](write: WriteQueries[F, Setting], query: UniqueQuery[F, Setting, (Long, String)])
+case class SettingsQueries[F[_]](write: WriteQueries[F, Setting], query: ((Long, String)) => Stream[F, Setting])
 
 
 object SettingsDB {
 
-  val settingsRel = relation[Setting]('configuration_property).keys('institution_id, 'property)
+  import io.doolse.simpledba.jdbc.postgres._
+  implicit val dbConfig = postgresConfig
+  val settingsRel = TableMapper[Setting].table("configuration_property").key('institution_id, 'property)
 
-  val model = RelationModel(settingsRel).queries[SettingsQueries](writes(settingsRel), queryByPK(settingsRel))
-
-  val jdbcBuidler = new JDBCMapper()
-  val q : SettingsQueries[Effect] = jdbcBuidler.buildModel(model).queries
+  val q : SettingsQueries[JDBCIO] = SettingsQueries(settingsRel.writes, settingsRel.byPK)
 
   def singleProperty(name: String): OptionT[DB, Setting] = OptionT {
     Kleisli {
@@ -51,7 +51,7 @@ object SettingsDB {
   }
 
   def mkSetting(name: String, value: String): DB[Setting] = Kleisli {
-    case UserContext(inst, _, _) => Setting(inst.getDatabaseId, name, value).pure[Effect]
+    case UserContext(inst, _, _) => Setting(inst.getDatabaseId, name, value).pure[JDBCIO]
   }
 
   def setJsonProperty[A : Encoder : Decoder](name: String, value: A): DB[Unit] = {
@@ -60,10 +60,10 @@ object SettingsDB {
       newSetting <- mkSetting(name, newJson)
       existProp <- singleProperty(name).value
       _ <- Kleisli.liftF {
-        existProp match {
+        (existProp match {
           case None => q.write.insert(newSetting)
           case Some(existing) => q.write.update(existing, newSetting)
-        }
+        }).flush.compile.drain
       }
     } yield ()
   }

@@ -20,19 +20,21 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.thoughtworks.xstream.XStream;
+import com.tle.core.auditlog.AuditLogJavaDao;
+import com.tle.core.db.tables.AuditLogEntry;
 import org.hibernate.criterion.Restrictions;
 
 import com.tle.beans.Institution;
-import com.tle.beans.audit.AuditLogEntry;
 import com.tle.beans.audit.AuditLogTable;
 import com.tle.common.filesystem.handle.BucketFile;
 import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.auditlog.AuditLogDao;
 import com.tle.core.auditlog.AuditLogExtension;
 import com.tle.core.auditlog.AuditLogService;
 import com.tle.core.guice.Bind;
@@ -58,9 +60,15 @@ public class AuditLogConverter extends AbstractConverter<Object>
 	private static final String KEY_NAME = "com.tle.core.entity.services.auditlogs.converter";
 
 	@Inject
-	private AuditLogDao auditLogDao;
-	@Inject
 	private AuditLogService auditLogService;
+
+	private XStream xstream;
+
+	@PostConstruct
+	protected void setupXStream() {
+		xstream = xmlHelper.createXStream(getClass().getClassLoader());
+		xstream.aliasType("com.tle.beans.audit.AuditLogEntry", AuditLogEntryXml.class);
+	}
 
 	@Override
 	public void doDelete(Institution institution, ConverterParams params)
@@ -70,7 +78,7 @@ public class AuditLogConverter extends AbstractConverter<Object>
 
 	private long getExportCount(final Institution institution)
 	{
-		long auditLogEntryCount = auditLogDao.countByCriteria(null, Restrictions.eq("institution", institution));
+		long auditLogEntryCount = AuditLogJavaDao.countForInstitution(institution);
 
 		long numberOfLogs = (long) Math.ceil((double) auditLogEntryCount / PER_XML_FILE);
 
@@ -100,20 +108,7 @@ public class AuditLogConverter extends AbstractConverter<Object>
 
 		// write out the format details
 		xmlHelper.writeExportFormatXmlFile(auditFolder, true);
-		do
-		{
-			List<AuditLogEntry> entries = auditLogDao.findAllByCriteria(null, offs, PER_XML_FILE,
-				Restrictions.eq("institution", institution));
-			size = entries.size();
-			if( size != 0 )
-			{
-				final BucketFile bucketFolder = new BucketFile(auditFolder, offs);
-				xmlHelper.writeXmlFile(bucketFolder, offs + "-" + (offs + size) + ".xml", entries);
-				offs += size;
-				message.incrementCurrent();
-			}
-		}
-		while( size != 0 );
+		AuditLogJavaDao.writeExport(auditFolder, PER_XML_FILE, institution, message, xmlHelper, xstream);
 
 		Collection<AuditLogExtension> extensions = auditLogService.getExtensions();
 		for( AuditLogExtension auditLogExtension : extensions )
@@ -157,14 +152,10 @@ public class AuditLogConverter extends AbstractConverter<Object>
 		message.setCurrent(0);
 		for( String xmlFilename : filenames )
 		{
-			final List<AuditLogEntry> entries = xmlHelper.readXmlFile(auditImportFolder, xmlFilename);
-			for( AuditLogEntry entry : entries )
+			final List<AuditLogEntryXml> entries = xmlHelper.readXmlFile(auditImportFolder, xmlFilename, xstream);
+			for( AuditLogEntryXml entry : entries )
 			{
-				entry.setInstitution(institution);
-				entry.setId(0);
-				auditLogDao.save(entry);
-				auditLogDao.flush();
-				auditLogDao.clear();
+				AuditLogJavaDao.insertFromXml(institution, entry);
 			}
 			message.incrementCurrent();
 		}
