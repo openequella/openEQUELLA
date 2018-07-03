@@ -25,6 +25,7 @@ import com.tle.core.db.{DB, RunWithDB, UserContext}
 import com.tle.core.events.ApplicationEvent
 import com.tle.core.events.ApplicationEvent.PostTo
 import com.tle.core.events.listeners.ApplicationListener
+import com.tle.core.hibernate.CurrentDataSource
 import com.tle.legacy.LegacyGuice
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -62,12 +63,14 @@ object Cache extends CacheInvalidation {
       }))
     }
 
-  def get[A](implicit c: Cacheable[A]): DB[A] = Kleisli { uc: UserContext =>
-    StateT.inspectF { s: Connection =>
-      val key = c.key(uc)
-      concurrentMap.computeIfAbsent(key,
-        k => fs2.async.once(RunWithDB.executeTransaction(uc, c.query.run(uc).map(IO.pure))).unsafeRunSync()
-      ).asInstanceOf[IO[A]]
+  def get[A](implicit c: Cacheable[A]): DB[A] = {
+    Kleisli { uc: UserContext =>
+      StateT.inspectF { s: Connection =>
+        val key = c.key(uc)
+        concurrentMap.computeIfAbsent(key,
+          k => fs2.async.once(RunWithDB.executeTransaction(uc.ds.getConnection(), c.query.run(uc).map(IO.pure))).unsafeRunSync()
+        ).asInstanceOf[IO[A]]
+      }
     }
   }
 

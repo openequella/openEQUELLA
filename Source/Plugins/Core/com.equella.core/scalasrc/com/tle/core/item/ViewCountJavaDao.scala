@@ -30,7 +30,7 @@ object ViewCountJavaDao {
 
   val queries = DBSchema.queries.viewCountQueries
 
-  def incrementSummaryViews(itemKey: ItemKey): Unit = RunWithDB.execute {
+  def incrementSummaryViews(itemKey: ItemKey): Unit = RunWithDB.executeWithHibernate {
     Kleisli { uc =>
       queries.itemCount((uc.inst, itemKey.getUuid, itemKey.getVersion)).last.flatMap {
         case Some(c) => queries.writeItemCounts.update(c, c.copy(count = c.count + 1, last_viewed = Instant.now()))
@@ -41,7 +41,7 @@ object ViewCountJavaDao {
     }
   }
 
-  def incrementAttachmentViews(itemKey: ItemKey, attachment: String): Unit = RunWithDB.execute {
+  def incrementAttachmentViews(itemKey: ItemKey, attachment: String): Unit = RunWithDB.executeWithHibernate {
     Kleisli { uc =>
       queries.attachmentCount((uc.inst, itemKey.getUuid, itemKey.getVersion, attachment)).last.flatMap {
         case Some(c) => queries.writeAttachmentCounts.update(c, c.copy(count = c.count + 1, last_viewed = Instant.now()))
@@ -52,27 +52,33 @@ object ViewCountJavaDao {
     }
   }
 
-  def getSummaryViewCount(itemKey: ItemKey): java.lang.Integer = RunWithDB.execute {
+  def getSummaryViewCount(itemKey: ItemKey): Int = RunWithDB.executeWithHibernate {
     Kleisli { uc : UserContext =>
       queries.itemCount((uc.inst, itemKey.getUuid, itemKey.getVersion)).map(_.count).compile.last
     }.map(_.getOrElse(0))
   }
 
-  def getAttachmentViewCount(itemKey: ItemKey, attachment: String): java.lang.Integer = RunWithDB.execute {
+  def getAttachmentViewCount(itemKey: ItemKey, attachment: String): Int = RunWithDB.executeWithHibernate {
     Kleisli { uc : UserContext =>
       queries.attachmentCount((uc.inst, itemKey.getUuid, itemKey.getVersion, attachment)).map(_.count).compile.last
     }.map(_.getOrElse(0))
   }
 
-  def getSummaryViewsForCollection(col: ItemDefinition): Int = RunWithDB.execute {
+  def getSummaryViewsForCollection(col: ItemDefinition): Int = RunWithDB.executeWithHibernate {
     Kleisli { uc : UserContext =>
       queries.countForCollectionId(col.getId).compile.last
     }.map(_.getOrElse(0))
   }
 
-  def getAttachmentViewsForCollection(col: ItemDefinition): Int = RunWithDB.execute {
+  def getAttachmentViewsForCollection(col: ItemDefinition): Int = RunWithDB.executeWithHibernate {
     Kleisli { uc : UserContext =>
       queries.attachmentCountForCollectionId(col.getId).compile.last
     }.map(_.getOrElse(0))
+  }
+
+  def deleteForItem(item: ItemKey): Unit = RunWithDB.executeWithHibernate {
+    Kleisli { uc: UserContext =>
+      queries.deleteForItemId(uc.inst, item.getUuid, item.getVersion).flush.compile.drain
+    }
   }
 }

@@ -127,7 +127,10 @@ public class ViewItemAuditor
 	private void logViewed(ItemKey itemId, Attachment attachment, ViewAuditEntry entry)
 	{
 		auditService.logItemContentViewed(itemId, entry.getContentType(), entry.getPath(), attachment, sessionService.getAssociatedRequest());
-		itemService.incrementViews(attachment);
+		if (attachment != null)
+		{
+			itemService.incrementViews(attachment);
+		}
 	}
 
 	private void logViewed(ViewableItem<Item> vitem, ViewAuditEntry entry)

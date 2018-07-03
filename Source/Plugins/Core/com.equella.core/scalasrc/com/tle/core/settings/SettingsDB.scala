@@ -18,31 +18,23 @@ package com.tle.core.settings
 
 import cats.data.{Kleisli, OptionT}
 import cats.syntax.applicative._
-import com.tle.core.db.{DB, UserContext}
+import com.tle.core.db.tables.Setting
+import com.tle.core.db.{DB, DBSchema, UserContext}
 import io.circe.parser._
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder}
-import io.doolse.simpledba.WriteQueries
 import io.doolse.simpledba.jdbc._
 import io.doolse.simpledba.syntax._
-import fs2.Stream
 
-case class Setting(institution_id: Long, property: String, value: String)
-
-case class SettingsQueries[F[_]](write: WriteQueries[F, Setting], query: ((Long, String)) => Stream[F, Setting])
 
 
 object SettingsDB {
 
-  import io.doolse.simpledba.jdbc.postgres._
-  implicit val dbConfig = postgresConfig
-  val settingsRel = TableMapper[Setting].table("configuration_property").key('institution_id, 'property)
-
-  val q : SettingsQueries[JDBCIO] = SettingsQueries(settingsRel.writes, settingsRel.byPK)
+  def q = DBSchema.queries.settingsQueries
 
   def singleProperty(name: String): OptionT[DB, Setting] = OptionT {
     Kleisli {
-      case UserContext(inst, _, _) => q.query(inst.getDatabaseId, name).compile.last
+      uc => q.query(uc.inst, name).compile.last
     }
   }
 
@@ -51,7 +43,7 @@ object SettingsDB {
   }
 
   def mkSetting(name: String, value: String): DB[Setting] = Kleisli {
-    case UserContext(inst, _, _) => Setting(inst.getDatabaseId, name, value).pure[JDBCIO]
+    uc => Setting(uc.inst, name, value).pure[JDBCIO]
   }
 
   def setJsonProperty[A : Encoder : Decoder](name: String, value: A): DB[Unit] = {

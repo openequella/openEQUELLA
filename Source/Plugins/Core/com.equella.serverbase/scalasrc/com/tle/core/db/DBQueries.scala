@@ -18,7 +18,7 @@ package com.tle.core.db
 
 import java.time.Instant
 
-import com.tle.core.db.tables.{AttachmentViewCount, AuditLogEntry, ItemViewCount}
+import com.tle.core.db.tables.{AttachmentViewCount, AuditLogEntry, ItemViewCount, Setting}
 import com.tle.core.db.types.{DbUUID, InstId, UserId}
 import fs2.Stream
 import io.doolse.simpledba.{WriteOp, WriteQueries}
@@ -38,8 +38,12 @@ case class ViewCountQueries(writeItemCounts: WriteQueries[JDBCIO, ItemViewCount]
                             itemCount: ((InstId, DbUUID, Int)) => Stream[JDBCIO, ItemViewCount],
                             attachmentCount: ((InstId, DbUUID, Int, DbUUID)) => Stream[JDBCIO, AttachmentViewCount],
                             countForCollectionId: Long => Stream[JDBCIO, Int],
-                            attachmentCountForCollectionId: Long => Stream[JDBCIO, Int]
+                            attachmentCountForCollectionId: Long => Stream[JDBCIO, Int],
+                            deleteForItemId: ((InstId, DbUUID, Int)) => Stream[JDBCIO, WriteOp]
                            )
+
+case class SettingsQueries(write: WriteQueries[JDBCIO, Setting], query: ((InstId, String)) => Stream[JDBCIO, Setting])
+
 
 object DBQueries
 {
@@ -52,8 +56,9 @@ trait DBQueries {
   def setupLogging(config: JDBCSQLConfig[C]): JDBCSQLConfig[C] =
     config.withPrepareLogger(sql => DBQueries.logSQL.debug(sql))
 
-  val auditLogQueries : AuditLogQueries
+  def auditLogQueries : AuditLogQueries
 
-  val viewCountQueries: ViewCountQueries
+  def viewCountQueries: ViewCountQueries
 
+  def settingsQueries: SettingsQueries
 }

@@ -45,6 +45,18 @@ public class HibernateServiceImpl implements HibernateService
 	@Inject
 	private DynamicDataSource institutionAwareDataSource;
 
+	private static HibernateServiceImpl instance;
+
+	public HibernateServiceImpl()
+	{
+		instance = this;
+	}
+
+	public static HibernateServiceImpl getInstance()
+	{
+		return instance;
+	}
+
 	private LoadingCache<SessionFactoryKey, SessionFactory> factories = CacheBuilder.newBuilder().build(
 		new CacheLoader<SessionFactoryKey, SessionFactory>()
 		{

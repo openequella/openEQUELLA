@@ -36,7 +36,7 @@ abstract class SimpleMigration(val id: String, year: Int, month: Int, day: Int, 
 
     override def migrate(status: MigrationResult): Unit = {
       val mig = migration(status, DBSchema.schemaMigration)
-      RunWithDB.executeTransaction(CurrentDataSource.get().getDataSource, mig)
+      RunWithDB.executeTransaction(CurrentDataSource.get().getDataSource.getConnection, mig)
     }
 
     override def createMigrationInfo(): MigrationInfo =

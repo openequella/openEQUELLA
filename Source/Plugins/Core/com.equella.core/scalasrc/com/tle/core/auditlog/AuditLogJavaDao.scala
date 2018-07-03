@@ -42,7 +42,7 @@ object AuditLogJavaDao {
   val queries = DBSchema.queries.auditLogQueries
 
   def executeAll(db: Stream[JDBCIO, WriteOp]): Unit
-  = RunWithDB.execute(Kleisli.liftF(db.flush.compile.drain))
+  = RunWithDB.executeWithHibernate(Kleisli.liftF(db.flush.compile.drain))
 
   def removeEntriesForInstitution(institution: Institution): Unit =
     executeAll(queries.deleteForInst(institution))
@@ -50,7 +50,7 @@ object AuditLogJavaDao {
   def removeEntriesBeforeDate(date: Date): Unit =
     executeAll(queries.deleteBefore(date.toInstant))
 
-  def countForInstitution(institution: Institution): Long = RunWithDB.execute {
+  def countForInstitution(institution: Institution): Long = RunWithDB.executeWithHibernate {
     Kleisli.liftF(queries.countForInst(institution).compile.last.map(_.getOrElse(0)))
   }
 
@@ -62,7 +62,7 @@ object AuditLogJavaDao {
   def logWithRequest(userId: String, sessionId: String, category: String,
           `type`: String, d1: String, d2: String, d3: String,
           d4: String, institution: Institution, request: HttpServletRequest): Unit = {
-    RunWithDB.execute( Kleisli {
+    RunWithDB.executeWithHibernate( Kleisli {
       _ => queries.insertNew(id => AuditLogEntry(id, d1, d2, d3, Option(d4),
         category, `type`, sessionId, AuditLogMeta(referrer(request)), Instant.now(),
         UserId(userId), institution)).compile.drain
@@ -75,7 +75,7 @@ object AuditLogJavaDao {
   def logHttp(category: String,
           `type`: String, d1: String, d2: String, d3: String,
           d4: String, request: HttpServletRequest): Unit = {
-    RunWithDB.execute( Kleisli {
+    RunWithDB.executeWithHibernate( Kleisli {
       uc => queries.insertNew(id => AuditLogEntry(id, d1, d2, d3, Option(d4),
         category, `type`, uc.user.getSessionID, AuditLogMeta(referrer(request)), Instant.now(),
         UserId(uc.user.getUserBean.getUniqueID), uc.inst)).compile.drain
@@ -83,7 +83,7 @@ object AuditLogJavaDao {
   }
 
   def writeExport(folder: SubTemporaryFile, perFile: Int, inst: Institution,
-                  progress: DefaultMessageCallback, xmlHelper: XmlHelper, xstream: XStream): Unit = RunWithDB.execute {
+                  progress: DefaultMessageCallback, xmlHelper: XmlHelper, xstream: XStream): Unit = RunWithDB.executeWithHibernate {
     Kleisli.liftF {
       queries.listForInst(inst).segmentN(perFile).zipWithIndex.map {
         a =>
@@ -108,7 +108,7 @@ object AuditLogJavaDao {
     }
   }
 
-  def insertFromXml(inst: Institution, entry: AuditLogEntryXml): Unit = RunWithDB.execute { Kleisli.liftF {
+  def insertFromXml(inst: Institution, entry: AuditLogEntryXml): Unit = RunWithDB.executeWithHibernate { Kleisli.liftF {
     queries.insertNew(id => AuditLogEntry(id, entry.data1, entry.data2, entry.data3, Option(entry.data4), entry.eventCategory, entry.eventType,
       entry.sessionId, AuditLogMeta(), entry.timestamp.toInstant, UserId(entry.userId), inst)).compile.drain
     }

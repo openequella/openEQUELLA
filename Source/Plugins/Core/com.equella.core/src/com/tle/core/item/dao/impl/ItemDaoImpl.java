@@ -31,6 +31,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.core.item.ViewCountJavaDao;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -495,6 +496,7 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
 	public void delete(Item entity)
 	{
 		itemLockingDao.deleteForItem(entity);
+		ViewCountJavaDao.deleteForItem(entity.getItemId());
 		Map<String, ItemDaoExtension> beans = itemDaoTracker.getBeanMap();
 		for( ItemDaoExtension extension : beans.values() )
 		{

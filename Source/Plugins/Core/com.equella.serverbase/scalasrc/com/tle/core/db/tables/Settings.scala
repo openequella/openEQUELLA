@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package com.tle.core.db
+package com.tle.core.db.tables
 
-import java.sql.Connection
+import com.tle.core.db.types.InstId
 
-import com.tle.beans.Institution
-import com.tle.common.usermanagement.user.UserState
-import javax.sql.DataSource
-
-case class UserContext(inst: Institution, user: UserState, ds: DataSource)
+case class Setting(institution_id: InstId, property: String, value: String)
