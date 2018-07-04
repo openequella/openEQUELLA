@@ -8,7 +8,7 @@ jdk:
 - oraclejdk8
 before_install:
 - sudo apt-get install awscli
-- yarn global add browserify bower purescript@0.11.7 pulp psc-package
+- yarn global add psc-package
 install:
 - git fetch --unshallow
 script:

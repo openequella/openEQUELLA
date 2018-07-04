@@ -151,11 +151,6 @@ aclEditorClass :: ReactClass {
   allowedPrivs :: Array String
 }
 aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
-  -- lifeCycle = do 
-  --   didMount Init
-    -- modify _ {shouldComponentUpdate = \this {acls} nextState -> 
-  --   modify _ {componentDidUpdate = \this {acls:oldAcls} _ -> dispatch eval this (Updated oldAcls)}
-
   let
     d = eval >>> affAction this
     componentDidUpdate {acls:oldAcls} _ _ = d $ Updated oldAcls
@@ -281,7 +276,8 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
           div [P.className classes.scrollable ] [
             droppable {droppableId:"common"} \p _ -> 
               div [unsafeMkProps "ref" p.innerRef, p.droppableProps, P.style {width: "100%"}] $
-                  mapWithIndex (\i (Tuple d t) -> commonExpr "common" [] (guard d $> targetActions i) false i t) terms
+                  mapWithIndex (\i (Tuple removable t) -> commonExpr "common" [] (guard removable $> targetActions i) false i t) 
+                    terms
               
           ]
         ]
@@ -330,8 +326,8 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
           ]
         ]
 
-      withPortal f p s = let child = f p s 
-        in if s.isDragging then maybe child (flip renderToPortal child) dragPortal else child
+      withPortal f p ds = let child = f p ds 
+        in if ds.isDragging then maybe child (flip renderToPortal child) dragPortal else child
 
       makeExpression indent multi expr l = case expr of       
           Term t n -> 
@@ -345,7 +341,7 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
             in Cons (\i -> commonExpr "term" [P.style {paddingLeft: indentPixels}] [termActions i] n i (ResolvedTerm t)) l
           Op op exprs n -> (Cons $ opEntry op n) (foldr (makeExpression (indent + 1) (length exprs > 1)) l exprs)
         where 
-        opEntry op n i = draggable {draggableId: "op" <> show i, index:i} $ \p s -> 
+        opEntry op n i = draggable {draggableId: "op" <> show i, index:i} $ \p _ -> 
           div [unsafeMkProps "ref" p.innerRef, p.draggableProps] [
             div [ P.className classes.opDrop, P.style {marginLeft: indentPixels} ] [ 
                 select [value $ opValue op n, textChange d $ ChangeOp i ] opItems,
@@ -354,20 +350,21 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
           ]
         indentPixels = indent * 12
       
-      commonExpr pfx props actions n i rt = draggable {draggableId: pfx <> show i, index:i} $ withPortal \p s -> 
+      commonExpr pfx props actions n i rt = draggable {draggableId: pfx <> show i, index:i} $ withPortal \p _ -> 
         div [unsafeMkProps "ref"  p.innerRef, p.draggableProps, p.dragHandleProps] $ [
           div ([P.className classes.termEntry] <> props) $ [ 
             listItemIcon_ [ icon_ [ text $ iconNameForTermType rt ] ], 
             listTextForTermType n rt ] <> actions
         ]
 
-      entryRow i (ResolvedEntry {granted,override,priv,expr}) = draggable { "type": "entry", draggableId: "entry" <> show i, index:i} $ withPortal \p _ -> 
+      entryRow i (ResolvedEntry {granted,override,priv,expr}) = 
+        draggable { "type": "entry", draggableId: "entry" <> show i, index:i} $ withPortal \p _ -> 
         div [unsafeMkProps "ref" p.innerRef, p.draggableProps, p.dragHandleProps] [
           div' [
             let selected = eq i <$> selectedIndex # fromMaybe false
                 menuOpen = (fst >>> eq i <$> s.entryMenu) # fromMaybe false
-                p = guard selected $> className classes.selectedEntry
-            in listItem (p <> [ P.button true, disableRipple true, onClick $ \_ -> d $ SelectEntry i]) [ 
+                props = guard selected $> className classes.selectedEntry
+            in listItem (props <> [ P.button true, disableRipple true, onClick $ \_ -> d $ SelectEntry i]) [ 
               div [P.className classes.exprLine ] [
                 listItemText [ className classes.entryText, disableTypography true, P.primary $ privText, P.secondary secondLine ],
                 div [ P.className classes.termActions ] [ 
@@ -455,9 +452,9 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
     reorder :: forall a. Int -> Int -> Array a -> Array a 
     reorder sourceIndex destIndex a = fromMaybe a do
       let newdest = if destIndex < 1 then 0 else destIndex
-      o <- index a sourceIndex
-      d <- deleteAt sourceIndex a
-      insertAt newdest o d
+      src <- index a sourceIndex
+      dest <- deleteAt sourceIndex a
+      insertAt newdest src dest
 
     appendExpr :: ResolvedExpression -> ResolvedExpression -> ResolvedExpression
     appendExpr e = atEnd
@@ -503,7 +500,7 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
     insertInto :: Int -> ResolvedExpression -> ResolvedExpression -> ResolvedExpression
     insertInto i e re = either (const re) singleExpr $ map (\f -> f [e]) $ findExprInsert i re 
       where 
-      singleExpr [e] = e 
+      singleExpr [se] = se 
       singleExpr exprs = defaultOp exprs
 
     copyToCurrent :: Int -> Int -> State MyState Boolean
@@ -529,8 +526,8 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
       if changed then do 
         {onChange:oc} <- getProps
         liftEffect $ runEffectFn1 oc {canSave: not $ any isInvalid acls, getAcls : liftEffect $ flip runReaderT this do 
-              {acls} <- getState
-              pure $ (traverse backToAccessEntry acls) # maybe ([]) \entries -> do 
+              s <- getState
+              pure $ (traverse backToAccessEntry s.acls) # maybe ([]) \entries -> do 
                 entryToTargetList <$> entries
           }
         else pure unit
