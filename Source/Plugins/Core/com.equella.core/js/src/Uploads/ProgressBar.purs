@@ -2,31 +2,25 @@ module Uploads.ProgressBar where
 
 import Prelude hiding (div)
 
-import Control.Monad.Eff (Eff)
-import Data.Nullable (Nullable, toNullable)
-import React (ReactElement, ReactProps, ReactRefs, ReactThis, ReadOnly, Ref, createClass, createFactory, getProps, readRef, spec, writeRef)
+import Data.Maybe (Maybe(..))
+import Dispatcher.React (propsRenderer, saveRef, withRef)
+import Effect (Effect)
+import Effect.Ref (new)
+import Effect.Uncurried (runEffectFn1)
+import React (ReactElement, ReactRef, component, getProps, unsafeCreateLeafElement)
 import React.DOM (div)
-import React.DOM.Props (className, withRef)
+import React.DOM.Props (className, ref)
 
-foreign import runProgress :: forall e. Nullable Ref -> Int -> Eff e Unit
+foreign import runProgress :: Int -> ReactRef -> Effect Unit
 
 progressBar :: {progress::Int} -> ReactElement
-progressBar = createFactory $ createClass $ (spec {} (\this -> render this <$> getProps this)) {
-  componentDidMount = mounted,
-  componentDidUpdate = updated}
-  where
-  updateProgress :: forall eff. ReactThis {progress::Int} {} -> Eff
-    ( props :: ReactProps
-    , refs :: ReactRefs ReadOnly
-    | eff
-    ) Unit
-  updateProgress this = do
-    {progress} <- getProps this
-    el <- readRef this "main"
-    runProgress (toNullable el) progress
-  mounted this = updateProgress this
-  updated this prevProps state = updateProgress this
-  render this {progress} = div [
-    className "progress-bar",
-    withRef (\ref -> writeRef this "main" ref)
-  ] [ ]
+progressBar = unsafeCreateLeafElement $ component "ProgressBar" $ \this -> do 
+  mainRef <- new Nothing
+  let updateProgress = do
+          {progress} <- getProps this
+          withRef mainRef $ runProgress progress
+      render {progress} = div [
+        className "progress-bar",
+        ref $ runEffectFn1 $ saveRef mainRef
+      ] [ ]
+  pure {render: propsRenderer render this, componentDidMount: updateProgress, componentDidUpdate: \_ _ _ -> updateProgress}

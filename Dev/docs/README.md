@@ -35,7 +35,7 @@ Originally EQUELLA was built out of several hundred "plugins" which each had the
 However for a few reasons (lack of typesafety for core functionality, slowness of build system, complexity) the number of plugins was cut back to a minimum. Fore "core" functionality, rather than creating a completely new plugin and filling out the various XML extension points, 
 you should simply add your classes to an existing (or new) package inside one of a few select plugins:
 
-Inside `Source/Plugins/Core/` -
+Inside `Source/Plugins/Core`:
 
 * `com.equella.core` - Anything related to the web site, frontend or backend.
 * `com.equella.serverbase` - Classes that don't have an affiliation with the web, e.g. DB access, core services.

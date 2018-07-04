@@ -2,10 +2,10 @@ module Bridge where
 
 import Prelude
 
-import Control.Monad.IOEffFn (IOFn1)
-import Data.Foreign (Foreign)
-import MaterialUI.Event (Event)
+import Effect.Uncurried (EffectFn1)
+import Foreign (Foreign)
 import React (ReactClass)
+import React.SyntheticEvent (SyntheticEvent)
 import Routes (Route(..), routeHref)
 import Security.ACLEditor (aclEditorClass)
 import Template (templateClass)
@@ -13,7 +13,7 @@ import Unsafe.Coerce (unsafeCoerce)
 
 type Bridge = {
     routes :: Foreign,
-    router :: Route -> {href::String, onClick :: IOFn1 Event Unit},
+    router :: Route -> {href::String, onClick :: EffectFn1 SyntheticEvent Unit},
     "Template" :: forall p. ReactClass p,
     "AclEditor" :: forall p. ReactClass p
 }

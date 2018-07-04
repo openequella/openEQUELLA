@@ -3,16 +3,17 @@ module SettingsPage where
 import Prelude
 
 import Common.Icons (expandMoreIcon)
-import Control.Monad.Aff.Console (log)
 import Control.Monad.Trans.Class (lift)
 import Data.Argonaut (class DecodeJson, decodeJson, (.?), (.??))
 import Data.Array (mapMaybe, sortWith)
 import Data.Either (either)
 import Data.Maybe (Maybe(..), maybe)
-import Data.StrMap as SM
 import Data.Tuple (Tuple(..))
-import Dispatcher.React (ReactProps(ReactProps), createLifecycleComponent, didMount, modifyState)
+import Dispatcher (affAction)
+import Dispatcher.React (modifyState, renderer)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
+import Effect.Class.Console (log)
+import Foreign.Object as SM
 import MaterialUI.CircularProgress (circularProgress)
 import MaterialUI.ExpansionPanel (expansionPanel_)
 import MaterialUI.ExpansionPanelDetails (expansionPanelDetails_)
@@ -24,8 +25,9 @@ import MaterialUI.Properties (className)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.Typography (typography)
 import Network.HTTP.Affjax (get)
-import React (ReactElement, createFactory)
-import React.DOM (a, div, div', text) as D
+import Network.HTTP.Affjax.Response (json)
+import React (ReactElement, component, unsafeCreateLeafElement)
+import React.DOM (a, div, text) as D
 import React.DOM.Props (_id)
 import React.DOM.Props as DP
 import Settings.UISettings (uiSettingsEditor)
@@ -57,23 +59,56 @@ type State = {
 
 data Command = LoadSettings
 
-initialState :: State
-initialState = {settings:Nothing}
-
 settingsPage :: {legacyMode::Boolean} -> ReactElement
-settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didMount LoadSettings) initialState render eval)
-  where
-  groupDetails :: Array (Tuple String { name :: String, desc :: String })
-  groupDetails = [
-    Tuple "general" string.general,
-    Tuple "integration" string.integration,
-    Tuple "diagnostics" string.diagnostics,
-    Tuple "ui" string.ui
-  ]
+settingsPage = unsafeCreateLeafElement $ withStyles styles $ component "SettingsPage" $ \this -> do
+  let 
+    groupDetails :: Array (Tuple String { name :: String, desc :: String })
+    groupDetails = [
+      Tuple "general" string.general,
+      Tuple "integration" string.integration,
+      Tuple "diagnostics" string.diagnostics,
+      Tuple "ui" string.ui
+    ]
 
-  string = prepLangStrings rawStrings
-  coreString = prepLangStrings coreStrings 
+    string = prepLangStrings rawStrings
+    coreString = prepLangStrings coreStrings 
 
+    render {state:{settings}, props:{legacyMode,classes}} = if not legacyMode
+                        then template coreString.title [ mainContent ]
+                        else mainContent
+      where
+      mainContent = maybe (D.div [DP.className classes.progress] [ circularProgress [] ]) renderSettings settings
+      renderSettings allSettings =
+        let groupMap = SM.fromFoldableWith append $ (\(Setting s) -> Tuple s.group [s]) <$> allSettings
+            renderGroup (Tuple "ui" details) = Just $ settingGroup details uiSettingsEditor
+            renderGroup (Tuple id details) | Just _pages <- SM.lookup id groupMap =
+              let pages = sortWith _.name _pages
+              in Just $ settingGroup details $ expansionPanelDetails_ [ list_ $ mapMaybe pageLink pages ]
+            renderGroup _ = Nothing
+        in D.div [_id "settingsPage"] $ mapMaybe renderGroup groupDetails
+
+      settingGroup {name,desc} contents = expansionPanel_ [
+        expansionPanelSummary [expandIcon expandMoreIcon ] [
+          typography [className classes.heading] [ D.text name ],
+          typography [className classes.secondaryHeading] [ D.text desc ]
+        ],
+        contents
+      ]
+
+      pageLink s@{pageUrl:Just pageUrl} = Just $ listItem_ [
+        listItemText [
+          primary $ D.a [DP.href pageUrl] [ D.text s.name ],
+          secondary s.description
+        ]
+      ]
+      pageLink _ = Nothing
+
+    eval (LoadSettings) = do
+      result <- lift $ get json $ baseUrl <> "api/settings"
+      either (lift <<< log) (\r -> modifyState _ {settings=Just r}) $ decodeJson result.response
+
+  pure {state:{settings:Nothing} :: State, render: renderer render this, componentDidMount: affAction this $ eval LoadSettings}
+  where 
   styles theme = {
     heading: {
       fontSize: theme.typography.pxToRem 15,
@@ -90,39 +125,6 @@ settingsPage = createFactory (withStyles styles $ createLifecycleComponent (didM
       justifyContent: "center"
     }
   }
-  render {settings} (ReactProps {legacyMode,classes})= if not legacyMode
-                      then template coreString.title [ mainContent ]
-                      else mainContent
-    where
-    mainContent = maybe (D.div [DP.className classes.progress] [ circularProgress [] ]) renderSettings settings
-    renderSettings allSettings =
-      let groupMap = SM.fromFoldableWith append $ (\(Setting s) -> Tuple s.group [s]) <$> allSettings
-          renderGroup (Tuple "ui" details) = Just $ settingGroup details uiSettingsEditor
-          renderGroup (Tuple id details) | Just _pages <- SM.lookup id groupMap =
-            let pages = sortWith _.name _pages
-            in Just $ settingGroup details $ expansionPanelDetails_ [ list_ $ mapMaybe pageLink pages ]
-          renderGroup _ = Nothing
-      in D.div [_id "settingsPage"] $ mapMaybe renderGroup groupDetails
-
-    settingGroup {name,desc} contents = expansionPanel_ [
-      expansionPanelSummary [expandIcon expandMoreIcon ] [
-        typography [className classes.heading] [ D.text name ],
-        typography [className classes.secondaryHeading] [ D.text desc ]
-      ],
-      contents
-    ]
-
-    pageLink s@{pageUrl:Just pageUrl} = Just $ listItem_ [
-      listItemText [
-        primary $ D.a [DP.href pageUrl] [ D.text s.name ],
-        secondary s.description
-      ]
-    ]
-    pageLink _ = Nothing
-
-  eval (LoadSettings) = do
-    result <- lift $ get $ baseUrl <> "api/settings"
-    either (lift <<< log) (\r -> modifyState _ {settings=Just r}) $ decodeJson result.response
 
 type GroupStrings = { name :: String, desc :: String }
 

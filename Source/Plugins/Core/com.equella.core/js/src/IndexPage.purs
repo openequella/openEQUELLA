@@ -2,35 +2,27 @@ module IndexPage where
 
 import Prelude
 
-import Control.Monad.Aff (runAff_)
-import Control.Monad.Aff.Console (log)
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Class (liftEff)
-import Control.Monad.Eff.Console (CONSOLE)
-import Control.Monad.Eff.Timer (TIMER, setInterval)
-import Control.Monad.Reader (ask)
-import DOM (DOM)
-import DOM.HTML (window)
-import DOM.HTML.Location (pathname)
-import DOM.HTML.Window (location)
-import Data.Either (fromRight)
+import Control.Monad.Reader (runReaderT)
+import Data.Either (Either, either)
 import Data.Int (floor)
-import Data.Lens ((^.))
-import Data.Maybe (Maybe(..), fromJust, fromMaybe, maybe)
+import Data.Lens (view)
+import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Newtype (unwrap)
 import Data.Nullable (toMaybe)
 import Data.String (Pattern(Pattern), stripPrefix)
 import Data.Time.Duration (Minutes(..), fromDuration)
-import Data.URI.AbsoluteURI (_path)
-import Data.URI.Path (printPath)
-import Data.URI.URI (_hierPart, parse)
-import Dispatcher (DispatchEff(..), effEval, fromContext)
-import Dispatcher.React (createLifecycleComponent, didMount, modifyState)
+import Dispatcher.React (modifyState, stateRenderer)
 import EQUELLA.Environment (baseUrl)
+import Effect (Effect)
+import Effect.Aff (runAff_)
+import Effect.Class (liftEffect)
+import Effect.Class.Console (log)
+import Effect.Exception (throw)
+import Effect.Timer (setInterval)
 import LegacyPage (legacy)
-import Network.HTTP.Affjax (AJAX, get)
-import Partial.Unsafe (unsafePartial)
-import React (createFactory)
+import Network.HTTP.Affjax (get)
+import Network.HTTP.Affjax.Response (string)
+import React (component, unsafeCreateLeafElement)
 import React.DOM (div')
 import Routes (Route(..), matchRoute, nav)
 import Routing.PushState (matchesWith)
@@ -38,21 +30,40 @@ import SearchPage (searchPage)
 import SettingsPage (settingsPage)
 import TSComponents (courseEdit, coursesPage)
 import Template (renderData, renderMain, renderReact)
+import Text.Parsing.Parser (ParseError, runParser)
+import URI (AbsoluteURI, HierPath, Host, Path, Port, Query, UserInfo)
+import URI.AbsoluteURI (_hierPart, _path, parser)
+import URI.HostPortPair (HostPortPair)
+import URI.HostPortPair as HPP
+import URI.Path (print)
+import Web.HTML (window)
+import Web.HTML.Location (pathname)
+import Web.HTML.Window (location)
 
 data RouterCommand = Init | ChangeRoute Route
 type State = {route::Maybe Route}
 
-foreign import polyfill :: forall e. Eff e Unit
+foreign import polyfill :: Effect Unit
 
-main :: forall eff. Eff (dom :: DOM, timer::TIMER, ajax::AJAX, console::CONSOLE | eff) Unit
+parse :: String -> Either ParseError (AbsoluteURI UserInfo (HostPortPair Host Port) Path HierPath Query)
+parse = flip runParser $ parser {
+  parseUserInfo: pure, 
+  parseHosts: HPP.parser pure pure, 
+  parsePath: pure, 
+  parseHierPath: pure, 
+  parseQuery: pure
+}
+
+main :: Effect Unit
 main = do
   polyfill
-  let basePath = unsafePartial $ fromJust $ printPath <$> (fromRight (parse baseUrl) ^. (_hierPart <<< _path))
+  basePath <- either (throw <<< show) (pure <<< print) $ 
+    view (_hierPart <<< _path) <$> parse baseUrl
   w <- window
   l <- location w
   p <- pathname l
   _ <- setInterval (floor $ unwrap $ fromDuration $ Minutes 2.0) $ runAff_ (\_ -> pure unit) $ void $ do 
-    {response} <- get $ baseUrl <> "api/status/heartbeat"
+    {response} <- get string $ baseUrl <> "api/status/heartbeat"
     if response == "OK" then pure unit else log response
   let 
     pagePath = fromMaybe "" $ stripPrefix (Pattern basePath) p
@@ -62,23 +73,22 @@ main = do
         "access/settings.do" -> Just SettingsPage        
         _ -> Nothing
 
-    renderRoot = createFactory
-          (createLifecycleComponent (didMount Init) {route:initialRoute} render (effEval eval) ) {}
-      where 
-      
-      render {route:Just r} = case r of 
-        SearchPage -> searchPage
-        SettingsPage -> settingsPage {legacyMode:false}
-        CoursesPage -> coursesPage
-        NewCourse -> courseEdit Nothing
-        CourseEdit cid -> courseEdit $ Just cid
-      render _ = maybe (div' []) legacy $ toMaybe renderData.html
+    renderRoot = flip unsafeCreateLeafElement {} $ 
+          component "IndexPage" $ \this -> do 
+      let
+        d = eval >>> flip runReaderT this
+        render {route:Just r} = case r of 
+          SearchPage -> searchPage
+          SettingsPage -> settingsPage {legacyMode:false}
+          CoursesPage -> coursesPage
+          NewCourse -> courseEdit Nothing
+          CourseEdit cid -> courseEdit $ Just cid
+        render _ = maybe (div' []) legacy $ toMaybe renderData.html
 
-      eval Init = do 
-        (DispatchEff d) <- ask >>= fromContext eval
-        _ <- liftEff $ matchesWith parseIt (\_ -> d ChangeRoute) nav
-        pure unit
-      eval (ChangeRoute r) = modifyState _ {route=Just r}
+        eval Init =  
+          void $ liftEffect $ matchesWith parseIt (\_ -> flip runReaderT this <<< eval <<< ChangeRoute) nav
+        eval (ChangeRoute r) = modifyState _ {route=Just r}
+      pure {render: stateRenderer render this, componentDidMount: d Init, state: {route:initialRoute}}
 
   if renderData.newUI 
     then renderMain renderRoot 

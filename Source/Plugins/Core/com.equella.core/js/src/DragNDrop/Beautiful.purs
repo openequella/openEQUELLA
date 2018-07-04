@@ -2,11 +2,10 @@ module DragNDrop.Beautiful where
 
 import Prelude
 
-import Control.Monad.Eff (Eff)
-import Control.Monad.IOEffFn (IOFn1(..))
 import Data.Function.Uncurried (mkFn2)
 import Data.Nullable (Nullable)
-import React (ReactClass, ReactElement, Ref, createElement)
+import Effect.Uncurried (EffectFn1)
+import React (ReactClass, ReactElement, ReactRef, unsafeCreateElement)
 import React.DOM.Props (Props)
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -17,7 +16,7 @@ foreign import draggableClass :: forall a. ReactClass a
 foreign import droppableClass :: forall a. ReactClass a
 
 type DroppableProvided = {
-    innerRef :: String,
+    innerRef :: EffectFn1 (Nullable ReactRef) Unit,
     droppableProps :: Props,
     placeholder :: ReactElement
 }
@@ -26,7 +25,7 @@ type DroppableStateSnapshot = {
 }
 
 type DraggableProvided = {
-    innerRef :: String,
+    innerRef :: EffectFn1 (Nullable ReactRef) Unit,
     draggableProps :: Props,
     dragHandleProps :: Props,
     placeholder :: ReactElement
@@ -43,11 +42,11 @@ type DropResult = {
   reason :: String 
 }
 
-dragDropContext :: {onDragEnd :: IOFn1 DropResult Unit} -> Array ReactElement -> ReactElement
-dragDropContext = createElement dragDropContextClass
+dragDropContext :: {onDragEnd :: EffectFn1 DropResult Unit} -> Array ReactElement -> ReactElement
+dragDropContext = unsafeCreateElement dragDropContextClass
 
 droppable :: forall r. {droppableId::String| r} -> (DroppableProvided -> DroppableStateSnapshot -> ReactElement) -> ReactElement
-droppable a c = createElement droppableClass a (unsafeCoerce $ mkFn2 c)
+droppable a c = unsafeCreateElement droppableClass a (unsafeCoerce $ mkFn2 c)
 
 draggable :: forall r. {draggableId::String, index::Int | r} -> (DraggableProvided -> DraggableStateSnapshot -> ReactElement) -> ReactElement
-draggable a c = createElement draggableClass a (unsafeCoerce $ mkFn2 c)
+draggable a c = unsafeCreateElement draggableClass a (unsafeCoerce $ mkFn2 c)

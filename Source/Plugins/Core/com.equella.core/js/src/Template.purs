@@ -3,33 +3,22 @@ module Template where
 import Prelude
 
 import Common.CommonStrings (commonString)
-import Control.Monad.Aff.Console (log)
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Class (liftEff)
-import Control.Monad.Eff.Console (CONSOLE)
-import Control.Monad.IOEffFn (mkIOFn1, runIOFn1)
-import Control.Monad.Reader (ask)
-import Control.Monad.State (modify)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
-import DOM (DOM)
-import DOM.Event.EventTarget (EventListener, addEventListener, removeEventListener)
-import DOM.HTML (window)
-import DOM.HTML.Event.EventTypes (beforeunload)
-import DOM.HTML.Types (HTMLElement, htmlDocumentToDocument, windowToEventTarget)
-import DOM.HTML.Window (document)
-import DOM.Node.NonElementParentNode (getElementById)
-import DOM.Node.Types (ElementId(ElementId), documentToNonElementParentNode)
 import Data.Argonaut (decodeJson)
 import Data.Array (catMaybes, concat, intercalate)
 import Data.Either (either)
 import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, isJust, isNothing, maybe)
 import Data.Nullable (Nullable, toMaybe, toNullable)
-import Data.StrMap as M
 import Data.String (joinWith)
-import Dispatcher (DispatchEff(DispatchEff), fromContext)
-import Dispatcher.React (ReactChildren(..), ReactProps(ReactProps), createLifecycleComponent, didMount, getProps, getState, modifyState)
+import Dispatcher (affAction)
+import Dispatcher.React (getProps, getState, modifyState, renderer)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
+import Effect (Effect)
+import Effect.Class (liftEffect)
+import Effect.Class.Console (log)
+import Effect.Uncurried (mkEffectFn1, runEffectFn1)
+import Foreign.Object as M
 import MaterialUI.AppBar (appBar)
 import MaterialUI.Badge (badge, badgeContent)
 import MaterialUI.Button (button)
@@ -65,14 +54,23 @@ import MaterialUI.Typography (typography)
 import MaterialUIPicker.DateFns (momentUtils)
 import MaterialUIPicker.MuiPickersUtilsProvider (muiPickersUtilsProvider, utils)
 import Network.HTTP.Affjax (get)
+import Network.HTTP.Affjax.Response as Resp
 import Partial.Unsafe (unsafePartial)
-import React (ReactClass, ReactElement, createElement)
+import React (Children, ReactClass, ReactElement, childrenToArray, createElement)
+import React as R
 import React.DOM (footer, text)
 import React.DOM as D
 import React.DOM.Props as DP
 import ReactDOM (render)
 import Routes (Route, forcePushRoute, matchRoute, pushRoute, routeHref, setPreventNav)
 import SearchResults (SearchResultsMeta(SearchResultsMeta))
+import Utils.UI (withCurrentTarget)
+import Web.DOM.NonElementParentNode (getElementById)
+import Web.Event.EventTarget (EventListener, addEventListener, removeEventListener)
+import Web.HTML (HTMLElement, window)
+import Web.HTML.Event.BeforeUnloadEvent.EventTypes (beforeunload)
+import Web.HTML.HTMLDocument (toNonElementParentNode)
+import Web.HTML.Window (document, toEventTarget)
 
 newtype MenuItem = MenuItem {href::String, title::String, systemIcon::Nullable String, route:: Nullable String}
 
@@ -88,7 +86,7 @@ type UserData = {
 
 type RenderData = {
   baseResources::String, 
-  html::Nullable (M.StrMap String), 
+  html::Nullable (M.Object String), 
   title::String, 
   menuItems :: Array (Array MenuItem), 
   menuMode :: String,
@@ -98,16 +96,16 @@ type RenderData = {
   user::UserData
 }
 
-foreign import preventUnload :: forall e. EventListener e
+foreign import preventUnload :: EventListener
 
 foreign import renderData :: RenderData
 
-foreign import setTitle :: forall e. String -> Eff (dom::DOM|e) Unit
+foreign import setTitle :: String -> Effect Unit
 
 nullAny :: forall a. Nullable a
 nullAny = toNullable Nothing
 
-type TemplateProps = {
+type TemplateProps = (
   title::String, 
   fixedViewPort :: Nullable Boolean, -- Fix the height of the main content, otherwise use min-height
   preventNavigation :: Nullable Boolean, -- Prevent navigation away from this page (e.g. Unsaved data) 
@@ -116,7 +114,7 @@ type TemplateProps = {
   tabs :: Nullable ReactElement, -- Additional markup for displaying tabs which integrate with the App bar
   footer :: Nullable ReactElement, -- Markup to show at the bottom of the main area. E.g. save/cancel options
   backRoute :: Nullable Route -- An optional Route for showing a back icon button
-}
+)
 
 type State = {
   mobileOpen::Boolean, 
@@ -135,287 +133,296 @@ initialState = {
 template :: String -> Array ReactElement -> ReactElement
 template title = template' $ templateDefaults title
 
-template' :: TemplateProps -> Array ReactElement -> ReactElement
+template' :: {|TemplateProps} -> Array ReactElement -> ReactElement
 template' = createElement templateClass
 
-templateDefaults ::  String -> TemplateProps
+templateDefaults ::  String ->  {|TemplateProps} 
 templateDefaults title = {title,titleExtra:nullAny, fixedViewPort:nullAny,preventNavigation:nullAny, menuExtra:nullAny, 
   tabs:nullAny, backRoute: nullAny, footer: nullAny}
 
-templateClass :: ReactClass TemplateProps
-templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initialState render eval)
-  where
-  boolNull = fromMaybe false <<< toMaybe
-  lifecycle = do 
-    didMount Init
-    modify _ {
-      componentDidUpdate = \this {preventNavigation} _ -> do
-        (DispatchEff d) <- fromContext eval this
-        d Updated {preventNavigation}, 
-      componentWillUnmount = \this -> setUnloadListener false 
-    }
-  newPage = isNothing $ toMaybe renderData.html
-  strings = prepLangStrings rawStrings
-  coreString = prepLangStrings coreStrings
-  drawerWidth = 240
-  tabHeight = 48 
-  ourStyles theme = 
-    let desktop :: forall a. {|a} -> MediaQuery
-        desktop = mediaQuery $ theme.breakpoints.up "md"
-        mobile :: forall a. {|a} -> MediaQuery
-        mobile = mediaQuery $ theme.breakpoints.up "sm"
-    in {
-    root: {
-      width: "100%",
-      zIndex: 1
-    },
-    title: cssList [ 
-      desktop {
-        marginLeft: theme.spacing.unit * 4
-      }, 
-      allQuery {
-        overflow: "hidden", 
-        whiteSpace: "nowrap", 
-        textOverflow: "ellipsis",
-        marginLeft: theme.spacing.unit
-      }
-    ],
-    appFrame: {
-      position: "relative"
-    },
-    appBar: cssList [ 
-      allQuery {
-        position: "fixed",
-        marginLeft: drawerWidth
-      },
-      desktop { 
-        width: "calc(100% - " <> show drawerWidth <> "px)"
-      }
-    ],
-    navIconHide: desktop { 
-      display: "none" 
-    },
-    toolbar: theme.mixins.toolbar,
-    drawerPaper: cssList [ 
-      desktop {
-        position: "fixed"
-      },
-      allQuery { 
-        width: drawerWidth 
-      }
-    ],
-    tabs: {
-      height: tabHeight
-    },
-    contentMinHeight: { 
-      minHeight: "100vh"
-    },
-    contentFixedHeight: {
-      height: "100vh"
-    },
-    "@global": cssList [
-      allQuery {
-        a: {
-          textDecoration: "none",
-          color: theme.palette.primary.main
-        }
-      }
-    ],
-    content: cssList [
-      allQuery {
-        display: "flex",
-        flexDirection: "column"
-      },
-      desktop {
-        marginLeft: drawerWidth
-      }
-    ],
-    logo: {
-      textAlign: "center",
-      marginTop: theme.spacing.unit * 2
-    }, 
-    titleArea: {
-      flexGrow: 1,
-      display: "flex", 
-      alignItems: "center", 
-      overflow: "hidden"
-    }, 
-    contentArea: {
-      flexGrow: 1, 
-      flexBasis: 0,
-      minHeight: 0
-    },
-    userMenu: {
-      flexShrink: 0
-    }, 
-    footer: cssList [
-      allQuery {
-        position: "fixed", 
-        right: 0,
-        bottom: 0, 
-        zIndex: 1000,
-        width: "100%"
-      }, 
-      desktop {
-        width: "calc(100% - " <> show drawerWidth <> "px)"
-      }
-    ]
-  }
+templateClass :: ReactClass {children::Children|TemplateProps}
+templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
+  let
+    d = eval >>> affAction this
+    boolNull = fromMaybe false <<< toMaybe
 
-  setUnloadListener :: forall e. Boolean -> Eff (dom::DOM|e) Unit
-  setUnloadListener add = do 
-    w <- window
-    (if add then addEventListener else removeEventListener) beforeunload preventUnload false $ windowToEventTarget w 
+    componentDidUpdate {preventNavigation} _ _ = d $ Updated {preventNavigation}
+    componentWillUnmount = setUnloadListener false
 
-  setPreventUnload add = do 
-    (DispatchEff d) <- ask >>= fromContext eval 
-    liftEff $ setPreventNav (mkIOFn1 \r -> do 
-      if add then d AttemptRoute r else pure unit
-      pure add
-    )
-    liftEff $ setUnloadListener add
+    newPage = isNothing $ toMaybe renderData.html
+    strings = prepLangStrings rawStrings
+    coreString = prepLangStrings coreStrings
 
-  eval (GoBack) = do 
-    {backRoute} <- getProps 
-    liftEff $ maybe (pure unit) pushRoute $ toMaybe backRoute  
-  eval (NavAway n) = do 
-    {attempt} <- getState
-    liftEff $ guard n *> attempt # maybe (pure unit) forcePushRoute
-    modifyState _{attempt = Nothing}
-  eval (AttemptRoute r) = do 
-    modifyState _{attempt = Just r}
-  eval (Updated {preventNavigation:oldpn}) = do 
-    {preventNavigation} <- getProps
-    let isTrue = fromMaybe false <<< toMaybe
-        newPN = isTrue preventNavigation
-    if isTrue oldpn /= newPN then setPreventUnload newPN else pure unit
-    pure unit
-  eval Init = do 
-    {title,preventNavigation:pn} <- getProps
-    liftEff $ setTitle $ title <> coreString.windowtitlepostfix
-    if fromMaybe false $ toMaybe pn then setPreventUnload true else pure unit
-    r <- lift $ get $ baseUrl <> "api/task"
-    either (lift <<< log) (\(SearchResultsMeta {available}) -> modifyState _ {tasks = Just available})  (decodeJson r.response)
-    r2 <- lift $ get $ baseUrl <> "api/notification"
-    either (lift <<< log) (\(SearchResultsMeta {available}) -> modifyState _ {notifications = Just available})  (decodeJson r2.response)
+    setUnloadListener :: Boolean -> Effect Unit
+    setUnloadListener add = do 
+      w <- window
+      (if add then addEventListener else removeEventListener) beforeunload preventUnload false $ toEventTarget w 
 
-  eval ToggleMenu = modifyState \(s :: State) -> s {mobileOpen = not s.mobileOpen}
-  eval (UserMenuAnchor el) = modifyState \(s :: State) -> s {menuAnchor = el}
+    setPreventUnload add = do 
+      liftEffect $ setPreventNav (mkEffectFn1 \r -> do 
+        if add then affAction this $ eval (AttemptRoute r) else pure unit
+        pure add
+      )
+      liftEffect $ setUnloadListener add
 
-  render state@{mobileOpen,menuAnchor,tasks,notifications,attempt} (ReactChildren children) (ReactProps props@{fixedViewPort:fvp, classes, 
-              title:titleText,titleExtra,menuExtra,backRoute}) 
-    (DispatchEff d) = muiPickersUtilsProvider [utils momentUtils] [
-    D.div [DP.className classes.root] $ [
-      cssBaseline_ [],
-      layout renderData.fullscreenMode renderData.menuMode renderData.hideAppBar, 
-      dialog [ open $ isJust attempt] [
-        dialogTitle_ [ text strings.navaway.title], 
-        dialogContent_ [
-          dialogContentText_ [ text strings.navaway.content ]
-        ], 
-        dialogActions_ [
-          button [onClick $ d \_ -> NavAway false, color C.secondary] [text commonString.action.cancel],
-          button [onClick $ d \_ -> NavAway true, color C.primary] [text commonString.action.discard]
+    eval (GoBack) = do 
+      {backRoute} <- getProps
+      liftEffect $ maybe (pure unit) pushRoute $ toMaybe backRoute  
+    eval (NavAway n) = do 
+      {attempt} <- getState
+      liftEffect $ guard n *> attempt # maybe (pure unit) forcePushRoute
+      modifyState _{attempt = Nothing}
+    eval (AttemptRoute r) = do 
+      modifyState _{attempt = Just r}
+    eval (Updated {preventNavigation:oldpn}) = do 
+      {preventNavigation} <- getProps
+      let isTrue = fromMaybe false <<< toMaybe
+          newPN = isTrue preventNavigation
+      if isTrue oldpn /= newPN then setPreventUnload newPN else pure unit
+      pure unit
+    eval Init = do 
+      {title,preventNavigation:pn} <- getProps
+      liftEffect $ setTitle $ title <> coreString.windowtitlepostfix
+      if fromMaybe false $ toMaybe pn then setPreventUnload true else pure unit
+      r <- lift $ get Resp.json $ baseUrl <> "api/task"
+      either (lift <<< log) (\(SearchResultsMeta {available}) -> modifyState _ {tasks = Just available})  (decodeJson r.response)
+      r2 <- lift $ get Resp.json $ baseUrl <> "api/notification"
+      either (lift <<< log) (\(SearchResultsMeta {available}) -> modifyState _ {notifications = Just available})  (decodeJson r2.response)
+
+    eval ToggleMenu = modifyState \(s :: State) -> s {mobileOpen = not s.mobileOpen}
+    eval (UserMenuAnchor el) = modifyState \(s :: State) -> s {menuAnchor = el}
+
+    render {state: state@{mobileOpen,menuAnchor,tasks,notifications,attempt}, props:props@{fixedViewPort:fvp, classes, 
+                title:titleText,titleExtra,menuExtra,backRoute}} = muiPickersUtilsProvider [utils momentUtils] [
+      D.div [DP.className classes.root] $ [
+        cssBaseline_ [],
+        layout renderData.fullscreenMode renderData.menuMode renderData.hideAppBar, 
+        dialog [ open $ isJust attempt] [
+          dialogTitle_ [ text strings.navaway.title], 
+          dialogContent_ [
+            dialogContentText_ [ text strings.navaway.content ]
+          ], 
+          dialogActions_ [
+            button [onClick $ \_ -> d $ NavAway false, color C.secondary] [text commonString.action.cancel],
+            button [onClick $ \_ -> d $ NavAway true, color C.primary] [text commonString.action.discard]
+          ]
         ]
       ]
     ]
-  ]
-    where
-    tabsM = toMaybe props.tabs
-    fixedViewPort = fromMaybe false $ toMaybe fvp 
-
-    contentClass = if fixedViewPort then classes.contentFixedHeight else classes.contentMinHeight
-    content = D.main [ DP.className $ joinWith " " $ [classes.content, contentClass] ] $  
-      catMaybes [
-        Just $ D.div [DP.className classes.toolbar] [],
-        tabsM $> D.div [DP.className classes.tabs] [],
-        Just $ D.div [DP.className classes.contentArea] children
-      ]
-    fullscreen = D.main' children
-    layout "YES" _ _ = fullscreen
-    layout "YES_WITH_TOOLBAR" _ _ = fullscreen 
-    layout _ _ true = fullscreen
-    layout _ _ _ = D.div [DP.className classes.appFrame] $ [
-      topBar,
-      hidden [ mdUp true ] [
-        drawer [ variant temporary, anchor left, classes_ {paper: classes.drawerPaper},
-                  open mobileOpen, onClose (d \_ -> ToggleMenu) ] menuContent ],
-      hidden [ smDown true, implementation css ] [
-        drawer [variant permanent, anchor left, open true, classes_ {paper: classes.drawerPaper} ] menuContent
-      ],
-      content
-    ] <> catMaybes [
-      toMaybe props.footer <#> \fc -> footer [DP.className classes.footer] [ 
-        fc
-      ]
-    ]
-    hasMenu = case renderData.menuMode of 
-      "HIDDEN" -> false 
-      _ -> true
-    topBar = appBar [className $ classes.appBar] $ catMaybes [
-      Just $ toolbar [disableGutters true] $ concat [
-        guard hasMenu $> iconButton [
-            color C.inherit, className classes.navIconHide, 
-            onClick $ d \_ -> ToggleMenu] [ icon_ [D.text "menu" ] 
-        ], [
-          D.div [DP.className classes.titleArea] $ catMaybes [
-            toMaybe backRoute $> iconButton [color C.inherit, onClick $ d \_ -> GoBack] [ icon_ [D.text "arrow_back" ] ],
-            Just $ typography [variant TS.headline, color C.inherit, className classes.title] [ D.text titleText ], 
-            toMaybe titleExtra
-          ],
-          userMenu 
-        ]
-      ], 
-      tabsM
-    ]
-    topBarString = coreString.topbar.link
-
-    userMenu = D.div [DP.className classes.userMenu ] $ (fromMaybe [] $ toMaybe menuExtra) <>
-      (guard (not renderData.user.guest) *>
-      [
-        badgedLink "assignment" tasks "access/tasklist.do" topBarString.tasks , 
-        badgedLink "notifications" notifications "access/notifications.do" topBarString.notifications,
-        tooltip [title strings.menu.title] [ 
-          iconButton [color inherit, mkProp "aria-label" strings.menu.title, onClick $ d \e -> UserMenuAnchor $ Just e.currentTarget] [
-            icon_ [ D.text "account_circle"]
-          ]
-        ],
-        menu [
-            anchorEl $ toNullable menuAnchor,
-            open $ isJust menuAnchor,
-            onClose $ d \_ -> UserMenuAnchor Nothing,
-            anchorOrigin $ { vertical: "top", horizontal: "right" },
-            transformOrigin $ { vertical: "top", horizontal: "right" }
-        ] $ catMaybes
-          [ Just $ menuItem [component "a", mkProp "href" "logon.do?logout=true"] [D.text strings.menu.logout],
-            guard renderData.user.prefsEditable $> menuItem [component "a", mkProp "href" "access/user.do"] [D.text strings.menu.prefs]
-          ]
-      ])
-    badgedLink iconName count uri tip = 
-      let iconOnly = icon_ [ D.text iconName ]
-          buttonLink col content = iconButton [mkProp "href" uri, color col, mkProp "aria-label" tip ] [ content ]
-       in tooltip [ title tip ] [ 
-         case fromMaybe 0 count of
-            0 -> buttonLink default iconOnly
-            c -> buttonLink inherit $ badge [badgeContent c, color secondary] [iconOnly]
-       ]
-    menuContent = [D.div [DP.className classes.logo] [ D.img [ DP.role "presentation", DP.src logoSrc] []]] <>
-                  intercalate [divider []] (group <$> renderData.menuItems)
       where
-        logoSrc = renderData.baseResources <> "images/new-equella-logo.png"
-        group items = [list [component "nav"] (navItem <$> items)]
-        navItem (MenuItem {title,href,systemIcon,route}) = listItem (linkProps <> [LI.button true, component "a"])
-          [
-            listItemIcon_ [icon [ color C.inherit ] [ D.text $ fromMaybe "folder" $ toMaybe systemIcon ] ],
-            listItemText [disableTypography true, primary $ typography [variant subheading, component "div"] [text title]]
+      children = childrenToArray props.children
+      tabsM = toMaybe props.tabs
+      fixedViewPort = fromMaybe false $ toMaybe fvp 
+
+      contentClass = if fixedViewPort then classes.contentFixedHeight else classes.contentMinHeight
+      content = D.main [ DP.className $ joinWith " " $ [classes.content, contentClass] ] $  
+        catMaybes [
+          Just $ D.div [DP.className classes.toolbar] [],
+          tabsM $> D.div [DP.className classes.tabs] [],
+          Just $ D.div [DP.className classes.contentArea] children
+        ]
+      fullscreen = D.main' children
+      layout "YES" _ _ = fullscreen
+      layout "YES_WITH_TOOLBAR" _ _ = fullscreen 
+      layout _ _ true = fullscreen
+      layout _ _ _ = D.div [DP.className classes.appFrame] $ [
+        topBar,
+        hidden [ mdUp true ] [
+          drawer [ variant temporary, anchor left, classes_ {paper: classes.drawerPaper},
+                    open mobileOpen, onClose (\_ -> d ToggleMenu) ] menuContent ],
+        hidden [ smDown true, implementation css ] [
+          drawer [variant permanent, anchor left, open true, classes_ {paper: classes.drawerPaper} ] menuContent
+        ],
+        content
+      ] <> catMaybes [
+        toMaybe props.footer <#> \fc -> footer [DP.className classes.footer] [ 
+          fc
+        ]
+      ]
+      hasMenu = case renderData.menuMode of 
+        "HIDDEN" -> false 
+        _ -> true
+      topBar = appBar [className $ classes.appBar] $ catMaybes [
+        Just $ toolbar [disableGutters true] $ concat [
+          guard hasMenu $> iconButton [
+              color C.inherit, className classes.navIconHide, 
+              onClick $ \_ -> d $ ToggleMenu] [ icon_ [D.text "menu" ] 
+          ], [
+            D.div [DP.className classes.titleArea] $ catMaybes [
+              toMaybe backRoute $> iconButton [color C.inherit, onClick $ \_ -> d GoBack] [ icon_ [D.text "arrow_back" ] ],
+              Just $ typography [variant TS.headline, color C.inherit, className classes.title] [ D.text titleText ], 
+              toMaybe titleExtra
+            ],
+            userMenu 
           ]
-          where 
-            linkProps = case routeHref <$> (toMaybe route >>= matchRoute) of
-              (Just {href:hr,onClick:oc}) | newPage -> [mkProp "href" hr, onClick $ runIOFn1 oc]
-              _ -> [ mkProp "href" href ]
+        ], 
+        tabsM
+      ]
+      topBarString = coreString.topbar.link
+
+      userMenu = D.div [DP.className classes.userMenu ] $ (fromMaybe [] $ toMaybe menuExtra) <>
+        (guard (not renderData.user.guest) *>
+        [
+          badgedLink "assignment" tasks "access/tasklist.do" topBarString.tasks , 
+          badgedLink "notifications" notifications "access/notifications.do" topBarString.notifications,
+          tooltip [title strings.menu.title] [ 
+            iconButton [color inherit, mkProp "aria-label" strings.menu.title, 
+              onClick $ withCurrentTarget $ d <<< UserMenuAnchor <<< Just] [
+              icon_ [ D.text "account_circle"]
+            ]
+          ],
+          menu [
+              anchorEl $ toNullable menuAnchor,
+              open $ isJust menuAnchor,
+              onClose $ \_ -> d $ UserMenuAnchor Nothing,
+              anchorOrigin $ { vertical: "top", horizontal: "right" },
+              transformOrigin $ { vertical: "top", horizontal: "right" }
+          ] $ catMaybes
+            [ Just $ menuItem [component "a", mkProp "href" "logon.do?logout=true"] [D.text strings.menu.logout],
+              guard renderData.user.prefsEditable $> menuItem [component "a", mkProp "href" "access/user.do"] [D.text strings.menu.prefs]
+            ]
+        ])
+      badgedLink iconName count uri tip = 
+        let iconOnly = icon_ [ D.text iconName ]
+            buttonLink col content = iconButton [mkProp "href" uri, color col, mkProp "aria-label" tip ] [ content ]
+        in tooltip [ title tip ] [ 
+          case fromMaybe 0 count of
+              0 -> buttonLink default iconOnly
+              c -> buttonLink inherit $ badge [badgeContent c, color secondary] [iconOnly]
+        ]
+      menuContent = [D.div [DP.className classes.logo] [ D.img [ DP.role "presentation", DP.src logoSrc] ]] <>
+                    intercalate [divider []] (group <$> renderData.menuItems)
+        where
+          logoSrc = renderData.baseResources <> "images/new-equella-logo.png"
+          group items = [list [component "nav"] (navItem <$> items)]
+          navItem (MenuItem {title,href,systemIcon,route}) = listItem (linkProps <> [LI.button true, component "a"])
+            [
+              listItemIcon_ [icon [ color C.inherit ] [ D.text $ fromMaybe "folder" $ toMaybe systemIcon ] ],
+              listItemText [disableTypography true, primary $ typography [variant subheading, component "div"] [text title]]
+            ]
+            where 
+              linkProps = case routeHref <$> (toMaybe route >>= matchRoute) of
+                (Just {href:hr,onClick:oc}) | newPage -> [mkProp "href" hr, onClick $ runEffectFn1 oc]
+                _ -> [ mkProp "href" href ]
+  pure {
+    render: renderer render this, 
+    state:initialState, 
+    componentDidMount: d Init, componentDidUpdate,
+    componentWillUnmount
+  }
+  where
+    drawerWidth = 240
+    tabHeight = 48 
+    ourStyles theme = 
+      let desktop :: forall a. {|a} -> MediaQuery
+          desktop = mediaQuery $ theme.breakpoints.up "md"
+          mobile :: forall a. {|a} -> MediaQuery
+          mobile = mediaQuery $ theme.breakpoints.up "sm"
+      in {
+      root: {
+        width: "100%",
+        zIndex: 1
+      },
+      title: cssList [ 
+        desktop {
+          marginLeft: theme.spacing.unit * 4
+        }, 
+        allQuery {
+          overflow: "hidden", 
+          whiteSpace: "nowrap", 
+          textOverflow: "ellipsis",
+          marginLeft: theme.spacing.unit
+        }
+      ],
+      appFrame: {
+        position: "relative"
+      },
+      appBar: cssList [ 
+        allQuery {
+          position: "fixed",
+          marginLeft: drawerWidth
+        },
+        desktop { 
+          width: "calc(100% - " <> show drawerWidth <> "px)"
+        }
+      ],
+      navIconHide: desktop { 
+        display: "none" 
+      },
+      toolbar: theme.mixins.toolbar,
+      drawerPaper: cssList [ 
+        desktop {
+          position: "fixed"
+        },
+        allQuery { 
+          width: drawerWidth 
+        }
+      ],
+      tabs: {
+        height: tabHeight
+      },
+      contentMinHeight: { 
+        minHeight: "100vh"
+      },
+      contentFixedHeight: {
+        height: "100vh"
+      },
+      "@global": cssList [
+        allQuery {
+          a: {
+            textDecoration: "none",
+            color: theme.palette.primary.main
+          }
+        }, 
+        desktop {
+          html: {
+            overflowY: "scroll"
+          }
+        }
+      ],
+      content: cssList [
+        allQuery {
+          display: "flex",
+          flexDirection: "column"
+        },
+        desktop {
+          marginLeft: drawerWidth
+        }
+      ],
+      logo: {
+        textAlign: "center",
+        marginTop: theme.spacing.unit * 2
+      }, 
+      titleArea: {
+        flexGrow: 1,
+        display: "flex", 
+        alignItems: "center", 
+        overflow: "hidden"
+      }, 
+      contentArea: {
+        flexGrow: 1, 
+        flexBasis: 0,
+        minHeight: 0
+      },
+      userMenu: {
+        flexShrink: 0
+      }, 
+      footer: cssList [
+        allQuery {
+          position: "fixed", 
+          right: 0,
+          bottom: 0, 
+          zIndex: 1000,
+          width: "100%"
+        }, 
+        desktop {
+          width: "calc(100% - " <> show drawerWidth <> "px)"
+        }
+      ]
+    }
 
 
-renderReact :: forall eff. String -> ReactElement -> Eff (dom :: DOM, console::CONSOLE | eff) Unit
+renderReact :: String -> ReactElement -> Effect Unit
 renderReact divId main = do
   void (elm' >>= render main)
   where
@@ -423,13 +430,23 @@ renderReact divId main = do
   elm' = do
     win <- window
     doc <- document win
-    elm <- getElementById (ElementId divId) (documentToNonElementParentNode (htmlDocumentToDocument doc))
+    elm <- getElementById divId (toNonElementParentNode doc)
     pure $ unsafePartial (fromJust elm)
 
 
-renderMain :: forall eff. ReactElement -> Eff (dom :: DOM, console::CONSOLE | eff) Unit
+renderMain :: ReactElement -> Effect Unit
 renderMain = renderReact "mainDiv"
 
+rawStrings :: { prefix :: String
+, strings :: { menu :: { title :: String
+                       , logout :: String
+                       , prefs :: String
+                       }
+             , navaway :: { title :: String
+                          , content :: String
+                          }
+             }
+}
 rawStrings = {prefix: "template", 
   strings: {
     menu: {
@@ -444,6 +461,14 @@ rawStrings = {prefix: "template",
   }
 }
 
+coreStrings :: { prefix :: String
+, strings :: { windowtitlepostfix :: String
+             , topbar :: { link :: { notifications :: String
+                                   , tasks :: String
+                                   }
+                         }
+             }
+}
 coreStrings = {prefix: "com.equella.core",
   strings: {
     windowtitlepostfix: " | EQUELLA",

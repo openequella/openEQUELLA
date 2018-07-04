@@ -4,8 +4,9 @@ import Prelude
 
 import Control.Bind (bindFlipped)
 import Data.Argonaut (class DecodeJson, class EncodeJson, decodeJson, getField, jsonEmptyObject, (.?), (:=), (~>))
-import Data.Array (drop, elemIndex, mapMaybe, uncons)
+import Data.Array (elemIndex, mapMaybe, uncons)
 import Data.Array as A
+import Data.Array.NonEmpty (drop, toArray)
 import Data.Bifunctor (lmap)
 import Data.Either (Either(..), either, fromRight)
 import Data.Int (fromString)
@@ -17,8 +18,7 @@ import Data.String.Regex (Regex, match, regex)
 import Data.String.Regex.Flags (noFlags)
 import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..), fst)
-import Debug.Trace (traceAny)
-import Global (decodeURIComponent, encodeURIComponent)
+import Global.Unsafe (unsafeDecodeURIComponent, unsafeEncodeURIComponent)
 import Partial.Unsafe (unsafePartial)
 
 data IpRange = IpRange Int Int Int Int Int
@@ -118,7 +118,7 @@ parseTerm = let
     "OR" -> Right $ BinOp OR
     "NOT" -> Right NOT 
     "*" -> t Everyone
-    s | Just [_, Just a, Just v'] <- match paramRegex s -> let v = decodeURIComponent v' in case a of 
+    s | Just [_, Just a, Just v'] <- toArray <$> match paramRegex s -> let v = unsafeDecodeURIComponent v' in case a of 
         "U" -> t $ User v
         "G" -> t $ Group v
         "R" -> case v of 
@@ -159,7 +159,7 @@ termToWho = case _ of
     Ip range -> param "I" $ ipAsString range 
     Referrer ref -> param "F" ref
     SharedSecretToken tokenId -> param "T" tokenId
-  where param a v = a <> ":" <> encodeURIComponent v
+  where param a v = a <> ":" <> unsafeEncodeURIComponent v
 
 rangeRegex :: Regex
 rangeRegex = unsafePartial fromRight $ regex "(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)/(\\d+)" noFlags

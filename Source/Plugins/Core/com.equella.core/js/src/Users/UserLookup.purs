@@ -2,17 +2,16 @@ module Users.UserLookup where
 
 import Prelude
 
-import Control.Monad.Aff (Aff, error, throwError)
 import Data.Argonaut (class DecodeJson, class EncodeJson, decodeJson, encodeJson, jsonEmptyObject, (.?), (.??), (:=), (~>))
 import Data.Either (either)
-import Data.Lens (Lens')
-import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Maybe (Maybe)
-import Data.Monoid (class Monoid)
 import Data.Newtype (class Newtype)
 import EQUELLA.Environment (baseUrl)
-import Global (encodeURIComponent)
-import Network.HTTP.Affjax (AJAX, get, post)
+import Effect.Aff (Aff, error, throwError)
+import Global.Unsafe (unsafeEncodeURIComponent)
+import Network.HTTP.Affjax (get, post)
+import Network.HTTP.Affjax.Response (json)
+import Network.HTTP.Affjax.Request (json) as Req
 
 type UserDetailsR = {id:: String, username:: String, firstName:: String,
                            lastName:: String, email :: Maybe String }
@@ -90,19 +89,19 @@ instance gUGR :: ToUGRDetail GroupDetails where
 instance rUGR :: ToUGRDetail RoleDetails where 
   toUGR r = UserGroupRoles {users:[], groups:[], roles:[r]}
 
-lookupUsers :: forall e. UserGroupRoles String String String -> Aff (ajax::AJAX|e) UGRDetail
+lookupUsers :: UserGroupRoles String String String -> Aff UGRDetail
 lookupUsers r = do 
-  resp <- post (baseUrl <> "api/userquery/lookup") (encodeJson r)
+  resp <- post json (baseUrl <> "api/userquery/lookup") $ Req.json (encodeJson r)
   either (throwError <<< error) pure $ decodeJson resp.response
 
-searchUGR :: forall e. String -> {users::Boolean, groups :: Boolean, roles :: Boolean} -> Aff (ajax::AJAX|e) UGRDetail
+searchUGR :: String -> {users::Boolean, groups :: Boolean, roles :: Boolean} -> Aff UGRDetail
 searchUGR q {users,groups,roles} =   do 
   let param t b = "&" <> t <> "=" <> show b
-  resp <- get $ baseUrl <> "api/userquery/search?q=" <> encodeURIComponent q <> param "users" users 
+  resp <- get json $ baseUrl <> "api/userquery/search?q=" <> unsafeEncodeURIComponent q <> param "users" users 
               <> param "groups" groups <> param "roles" roles 
   either (throwError <<< error) pure $ decodeJson resp.response
 
-listTokens :: forall e. Aff (ajax::AJAX|e) (Array String)
+listTokens :: Aff (Array String)
 listTokens =  do 
-  resp <- get $ baseUrl <> "api/userquery/tokens"
+  resp <- get json $ baseUrl <> "api/userquery/tokens"
   either (throwError <<< error) pure $ decodeJson resp.response

@@ -2,12 +2,12 @@ module DateUtils where
 
 import Prelude
 
-import Control.Monad.Eff.Unsafe (unsafePerformEff)
 import Data.DateTime (Date, canonicalDate, day, month, year)
 import Data.Enum (class BoundedEnum, fromEnum, toEnum)
 import Data.Int (floor, toNumber)
 import Data.JSDate (JSDate, getDate, getFullYear, getMonth, jsdateLocal)
 import Data.Maybe (fromJust)
+import Effect.Unsafe (unsafePerformEffect)
 import Partial.Unsafe (unsafePartial)
 
 dateToLocalJSDate :: Date -> JSDate
@@ -15,7 +15,7 @@ dateToLocalJSDate d =
   let 
   toNum :: forall a. BoundedEnum a => (Date -> a) -> Number
   toNum f = toNumber $ fromEnum $ f d
-  in unsafePerformEff $ jsdateLocal {
+  in unsafePerformEffect $ jsdateLocal {
         year: toNum year
       , month: toNum month - 1.0
       , day: toNum day
@@ -23,7 +23,7 @@ dateToLocalJSDate d =
 
 localJSToDate :: JSDate -> Date
 localJSToDate jsd = 
-    let {y,m,d} = unsafePerformEff do
+    let {y,m,d} = unsafePerformEffect do
             y <- getFullYear jsd
             m <- getMonth jsd 
             d <- getDate jsd

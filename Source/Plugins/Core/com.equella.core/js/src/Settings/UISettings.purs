@@ -2,10 +2,7 @@ module Settings.UISettings where
 
 import Prelude
 
-import Control.Monad.Aff (Fiber, Milliseconds(..), delay, error, forkAff, killFiber)
-import Control.Monad.Aff.Console (log)
-import Control.Monad.Eff.Uncurried (mkEffFn1, mkEffFn2)
-import Control.Monad.Reader (ask, runReaderT)
+import Control.Monad.Reader (runReaderT)
 import Control.Monad.Trans.Class (lift)
 import Data.Argonaut (class DecodeJson, class EncodeJson, decodeJson, encodeJson, jsonEmptyObject, (.?), (:=), (~>))
 import Data.Array (deleteAt, mapWithIndex, modifyAt, snoc)
@@ -17,16 +14,19 @@ import Data.Lens.Setter (set)
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Newtype (class Newtype)
 import Data.Symbol (SProxy(..))
-import Data.Tuple (Tuple(..))
-import Dispatcher (DispatchEff(..))
-import Dispatcher.React (ReactProps(..), createLifecycleComponent, didMount, getState, modifyState)
+import Dispatcher (affAction)
+import Dispatcher.React (getState, modifyState, renderer)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
+import Effect (Effect)
+import Effect.Aff (Fiber, Milliseconds(..), delay, error, forkAff, killFiber)
+import Effect.Class.Console (log)
+import Effect.Uncurried (mkEffectFn2)
 import MaterialUI.Button (button, fab)
 import MaterialUI.ExpansionPanelDetails (expansionPanelDetails_)
 import MaterialUI.FormControl (formControl_)
 import MaterialUI.FormControlLabel (control, formControlLabel, label)
 import MaterialUI.Icon (icon_)
-import MaterialUI.Properties (IProp, className, mkProp, onChange, onClick, variant)
+import MaterialUI.Properties (IProp, className, onChange, onClick, variant)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.Switch (switch)
 import MaterialUI.SwitchBase (checked, disabled)
@@ -34,10 +34,13 @@ import MaterialUI.TextField (margin, placeholder, textField, value)
 import MaterialUI.TextStyle (subheading)
 import MaterialUI.Typography (typography)
 import Network.HTTP.Affjax (get, put_)
-import React (ReactElement, createFactory)
+import Network.HTTP.Affjax.Request (json)
+import Network.HTTP.Affjax.Response (json) as Resp
+import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (text)
 import React.DOM as D
 import React.DOM.Props as DP
+import Utils.UI (textChange)
 
 
 newtype FacetSetting = FacetSetting { name :: String, path :: String }
@@ -92,111 +95,113 @@ data Command = LoadSetting | SetNewUI Boolean | SetNewSearch Boolean
 type State eff = {
   disabled :: Boolean,
   settings :: UISettings,
-  saving :: Maybe (Fiber eff Unit)
+  saving :: Maybe (Fiber Unit)
 }
 
 initialState :: forall eff. State eff
 initialState = {disabled:true, saving:Nothing, settings:UISettings {newUI: NewUISettings {enabled:false, newSearch: false, facets:[]}}}
 
 uiSettingsEditor :: ReactElement
-uiSettingsEditor = createFactory (withStyles styles $ createLifecycleComponent (didMount LoadSetting) initialState render eval) {}
-  where
-  string = prepLangStrings rawStrings
-  styles theme = {
-    fab: {
-      position: "absolute",
-      bottom: 0,
-      right: 16
-    },
-    enableColumn: {
-      flexBasis: "33.3%"
-    },
-    facetColumn: {
-      flexBasis: "50%"
-    },
-    facetConfig: {
-      position:"relative",
-      paddingBottom: 64
-    },
-    pathField: {
-      marginLeft: theme.spacing.unit,
-      marginRight: theme.spacing.unit,
-      width: 300
-    }
-  }
-  _newSearch = prop (SProxy :: SProxy "newSearch")
-  _enabled = prop (SProxy :: SProxy "enabled")
-  _newUI = prop (SProxy :: SProxy "newUI")
-  _settings = prop (SProxy :: SProxy "settings")
-  _facets = prop (SProxy :: SProxy "facets")
-  _name = prop (SProxy :: SProxy "name")
-  _path = prop (SProxy :: SProxy "path")
-  _newUISettings = _settings <<< _Newtype <<< _newUI <<< _Newtype
+uiSettingsEditor = flip unsafeCreateLeafElement {} $ withStyles styles $ component "UISettings" $ \this -> do 
+  let
+    d = eval >>> affAction this
+    string = prepLangStrings rawStrings
+    _newSearch = prop (SProxy :: SProxy "newSearch")
+    _enabled = prop (SProxy :: SProxy "enabled")
+    _newUI = prop (SProxy :: SProxy "newUI")
+    _settings = prop (SProxy :: SProxy "settings")
+    _facets = prop (SProxy :: SProxy "facets")
+    _name = prop (SProxy :: SProxy "name")
+    _path = prop (SProxy :: SProxy "path")
+    _newUISettings = _settings <<< _Newtype <<< _newUI <<< _Newtype
 
-  render s@{settings:UISettings uis@{newUI: (NewUISettings newUI)}} (ReactProps {classes}) (DispatchEff d) =
-    let
-      dis :: forall r. IProp (disabled::Boolean|r)
-      dis = disabled $ not newUI.enabled
-      facetEditor ind (FacetSetting {name,path}) = D.div' [
-        textField [dis, label $ string.facet.name, margin "normal", value name, changeField _name, placeholder string.facet.name],
-        textField [className classes.pathField, dis, margin "normal", label "Path", value path, changeField _path,
-          placeholder "/item/metadata/path" ],
-        button [dis, onClick $ d \_ -> RemoveFacet ind ] [ icon_ [ text "delete"] ]
-      ]
-        where changeField l = onChange $ mkEffFn1 (d $ \e -> ModifyFacet ind $ set (_Newtype <<< l) e.target.value)
-    in
-    expansionPanelDetails_ [
-      D.div [DP.className classes.enableColumn] [
-        formControl_ [
-          formControlLabel [ label string.enableNew, control $ switch [checked newUI.enabled,
-                          disabled s.disabled, onChange $ mkEffFn2 $ \e -> d $ SetNewUI ]]
+    render {state: s@{settings:UISettings uis@{newUI: (NewUISettings newUI)}}, props: {classes}} =
+      let
+        dis :: forall r. IProp (disabled::Boolean|r)
+        dis = disabled $ not newUI.enabled
+        facetEditor ind (FacetSetting {name,path}) = D.div' [
+          textField [dis, label $ string.facet.name, margin "normal", value name, changeField _name, placeholder string.facet.name],
+          textField [className classes.pathField, dis, margin "normal", label "Path", value path, changeField _path,
+            placeholder "/item/metadata/path" ],
+          button [dis, onClick $ \_ -> d $ RemoveFacet ind ] [ icon_ [ text "delete"] ]
         ]
-      ],
-      D.div [DP.className classes.facetColumn] $ [
-        formControl_ [
-          formControlLabel [ label string.enableSearch, control $ switch [checked newUI.newSearch,
-                          dis, onChange $ mkEffFn2 \e -> d $ SetNewSearch ]]
+          where changeField l = textChange d (ModifyFacet ind <<< set (_Newtype <<< l))
+      in
+      expansionPanelDetails_ [
+        D.div [DP.className classes.enableColumn] [
+          formControl_ [
+            formControlLabel [ label string.enableNew, control $ switch [checked newUI.enabled,
+                            disabled s.disabled, onChange $ mkEffectFn2 $ \e -> d <<< SetNewUI]]
+          ]
         ],
-        D.div [DP.className classes.facetConfig ] $ [
-          typography [variant subheading] [text string.facet.title]
-        ] <> (mapWithIndex facetEditor newUI.facets) <>
-        [
-          button [dis, variant fab, className classes.fab, onClick $ d \e -> AddFacet] [ icon_ [text "add"] ]
+        D.div [DP.className classes.facetColumn] $ [
+          formControl_ [
+            formControlLabel [ label string.enableSearch, control $ switch [checked newUI.newSearch,
+                            dis, onChange $ mkEffectFn2 \e -> d <<< SetNewSearch ]]
+          ],
+          D.div [DP.className classes.facetConfig ] $ [
+            typography [variant subheading] [text string.facet.title]
+          ] <> (mapWithIndex facetEditor newUI.facets) <>
+          [
+            button [dis, variant fab, className classes.fab, onClick $ \e -> d AddFacet] [ icon_ [text "add"] ]
+          ]
         ]
       ]
-    ]
 
-  modifyFacets = modifyState <<< over (_newUISettings <<< _facets)
-  modifyFacetsM f = modifyFacets \facets -> fromMaybe facets $ f facets
+    modifyFacets = modifyState <<< over (_newUISettings <<< _facets)
+    modifyFacetsM f = modifyFacets \facets -> fromMaybe facets $ f facets
 
-  save = do
-    {saving} <- getState
-    this <- ask
-    newFiber <- lift $ forkAff $ do
-      delay (Milliseconds 1000.0)
-      {settings} <- runReaderT getState this
-      void $ put_ (baseUrl <> "api/settings/ui") $ encodeJson settings
-    modifyState _{saving=Just newFiber}
-    lift $ maybe (pure unit) (killFiber (error "")) saving
+    save = do
+      {saving} <- getState
+      newFiber <- lift $ forkAff $ do
+        delay (Milliseconds 1000.0)
+        {settings} <- runReaderT getState this
+        void $ put_ (baseUrl <> "api/settings/ui") $ json $ encodeJson settings
+      modifyState _{saving=Just newFiber}
+      lift $ maybe (pure unit) (killFiber (error "")) saving
 
-  eval LoadSetting = do
-    result <- lift $ get $ baseUrl <> "api/settings/ui"
-    either (lift <<< log) (\r -> modifyState _ {settings=r, disabled=false}) $ decodeJson result.response
-  eval AddFacet = do
-    modifyFacets (flip snoc $ FacetSetting {name:"",path:""})
-    save
-  eval (RemoveFacet ind) = do
-    modifyFacetsM $ deleteAt ind
-    save
-  eval (ModifyFacet ind f) = do
-    modifyFacetsM $ modifyAt ind f
-    save
-  eval (SetNewUI v) = do
-    modifyState $ set (_newUISettings <<< _enabled) v
-    save
-  eval (SetNewSearch v) = do
-    modifyState $ set (_newUISettings <<< _newSearch) v
-    save
+    eval LoadSetting = do
+      result <- lift $ get Resp.json $ baseUrl <> "api/settings/ui"
+      either (lift <<< log) (\r -> modifyState _ {settings=r, disabled=false}) $ decodeJson result.response
+    eval AddFacet = do
+      modifyFacets (flip snoc $ FacetSetting {name:"",path:""})
+      save
+    eval (RemoveFacet ind) = do
+      modifyFacetsM $ deleteAt ind
+      save
+    eval (ModifyFacet ind f) = do
+      modifyFacetsM $ modifyAt ind f
+      save
+    eval (SetNewUI v) = do
+      modifyState $ set (_newUISettings <<< _enabled) v
+      save
+    eval (SetNewSearch v) = do
+      modifyState $ set (_newUISettings <<< _newSearch) v
+      save
+  pure {state:initialState, render: renderer render this, componentDidMount: d LoadSetting}
+  where 
+    styles theme = {
+      fab: {
+        position: "absolute",
+        bottom: 0,
+        right: 16
+      },
+      enableColumn: {
+        flexBasis: "33.3%"
+      },
+      facetColumn: {
+        flexBasis: "50%"
+      },
+      facetConfig: {
+        position:"relative",
+        paddingBottom: 64
+      },
+      pathField: {
+        marginLeft: theme.spacing.unit,
+        marginRight: theme.spacing.unit,
+        width: 300
+      }
+    }
 
 
 rawStrings = {

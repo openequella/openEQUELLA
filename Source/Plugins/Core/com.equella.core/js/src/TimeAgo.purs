@@ -3,7 +3,7 @@ module TimeAgo where
 import Prelude
 
 import MaterialUI.Properties (IProp, PropValue, mkPropF, mkPropRecord)
-import React (ReactClass, ReactElement, createElement)
+import React (ReactClass, ReactElement, createElement, unsafeCreateElement)
 import Unsafe.Coerce (unsafeCoerce)
 
 foreign import timeAgoClass :: forall p. ReactClass p
@@ -22,4 +22,4 @@ type TimeAgoProps = (
 )
 
 timeAgo :: forall a. IsTimeAgoDate a => a -> Array (IProp TimeAgoProps) -> ReactElement
-timeAgo dt p = createElement timeAgoClass (mkPropRecord $ [mkPropF "datetime" $ toProp dt] <> p) []
+timeAgo dt p = unsafeCreateElement timeAgoClass (mkPropRecord $ [mkPropF "datetime" $ toProp dt] <> p) []

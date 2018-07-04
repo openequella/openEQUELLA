@@ -3,15 +3,16 @@ module Tools.GenLangStrings where
 import Prelude
 
 import Common.CommonStrings (commonString)
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
 import Control.Plus (empty)
 import Data.Argonaut (encodeJson, stringify)
-import Data.StrMap (fromFoldable) as SM
 import Data.List (List, fromFoldable, singleton)
-import Data.Record (get)
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Tuple (Tuple(..))
+import Effect (Effect)
+import Effect.Class.Console (log)
+import Foreign.Object as SM
+import Prim.Row (class Cons)
+import Record (get)
 import SearchPage (coreStrings, rawStrings) as SearchPage
 import Security.ACLEditor (aclRawStrings)
 import Security.TermSelection (termRawStrings)
@@ -33,7 +34,7 @@ foreign import genStringsDynamic :: (String -> String -> Tuple String String) ->
 instance nilStrings :: ConvertToStrings (Tuple (RLProxy Nil) (Record r)) where
   genStrings _ _ = empty
 
-instance consStrings :: (IsSymbol hs, RowCons hs ht r' r,
+instance consStrings :: (IsSymbol hs, Cons hs ht r' r,
     ConvertToStrings ht,
     ConvertToStrings (Tuple (RLProxy t) (Record r)))
   => ConvertToStrings (Tuple (RLProxy (Cons hs ht t)) (Record r)) where
@@ -57,7 +58,7 @@ instance dynamic :: ConvertToStrings DynamicString where
 genTopLevel :: forall r. ConvertToStrings r => {prefix::String, strings:: r} -> List (Tuple String String)
 genTopLevel {prefix,strings} = genStrings "" (Tuple prefix strings)
 
-main :: forall eff. Eff ( console :: CONSOLE | eff) Unit
+main :: Effect Unit
 main = do
   log $ stringify $ encodeJson $ SM.fromFoldable $
     genTopLevel Template.rawStrings <>

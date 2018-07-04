@@ -32,7 +32,7 @@ resolvedToTerm = case _ of
   ResolvedRole (RoleDetails {id}) -> Role id
 
 findExprModify :: Int -> ResolvedExpression -> Either Int { get :: ResolvedExpression, modify :: Maybe ResolvedExpression -> Maybe ResolvedExpression }
-findExprModify 0 e = Right $ {get:e, modify: id}
+findExprModify 0 e = Right $ {get:e, modify: identity}
 findExprModify i (Term _ _) = Left $ i - 1
 findExprModify i (Op op exprs notted) = 
   let foldOp (Left {i,o}) e = let 
@@ -41,7 +41,7 @@ findExprModify i (Op op exprs notted) =
           in Just $ Op op newexprs notted } 
         in bimap {i: _, o:o+1} update $ findExprModify i e
       foldOp r _ = r
-  in bimap _.i id $ foldl foldOp (Left $ {i: i - 1, o:0}) exprs 
+  in bimap _.i identity $ foldl foldOp (Left $ {i: i - 1, o:0}) exprs 
 
 findExprInsert :: Int -> ResolvedExpression -> Either Int (Array ResolvedExpression -> Array ResolvedExpression)
 findExprInsert 0 e = Right $ \n -> n <> [e]

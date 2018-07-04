@@ -2,18 +2,15 @@ module LegacyPage where
 
 import Prelude
 
-import Control.Monad.Eff (Eff)
-import Control.Monad.State (modify)
+import Control.Monad.Reader (runReaderT)
 import Control.Monad.Trans.Class (lift)
-import DOM.HTML.Types (HTMLElement)
 import Data.Array (catMaybes)
 import Data.Maybe (Maybe(Nothing, Just), isJust)
 import Data.Nullable (Nullable, toNullable)
-import Data.StrMap (StrMap, lookup)
 import Data.String (joinWith)
-import Debug.Trace (traceAny)
-import Dispatcher (DispatchEff(..), effEval)
-import Dispatcher.React (ReactProps(ReactProps), createComponent, createLifecycleComponent, getProps, modifyState)
+import Dispatcher.React (getProps, modifyState, propsRenderer, renderer)
+import Effect (Effect)
+import Foreign.Object (Object, lookup)
 import MaterialUI.Color (inherit)
 import MaterialUI.Icon (icon_)
 import MaterialUI.IconButton (iconButton)
@@ -21,32 +18,66 @@ import MaterialUI.Modal (open)
 import MaterialUI.Popover (anchorEl, anchorOrigin, marginThreshold, popover)
 import MaterialUI.Properties (color, onClick, onClose)
 import MaterialUI.Styles (withStyles)
-import React (ReactElement, Ref, createFactory)
+import React (ReactElement, ReactRef, component, unsafeCreateLeafElement)
 import React.DOM (text)
 import React.DOM as D
 import React.DOM.Props (Props, _id)
 import React.DOM.Props as DP
 import Template (renderData, template', templateDefaults)
+import Utils.UI (withCurrentTarget)
+import Web.HTML (HTMLElement)
 
-foreign import setInnerHtml :: forall eff. String -> Nullable Ref -> Eff eff Unit
+foreign import setInnerHtml :: String -> Nullable ReactRef -> Effect Unit
 
-data RawHtml = DomNode (Nullable Ref)
+data RawHtml = DomNode (Nullable ReactRef)
 
 divWithHtml :: {divProps :: Array Props, html :: String} -> ReactElement
-divWithHtml = createFactory $ createLifecycleComponent lc {} render eval 
-  where 
-    lc = modify _ { shouldComponentUpdate = \_ _ _ -> pure false }
+divWithHtml = unsafeCreateLeafElement $ component "JQueryDiv" $ \this -> do
+  let
+    d = eval >>> flip runReaderT this
     eval (DomNode r) = do
       {html} <- getProps
       lift $ setInnerHtml html r
-    render _ (ReactProps {divProps,html}) (DispatchEff d) = D.div (divProps <> [ DP.withRef $ d DomNode ]) []
+    render {divProps,html} = D.div (divProps <> [ DP.ref $ d <<< DomNode ]) []
+  pure {render: propsRenderer render this, shouldComponentUpdate: \_ _ -> pure false}
 
 data Command = OptionsAnchor (Maybe HTMLElement)
 type State = {optionsAnchor::Maybe HTMLElement}
 
-legacy :: StrMap String -> ReactElement
-legacy htmlMap = createFactory (withStyles styles $ createComponent {optionsAnchor:Nothing} render $ effEval eval) {}
-  where 
+legacy :: Object String -> ReactElement
+legacy htmlMap = flip unsafeCreateLeafElement {} $ withStyles styles $ component "LegacyPage" $ \this -> do
+  -- 
+  let 
+    d :: Command -> Effect Unit
+    d = eval >>> flip runReaderT this
+    render {state:s, props:{classes}} = 
+          template' (templateDefaults renderData.title) {menuExtra = toNullable $ options <$> lookup "so" htmlMap} [ mainContent ]
+      where
+      extraClass = case renderData.fullscreenMode of 
+        "YES" -> []
+        "YES_WITH_TOOLBAR" -> []
+        _ -> case renderData.menuMode of 
+          "HIDDEN" -> []
+          _ -> [classes.withPadding]
+      options html = [ 
+          iconButton [color inherit, onClick $ withCurrentTarget $ d <<< OptionsAnchor <<< Just] [ icon_ [text "more_vert"] ],
+          popover [ open $ isJust s.optionsAnchor, marginThreshold 64
+              , anchorOrigin {vertical:"bottom",horizontal:"left"}
+              , onClose (\_ -> d $ OptionsAnchor Nothing)
+              , anchorEl $ toNullable s.optionsAnchor ] 
+          [ 
+              divWithHtml {divProps:[DP.className $ classes.screenOptions], html}
+          ]
+      ]
+      mainContent = D.div [DP.className $ joinWith " " $ ["content"] <> extraClass] $ catMaybes [ 
+        (divWithHtml <<< {divProps:[_id "breadcrumbs"], html: _} <$> lookup "crumbs" htmlMap),
+        (divWithHtml <<< {divProps:[], html: _} <$> lookup "upperbody" htmlMap),
+        (divWithHtml <<< {divProps:[], html: _} <$> lookup "body" htmlMap)
+      ]
+    eval (OptionsAnchor el) = modifyState _ {optionsAnchor = el}
+  pure {state:{optionsAnchor:Nothing}, render: renderer render this}
+
+  where
   styles t = {
     screenOptions: {
         margin: 20
@@ -55,28 +86,4 @@ legacy htmlMap = createFactory (withStyles styles $ createComponent {optionsAnch
       padding: t.spacing.unit * 2
     }
   }
-  render s (ReactProps {classes}) (DispatchEff d) = 
-        template' (templateDefaults renderData.title) {menuExtra = toNullable $ options <$> lookup "so" htmlMap} [ mainContent ]
-    where
-    extraClass = case renderData.fullscreenMode of 
-      "YES" -> []
-      "YES_WITH_TOOLBAR" -> []
-      _ -> case renderData.menuMode of 
-        "HIDDEN" -> []
-        _ -> [classes.withPadding]
-    options html = [ 
-        iconButton [color inherit, onClick $ d \e -> OptionsAnchor $ Just e.currentTarget] [ icon_ [text "more_vert"] ],
-        popover [ open $ isJust s.optionsAnchor, marginThreshold 64
-            , anchorOrigin {vertical:"bottom",horizontal:"left"}
-            , onClose (d \_ -> OptionsAnchor Nothing)
-            , anchorEl $ toNullable s.optionsAnchor ] 
-        [ 
-            divWithHtml {divProps:[DP.className $ classes.screenOptions], html}
-        ]
-    ]
-    mainContent = D.div [DP.className $ joinWith " " $ ["content"] <> extraClass] $ catMaybes [ 
-      (divWithHtml <<< {divProps:[_id "breadcrumbs"], html: _} <$> lookup "crumbs" htmlMap),
-      (divWithHtml <<< {divProps:[], html: _} <$> lookup "upperbody" htmlMap),
-      (divWithHtml <<< {divProps:[], html: _} <$> lookup "body" htmlMap)
-    ]
-  eval (OptionsAnchor el) = modifyState _ {optionsAnchor = el}
+

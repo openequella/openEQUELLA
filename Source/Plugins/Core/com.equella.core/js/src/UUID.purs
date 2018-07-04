@@ -1,6 +1,6 @@
 module UUID where 
 
 
-import Control.Monad.IOSync (IOSync(..))
+import Effect (Effect)
 
-foreign import newUUID :: IOSync String 
+foreign import newUUID :: Effect String 
