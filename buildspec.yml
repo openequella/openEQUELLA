@@ -3,7 +3,6 @@ version: 0.2
 env:
   variables:
     KALTURA_BRANCH: master
-    AUTOTEST_BRANCH: auditcolumn
 phases:
   pre_build:
     commands:
@@ -12,7 +11,7 @@ phases:
       - setupBuild
   build:
     commands:
-      - sbt -Dconfig.file=${HOME}/build.conf test installerZip writeLanguagePack
+      - sbt -no-colors -Dconfig.file=${HOME}/build.conf test installerZip writeLanguagePack
   post_build:
     commands:
       - publishBuild
