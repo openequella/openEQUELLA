@@ -5,10 +5,10 @@ import static org.testng.Assert.assertTrue;
 
 import java.io.File;
 
-import org.apache.commons.io.FileUtils;
+import com.dytech.common.legacyio.FileUtils;
 import org.testng.annotations.Test;
 
-import com.dytech.common.io.ZipUtils;
+import com.dytech.common.legacyio.ZipUtils;
 import com.dytech.devlib.PropBagEx;
 import com.tle.webtests.framework.LocalWebDriver;
 import com.tle.webtests.framework.Name;

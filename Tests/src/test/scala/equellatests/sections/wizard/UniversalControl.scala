@@ -2,6 +2,7 @@ package equellatests.sections.wizard
 
 import equellatests.domain.TestFile
 import org.openqa.selenium.By
+import org.openqa.selenium.support.pagefactory.ByChained
 import org.openqa.selenium.support.ui.{ExpectedCondition, ExpectedConditions}
 
 import scala.util.Try
@@ -32,7 +33,7 @@ class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends Wizard
   private def rowDescriptionBy(title: String, disabled: Boolean) = By.xpath(".//tr[.//" + (if (disabled) "span" else "a") + "[text()=" + quoteXPath(title) + "]]")
 
   def attachNameWaiter(description: String, disabled: Boolean): ExpectedCondition[_] = {
-    ExpectedConditions.visibilityOfNestedElementsLocatedBy(pageBy, rowDescriptionBy(description, disabled))
+    ExpectedConditions.visibilityOfElementLocated(new ByChained(pageBy, rowDescriptionBy(description, disabled)))
   }
 
   def pageBy = By.id(idFor("universalresources"))

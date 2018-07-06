@@ -3,13 +3,13 @@ package com.tle.webtests.framework;
 import com.google.common.collect.Maps;
 import com.tle.common.Check;
 import com.tle.webtests.pageobject.AbstractPage;
-import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.*;
 
@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -58,6 +59,7 @@ public class StandardDriverFactory {
 
     public WebDriver getDriver(Class<?> clazz) throws IOException {
         WebDriver driver;
+        String downDir = Files.createTempDirectory("eqdown").toAbsolutePath().toString();
         if (!Check.isEmpty(gridUrl) && !clazz.isAnnotationPresent(LocalWebDriver.class)) {
             DesiredCapabilities capability = DesiredCapabilities.firefox();
             FirefoxProfile profile = new FirefoxProfile();
@@ -65,7 +67,7 @@ public class StandardDriverFactory {
             profile.setPreference("dom.max_chrome_script_run_time", 120);
             profile.setPreference("browser.download.useDownloadDir", true);
             profile.setPreference("browser.download.folderList", 2);
-            profile.setPreference("browser.download.dir", FileUtils.getTempDirectory().getAbsolutePath());
+            profile.setPreference("browser.download.dir", downDir);
             profile.setPreference("extensions.firebug.currentVersion", "999");
             profile.setPreference("browser.helperApps.neverAsk.saveToDisk", "application/zip,image/png,text/xml");
             profile.setPreference("security.mixed_content.block_active_content", false);
@@ -96,7 +98,7 @@ public class StandardDriverFactory {
 
                 Map<String, Object> prefs = Maps.newHashMap();
                 prefs.put("intl.accept_languages", "en-US");
-                prefs.put("download.default_directory", FileUtils.getTempDirectory().getAbsolutePath());
+                prefs.put("download.default_directory", downDir);
                 prefs.put("profile.password_manager_enabled", false);
 
                 options.setExperimentalOption("prefs", prefs);
@@ -123,7 +125,7 @@ public class StandardDriverFactory {
                 profile.setPreference("dom.max_chrome_script_run_time", 120);
                 profile.setPreference("browser.download.useDownloadDir", true);
                 profile.setPreference("browser.download.folderList", 2);
-                profile.setPreference("browser.download.dir", FileUtils.getTempDirectory().getAbsolutePath());
+                profile.setPreference("browser.download.dir", downDir);
                 profile.setPreference("browser.helperApps.neverAsk.saveToDisk",
                         "application/zip,image/png,text/xml");
                 // profile.setEnableNativeEvents(true);
@@ -133,7 +135,10 @@ public class StandardDriverFactory {
                 if (proxy != null) {
                     cap.setCapability(CapabilityType.PROXY, proxy);
                 }
-                driver = new FirefoxDriver(binary, profile, cap);
+                FirefoxOptions options = new FirefoxOptions(cap);
+                options.setBinary(binary);
+                options.setProfile(profile);
+                driver = new FirefoxDriver(options);
                 driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.MINUTES);
             }
 

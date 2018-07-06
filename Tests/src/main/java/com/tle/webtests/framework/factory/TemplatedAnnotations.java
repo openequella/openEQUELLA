@@ -26,11 +26,11 @@ public class TemplatedAnnotations extends Annotations
 		return dontCache;
 	}
 
-	@Override
-	protected By buildByFromFindBy(FindBy findBy)
-	{
-		Object proxiedFindBy = Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[]{FindBy.class},
-			new ByInvocationHandler(pageObject, findBy));
-		return super.buildByFromFindBy((FindBy) proxiedFindBy);
-	}
+//	@Override
+//	protected By buildByFromFindBy(FindBy findBy)
+//	{
+//		Object proxiedFindBy = Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[]{FindBy.class},
+//			new ByInvocationHandler(pageObject, findBy));
+//		return super.buildByFromFindBy((FindBy) proxiedFindBy);
+//	}
 }

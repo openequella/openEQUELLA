@@ -23,6 +23,7 @@ import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 
 import com.tle.webtests.framework.PageContext;
@@ -201,6 +202,9 @@ public class SyncToLocalServer
 		profile.setPreference("dom.max_script_run_time", 120);
 		profile.setPreference("dom.max_chrome_script_run_time", 120);
 
-		return new FirefoxDriver(binary, profile);
+		FirefoxOptions options = new FirefoxOptions();
+		options.setBinary(binary);
+		options.setProfile(profile);
+		return new FirefoxDriver(options);
 	}
 }

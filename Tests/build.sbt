@@ -1,8 +1,6 @@
-import sbt.complete.DefaultParsers.spaceDelimited
-
-val circeVersion = "0.9.0-M2"
-val http4sVersion = "0.18.0-M5"
-val catsVersion = "1.0.0-RC1"
+val circeVersion = "0.9.3"
+val http4sVersion = "0.18.4"
+val catsVersion = "1.1.0"
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
 
@@ -13,7 +11,8 @@ libraryDependencies ++= Seq(
 ).map(_ % circeVersion)
 
 libraryDependencies ++= Seq(
-  "org.seleniumhq.selenium" % "selenium-java" % "3.4.0",
+  "org.apache.commons" % "commons-lang3" % "3.7",
+  "org.seleniumhq.selenium" % "selenium-java" % "3.13.0",
   "org.easytesting" % "fest-util" % "1.2.5",
   "org.easytesting" % "fest-swing" % "1.2.1",
   "org.codehaus.jackson" % "jackson-core-asl" % "1.9.13",

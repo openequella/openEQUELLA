@@ -1,5 +1,0 @@
-<xml>
-	<node1>Escape char tab: &#x09;</node1>
-	<node2>Some more text with an &amp;</node2>
-	<node3 test="ball&amp;shank"></node3>
-</xml>

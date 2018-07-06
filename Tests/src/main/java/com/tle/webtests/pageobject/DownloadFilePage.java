@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 
+import com.google.common.io.Closeables;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.openqa.selenium.NotFoundException;
 
 import com.tle.common.Check;
@@ -18,6 +18,18 @@ public class DownloadFilePage extends AbstractPage<DownloadFilePage>
 	private final File file;
 	private final String md5;
 	private final long minSize;
+	private static File DownDir = null;
+
+	public static synchronized File getDownDir() {
+		if (DownDir == null) {
+			try {
+				DownDir = Files.createTempDirectory("eqdown").toFile();
+			} catch (IOException e) {
+				throw new Error(e);
+			}
+		}
+		return DownDir;
+	}
 
 	public DownloadFilePage(PageContext context, File file, String md5, long minSize)
 	{
@@ -29,12 +41,12 @@ public class DownloadFilePage extends AbstractPage<DownloadFilePage>
 
 	public DownloadFilePage(PageContext context, String file, long minSize)
 	{
-		this(context, new File(FileUtils.getTempDirectory(), file), "", minSize);
+		this(context, new File(getDownDir(), file), "", minSize);
 	}
 
 	public DownloadFilePage(PageContext context, String file)
 	{
-		this(context, new File(FileUtils.getTempDirectory(), file), "", 0);
+		this(context, new File(getDownDir(), file), "", 0);
 	}
 
 	public DownloadFilePage(PageContext context, URL url) throws IOException
@@ -44,16 +56,16 @@ public class DownloadFilePage extends AbstractPage<DownloadFilePage>
 
 	public DownloadFilePage(PageContext context, URL url, String md5) throws IOException
 	{
-		this(context, new File(FileUtils.getTempDirectory(), url.getFile()), md5, 0);
+		this(context, new File(getDownDir(), url.getFile()), md5, 0);
 		if( !fileIsDownloaded() )
 		{
-			FileUtils.copyURLToFile(url, file, 30, 30);
+			com.google.common.io.Resources.copy(url, Files.newOutputStream(file.toPath()));
 		}
 	}
 
 	public DownloadFilePage(PageContext context, String file, String md5)
 	{
-		this(context, new File(FileUtils.getTempDirectory(), file), md5, 0);
+		this(context, new File(getDownDir(), file), md5, 0);
 	}
 
 	@Override
@@ -82,7 +94,7 @@ public class DownloadFilePage extends AbstractPage<DownloadFilePage>
 			}
 			finally
 			{
-				IOUtils.closeQuietly(inputStream);
+				Closeables.closeQuietly(inputStream);
 			}
 
 		}
@@ -121,7 +133,7 @@ public class DownloadFilePage extends AbstractPage<DownloadFilePage>
 			}
 			finally
 			{
-				IOUtils.closeQuietly(inputStream);
+				Closeables.closeQuietly(inputStream);
 			}
 
 		}
@@ -135,6 +147,11 @@ public class DownloadFilePage extends AbstractPage<DownloadFilePage>
 
 	public boolean deleteFile()
 	{
-		return FileUtils.deleteQuietly(file);
+		try {
+			return Files.deleteIfExists(file.toPath());
+		} catch (IOException e) {
+			// quiet
+		}
+		return false;
 	}
 }

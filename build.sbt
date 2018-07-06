@@ -12,31 +12,31 @@ name := "equella-autotests"
 libraryDependencies += "org.jacoco" % "org.jacoco.agent" % "0.7.9" classifier "runtime"
 
 lazy val common = Seq(
-  scalaVersion := "2.12.3",
+  scalaVersion := "2.12.6",
   version := "1.0"
 )
 
 common
-
-lazy val platform = (project in file("Platform/Plugins/com.tle.platform.common")).settings(common).settings(
-  javaSource in Compile := baseDirectory.value / "src",
-  javaSource in Test := baseDirectory.value / "test",
-  libraryDependencies ++= Seq(
-    "org.apache.commons" % "commons-compress" % "1.1",
-    "com.github.equella.jpf" % "jpf" % "1.0.7",
-    "com.google.guava" % "guava" % "18.0",
-    "commons-beanutils" % "commons-beanutils" % "1.9.3",
-    "org.slf4j" % "slf4j-api" % "1.7.5",
-    "commons-codec" % "commons-codec" % "1.7",
-    "junit" % "junit" % "4.12" % Test
-  )
-)
+//
+//lazy val platform = (project in file("Platform/Plugins/com.tle.platform.common")).settings(common).settings(
+//  javaSource in Compile := baseDirectory.value / "src",
+//  javaSource in Test := baseDirectory.value / "test",
+//  libraryDependencies ++= Seq(
+//    "org.apache.commons" % "commons-compress" % "1.1",
+//    "com.github.equella.jpf" % "jpf" % "1.0.7",
+//    "com.google.guava" % "guava" % "18.0",
+//    "commons-beanutils" % "commons-beanutils" % "1.9.3",
+//    "org.slf4j" % "slf4j-api" % "1.7.5",
+//    "commons-codec" % "commons-codec" % "1.7",
+//    "junit" % "junit" % "4.12" % Test
+//  )
+//)
 
 lazy val config = (project in file("config")).settings(resourceDirectory in Compile := baseDirectory.value / "resources").settings(common)
 
-lazy val Tests = (project in file("Tests")).settings(common).dependsOn(platform, config)
+lazy val Tests = (project in file("Tests")).settings(common).dependsOn(config)
 
-lazy val OldTests = (project in file("OldTests")).settings(common).dependsOn(platform, Tests, config)
+lazy val OldTests = (project in file("OldTests")).settings(common).dependsOn(Tests, config)
 
 val IntegTester = project in file("IntegTester")
 

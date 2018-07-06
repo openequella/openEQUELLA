@@ -1,4 +1,4 @@
-package com.dytech.common.io;
+package com.dytech.common.legacyio;
 
 import java.io.BufferedInputStream;
 import java.io.File;

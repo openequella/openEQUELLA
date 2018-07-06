@@ -1,7 +1,6 @@
 package com.tle.webtests.framework;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -12,6 +11,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -45,7 +45,7 @@ public class ScreenshotTaker {
             boolean failed = false;
             try
             {
-                FileUtils.copyFile(screenshot, destScreenshot);
+                Files.copy(screenshot.toPath(), destScreenshot.toPath());
                 screenshot.delete();
                 failed = !destScreenshot.exists();
 

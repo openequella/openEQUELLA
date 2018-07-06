@@ -1,16 +1,10 @@
 package com.tle.webtests.pageobject.institution;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.jar.JarFile;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
-
-import com.dytech.common.io.ZipUtils;
-import org.apache.commons.compress.archivers.zip.ZipUtil;
+import com.dytech.common.legacyio.ZipUtils;
+import com.tle.webtests.framework.PageContext;
+import com.tle.webtests.pageobject.ExpectWaiter;
+import com.tle.webtests.pageobject.ExpectedConditions2;
+import com.tle.webtests.pageobject.WaitingPageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -18,10 +12,12 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.tle.webtests.framework.PageContext;
-import com.tle.webtests.pageobject.ExpectWaiter;
-import com.tle.webtests.pageobject.ExpectedConditions2;
-import com.tle.webtests.pageobject.WaitingPageObject;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.zip.ZipOutputStream;
 
 public class ImportTab extends InstitutionTab<ImportTab> implements DbSelectable<ImportTab>
 {
