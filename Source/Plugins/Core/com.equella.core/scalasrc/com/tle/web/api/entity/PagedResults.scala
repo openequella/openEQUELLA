@@ -16,18 +16,14 @@
 
 package com.tle.web.api.entity
 
-import java.util
-import java.util.Collections
-
-import com.google.common.collect.ImmutableCollection
 import com.tle.beans.entity.BaseEntity
 import com.tle.core.entity.EnumerateOptions
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.entity.resource.AbstractBaseEntityResource
 import com.tle.web.api.interfaces.beans.{BaseEntityBean, BaseEntityReadOnly, PagingBean}
 
-import scala.collection.JavaConverters._
 import scala.annotation.tailrec
+import scala.collection.JavaConverters._
 
 object PagedResults {
 

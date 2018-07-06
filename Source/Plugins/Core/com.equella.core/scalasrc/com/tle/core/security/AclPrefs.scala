@@ -16,7 +16,6 @@
 
 package com.tle.core.security
 
-import com.tle.beans.security.AccessExpression
 import com.tle.core.settings.UserPrefs
 
 sealed trait ExpressionError

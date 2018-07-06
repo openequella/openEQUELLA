@@ -17,7 +17,6 @@
 package com.tle.web.controls.universal
 
 import com.tle.web.freemarker.{FreemarkerFactory, FreemarkerSectionResult}
-import com.tle.web.sections.render.SectionRenderable
 
 trait RenderHelper {
   def viewFactory : FreemarkerFactory

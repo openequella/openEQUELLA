@@ -16,14 +16,13 @@
 
 package com.tle.web.workflow.notification
 
-import javax.inject.{Inject, Singleton}
-
 import com.tle.beans.item.Item
 import com.tle.core.guice.Bind
 import com.tle.core.notification.beans.Notification
 import com.tle.core.services.user.{LazyUserLookup, UserService}
 import com.tle.web.sections.render.TextLabel
 import com.tle.web.sections.result.util.{BundleLabel, UserLabel}
+import javax.inject.{Inject, Singleton}
 
 import scala.collection.JavaConverters._
 @Bind

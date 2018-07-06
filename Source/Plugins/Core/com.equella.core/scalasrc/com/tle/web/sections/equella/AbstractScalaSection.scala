@@ -16,7 +16,6 @@
 
 package com.tle.web.sections.equella
 
-import com.tle.common.Utils
 import com.tle.web.sections.{Section, SectionInfo, SectionTree}
 
 abstract class AbstractScalaSection extends Section {

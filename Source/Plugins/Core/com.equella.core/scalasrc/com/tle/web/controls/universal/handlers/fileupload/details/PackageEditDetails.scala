@@ -18,20 +18,16 @@ package com.tle.web.controls.universal.handlers.fileupload.details
 
 import com.tle.beans.item.attachments.{Attachment, ImsAttachment}
 import com.tle.common.NameValue
-import com.tle.common.collection.AttachmentConfigConstants
 import com.tle.common.filesystem.FileSystemConstants
-import com.tle.core.plugins.PluginTracker
 import com.tle.web.controls.universal.handlers.fileupload.{AttachmentDelete, WebFileUploads}
 import com.tle.web.controls.universal.{AbstractDetailsAttachmentHandler, ControlContext, DialogRenderOptions, RenderHelper}
 import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.freemarker.annotations.ViewFactory
 import com.tle.web.sections.equella.AbstractScalaSection
 import com.tle.web.sections.events.RenderContext
-import com.tle.web.sections.generic.AbstractPrototypeSection
 import com.tle.web.sections.render.{SectionRenderable, TextLabel}
 import com.tle.web.sections.result.util.KeyLabel
 import com.tle.web.sections.standard.annotations.Component
-import com.tle.web.sections.standard.dialog.Dialog
 import com.tle.web.sections.standard.model.{LabelOption, SimpleHtmlListModel}
 import com.tle.web.sections.standard.{Checkbox, SingleSelectionList, TextField, model}
 import com.tle.web.sections.{SectionInfo, SectionTree}
@@ -42,7 +38,7 @@ object PackageEditDetails {
   val KEY_PFXBUTTON = WebFileUploads.r.key("handlers.file.packagedetails.")
 }
 
-import PackageEditDetails._
+import com.tle.web.controls.universal.handlers.fileupload.details.PackageEditDetails._
 
 class PackageEditDetails(parentId: String, tree: SectionTree, ctx: ControlContext, viewerHandler: ViewerHandler,
                          showRestrict: Boolean, val editingAttachment: SectionInfo => Attachment)

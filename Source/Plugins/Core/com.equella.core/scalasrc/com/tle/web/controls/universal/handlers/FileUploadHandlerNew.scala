@@ -20,7 +20,6 @@ import java.util
 import java.util.{Collections, UUID}
 
 import com.google.common.io.ByteStreams
-import javax.inject.Inject
 import com.tle.beans.item.ItemId
 import com.tle.beans.item.attachments._
 import com.tle.common.collection.AttachmentConfigConstants
@@ -31,9 +30,7 @@ import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings
 import com.tle.core.filesystem.staging.service.StagingService
 import com.tle.core.guice.Bind
 import com.tle.core.item.service.{ItemFileService, ItemService}
-import com.tle.core.json.CirceUtils
 import com.tle.core.mimetypes.MimeTypeService
-import com.tle.core.plugins.AbstractPluginService
 import com.tle.core.security.TLEAclManager
 import com.tle.core.services.{FileSystemService, ZipProgress}
 import com.tle.core.workflow.thumbnail.service.ThumbnailService
@@ -42,39 +39,38 @@ import com.tle.mycontent.service.MyContentService
 import com.tle.mycontent.web.selection.{MyContentSelectable, MyContentSelectionSettings}
 import com.tle.web.controls.universal.UniversalWebControlNew.uploadListSrc
 import com.tle.web.controls.universal._
-import com.tle.web.controls.universal.handlers.fileupload.WebFileUploads.{attachmentCreatorForUpload, validateContent}
+import com.tle.web.controls.universal.handlers.fileupload.WebFileUploads.validateContent
 import com.tle.web.controls.universal.handlers.fileupload._
 import com.tle.web.controls.universal.handlers.fileupload.details._
 import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.inplaceeditor.service.InPlaceEditorWebService
 import com.tle.web.myresource.MyResourceConstants
 import com.tle.web.resources.ResourcesService
+import com.tle.web.sections._
 import com.tle.web.sections.ajax.AjaxGenerator
 import com.tle.web.sections.ajax.handler.{AjaxFactory, AjaxMethod}
 import com.tle.web.sections.annotations.{Bookmarked, EventHandlerMethod}
 import com.tle.web.sections.equella.ajaxupload._
 import com.tle.web.sections.equella.annotation.PlugKey
-import com.tle.web.sections.equella.render.{EquellaFileUploadExtension, UnselectLinkRenderer}
+import com.tle.web.sections.equella.render.EquellaFileUploadExtension
 import com.tle.web.sections.events.RenderContext
 import com.tle.web.sections.events.js.BookmarkAndModify
 import com.tle.web.sections.generic.InfoBookmark
-import com.tle.web.sections.jquery.JQuerySelector
-import com.tle.web.sections.js.generic.StatementHandler
 import com.tle.web.sections.js.generic.expression.ObjectExpression
 import com.tle.web.sections.js.generic.function.{AnonymousFunction, ExternallyDefinedFunction, PartiallyApply, PassThroughFunction}
 import com.tle.web.sections.render._
 import com.tle.web.sections.result.util.KeyLabel
 import com.tle.web.sections.standard._
 import com.tle.web.sections.standard.annotations.Component
-import com.tle.web.sections.standard.model.{HtmlComponentState, HtmlLinkState, TableState}
+import com.tle.web.sections.standard.model.{HtmlLinkState, TableState}
 import com.tle.web.sections.standard.renderers.{DivRenderer, FileDropRenderer, LinkRenderer}
-import com.tle.web.sections._
 import com.tle.web.selection.filter.SelectionFilter
 import com.tle.web.selection.{ParentFrameSelectionCallback, SelectedResourceDetails, SelectionService, SelectionSession}
-import com.tle.web.viewurl.attachments.{AttachmentNode, AttachmentResourceService}
+import com.tle.web.viewurl.attachments.AttachmentResourceService
 import com.tle.web.viewurl.{AttachmentDetail, ViewItemService, ViewableResource}
 import io.circe.parser.decode
 import io.circe.syntax._
+import javax.inject.Inject
 
 import scala.collection.JavaConverters._
 import scala.io.Source

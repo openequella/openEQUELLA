@@ -17,14 +17,13 @@
 package com.tle.web.workflow.notification
 
 import java.io.StringWriter
-import javax.inject.Inject
 
 import com.tle.common.usermanagement.user.valuebean.UserBean
 import com.tle.core.notification.NotificationEmail
 import com.tle.core.notification.beans.Notification
 import com.tle.web.sections.equella.freemarker.ExtendedFreemarkerFactory
 import com.tle.web.sections.render.{AppendedLabel, Label}
-import NotificationLangStrings._
+import javax.inject.Inject
 
 import scala.collection.JavaConverters._
 

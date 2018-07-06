@@ -16,16 +16,15 @@
 
 package com.tle.web.template
 
-import java.util
-
 import com.tle.core.guice.Bind
 import com.tle.legacy.LegacyGuice
 import com.tle.web.sections.equella.AbstractScalaSection
 import com.tle.web.sections.events.RenderEventContext
 import com.tle.web.sections.registry.SectionsServlet
 import com.tle.web.sections.render.{HtmlRenderer, SimpleSectionResult, TextLabel}
-import com.tle.web.sections.{PublicBookmarkFactory, SectionInfo, SectionResult, SectionTree}
+import com.tle.web.sections.{SectionInfo, SectionResult, SectionTree}
 import javax.servlet.http.HttpServletRequest
+
 import scala.collection.JavaConverters._
 
 @Bind

@@ -27,9 +27,9 @@ import com.tle.web.sections.js.generic.Js
 import com.tle.web.sections.js.generic.function.{ExternallyDefinedFunction, IncludeFile, PartiallyApply}
 import com.tle.web.sections.render.CssInclude
 import com.tle.web.upload.StreamKilledException
-import io.circe.{Decoder, Encoder}
 import io.circe.generic.extras._
 import io.circe.generic.extras.semiauto._
+import io.circe.{Decoder, Encoder}
 
 import scala.util.Try
 

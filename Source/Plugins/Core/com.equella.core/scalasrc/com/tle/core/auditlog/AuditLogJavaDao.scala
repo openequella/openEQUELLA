@@ -27,13 +27,13 @@ import com.tle.common.filesystem.handle.SubTemporaryFile
 import com.tle.core.auditlog.convert.AuditLogEntryXml
 import com.tle.core.db.tables.{AuditLogEntry, AuditLogMeta}
 import com.tle.core.db.types.UserId
-import com.tle.core.db.{DB, DBSchema, RunWithDB}
+import com.tle.core.db.{DBSchema, RunWithDB}
 import com.tle.core.institution.convert.{DefaultMessageCallback, XmlHelper}
-import javax.servlet.http.HttpServletRequest
-import io.doolse.simpledba.jdbc._
-import io.doolse.simpledba.syntax._
 import fs2.Stream
 import io.doolse.simpledba.WriteOp
+import io.doolse.simpledba.jdbc._
+import io.doolse.simpledba.syntax._
+import javax.servlet.http.HttpServletRequest
 
 import scala.collection.JavaConverters._
 

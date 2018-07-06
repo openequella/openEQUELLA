@@ -16,9 +16,6 @@
 
 package com.tle.web.settings
 
-import java.util
-import java.util.concurrent.ConcurrentLinkedQueue
-
 import com.tle.common.connectors.ConnectorConstants.{PRIV_CREATE_CONNECTOR, PRIV_EDIT_CONNECTOR}
 import com.tle.common.externaltools.constants.ExternalToolConstants
 import com.tle.common.lti.consumers.LtiConsumerConstants
@@ -33,7 +30,6 @@ import com.tle.web.mimetypes.MimeEditorUtils
 import com.tle.web.sections.render.TextLabel
 import com.tle.web.sections.standard.model.{HtmlLinkState, SimpleBookmark}
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 object CoreSettingsPage

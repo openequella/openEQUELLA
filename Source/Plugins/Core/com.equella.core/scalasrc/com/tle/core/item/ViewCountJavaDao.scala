@@ -20,7 +20,7 @@ import java.time.Instant
 
 import cats.data.Kleisli
 import com.tle.beans.entity.itemdef.ItemDefinition
-import com.tle.beans.item.{ItemId, ItemKey}
+import com.tle.beans.item.ItemKey
 import com.tle.core.db.tables.{AttachmentViewCount, ItemViewCount}
 import com.tle.core.db.{DBSchema, RunWithDB, UserContext}
 import io.doolse.simpledba.jdbc._

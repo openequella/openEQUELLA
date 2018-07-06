@@ -25,7 +25,6 @@ import com.tle.core.db.{DB, RunWithDB, UserContext}
 import com.tle.core.events.ApplicationEvent
 import com.tle.core.events.ApplicationEvent.PostTo
 import com.tle.core.events.listeners.ApplicationListener
-import com.tle.core.hibernate.CurrentDataSource
 import com.tle.legacy.LegacyGuice
 
 import scala.concurrent.ExecutionContext.Implicits.global

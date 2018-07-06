@@ -20,7 +20,7 @@ import com.tle.common.NameValue
 import com.tle.web.controls.universal.handlers.fileupload.WebFileUploads
 import com.tle.web.sections.SectionInfo
 import com.tle.web.sections.equella.utils.KeyOption
-import com.tle.web.sections.standard.model.{DynamicHtmlListModel, Option}
+import com.tle.web.sections.standard.model.DynamicHtmlListModel
 import com.tle.web.viewurl.{ViewItemService, ViewableResource}
 
 object ViewersListModel {

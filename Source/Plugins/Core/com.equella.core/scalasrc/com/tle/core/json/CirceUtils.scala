@@ -16,10 +16,10 @@
 
 package com.tle.core.json
 
-import com.tle.web.sections.js.{JSExpression, JSUtils}
 import com.tle.web.sections.js.generic.expression.{ArrayExpression, ObjectExpression}
-import io.circe.{Encoder, Json, JsonObject}
+import com.tle.web.sections.js.{JSExpression, JSUtils}
 import io.circe.syntax._
+import io.circe.{Encoder, Json, JsonObject}
 
 object CirceUtils {
 

@@ -21,7 +21,7 @@ import com.tle.common.Check
 import com.tle.common.filesystem.FileEntry
 import com.tle.core.services.ZipProgress
 import com.tle.web.controls.universal.handlers.fileupload.{AttachmentDelete, WebFileUploads}
-import com.tle.web.controls.universal.{ControlContext, DialogRenderOptions, StagingContext}
+import com.tle.web.controls.universal.{ControlContext, DialogRenderOptions}
 import com.tle.web.sections.SectionInfo
 import com.tle.web.sections.events.RenderContext
 import com.tle.web.sections.render.{Label, SectionRenderable}
@@ -58,7 +58,7 @@ object DetailsPage {
   val LABEL_ERROR_BLANK = WebFileUploads.label("handlers.abstract.error.blank")
 }
 
-import DetailsPage._
+import com.tle.web.controls.universal.handlers.fileupload.details.DetailsPage._
 
 trait DetailsPage {
 

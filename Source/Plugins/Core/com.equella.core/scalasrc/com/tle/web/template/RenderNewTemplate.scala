@@ -38,12 +38,11 @@ import com.tle.web.sections.js.JSUtils
 import com.tle.web.sections.js.generic.expression.{ArrayExpression, ObjectExpression}
 import com.tle.web.sections.js.generic.function.IncludeFile
 import com.tle.web.sections.render._
-import com.tle.web.sections.result.util.KeyLabel
 import com.tle.web.sections.standard.model.HtmlLinkState
 import com.tle.web.sections.standard.renderers.{DivRenderer, LinkRenderer, SpanRenderer}
 import com.tle.web.settings.UISettings
 import com.tle.web.template.Decorations.MenuMode
-import com.tle.web.template.section.{HeaderSection, HelpAndScreenOptionsSection}
+import com.tle.web.template.section.HelpAndScreenOptionsSection
 import io.circe.generic.auto._
 
 import scala.collection.JavaConverters._

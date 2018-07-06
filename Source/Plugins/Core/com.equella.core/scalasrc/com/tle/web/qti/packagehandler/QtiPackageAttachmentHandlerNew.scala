@@ -17,22 +17,21 @@
 package com.tle.web.qti.packagehandler
 
 import java.util.UUID
-import javax.inject.Inject
 
 import com.tle.beans.item.attachments.{Attachment, CustomAttachment}
 import com.tle.common.PathUtils
-import com.tle.common.filesystem.FileSystemConstants
 import com.tle.core.guice.Bind
 import com.tle.core.qti.QtiConstants
 import com.tle.core.qti.service.QtiService
 import com.tle.ims.service.IMSService
 import com.tle.web.controls.universal.handlers.fileupload._
-import com.tle.web.controls.universal.handlers.fileupload.packages.IMSPackageExtension.{commitFiles, standardPackageDetails, unzipPackage}
+import com.tle.web.controls.universal.handlers.fileupload.packages.IMSPackageExtension.{standardPackageDetails, unzipPackage}
 import com.tle.web.controls.universal.handlers.fileupload.packages.PackageAttachmentExtension
 import com.tle.web.controls.universal.{ControlContext, StagingContext}
 import com.tle.web.resources.ResourcesService
 import com.tle.web.sections.SectionInfo
 import com.tle.web.sections.result.util.KeyLabel
+import javax.inject.Inject
 
 import scala.collection.JavaConverters._
 

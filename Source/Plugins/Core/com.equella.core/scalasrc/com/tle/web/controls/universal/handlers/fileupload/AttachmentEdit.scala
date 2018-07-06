@@ -16,8 +16,6 @@
 
 package com.tle.web.controls.universal.handlers.fileupload
 
-import java.util.UUID
-
 import com.tle.beans.item.attachments.Attachment
 import com.tle.web.controls.universal.StagingContext
 

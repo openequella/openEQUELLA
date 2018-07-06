@@ -17,9 +17,9 @@
 package com.tle.core.settings
 
 import com.tle.legacy.LegacyGuice
-import io.circe.{Decoder, Encoder}
 import io.circe.parser._
 import io.circe.syntax._
+import io.circe.{Decoder, Encoder}
 
 object UserPrefs {
 
