@@ -90,9 +90,9 @@ public class UserPreferenceConverter extends AbstractConverter<UserPreferenceCon
 	}
 
 	@Override
-	public ConverterId getConverterId()
+	public String getStringId()
 	{
-		return ConverterId.PREFERENCES;
+		return "PREFERENCES";
 	}
 
 	public static class UserPreferenceConverterInfo

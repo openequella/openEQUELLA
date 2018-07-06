@@ -45,15 +45,17 @@ import com.tle.core.institution.convert.service.impl.InstitutionImportServiceImp
 @SuppressWarnings("nls")
 public class FilestoreConverter<T> extends AbstractConverter<T>
 {
+	public static final String CONVERTER_ID = "FILES";
+
 	@Override
 	public void importIt(TemporaryFileHandle staging, Institution institution, ConverterParams params, String cid)
 		throws IOException
 	{
-		if( cid.equals(ConverterId.FILES.name()) )
+		if( cid.equals(CONVERTER_ID) )
 		{
 			doImport(staging, institution, params);
 		}
-		else if( cid.equals(ConverterId.CLEANUPFILES.name()) )
+		else if( cid.equals("CLEANUPFILES") )
 		{
 			doFileDelete(staging, params);
 		}
@@ -80,7 +82,7 @@ public class FilestoreConverter<T> extends AbstractConverter<T>
 	public void exportIt(TemporaryFileHandle staging, Institution institution, ConverterParams callback, String cid)
 		throws IOException
 	{
-		if( cid.equals(ConverterId.FILES.name()) )
+		if( cid.equals(CONVERTER_ID) )
 		{
 			doExport(staging, institution, callback);
 		}
@@ -89,7 +91,7 @@ public class FilestoreConverter<T> extends AbstractConverter<T>
 	@Override
 	public void deleteIt(TemporaryFileHandle staging, Institution institution, ConverterParams params, String cid)
 	{
-		if( cid.equals(ConverterId.FILES.name()) )
+		if( cid.equals(CONVERTER_ID) )
 		{
 			FileHandle handle = new InstitutionFile(institution);
 			if( !doFileDelete(handle, params) )
@@ -97,7 +99,7 @@ public class FilestoreConverter<T> extends AbstractConverter<T>
 				throw new RuntimeApplicationException("Could not delete filestore for unknown reasons");
 			}
 		}
-		else if( cid.equals(ConverterId.CLEANUPFILES.name()) )
+		else if( cid.equals("CLEANUPFILES") )
 		{
 			doFileDelete(staging, params);
 		}
@@ -108,19 +110,19 @@ public class FilestoreConverter<T> extends AbstractConverter<T>
 	{
 		if( type == ConvertType.DELETE )
 		{
-			tasks.addAfter(getStandardTask(ConverterId.FILES));
+			tasks.addAfter(getStandardTask(CONVERTER_ID));
 		}
 		else
 		{
-			tasks.add(getStandardTask(ConverterId.FILES));
-			tasks.add(getStandardTask(ConverterId.CLEANUPFILES));
+			tasks.add(getStandardTask(CONVERTER_ID));
+			tasks.add(getStandardTask("CLEANUPFILES"));
 		}
 	}
 
 	@Override
-	public ConverterId getConverterId()
+	public String getStringId()
 	{
-		return ConverterId.FILES;
+		return CONVERTER_ID;
 	}
 
 	@Override

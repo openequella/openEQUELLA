@@ -6200,4 +6200,9 @@
     <parameter id="root" value="bean:com.tle.web.template.SinglePageApp" />
     <parameter id="url" value="false" />
   </extension>
+  <extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="itemViewsConverter">
+    <parameter id="id" value="item_views" />
+    <parameter id="class" value="bean:com.tle.core.item.convert.ViewsConverter" />
+    <parameter id="order" value="815" />
+  </extension>
 </plugin>

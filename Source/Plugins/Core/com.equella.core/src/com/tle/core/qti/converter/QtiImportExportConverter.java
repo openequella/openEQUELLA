@@ -268,13 +268,6 @@ public class QtiImportExportConverter extends AbstractConverter<Object>
 		}
 	}
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public ConverterId getConverterId()
-	{
-		return null;
-	}
-
 	@Override
 	protected NameValue getStandardTask()
 	{

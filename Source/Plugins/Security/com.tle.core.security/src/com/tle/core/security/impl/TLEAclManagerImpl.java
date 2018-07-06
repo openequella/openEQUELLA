@@ -43,10 +43,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.common.security.*;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Propagation;
@@ -64,13 +66,7 @@ import com.tle.beans.security.AccessExpression;
 import com.tle.common.Pair;
 import com.tle.common.Triple;
 import com.tle.common.institution.CurrentInstitution;
-import com.tle.common.security.PrivilegeTree;
 import com.tle.common.security.PrivilegeTree.Node;
-import com.tle.common.security.SecurityConstants;
-import com.tle.common.security.TargetList;
-import com.tle.common.security.TargetListEntry;
-import com.tle.common.security.WorkflowTaskDynamicTarget;
-import com.tle.common.security.WorkflowTaskTarget;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.usermanagement.user.ModifiableUserState;
 import com.tle.common.usermanagement.user.UserState;
@@ -165,9 +161,10 @@ public class TLEAclManagerImpl implements TLEAclManager
 	}
 
 	@Override
-	public <T> boolean checkPrivilege(String privilege, T domainObj)
+	public boolean hasPrivilege(Object domainObj, Privilege... privilege)
 	{
-		return !filterNonGrantedObjects(Collections.singleton(privilege), Collections.singleton(domainObj)).isEmpty();
+		final Collection<String> privs = Arrays.stream(privilege).map(p -> p.toString()).collect(Collectors.toList());
+		return !filterNonGrantedPrivileges(domainObj, privs).isEmpty();
 	}
 
 	@Override

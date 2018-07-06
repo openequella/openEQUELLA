@@ -39,8 +39,11 @@ import com.tle.beans.item.attachments.ImsAttachment;
 import com.tle.beans.item.attachments.LinkAttachment;
 import com.tle.beans.item.attachments.ZipAttachment;
 import com.tle.common.Check;
+import com.tle.common.security.Privilege;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.ViewCountJavaDao;
 import com.tle.core.item.service.ItemResolver;
+import com.tle.core.security.TLEAclManager;
 import com.tle.core.url.URLCheckerService;
 
 @SuppressWarnings("nls")
@@ -54,6 +57,8 @@ public class AttachmentHelper extends AbstractHelper
 	private URLCheckerService urlCheckerService;
 	@Inject
 	private ItemResolver itemResolver;
+	@Inject
+	private TLEAclManager aclService;
 
 	public AttachmentHelper()
 	{
@@ -66,6 +71,7 @@ public class AttachmentHelper extends AbstractHelper
 		PropBagEx attXml = itemxml.aquireSubtree("attachments");
 		attXml.deleteAll(Constants.XML_WILD);
 
+		final boolean canViewCounts = aclService.hasPrivilege(bean, Privilege.VIEW_VIEWCOUNT);
 		for( Attachment attachment : bean.getAttachmentsUnmodifiable() )
 		{
 			//itemResolver will only be null for unit tests
@@ -124,6 +130,15 @@ public class AttachmentHelper extends AbstractHelper
 							attachment.getDataAttributesReadOnly());
 						PropBagEx dataXml = new PropBagEx(customAttachXstream.toXML(dataAttributes));
 						aXml.appendChildren("attributes", dataXml);
+
+						if (canViewCounts)
+						{
+							final int views = ViewCountJavaDao.getAttachmentViewCount(bean.getItemId(), attachment.getUuid());
+							if (views > 0)
+							{
+								setNode(aXml, "/views", views);
+							}
+						}
 
 						attXml.append(Constants.BLANK, aXml);
 					}

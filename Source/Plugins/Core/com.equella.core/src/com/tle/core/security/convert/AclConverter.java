@@ -264,9 +264,9 @@ public class AclConverter extends AbstractConverter<AclConverter.AclPostReadMigr
 	}
 
 	@Override
-	public ConverterId getConverterId()
+	public String getStringId()
 	{
-		return ConverterId.ACLS;
+		return "ACLS";
 	}
 
 	public static class AclPostReadMigratorParams implements Iterable<AccessEntry>

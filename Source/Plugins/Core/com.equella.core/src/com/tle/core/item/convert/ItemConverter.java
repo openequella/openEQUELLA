@@ -587,10 +587,9 @@ public class ItemConverter extends AbstractConverter<ItemConverter.ItemConverter
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
-	public ConverterId getConverterId()
+	public String getStringId()
 	{
-		return ConverterId.ITEMS;
+		return "ITEMS";
 	}
 
 	public static class ItemConverterInfo

@@ -112,12 +112,6 @@ public class RelationConverter extends AbstractConverter<Relation>
 		}
 	}
 
-	@Override
-	public ConverterId getConverterId()
-	{
-		return null;
-	}
-
 	public XStream getXStream()
 	{
 		if( xstream == null )

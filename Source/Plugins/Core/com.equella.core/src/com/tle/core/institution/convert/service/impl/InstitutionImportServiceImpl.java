@@ -64,7 +64,6 @@ import com.tle.core.institution.InstitutionService;
 import com.tle.core.institution.InstitutionValidationError;
 import com.tle.core.institution.RunAsInstitution;
 import com.tle.core.institution.convert.Converter;
-import com.tle.core.institution.convert.Converter.ConverterId;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.InstitutionImport;
 import com.tle.core.institution.convert.InstitutionInfo;
@@ -605,9 +604,9 @@ public class InstitutionImportServiceImpl implements InstitutionImportService
 	public Set<String> convertToFlags(Set<String> conversions)
 	{
 		Set<String> flags = new HashSet<String>();
-		if( conversions.contains(ConverterId.ITEMS.name()) )
+		if( conversions.contains("ITEMS") )
 		{
-			if( !conversions.contains(ConverterId.ITEMSATTACHMENTS.name()) )
+			if( !conversions.contains("ITEMSATTACHMENTS") )
 			{
 				flags.add(ConverterParams.NO_ITEMSATTACHMENTS);
 			}
@@ -618,7 +617,7 @@ public class InstitutionImportServiceImpl implements InstitutionImportService
 			flags.add(ConverterParams.NO_ITEMSATTACHMENTS);
 		}
 
-		if( !conversions.contains(ConverterId.AUDITLOGS.name()) )
+		if( !conversions.contains("AUDITLOGS") )
 		{
 			flags.add(ConverterParams.NO_AUDITLOGS);
 		}
@@ -634,7 +633,7 @@ public class InstitutionImportServiceImpl implements InstitutionImportService
 			@Override
 			public void run()
 			{
-				tasksDone.add(0, ConverterId.CLEANUPFILES.name());
+				tasksDone.add(0, "CLEANUPFILES");
 				ListIterator<String> iter = tasksDone.listIterator(tasksDone.size());
 
 				while( iter.hasPrevious() )

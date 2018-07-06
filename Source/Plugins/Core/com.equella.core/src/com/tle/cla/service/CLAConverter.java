@@ -119,12 +119,6 @@ public class CLAConverter extends AbstractConverter<Object>
 	}
 
 	@Override
-	public ConverterId getConverterId()
-	{
-		return null;
-	}
-
-	@Override
 	public void doImport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
 		throws IOException
 	{
