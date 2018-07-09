@@ -48,6 +48,7 @@ Usually `com.equella.core` is the place where new architecture classes will be p
 ## Guides
 
 * [REST endpoint creation](restendpoint.md)
-* Using security - TODO
+* [Using security](security.md)
 * [React based web pages](reactjs.md)
+* [Scala server side code](scaladb.md)
 

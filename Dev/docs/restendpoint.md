@@ -3,7 +3,7 @@
 The new architecture emphasizes communicating to the backend server via REST endpoints using JSON
 representations. 
 
-RestEasy 3.5.0 configured using JAX-RS annotations and Jackson for JSON de/serialization. 
+RestEasy 3.5.0 configured using [JAX-RS](https://docs.oracle.com/javaee/6/tutorial/doc/giepu.html) annotations and Jackson for JSON de/serialization. 
 On top of that Swagger annotations are used for documentation.
 
 * [Add an endpoint](#adding)
