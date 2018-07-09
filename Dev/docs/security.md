@@ -44,17 +44,17 @@ Java code should use `TLEAclManager` to check privileges. It is responsible for 
 Some of the useful methods in `TLEAclManager`:
 
 ```java
-    /* For filtering out a list of objects for which you don't have ALL the privileges for */
-    <T> Collection<T> filterNonGrantedObjects(Collection<String> privileges, Collection<T> domainObjs)
+/* For filtering out a list of objects for which you don't have ALL the privileges for */
+<T> Collection<T> filterNonGrantedObjects(Collection<String> privileges, Collection<T> domainObjs)
 
-    /* Checking a single privilege on a single domain object */
-	<T> boolean checkPrivilege(String privilege, T domainObj);
+/* Checking a single privilege on a single domain object */
+<T> boolean checkPrivilege(String privilege, T domainObj);
 
-    /* When you need to know exactly which privileges are available for a list of objects */
-	<T> Map<T, Map<String, Boolean>> getPrivilegesForObjects(Collection<String> privileges, Collection<T> domainObjs);
+/* When you need to know exactly which privileges are available for a list of objects */
+<T> Map<T, Map<String, Boolean>> getPrivilegesForObjects(Collection<String> privileges, Collection<T> domainObjs);
 
-    /* For checking privileges which don't apply to a particular object, e.g. CREATE_COLLECTION */
-	Set<String> filterNonGrantedPrivileges(Collection<String> privileges, boolean includePossibleOwnerAcls);
+/* For checking privileges which don't apply to a particular object, e.g. CREATE_COLLECTION */
+Set<String> filterNonGrantedPrivileges(Collection<String> privileges, boolean includePossibleOwnerAcls);
 ```
 
 Scala code can use the `AclChecks` object to check "top level" privileges in the [DB](scaladb.md) monad, 
