@@ -98,7 +98,7 @@ Right now none of the pages share any part of the Redux store, but eventually if
 
 ## Purescript notes
 
-* Purescript 0.11.7
+* Purescript 0.12.0
 * `Affjax` based AJAX 
 * [purescript-react-mui](https://github.com/doolse/purescript-react-mui) purescript bindings for Material UI.
 
