@@ -27,6 +27,7 @@ import com.tle.core.db.tables.{AttachmentViewCount, ItemViewCount}
 import com.tle.core.db.{DBSchema, RunWithDB, UserContext}
 import io.doolse.simpledba.jdbc._
 import io.doolse.simpledba.syntax._
+import scala.collection.JavaConverters._
 
 object ViewCountJavaDao {
 
@@ -76,15 +77,8 @@ object ViewCountJavaDao {
     }
   }
 
-  // FIXME:!!!
-  def getAllSummaryViewCount(inst: Institution): java.util.List[ItemViewCount] = {
-    val res = new java.util.ArrayList[ItemViewCount]
-    //RunWithDB.executeWithHibernate {
-    // 1. Write some code
-    // 2. ???
-    // 3. Profit
-    //}
-    res
+  def getAllSummaryViewCount(inst: Institution): java.util.List[ItemViewCount] = RunWithDB.executeWithHibernate {
+    Kleisli.liftF(queries.allItemCount(inst).compile.toVector.map(_.asJava))
   }
 
   def getSummaryViewCount(itemKey: ItemKey): Int = RunWithDB.executeWithHibernate {
@@ -99,15 +93,8 @@ object ViewCountJavaDao {
     }.map(_.getOrElse(0))
   }
 
-  // FIXME:!!!
-  def getAllAttachmentViewCount(inst: Institution, itemKey: ItemKey): java.util.List[AttachmentViewCount] = {
-    val res = new java.util.ArrayList[AttachmentViewCount]
-    //RunWithDB.executeWithHibernate {
-    // 1. Write some code
-    // 2. ???
-    // 3. Profit
-    //}
-    res
+  def getAllAttachmentViewCount(inst: Institution, itemKey: ItemKey): java.util.List[AttachmentViewCount] = RunWithDB.executeWithHibernate {
+    Kleisli.liftF(queries.allAttachmentCount(inst, itemKey.getUuid, itemKey.getVersion).compile.toVector.map(_.asJava))
   }
 
   def getSummaryViewsForCollection(col: ItemDefinition): Int = RunWithDB.executeWithHibernate {
