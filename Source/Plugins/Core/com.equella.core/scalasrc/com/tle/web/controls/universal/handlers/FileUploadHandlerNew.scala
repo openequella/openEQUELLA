@@ -19,6 +19,7 @@ package com.tle.web.controls.universal.handlers
 import java.util
 import java.util.{Collections, UUID}
 
+import com.google.common.collect.Iterables
 import com.google.common.io.ByteStreams
 import com.tle.beans.item.ItemId
 import com.tle.beans.item.attachments._
@@ -420,11 +421,11 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
       // Can move on if there are no uploading files and at least one successful upload
       if (uploads.forall(_.finished)) {
         val allValidated = allValidatedUploads
-        if (allValidated.size == 1) {
+        if (allValidated.size == 1 && fileOptions.defaultResolve(singleUpload).isEmpty) {
           optionsButton.setClickHandler(context, events.getNamedHandler("nextPage"))
           renderOptions.addAction(optionsButton)
         }
-        else if (allValidated.size > 1) {
+        else if (allValidated.size > 0) {
           renderOptions.setShowSave(true)
           renderOptions.setShowAddReplace(true)
         }

@@ -62,8 +62,7 @@ import com.tle.web.viewurl.attachments.AttachmentResourceService;
 
 /**
  * An abstract {@link AttachmentHandler} which has an "add" page and a "details"
- * page. Multiple attachments can be created by the "add" page, however if only
- * 1 is created the handler will go to the "details" page.
+ * page. The "details" page will only show when editing an attachment.
  * <p>
  * Attachments themselves are represented by a generic type UA extends
  * {@link UniversalAttachment}, which can have more state than just the
@@ -271,11 +270,6 @@ public abstract class AbstractDetailsAttachmentHandler<M extends AbstractDetails
 		{
 			List<UA> attachments = createUniversalAttachments(info);
 			storeUniversalAttachments(info, attachments);
-			if( attachments.size() == 1 )
-			{
-				setupDetailEditing(info);
-				return false;
-			}
 			if( !isMultipleAllowed(info) && attachments.size() > 1 )
 			{
 				throw new Error("Weren't meant to allow multiple attachments");

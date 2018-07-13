@@ -31,11 +31,13 @@ public class ResourceSettings extends UniversalSettings
 	private static final String KEY_RELATION_TYPE = "RelationType";
 	private static final String KEY_RESTRICT_SWITCH_PREFIX = "IsRestricted";
 	private static final String KEY_RESTRICT_CHOICES_PREFIX = "RestrictTo";
+	private static final String KEY_SKIP_CHECKOUT_PAGE = "SkipCheckoutPage";
 
 	public static final String KEY_RESTRICT_COLLECTIONS = "Collections";
 	public static final String KEY_RESTRICT_POWERSEARCHES = "PowerSearches";
 	public static final String KEY_RESTRICT_CONTRIBUTION = "Contribution";
 	public static final String KEY_RESTRICT_DYNACOLLECTION = "DynaCollection";
+
 
 	public ResourceSettings(CustomControl wrapped)
 	{
@@ -85,6 +87,16 @@ public class ResourceSettings extends UniversalSettings
 	public void setRestrictedTo(String key, Set<String> value)
 	{
 		wrapped.getAttributes().put(KEY_RESTRICT_CHOICES_PREFIX + key, value);
+	}
+
+	public boolean isSkipCheckoutPage()
+	{
+		return wrapped.getBooleanAttribute(KEY_SKIP_CHECKOUT_PAGE);
+	}
+
+	public void setSkipCheckoutPage( boolean b)
+	{
+		wrapped.getAttributes().put(KEY_SKIP_CHECKOUT_PAGE, b);
 	}
 
 	public static enum AllowedSelection

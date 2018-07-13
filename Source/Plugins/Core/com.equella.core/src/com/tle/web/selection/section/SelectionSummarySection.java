@@ -187,8 +187,15 @@ public class SelectionSummarySection extends AbstractPrototypeSection<SelectionS
 		// TODO: Do show a message here if SelectionSession.isCancelDisabled and
 		// there are no selections? Alternatively, do we now show the checkout
 		// button until there are selections if isCancelDisabled is true?
-
-		selectionService.forwardToCheckout(context);
+		final SelectionSession session = selectionService.getCurrentSession(context);
+		if (session.isSkipCheckoutPage())
+		{
+			selectionService.returnFromSession(context);
+		}
+		else
+		{
+			selectionService.forwardToCheckout(context);
+		}
 	}
 
 	@EventHandlerMethod
