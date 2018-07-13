@@ -42,9 +42,6 @@ import com.tle.common.Check;
 import com.tle.common.security.Privilege;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.ViewCountJavaDao;
-import com.tle.core.item.service.ItemResolver;
-import com.tle.core.security.TLEAclManager;
-import com.tle.core.url.URLCheckerService;
 
 @SuppressWarnings("nls")
 @Bind
@@ -52,16 +49,12 @@ import com.tle.core.url.URLCheckerService;
 public class AttachmentHelper extends AbstractHelper
 {
 	private final XStream customAttachXstream = new XStream();
+	private final ItemXmlSecurity security;
 
 	@Inject
-	private URLCheckerService urlCheckerService;
-	@Inject
-	private ItemResolver itemResolver;
-	@Inject
-	private TLEAclManager aclService;
-
-	public AttachmentHelper()
+	public AttachmentHelper(ItemXmlSecurity security)
 	{
+		this.security= security;
 		customAttachXstream.alias("attributes", Map.class);
 	}
 
@@ -71,11 +64,11 @@ public class AttachmentHelper extends AbstractHelper
 		PropBagEx attXml = itemxml.aquireSubtree("attachments");
 		attXml.deleteAll(Constants.XML_WILD);
 
-		final boolean canViewCounts = aclService.hasPrivilege(bean, Privilege.VIEW_VIEWCOUNT);
+		final boolean canViewCounts = security.hasPrivilege(bean, Privilege.VIEW_VIEWCOUNT);
 		for( Attachment attachment : bean.getAttachmentsUnmodifiable() )
 		{
 			//itemResolver will only be null for unit tests
-			if( itemResolver == null || !itemResolver.checkRestrictedAttachment(bean, attachment, null) )
+			if( security.checkRestrictedAttachment(bean, attachment) )
 			{
 				if( attachment.getAttachmentType() != AttachmentType.IMS )
 				{
@@ -91,14 +84,7 @@ public class AttachmentHelper extends AbstractHelper
 							break;
 						case LINK:
 							LinkAttachment la = (LinkAttachment) attachment;
-							if( urlCheckerService != null )
-							{
-								setNode(aXml, "@disabled", urlCheckerService.isUrlDisabled(la.getUrl()));
-							}
-							else
-							{
-								setNode(aXml, "@disabled", false);
-							}
+							setNode(aXml, "@disabled", security.isUrlDisabled(la.getUrl()));
 							type = "remote";
 							break;
 						case ZIP:
