@@ -70,7 +70,8 @@ public class EquellaDropdownExtension implements RendererFactoryExtension
 		}
 		else
 		{
-			return new StylishDropDownRenderer(htmlListState);
+			//return new StylishDropDownRenderer(htmlListState);
+			return new AutocompleteDropdownRenderer(htmlListState);
 		}
 	}
 }

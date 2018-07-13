@@ -115,10 +115,14 @@ public class MultiSelectionList<T> extends AbstractValueComponent<HtmlListState,
 	{
 		super.prepareModel(info);
 		ensureSelection(info);
-		final List<?> options = listModel.getOptions(info);
 		final HtmlListState state = getState(info);
-		state.setOptions((List<Option<?>>) options);
+		state.setOptions((List<Option<?>>) getOptions(info));
 		extraHtmlRender(info);
+	}
+
+	protected List<?> getOptions(SectionInfo info)
+	{
+		return getListModel().getOptions(info);
 	}
 
 	protected void extraHtmlRender(SectionInfo info)
@@ -281,7 +285,7 @@ public class MultiSelectionList<T> extends AbstractValueComponent<HtmlListState,
 	@AjaxMethod
 	public SimpleResult ajaxOptions(SectionInfo info)
 	{
-		return new SimpleResult(listModel.getOptions(info));
+		return new SimpleResult(getOptions(info));
 	}
 
 	public JSValidator createEmptyValidator()
@@ -323,7 +327,7 @@ public class MultiSelectionList<T> extends AbstractValueComponent<HtmlListState,
 		List<String> values = Collections.singletonList("Probably dynamic");
 		try
 		{
-			List<Option<T>> options = listModel.getOptions(info);
+			List<Option<T>> options = (List<Option<T>>) getOptions(info);
 			values = new ArrayList<String>();
 			String defaultVal = listModel.getDefaultValue(info);
 			for( Option<T> option : options )

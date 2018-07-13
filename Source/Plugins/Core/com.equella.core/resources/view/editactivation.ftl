@@ -11,11 +11,9 @@
 <div>
 	<@settingContainer>
 		<@setting label=b.key('editactivation.name')>${_userformat("$LoggedInUser")}</@setting>
-		<@a.div id="courseajax">
-			<@setting label=b.key("editactivation.course") mandatory=true>
-				<span>(${m.course.code}) ${b.bundle(m.course.name)}</span><@button section=s.selectCourse />
-			</@setting>
-		</@a.div>
+        <@setting label=b.key("editactivation.course") mandatory=true>
+            <@render s.course />
+        </@setting>
 		<@setting label=b.key("editactivation.activatefrom") mandatory=true labelFor=s.fromDate>
 			<@calendar section=s.fromDate notAfter=s.untilDate />
 		</@setting>

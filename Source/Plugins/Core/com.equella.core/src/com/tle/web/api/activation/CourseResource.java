@@ -41,9 +41,9 @@ public interface CourseResource extends BaseEntityResource<CourseBean, BaseEntit
 	PagingBean<CourseBean> list(@Context UriInfo uriInfo,
 		   @ApiParam(value = "Course code to search for", required = false) @QueryParam("code") String code,
 		   @ApiParam("Search name and description") @QueryParam("q") String q,
-		   @ApiParam("Include archived") @QueryParam("archived") @DefaultValue("false") Boolean includeArchived,
+		   @ApiParam("Include archived") @QueryParam("archived") @DefaultValue("false") boolean includeArchived,
 		   @ApiParam("Privilege(s) to filter by") @QueryParam("privilege") List<String> privilege,
-		   @QueryParam("resumption") @ApiParam("Resumption token for paging") String resumptionToken,
+		   @QueryParam("resumption") @ApiParam("Resumption token for paging") String resumption,
 		   @QueryParam("length") @ApiParam("Number of results") @DefaultValue("10") int length,
 		   @QueryParam("full") @ApiParam("Return full entity (needs VIEW or EDIT privilege)") boolean full);
 

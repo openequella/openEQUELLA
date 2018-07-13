@@ -44,6 +44,7 @@ import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.annotation.PlugURL;
+import com.tle.web.sections.equella.render.AutocompleteDropdownRenderer;
 import com.tle.web.sections.equella.search.PagingSection;
 import com.tle.web.sections.equella.search.event.AbstractSearchEvent;
 import com.tle.web.sections.equella.search.event.AbstractSearchResultsEvent;

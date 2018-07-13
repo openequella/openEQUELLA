@@ -20,14 +20,13 @@ import java.util.Date;
 
 import javax.inject.Inject;
 
+import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.activation.ActivateRequest;
-import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.common.util.UtcDate;
 import com.tle.core.activation.service.ActivationService;
 import com.tle.core.activation.service.CourseInfoService;
 import com.tle.core.guice.Bind;
 import com.tle.common.usermanagement.user.CurrentUser;
-import com.tle.web.activation.filter.SelectCourseDialog;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;
@@ -39,6 +38,7 @@ import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.sections.equella.annotation.PlugKey;
+import com.tle.web.sections.equella.component.CourseSelectionList;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.Button;
@@ -47,6 +47,7 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.viewitem.summary.content.AbstractContentSection;
 import com.tle.web.viewitem.summary.section.ItemSummaryContentSection;
 
+@NonNullByDefault
 @Bind
 public class EditActivationSection extends AbstractContentSection<EditActivationSection.EditActivationModel>
 {
@@ -57,22 +58,22 @@ public class EditActivationSection extends AbstractContentSection<EditActivation
 	@PlugKey("editactivation.error.pendingpast")
 	private static Label LABEL_ERROR_PENDING_PAST;
 
+	@Inject
+	private ActivationService activationService;
+
 	@ViewFactory
 	private FreemarkerFactory viewFactory;
 	@TreeLookup
 	private ItemSummaryContentSection summarySection;
 	@TreeLookup
 	private ShowActivationsSection activationsSection;
-	@Inject
-	private ActivationService activationService;
-	@AjaxFactory
-	private AjaxGenerator ajax;
-	@Inject
-	private CourseInfoService courseService;
 
-	@Component(name = "fd")
+	@Inject
+	@Component(name = "cid", stateful = false)
+	private CourseSelectionList course;
+	@Component(name = "fd", stateful = false)
 	private Calendar fromDate;
-	@Component(name = "ud")
+	@Component(name = "ud", stateful = false)
 	private Calendar untilDate;
 	@Component
 	@PlugKey("editactivation.cancel")
@@ -80,13 +81,6 @@ public class EditActivationSection extends AbstractContentSection<EditActivation
 	@Component
 	@PlugKey("editactivation.save")
 	private Button saveButton;
-
-	@Component(name = "sc")
-	@PlugKey("editactivation.changecourse")
-	private Button selectCourse;
-	@Inject
-	@Component
-	private SelectCourseDialog selectCourseDialog;
 
 	public void doEdit(SectionInfo info, String uuid)
 	{
@@ -98,19 +92,17 @@ public class EditActivationSection extends AbstractContentSection<EditActivation
 	@Override
 	public SectionResult renderHtml(RenderEventContext context) throws Exception
 	{
-		EditActivationModel model = getModel(context);
-		ActivateRequest request = activationService.getRequest(model.getActivationId());
-		if( model.getCourse() == null )
-		{
-			model.setCourse(request.getCourse());
-		}
+		final EditActivationModel model = getModel(context);
+		final ActivateRequest request = activationService.getRequest(model.getActivationId());
+		course.setSelectedValue(context, request.getCourse());
+
 		if( model.getError() == null )
 		{
 			fromDate.setDate(context, new UtcDate(request.getFrom()).conceptualDate());
 			untilDate.setDate(context, new UtcDate(request.getUntil()).conceptualDate());
 		}
-		boolean active = request.getStatus() == ActivateRequest.TYPE_ACTIVE;
-		selectCourse.setDisabled(context, active);
+		final boolean active = (request.getStatus() == ActivateRequest.TYPE_ACTIVE);
+		course.setDisabled(context, active);
 		fromDate.setDisabled(context, active);
 		return viewFactory.createResult("editactivation.ftl", this);
 	}
@@ -120,21 +112,17 @@ public class EditActivationSection extends AbstractContentSection<EditActivation
 	{
 		super.registered(id, tree);
 		cancelButton.setClickHandler(events.getNamedHandler("cancelEdit"));
-		selectCourse.setClickHandler(selectCourseDialog.getOpenFunction());
-		selectCourseDialog.setAjax(true);
-		selectCourseDialog.setOkCallback(ajax.getAjaxUpdateDomFunction(tree, null,
-			events.getEventHandler("courseChanged"), "courseajax"));
 		saveButton.setClickHandler(events.getNamedHandler("save"));
 	}
 
 	@EventHandlerMethod
 	public void save(SectionInfo info)
 	{
-		EditActivationModel model = getModel(info);
-		ActivateRequest request = activationService.getRequest(model.getActivationId());
+		final EditActivationModel model = getModel(info);
+		final ActivateRequest request = activationService.getRequest(model.getActivationId());
 		if( isValid(info, request) )
 		{
-			request.setCourse(courseService.getByUuid(model.getCourseId()));
+			request.setCourse(course.getSelectedValue(info));
 			request.setFrom(fromDate.getDate(info).toDate());
 			request.setUntil(untilDate.getDate(info).toDate());
 			request.setUser(CurrentUser.getUserID());
@@ -147,10 +135,17 @@ public class EditActivationSection extends AbstractContentSection<EditActivation
 		}
 	}
 
+	@EventHandlerMethod
+	public void cancelEdit(SectionInfo info)
+	{
+		getModel(info).setActivationId(null);
+		summarySection.setSummaryId(info, activationsSection.getSectionObject());
+	}
+
 	private boolean isValid(SectionInfo info, ActivateRequest request)
 	{
-		Date today = new Date();
-		EditActivationModel model = getModel(info);
+		final Date today = new Date();
+		final EditActivationModel model = getModel(info);
 		if( fromDate.getDate(info).after(untilDate.getDate(info)) )
 		{
 			// not actually possible but JUST IN CASE
@@ -170,63 +165,23 @@ public class EditActivationSection extends AbstractContentSection<EditActivation
 		return true;
 	}
 
-	@EventHandlerMethod
-	public void courseChanged(SectionInfo info, String courseUuid)
-	{
-		getModel(info).setCourse(courseService.getByUuid(courseUuid));
-	}
-
-	@EventHandlerMethod
-	public void cancelEdit(SectionInfo info)
-	{
-		summarySection.setSummaryId(info, activationsSection.getSectionObject());
-	}
-
 	@Override
 	public Class<EditActivationModel> getModelClass()
 	{
 		return EditActivationModel.class;
 	}
-
+/*
 	@Override
 	public Object instantiateModel(SectionInfo info)
 	{
 		return new EditActivationModel();
-	}
+	}*/
 
-	public class EditActivationModel
+	public static class EditActivationModel
 	{
 		@Bookmarked(name = "aid")
 		private String activationId;
-		private CourseInfo course;
-		@Bookmarked(name = "cid")
-		private String courseId;
 		private Label error;
-
-		public String getCourseId()
-		{
-			if( courseId == null && course != null )
-			{
-				return course.getUuid();
-			}
-			return courseId;
-		}
-
-		public void setCourseId(String courseId)
-		{
-			this.courseId = courseId;
-		}
-
-		public CourseInfo getCourse()
-		{
-			return course;
-		}
-
-		public void setCourse(CourseInfo course)
-		{
-			this.course = course;
-			setCourseId(course.getUuid());
-		}
 
 		public String getActivationId()
 		{
@@ -247,7 +202,11 @@ public class EditActivationSection extends AbstractContentSection<EditActivation
 		{
 			this.error = error;
 		}
+	}
 
+	public CourseSelectionList getCourse()
+	{
+		return course;
 	}
 
 	public Calendar getFromDate()
@@ -258,11 +217,6 @@ public class EditActivationSection extends AbstractContentSection<EditActivation
 	public Calendar getUntilDate()
 	{
 		return untilDate;
-	}
-
-	public Button getSelectCourse()
-	{
-		return selectCourse;
 	}
 
 	public Button getCancelButton()

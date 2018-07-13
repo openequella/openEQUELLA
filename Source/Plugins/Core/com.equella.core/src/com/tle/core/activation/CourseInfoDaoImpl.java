@@ -63,7 +63,7 @@ public class CourseInfoDaoImpl extends AbstractEntityDaoImpl<CourseInfo> impleme
 		final Boolean includeDisabled = options.isIncludeDisabled();
 		if (includeDisabled != null)
 		{
-			callback = new EnabledCallback(callback, includeDisabled);
+			callback = new EnabledCallback(callback, !includeDisabled);
 		}
 		if (options.getOffset() != 0 || options.getMax() != -1)
 		{

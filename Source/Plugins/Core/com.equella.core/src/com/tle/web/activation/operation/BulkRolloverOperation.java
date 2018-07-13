@@ -53,6 +53,7 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.annotation.PlugKey;
+import com.tle.web.sections.equella.component.CourseSelectionList;
 import com.tle.web.sections.equella.utils.KeyOption;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.js.EventGenerator;
@@ -99,8 +100,9 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object> impl
 	@EventFactory
 	private EventGenerator events;
 
+	@Inject
 	@Component(name = "c")
-	private SingleSelectionList<CourseInfo> courses;
+	private CourseSelectionList courses;
 	@Component(name = "ce")
 	private Checkbox cancelExisting;
 	@Component(name = "fd")
@@ -222,10 +224,7 @@ public class BulkRolloverOperation extends AbstractPrototypeSection<Object> impl
 		super.registered(id, tree);
 		CourseListModel courseListModel = new CourseListModel();
 		courseListModel.setSort(true);
-		courses.setListModel(courseListModel);
-		courses.setAlwaysSelect(true);
 		courses.setEventHandler(JSHandler.EVENT_CHANGE, events.getNamedHandler("updateDatesFromCourse"));
-		courses.setDefaultRenderer("defaultdropdown");
 
 		fromDate.setEventHandler(JSHandler.EVENT_CHANGE, new ReloadHandler());
 		toDate.setEventHandler(JSHandler.EVENT_CHANGE, new ReloadHandler());
