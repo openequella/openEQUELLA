@@ -94,8 +94,12 @@ trait DBSchema extends StdColumns {
   val viewCountQueries = {
     val del1 = itemViewCount.delete.where(itemViewId, BinOp.EQ).build[(InstId, DbUUID, Int)]
     val del2 = attachmentViewCount.delete.where(itemViewId, BinOp.EQ).build[(InstId, DbUUID, Int)]
-    ViewCountQueries(itemViewCount.writes, attachmentViewCount.writes,
-      itemViewCount.byPK, attachmentViewCount.byPK,
+    ViewCountQueries(itemViewCount.writes,
+      attachmentViewCount.writes,
+      itemViewCount.byPK,
+      itemViewCount.query.where(Cols('inst), BinOp.EQ).build,
+      attachmentViewCount.byPK,
+      attachmentViewCount.query.where(Cols('inst, 'item_uuid, 'item_version), BinOp.EQ).build,
       countByCol.as[Long => Stream[JDBCIO, Option[Int]]].andThen(_.map(_.getOrElse(0))),
       attachmentViewCountByCol.as[Long => Stream[JDBCIO, Option[Int]]].andThen(_.map(_.getOrElse(0))),
       id => del1(id) ++ del2(id)

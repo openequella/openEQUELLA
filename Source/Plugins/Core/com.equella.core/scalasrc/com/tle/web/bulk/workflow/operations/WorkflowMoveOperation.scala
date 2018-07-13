@@ -19,6 +19,7 @@ package com.tle.web.bulk.workflow.operations
 import com.google.inject.assistedinject.{Assisted, AssistedInject}
 import com.tle.beans.item.HistoryEvent
 import com.tle.common.i18n.CurrentLocale
+import com.tle.common.security.Privilege
 import com.tle.common.workflow.node.WorkflowNode
 import com.tle.common.workflow.{WorkflowItemStatus, WorkflowNodeStatus}
 import com.tle.core.item.standard.operations.workflow.TaskOperation
@@ -36,7 +37,7 @@ class WorkflowMoveOperation @AssistedInject()(@Assisted("msg") val msg: String, 
 
 
   override def execute: Boolean = {
-    if (!aclService.checkPrivilege("MANAGE_WORKFLOW", getWorkflow)) {
+    if (!aclService.hasPrivilege(getWorkflow, Privilege.MANAGE_WORKFLOW)) {
       throw new AccessDeniedException(CurrentLocale.get("com.tle.core.services.item.error.nopriv", "MANAGE_WORKFLOW", getItemId))
     }
 

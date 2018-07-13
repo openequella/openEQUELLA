@@ -19,6 +19,7 @@ package com.tle.core.item.helper;
 import java.util.Arrays;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.dytech.devlib.PropBagEx;
@@ -29,14 +30,24 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemPack;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.security.Privilege;
 import com.tle.common.util.LocalDate;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.ViewCountJavaDao;
 
 @SuppressWarnings("nls")
 @Bind
 @Singleton
 public class ItemDetailsHelper extends AbstractHelper
 {
+	private final ItemXmlSecurity security;
+
+	@Inject
+	public ItemDetailsHelper(ItemXmlSecurity security)
+	{
+		this.security = security;
+	}
+	
 	@Override
 	public void load(PropBagEx item, ItemPack pack)
 	{
@@ -59,12 +70,12 @@ public class ItemDetailsHelper extends AbstractHelper
 		setNode(xml, "newitem", item.isNewItem());
 
 		final String thumb = item.getThumb();
-		if( thumb != null )
+		if (thumb != null)
 		{
 			setNode(xml, "thumbnail", thumb);
 		}
 		final ItemDefinition itemdef = item.getItemDefinition();
-		if( itemdef != null )
+		if (itemdef != null)
 		{
 			setNode(xml, "/@itemdefid", itemdef.getUuid());
 		}
@@ -76,6 +87,15 @@ public class ItemDetailsHelper extends AbstractHelper
 		setNode(xml, "/@itemstatus", item.getStatus());
 		setNode(xml, "/@moderating", item.isModerating());
 		setNode(xml, "/rating/@average", item.getRating());
+
+		if (security.hasPrivilege(item, Privilege.VIEW_VIEWCOUNT))
+		{
+			final int views = ViewCountJavaDao.getSummaryViewCount(item.getItemId());
+			if (views > 0)
+			{
+				setNode(xml, "/views", views);
+			}
+		}
 	}
 
 	@Override
@@ -141,8 +161,8 @@ public class ItemDetailsHelper extends AbstractHelper
 			item.setItemDefinition(itemdef);
 		}
 
-		handled.addAll(Arrays.asList(new String[]{"@key", "@id", "@task", "newitem", "owner", "datecreated",
+		handled.addAll(Arrays.asList("@key", "@id", "@task", "newitem", "owner", "datecreated",
 				"datemodified", "dateforindex", "@itemstatus", "itembody/thumbnail", "@live", "@moderating", "itemtype",
-				"modifier", "lockedby", "publiclock", "folder", "rating/@average", "@itemdefid", "thumbnail"}));
+				"modifier", "lockedby", "publiclock", "folder", "rating/@average", "@itemdefid", "thumbnail"));
 	}
 }

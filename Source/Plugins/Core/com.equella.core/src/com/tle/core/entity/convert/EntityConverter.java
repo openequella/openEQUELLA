@@ -209,8 +209,8 @@ public class EntityConverter extends AbstractConverter<BaseEntity>
 	}
 
 	@Override
-	public ConverterId getConverterId()
+	public String getStringId()
 	{
-		return ConverterId.ENTITIES;
+		return "ENTITIES";
 	}
 }

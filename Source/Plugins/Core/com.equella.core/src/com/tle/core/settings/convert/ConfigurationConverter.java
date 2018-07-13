@@ -80,9 +80,9 @@ public class ConfigurationConverter extends AbstractConverter<Map<String, String
 	}
 
 	@Override
-	public ConverterId getConverterId()
+	public String getStringId()
 	{
-		return ConverterId.CONFIGURATION;
+		return "CONFIGURATION";
 	}
 
 	@Inject

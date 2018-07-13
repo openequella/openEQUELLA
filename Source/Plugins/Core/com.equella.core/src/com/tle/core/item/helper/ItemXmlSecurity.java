@@ -14,28 +14,17 @@
  * limitations under the License.
  */
 
-package com.tle.core.institution.convert;
+package com.tle.core.item.helper;
 
-public abstract class AbstractConverter<T> extends AbstractMigratableConverter<T>
-{
-	@Override
-	public String getStringId()
-	{
-		return null;
-	}
+import com.tle.beans.item.Item;
+import com.tle.beans.item.attachments.Attachment;
+import com.tle.common.security.Privilege;
 
-	public static class FormatFile
-	{
-		private boolean bucketed;
+public interface ItemXmlSecurity {
 
-		public boolean isBucketed()
-		{
-			return bucketed;
-		}
+    boolean hasPrivilege(Item bean, Privilege privilege);
 
-		public void setBucketed(boolean bucketed)
-		{
-			this.bucketed = bucketed;
-		}
-	}
+    boolean isUrlDisabled(String url);
+
+    boolean checkRestrictedAttachment(Item bean, Attachment attachment);
 }

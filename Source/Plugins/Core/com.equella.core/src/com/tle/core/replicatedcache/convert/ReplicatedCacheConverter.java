@@ -59,12 +59,6 @@ public class ReplicatedCacheConverter extends AbstractConverter<CachedValue>
 	}
 
 	@Override
-	public ConverterId getConverterId()
-	{
-		return null;
-	}
-
-	@Override
 	public String getStringId()
 	{
 		return "REPLICATEDCACHE";

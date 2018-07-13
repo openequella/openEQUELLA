@@ -95,8 +95,8 @@ public class UserConverter extends AbstractConverter<Object>
 	}
 
 	@Override
-	public ConverterId getConverterId()
+	public String getStringId()
 	{
-		return ConverterId.USERS;
+		return "USERS";
 	}
 }

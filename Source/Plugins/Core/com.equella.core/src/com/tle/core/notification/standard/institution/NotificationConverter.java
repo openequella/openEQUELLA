@@ -58,12 +58,6 @@ public class NotificationConverter extends AbstractConverter<Object> implements 
 	private XStream xstream;
 
 	@Override
-	public ConverterId getConverterId()
-	{
-		return null;
-	}
-
-	@Override
 	public String getStringId()
 	{
 		return CONVERTER_ID;

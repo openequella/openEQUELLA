@@ -36,6 +36,7 @@ import com.tle.beans.item.ItemId;
 import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.common.Check;
 import com.tle.common.beans.exception.NotFoundException;
+import com.tle.common.security.Privilege;
 import com.tle.core.activation.ActivationConstants;
 import com.tle.core.activation.service.ActivationService;
 import com.tle.core.activation.service.CourseInfoService;
@@ -211,7 +212,7 @@ public class ActivationResourceImpl implements ActivationResource
 		{
 			throw new NotFoundException(resources.getString("activation.notfound.activation", uuid));
 		}
-		if( !aclService.checkPrivilege("VIEW_ACTIVATION_ITEM", entity) )
+		if( !aclService.hasPrivilege(entity, Privilege.VIEW_ACTIVATION_ITEM) )
 		{
 			throw new AccessDeniedException(
 				resources.getString("activation.notfound.activation", "VIEW_ACTIVATION_ITEM"));

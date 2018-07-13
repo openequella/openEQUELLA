@@ -14,28 +14,21 @@
  * limitations under the License.
  */
 
-package com.tle.core.institution.convert;
+package com.tle.common.security;
 
-public abstract class AbstractConverter<T> extends AbstractMigratableConverter<T>
+public enum Privilege
 {
-	@Override
-	public String getStringId()
-	{
-		return null;
-	}
-
-	public static class FormatFile
-	{
-		private boolean bucketed;
-
-		public boolean isBucketed()
-		{
-			return bucketed;
-		}
-
-		public void setBucketed(boolean bucketed)
-		{
-			this.bucketed = bucketed;
-		}
-	}
+	CREATE_ITEM,
+	EDIT_ITEM,
+	VIEW_ITEM,
+	CLONE_ITEM,
+	MOVE_ITEM,
+	COMMENT_CREATE_ITEM,
+	COMMENT_DELETE_ITEM,
+	COMMENT_VIEW_ITEM,
+	DISCOVER_ITEM,
+	ARCHIVE_ITEM,
+	MANAGE_WORKFLOW,
+	VIEW_ACTIVATION_ITEM,
+	VIEW_VIEWCOUNT,
 }

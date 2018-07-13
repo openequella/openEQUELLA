@@ -188,9 +188,9 @@ public class AuditLogConverter extends AbstractConverter<Object>
 	}
 
 	@Override
-	public ConverterId getConverterId()
+	public String getStringId()
 	{
-		return ConverterId.AUDITLOGS;
+		return "AUDITLOGS";
 	}
 
 	@Override

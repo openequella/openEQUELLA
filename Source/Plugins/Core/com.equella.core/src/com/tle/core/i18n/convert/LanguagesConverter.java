@@ -133,8 +133,8 @@ public class LanguagesConverter extends AbstractConverter<Language>
 	}
 
 	@Override
-	public com.tle.core.institution.convert.Converter.ConverterId getConverterId()
+	public String getStringId()
 	{
-		return ConverterId.LANGUAGES;
+		return "LANGUAGES";
 	}
 }

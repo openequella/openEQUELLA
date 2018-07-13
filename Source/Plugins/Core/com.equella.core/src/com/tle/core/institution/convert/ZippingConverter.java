@@ -38,12 +38,6 @@ import com.tle.core.util.archive.ArchiveType;
 public class ZippingConverter extends AbstractConverter<Object>
 {
 	@Override
-	public ConverterId getConverterId()
-	{
-		return null;
-	}
-
-	@Override
 	public void doDelete(Institution institution, ConverterParams callback)
 	{
 		// nada
@@ -76,7 +70,7 @@ public class ZippingConverter extends AbstractConverter<Object>
 	{
 		if( type == ConvertType.EXPORT )
 		{
-			tasks.add(getStandardTask(ConverterId.ZIPFILES));
+			tasks.add(getStandardTask("ZIPFILES"));
 		}
 	}
 

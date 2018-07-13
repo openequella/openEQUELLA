@@ -17,14 +17,17 @@
 package com.tle.core.item
 
 import java.time.Instant
+import java.util.Date
 
 import cats.data.Kleisli
+import com.tle.beans.Institution
 import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.beans.item.ItemKey
 import com.tle.core.db.tables.{AttachmentViewCount, ItemViewCount}
 import com.tle.core.db.{DBSchema, RunWithDB, UserContext}
 import io.doolse.simpledba.jdbc._
 import io.doolse.simpledba.syntax._
+import scala.collection.JavaConverters._
 
 object ViewCountJavaDao {
 
@@ -41,6 +44,17 @@ object ViewCountJavaDao {
     }
   }
 
+  def setSummaryViews(itemKey: ItemKey, views: Int, lastViewed: Instant): Unit = RunWithDB.executeWithHibernate {
+    Kleisli { uc =>
+      queries.itemCount((uc.inst, itemKey.getUuid, itemKey.getVersion)).last.flatMap {
+        case Some(c) => queries.writeItemCounts.update(c, c.copy(count = views, last_viewed = lastViewed))
+        case _ =>
+          val newCount = ItemViewCount(uc.inst, itemKey.getUuid, itemKey.getVersion, views, lastViewed)
+          queries.writeItemCounts.insert(newCount)
+      }.flush.compile.drain
+    }
+  }
+
   def incrementAttachmentViews(itemKey: ItemKey, attachment: String): Unit = RunWithDB.executeWithHibernate {
     Kleisli { uc =>
       queries.attachmentCount((uc.inst, itemKey.getUuid, itemKey.getVersion, attachment)).last.flatMap {
@@ -50,6 +64,21 @@ object ViewCountJavaDao {
           queries.writeAttachmentCounts.insert(newCount)
       }.flush.compile.drain
     }
+  }
+
+  def setAttachmentViews(itemKey: ItemKey, attachment: String, views: Int, lastViewed: Instant): Unit = RunWithDB.executeWithHibernate {
+    Kleisli { uc =>
+      queries.attachmentCount((uc.inst, itemKey.getUuid, itemKey.getVersion, attachment)).last.flatMap {
+        case Some(c) => queries.writeAttachmentCounts.update(c, c.copy(count = views, last_viewed = lastViewed))
+        case _ =>
+          val newCount = AttachmentViewCount(uc.inst, itemKey.getUuid, itemKey.getVersion, attachment, views, lastViewed)
+          queries.writeAttachmentCounts.insert(newCount)
+      }.flush.compile.drain
+    }
+  }
+
+  def getAllSummaryViewCount(inst: Institution): java.util.List[ItemViewCount] = RunWithDB.executeWithHibernate {
+    Kleisli.liftF(queries.allItemCount(inst).compile.toVector.map(_.asJava))
   }
 
   def getSummaryViewCount(itemKey: ItemKey): Int = RunWithDB.executeWithHibernate {
@@ -62,6 +91,10 @@ object ViewCountJavaDao {
     Kleisli { uc : UserContext =>
       queries.attachmentCount((uc.inst, itemKey.getUuid, itemKey.getVersion, attachment)).map(_.count).compile.last
     }.map(_.getOrElse(0))
+  }
+
+  def getAllAttachmentViewCount(inst: Institution, itemKey: ItemKey): java.util.List[AttachmentViewCount] = RunWithDB.executeWithHibernate {
+    Kleisli.liftF(queries.allAttachmentCount(inst, itemKey.getUuid, itemKey.getVersion).compile.toVector.map(_.asJava))
   }
 
   def getSummaryViewsForCollection(col: ItemDefinition): Int = RunWithDB.executeWithHibernate {

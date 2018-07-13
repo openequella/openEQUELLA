@@ -14,28 +14,15 @@
  * limitations under the License.
  */
 
-package com.tle.core.institution.convert;
+package com.tle.core.institution.convert.service;
 
-public abstract class AbstractConverter<T> extends AbstractMigratableConverter<T>
+import com.tle.core.institution.convert.AbstractConverter;
+import com.tle.core.institution.convert.JsonHelper;
+
+import javax.inject.Inject;
+
+public abstract class AbstractJsonConverter<T> extends AbstractConverter<T>
 {
-	@Override
-	public String getStringId()
-	{
-		return null;
-	}
-
-	public static class FormatFile
-	{
-		private boolean bucketed;
-
-		public boolean isBucketed()
-		{
-			return bucketed;
-		}
-
-		public void setBucketed(boolean bucketed)
-		{
-			this.bucketed = bucketed;
-		}
-	}
+	@Inject
+	protected JsonHelper json;
 }

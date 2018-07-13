@@ -58,9 +58,9 @@ public class HierarchyConverter extends BaseEntityTreeNodeConverter<HierarchyTop
 	}
 
 	@Override
-	public ConverterId getConverterId()
+	public String getStringId()
 	{
-		return ConverterId.HIERARCHY;
+		return "HIERARCHY";
 	}
 
 	@Override
