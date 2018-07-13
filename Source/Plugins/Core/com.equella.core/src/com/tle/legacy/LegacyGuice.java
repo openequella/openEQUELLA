@@ -47,6 +47,7 @@ import com.tle.web.portal.service.PortletWebService;
 import com.tle.web.quickcontributeandversion.QuickContributeAndVersionSettingsPrivilegeTreeProvider;
 import com.tle.web.remotecaching.RemoteCachingPrivilegeTreeProvider;
 import com.tle.web.scheduler.ScheduledTasksPrivilegeTreeProvider;
+import com.tle.web.sections.SectionsController;
 import com.tle.web.sections.registry.TreeRegistry;
 import com.tle.web.shortcuturls.ShortcutUrlsSettingsPrivilegeTreeProvider;
 
@@ -146,6 +147,9 @@ public class LegacyGuice extends AbstractModule {
 
     @Inject
     public static TreeRegistry treeRegistry;
+
+    @Inject
+    public static SectionsController sectionsController;
 
     @Inject
     public static TLEUserDao tleUserDao;

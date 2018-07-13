@@ -34,6 +34,7 @@ import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.DebugSettings;
+import com.tle.web.api.LegacyContentApi;
 import com.tle.web.api.institution.AclResource;
 import com.tle.web.api.institution.GdprResource;
 import com.tle.web.api.language.LanguageResource;
@@ -124,6 +125,8 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 		classes.add(AclResource.class);
 		registry.addSingletonResource(new GdprResource());
 		classes.add(GdprResource.class);
+		registry.addSingletonResource(new LegacyContentApi());
+		classes.add(LegacyContentApi.class);
 
 		ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
 		providerFactory.registerProvider(SwaggerSerializers.class);

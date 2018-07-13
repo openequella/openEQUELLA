@@ -10,3 +10,16 @@ exports.setInnerHtml = function (html) {
     }
   }
 }
+
+exports.setupLegacyHooks = function(cb) {
+  return function() {
+    window.EQ = {
+      event: function(command) {
+        var vals = [];
+        vals.push({name: "event__", value:command});
+        document.querySelector("#eqForm").querySelectorAll("input").forEach(function (v) { vals.push({name: v.name, value: v.value}); });
+        cb(vals)();
+      }
+    }
+  }
+}

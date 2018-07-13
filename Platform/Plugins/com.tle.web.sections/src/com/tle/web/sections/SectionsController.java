@@ -108,4 +108,7 @@ public interface SectionsController extends InfoCreator
 	void handleException(SectionInfo info, Throwable t, @Nullable SectionEvent<?> event);
 
 	MutableSectionInfo createInfoFromTree(SectionTree tree, SectionInfo info);
+
+	MutableSectionInfo createUnfilteredInfo(SectionTree tree, @Nullable HttpServletRequest request,
+								  @Nullable HttpServletResponse response, @Nullable Map<Object, Object> attrs);
 }

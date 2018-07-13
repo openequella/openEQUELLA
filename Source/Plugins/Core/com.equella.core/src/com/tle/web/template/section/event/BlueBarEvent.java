@@ -31,12 +31,10 @@ import com.tle.web.template.section.HelpAndScreenOptionsSection;
 public class BlueBarEvent extends AbstractSectionEvent<BlueBarEventListener>
 {
 	private final RenderContext context;
-	private final HelpAndScreenOptionsSection screenOptions;
 
 	public BlueBarEvent(RenderContext context)
 	{
 		this.context = context;
-		screenOptions = context.lookupSection(HelpAndScreenOptionsSection.class);
 	}
 
 	@Override
@@ -49,7 +47,7 @@ public class BlueBarEvent extends AbstractSectionEvent<BlueBarEventListener>
 	{
 		if( renderable != null )
 		{
-			screenOptions.addTab(context, BlueBarConstants.Type.HELP.content(renderable));
+			HelpAndScreenOptionsSection.addTab(context, BlueBarConstants.Type.HELP.content(renderable));
 		}
 	}
 
@@ -63,7 +61,7 @@ public class BlueBarEvent extends AbstractSectionEvent<BlueBarEventListener>
 	{
 		if( blueBarRenderable != null )
 		{
-			screenOptions.addTab(context, blueBarRenderable);
+			HelpAndScreenOptionsSection.addTab(context, blueBarRenderable);
 		}
 	}
 
@@ -71,7 +69,7 @@ public class BlueBarEvent extends AbstractSectionEvent<BlueBarEventListener>
 	{
 		if( renderable != null )
 		{
-			screenOptions.addTab(context, BlueBarConstants.Type.SCREENOPTIONS.content(renderable));
+			HelpAndScreenOptionsSection.addTab(context, BlueBarConstants.Type.SCREENOPTIONS.content(renderable));
 		}
 	}
 

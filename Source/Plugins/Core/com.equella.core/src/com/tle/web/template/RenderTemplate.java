@@ -125,6 +125,10 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 	{
 		boolean oldLayout = !RenderNewTemplate.isNewLayout(context);
 		setupHeaderHelper(context);
+		if (!oldLayout)
+		{
+			return RenderNewTemplate.renderNewHtml(context, viewFactory);
+		}
 		if( checkForResponse(context) )
 		{
 			return null;
@@ -174,19 +178,14 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 			setHtmlAttrsToModel(context, model, decorations);
 
 			template = collector.getTemplateResult();
-			if (oldLayout) {
-				template = selectInnerLayout(context, template);
-			}
+			template = selectInnerLayout(context, template);
 		}
 
 		PreRenderContext precontext = context.getPreRenderContext();
-        if (oldLayout) {
-			model.getBody().setPostmarkup(template.getNamedResult(context, "postmarkup"));
-			precontext.preRender(STYLES_CSS);
-			precontext.preRender(CUSTOMER_CSS);
-			return selectLayout(context, template);
-        }
-        else return RenderNewTemplate.renderHtml(viewFactory, context, template, menuService, model.getHtmlAttrs());
+		model.getBody().setPostmarkup(template.getNamedResult(context, "postmarkup"));
+		precontext.preRender(STYLES_CSS);
+		precontext.preRender(CUSTOMER_CSS);
+		return selectLayout(context, template);
 	}
 
 	private void setupHeaderHelper(RenderEventContext context)

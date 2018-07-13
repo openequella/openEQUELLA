@@ -169,6 +169,13 @@ public final class UserSessionServiceImpl
 	}
 
 	@Override
+	public void reenableSessionUse()
+	{
+		SessionState sessionState = sessionLocal.get();
+		sessionState.setSessionPrevented(false);
+	}
+
+	@Override
 	public HttpServletRequest getAssociatedRequest()
 	{
 		SessionState sessionState = sessionLocal.get();

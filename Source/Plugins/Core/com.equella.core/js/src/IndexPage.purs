@@ -9,7 +9,7 @@ import Data.Lens (view)
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Newtype (unwrap)
 import Data.Nullable (toMaybe)
-import Data.String (Pattern(Pattern), stripPrefix)
+import Data.String (Pattern(Pattern), indexOf, stripPrefix)
 import Data.Time.Duration (Minutes(..), fromDuration)
 import Dispatcher.React (modifyState, stateRenderer)
 import EQUELLA.Environment (baseUrl)
@@ -70,7 +70,7 @@ main = do
     parseIt m = stripPrefix (Pattern $ basePath <> "page/") m >>= matchRoute
     
     initialRoute = case pagePath of 
-        "access/settings.do" -> Just SettingsPage        
+        "access/settings.do" -> Just SettingsPage
         _ -> Nothing
 
     renderRoot = flip unsafeCreateLeafElement {} $ 
@@ -83,7 +83,7 @@ main = do
           CoursesPage -> coursesPage
           NewCourse -> courseEdit Nothing
           CourseEdit cid -> courseEdit $ Just cid
-        render _ = maybe (div' []) legacy $ toMaybe renderData.html
+        render _ = legacy {pagePath}
 
         eval Init =  
           void $ liftEffect $ matchesWith parseIt (\_ -> flip runReaderT this <<< eval <<< ChangeRoute) nav

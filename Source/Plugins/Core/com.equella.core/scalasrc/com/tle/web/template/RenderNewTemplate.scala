@@ -29,6 +29,7 @@ import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.navigation.MenuService
 import com.tle.web.resources.ResourcesService
 import com.tle.web.sections._
+import com.tle.web.sections.equella.ScalaSectionRenderable
 import com.tle.web.sections.equella.layout.OneColumnLayout
 import com.tle.web.sections.events._
 import com.tle.web.sections.events.js.BookmarkAndModify
@@ -88,16 +89,50 @@ object RenderNewTemplate {
     )
   }
 
+  case object HeaderSection extends ScalaSectionRenderable({
+    writer =>
+      writer.getInfo() match {
+        case src: StandardRenderContext =>
+          writer.writeTag("base", "href", writer.getPathGenerator.getBaseHref(writer).toString)
+          src.getJsFiles.asScala.foreach {
+            s => writer.writeTag("script", "src", s)
+              writer.endTag("script")
+          }
+      }
+  })
+
+  def renderNewHtml(context: RenderEventContext, viewFactory: FreemarkerFactory): SectionResult =
+  {
+    val renderData = new ObjectExpression("baseResources", r.url(""),
+      "newUI", java.lang.Boolean.TRUE, "title", "title",
+      "user", userObj(CurrentUser.getUserState),
+      "menuMode", "",
+      "fullscreenMode", "false",
+      "hideAppBar", "false",
+      "menuItems", new ArrayExpression())
+
+    context.preRender(JQueryCore.PRERENDER)
+    if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident")))
+    {
+      context.getPreRenderContext.addJs("https://cdn.polyfill.io/v2/polyfill.min.js?features=es6")
+    }
+    context.preRender(bundleJs)
+    val tempResult = new GenericTemplateResult()
+    tempResult.addNamedResult("header", HeaderSection)
+    viewFactory.createResultWithModel("layouts/outer/react.ftl",
+      TemplateScript(reactTemplate, renderData, tempResult, ""))
+  }
+
+  case class TemplateScript(getScriptUrl : String,  getRenderJs: ObjectExpression, getTemplate: TemplateResult, htmlAttributes: String)
+  {
+    def getLang = LocaleUtils.toHtmlLang(CurrentLocale.getLocale)
+    def isRightToLeft = CurrentLocale.isRightToLeft
+    def getHtmlAttrs = htmlAttributes
+  }
 
   def renderHtml(viewFactory: FreemarkerFactory, context: RenderEventContext,
                  tempResult: TemplateResult, menuService: MenuService, htmlAttributes: String): SectionResult = {
 
-    case class TemplateScript(getScriptUrl : String,  getRenderJs: ObjectExpression, getTemplate: TemplateResult)
-    {
-      def getLang = LocaleUtils.toHtmlLang(CurrentLocale.getLocale)
-      def isRightToLeft = CurrentLocale.isRightToLeft
-      def getHtmlAttrs = htmlAttributes
-    }
 
     context.preRender(JQueryCore.PRERENDER)
     if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident")))
@@ -157,7 +192,7 @@ object RenderNewTemplate {
       "hideAppBar", java.lang.Boolean.valueOf(!(decs.isBanner || !decs.isMenuHidden || decs.isContent)),
       "menuItems", new ArrayExpression(JSUtils.convertExpressions(menuValues.toSeq: _*)))
     viewFactory.createResultWithModel("layouts/outer/react.ftl",
-      TemplateScript(reactTemplate, renderData, tempResult))
+      TemplateScript(reactTemplate, renderData, tempResult, htmlAttributes))
 
   }
 

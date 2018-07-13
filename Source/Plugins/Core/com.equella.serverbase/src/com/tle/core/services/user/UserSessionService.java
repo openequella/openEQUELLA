@@ -45,6 +45,8 @@ public interface UserSessionService
 
 	void preventSessionUse();
 
+	void reenableSessionUse();
+
 	void bindRequest(HttpServletRequest request);
 
 	void unbind();
