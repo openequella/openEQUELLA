@@ -15,6 +15,7 @@ import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, propsRenderer, renderer)
 import EQUELLA.Environment (baseUrl)
 import Effect (Effect)
+import Effect.Class (liftEffect)
 import Effect.Class.Console (log)
 import Foreign.Object (Object, lookup)
 import Global.Unsafe (unsafeEncodeURIComponent)
@@ -43,12 +44,18 @@ foreign import setInnerHtml :: String -> Nullable ReactRef -> Effect Unit
 
 foreign import setupLegacyHooks :: (Array NameValue -> Effect Unit) -> Effect Unit
 
+type Resource = { src::String, "type" :: String }
+
+foreign import loadResources :: (Array Resource) -> Effect Unit
+
 newtype NameValue = NameValue {name::String, value::String}
 
 newtype LegacyContent = LegacyContent {
   -- baseResources::String, 
   html:: Object String, 
-  state :: Array NameValue
+  state :: Array NameValue,
+  css :: Array String, 
+  js :: Array String
   -- title::String, 
   -- menuItems :: Array (Array MenuItem), 
   -- menuMode :: String,
@@ -111,16 +118,19 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
           ]
       ]
 
-    eval  = case _ of 
+    eval = case _ of 
       (OptionsAnchor el) -> modifyState _ {optionsAnchor = el}
       (LoadPage lp) -> do 
         modifyState _ {pagePath = lp}
         {response} <- lift $ get (Resp.json) $ baseUrl <> "api/content/render/" <> (unsafeEncodeURIComponent lp)
-        either log (\nm -> modifyState _ {content = nm}) $  decodeJson response 
+        either log updateContent $ decodeJson response 
       Submit vals -> do 
         {pagePath} <- getState
         {response} <- lift $ post (Resp.json) (baseUrl <> "api/content/submit/" <> (unsafeEncodeURIComponent pagePath)) (Req.json $ encodeJson vals)
-        traceM vals
+        either log updateContent $ decodeJson response 
+    updateContent lc@(LegacyContent {css, js}) = do 
+      modifyState _ {content = Just lc}
+      liftEffect $ loadResources $ ({"type": "css", src: _} <$> css) <> ({"type": "js", src: _} <$> js)
   {pagePath} <- R.getProps this
   setupLegacyHooks (d <<< Submit)
   pure {
@@ -154,4 +164,6 @@ instance decodeLC :: DecodeJson LegacyContent where
     o <- decodeJson v 
     html <- o .? "html"
     state <- o .? "state"
-    pure $ LegacyContent {html, state}
+    css <- o .? "css"
+    js <- o .? "js"
+    pure $ LegacyContent {html, state, css, js}

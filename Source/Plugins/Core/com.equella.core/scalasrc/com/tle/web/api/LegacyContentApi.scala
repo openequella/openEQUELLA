@@ -1,10 +1,14 @@
 package com.tle.web.api
 
+import java.util
+import java.util.{ArrayList, LinkedList, List}
+
 import com.tle.legacy.LegacyGuice
 import com.tle.web.sections._
 import com.tle.web.sections.equella.js.StandardExpressions
-import com.tle.web.sections.events.{ParametersEvent, RenderEvent, RenderResultListener, StandardRenderContext}
+import com.tle.web.sections.events._
 import com.tle.web.sections.header.MutableHeaderHelper
+import com.tle.web.sections.js.JSStatements
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction
 import com.tle.web.sections.render.{CssInclude, SectionRenderable, TemplateResult}
 import io.swagger.annotations.Api
@@ -14,6 +18,7 @@ import javax.ws.rs.core.{Context, Response}
 import javax.ws.rs._
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 case class NameValue(name: String, value: String)
 
@@ -105,6 +110,7 @@ class LegacyContentApi {
       }
     })
     info.processEvent(renderEvent)
+    println(preRenderPageScripts(context, standardContext))
     val jsFiles = standardContext.getJsFiles.asScala
     val cssFiles = standardContext.getCssFiles.asScala.collect {
       case css: CssInclude => css.getHref(standardContext)
@@ -112,4 +118,21 @@ class LegacyContentApi {
     Response.ok(LegacyContent(html, cssFiles, jsFiles, None, Iterable.empty))
   }
 
+  private def preRenderPageScripts(context: RenderContext, helper: StandardRenderContext): mutable.Buffer[JSStatements] = {
+    val renderedStatements = mutable.Buffer[JSStatements]()
+    var iterations: Int = 0
+    var origStatements: util.List[JSStatements] = helper.dequeueStatements
+    while ( {
+      !origStatements.isEmpty
+    }) {
+      val statements: util.List[JSStatements] = new util.ArrayList[JSStatements](origStatements)
+      renderedStatements.insertAll(0, statements.asScala)
+      context.preRender(statements)
+      origStatements = helper.dequeueStatements
+      if ( {
+        iterations += 1; iterations
+      } > 10) throw new SectionsRuntimeException("10 looks like infinity")
+    }
+    renderedStatements
+  }
 }

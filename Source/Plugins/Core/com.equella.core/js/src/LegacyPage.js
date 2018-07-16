@@ -17,9 +17,20 @@ exports.setupLegacyHooks = function(cb) {
       event: function(command) {
         var vals = [];
         vals.push({name: "event__", value:command});
-        document.querySelector("#eqForm").querySelectorAll("input").forEach(function (v) { vals.push({name: v.name, value: v.value}); });
+        document.querySelector("#eqForm").querySelectorAll("input").forEach(
+          function (v) { 
+            vals.push({name: v.name, value: v.value}); 
+          }
+        );
         cb(vals)();
       }
     }
+  }
+}
+const loadJsCss = require('load-js-css');
+exports.loadResources = function(resources)
+{
+  return function() {
+    loadJsCss.list(resources);
   }
 }
