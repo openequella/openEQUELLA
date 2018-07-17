@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-package com.tle.core.settings
+package com.tle.core.institution.convert.service;
 
-import com.tle.legacy.LegacyGuice
-import io.circe.parser._
-import io.circe.syntax._
-import io.circe.{Decoder, Encoder}
+import com.tle.core.institution.convert.AbstractConverter;
+import com.tle.core.institution.convert.JsonHelper;
 
-object UserPrefs {
+import javax.inject.Inject;
 
-  def jsonPref[A](key: String)(implicit d: Decoder[A]): Option[A] = {
-    Option(LegacyGuice.userPreferenceService.getPreference(key)).flatMap { p =>
-      parse(p).flatMap(d.decodeJson).toOption
-    }
-  }
-
-  def setJsonPref[A : Encoder](k: String, a: A): Unit = {
-    LegacyGuice.userPreferenceService.setPreference(k, a.asJson.spaces2)
-  }
+public abstract class AbstractJsonConverter<T> extends AbstractConverter<T>
+{
+	@Inject
+	protected JsonHelper json;
 }

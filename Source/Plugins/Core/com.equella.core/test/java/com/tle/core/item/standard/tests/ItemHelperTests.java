@@ -11,6 +11,8 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 
+import com.tle.common.security.Privilege;
+import com.tle.core.item.helper.ItemXmlSecurity;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -78,12 +80,32 @@ public class ItemHelperTests
 		});
 	}
 
+	private ItemXmlSecurity security = new ItemXmlSecurity() {
+		@Override
+		public boolean hasPrivilege(Item bean, Privilege privilege)
+		{
+			return false;
+		}
+
+		@Override
+		public boolean isUrlDisabled(String url)
+		{
+			return false;
+		}
+
+		@Override
+		public boolean checkRestrictedAttachment(Item bean, Attachment attachment)
+		{
+			return true;
+		}
+	};
+
 	@SuppressWarnings("nls")
 	@Test
 	public void testAttachmentsLoad()
 	{
 		Item item = new Item();
-		AttachmentHelper attachmentHelper = new AttachmentHelper();
+		AttachmentHelper attachmentHelper = new AttachmentHelper(security);
 		List<Attachment> attachments = Lists.newArrayList();
 
 		FileAttachment file = new FileAttachment();
@@ -170,7 +192,7 @@ public class ItemHelperTests
 		PropBagEx attachXml = new PropBagEx(
 			new UnicodeReader(getClass().getResourceAsStream("attachments.xml"), "UTF-8"));
 		Item item = new Item();
-		new AttachmentHelper().save(attachXml, item, new HashSet<String>());
+		new AttachmentHelper(security).save(attachXml, item, new HashSet<String>());
 		List<Attachment> attachments = item.getAttachments();
 		FileAttachment fattach = (FileAttachment) attachments.get(0);
 		assertEquals("frog", fattach.getFilename());
@@ -216,7 +238,7 @@ public class ItemHelperTests
 		item.setStatus(ItemStatus.REJECTED);
 		item.setOwner("fred");
 		PropBagEx itemxml = new PropBagEx();
-		new ItemDetailsHelper().load(itemxml, item);
+		new ItemDetailsHelper(security).load(itemxml, item);
 		assertEquals("1970-01-01T00:00:00+0000", itemxml.getNode("datecreated"));
 		assertEquals("1970-01-01T00:00:00+0000", itemxml.getNode("datemodified"));
 		assertEquals("1970-01-01T00:00:00+0000", itemxml.getNode("dateforindex"));
@@ -236,7 +258,7 @@ public class ItemHelperTests
 	{
 		PropBagEx detailsXml = new PropBagEx(new UnicodeReader(getClass().getResourceAsStream("details.xml"), "UTF-8"));
 		Item item = new Item();
-		new ItemDetailsHelper().save(detailsXml, item, new HashSet<String>());
+		new ItemDetailsHelper(security).save(detailsXml, item, new HashSet<String>());
 		assertEquals(100, item.getId());
 		Calendar cal = Calendar.getInstance(CurrentTimeZone.get());
 		cal.clear();

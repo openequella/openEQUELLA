@@ -1,6 +1,6 @@
 
-exports.runProgress = function(el) {
-  return function(p) {
+exports.runProgress = function(p) {
+  return function(el) {
     return function() {
       if (el)
       {

@@ -98,7 +98,7 @@ Right now none of the pages share any part of the Redux store, but eventually if
 
 ## Purescript notes
 
-* Purescript 0.11.7
+* Purescript 0.12.0
 * `Affjax` based AJAX 
 * [purescript-react-mui](https://github.com/doolse/purescript-react-mui) purescript bindings for Material UI.
 
@@ -140,7 +140,7 @@ foreign import helloWorldClass :: forall a. ReactClass a
 exports.helloWorldClass = require("HelloWorld").default;
 ```
 
-Add a route for the page in `Routes.purs`
+Add a route for the page (in `Routes.purs`)
 
 ```purescript
 data Route = SearchPage | 
@@ -168,13 +168,16 @@ routeURI r = "/" <> ( case r of
     HelloWorldPage -> "hello"
 ```
 
-Make the entry point render the component when it's Route is selected:
+Make the entry point render the component when it's Route is selected (in `IndexPage.purs`):
 
 ```purescript
-render {route:Just r} = case r of 
-        SearchPage -> searchPage
-        ...
-        HelloWorldPage -> createElement helloWorldClass {bridge:tsBridge} []
+import TSComponents (helloWorldClass)
+...
+
+    render {route:Just r} = case r of 
+            SearchPage -> searchPage
+            ...
+            HelloWorldPage -> unsafeCreateLeafElement helloWorldClass {bridge:tsBridge}
 ```
 
-Now if you build the bundle (see development cycle) above you should be able to go to `http://<insturl>/pages/hello` and see your page.
+Now if you build the bundle (see development cycle above) you should be able to go to `http://<insturl>/pages/hello` and see your page.

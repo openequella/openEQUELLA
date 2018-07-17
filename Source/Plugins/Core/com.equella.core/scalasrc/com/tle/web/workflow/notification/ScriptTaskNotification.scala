@@ -16,15 +16,14 @@
 
 package com.tle.web.workflow.notification
 
-import javax.inject.Singleton
-
 import com.tle.beans.item.Item
 import com.tle.common.usermanagement.user.valuebean.UserBean
 import com.tle.core.guice.Bind
 import com.tle.core.notification.beans.Notification
-import com.tle.web.sections.render.{AppendedLabel, Label}
+import com.tle.web.sections.render.Label
 import com.tle.web.sections.result.util.KeyLabel
 import com.tle.web.workflow.notification.NotificationLangStrings.KEYPFX_EMAIL_SUBJECT
+import javax.inject.Singleton
 
 case class ScriptTaskGroup(reason: String, taskName: String) extends NotificationGroup
 {

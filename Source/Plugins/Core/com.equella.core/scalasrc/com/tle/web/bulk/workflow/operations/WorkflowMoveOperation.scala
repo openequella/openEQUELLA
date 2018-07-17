@@ -16,21 +16,17 @@
 
 package com.tle.web.bulk.workflow.operations
 
-import java.util.Date
-import javax.inject.Inject
-
 import com.google.inject.assistedinject.{Assisted, AssistedInject}
-import com.tle.annotation.Nullable
 import com.tle.beans.item.HistoryEvent
 import com.tle.common.i18n.CurrentLocale
-import com.tle.common.workflow.{WorkflowItemStatus, WorkflowNodeStatus}
+import com.tle.common.security.Privilege
 import com.tle.common.workflow.node.WorkflowNode
-import com.tle.core.item.NodeStatus
-import com.tle.core.item.standard.ItemOperationFactory
+import com.tle.common.workflow.{WorkflowItemStatus, WorkflowNodeStatus}
 import com.tle.core.item.standard.operations.workflow.TaskOperation
 import com.tle.core.security.TLEAclManager
 import com.tle.core.security.impl.SecureInModeration
 import com.tle.exceptions.AccessDeniedException
+import javax.inject.Inject
 
 import scala.collection.JavaConverters._
 
@@ -41,7 +37,7 @@ class WorkflowMoveOperation @AssistedInject()(@Assisted("msg") val msg: String, 
 
 
   override def execute: Boolean = {
-    if (!aclService.checkPrivilege("MANAGE_WORKFLOW", getWorkflow)) {
+    if (!aclService.hasPrivilege(getWorkflow, Privilege.MANAGE_WORKFLOW)) {
       throw new AccessDeniedException(CurrentLocale.get("com.tle.core.services.item.error.nopriv", "MANAGE_WORKFLOW", getItemId))
     }
 

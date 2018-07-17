@@ -16,13 +16,13 @@
 
 package com.tle.web.workflow.notification
 
-import com.tle.web.sections.result.util.KeyLabel
-import FilterableNotification._
 import com.tle.web.notification.WebNotificationExtension
+import com.tle.web.sections.result.util.KeyLabel
+import com.tle.web.workflow.notification.FilterableNotification._
 
 object FilterableNotification
 {
-  import NotificationLangStrings.{r,l}
+  import NotificationLangStrings.r
 
   val KEY_REASON_FILTER = r.key("notereason.")
   val KEY_REASON_LIST = r.key("notificationlist.reasons.")

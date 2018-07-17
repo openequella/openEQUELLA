@@ -25,9 +25,8 @@ import com.tle.core.institution.convert.service.impl.InstitutionImportServiceImp
 
 public interface Converter
 {
-	/**
-	 * Use a string value
-	 */
+	// Kept for deserialisation purposes.
+	// Could write a custom XStream deserialiser for this instead.
 	@Deprecated
 	public enum ConverterId
 	{

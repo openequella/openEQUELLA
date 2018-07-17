@@ -103,9 +103,9 @@ public class MigrationConverter extends AbstractConverter<Object>
 	}
 
 	@Override
-	public ConverterId getConverterId()
+	public String getStringId()
 	{
-		return ConverterId.MIGRATION;
+		return "MIGRATION";
 	}
 
 	private synchronized Set<Migrator> getXmlMigrators(InstitutionInfo info)

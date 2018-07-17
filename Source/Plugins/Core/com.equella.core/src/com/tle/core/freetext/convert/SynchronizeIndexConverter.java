@@ -53,17 +53,11 @@ public class SynchronizeIndexConverter extends AbstractConverter<Object>
 	}
 
 	@Override
-	public ConverterId getConverterId()
-	{
-		return null;
-	}
-
-	@Override
 	public void addTasks(ConvertType type, ConverterTasks tasks, ConverterParams params)
 	{
 		if( !params.hasFlag(ConverterParams.NO_ITEMS) && (type == ConvertType.IMPORT || type == ConvertType.CLONE) )
 		{
-			tasks.addAfter(getStandardTask(ConverterId.SYNCHRONIZEITEMS));
+			tasks.addAfter(getStandardTask("SYNCHRONIZEITEMS"));
 		}
 	}
 }

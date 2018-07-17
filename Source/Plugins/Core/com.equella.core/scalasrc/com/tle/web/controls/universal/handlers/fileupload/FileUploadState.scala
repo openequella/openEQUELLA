@@ -20,8 +20,6 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicReference
 
-import com.tle.web.sections.render.Label
-
 import scala.collection.JavaConverters._
 
 object FileUploadState

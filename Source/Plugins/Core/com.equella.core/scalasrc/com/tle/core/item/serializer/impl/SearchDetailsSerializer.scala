@@ -16,25 +16,19 @@
 
 package com.tle.core.item.serializer.impl
 
-import java.util
-import java.util.{List, Map}
-import javax.inject.{Inject, Singleton}
-
 import com.tle.beans.cal.{CALHolding, CALPortion}
 import com.tle.beans.entity.LanguageBundle
 import com.tle.beans.entity.itemdef.SearchDetails
-import com.tle.beans.item.Item
 import com.tle.cal.dao.CALDao
 import com.tle.cal.service.CALService
 import com.tle.common.Pair
-import com.tle.common.interfaces.{I18NStrings, SimpleI18NString}
-import com.tle.common.interfaces.equella.{BundleString, TextI18NStrings}
-import com.tle.core.copyright.service.CopyrightService
+import com.tle.common.interfaces.SimpleI18NString
+import com.tle.common.interfaces.equella.BundleString
 import com.tle.core.guice.Bind
 import com.tle.core.item.serializer.{ItemSerializerProvider, ItemSerializerState, XMLStreamer}
 import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, DisplayOptions, EquellaItemBean}
-import com.tle.web.itemlist.item.AbstractItemlikeListEntry
-import com.tle.web.resources.{PluginResourceHelper, ResourcesService}
+import com.tle.web.resources.ResourcesService
+import javax.inject.{Inject, Singleton}
 import org.hibernate.criterion.Projections
 
 import scala.collection.JavaConverters._

@@ -16,8 +16,6 @@
 
 package com.tle.web.workflow.notification
 
-import javax.inject.{Inject, Singleton}
-
 import com.dytech.devlib.PropBagEx
 import com.dytech.edge.common.Constants
 import com.tle.beans.item.Item
@@ -33,10 +31,11 @@ import com.tle.core.notification.beans.Notification
 import com.tle.core.services.FileSystemService
 import com.tle.core.services.user.{LazyUserLookup, UserService}
 import com.tle.core.workflow.service.WorkflowService
-import com.tle.web.sections.render.{AppendedLabel, Label}
+import com.tle.web.sections.render.Label
 import com.tle.web.sections.result.util._
 import com.tle.web.workflow.notification.NotificationLangStrings._
 import com.tle.web.workflow.servlet.WorkflowMessageServlet
+import javax.inject.{Inject, Singleton}
 
 import scala.collection.JavaConverters._
 

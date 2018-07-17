@@ -23,8 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
+import javax.swing.*;
 
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
@@ -48,6 +47,7 @@ import com.tle.core.remoting.RemotePowerSearchService;
 @SuppressWarnings("nls")
 public class ResourceSettingsPanel extends UniversalControlSettingPanel
 {
+	private final JCheckBox skipCheckoutPage;
 	private final JComboBox<RelationType> relationType;
 	private final JComboBox<ASItem> allowSelection;
 	private final List<EntityShuffler<ResourceSettings>> restrictions = Lists.newArrayList();
@@ -66,6 +66,8 @@ public class ResourceSettingsPanel extends UniversalControlSettingPanel
 		allowSelection.addItem(new ASItem("items", AllowedSelection.ITEMS));
 		allowSelection.addItem(new ASItem("attachments", AllowedSelection.ATTACHMENTS));
 		allowSelection.addItem(new ASItem("packages", AllowedSelection.PACKAGES));
+
+		skipCheckoutPage = new JCheckBox(getString("resourcesettings.skipcheckout"));
 
 		relationType = new JComboBox<>();
 		AppletGuiUtils.addItemsToJCombo(relationType, getRelationTypes());
@@ -86,6 +88,8 @@ public class ResourceSettingsPanel extends UniversalControlSettingPanel
 			RemoteDynaCollectionService.class, ResourceSettings.KEY_RESTRICT_DYNACOLLECTION));
 		restrictions.add(new RestrictEntities(getKey("restrict.contribution"),
 			RemoteItemDefinitionService.class, ResourceSettings.KEY_RESTRICT_CONTRIBUTION));
+
+		add(skipCheckoutPage, "span 2, gapbottom 8");
 
 		add(relationTypeLabel);
 		add(relationType);
@@ -124,6 +128,7 @@ public class ResourceSettingsPanel extends UniversalControlSettingPanel
 	{
 		final ResourceSettings settings = new ResourceSettings(state);
 
+		skipCheckoutPage.setSelected(settings.isSkipCheckoutPage());
 		AppletGuiUtils.selectInJCombo(allowSelection, new ASItem(null, settings.getAllowedSelection()));
 		AppletGuiUtils.selectInJCombo(relationType, new RelationType(settings.getRelationType()));
 		for( EntityShuffler<ResourceSettings> rc : restrictions )
@@ -143,6 +148,7 @@ public class ResourceSettingsPanel extends UniversalControlSettingPanel
 	{
 		final ResourceSettings settings = new ResourceSettings(state);
 
+		settings.setSkipCheckoutPage(skipCheckoutPage.isSelected());
 		settings.setAllowedSelection(((ASItem) allowSelection.getSelectedItem()).getSecond());
 		settings.setRelationType(((RelationType) relationType.getSelectedItem()).getValue());
 		for( EntityShuffler<ResourceSettings> rc : restrictions )

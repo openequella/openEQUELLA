@@ -17,10 +17,9 @@
 package com.tle.web.workflow.tasks.dialog
 
 import java.util
-import java.util.{Collections, UUID}
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicReference
-import javax.inject.Inject
+import java.util.{Collections, UUID}
 
 import com.dytech.edge.exceptions.BannedFileException
 import com.tle.common.Check
@@ -53,6 +52,7 @@ import com.tle.web.sections.standard.{Button, FileDrop, TextField}
 import com.tle.web.sections.{SectionInfo, SectionTree}
 import com.tle.web.workflow.servlet.WorkflowMessageServlet
 import com.tle.web.workflow.tasks.CurrentTaskSection
+import javax.inject.Inject
 
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success}

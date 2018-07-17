@@ -67,13 +67,6 @@ public class OAuthTokenConverter extends AbstractConverter<OAuthToken>
 	private OAuthService oauthService;
 	private XStream xstream;
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public ConverterId getConverterId()
-	{
-		return null;
-	}
-
 	@Override
 	public String getStringId()
 	{

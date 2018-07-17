@@ -43,9 +43,9 @@ public class GroupConverter extends TreeNodeConverter<TLEGroup>
 	}
 
 	@Override
-	public ConverterId getConverterId()
+	public String getStringId()
 	{
-		return ConverterId.GROUPS;
+		return "GROUPS";
 	}
 
 	@Override

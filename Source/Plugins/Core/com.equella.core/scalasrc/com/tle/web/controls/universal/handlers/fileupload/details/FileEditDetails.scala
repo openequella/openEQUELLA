@@ -21,8 +21,8 @@ import java.util.UUID
 
 import com.tle.beans.item.ItemId
 import com.tle.beans.item.attachments.{Attachment, FileAttachment, ZipAttachment}
+import com.tle.common.NameValue
 import com.tle.common.filesystem.FileEntry
-import com.tle.common.{Check, NameValue}
 import com.tle.web.controls.universal.handlers.fileupload.details.FileEditDetails._
 import com.tle.web.controls.universal.handlers.fileupload.{AttachmentDelete, WebFileUploads}
 import com.tle.web.controls.universal.{AbstractDetailsAttachmentHandler, ControlContext, DialogRenderOptions, RenderHelper}

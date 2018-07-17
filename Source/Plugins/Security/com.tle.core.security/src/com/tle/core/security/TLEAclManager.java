@@ -25,6 +25,7 @@ import com.google.common.collect.ListMultimap;
 import com.tle.beans.security.AccessEntry;
 import com.tle.beans.security.AccessExpression;
 import com.tle.common.Triple;
+import com.tle.common.security.Privilege;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.TargetList;
 import com.tle.common.security.remoting.RemoteTLEAclManager;
@@ -42,12 +43,12 @@ public interface TLEAclManager extends RemoteTLEAclManager
 	<T> Collection<T> filterNonGrantedObjects(Collection<String> privileges, Collection<T> domainObjs);
 
 	/**
-	 * Same as filterNonGrantedObjects, but much easier to use.
+	 * A much easier method than !aclService.filterNonGrantedPrivileges.isEmpty()
+	 *
 	 * @param privilege
-	 * @param domainObj
-	 * @return true if the privilege is granted
+	 * @return true if ANY of the supplied privileges are granted
 	 */
-	<T> boolean checkPrivilege(String privilege, T domainObj);
+	boolean hasPrivilege(Object domainObj, Privilege... privilege);
 
 	/**
 	 * Return a map of domain objects to maps of privileges.

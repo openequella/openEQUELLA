@@ -16,30 +16,25 @@
 
 package com.tle.web.controls.universal.handlers.fileupload
 
-import java.io.{FilterInputStream, InputStream}
+import java.io.InputStream
 import java.time.Instant
 import java.util.{Collections, UUID}
-import java.util.concurrent.atomic.AtomicReference
 
 import com.dytech.common.GeneralConstants
-import com.dytech.edge.common.{Constants, FileInfo}
 import com.dytech.edge.exceptions.BannedFileException
 import com.tle.beans.item.attachments._
 import com.tle.common.PathUtils
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings
-import com.tle.core.wizard.LERepository
 import com.tle.web.controls.universal.handlers.fileupload.packages.PackageFileCreate
 import com.tle.web.controls.universal.{ControlContext, StagingContext}
 import com.tle.web.resources.ResourcesService
 import com.tle.web.sections.SectionInfo
 import com.tle.web.sections.equella.ajaxupload.AjaxUpload
-import com.tle.web.sections.js.{JSAssignable, JSExpression}
 import com.tle.web.sections.js.generic.Js
 import com.tle.web.sections.js.generic.function.{ExternallyDefinedFunction, IncludeFile}
+import com.tle.web.sections.js.{JSAssignable, JSExpression}
 import com.tle.web.sections.render._
 import com.tle.web.sections.result.util.KeyLabel
-import com.tle.web.sections.standard.AbstractFileUpload
-import com.tle.web.upload.StreamKilledException
 import com.tle.web.wizard.impl.WebRepository
 
 import scala.annotation.tailrec

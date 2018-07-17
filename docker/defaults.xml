@@ -9,7 +9,7 @@
     </version>
     <company>Apereo</company>
   </product>
-  <local>/equella-installer-6.6</local>
+  <local>/equella-installer-6.7</local>
   <platform>linux64</platform>
 </installer>
 <install.path>/home/equella/equella</install.path>

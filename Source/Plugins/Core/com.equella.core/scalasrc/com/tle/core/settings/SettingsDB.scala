@@ -19,7 +19,7 @@ package com.tle.core.settings
 import cats.data.{Kleisli, OptionT}
 import cats.syntax.applicative._
 import com.tle.core.db.tables.Setting
-import com.tle.core.db.{DB, DBSchema, UserContext}
+import com.tle.core.db.{DB, DBSchema}
 import io.circe.parser._
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder}

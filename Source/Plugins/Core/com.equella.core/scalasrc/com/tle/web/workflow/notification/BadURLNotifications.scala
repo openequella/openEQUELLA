@@ -16,14 +16,11 @@
 
 package com.tle.web.workflow.notification
 
+import com.tle.beans.item.Item
+import com.tle.core.guice.Bind
+import com.tle.core.notification.beans.Notification
 import javax.inject.Singleton
 
-import com.tle.beans.item.Item
-import com.tle.common.usermanagement.user.valuebean.UserBean
-import com.tle.core.guice.Bind
-import com.tle.core.notification.NotificationEmail
-import com.tle.core.notification.beans.Notification
-import com.tle.web.notification.WebNotificationExtension
 import scala.collection.JavaConverters._
 
 @Bind

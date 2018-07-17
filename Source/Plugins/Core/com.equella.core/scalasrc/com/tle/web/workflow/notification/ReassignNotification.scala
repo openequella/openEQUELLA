@@ -16,12 +16,11 @@
 
 package com.tle.web.workflow.notification
 
-import javax.inject.{Inject, Singleton}
-
-import com.tle.beans.item.{Item, ItemTaskId}
+import com.tle.beans.item.Item
 import com.tle.core.guice.Bind
 import com.tle.core.notification.beans.Notification
 import com.tle.core.services.user.{LazyUserLookup, UserService}
+import javax.inject.{Inject, Singleton}
 
 @Bind
 @Singleton

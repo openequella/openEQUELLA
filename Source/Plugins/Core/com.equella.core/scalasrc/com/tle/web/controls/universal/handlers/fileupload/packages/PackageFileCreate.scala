@@ -16,15 +16,12 @@
 
 package com.tle.web.controls.universal.handlers.fileupload.packages
 
-import java.util.UUID
-
-import com.dytech.edge.common.FileInfo
 import com.tle.beans.item.attachments.{Attachment, CustomAttachment, ImsAttachment}
 import com.tle.common.filesystem.FileSystemConstants
 import com.tle.core.plugins.{AbstractPluginService, PluginTracker}
-import com.tle.web.controls.universal.{ControlContext, StagingContext}
 import com.tle.web.controls.universal.handlers.fileupload._
 import com.tle.web.controls.universal.handlers.fileupload.packages.IMSPackageExtension.{commitFiles, standardPackageDetails, unzipPackage}
+import com.tle.web.controls.universal.{ControlContext, StagingContext}
 import com.tle.web.sections.SectionInfo
 import com.tle.web.sections.render.Label
 import com.tle.web.wizard.PackageInfo

@@ -70,7 +70,7 @@ public class XmlHelper
 		}
 		catch( Exception e )
 		{
-			throw new RuntimeException("Error reading xml from file:" + staging.getAbsolutePath() + filename, e);
+			throw new RuntimeException("Error writing xml for file:" + staging.getAbsolutePath() + "/" + filename, e);
 		}
 	}
 

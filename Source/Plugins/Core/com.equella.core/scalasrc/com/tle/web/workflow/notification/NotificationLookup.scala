@@ -16,8 +16,6 @@
 
 package com.tle.web.workflow.notification
 
-import javax.inject.Inject
-
 import com.tle.beans.item.{Item, ItemId, ItemTaskId}
 import com.tle.common.workflow.node.WorkflowNode
 import com.tle.core.i18n.BundleCache
@@ -29,6 +27,7 @@ import com.tle.web.sections.render.Label
 import com.tle.web.sections.result.util.{BundleLabel, ItemNameLabel, UserLabel}
 import com.tle.web.viewurl.ViewItemUrlFactory
 import com.tle.web.workflow.tasks.RootTaskListSection
+import javax.inject.Inject
 
 import scala.collection.JavaConverters._
 

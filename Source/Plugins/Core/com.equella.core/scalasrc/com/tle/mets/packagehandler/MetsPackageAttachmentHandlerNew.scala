@@ -16,13 +16,9 @@
 
 package com.tle.mets.packagehandler
 
-import javax.inject.Inject
-
-import com.tle.beans.item.Item
 import com.tle.beans.item.attachments.{Attachment, CustomAttachment}
 import com.tle.common.PathUtils
 import com.tle.core.guice.Bind
-import com.tle.core.qti.QtiConstants
 import com.tle.mets.metsimport.METSTreeBuilder
 import com.tle.web.controls.universal.ControlContext
 import com.tle.web.controls.universal.handlers.fileupload._
@@ -30,6 +26,7 @@ import com.tle.web.controls.universal.handlers.fileupload.packages.{IMSPackageEx
 import com.tle.web.resources.ResourcesService
 import com.tle.web.sections.SectionInfo
 import com.tle.web.sections.result.util.KeyLabel
+import javax.inject.Inject
 
 @Bind
 class MetsPackageAttachmentHandlerNew extends PackageAttachmentExtension {

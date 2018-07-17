@@ -16,13 +16,10 @@
 
 package com.tle.web.workflow.notification
 
-import com.tle.common.i18n.CurrentLocale
-import NotificationLangStrings._
 import com.tle.common.usermanagement.user.valuebean.UserBean
 import com.tle.web.resources.ResourcesService
-import com.tle.web.sections.render.{AppendedLabel, Label, TextLabel}
+import com.tle.web.sections.render.Label
 import com.tle.web.sections.result.util.{KeyLabel, PluralKeyLabel}
-import com.tle.web.workflow.notification.TaskNotifications.getClass
 
 object NotificationLangStrings
 {

@@ -4,7 +4,6 @@ import sbt.Keys._
 import sbt._
 
 import scala.annotation.tailrec
-import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 
 object JPFScanPlugin extends AutoPlugin {
@@ -22,11 +21,11 @@ object JPFScanPlugin extends AutoPlugin {
     val x = saxBuilder.build(f)
     val root = x.getRootElement
     val pluginId = root.getAttribute("id").getValue
-    val (extDeps, deps) = root.getChildren("requires").flatMap(_.getChildren("import")).map { e =>
+    val (extDeps, deps) = root.getChildren("requires").asScala.flatMap(_.getChildren("import").asScala).map { e =>
       (e.getAttributeValue("plugin-id"), e.getAttributeValue("exported", "false") == "true")
     }.partition(_._1.contains(":"))
 
-    val adminConsole = root.getChildren("attributes").flatMap(a => a.getChildren("attribute")).find {
+    val adminConsole = root.getChildren("attributes").asScala.flatMap(a => a.getChildren("attribute").asScala).find {
       _.getAttributeValue("id") == "type"
     }.exists(_.getAttributeValue("value") == "admin-console")
 

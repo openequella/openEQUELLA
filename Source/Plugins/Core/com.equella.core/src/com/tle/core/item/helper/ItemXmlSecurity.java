@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package com.tle.core.settings
+package com.tle.core.item.helper;
 
-import com.tle.legacy.LegacyGuice
-import io.circe.parser._
-import io.circe.syntax._
-import io.circe.{Decoder, Encoder}
+import com.tle.beans.item.Item;
+import com.tle.beans.item.attachments.Attachment;
+import com.tle.common.security.Privilege;
 
-object UserPrefs {
+public interface ItemXmlSecurity {
 
-  def jsonPref[A](key: String)(implicit d: Decoder[A]): Option[A] = {
-    Option(LegacyGuice.userPreferenceService.getPreference(key)).flatMap { p =>
-      parse(p).flatMap(d.decodeJson).toOption
-    }
-  }
+    boolean hasPrivilege(Item bean, Privilege privilege);
 
-  def setJsonPref[A : Encoder](k: String, a: A): Unit = {
-    LegacyGuice.userPreferenceService.setPreference(k, a.asJson.spaces2)
-  }
+    boolean isUrlDisabled(String url);
+
+    boolean checkRestrictedAttachment(Item bean, Attachment attachment);
 }

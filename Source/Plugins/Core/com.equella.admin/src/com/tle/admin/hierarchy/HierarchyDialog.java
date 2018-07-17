@@ -95,9 +95,8 @@ public class HierarchyDialog extends JDialog
 			@Override
 			protected AbstractTreeEditorTree<HierarchyTreeNode> createTree()
 			{
-				Collection<String> privs = Collections.singleton("EDIT_HIERARCHY_TOPIC");
 				final boolean canAddRootTopics = !clientService.getService(RemoteTLEAclManager.class)
-					.filterNonGrantedPrivileges(null, privs).isEmpty();
+					.filterNonGrantedPrivileges(null, "EDIT_HIERARCHY_TOPIC").isEmpty();
 
 				return new TreeEditor(hierarchyService, canAddRootTopics);
 			}

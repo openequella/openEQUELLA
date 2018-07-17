@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package com.tle.core.settings
+package com.tle.common.security;
 
-import com.tle.legacy.LegacyGuice
-import io.circe.parser._
-import io.circe.syntax._
-import io.circe.{Decoder, Encoder}
-
-object UserPrefs {
-
-  def jsonPref[A](key: String)(implicit d: Decoder[A]): Option[A] = {
-    Option(LegacyGuice.userPreferenceService.getPreference(key)).flatMap { p =>
-      parse(p).flatMap(d.decodeJson).toOption
-    }
-  }
-
-  def setJsonPref[A : Encoder](k: String, a: A): Unit = {
-    LegacyGuice.userPreferenceService.setPreference(k, a.asJson.spaces2)
-  }
+public enum Privilege
+{
+	CREATE_ITEM,
+	EDIT_ITEM,
+	VIEW_ITEM,
+	CLONE_ITEM,
+	MOVE_ITEM,
+	COMMENT_CREATE_ITEM,
+	COMMENT_DELETE_ITEM,
+	COMMENT_VIEW_ITEM,
+	DISCOVER_ITEM,
+	ARCHIVE_ITEM,
+	MANAGE_WORKFLOW,
+	VIEW_ACTIVATION_ITEM,
+	VIEW_VIEWCOUNT,
 }

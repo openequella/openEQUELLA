@@ -19,16 +19,13 @@ package com.tle.web.api.institution
 import com.tle.common.security.PrivilegeTree.Node
 import com.tle.common.security.{PrivilegeTree, TargetList, TargetListEntry}
 import com.tle.core.security.AclPrefs
-import com.tle.core.settings.UserPrefs
 import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.security.{TargetListBean, TargetListEntryBean}
-import io.circe.Decoder
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
+import javax.ws.rs._
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.Status
-import javax.ws.rs._
-import sbt.io.Path
 
 import scala.collection.JavaConverters._
 
