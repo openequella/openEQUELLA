@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <installer>
 	<product>
-		<name>EQUELLA</name>
+		<name>openEQUELLA</name>
 		<company>Apereo</company>
 	</product>
 	<image uri="/images/equella.jpg"/>
@@ -9,15 +9,15 @@
 		<page>
 			<controls>
 				<control class="heading">
-					<title>Welcome to EQUELLA®</title>
+					<title>Welcome to openEQUELLA®</title>
 				</control>
 				<control class="paragraph">
-					<title>What is EQUELLA?</title>
-					<description>EQUELLA is an award–winning Digital Repository that incorporates Learning Objects, Learning Content Management and integrated content authoring. EQUELLA is revolutionising the way institutions search, manage and create content online.</description>
+					<title>What is openEQUELLA?</title>
+					<description>openEQUELLA is an award–winning Digital Repository that incorporates Learning Objects, Learning Content Management and integrated content authoring. openEQUELLA is revolutionising the way institutions search, manage and create content online.</description>
 				</control>
 				<control class="paragraph">
 					<title></title>
-					<description>Please ensure you have reviewed the EQUELLA Installation and Administration Guide available from</description>
+					<description>Please ensure you have reviewed the openEQUELLA Installation and Administration Guide available from</description>
 				</control>
 				<control class="link">
 					<title>https://equella.github.io/</title>
@@ -55,8 +55,8 @@
 					<title>Install Directory</title>
 				</control>
 				<control class="directoryselector">
-					<title>EQUELLA Installation</title>
-					<description>Please choose the location where EQUELLA will be installed.  Please ensure that the path contains no spaces.</description>
+					<title>openEQUELLA Installation</title>
+					<description>Please choose the location where openEQUELLA will be installed.  Please ensure that the path contains no spaces.</description>
 					<target>install.path</target>
 					<items>
 						<item name="" value=""/>
@@ -151,7 +151,7 @@
 				</control>
 				<control class="editbox">
 					<title>Institution Administration URL</title>
-					<description>The  URL address of the institution administration web site.  Do not enter 'localhost' or '127.0.0.1' for the hostname or IP address unless you are using this installation for testing purposes, and do not wish to access EQUELLA except from this local machine.  You can also specify the port (defaults to 80) and web context (defaults to '/').</description>
+					<description>The  URL address of the institution administration web site.  Do not enter 'localhost' or '127.0.0.1' for the hostname or IP address unless you are using this installation for testing purposes, and do not wish to access openEQUELLA except from this local machine.  You can also specify the port (defaults to 80) and web context (defaults to '/').</description>
 					<target>webserver/url</target>
 					<items>
 						<item name="" value="http://"/>
@@ -159,7 +159,7 @@
 				</control>
 				<control class="radiogroup">
 					<title>Address Binding</title>
-					<description>If you have specified an IP address above, do you want EQUELLA to provide its services exclusively on this network interface, or bind its services to all network interfaces on the server?</description>
+					<description>If you have specified an IP address above, do you want openEQUELLA to provide its services exclusively on this network interface, or bind its services to all network interfaces on the server?</description>
 					<target>webserver/binding</target>
 					<items>
 						<item name="Bind to all network interfaces" value="all" default="true"/>
@@ -176,19 +176,19 @@
 		<page>
 			<controls>
 				<control class="heading">
-					<title>EQUELLA Manager</title>
+					<title>openEQUELLA Manager</title>
 				</control>
 				<control class="password">
-					<title>EQUELLA Manager website</title>
-					<description>The EQUELLA Manager is responsible for starting, stopping and upgrading your instance of EQUELLA.  Please provide a password to secure this service and remember it for future reference.</description>
+					<title>openEQUELLA Manager website</title>
+					<description>The openEQUELLA Manager is responsible for starting, stopping and upgrading your instance of openEQUELLA.  Please provide a password to secure this service and remember it for future reference.</description>
 					<target>admin.password</target>
 					<items>
 						<item name="" value="admin"/>
 					</items>
 				</control>
 				<control class="editbox">
-					<title>EQUELLA Manager website port</title>
-					<description>Please enter a port number for the EQUELLA Manager website.  The default port is 3000.</description>
+					<title>openEQUELLA Manager website port</title>
+					<description>Please enter a port number for the openEQUELLA Manager website.  The default port is 3000.</description>
 					<target>service/port</target>
 					<items>
 						<item name="" value="3000"/>
@@ -273,7 +273,7 @@
 				</control>
 				<control class="paragraph">
 					<title>Minimum and Maximum Usage</title>
-					<description>The minimum and maximum amount of memory used by the EQUELLA server can be configured to work best for your hardware  It is recommended that the minimum and maximum values are set to half of the total physical memory.  Never specify a memory value greater than the total physical memory as this may cause the system to fail.</description>
+					<description>The minimum and maximum amount of memory used by the openEQUELLA server can be configured to work best for your hardware  It is recommended that the minimum and maximum values are set to half of the total physical memory.  Never specify a memory value greater than the total physical memory as this may cause the system to fail.</description>
 				</control>
 				<control class="editbox">
 					<title>Minimum Memory Usage</title>
@@ -304,11 +304,11 @@
 					<title>ImageMagick</title>
 				</control>
 				<control class="paragraph">
-					<description>The free third-party product ImageMagick is utilised by EQUELLA for all image processing.  EQUELLA requires version 6.4 or greater of ImageMagick to be installed on your system.  If you do not have ImageMagick installed, or would like more information about the product, please visit http://www.imagemagick.org</description>
+					<description>The free third-party product ImageMagick is utilised by openEQUELLA for all image processing.  openEQUELLA requires version 6.4 or greater of ImageMagick to be installed on your system.  If you do not have ImageMagick installed, or would like more information about the product, please visit http://www.imagemagick.org</description>
 				</control>
 				<control class="directoryselector">
 					<title>Directory to ImageMagick Programs</title>
-					<description>ImageMagick is comprised of a set of different programs, and EQUELLA needs to know the directory that contains these programs.  For example, running 'which convert' on a Unix-like system may return '/usr/bin/convert' so you should enter '/usr/bin'.  On a Windows system, you may have installed to 'C:\ImageMagick6.4', then the programs can be found directly inside that path.</description>
+					<description>ImageMagick is comprised of a set of different programs, and openEQUELLA needs to know the directory that contains these programs.  For example, running 'which convert' on a Unix-like system may return '/usr/bin/convert' so you should enter '/usr/bin'.  On a Windows system, you may have installed to 'C:\ImageMagick6.4', then the programs can be found directly inside that path.</description>
 					<target>imagemagick/path</target>
 					<items>
 						<item name="" value=""/>
@@ -327,11 +327,11 @@
 					<title>Libav</title>
 				</control>
 				<control class="paragraph">
-					<description>Libav is a free, third-party product utilised by EQUELLA to produce thumbnails and previews for video files uploaded to the EQUELLA repository. If you do not have Libav installed, or would like more information about the product, please visit https://libav.org/</description>
+					<description>Libav is a free, third-party product utilised by openEQUELLA to produce thumbnails and previews for video files uploaded to the openEQUELLA repository. If you do not have Libav installed, or would like more information about the product, please visit https://libav.org/</description>
 				</control>
 				<control class="directoryselector">
 					<title>Directory to Libav Programs</title>
-					<description>Libav comprises a set of different programs, and EQUELLA needs to know the directory that contains these programs. For example, running 'which avconv' on a Unix-like system may return '/usr/bin/avconv' so you should enter '/usr/bin'. On a Windows system, you may have installed to 'C:/Libav', then the programs can be found somewhere inside that path, such as ‘C:/Libav/usr/bin’.</description>
+					<description>Libav comprises a set of different programs, and openEQUELLA needs to know the directory that contains these programs. For example, running 'which avconv' on a Unix-like system may return '/usr/bin/avconv' so you should enter '/usr/bin'. On a Windows system, you may have installed to 'C:/Libav', then the programs can be found somewhere inside that path, such as ‘C:/Libav/usr/bin’.</description>
 					<target>libav/path</target>
 					<items>
 						<item name="" value=""/>

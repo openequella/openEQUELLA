@@ -1,4 +1,4 @@
-# EQUELLA
+# openEQUELLA
 
 [![Travis build](https://travis-ci.org/equella/Equella.svg?branch=master)](https://travis-ci.org/equella/Equella)
 
@@ -6,9 +6,9 @@ Builds for each openEQUELLA Release can be found on the [Releases page](https://
 
 More in-depth documentation can be found in [Docs](https://equella.github.io/) repo.
 
-If you would like to contribute to EQUELLA please setup a [development environment](CONTRIBUTING.md).
+If you would like to contribute to openEQUELLA please setup a [development environment](CONTRIBUTING.md).
 
-# Building EQUELLA from source
+# Building openEQUELLA from source
 
 * [Download required software](#download-required-software)
 * [Get the code](#get-the-code)
@@ -70,7 +70,7 @@ Latest release tested was 0.3.3.
 
 <http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html>
 
-Oracle is the recommended and historically the supported vendor of Java to run Equella with.
+Oracle is the recommended and historically the supported vendor of Java to run openEquella with.
 
 In ubuntu:
 
@@ -87,7 +87,7 @@ In ubuntu:
 _Note: For ubuntu follow the install from Unix Source instructions:_
 <https://www.imagemagick.org/script/install-source.php>
 
-To confirm the installation directory in Ubuntu for the Equella installer, run the command:
+To confirm the installation directory in Ubuntu for the openEquella installer, run the command:
 
 ```
 ~$ whereis convert
@@ -103,7 +103,7 @@ In ubuntu:
 ~$ sudo apt-get install libav-tools
 ```
 
-To confirm the installation directory in Ubuntu for the Equella installer, run the command:
+To confirm the installation directory in Ubuntu for the openEquella installer, run the command:
 
 ```
 ~$ whereis avconv
@@ -127,7 +127,7 @@ Once SBT and Java are installed, you may need to set a JAVA_HOME environment var
 
 ### Optional code
 
-There is functionality that could not be included into the core Equella code repository, but based on your business needs, may be appropriate to include.
+There is functionality that could not be included into the core openEquella code repository, but based on your business needs, may be appropriate to include.
 
 * Oracle DB Driver
 * [Kaltura](https://github.com/equella/Equella-Kaltura)
