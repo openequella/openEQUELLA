@@ -61,8 +61,8 @@ public class SectionsControllerImpl implements SectionsController
 {
 	@Inject
 	private TreeRegistry treeRegistry;
-	private PluginTracker<SectionFilter> sectionFilters;
-	private PluginTracker<SectionsExceptionHandler> exceptionHandlers;
+	protected PluginTracker<SectionFilter> sectionFilters;
+	protected PluginTracker<SectionsExceptionHandler> exceptionHandlers;
 
 	@Override
 	public void execute(SectionInfo info)

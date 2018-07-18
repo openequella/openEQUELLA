@@ -4,19 +4,37 @@ import Prelude
 
 import Control.Alt ((<|>))
 import Data.Either (either)
+import Data.List (List, fold, foldMap)
+import Data.Map as Map
 import Data.Maybe (Maybe(Just, Nothing))
+import Data.Newtype (wrap)
+import Data.Tuple (Tuple(..))
+import Debug.Trace (spy)
 import Effect (Effect)
 import Effect.Ref (Ref, new, read, write)
 import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
 import Effect.Unsafe (unsafePerformEffect)
 import Foreign (unsafeToForeign)
-import React.SyntheticEvent (SyntheticMouseEvent, SyntheticEvent, preventDefault)
+import QueryString (queryString)
+import React.SyntheticEvent (SyntheticEvent, preventDefault)
 import Routing (match)
 import Routing.Match (Match, lit, str)
 import Routing.PushState (PushStateInterface, makeInterface)
-import Unsafe.Coerce (unsafeCoerce)
+import Routing.Types (RoutePart(..))
 
-data Route = SearchPage | 
+data LegacyURI = LegacyURI String (Array (Tuple String String))
+instance legacySG :: Semigroup LegacyURI where 
+  append (LegacyURI path1 qp) (LegacyURI path2 qp2) = LegacyURI (case {path1,path2} of 
+    {path1:""} -> path2 
+    {path2:""} -> path1 
+    _ -> path1 <> "/" <> path2) (qp <> qp2)
+instance legacyMonoid :: Monoid LegacyURI where 
+  mempty = LegacyURI "" []
+derive instance eqLURI :: Eq LegacyURI 
+
+data Route = 
+    LegacyPage LegacyURI |
+    SearchPage | 
     SettingsPage | 
     CoursesPage | 
     CourseEdit String |
@@ -37,13 +55,22 @@ emptyPreventNav = mkEffectFn1 $ const $ pure false
 homeSlash :: Match Unit
 homeSlash = lit ""
 
+remainingParts :: Match (List RoutePart)
+remainingParts = wrap $ \r -> pure $ Tuple r r
+
+legacyRoute :: Match LegacyURI
+legacyRoute = foldMap toLegURI <$> remainingParts
+  where 
+    toLegURI (Path p) = LegacyURI p []
+    toLegURI (Query qm) = LegacyURI "" $ Map.toUnfoldable qm
+
 routeMatch :: Match Route
-routeMatch = 
-    SearchPage <$ (lit "search") <|>
+routeMatch = lit "page" *>
+    (SearchPage <$ (lit "search") <|>
     SettingsPage <$ (lit "settings") <|>
     NewCourse <$ (lit "course" *> lit "new") <|>
     CourseEdit <$> (lit "course" *> str <* lit "edit") <|>
-    CoursesPage <$ (lit "course")
+    CoursesPage <$ (lit "course")) <|> (LegacyPage <$> legacyRoute)
 
 matchRoute :: String -> Maybe Route 
 matchRoute = match routeMatch >>> (either (const Nothing) Just)
@@ -53,7 +80,7 @@ setPreventNav preventNav = write preventNav navGlobals.preventNav
 
 forcePushRoute :: Route -> Effect Unit
 forcePushRoute r = do 
-    let href = append "page" $ routeURI r
+    let href = routeURI r
     write emptyPreventNav navGlobals.preventNav
     nav.pushState (unsafeToForeign {}) href
 
@@ -64,15 +91,17 @@ pushRoute r = do
 
 routeHref :: Route -> {href::String, onClick :: EffectFn1 SyntheticEvent Unit}
 routeHref r = 
-    let href = append "page" $ routeURI r
+    let href = routeURI r
         onClick = mkEffectFn1 $ \e -> preventDefault e *> pushRoute r
     in { href, onClick }
 
 routeURI :: Route -> String
-routeURI r = "/" <> ( case r of 
-    SearchPage -> "search"
-    SettingsPage -> "settings"
-    CoursesPage -> "course"
-    NewCourse -> "course/new"
-    CourseEdit cid -> "course/" <> cid <> "/edit"
+routeURI r = (case r of 
+    SearchPage -> "page/search"
+    SettingsPage -> "page/settings"
+    CoursesPage -> "page/course"
+    NewCourse -> "page/course/new"
+    CourseEdit cid -> "page/course/" <> cid <> "/edit"
+    LegacyPage (LegacyURI path []) -> path
+    LegacyPage (LegacyURI path params) -> path <> "?" <> queryString params
   )

@@ -22,6 +22,7 @@ import com.tle.core.i18n.service.LanguageService;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.search.service.impl.SearchPrivilegeTreeProvider;
 import com.tle.core.security.TLEAclManager;
+import com.tle.core.services.UrlService;
 import com.tle.core.services.user.UserPreferenceService;
 import com.tle.core.services.user.UserService;
 import com.tle.core.services.user.UserSessionService;
@@ -42,6 +43,7 @@ import com.tle.web.login.LoginSettingsPrivilegeTreeProvider;
 import com.tle.web.mail.MailSettingsPrivilegeTreeProvider;
 import com.tle.web.manualdatafixes.ManualDataFixesPrivilegeTreeProvider;
 import com.tle.web.mimetypes.MimeSearchPrivilegeTreeProvider;
+import com.tle.web.navigation.MenuService;
 import com.tle.web.oaiidentifier.OaiIdentifierSettingsPrivilegeTreeProvider;
 import com.tle.web.portal.service.PortletWebService;
 import com.tle.web.quickcontributeandversion.QuickContributeAndVersionSettingsPrivilegeTreeProvider;
@@ -153,6 +155,12 @@ public class LegacyGuice extends AbstractModule {
 
     @Inject
     public static TLEUserDao tleUserDao;
+
+    @Inject
+    public static UrlService urlService;
+
+    @Inject
+    public static MenuService menuService;
 
     @Override
     protected void configure()

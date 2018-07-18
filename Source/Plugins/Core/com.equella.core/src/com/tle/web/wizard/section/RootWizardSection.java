@@ -170,8 +170,11 @@ public class RootWizardSection extends TwoColumnLayout<WizardForm>
 	public void responding(SectionInfo info)
 	{
 		final String wizid = getModel(info).getWizid();
-		final WizardState state = wizardService.getFromSession(info, wizid);
-		wizardService.updateSession(info, state);
+		if (wizid != null)
+		{
+			final WizardState state = wizardService.getFromSession(info, wizid);
+			wizardService.updateSession(info, state);
+		}
 	}
 
 	public WizardState newitem(final SectionInfo info) throws Exception

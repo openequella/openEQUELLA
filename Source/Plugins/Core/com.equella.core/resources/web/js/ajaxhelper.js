@@ -188,6 +188,10 @@ function postAjaxEvent(action, formData, name, params, callback)
 
 function postAjaxJSON(form, name, params, callback, errorcallback)
 {
+    if (window.EQ)
+    {
+        return window.EQ.postAjax(form, name, params, callback, errorcallback);
+    }
 	var f = $(form);
 	_trigger("presubmit");
 	var formData = $("input, select, textarea", f).serializeArray();

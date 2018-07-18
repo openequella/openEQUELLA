@@ -36,6 +36,8 @@ public interface AjaxRenderContext extends PreRenderContext
 
 	void setJSONResponseCallback(JSONResponseCallback jsonResponseCallback);
 
+	JSONResponseCallback getJSONResponseCallback();
+
 	void addAjaxDivs(String... divIds);
 
 	void addAjaxDivs(Collection<String> ajaxIds);

@@ -5,9 +5,9 @@ import Prelude
 import Common.CommonStrings (commonString)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
-import Data.Argonaut (decodeJson)
+import Data.Argonaut (class DecodeJson, decodeJson, (.?), (.??))
 import Data.Array (catMaybes, concat, intercalate)
-import Data.Either (either)
+import Data.Either (Either(..), either)
 import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, isJust, isNothing, maybe)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.String (joinWith)
@@ -72,7 +72,10 @@ import Web.HTML.Event.BeforeUnloadEvent.EventTypes (beforeunload)
 import Web.HTML.HTMLDocument (toNonElementParentNode)
 import Web.HTML.Window (document, toEventTarget)
 
-newtype MenuItem = MenuItem {href::String, title::String, systemIcon::Nullable String, route:: Nullable String}
+newtype ExternalHref = ExternalHref String 
+newtype MenuItem = MenuItem {route::Either ExternalHref String, title::String, systemIcon::Maybe String}
+
+newtype MenuLinks = MenuLinks (Array (Array MenuItem))
 
 data Command = Init | Updated {preventNavigation :: Nullable Boolean} | AttemptRoute Route | NavAway Boolean
   | ToggleMenu | UserMenuAnchor (Maybe HTMLElement)  | GoBack
@@ -86,12 +89,6 @@ type UserData = {
 
 type RenderData = {
   baseResources::String, 
-  html::Nullable (M.Object String), 
-  title::String, 
-  menuItems :: Array (Array MenuItem), 
-  menuMode :: String,
-  fullscreenMode :: String,
-  hideAppBar :: Boolean,
   newUI::Boolean, 
   user::UserData
 }
@@ -109,11 +106,14 @@ type TemplateProps = (
   title::String, 
   fixedViewPort :: Nullable Boolean, -- Fix the height of the main content, otherwise use min-height
   preventNavigation :: Nullable Boolean, -- Prevent navigation away from this page (e.g. Unsaved data) 
-  titleExtra::Nullable ReactElement, -- Extra part of the App bar (e.g. Search control)
-  menuExtra:: Nullable (Array ReactElement), -- Extra menu options
+  titleExtra :: Nullable ReactElement, -- Extra part of the App bar (e.g. Search control)
+  menuExtra :: Nullable (Array ReactElement), -- Extra menu options
   tabs :: Nullable ReactElement, -- Additional markup for displaying tabs which integrate with the App bar
   footer :: Nullable ReactElement, -- Markup to show at the bottom of the main area. E.g. save/cancel options
-  backRoute :: Nullable Route -- An optional Route for showing a back icon button
+  backRoute :: Nullable Route, -- An optional Route for showing a back icon button
+  menuMode :: String,
+  fullscreenMode :: String,
+  hideAppBar :: Boolean
 )
 
 type State = {
@@ -121,13 +121,14 @@ type State = {
   menuAnchor::Maybe HTMLElement, 
   tasks :: Maybe Int, 
   notifications :: Maybe Int, 
-  attempt :: Maybe Route
+  attempt :: Maybe Route, 
+  menuItems :: Array (Array MenuItem)
 }
 
 initialState :: State
 initialState = {
   mobileOpen: false, menuAnchor: Nothing, tasks: Nothing, 
-  notifications: Nothing, attempt: Nothing
+  notifications: Nothing, attempt: Nothing, menuItems: []
 }
 
 template :: String -> Array ReactElement -> ReactElement
@@ -138,7 +139,7 @@ template' = createElement templateClass
 
 templateDefaults ::  String ->  {|TemplateProps} 
 templateDefaults title = {title,titleExtra:nullAny, fixedViewPort:nullAny,preventNavigation:nullAny, menuExtra:nullAny, 
-  tabs:nullAny, backRoute: nullAny, footer: nullAny}
+  tabs:nullAny, backRoute: nullAny, footer: nullAny, menuMode:"", fullscreenMode:"", hideAppBar: false}
 
 templateClass :: ReactClass {children::Children|TemplateProps}
 templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
@@ -149,7 +150,6 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
     componentDidUpdate {preventNavigation} _ _ = d $ Updated {preventNavigation}
     componentWillUnmount = setUnloadListener false
 
-    newPage = isNothing $ toMaybe renderData.html
     strings = prepLangStrings rawStrings
     coreString = prepLangStrings coreStrings
 
@@ -184,6 +184,8 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       {title,preventNavigation:pn} <- getProps
       liftEffect $ setTitle $ title <> coreString.windowtitlepostfix
       if fromMaybe false $ toMaybe pn then setPreventUnload true else pure unit
+      mr <- lift $ get Resp.json $ baseUrl <> "api/content/menu"
+      either (lift <<< log) (\(MenuLinks ml) -> modifyState _ {menuItems = ml})  (decodeJson mr.response)
       r <- lift $ get Resp.json $ baseUrl <> "api/task"
       either (lift <<< log) (\(SearchResultsMeta {available}) -> modifyState _ {tasks = Just available})  (decodeJson r.response)
       r2 <- lift $ get Resp.json $ baseUrl <> "api/notification"
@@ -196,7 +198,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
                 title:titleText,titleExtra,menuExtra,backRoute}} = muiPickersUtilsProvider [utils momentUtils] [
       D.div [DP.className classes.root] $ [
         cssBaseline_ [],
-        layout renderData.fullscreenMode renderData.menuMode renderData.hideAppBar, 
+        layout props.fullscreenMode props.menuMode props.hideAppBar, 
         dialog [ open $ isJust attempt] [
           dialogTitle_ [ text strings.navaway.title], 
           dialogContent_ [
@@ -239,7 +241,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
           fc
         ]
       ]
-      hasMenu = case renderData.menuMode of 
+      hasMenu = case props.menuMode of 
         "HIDDEN" -> false 
         _ -> true
       topBar = appBar [className $ classes.appBar] $ catMaybes [
@@ -291,19 +293,20 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
               c -> buttonLink inherit $ badge [badgeContent c, color secondary] [iconOnly]
         ]
       menuContent = [D.div [DP.className classes.logo] [ D.img [ DP.role "presentation", DP.src logoSrc] ]] <>
-                    intercalate [divider []] (group <$> renderData.menuItems)
+                    intercalate [divider []] (group <$> state.menuItems)
         where
           logoSrc = renderData.baseResources <> "images/new-equella-logo.png"
           group items = [list [component "nav"] (navItem <$> items)]
-          navItem (MenuItem {title,href,systemIcon,route}) = listItem (linkProps <> [LI.button true, component "a"])
+          navItem (MenuItem {title,systemIcon,route}) = listItem (linkProps <> [LI.button true, component "a"])
             [
-              listItemIcon_ [icon [ color C.inherit ] [ D.text $ fromMaybe "folder" $ toMaybe systemIcon ] ],
+              listItemIcon_ [icon [ color C.inherit ] [ D.text $ fromMaybe "folder" $ systemIcon ] ],
               listItemText [disableTypography true, primary $ typography [variant subheading, component "div"] [text title]]
             ]
             where 
-              linkProps = case routeHref <$> (toMaybe route >>= matchRoute) of
-                (Just {href:hr,onClick:oc}) | newPage -> [mkProp "href" hr, onClick $ runEffectFn1 oc]
-                _ -> [ mkProp "href" href ]
+              linkProps = case route of 
+                Right r | Just m <- routeHref <$> matchRoute r -> [mkProp "href" m.href, onClick $ runEffectFn1 m.onClick]
+                Left (ExternalHref href) -> [mkProp "href" href]
+                Right r -> [mkProp "href" $ show r]
   pure {
     render: renderer render this, 
     state:initialState, 
@@ -480,3 +483,21 @@ coreStrings = {prefix: "com.equella.core",
     }
   }
 }
+
+instance decodeMI :: DecodeJson MenuItem where 
+  decodeJson v = do 
+    o <- decodeJson v
+    href <- o .?? "href"
+    route <- o .?? "route" <#> case _ of 
+      Just r -> Right r 
+      _ | Just h <- href -> Left $ ExternalHref h
+      _ -> Right "home.do"
+    title <- o .? "title"
+    systemIcon <- o .?? "systemIcon"
+    pure $ MenuItem {title, route, systemIcon}
+
+instance decodeML :: DecodeJson MenuLinks where 
+  decodeJson v = do 
+    o <- decodeJson v
+    ml <- o .? "groups"
+    pure $ MenuLinks ml 

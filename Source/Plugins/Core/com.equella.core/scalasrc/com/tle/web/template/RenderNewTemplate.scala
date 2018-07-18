@@ -98,18 +98,19 @@ object RenderNewTemplate {
             s => writer.writeTag("script", "src", s)
               writer.endTag("script")
           }
+          src.getCssFiles.asScala.foreach {
+            s : CssInclude => writer.writeTag("link", "rel", "stylesheet", "type", "text/css",
+              "href", s.getHref(src))
+              writer.endTag("link")
+          }
       }
   })
 
   def renderNewHtml(context: RenderEventContext, viewFactory: FreemarkerFactory): SectionResult =
   {
     val renderData = new ObjectExpression("baseResources", r.url(""),
-      "newUI", java.lang.Boolean.TRUE, "title", "title",
-      "user", userObj(CurrentUser.getUserState),
-      "menuMode", "",
-      "fullscreenMode", "false",
-      "hideAppBar", "false",
-      "menuItems", new ArrayExpression())
+      "newUI", java.lang.Boolean.TRUE,
+      "user", userObj(CurrentUser.getUserState))
 
     context.preRender(JQueryCore.PRERENDER)
     if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident")))
@@ -117,6 +118,7 @@ object RenderNewTemplate {
       context.getPreRenderContext.addJs("https://cdn.polyfill.io/v2/polyfill.min.js?features=es6")
     }
     context.preRender(bundleJs)
+//    context.preRender(RenderTemplate.STYLES_CSS)
     val tempResult = new GenericTemplateResult()
     tempResult.addNamedResult("header", HeaderSection)
     viewFactory.createResultWithModel("layouts/outer/react.ftl",
@@ -200,7 +202,7 @@ object RenderNewTemplate {
   private val SERVER_ADMIN_FILTER = new PluginTracker.ParamFilter("enabledFor", "serverAdmin")
   private val LOGGED_IN_FILTER = new PluginTracker.ParamFilter("enabledFor", true, "loggedIn")
 
-  def menuOptions(context: RenderEventContext, menuService: MenuService): Iterable[ArrayExpression] = {
+  def menuOptions(context: SectionInfo, menuService: MenuService): Iterable[ArrayExpression] = {
     val decorations = Decorations.getDecorations(context)
     val menuMode = decorations.getMenuMode
     if (menuMode == MenuMode.HIDDEN) Iterable.empty

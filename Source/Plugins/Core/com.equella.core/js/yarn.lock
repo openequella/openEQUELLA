@@ -5043,10 +5043,6 @@ load-from-cwd-or-npm@^2.2.1:
     optional "^0.1.4"
     resolve-from-npm "^2.0.4"
 
-load-js-css@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/load-js-css/-/load-js-css-0.0.2.tgz#a85162c72f20bf80888aacfbf8a064063897ce90"
-
 load-json-file@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/load-json-file/-/load-json-file-1.1.0.tgz#956905708d58b4bab4c2261b04f59f31c99374c0"

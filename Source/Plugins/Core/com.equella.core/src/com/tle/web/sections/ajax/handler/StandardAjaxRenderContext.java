@@ -208,7 +208,6 @@ public class StandardAjaxRenderContext extends WrappedSectionInfo implements Aja
 		domResult.setLists(lists);
 		List<String> css = Lists.newArrayList();
 		boolean rtl = CurrentLocale.isRightToLeft();
-		boolean newLayout = RenderNewTemplate.isNewLayout(this);
 		for( CssInclude ci : cssFiles )
 		{
 			if( rtl && ci.isHasRtl() )
@@ -449,6 +448,12 @@ public class StandardAjaxRenderContext extends WrappedSectionInfo implements Aja
 		{
 			throw new AjaxException(e);
 		}
+	}
+
+	@Override
+	public JSONResponseCallback getJSONResponseCallback()
+	{
+		return responseCallback;
 	}
 
 	@Override
