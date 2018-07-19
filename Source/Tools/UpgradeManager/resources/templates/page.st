@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>EQUELLA Manager</title>
+		<title>openEQUELLA Manager</title>
 
 		<link rel="stylesheet" type="text/css" href="/application.css" />
 		<link rel="stylesheet" type="text/css" href="/tabs/ui.tabs.css" />
@@ -18,13 +18,13 @@
 	</head>
 	<body>
 		<div id="title">
-			<h1>EQUELLA Manager</h1>
+			<h1>openEQUELLA Manager</h1>
 		</div>
 		<div id="content">
 			$content$
         </div>
         <div id="footer">
-        	EQUELLA Manager $managerversion$
+        	openEQUELLA Manager $managerversion$
         </div>
 	</body>
 </html>
