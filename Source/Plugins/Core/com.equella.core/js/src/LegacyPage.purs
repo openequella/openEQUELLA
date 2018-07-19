@@ -19,13 +19,15 @@ import Data.String (joinWith)
 import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..))
 import Dispatcher (affAction)
-import Dispatcher.React (getProps, getState, modifyState, propsRenderer, renderer)
+import Dispatcher.React (getProps, getState, modifyState, propsRenderer, renderer, saveRef, withRef)
 import EQUELLA.Environment (baseUrl)
 import Effect (Effect)
 import Effect.Aff (Aff, makeAff, nonCanceler, runAff_)
 import Effect.Aff.Compat (EffectFn1, EffectFn2, mkEffectFn1, mkEffectFn2, runEffectFn1)
 import Effect.Class (liftEffect)
 import Effect.Class.Console (log)
+import Effect.Ref (write)
+import Effect.Ref as Ref
 import Foreign.Object (Object, lookup)
 import MaterialUI.Color (inherit)
 import MaterialUI.Icon (icon_)
@@ -62,7 +64,8 @@ import Web.HTML.HTMLLinkElement as Link
 import Web.HTML.HTMLScriptElement as Script
 import Web.HTML.Window (document)
 
-foreign import setInnerHtml :: {html:: String, script::Nullable String, node :: Nullable ReactRef } -> Effect Unit
+foreign import setInnerHtml :: {node :: ReactRef, html:: String, script::Nullable String } -> Effect Unit
+foreign import clearInnerHtml :: ReactRef -> Effect Unit
 
 type SubmitOptions = {vals::Array NameValue, callback :: Nullable (EffectFn1 Json Unit)} 
 
@@ -99,18 +102,20 @@ type LegacyContentR = {
 
 data ContentResponse = Redirect (Array NameValue) String | LegacyContent LegacyContentR
 
-data RawHtml = DomNode (Nullable ReactRef)
-
 divWithHtml :: {divProps :: Array Props, html :: String, script :: Maybe String} -> ReactElement
 divWithHtml = unsafeCreateLeafElement $ component "JQueryDiv" $ \this -> do
+  domNode <- Ref.new Nothing
   let
-    d = eval >>> flip runReaderT this
-    eval (DomNode r) = do
-      {html, script} <- getProps
-      lift $ setInnerHtml {html, script: toNullable script, node:r}
-    render {divProps,html} = D.div (divProps <> [ DP.ref $ d <<< DomNode ]) []
+    render {divProps,html} = D.div (divProps <> [ DP.ref $ runEffectFn1 $ saveRef domNode ]) []
+    updateHtml = do 
+      {html, script} <- R.getProps this
+      withRef domNode $ \node -> setInnerHtml {node,html,script: toNullable script}
   pure {
-    render: propsRenderer render this, shouldComponentUpdate: \{html} _ -> do 
+    render: propsRenderer render this,
+    componentDidMount: updateHtml,
+    componentWillUnmount: withRef domNode clearInnerHtml,
+    componentDidUpdate: \_ _  _ -> updateHtml,
+    shouldComponentUpdate: \{html} _ -> do 
       {html:newhtml} <- R.getProps this
       pure $ html /= newhtml
   }

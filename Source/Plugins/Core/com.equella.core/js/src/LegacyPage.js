@@ -1,15 +1,18 @@
 exports.setInnerHtml = function (props) {
     return function()
     {
-      if (props.node)
-      {
         $(props.node).html(props.html);
         if (props.script)
         {
           window.eval(props.script);
         }
-      }
     }
+}
+
+exports.clearInnerHtml = function(node) {
+  return function() {
+    $(node).empty()
+  }
 }
 
 function collectParams(form, command, args)
@@ -23,19 +26,45 @@ function collectParams(form, command, args)
   });
   form.querySelectorAll("input,select,textarea").forEach(
     function (v) { 
+      if (v.type)
+      {
+        switch (v.type)
+        {
+          case 'button': 
+            return;
+          case 'checkbox':
+          case 'radio':
+            if (!v.checked || v.disabled) 
+              return;
+        }
+      }
       vals.push({name: v.name, value: v.value}); 
     }
   );
   return vals;
 }
 
+
 exports.setupLegacyHooks = function(ps) {
-  return function() {
-    window.EQ = {
-      event: function(command) {
+    function stdSubmit(validate) {
+      return function(command) {
+        _trigger("presubmit");
+        if (validate)
+        {
+          if (!_trigger("validate"))
+          {
+            return false;
+          }
+        }
         var vals = collectParams(document.getElementById("eqpageForm"), command, [].slice.call(arguments, 1));
         ps.submit({vals:vals, callback:null});
-      },
+        return false;
+      }
+    }
+    return function() {
+    window.EQ = {
+      event: stdSubmit(true),
+      eventnv: stdSubmit(false),
       postAjax: function(form, name, params, callback, errorcallback) {
         var vals = collectParams(form, name, params);
         ps.submit({vals:vals, callback: callback});

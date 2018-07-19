@@ -7,6 +7,7 @@ import java.util.Collections
 import com.dytech.common.io.DevNullWriter
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.CurrentUser
+import com.tle.core.i18n.CoreStrings
 import com.tle.core.plugins.PluginTracker
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.LegacyContentController.getBookmarkState
@@ -23,10 +24,12 @@ import com.tle.web.sections.js.JSStatements
 import com.tle.web.sections.js.generic.function.{AnonymousFunction, ExternallyDefinedFunction}
 import com.tle.web.sections.js.generic.statement.{FunctionCallStatement, StatementBlock}
 import com.tle.web.sections.registry.AbstractSectionsController
-import com.tle.web.sections.render.{CssInclude, SectionRenderable, TagState, TemplateResult}
-import com.tle.web.sections.standard.renderers.DivRenderer
+import com.tle.web.sections.render._
+import com.tle.web.sections.standard.model.HtmlLinkState
+import com.tle.web.sections.standard.renderers.{DivRenderer, LinkRenderer, SpanRenderer}
+import com.tle.web.template.RenderNewTemplate.renderCrumbs
 import com.tle.web.template.section.HelpAndScreenOptionsSection
-import com.tle.web.template.{Decorations, RenderTemplate}
+import com.tle.web.template.{Breadcrumbs, Decorations, RenderTemplate}
 import io.swagger.annotations.Api
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.ws.rs._
@@ -215,7 +218,12 @@ class LegacyContentApi {
         val body = SectionUtils.renderToString(context, wrapBody(decs, tr.getNamedResult(context, "body")))
         val hasoMap = HelpAndScreenOptionsSection.getContent(context).asScala
         val scrops = hasoMap.get("screenoptions").map(bbr => SectionUtils.renderToString(context, bbr.getRenderable))
-        Iterable(Some("body" -> body), scrops.map("so" -> _)).flatten.toMap
+        val crumbs = renderCrumbs(context, decs).map(SectionUtils.renderToString(context, _))
+        Iterable(
+          Some("body" -> body),
+          scrops.map("so" -> _),
+          crumbs.map("crumbs" -> _)
+        ).flatten.toMap
       case sr: SectionRenderable =>
         Map("body" -> SectionUtils.renderToString(context, wrapBody(decs, sr)))
     }
@@ -291,6 +299,18 @@ class LegacyContentApi {
     standardContext.setBindW3CFunction(StandardExpressions.BIND_W3C_FUNCTION)
     standardContext.preRender(RenderTemplate.STYLES_CSS)
     standardContext
+  }
+
+  def renderCrumbs(context: RenderContext, d: Decorations): Option[SectionRenderable] = {
+    val bc = Breadcrumbs.get(context)
+    if (d.isForceBreadcrumbsOn || (d.isBreadcrumbs && !bc.getLinks.isEmpty)) Option {
+      val ct = new TagState("breadcrumb-inner")
+      val allCrumbs = bc.getLinks.asScala.map {
+        case ls: HtmlLinkState => new LinkRenderer(ls)
+        case o => new TagRenderer("span", o)
+      } :+ Option(bc.getForcedLastCrumb).getOrElse(d.getTitle)
+      new SpanRenderer(ct, new DelimitedRenderer(" " + CoreStrings.text("breadcrumb.separator") + " ", allCrumbs: _*))
+    } else None
   }
 
   def ajaxResponse(info: MutableSectionInfo, arc: AjaxRenderContext) = {
