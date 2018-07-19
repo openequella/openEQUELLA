@@ -18,18 +18,18 @@ package com.tle.web.sections.ajax.handler;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.net.URI;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
-import com.tle.web.sections.BookmarkModifier;
-import com.tle.web.sections.SectionId;
-import com.tle.web.sections.SectionInfo;
-import com.tle.web.sections.SectionTree;
+import com.tle.web.sections.*;
 import com.tle.web.sections.ajax.AjaxEffects;
 import com.tle.web.sections.ajax.AjaxGenerator;
+import com.tle.web.sections.events.js.BookmarkAndModify;
 import com.tle.web.sections.events.js.EventGeneratorListener;
 import com.tle.web.sections.events.js.EventModifier;
 import com.tle.web.sections.events.js.ParameterizedEvent;
+import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.sections.js.JSBookmarkModifier;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.JSExpression;
@@ -124,8 +124,7 @@ public class AjaxGeneratorImpl implements AjaxGenerator
 			getEffectFunction(EffectType.REPLACE_WITH_LOADING), onSuccess, ajaxIds);
 	}
 
-	@Override
-	public BookmarkModifier getModifier(final String name, Object... params)
+	public static BookmarkModifier getModifier(String baseId, final String name, Object... params)
 	{
 		final JSExpression[] exprs = JSUtils.convertExpressions(params);
 		return new BookmarkModifier()
@@ -141,6 +140,20 @@ public class AjaxGeneratorImpl implements AjaxGenerator
 				}
 			}
 		};
+	}
+
+	@Override
+	public Bookmark getModifiedAjaxUrl(SectionInfo info, BookmarkModifier modifier, String name, Object... params)
+	{
+		InfoBookmark bm = new InfoBookmark(info, info.<URI> getAttribute(AjaxGenerator.AJAX_BASEURI));
+		return new BookmarkAndModify(bm, getModifier(baseId, name, params), modifier);
+	}
+
+	@Override
+	public Bookmark getAjaxUrl(SectionInfo info, String name, Object... params)
+	{
+		InfoBookmark bm = new InfoBookmark(info, info.<URI> getAttribute(AjaxGenerator.AJAX_BASEURI));
+		return new BookmarkAndModify(bm, getModifier(baseId, name, params));
 	}
 
 	@Override

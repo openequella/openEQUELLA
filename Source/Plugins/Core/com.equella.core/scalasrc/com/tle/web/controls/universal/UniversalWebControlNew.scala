@@ -118,7 +118,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
     val definition = new UniversalSettings(control.getControlBean.asInstanceOf[CustomControl])
     val repository = control.getRepository.asInstanceOf[WebRepository]
     val fileSettingsO = if (definition.getAttachmentTypes.contains("fileHandler")) Some(new FileUploadSettings(definition)) else None
-    val commandModifier = ajax.getModifier("uploadCommand")
+//    val commandModifier = ajax.getModifier("uploadCommand")
 
     dialog.setRepository(repository)
     dialog.setDefinition(definition)
@@ -175,7 +175,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
             "toomany", CurrentLocale.getFormatForKey("wizard.controls.file.toomanyattachments")
           ),
           "dialog", PartiallyApply.partial(dialog.getOpenFunction, 2),
-          "commandUrl", new BookmarkAndModify(info, commandModifier).getHref
+          "commandUrl", ajax.getAjaxUrl(info, "uploadCommand").getHref
         )
         ts.addReadyStatements(uploadListFunc, uploadArgs)
         new DivRenderer(ts)
@@ -263,8 +263,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
               UploadFailed(WebFileUploads.labelForIllegalReason(reason, filename).getText)
             }.getOrElse {
               state.initialiseUpload(uploadId, uniqueName, uniqueName)
-              val uploadUrl = new BookmarkAndModify(info,
-                commandModifier, new SimpleBookmarkModifier("uploadId", uploadId.toString)).getHref
+              val uploadUrl = ajax.getModifiedAjaxUrl(info, new SimpleBookmarkModifier("uploadId", uploadId.toString),"uploadCommand").getHref
               NewUploadResponse(uploadUrl, uploadId.toString, uniqueName)
             }
           }

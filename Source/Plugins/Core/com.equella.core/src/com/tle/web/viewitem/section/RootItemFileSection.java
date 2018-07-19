@@ -61,6 +61,7 @@ import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.section.RootSelectionSection;
 import com.tle.web.stream.ContentStream;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.RenderTemplate;
 import com.tle.web.viewable.NewDefaultViewableItem;
 import com.tle.web.viewable.ViewableItem;
@@ -221,6 +222,7 @@ public class RootItemFileSection extends AbstractPrototypeSection<RootItemFileSe
 		}
 		viewer = resource.getViewer();
 		model.setActualViewer(viewer);
+		info.setAttribute(RenderNewTemplate.DisableNewUI(), true);
 		if( viewer instanceof ResourceViewerAware )
 		{
 			((ResourceViewerAware) viewer).beforeRender(info, resource);

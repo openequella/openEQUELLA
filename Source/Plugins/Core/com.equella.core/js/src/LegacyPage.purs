@@ -6,11 +6,10 @@ import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
 import Control.Monad.Reader (runReaderT)
 import Control.Monad.Trans.Class (lift)
 import Data.Argonaut (class DecodeJson, class EncodeJson, Json, decodeJson, encodeJson, (.?), (.??))
-import Data.Array (catMaybes, filter, find, length, mapMaybe)
+import Data.Array (catMaybes, filter, length)
 import Data.Either (Either(..), either)
 import Data.Foldable (sequence_, traverse_)
 import Data.FunctorWithIndex (mapWithIndex)
-import Data.Map (Map)
 import Data.Map as Map
 import Data.Maybe (Maybe(..), fromJust, isJust, maybe)
 import Data.Nullable (Nullable, toMaybe, toNullable)
@@ -19,13 +18,12 @@ import Data.Set as Set
 import Data.String (joinWith)
 import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..))
-import Debug.Trace (spy, traceM)
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, propsRenderer, renderer)
 import EQUELLA.Environment (baseUrl)
 import Effect (Effect)
-import Effect.Aff (Aff, makeAff, nonCanceler)
-import Effect.Aff.Compat (EffectFn1, EffectFnAff, fromEffectFnAff, runEffectFn1)
+import Effect.Aff (Aff, makeAff, nonCanceler, runAff_)
+import Effect.Aff.Compat (EffectFn1, EffectFn2, mkEffectFn1, mkEffectFn2, runEffectFn1)
 import Effect.Class (liftEffect)
 import Effect.Class.Console (log)
 import Foreign.Object (Object, lookup)
@@ -56,10 +54,9 @@ import Web.DOM.HTMLCollection (item, toArray)
 import Web.DOM.Node (appendChild, insertBefore, removeChild)
 import Web.DOM.NonDocumentTypeChildNode (previousElementSibling)
 import Web.DOM.NonElementParentNode (getElementById)
-import Web.DOM.ParentNode (QuerySelector(..), querySelector)
 import Web.Event.Event (EventType(..))
 import Web.Event.EventTarget (addEventListener, eventListener)
-import Web.HTML (HTMLElement, HTMLLinkElement, window)
+import Web.HTML (HTMLElement, window)
 import Web.HTML.HTMLDocument (toDocument)
 import Web.HTML.HTMLLinkElement as Link
 import Web.HTML.HTMLScriptElement as Script
@@ -69,13 +66,16 @@ foreign import setInnerHtml :: {html:: String, script::Nullable String, node :: 
 
 type SubmitOptions = {vals::Array NameValue, callback :: Nullable (EffectFn1 Json Unit)} 
 
-foreign import setupLegacyHooks :: (SubmitOptions -> Effect Unit) -> Effect Unit
+foreign import setupLegacyHooks :: {submit:: EffectFn1 SubmitOptions Unit, 
+    updateIncludes :: EffectFn2 {css :: Array String, js :: Array String} (Effect Unit) Unit
+  } -> Effect Unit
 
 newtype NameValue = NameValue {name::String, value::String}
 
 toNameValue :: Tuple String String -> NameValue
 toNameValue (Tuple name value) = NameValue {name, value}
 
+fromNameValue :: NameValue -> Tuple String String
 fromNameValue (NameValue {name,value}) = Tuple name value
 
 type LegacyContentR = {
@@ -158,8 +158,8 @@ loadMissingScripts _scripts =  unsafePartial $ makeAff $ \cb -> do
   pure nonCanceler
 
 
-setStylesheets :: Array String -> Effect Unit
-setStylesheets _sheets = unsafePartial $ do 
+updateStylesheets :: Boolean -> Array String -> Effect Unit
+updateStylesheets replace _sheets = unsafePartial $ do 
   let sheets = resolveUrl <$> _sheets
   w <- window
   htmldoc <- document w
@@ -183,11 +183,10 @@ setStylesheets _sheets = unsafePartial $ do
       deleteSheet c = removeChild (Link.toNode c) head
       toDelete = Map.filterKeys (not <<< flip Set.member $ Set.fromFoldable sheets) previous
   traverse_ createLink $ (filterUrls (Map.keys previous) sheets)
-  traverse_ deleteSheet (Map.values toDelete)
+  if replace then traverse_ deleteSheet (Map.values toDelete) else pure unit
 
 legacy :: {page :: LegacyURI} -> ReactElement
 legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ \this -> do
-  -- 
   let 
     d = eval >>> affAction this
     stateinp (NameValue {name,value}) = D.input [_type "hidden", DP.name name, DP.value value ]
@@ -226,8 +225,7 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
     submitWithPath path {vals,callback} = do 
         let cb = toMaybe callback
             ajax = isJust cb
-            apiPath = if ajax then "ajax" else "submit"
-        {response} <- lift $ post (Resp.json) (baseUrl <> "api/content/" <> apiPath <> "/" <> path)
+        {response} <- lift $ post (Resp.json) (baseUrl <> "api/content/submit/" <> path)
                         (Req.json $ encodeJson vals)
         cb # maybe (either log updateContent $ decodeJson response) 
                   (liftEffect <<< flip runEffectFn1 response)
@@ -245,20 +243,25 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
         {pagePath} <- getState
         submitWithPath pagePath s
 
+    updateIncludes replace css js = do 
+      liftEffect $ updateStylesheets replace css
+      loadMissingScripts $ js
+
     updateContent (Redirect state redir) = do 
       liftEffect $ pushRoute $ LegacyPage $ LegacyURI redir $ fromNameValue <$> state
     updateContent (LegacyContent lc@{css, js, script}) = do 
-      liftEffect $ setStylesheets css
-      lift $ loadMissingScripts $ js
+      lift $ updateIncludes true css js
       modifyState \s -> s {content = Just lc}
 
-  setupLegacyHooks (d <<< Submit)
+  setupLegacyHooks {submit: mkEffectFn1 $ d <<< Submit, updateIncludes: mkEffectFn2 
+      \{css,js} cb -> runAff_ (\_ -> cb) $ updateIncludes false css js
+    }
   pure {
     state:{optionsAnchor:Nothing, content: Nothing, pagePath: "", stylesheets: []} :: State, 
     render: renderer render this, 
     componentDidMount: d $ LoadPage,
     componentDidUpdate: \{page} _ _ -> d $ Updated page,
-    componentWillUnmount: setStylesheets []
+    componentWillUnmount: updateStylesheets true []
   }
 
   where

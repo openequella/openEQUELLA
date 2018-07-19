@@ -209,7 +209,6 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
   class AfterRegister(id: String, tree: SectionTree, val controlState: UniversalControlState)
     extends ControlContext with RenderHelper with ZipHandler with ViewerHandler with EditingHandler {
 
-    val commandModifier = ajax.getModifier("uploadCommand")
     val updateFooter = controlState.getDialog.getFooterUpdate(tree, null)
     val scrapBookOnClick = Option(new AnonymousFunction(events.getNamedHandler("startSelection")))
                             .filter(_ => myContentService.isMyContentContributionAllowed)
@@ -272,7 +271,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
         ts.setId(id+"_react")
         val uploadArgs = new ObjectExpression("elem", ts,
           "ctrlId", id,
-          "commandUrl", new BookmarkAndModify(info, commandModifier).getHref,
+          "commandUrl", ajax.getAjaxUrl(info, "uploadCommand").getHref,
           "scrapBookOnClick", scrapBookOnClick.orNull,
           "updateFooter", PartiallyApply.partial(updateFooter, 0),
           "strings", new ObjectExpression(
@@ -625,8 +624,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
               UploadFailed( WebFileUploads.labelForIllegalReason(reason, filename).getText )
             }.getOrElse {
               state.initialiseUpload(uploadId, uniqueName, uniqueName)
-              val uploadUrl = new BookmarkAndModify(info,
-                commandModifier, new SimpleBookmarkModifier("uploadId", uploadId.toString)).getHref
+              val uploadUrl = ajax.getModifiedAjaxUrl(info, new SimpleBookmarkModifier("uploadId", uploadId.toString),"uploadCommand").getHref
               NewUploadResponse(uploadUrl, uploadId.toString, uniqueName)
             }
         }

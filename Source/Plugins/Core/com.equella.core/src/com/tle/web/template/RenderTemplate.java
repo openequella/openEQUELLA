@@ -125,7 +125,7 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 	{
 		boolean oldLayout = !RenderNewTemplate.isNewLayout(context);
 		setupHeaderHelper(context);
-		if (!oldLayout)
+		if (!oldLayout && !context.getBooleanAttribute("DISABLE_NEWUI"))
 		{
 			return RenderNewTemplate.renderNewHtml(context, viewFactory);
 		}

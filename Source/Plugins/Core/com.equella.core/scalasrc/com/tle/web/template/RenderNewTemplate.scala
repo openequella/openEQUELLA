@@ -33,6 +33,7 @@ import com.tle.web.sections.equella.ScalaSectionRenderable
 import com.tle.web.sections.equella.layout.OneColumnLayout
 import com.tle.web.sections.events._
 import com.tle.web.sections.events.js.BookmarkAndModify
+import com.tle.web.sections.generic.InfoBookmark
 import com.tle.web.sections.jquery.JQueryStatement
 import com.tle.web.sections.jquery.libraries.JQueryCore
 import com.tle.web.sections.js.JSUtils
@@ -52,6 +53,7 @@ case class ReactPageModel(getReactScript: String)
 
 object RenderNewTemplate {
   val r = ResourcesService.getResourceHelper(getClass)
+  val DisableNewUI = "DISABLE_NEWUI"
 
   val reactTemplate = r.url("reactjs/index.js")
 
@@ -93,7 +95,7 @@ object RenderNewTemplate {
     writer =>
       writer.getInfo() match {
         case src: StandardRenderContext =>
-          writer.writeTag("base", "href", writer.getPathGenerator.getBaseHref(writer).toString)
+          writer.writeTag("base", "href", InfoBookmark.getBaseHref(writer).toString)
           src.getJsFiles.asScala.foreach {
             s => writer.writeTag("script", "src", s)
               writer.endTag("script")

@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.tle.web.sections.Bookmark;
-import com.tle.web.sections.PathGenerator;
 import com.tle.web.sections.Section;
 import com.tle.web.sections.SectionContext;
 import com.tle.web.sections.SectionId;
@@ -473,12 +472,6 @@ public class StandardRenderEventContext implements RenderEventContext
 	public boolean isForceRedirect()
 	{
 		return renderContext.isForceRedirect();
-	}
-
-	@Override
-	public PathGenerator getPathGenerator()
-	{
-		return renderContext.getPathGenerator();
 	}
 
 	@Override

@@ -77,7 +77,7 @@ newtype MenuItem = MenuItem {route::Either ExternalHref String, title::String, s
 
 newtype MenuLinks = MenuLinks (Array (Array MenuItem))
 
-data Command = Init | Updated {preventNavigation :: Nullable Boolean} | AttemptRoute Route | NavAway Boolean
+data Command = Init | Updated {preventNavigation :: Nullable Boolean, title::String} | AttemptRoute Route | NavAway Boolean
   | ToggleMenu | UserMenuAnchor (Maybe HTMLElement)  | GoBack
 
 type UserData = {
@@ -147,9 +147,6 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
     d = eval >>> affAction this
     boolNull = fromMaybe false <<< toMaybe
 
-    componentDidUpdate {preventNavigation} _ _ = d $ Updated {preventNavigation}
-    componentWillUnmount = setUnloadListener false
-
     strings = prepLangStrings rawStrings
     coreString = prepLangStrings coreStrings
 
@@ -164,35 +161,6 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
         pure add
       )
       liftEffect $ setUnloadListener add
-
-    eval (GoBack) = do 
-      {backRoute} <- getProps
-      liftEffect $ maybe (pure unit) pushRoute $ toMaybe backRoute  
-    eval (NavAway n) = do 
-      {attempt} <- getState
-      liftEffect $ guard n *> attempt # maybe (pure unit) forcePushRoute
-      modifyState _{attempt = Nothing}
-    eval (AttemptRoute r) = do 
-      modifyState _{attempt = Just r}
-    eval (Updated {preventNavigation:oldpn}) = do 
-      {preventNavigation} <- getProps
-      let isTrue = fromMaybe false <<< toMaybe
-          newPN = isTrue preventNavigation
-      if isTrue oldpn /= newPN then setPreventUnload newPN else pure unit
-      pure unit
-    eval Init = do 
-      {title,preventNavigation:pn} <- getProps
-      liftEffect $ setTitle $ title <> coreString.windowtitlepostfix
-      if fromMaybe false $ toMaybe pn then setPreventUnload true else pure unit
-      mr <- lift $ get Resp.json $ baseUrl <> "api/content/menu"
-      either (lift <<< log) (\(MenuLinks ml) -> modifyState _ {menuItems = ml})  (decodeJson mr.response)
-      r <- lift $ get Resp.json $ baseUrl <> "api/task"
-      either (lift <<< log) (\(SearchResultsMeta {available}) -> modifyState _ {tasks = Just available})  (decodeJson r.response)
-      r2 <- lift $ get Resp.json $ baseUrl <> "api/notification"
-      either (lift <<< log) (\(SearchResultsMeta {available}) -> modifyState _ {notifications = Just available})  (decodeJson r2.response)
-
-    eval ToggleMenu = modifyState \(s :: State) -> s {mobileOpen = not s.mobileOpen}
-    eval (UserMenuAnchor el) = modifyState \(s :: State) -> s {menuAnchor = el}
 
     render {state: state@{mobileOpen,menuAnchor,tasks,notifications,attempt}, props:props@{fixedViewPort:fvp, classes, 
                 title:titleText,titleExtra,menuExtra,backRoute}} = muiPickersUtilsProvider [utils momentUtils] [
@@ -307,11 +275,45 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
                 Right r | Just m <- routeHref <$> matchRoute r -> [mkProp "href" m.href, onClick $ runEffectFn1 m.onClick]
                 Left (ExternalHref href) -> [mkProp "href" href]
                 Right r -> [mkProp "href" $ show r]
+
+    setWindowTitle title = liftEffect $ setTitle $ title <> coreString.windowtitlepostfix
+
+    eval (GoBack) = do 
+      {backRoute} <- getProps
+      liftEffect $ maybe (pure unit) pushRoute $ toMaybe backRoute  
+    eval (NavAway n) = do 
+      {attempt} <- getState
+      liftEffect $ guard n *> attempt # maybe (pure unit) forcePushRoute
+      modifyState _{attempt = Nothing}
+    eval (AttemptRoute r) = do 
+      modifyState _{attempt = Just r}
+    eval (Updated {preventNavigation:oldpn,title:oldtitle}) = do 
+      {preventNavigation, title} <- getProps
+      let isTrue = fromMaybe false <<< toMaybe
+          newPN = isTrue preventNavigation
+      if isTrue oldpn /= newPN then setPreventUnload newPN else pure unit
+      if oldtitle /= title then setWindowTitle title else pure unit
+      pure unit
+    eval Init = do 
+      {title,preventNavigation:pn} <- getProps
+      setWindowTitle title
+      if fromMaybe false $ toMaybe pn then setPreventUnload true else pure unit
+      mr <- lift $ get Resp.json $ baseUrl <> "api/content/menu"
+      either (lift <<< log) (\(MenuLinks ml) -> modifyState _ {menuItems = ml})  (decodeJson mr.response)
+      r <- lift $ get Resp.json $ baseUrl <> "api/task"
+      either (lift <<< log) (\(SearchResultsMeta {available}) -> modifyState _ {tasks = Just available})  (decodeJson r.response)
+      r2 <- lift $ get Resp.json $ baseUrl <> "api/notification"
+      either (lift <<< log) (\(SearchResultsMeta {available}) -> modifyState _ {notifications = Just available})  (decodeJson r2.response)
+
+    eval ToggleMenu = modifyState \(s :: State) -> s {mobileOpen = not s.mobileOpen}
+    eval (UserMenuAnchor el) = modifyState \(s :: State) -> s {menuAnchor = el}
+
   pure {
     render: renderer render this, 
     state:initialState, 
-    componentDidMount: d Init, componentDidUpdate,
-    componentWillUnmount
+    componentDidMount: d Init, 
+    componentDidUpdate: \{preventNavigation,title} _ _ -> d $ Updated { preventNavigation, title},
+    componentWillUnmount: setUnloadListener false
   }
   where
     drawerWidth = 240
@@ -375,11 +377,6 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
           a: {
             textDecoration: "none",
             color: theme.palette.primary.main
-          }
-        }, 
-        desktop {
-          html: {
-            overflowY: "scroll"
           }
         }
       ],

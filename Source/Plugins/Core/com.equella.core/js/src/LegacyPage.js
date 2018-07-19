@@ -15,11 +15,13 @@ exports.setInnerHtml = function (props) {
 function collectParams(form, command, args)
 {
   var vals = [];
-  vals.push({name: "event__", value:command});
+  if (command) { 
+    vals.push({name: "event__", value:command});
+  }
   args.forEach(function (c, i){
     vals.push({name: "eventp__" + i, value: c})
   });
-  form.querySelectorAll("input").forEach(
+  form.querySelectorAll("input,select,textarea").forEach(
     function (v) { 
       vals.push({name: v.name, value: v.value}); 
     }
@@ -27,18 +29,18 @@ function collectParams(form, command, args)
   return vals;
 }
 
-exports.setupLegacyHooks = function(cb) {
+exports.setupLegacyHooks = function(ps) {
   return function() {
     window.EQ = {
       event: function(command) {
         var vals = collectParams(document.getElementById("eqpageForm"), command, [].slice.call(arguments, 1));
-        cb({vals:vals, callback:null})();
+        ps.submit({vals:vals, callback:null});
       },
       postAjax: function(form, name, params, callback, errorcallback) {
-        console.log(form);
         var vals = collectParams(form, name, params);
-        cb({vals:vals, callback: callback})();
-      }
+        ps.submit({vals:vals, callback: callback});
+      },
+      updateIncludes: ps.updateIncludes
     }
   }
 }

@@ -46,8 +46,8 @@ navGlobals = unsafePerformEffect do
     preventNav <- new emptyPreventNav
     pure {nav, preventNav}
 
-nav :: PushStateInterface
-nav = navGlobals.nav
+globalNav :: PushStateInterface
+globalNav = navGlobals.nav
 
 emptyPreventNav :: EffectFn1 Route Boolean
 emptyPreventNav = mkEffectFn1 $ const $ pure false
@@ -82,7 +82,7 @@ forcePushRoute :: Route -> Effect Unit
 forcePushRoute r = do 
     let href = routeURI r
     write emptyPreventNav navGlobals.preventNav
-    nav.pushState (unsafeToForeign {}) href
+    globalNav.pushState (unsafeToForeign {}) href
 
 pushRoute :: Route -> Effect Unit
 pushRoute r = do 
