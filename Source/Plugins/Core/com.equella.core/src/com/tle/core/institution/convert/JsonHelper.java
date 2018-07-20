@@ -18,9 +18,11 @@ package com.tle.core.institution.convert;
 
 import com.dytech.common.io.UnicodeReader;
 import com.dytech.edge.common.Constants;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
+import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.services.FileSystemService;
 import io.circe.syntax.package$;
 import org.apache.log4j.Logger;
@@ -39,10 +41,22 @@ public class JsonHelper
 {
 	private static final Logger LOGGER = Logger.getLogger(JsonHelper.class);
 
-	private Gson gson = new Gson();
-
 	@Inject
 	private FileSystemService fileSystemService;
+	@Inject
+	private ObjectMapperService objectMapperService;
+
+	private ObjectMapper mapper;
+
+	public synchronized ObjectMapper getMapper()
+	{
+		if( mapper == null )
+		{
+			mapper = objectMapperService.createObjectMapper();
+		}
+
+		return mapper;
+	}
 
 	public List<String> getFileList(final TemporaryFileHandle folder)
 	{
@@ -54,7 +68,7 @@ public class JsonHelper
 	{
 		try( Reader reader = new UnicodeReader(fileSystemService.read(file, path), Constants.UTF8) )
 		{
-			return gson.fromJson(reader, type);
+			return getMapper().readValue(reader, type);
 		}
 		catch( IOException re )
 		{
@@ -67,7 +81,7 @@ public class JsonHelper
 	{
 		try( OutputStream outStream = fileSystemService.getOutputStream(file, path, false) )
 		{
-			gson.toJson(obj, new OutputStreamWriter(outStream, Constants.UTF8));
+			getMapper().writeValue(outStream, obj);
 		}
 		catch( IOException ioe )
 		{

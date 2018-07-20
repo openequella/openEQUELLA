@@ -92,12 +92,15 @@ public class ViewsConverter extends AbstractJsonConverter<Object>
 		for( String entry : entries )
 		{
 			final ItemViewsExport views = json.read(viewsImportFolder, entry, ItemViewsExport.class);
-			final ItemId itemId = new ItemId(views.itemUuid, views.itemVersion);
-
-			ViewCountJavaDao.setSummaryViews(itemId, views.count, Instant.ofEpochMilli(views.lastViewed));
-			for (AttachmentViewsExport attachment : views.attachments)
+			if (views != null)
 			{
-				ViewCountJavaDao.setAttachmentViews(itemId, attachment.attachmentUuid, attachment.count, Instant.ofEpochMilli(attachment.lastViewed));
+				final ItemId itemId = new ItemId(views.itemUuid, views.itemVersion);
+
+				ViewCountJavaDao.setSummaryViews(itemId, views.count, Instant.ofEpochMilli(views.lastViewed));
+				for (AttachmentViewsExport attachment : views.attachments)
+				{
+					ViewCountJavaDao.setAttachmentViews(itemId, attachment.attachmentUuid, attachment.count, Instant.ofEpochMilli(attachment.lastViewed));
+				}
 			}
 		}
 	}
