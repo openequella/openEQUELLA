@@ -156,7 +156,7 @@ loadMissingScripts _scripts =  unsafePartial $ makeAff $ \cb -> do
         tag <- fromJust <<< Script.fromElement <$> createElement "script" doc
         Script.setSrc src tag
         Script.setAsync false tag
-        if scriptCount == ind + 1 
+        if scriptCount == ind + 1
           then do 
             el <- eventListener (\_ -> cb $ Right unit)
             addEventListener (EventType "load") el false (Script.toEventTarget tag)
@@ -167,8 +167,8 @@ loadMissingScripts _scripts =  unsafePartial $ makeAff $ \cb -> do
   pure nonCanceler
 
 
-updateStylesheets :: Boolean -> Array String -> Effect Unit
-updateStylesheets replace _sheets = unsafePartial $ do 
+updateStylesheets :: Boolean -> Array String -> Aff Unit
+updateStylesheets replace _sheets = unsafePartial $ makeAff $ \cb -> do 
   let sheets = resolveUrl <$> _sheets
   w <- window
   htmldoc <- document w
@@ -184,15 +184,24 @@ updateStylesheets replace _sheets = unsafePartial $ do
     insertPoint <- MaybeT $ getElementById "_dynamicInsert" (toNonElementParentNode doc)
     previous <- lift $ Map.fromFoldable <$> findPreviousLinks insertPoint
     pure $ {head, insertPoint, previous}
-  let createLink href = do 
+  let newSheets = (filterUrls (Map.keys previous) sheets)
+      sheetCount = length newSheets
+      createLink ind href = do 
         l <- fromJust <<< Link.fromElement <$> createElement "link" doc
         Link.setRel "stylesheet" l
         Link.setHref href l
+        if sheetCount == ind + 1
+          then do 
+            el <- eventListener (\_ -> cb $ Right unit)
+            addEventListener (EventType "load") el false (Link.toEventTarget l)
+          else pure unit
         insertBefore (Link.toNode l) (Elem.toNode insertPoint) head
       deleteSheet c = removeChild (Link.toNode c) head
       toDelete = Map.filterKeys (not <<< flip Set.member $ Set.fromFoldable sheets) previous
-  traverse_ createLink $ (filterUrls (Map.keys previous) sheets)
   if replace then traverse_ deleteSheet (Map.values toDelete) else pure unit
+  sequence_ $ mapWithIndex createLink newSheets
+  if sheetCount == 0 then (cb $ Right unit) else pure unit
+  pure nonCanceler
 
 legacy :: {page :: LegacyURI} -> ReactElement
 legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ \this -> do
@@ -257,7 +266,7 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
         modifyState \s -> s {state = if partial then Object.union s.state state else state}
 
     updateIncludes replace css js = do 
-      liftEffect $ updateStylesheets replace css
+      updateStylesheets replace css
       loadMissingScripts $ js
 
     updateContent (Redirect state redir) = do 
@@ -279,7 +288,7 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
     render: renderer render this, 
     componentDidMount: d $ LoadPage,
     componentDidUpdate: \{page} _ _ -> d $ Updated page,
-    componentWillUnmount: updateStylesheets true []
+    componentWillUnmount: runAff_ (const $ pure unit) $ updateStylesheets true []
   }
 
   where

@@ -111,7 +111,7 @@ public abstract class AbstractSectionsController implements SectionsController {
     }
 
     @Override
-    public MutableSectionInfo createFilteredInfo(SectionTree tree, HttpServletRequest request, HttpServletResponse response,
+    public MutableSectionInfo createUnfilteredInfo(SectionTree tree, HttpServletRequest request, HttpServletResponse response,
                                                    Map<Object, Object> attrs)
     {
         MutableSectionInfo sectionInfo = new DefaultSectionInfo(this);
@@ -126,45 +126,8 @@ public abstract class AbstractSectionsController implements SectionsController {
         }
         sectionInfo.addTree(tree);
         sectionInfo.queueTreeEvents(tree);
-        List<SectionFilter> filters = getSectionFilters();
-        for( SectionFilter sectionFilter : filters )
-        {
-            sectionFilter.filter(sectionInfo);
-            if( sectionInfo.isRendered() )
-            {
-                break;
-            }
-        }
         return sectionInfo;
     }
-
-    @Override
-    public MutableSectionInfo createInfo(SectionTree tree, String path, @Nullable HttpServletRequest request,
-                                         @Nullable HttpServletResponse response, @Nullable SectionInfo info, @Nullable Map<String, String[]> params,
-                                         @Nullable Map<Object, Object> attributes)
-    {
-        MutableSectionInfo sectionInfo = createFilteredInfo(tree, request, response, attributes);
-        sectionInfo.setAttribute(SectionInfo.KEY_PATH, path);
-        sectionInfo.setAttribute(SectionInfo.KEY_FORWARDFROM, info);
-        try
-        {
-            if( info != null )
-            {
-                info.processEvent(new ForwardEvent(sectionInfo));
-            }
-            ParametersEvent paramsEvent = new ParametersEvent(params, true);
-            sectionInfo.addParametersEvent(paramsEvent);
-            sectionInfo.processEvent(paramsEvent);
-            return sectionInfo;
-        }
-        catch( Exception ex )
-        {
-            handleException(sectionInfo, ex, null);
-            return sectionInfo;
-        }
-    }
-
-    protected abstract List<SectionFilter> getSectionFilters();
 
     @Override
     public SectionInfo createForward(String path)
@@ -208,30 +171,5 @@ public abstract class AbstractSectionsController implements SectionsController {
         forward(original, forward);
     }
 
-    @Override
-    public void handleException(SectionInfo info, Throwable exception, @Nullable SectionEvent<?> event)
-    {
-        if( exception instanceof SectionsRuntimeException )
-        {
-            if( exception.getCause() != null )
-            {
-                exception = exception.getCause();
-            }
-        }
-        List<SectionsExceptionHandler> extensions = getExceptionHandlers();
-        for( SectionsExceptionHandler handler : extensions )
-        {
-            boolean handle;
-            if (handler.canHandle(info, exception, event))
-            {
-                handler.handle(exception, info, this, event);
-                return;
-                // else continue until we either find a non-null handler, or
-                // exit loop and call SectionUtils.throwRuntime
-            }
-        }
-        SectionUtils.throwRuntime(exception);
-    }
-
-    protected abstract List<SectionsExceptionHandler> getExceptionHandlers();
+    public abstract void handleException(SectionInfo info, Throwable exception, @Nullable SectionEvent<?> event);
 }

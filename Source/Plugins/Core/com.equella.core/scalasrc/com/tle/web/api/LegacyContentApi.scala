@@ -2,7 +2,7 @@ package com.tle.web.api
 
 import java.net.URI
 import java.util
-import java.util.Collections
+import java.util.{Collections, EventListener, List}
 
 import com.dytech.common.io.DevNullWriter
 import com.tle.beans.item.ItemTaskId
@@ -62,24 +62,14 @@ object LegacyContentController extends AbstractSectionsController {
     if (CurrentInstitution.get() == null) LegacyGuice.urlService.getAdminUrl.toURI else CurrentInstitution.get().getUrlAsUri
   }
 
-  override def createFilteredInfo(tree: SectionTree, request: HttpServletRequest, response: HttpServletResponse,
-                                    attrs: util.Map[AnyRef, AnyRef]): MutableSectionInfo = {
-    val info = super.createFilteredInfo(tree, request, response, attrs)
-    info.setAttribute(SectionInfo.KEY_BASE_HREF, baseUri)
-    info
-  }
-
   val RedirectedAttr = "REDIRECTED"
   val StateAttr = "STATE"
 
   override protected def getTreeForPath(path: String): SectionTree =
     LegacyGuice.treeRegistry.getTreeForPath(path)
 
-  override protected def getSectionFilters: util.List[SectionFilter] =
-    util.Arrays.asList(LegacyGuice.moderationService)
-
-  override protected def getExceptionHandlers: util.List[SectionsExceptionHandler] =
-    Collections.emptyList()
+//  override protected def getSectionFilters: util.List[SectionFilter] =
+//    util.Arrays.asList(LegacyGuice.moderationService)
 
   def getBookmarkState(info: SectionInfo, event: BookmarkEvent): Map[String, Array[String]] = {
     val q = new InfoBookmark(info, event).getBookmarkParams
@@ -104,6 +94,21 @@ object LegacyContentController extends AbstractSectionsController {
   override def forwardToUrl(info: SectionInfo, link: String, code: Int): Unit = {
     info.getRequest.setAttribute(RedirectedAttr, link)
   }
+
+  override def createInfo(tree: SectionTree, path: String, request: HttpServletRequest,
+                          response: HttpServletResponse, from: SectionInfo,
+                          params: util.Map[String, Array[String]],
+                          attrs: util.Map[AnyRef, AnyRef]): MutableSectionInfo = {
+    val sectionInfo = createUnfilteredInfo(tree, request, response, attrs)
+    sectionInfo.setAttribute(SectionInfo.KEY_PATH, path)
+    sectionInfo.setAttribute(SectionInfo.KEY_FORWARDFROM, from)
+    sectionInfo.setAttribute(SectionInfo.KEY_BASE_HREF, baseUri)
+    LegacyGuice.moderationService.filter(sectionInfo)
+    sectionInfo
+  }
+
+  override def handleException(info: SectionInfo, exception: Throwable,
+                               event: SectionEvent[_]): Unit = {}
 }
 
 @Api("Legacy content")
@@ -126,8 +131,7 @@ class LegacyContentApi {
       case None => Response.status(404)
       case Some(tree) => {
         LegacyGuice.userSessionService.reenableSessionUse()
-        val info = LegacyContentController.createFilteredInfo(tree, req, resp, attrs.asJava)
-        info.setAttribute(SectionInfo.KEY_PATH, path)
+        val info = LegacyContentController.createInfo(tree, path, req, resp, null, null, attrs.asJava)
         info.setAttribute(AjaxGenerator.AJAX_BASEURI, uriInfo.getBaseUriBuilder.
           path(classOf[LegacyContentApi]).path(classOf[LegacyContentApi], "ajaxCall").build(""))
         f(info)
@@ -207,7 +211,8 @@ class LegacyContentApi {
   }
 
   def redirectResponse(req: HttpServletRequest)(url: String): ResponseBuilder = {
-    val state = Option(req.getAttribute(LegacyContentController.StateAttr).asInstanceOf[Map[String, Array[String]]]).getOrElse(Map.empty)
+    val state = Option(req.getAttribute(LegacyContentController.StateAttr).asInstanceOf[Map[String, Array[String]]])
+      .getOrElse(Map.empty)
     val fromBase = LegacyGuice.urlService.getBaseUriFromRequest(req).relativize(URI.create(url)).toString
     Response.ok(RedirectContent(fromBase, state))
   }
@@ -219,7 +224,8 @@ class LegacyContentApi {
     var firstResult: SectionResult = null
     info.processEvent {
       new RenderEvent(context, rootId, new RenderResultListener {
-        override def returnResult(result: SectionResult, fromId: String): Unit = firstResult = result
+        override def returnResult(result: SectionResult, fromId: String): Unit =
+          firstResult = result
       })
     }
     val html = firstResult match {
@@ -348,7 +354,8 @@ class LegacyContentApi {
       var bodySR: SectionResult = null
       context.processEvent(new RenderEvent(context, Option(context.getModalId).getOrElse(context.getRootId),
         new RenderResultListener {
-          override def returnResult(result: SectionResult, fromId: String): Unit = bodySR = result
+          override def returnResult(result: SectionResult, fromId: String): Unit =
+            bodySR = result
         }))
       bodySR
     } match {
