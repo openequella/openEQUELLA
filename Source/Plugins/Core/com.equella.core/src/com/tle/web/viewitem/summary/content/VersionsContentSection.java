@@ -16,13 +16,16 @@
 
 package com.tle.web.viewitem.summary.content;
 
-import java.util.List;
+import java.util.*;
 
 import javax.inject.Inject;
 
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
+import com.tle.common.security.Privilege;
+import com.tle.core.item.ViewCountJavaDao;
 import com.tle.core.item.service.ItemService;
+import com.tle.core.security.TLEAclManager;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;
@@ -37,6 +40,7 @@ import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.result.util.BundleLabel;
+import com.tle.web.sections.standard.AbstractTable;
 import com.tle.web.sections.standard.AbstractTable.Sort;
 import com.tle.web.sections.standard.Table;
 import com.tle.web.sections.standard.annotations.Component;
@@ -58,6 +62,8 @@ public class VersionsContentSection extends AbstractContentSection<Object>
 	private static Label LABEL_ITEM_TITLE;
 	@PlugKey("summary.content.versions.column.status")
 	private static Label LABEL_STATUS;
+	@PlugKey("summary.content.versions.column.views")
+	private static Label LABEL_VIEWS;
 
 	@ViewFactory
 	private FreemarkerFactory viewFactory;
@@ -66,6 +72,8 @@ public class VersionsContentSection extends AbstractContentSection<Object>
 	private ItemService itemService;
 	@Inject
 	private ViewItemUrlFactory viewItemUrlFactory;
+	@Inject
+	private TLEAclManager aclService;
 
 	@Component(name = "v")
 	private Table versionsTable;
@@ -78,8 +86,6 @@ public class VersionsContentSection extends AbstractContentSection<Object>
 		super.registered(id, tree);
 
 		versionsClickedFunc = events.getSubmitValuesFunction("versionClicked");
-		versionsTable.setColumnHeadings(LABEL_VERSION, LABEL_ITEM_TITLE, LABEL_STATUS);
-		versionsTable.setColumnSorts(Sort.PRIMARY_DESC, Sort.NONE, Sort.NONE);
 	}
 
 	@Override
@@ -90,6 +96,19 @@ public class VersionsContentSection extends AbstractContentSection<Object>
 		final List<Item> items = itemService.getVersionDetails(itemInfo.getItem().getUuid());
 		final TableState versionTableState = versionsTable.getState(context);
 		versionTableState.addClass("versions");
+
+		final Set<ItemId> showViews = getVisibleViewsItems(items);
+		final boolean anyViews = !showViews.isEmpty();
+		if (anyViews)
+		{
+			versionTableState.addHeaderRow(LABEL_VERSION, LABEL_ITEM_TITLE, LABEL_STATUS, LABEL_VIEWS);
+			versionTableState.setColumnSorts(Sort.PRIMARY_DESC, Sort.NONE, Sort.NONE, Sort.SORTABLE_DESC);
+		}
+		else
+		{
+			versionTableState.addHeaderRow(LABEL_VERSION, LABEL_ITEM_TITLE, LABEL_STATUS);
+			versionTableState.setColumnSorts(Sort.PRIMARY_DESC, Sort.NONE, Sort.NONE);
+		}
 		for( Item item : items )
 		{
 			final int version = item.getVersion();
@@ -97,14 +116,40 @@ public class VersionsContentSection extends AbstractContentSection<Object>
 			final HtmlLinkState linkState = new HtmlLinkState(new OverrideHandler(versionsClickedFunc, version));
 			linkState.setLabel(new BundleLabel(item.getName(), item.getUuid(), bundleCache));
 
-			TableRow row = versionTableState.addRow(version, linkState, item.getStatus());
-			row.setSortData(version, null, null);
+			if (anyViews)
+			{
+				Integer views = null;
+				if (showViews.contains(item.getItemId()))
+				{
+					views = ViewCountJavaDao.getSummaryViewCount(item.getItemId());
+				}
+				TableRow row = versionTableState.addRow(version, linkState, item.getStatus(), views);
+				row.setSortData(version, null, null, views);
+			}
+			else
+			{
+				TableRow row = versionTableState.addRow(version, linkState, item.getStatus());
+				row.setSortData(version, null, null);
+			}
 		}
 
 		addDefaultBreadcrumbs(context, itemInfo, TITLE_LABEL);
 		displayBackButton(context);
 
 		return viewFactory.createResult("viewitem/summary/content/versions.ftl", context);
+	}
+
+	private Set<ItemId> getVisibleViewsItems(List<Item> items)
+	{
+		final Set<ItemId> res = new HashSet<>();
+		for (Item item : items)
+		{
+			if (aclService.hasPrivilege(item, Privilege.VIEW_VIEWCOUNT))
+			{
+				res.add(item.getItemId());
+			}
+		}
+		return res;
 	}
 
 	@EventHandlerMethod
