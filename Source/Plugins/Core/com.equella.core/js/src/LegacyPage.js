@@ -55,12 +55,15 @@ function collectParams(form, command, args)
 exports.setupLegacyHooks = function(ps) {
     function stdSubmit(validate) {
       return function(command) {
-        _trigger("presubmit");
-        if (validate)
+        if (window._trigger)
         {
-          if (!_trigger("validate"))
+          _trigger("presubmit");
+          if (validate)
           {
-            return false;
+            if (!_trigger("validate"))
+            {
+              return false;
+            }
           }
         }
         var vals = collectParams(document.getElementById("eqpageForm"), command, [].slice.call(arguments, 1));
