@@ -4,32 +4,33 @@ import Prelude
 
 import Control.Alt ((<|>))
 import Data.Either (either)
-import Data.List (List, fold, foldMap)
+import Data.List (List, foldMap)
 import Data.Map as Map
 import Data.Maybe (Maybe(Just, Nothing))
 import Data.Newtype (wrap)
 import Data.Tuple (Tuple(..))
-import Debug.Trace (spy)
 import Effect (Effect)
 import Effect.Ref (Ref, new, read, write)
 import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
 import Effect.Unsafe (unsafePerformEffect)
 import Foreign (unsafeToForeign)
-import QueryString (queryString)
+import Foreign.Object (Object, isEmpty)
+import Foreign.Object as Object
+import QueryString (queryStringObj)
 import React.SyntheticEvent (SyntheticEvent, preventDefault)
 import Routing (match)
 import Routing.Match (Match, lit, str)
 import Routing.PushState (PushStateInterface, makeInterface)
 import Routing.Types (RoutePart(..))
 
-data LegacyURI = LegacyURI String (Array (Tuple String String))
+data LegacyURI = LegacyURI String (Object (Array String))
 instance legacySG :: Semigroup LegacyURI where 
   append (LegacyURI path1 qp) (LegacyURI path2 qp2) = LegacyURI (case {path1,path2} of 
     {path1:""} -> path2 
     {path2:""} -> path1 
     _ -> path1 <> "/" <> path2) (qp <> qp2)
 instance legacyMonoid :: Monoid LegacyURI where 
-  mempty = LegacyURI "" []
+  mempty = LegacyURI "" Object.empty
 derive instance eqLURI :: Eq LegacyURI 
 
 data Route = 
@@ -61,8 +62,8 @@ remainingParts = wrap $ \r -> pure $ Tuple r r
 legacyRoute :: Match LegacyURI
 legacyRoute = foldMap toLegURI <$> remainingParts
   where 
-    toLegURI (Path p) = LegacyURI p []
-    toLegURI (Query qm) = LegacyURI "" $ Map.toUnfoldable qm
+    toLegURI (Path p) = LegacyURI p Object.empty
+    toLegURI (Query qm) = LegacyURI "" $ pure <$> (Object.fromFoldable $ Map.toUnfoldable qm :: Array (Tuple String String))
 
 routeMatch :: Match Route
 routeMatch = lit "page" *>
@@ -102,6 +103,6 @@ routeURI r = (case r of
     CoursesPage -> "page/course"
     NewCourse -> "page/course/new"
     CourseEdit cid -> "page/course/" <> cid <> "/edit"
-    LegacyPage (LegacyURI path []) -> path
-    LegacyPage (LegacyURI path params) -> path <> "?" <> queryString params
+    LegacyPage (LegacyURI path o) | isEmpty o -> path
+    LegacyPage (LegacyURI path params) -> path <> "?" <> queryStringObj params
   )

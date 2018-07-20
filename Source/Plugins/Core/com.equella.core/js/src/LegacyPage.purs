@@ -3,9 +3,8 @@ module LegacyPage where
 import Prelude
 
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
-import Control.Monad.Reader (runReaderT)
 import Control.Monad.Trans.Class (lift)
-import Data.Argonaut (class DecodeJson, class EncodeJson, Json, decodeJson, encodeJson, (.?), (.??))
+import Data.Argonaut (class DecodeJson, Json, decodeJson, encodeJson, (.?), (.??))
 import Data.Array (catMaybes, filter, length)
 import Data.Either (Either(..), either)
 import Data.Foldable (sequence_, traverse_)
@@ -26,9 +25,9 @@ import Effect.Aff (Aff, makeAff, nonCanceler, runAff_)
 import Effect.Aff.Compat (EffectFn1, EffectFn2, mkEffectFn1, mkEffectFn2, runEffectFn1)
 import Effect.Class (liftEffect)
 import Effect.Class.Console (log)
-import Effect.Ref (write)
 import Effect.Ref as Ref
 import Foreign.Object (Object, lookup)
+import Foreign.Object as Object
 import MaterialUI.Color (inherit)
 import MaterialUI.Icon (icon_)
 import MaterialUI.IconButton (iconButton)
@@ -40,6 +39,7 @@ import Network.HTTP.Affjax (post)
 import Network.HTTP.Affjax.Request as Req
 import Network.HTTP.Affjax.Response as Resp
 import Partial.Unsafe (unsafePartial)
+import QueryString (toTuples)
 import React (ReactElement, ReactRef, component, unsafeCreateLeafElement)
 import React as R
 import React.DOM (text)
@@ -48,7 +48,6 @@ import React.DOM.Props (Props, _id, _type)
 import React.DOM.Props as DP
 import Routes (LegacyURI(..), Route(..), pushRoute)
 import Template (template, template', templateDefaults)
-import Unsafe.Coerce (unsafeCoerce)
 import Utils.UI (withCurrentTarget)
 import Web.DOM.Document (createElement, getElementsByTagName, toNonElementParentNode)
 import Web.DOM.Element as Elem
@@ -66,41 +65,41 @@ import Web.HTML.Window (document)
 
 foreign import setInnerHtml :: {node :: ReactRef, html:: String, script::Nullable String } -> Effect Unit
 foreign import clearInnerHtml :: ReactRef -> Effect Unit
+foreign import globalEval :: String -> Effect Unit
 
-type SubmitOptions = {vals::Array NameValue, callback :: Nullable (EffectFn1 Json Unit)} 
+type SubmitOptions = {vals::Object (Array String), callback :: Nullable (EffectFn1 Json Unit)} 
 
-foreign import setupLegacyHooks :: {submit:: EffectFn1 SubmitOptions Unit, 
-    updateIncludes :: EffectFn2 {css :: Array String, js :: Array String} (Effect Unit) Unit
+foreign import setupLegacyHooks :: {
+    submit:: EffectFn1 SubmitOptions Unit, 
+    updateIncludes :: EffectFn2 {css :: Array String, js :: Array String, script::String} (Effect Unit) Unit,
+    updateForm :: EffectFn1 {state :: Object (Array String), partial :: Boolean} Unit
   } -> Effect Unit
-
-newtype NameValue = NameValue {name::String, value::String}
-
-toNameValue :: Tuple String String -> NameValue
-toNameValue (Tuple name value) = NameValue {name, value}
-
-fromNameValue :: NameValue -> Tuple String String
-fromNameValue (NameValue {name,value}) = Tuple name value
 
 type LegacyContentR = {
   -- baseResources::String, 
   html:: Object String, 
-  state :: Array NameValue,
+  state :: Object (Array String),
   css :: Array String, 
   js :: Array String,
   script :: String, 
   title :: String, 
   fullscreenMode :: String, 
   menuMode :: String
-  -- title::String, 
   -- menuItems :: Array (Array MenuItem), 
-  -- menuMode :: String,
-  -- fullscreenMode :: String,
   -- hideAppBar :: Boolean,
   -- newUI::Boolean, 
   -- user::UserData
 } 
 
-data ContentResponse = Redirect (Array NameValue) String | LegacyContent LegacyContentR
+type PageContent = {
+  html:: Object String,
+  script :: String,
+  title :: String, 
+  fullscreenMode :: String, 
+  menuMode :: String
+}
+
+data ContentResponse = Redirect (Object (Array String)) String | LegacyContent LegacyContentR
 
 divWithHtml :: {divProps :: Array Props, html :: String, script :: Maybe String} -> ReactElement
 divWithHtml = unsafeCreateLeafElement $ component "JQueryDiv" $ \this -> do
@@ -120,11 +119,16 @@ divWithHtml = unsafeCreateLeafElement $ component "JQueryDiv" $ \this -> do
       pure $ html /= newhtml
   }
 
-data Command = OptionsAnchor (Maybe HTMLElement) | Submit SubmitOptions | LoadPage | Updated LegacyURI
+data Command = OptionsAnchor (Maybe HTMLElement) 
+  | Submit SubmitOptions 
+  | LoadPage 
+  | Updated LegacyURI
+  | UpdateForm {state :: Object (Array String), partial :: Boolean}
 
 type State = {
   optionsAnchor::Maybe HTMLElement, 
-  content :: Maybe LegacyContentR, 
+  content :: Maybe PageContent,
+  state :: Object (Array String),
   pagePath :: String,
   stylesheets :: Array String
 }
@@ -194,16 +198,18 @@ legacy :: {page :: LegacyURI} -> ReactElement
 legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ \this -> do
   let 
     d = eval >>> affAction this
-    stateinp (NameValue {name,value}) = D.input [_type "hidden", DP.name name, DP.value value ]
+    stateinp (Tuple name value) = D.input [_type "hidden", DP.name name, DP.value value ]
     render {state:s@{content}, props:{classes}} = case content of 
-        Just (c@{html,state,title,script}) -> 
+        Just (c@{html,title,script}) -> 
           let extraClass = case c.fullscreenMode of 
                 "YES" -> []
                 "YES_WITH_TOOLBAR" -> []
                 _ -> case c.menuMode of
                   "HIDDEN" -> []
                   _ -> [classes.withPadding]
-              mainContent = D.form [DP.name "eqForm", DP._id "eqpageForm"] $ (stateinp <$> state) <> [
+              hiddenState = D.div [DP.style {display: "none"}, DP.className "_hiddenstate"] $ (stateinp <$> toTuples s.state)
+              mainContent = D.form [DP.name "eqForm", DP._id "eqpageForm"] $ [
+                hiddenState,
                 D.div [DP.className $ joinWith " " $ ["content"] <> extraClass] $ catMaybes [ 
                   (divWithHtml <<< {divProps:[_id "breadcrumbs"], script:Nothing, html: _} <$> lookup "crumbs" html),
                   (divWithHtml <<< {divProps:[], script:Nothing, html: _} <$> lookup "upperbody" html),
@@ -243,26 +249,33 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
       LoadPage -> do 
         {page: LegacyURI pagePath params} <- getProps 
         modifyState _ {pagePath = pagePath}
-        submitWithPath pagePath {vals:toNameValue <$> params, callback: toNullable Nothing}
+        submitWithPath pagePath {vals: params, callback: toNullable Nothing}
       Submit s -> do 
         {pagePath} <- getState
         submitWithPath pagePath s
+      UpdateForm {state,partial} -> do 
+        modifyState \s -> s {state = if partial then Object.union s.state state else state}
 
     updateIncludes replace css js = do 
       liftEffect $ updateStylesheets replace css
       loadMissingScripts $ js
 
     updateContent (Redirect state redir) = do 
-      liftEffect $ pushRoute $ LegacyPage $ LegacyURI redir $ fromNameValue <$> state
-    updateContent (LegacyContent lc@{css, js, script}) = do 
+      liftEffect $ pushRoute $ LegacyPage $ LegacyURI redir state
+    updateContent (LegacyContent lc@{css, js, state, html,script, title, fullscreenMode, menuMode}) = do 
       lift $ updateIncludes true css js
-      modifyState \s -> s {content = Just lc}
+      modifyState \s -> s {content = Just {html, script, title, fullscreenMode, menuMode}, state = state}
 
-  setupLegacyHooks {submit: mkEffectFn1 $ d <<< Submit, updateIncludes: mkEffectFn2 
-      \{css,js} cb -> runAff_ (\_ -> cb) $ updateIncludes false css js
+  setupLegacyHooks {
+      submit: mkEffectFn1 $ d <<< Submit, 
+      updateIncludes: mkEffectFn2 
+        \{css,js,script} cb -> runAff_ (\_ -> cb) $ do 
+          updateIncludes false css js
+          liftEffect $ globalEval script, 
+      updateForm: mkEffectFn1 $ d <<< UpdateForm
     }
   pure {
-    state:{optionsAnchor:Nothing, content: Nothing, pagePath: "", stylesheets: []} :: State, 
+    state:{optionsAnchor:Nothing, content: Nothing, pagePath: "", stylesheets: [], state: Object.empty} :: State, 
     render: renderer render this, 
     componentDidMount: d $ LoadPage,
     componentDidUpdate: \{page} _ _ -> d $ Updated page,
@@ -278,16 +291,6 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
       padding: t.spacing.unit * 2
     }
   }
-instance decodeNV :: DecodeJson NameValue where 
- decodeJson v = do 
-    o <- decodeJson v 
-    name <- o .? "name"
-    value <- o .? "value"
-    pure $ NameValue {name, value}
- 
-
-instance encodeNV :: EncodeJson NameValue where 
-  encodeJson (NameValue nv) = unsafeCoerce nv
 
 instance decodeLC :: DecodeJson ContentResponse where 
   decodeJson v = do 

@@ -9,6 +9,13 @@ exports.setInnerHtml = function (props) {
     }
 }
 
+exports.globalEval = function(script)
+{
+  return function() {
+    window.eval(script);
+  }
+}
+
 exports.clearInnerHtml = function(node) {
   return function() {
     $(node).empty()
@@ -17,12 +24,12 @@ exports.clearInnerHtml = function(node) {
 
 function collectParams(form, command, args)
 {
-  var vals = [];
+  var vals = {};
   if (command) { 
-    vals.push({name: "event__", value:command});
+    vals["event__"] = [command];
   }
   args.forEach(function (c, i){
-    vals.push({name: "eventp__" + i, value: c})
+    vals["eventp__" + i] = [c];
   });
   form.querySelectorAll("input,select,textarea").forEach(
     function (v) { 
@@ -38,7 +45,7 @@ function collectParams(form, command, args)
               return;
         }
       }
-      vals.push({name: v.name, value: v.value}); 
+      vals[v.name] = [v.value];
     }
   );
   return vals;
@@ -69,7 +76,8 @@ exports.setupLegacyHooks = function(ps) {
         var vals = collectParams(form, name, params);
         ps.submit({vals:vals, callback: callback});
       },
-      updateIncludes: ps.updateIncludes
+      updateIncludes: ps.updateIncludes,
+      updateForm: ps.updateForm
     }
   }
 }

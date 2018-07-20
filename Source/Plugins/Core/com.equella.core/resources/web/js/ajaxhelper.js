@@ -250,6 +250,7 @@ function updateIncludes(newContents, onFinish)
 {
     if (window.EQ)
     {
+        updateFormAttributes(newContents);
         return window.EQ.updateIncludes(newContents, onFinish);
     }
 	var wrappedFinish = function()
@@ -399,6 +400,10 @@ function updateFormAttributes(newContents)
 	var params = newContents.formParams;
 	if (params)
 	{
+	    if (window.EQ && params.id == 'eqpageForm')
+	    {
+	        return window.EQ.updateForm(params);
+	    }
 		var form = $("#" + params.id);
 		if (params.action)
 		{

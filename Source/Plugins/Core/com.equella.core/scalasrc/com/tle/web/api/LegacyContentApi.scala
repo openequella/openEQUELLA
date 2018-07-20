@@ -39,10 +39,8 @@ import javax.ws.rs.core.{Context, Response, UriInfo}
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
-case class NameValue(name: String, value: String)
 
-
-case class RedirectContent(redirect: String, state: Iterable[NameValue])
+case class RedirectContent(redirect: String, state: Map[String, Array[String]])
 
 case class MenuItem(title: String, href: Option[String], systemIcon: Option[String], route: Option[String])
 
@@ -52,7 +50,7 @@ case class LegacyContent(html: Map[String, String],
                          css: Iterable[String],
                          js: Iterable[String],
                          script: String,
-                         state: Iterable[NameValue],
+                         state: Map[String, Array[String]],
                          title: String,
                          menuMode: String,
                          fullscreenMode: String)
@@ -82,11 +80,9 @@ object LegacyContentController extends AbstractSectionsController {
   override protected def getExceptionHandlers: util.List[SectionsExceptionHandler] =
     Collections.emptyList()
 
-  def getBookmarkState(info: SectionInfo, event: BookmarkEvent): Iterable[NameValue] = {
+  def getBookmarkState(info: SectionInfo, event: BookmarkEvent): Map[String, Array[String]] = {
     val q = new InfoBookmark(info, event).getBookmarkParams
-    q.asScala.flatMap {
-      case (k, vals) => vals.map(v => NameValue(k, v))
-    }
+    q.asScala.toMap
   }
 
 
@@ -174,7 +170,9 @@ class LegacyContentApi {
       info.addParametersEvent(paramEvent)
       info.processEvent(paramEvent)
       LegacyContentController.execute(info)
-      ajaxResponse(info, info.getAttributeForClass(classOf[AjaxRenderContext]))
+      renderedResponse(info).getOrElse {
+        ajaxResponse(info, info.getAttributeForClass(classOf[AjaxRenderContext]))
+      }
     })
   }
 
@@ -183,22 +181,23 @@ class LegacyContentApi {
   @Produces(value = Array("application/json"))
   def submit(@PathParam("path") _path: String, @Context uriInfo: UriInfo,
              @Context req: HttpServletRequest, @Context resp: HttpServletResponse,
-             params: Iterable[NameValue]): Response = {
+             params: mutable.Map[String, Array[String]]): Response = {
     withTreePath(_path, uriInfo, req, resp,
       { info =>
-        val javaParams = params.groupBy(_.name).mapValues(_.map(_.value).toArray).asJava
+        val javaParams = params.asJava
         val paramEvent = new ParametersEvent(javaParams, true)
         info.addParametersEvent(paramEvent)
         info.processEvent(paramEvent)
         LegacyContentController.execute(info)
         Option(req.getAttribute(LegacyContentController.RedirectedAttr).asInstanceOf[String]).map(redirectResponse(req))
+          .orElse(renderedResponse(info))
           .orElse(Option(info.getAttributeForClass(classOf[AjaxRenderContext])).map(arc => ajaxResponse(info, arc)))
           .getOrElse(renderFullPage(info))
       })
   }
 
   def redirectResponse(req: HttpServletRequest)(url: String): ResponseBuilder = {
-    val state = Option(req.getAttribute(LegacyContentController.StateAttr).asInstanceOf[Iterable[NameValue]]).getOrElse(Iterable.empty)
+    val state = Option(req.getAttribute(LegacyContentController.StateAttr).asInstanceOf[Map[String, Array[String]]]).getOrElse(Map.empty)
     val fromBase = LegacyGuice.urlService.getBaseUriFromRequest(req).relativize(URI.create(url)).toString
     Response.ok(RedirectContent(fromBase, state))
   }
@@ -313,38 +312,42 @@ class LegacyContentApi {
     } else None
   }
 
+  def renderedResponse(info: MutableSectionInfo) = {
+    Option(info.getRootRenderContext.getRenderedResponse).map { sr =>
+      Response.ok(SectionUtils.renderToString(prepareJSContext(info), sr))
+    }
+  }
+
   def ajaxResponse(info: MutableSectionInfo, arc: AjaxRenderContext) = {
-    Option(info.getRootRenderContext.getRenderedResponse).map {
-      case sr: SectionRenderable => Response.ok(SectionUtils.renderToString(prepareJSContext(info), sr))
-    }.getOrElse {
-      var resp: ResponseBuilder = null
-      val context = prepareJSContext(info)
+    var resp: ResponseBuilder = null
+    val context = prepareJSContext(info)
 
-      def renderAjaxBody(sr: SectionRenderable): Unit = {
-        val body = context.getBody
-        val formTag = context.getForm
-        if (formTag.getAction == null) {
-          val bookmarkEvent = new BookmarkEvent(null, true, null)
-          formTag.setAction(new InfoFormAction(new InfoBookmark(context, bookmarkEvent)))
-        }
-        formTag.setNestedRenderable(sr)
-        body.setNestedRenderable(formTag)
-        SectionUtils.renderToWriter(context, body, new DevNullWriter)
+    def renderAjaxBody(sr: SectionRenderable): Unit = {
+      val body = context.getBody
+      val formTag = context.getForm
+      if (formTag.getAction == null) {
+        val bookmarkEvent = new BookmarkEvent(null, true, null)
+        formTag.setAction(new InfoFormAction(new InfoBookmark(context, bookmarkEvent)))
       }
+      formTag.setNestedRenderable(sr)
+      body.setNestedRenderable(formTag)
+      SectionUtils.renderToWriter(context, body, new DevNullWriter)
+    }
 
+    val renderedBody = Option(context.getRenderedBody).getOrElse {
+      var bodySR: SectionResult = null
       context.processEvent(new RenderEvent(context, Option(context.getModalId).getOrElse(context.getRootId),
         new RenderResultListener {
-          override def returnResult(result: SectionResult, fromId: String): Unit = resp = {
-            val decs = Decorations.getDecorations(info)
-            result match {
-              case tr: TemplateResult => renderAjaxBody(tr.getNamedResult(context, "body"))
-              case sr: SectionRenderable => renderAjaxBody(sr)
-            }
-            val responseCallback = arc.getJSONResponseCallback
-            Response.ok(responseCallback.getResponseObject(arc))
-          }
+          override def returnResult(result: SectionResult, fromId: String): Unit = bodySR = result
         }))
-      resp
+      bodySR
+    } match {
+      case tr: TemplateResult => tr.getNamedResult(context, "body")
+      case sr: SectionRenderable => sr
+      case pr: PreRenderable => new PreRenderOnly(pr)
     }
+    renderAjaxBody(renderedBody)
+    val responseCallback = arc.getJSONResponseCallback
+    Response.ok(responseCallback.getResponseObject(arc))
   }
 }
