@@ -5,6 +5,7 @@ import java.util
 import java.util.Collections
 
 import com.dytech.common.io.DevNullWriter
+import com.tle.beans.item.ItemTaskId
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.i18n.CoreStrings
@@ -27,9 +28,9 @@ import com.tle.web.sections.registry.AbstractSectionsController
 import com.tle.web.sections.render._
 import com.tle.web.sections.standard.model.HtmlLinkState
 import com.tle.web.sections.standard.renderers.{DivRenderer, LinkRenderer, SpanRenderer}
-import com.tle.web.template.RenderNewTemplate.renderCrumbs
 import com.tle.web.template.section.HelpAndScreenOptionsSection
 import com.tle.web.template.{Breadcrumbs, Decorations, RenderTemplate}
+import com.tle.web.viewable.servlet.ItemServlet
 import io.swagger.annotations.Api
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.ws.rs._
@@ -61,9 +62,9 @@ object LegacyContentController extends AbstractSectionsController {
     if (CurrentInstitution.get() == null) LegacyGuice.urlService.getAdminUrl.toURI else CurrentInstitution.get().getUrlAsUri
   }
 
-  override def createUnfilteredInfo(tree: SectionTree, request: HttpServletRequest, response: HttpServletResponse,
+  override def createFilteredInfo(tree: SectionTree, request: HttpServletRequest, response: HttpServletResponse,
                                     attrs: util.Map[AnyRef, AnyRef]): MutableSectionInfo = {
-    val info = super.createUnfilteredInfo(tree, request, response, attrs)
+    val info = super.createFilteredInfo(tree, request, response, attrs)
     info.setAttribute(SectionInfo.KEY_BASE_HREF, baseUri)
     info
   }
@@ -75,7 +76,7 @@ object LegacyContentController extends AbstractSectionsController {
     LegacyGuice.treeRegistry.getTreeForPath(path)
 
   override protected def getSectionFilters: util.List[SectionFilter] =
-    Collections.emptyList()
+    util.Arrays.asList(LegacyGuice.moderationService)
 
   override protected def getExceptionHandlers: util.List[SectionsExceptionHandler] =
     Collections.emptyList()
@@ -109,14 +110,23 @@ object LegacyContentController extends AbstractSectionsController {
 @Path("content")
 class LegacyContentApi {
 
+  def parsePath(path: String): (String, mutable.Map[AnyRef, AnyRef]) = path match {
+    case p if p.startsWith("items/") => {
+      val itemId = ItemTaskId.parse(p.substring(6))
+      ("/viewitem/viewitem.do", mutable.Map(ItemServlet.VIEWABLE_ITEM ->
+        LegacyGuice.viewableItemFactory.createNewViewableItem(itemId)))
+    }
+    case p => (s"/$p", mutable.Map.empty)
+  }
+
   def withTreePath(_path: String, uriInfo: UriInfo, req: HttpServletRequest, resp: HttpServletResponse,
                    f: MutableSectionInfo => ResponseBuilder): Response = {
-    val path = s"/${_path}"
+    val (path, attrs) = parsePath(_path)
     (Option(LegacyGuice.treeRegistry.getTreeForPath(path)) match {
       case None => Response.status(404)
       case Some(tree) => {
         LegacyGuice.userSessionService.reenableSessionUse()
-        val info = LegacyContentController.createUnfilteredInfo(tree, req, resp, null)
+        val info = LegacyContentController.createFilteredInfo(tree, req, resp, attrs.asJava)
         info.setAttribute(SectionInfo.KEY_PATH, path)
         info.setAttribute(AjaxGenerator.AJAX_BASEURI, uriInfo.getBaseUriBuilder.
           path(classOf[LegacyContentApi]).path(classOf[LegacyContentApi], "ajaxCall").build(""))

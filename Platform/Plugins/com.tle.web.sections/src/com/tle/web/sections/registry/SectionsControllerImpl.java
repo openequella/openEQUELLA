@@ -166,7 +166,7 @@ public class SectionsControllerImpl implements SectionsController
 	}
 
 	@Override
-	public MutableSectionInfo createUnfilteredInfo(SectionTree tree, HttpServletRequest request, HttpServletResponse response,
+	public MutableSectionInfo createFilteredInfo(SectionTree tree, HttpServletRequest request, HttpServletResponse response,
 												   Map<Object, Object> attrs)
 	{
 		MutableSectionInfo sectionInfo = new DefaultSectionInfo(this);
@@ -181,17 +181,6 @@ public class SectionsControllerImpl implements SectionsController
 		}
 		sectionInfo.addTree(tree);
 		sectionInfo.queueTreeEvents(tree);
-		return sectionInfo;
-	}
-
-	@Override
-	public MutableSectionInfo createInfo(SectionTree tree, String path, @Nullable HttpServletRequest request,
-		@Nullable HttpServletResponse response, @Nullable SectionInfo info, @Nullable Map<String, String[]> params,
-		@Nullable Map<Object, Object> attributes)
-	{
-		MutableSectionInfo sectionInfo = createUnfilteredInfo(tree, request, response, attributes);
-		sectionInfo.setAttribute(SectionInfo.KEY_PATH, path);
-		sectionInfo.setAttribute(SectionInfo.KEY_FORWARDFROM, info);
 		List<SectionFilter> filters = sectionFilters.getBeanList();
 		for( SectionFilter sectionFilter : filters )
 		{
@@ -201,6 +190,17 @@ public class SectionsControllerImpl implements SectionsController
 				break;
 			}
 		}
+		return sectionInfo;
+	}
+
+	@Override
+	public MutableSectionInfo createInfo(SectionTree tree, String path, @Nullable HttpServletRequest request,
+		@Nullable HttpServletResponse response, @Nullable SectionInfo info, @Nullable Map<String, String[]> params,
+		@Nullable Map<Object, Object> attributes)
+	{
+		MutableSectionInfo sectionInfo = createFilteredInfo(tree, request, response, attributes);
+		sectionInfo.setAttribute(SectionInfo.KEY_PATH, path);
+		sectionInfo.setAttribute(SectionInfo.KEY_FORWARDFROM, info);
 		try
 		{
 			if( info != null )

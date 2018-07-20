@@ -52,6 +52,8 @@ import com.tle.web.scheduler.ScheduledTasksPrivilegeTreeProvider;
 import com.tle.web.sections.SectionsController;
 import com.tle.web.sections.registry.TreeRegistry;
 import com.tle.web.shortcuturls.ShortcutUrlsSettingsPrivilegeTreeProvider;
+import com.tle.web.viewable.impl.ViewableItemFactory;
+import com.tle.web.workflow.tasks.ModerationService;
 
 import javax.inject.Inject;
 
@@ -161,6 +163,12 @@ public class LegacyGuice extends AbstractModule {
 
     @Inject
     public static MenuService menuService;
+
+    @Inject
+    public static ViewableItemFactory viewableItemFactory;
+
+    @Inject
+    public static ModerationService moderationService;
 
     @Override
     protected void configure()

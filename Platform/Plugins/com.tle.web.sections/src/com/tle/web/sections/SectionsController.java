@@ -109,6 +109,6 @@ public interface SectionsController extends InfoCreator
 
 	MutableSectionInfo createInfoFromTree(SectionTree tree, SectionInfo info);
 
-	MutableSectionInfo createUnfilteredInfo(SectionTree tree, @Nullable HttpServletRequest request,
+	MutableSectionInfo createFilteredInfo(SectionTree tree, @Nullable HttpServletRequest request,
 								  @Nullable HttpServletResponse response, @Nullable Map<Object, Object> attrs);
 }
