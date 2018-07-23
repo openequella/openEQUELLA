@@ -18,8 +18,10 @@ package com.tle.legacy;
 
 import com.google.inject.AbstractModule;
 import com.tle.core.events.services.EventService;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.i18n.service.LanguageService;
 import com.tle.core.institution.InstitutionService;
+import com.tle.core.notification.NotificationService;
 import com.tle.core.search.service.impl.SearchPrivilegeTreeProvider;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.UrlService;
@@ -169,6 +171,9 @@ public class LegacyGuice extends AbstractModule {
 
     @Inject
     public static ModerationService moderationService;
+
+    @Inject
+    public static FreeTextService freeTextService;
 
     @Override
     protected void configure()

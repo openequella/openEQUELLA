@@ -2,20 +2,22 @@ package com.tle.web.api
 
 import java.net.URI
 import java.util
-import java.util.{Collections, EventListener, List}
+import java.util.Collections
 
 import com.dytech.common.io.DevNullWriter
 import com.tle.beans.item.ItemTaskId
 import com.tle.common.institution.CurrentInstitution
+import com.tle.common.settings.standard.AutoLogin
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.i18n.CoreStrings
+import com.tle.core.notification.standard.indexer.NotificationSearch
 import com.tle.core.plugins.PluginTracker
+import com.tle.core.workflow.freetext.TaskListSearch
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.LegacyContentController.getBookmarkState
 import com.tle.web.sections._
 import com.tle.web.sections.ajax.{AjaxGenerator, AjaxRenderContext}
 import com.tle.web.sections.equella.js.StandardExpressions
-import com.tle.web.sections.errors.SectionsExceptionHandler
 import com.tle.web.sections.events._
 import com.tle.web.sections.events.js.BookmarkAndModify
 import com.tle.web.sections.generic.InfoBookmark
@@ -41,25 +43,34 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 
-case class RedirectContent(redirect: String, state: Map[String, Array[String]])
+case class RedirectContent(redirect: String, state: Map[String, Array[String]], userUpdated: Boolean)
 
 case class MenuItem(title: String, href: Option[String], systemIcon: Option[String], route: Option[String])
 
-case class MenuLinks(groups: Iterable[Iterable[MenuItem]])
+case class LegacyContent
+(html: Map[String, String],
+ css: Iterable[String],
+ js: Iterable[String],
+ script: String,
+ state: Map[String, Array[String]],
+ title: String,
+ menuMode: String,
+ fullscreenMode: String,
+ userUpdated: Boolean)
 
-case class LegacyContent(html: Map[String, String],
-                         css: Iterable[String],
-                         js: Iterable[String],
-                         script: String,
-                         state: Map[String, Array[String]],
-                         title: String,
-                         menuMode: String,
-                         fullscreenMode: String)
+case class ItemCounts(tasks: Int, notifications: Int)
+
+case class CurrentUserDetails
+(id: String,
+ username: String, firstName: String, lastName: String, emailAddress: String,
+ autoLoggedIn: Boolean, guest: Boolean, prefsEditable: Boolean,
+ menuGroups: Iterable[Iterable[MenuItem]], counts: Option[ItemCounts])
 
 object LegacyContentController extends AbstractSectionsController {
 
   def baseUri: URI = {
-    if (CurrentInstitution.get() == null) LegacyGuice.urlService.getAdminUrl.toURI else CurrentInstitution.get().getUrlAsUri
+    Option(CurrentInstitution.get()).map(_.getUrlAsUri).
+      getOrElse(LegacyGuice.urlService.getAdminUrl.toURI)
   }
 
   val RedirectedAttr = "REDIRECTED"
@@ -67,9 +78,6 @@ object LegacyContentController extends AbstractSectionsController {
 
   override protected def getTreeForPath(path: String): SectionTree =
     LegacyGuice.treeRegistry.getTreeForPath(path)
-
-//  override protected def getSectionFilters: util.List[SectionFilter] =
-//    util.Arrays.asList(LegacyGuice.moderationService)
 
   def getBookmarkState(info: SectionInfo, event: BookmarkEvent): Map[String, Array[String]] = {
     val q = new InfoBookmark(info, event).getBookmarkParams
@@ -124,6 +132,8 @@ class LegacyContentApi {
     case p => (s"/$p", mutable.Map.empty)
   }
 
+  private val UserIdKey = "InitialUserId"
+
   def withTreePath(_path: String, uriInfo: UriInfo, req: HttpServletRequest, resp: HttpServletResponse,
                    f: MutableSectionInfo => ResponseBuilder): Response = {
     val (path, attrs) = parsePath(_path)
@@ -131,6 +141,7 @@ class LegacyContentApi {
       case None => Response.status(404)
       case Some(tree) => {
         LegacyGuice.userSessionService.reenableSessionUse()
+        req.setAttribute(UserIdKey, CurrentUser.getUserID)
         val info = LegacyContentController.createInfo(tree, path, req, resp, null, null, attrs.asJava)
         info.setAttribute(AjaxGenerator.AJAX_BASEURI, uriInfo.getBaseUriBuilder.
           path(classOf[LegacyContentApi]).path(classOf[LegacyContentApi], "ajaxCall").build(""))
@@ -140,9 +151,9 @@ class LegacyContentApi {
   }
 
   @GET
-  @Path("menu")
+  @Path("currentuser")
   @Produces(value = Array("application/json"))
-  def menuOptions(@Context req: HttpServletRequest, @Context resp: HttpServletResponse): MenuLinks = {
+  def menuOptions(@Context req: HttpServletRequest, @Context resp: HttpServletResponse): CurrentUserDetails = {
     val contributors = LegacyGuice.menuService.getContributors
     val noInst = CurrentInstitution.get == null
     val (noParam, filterName) = if (noInst) (false, "serverAdmin")
@@ -152,7 +163,11 @@ class LegacyContentApi {
     LegacyGuice.userSessionService.reenableSessionUse()
     val context = LegacyGuice.sectionsController.createInfo("/home.do", req, resp, null, null, null)
 
-    MenuLinks {
+    val cu = CurrentUser.getUserState
+
+    val prefsEditable = !(cu.isSystem || cu.isGuest) && !(cu.wasAutoLoggedIn &&
+      LegacyGuice.configService.getProperties(new AutoLogin).isEditDetailsDisallowed)
+    val menuGroups = {
       contributors.getExtensions(new PluginTracker.ParamFilter("enabledFor", noParam, filterName)).asScala.flatMap { ext =>
         contributors.getBeanByExtension(ext).getMenuContributions(context).asScala
       }.groupBy(_.getGroupPriority).toSeq.sortBy(_._1).map {
@@ -170,6 +185,15 @@ class LegacyContentApi {
           }
       }
     }
+    val counts = if (!cu.isGuest) Option {
+      val notificationCount = LegacyGuice.freeTextService.countsFromFilters(Collections.singletonList(new NotificationSearch))(0)
+      val taskCount = LegacyGuice.freeTextService.countsFromFilters(Collections.singletonList(new TaskListSearch))(0);
+      ItemCounts(taskCount, notificationCount)
+    } else None
+    val ub = cu.getUserBean
+    CurrentUserDetails(id = ub.getUniqueID, username = ub.getUsername, firstName = ub.getFirstName, lastName = ub.getLastName,
+      emailAddress = ub.getEmailAddress, autoLoggedIn = cu.wasAutoLoggedIn(), guest = cu.isGuest, prefsEditable = prefsEditable,
+      menuGroups = menuGroups, counts = counts)
   }
 
   @POST
@@ -210,11 +234,17 @@ class LegacyContentApi {
       })
   }
 
+  def userChanged(req: HttpServletRequest): Boolean = {
+    val idNow = CurrentUser.getUserID
+    val idThen = req.getAttribute(UserIdKey).asInstanceOf[String]
+    idNow != idThen
+  }
+
   def redirectResponse(req: HttpServletRequest)(url: String): ResponseBuilder = {
     val state = Option(req.getAttribute(LegacyContentController.StateAttr).asInstanceOf[Map[String, Array[String]]])
       .getOrElse(Map.empty)
     val fromBase = LegacyGuice.urlService.getBaseUriFromRequest(req).relativize(URI.create(url)).toString
-    Response.ok(RedirectContent(fromBase, state))
+    Response.ok(RedirectContent(fromBase, state, userChanged(req)))
   }
 
   def renderFullPage(info: MutableSectionInfo) = {
@@ -259,7 +289,8 @@ class LegacyContentApi {
     val fullscreenMode = decs.isFullscreen.toString
     val hideAppBar = !(decs.isBanner || !decs.isMenuHidden || decs.isContent)
     Response.ok(LegacyContent(html, cssFiles, jsFiles, scripts.mkString("\n"),
-      getBookmarkState(info, new BookmarkEvent(null, true, info)), title, menuMode, fullscreenMode))
+      getBookmarkState(info, new BookmarkEvent(null, true, info)), title,
+      menuMode, fullscreenMode, userChanged(info.getRequest)))
 
   }
 

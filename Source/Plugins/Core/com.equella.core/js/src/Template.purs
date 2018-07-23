@@ -3,22 +3,28 @@ module Template where
 import Prelude
 
 import Common.CommonStrings (commonString)
+import Control.Monad.Reader (ReaderT)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
-import Data.Argonaut (class DecodeJson, decodeJson, (.?), (.??))
+import Data.Argonaut (class DecodeJson, Json, decodeJson, (.?), (.??))
 import Data.Array (catMaybes, concat, intercalate)
 import Data.Either (Either(..), either)
-import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, isJust, isNothing, maybe)
+import Data.Lens (Lens', _Just, preview, (^?))
+import Data.Lens.Record (prop)
+import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, isJust, maybe)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.String (joinWith)
+import Data.Symbol (SProxy(..))
+import Data.Traversable (traverse)
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
 import Effect (Effect)
+import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
 import Effect.Class.Console (log)
-import Effect.Uncurried (mkEffectFn1, runEffectFn1)
-import Foreign.Object as M
+import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
+import Foreign.Object as Object
 import MaterialUI.AppBar (appBar)
 import MaterialUI.Badge (badge, badgeContent)
 import MaterialUI.Button (button)
@@ -56,14 +62,13 @@ import MaterialUIPicker.MuiPickersUtilsProvider (muiPickersUtilsProvider, utils)
 import Network.HTTP.Affjax (get)
 import Network.HTTP.Affjax.Response as Resp
 import Partial.Unsafe (unsafePartial)
-import React (Children, ReactClass, ReactElement, childrenToArray, createElement)
+import React (class ReactPropFields, Children, ReactClass, ReactElement, ReactThis, childrenToArray, createElement)
 import React as R
 import React.DOM (footer, text)
 import React.DOM as D
 import React.DOM.Props as DP
 import ReactDOM (render)
 import Routes (Route, forcePushRoute, matchRoute, pushRoute, routeHref, setPreventNav)
-import SearchResults (SearchResultsMeta(SearchResultsMeta))
 import Utils.UI (withCurrentTarget)
 import Web.DOM.NonElementParentNode (getElementById)
 import Web.Event.EventTarget (EventListener, addEventListener, removeEventListener)
@@ -75,22 +80,26 @@ import Web.HTML.Window (document, toEventTarget)
 newtype ExternalHref = ExternalHref String 
 newtype MenuItem = MenuItem {route::Either ExternalHref String, title::String, systemIcon::Maybe String}
 
-newtype MenuLinks = MenuLinks (Array (Array MenuItem))
-
 data Command = Init | Updated {preventNavigation :: Nullable Boolean, title::String} | AttemptRoute Route | NavAway Boolean
   | ToggleMenu | UserMenuAnchor (Maybe HTMLElement)  | GoBack
+
+type Counts = {
+  tasks :: Int, 
+  notifications :: Int
+}
 
 type UserData = {
   id::String, 
   guest::Boolean, 
-  autoLogin::Boolean, 
-  prefsEditable::Boolean
+  autoLoggedIn::Boolean, 
+  prefsEditable::Boolean,
+  counts :: Maybe Counts,
+  menuGroups :: Array (Array MenuItem)
 }
 
 type RenderData = {
   baseResources::String, 
-  newUI::Boolean, 
-  user::UserData
+  newUI::Boolean
 }
 
 foreign import preventUnload :: EventListener
@@ -101,6 +110,8 @@ foreign import setTitle :: String -> Effect Unit
 
 nullAny :: forall a. Nullable a
 nullAny = toNullable Nothing
+
+newtype TemplateRef = TemplateRef (ReactThis {|TemplateProps} State)
 
 type TemplateProps = (
   title::String, 
@@ -113,22 +124,21 @@ type TemplateProps = (
   backRoute :: Nullable Route, -- An optional Route for showing a back icon button
   menuMode :: String,
   fullscreenMode :: String,
-  hideAppBar :: Boolean
+  hideAppBar :: Boolean, 
+  innerRef :: Nullable (EffectFn1 (Nullable TemplateRef) Unit)
 )
 
 type State = {
   mobileOpen::Boolean, 
   menuAnchor::Maybe HTMLElement, 
-  tasks :: Maybe Int, 
-  notifications :: Maybe Int, 
-  attempt :: Maybe Route, 
-  menuItems :: Array (Array MenuItem)
+  user :: Maybe UserData,
+  attempt :: Maybe Route
 }
 
 initialState :: State
 initialState = {
-  mobileOpen: false, menuAnchor: Nothing, tasks: Nothing, 
-  notifications: Nothing, attempt: Nothing, menuItems: []
+  mobileOpen: false, menuAnchor: Nothing, user: Nothing, 
+    attempt: Nothing
 }
 
 template :: String -> Array ReactElement -> ReactElement
@@ -139,7 +149,15 @@ template' = createElement templateClass
 
 templateDefaults ::  String ->  {|TemplateProps} 
 templateDefaults title = {title,titleExtra:nullAny, fixedViewPort:nullAny,preventNavigation:nullAny, menuExtra:nullAny, 
-  tabs:nullAny, backRoute: nullAny, footer: nullAny, menuMode:"", fullscreenMode:"", hideAppBar: false}
+  tabs:nullAny, backRoute: nullAny, footer: nullAny, menuMode:"", fullscreenMode:"", hideAppBar: false, innerRef:nullAny}
+
+loadNewUser :: forall p. ReaderT (ReactThis p State) Aff Unit
+loadNewUser = do 
+  mr <- lift $ get Resp.json $ baseUrl <> "api/content/currentuser"
+  either (lift <<< log) (\ud -> modifyState _ {user = Just ud})  (decodeUserData mr.response)
+
+refreshUser :: TemplateRef -> Effect Unit 
+refreshUser (TemplateRef r) = affAction r loadNewUser
 
 templateClass :: ReactClass {children::Children|TemplateProps}
 templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
@@ -149,6 +167,12 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
 
     strings = prepLangStrings rawStrings
     coreString = prepLangStrings coreStrings
+    _counts = prop (SProxy :: SProxy "counts")
+    _tasks = prop (SProxy :: SProxy "tasks")
+    _guest = prop (SProxy :: SProxy "guest")
+    _notifications = prop (SProxy :: SProxy "notifications")
+    _prefsEditable = prop (SProxy :: SProxy "prefsEditable")
+    _menuGroups = prop (SProxy :: SProxy "menuGroups")
 
     setUnloadListener :: Boolean -> Effect Unit
     setUnloadListener add = do 
@@ -162,7 +186,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       )
       liftEffect $ setUnloadListener add
 
-    render {state: state@{mobileOpen,menuAnchor,tasks,notifications,attempt}, props:props@{fixedViewPort:fvp, classes, 
+    render {state: state@{mobileOpen,menuAnchor,user,attempt}, props:props@{fixedViewPort:fvp, classes, 
                 title:titleText,titleExtra,menuExtra,backRoute}} = muiPickersUtilsProvider [utils momentUtils] [
       D.div [DP.className classes.root] $ [
         cssBaseline_ [],
@@ -230,38 +254,42 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       ]
       topBarString = coreString.topbar.link
 
+      userMaybe :: forall a. Lens' UserData a -> Maybe a
+      userMaybe l = user ^? (_Just <<< l)
       userMenu = D.div [DP.className classes.userMenu ] $ (fromMaybe [] $ toMaybe menuExtra) <>
-        (guard (not renderData.user.guest) *>
-        [
-          badgedLink "assignment" tasks "access/tasklist.do" topBarString.tasks , 
-          badgedLink "notifications" notifications "access/notifications.do" topBarString.notifications,
-          tooltip [title strings.menu.title] [ 
-            iconButton [color inherit, mkProp "aria-label" strings.menu.title, 
-              onClick $ withCurrentTarget $ d <<< UserMenuAnchor <<< Just] [
-              icon_ [ D.text "account_circle"]
-            ]
-          ],
-          menu [
-              anchorEl $ toNullable menuAnchor,
-              open $ isJust menuAnchor,
-              onClose $ \_ -> d $ UserMenuAnchor Nothing,
-              anchorOrigin $ { vertical: "top", horizontal: "right" },
-              transformOrigin $ { vertical: "top", horizontal: "right" }
-          ] $ catMaybes
-            [ Just $ menuItem [component "a", mkProp "href" "logon.do?logout=true"] [D.text strings.menu.logout],
-              guard renderData.user.prefsEditable $> menuItem [component "a", mkProp "href" "access/user.do"] [D.text strings.menu.prefs]
-            ]
-        ])
+        (
+          (guard $ not $ fromMaybe true $ userMaybe _guest) *>
+          [
+            badgedLink "assignment" _tasks "access/tasklist.do" topBarString.tasks , 
+            badgedLink "notifications" _notifications "access/notifications.do" topBarString.notifications,
+            tooltip [title strings.menu.title] [ 
+              iconButton [color inherit, mkProp "aria-label" strings.menu.title, 
+                onClick $ withCurrentTarget $ d <<< UserMenuAnchor <<< Just] [
+                icon_ [ D.text "account_circle"]
+              ]
+            ],
+            menu [
+                anchorEl $ toNullable menuAnchor,
+                open $ isJust menuAnchor,
+                onClose $ \_ -> d $ UserMenuAnchor Nothing,
+                anchorOrigin $ { vertical: "top", horizontal: "right" },
+                transformOrigin $ { vertical: "top", horizontal: "right" }
+            ] $ catMaybes
+              [ Just $ menuItem [component "a", mkProp "href" "logon.do?logout=true"] [D.text strings.menu.logout],
+                (guard $ fromMaybe false $ userMaybe _prefsEditable) $> menuItem [component "a", mkProp "href" "access/user.do"] 
+                                                                        [D.text strings.menu.prefs]
+              ]
+          ])
       badgedLink iconName count uri tip = 
         let iconOnly = icon_ [ D.text iconName ]
-            buttonLink col content = iconButton [mkProp "href" uri, color col, mkProp "aria-label" tip ] [ content ]
+            buttonLink col linkContent = iconButton [mkProp "href" uri, color col, mkProp "aria-label" tip ] [ linkContent ]
         in tooltip [ title tip ] [ 
-          case fromMaybe 0 count of
+          case fromMaybe 0 $ preview (_Just <<< _counts <<< _Just <<< count) user of
               0 -> buttonLink default iconOnly
               c -> buttonLink inherit $ badge [badgeContent c, color secondary] [iconOnly]
         ]
       menuContent = [D.div [DP.className classes.logo] [ D.img [ DP.role "presentation", DP.src logoSrc] ]] <>
-                    intercalate [divider []] (group <$> state.menuItems)
+                    intercalate [divider []] (map group $ fromMaybe [] $ userMaybe _menuGroups)
         where
           logoSrc = renderData.baseResources <> "images/new-equella-logo.png"
           group items = [list [component "nav"] (navItem <$> items)]
@@ -298,12 +326,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       {title,preventNavigation:pn} <- getProps
       setWindowTitle title
       if fromMaybe false $ toMaybe pn then setPreventUnload true else pure unit
-      mr <- lift $ get Resp.json $ baseUrl <> "api/content/menu"
-      either (lift <<< log) (\(MenuLinks ml) -> modifyState _ {menuItems = ml})  (decodeJson mr.response)
-      r <- lift $ get Resp.json $ baseUrl <> "api/task"
-      either (lift <<< log) (\(SearchResultsMeta {available}) -> modifyState _ {tasks = Just available})  (decodeJson r.response)
-      r2 <- lift $ get Resp.json $ baseUrl <> "api/notification"
-      either (lift <<< log) (\(SearchResultsMeta {available}) -> modifyState _ {notifications = Just available})  (decodeJson r2.response)
+      loadNewUser
 
     eval ToggleMenu = modifyState \(s :: State) -> s {mobileOpen = not s.mobileOpen}
     eval (UserMenuAnchor el) = modifyState \(s :: State) -> s {menuAnchor = el}
@@ -493,8 +516,20 @@ instance decodeMI :: DecodeJson MenuItem where
     systemIcon <- o .?? "systemIcon"
     pure $ MenuItem {title, route, systemIcon}
 
-instance decodeML :: DecodeJson MenuLinks where 
-  decodeJson v = do 
-    o <- decodeJson v
-    ml <- o .? "groups"
-    pure $ MenuLinks ml 
+decodeCounts :: Json -> Either String Counts
+decodeCounts v = do 
+  o <- decodeJson v
+  tasks <- o .? "tasks"
+  notifications <- o .? "notifications"
+  pure {tasks, notifications}
+
+decodeUserData :: Json -> Either String UserData
+decodeUserData v = do 
+  o <- decodeJson v
+  id <- o .? "id"
+  autoLoggedIn <- o .? "autoLoggedIn"
+  guest <- o .? "guest"
+  prefsEditable <- o .? "prefsEditable"
+  menuGroups <- o .? "menuGroups"
+  counts <- traverse decodeCounts $ Object.lookup "counts" o
+  pure {id, autoLoggedIn, guest, prefsEditable, menuGroups, counts}

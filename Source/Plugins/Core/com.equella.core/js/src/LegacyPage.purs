@@ -25,6 +25,7 @@ import Effect.Aff (Aff, makeAff, nonCanceler, runAff_)
 import Effect.Aff.Compat (EffectFn1, EffectFn2, mkEffectFn1, mkEffectFn2, runEffectFn1)
 import Effect.Class (liftEffect)
 import Effect.Class.Console (log)
+import Effect.Ref (new)
 import Effect.Ref as Ref
 import Foreign.Object (Object, lookup)
 import Foreign.Object as Object
@@ -46,8 +47,9 @@ import React.DOM (text)
 import React.DOM as D
 import React.DOM.Props (Props, _id, _type)
 import React.DOM.Props as DP
+import Record (merge)
 import Routes (LegacyURI(..), Route(..), pushRoute)
-import Template (template, template', templateDefaults)
+import Template (refreshUser, template, template', templateDefaults)
 import Utils.UI (withCurrentTarget)
 import Web.DOM.Document (createElement, getElementsByTagName, toNonElementParentNode)
 import Web.DOM.Element as Elem
@@ -99,7 +101,7 @@ type PageContent = {
   menuMode :: String
 }
 
-data ContentResponse = Redirect (Object (Array String)) String | LegacyContent LegacyContentR
+data ContentResponse = Redirect (Object (Array String)) String Boolean | LegacyContent LegacyContentR Boolean
 
 divWithHtml :: {divProps :: Array Props, html :: String, script :: Maybe String} -> ReactElement
 divWithHtml = unsafeCreateLeafElement $ component "JQueryDiv" $ \this -> do
@@ -205,6 +207,7 @@ updateStylesheets replace _sheets = unsafePartial $ makeAff $ \cb -> do
 
 legacy :: {page :: LegacyURI} -> ReactElement
 legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ \this -> do
+  tempRef <- new Nothing
   let 
     d = eval >>> affAction this
     stateinp (Tuple name value) = D.input [_type "hidden", DP.name name, DP.value value ]
@@ -214,7 +217,7 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
                 "YES" -> []
                 "YES_WITH_TOOLBAR" -> []
                 _ -> case c.menuMode of
-                  "HIDDEN" -> []
+                  "HIDDEN" -> [] 
                   _ -> [classes.withPadding]
               hiddenState = D.div [DP.style {display: "none"}, DP.className "_hiddenstate"] $ (stateinp <$> toTuples s.state)
               mainContent = D.form [DP.name "eqForm", DP._id "eqpageForm"] $ [
@@ -226,8 +229,9 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
                 ]
           ] 
           in template' (templateDefaults title) {
-                                menuExtra = toNullable $ options <$> lookup "so" html 
-                          } [ mainContent ]
+                                menuExtra = toNullable $ options <$> lookup "so" html, 
+                                innerRef = toNullable $ Just $ saveRef tempRef
+                          } [ mainContent ] 
         Nothing ->  template "Loading" []
       where
       options html = [ 
@@ -269,9 +273,14 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
       updateStylesheets replace css
       loadMissingScripts $ js
 
-    updateContent (Redirect state redir) = do 
+    doRefresh true = liftEffect $ withRef tempRef refreshUser
+    doRefresh _ = pure unit
+
+    updateContent (Redirect state redir userUpdated) = do 
+      doRefresh userUpdated
       liftEffect $ pushRoute $ LegacyPage $ LegacyURI redir state
-    updateContent (LegacyContent lc@{css, js, state, html,script, title, fullscreenMode, menuMode}) = do 
+    updateContent (LegacyContent lc@{css, js, state, html,script, title, fullscreenMode, menuMode} userUpdated) = do 
+      doRefresh userUpdated
       lift $ updateIncludes true css js
       modifyState \s -> s {content = Just {html, script, title, fullscreenMode, menuMode}, state = state}
 
@@ -306,7 +315,8 @@ instance decodeLC :: DecodeJson ContentResponse where
     o <- decodeJson v 
     state <- o .? "state"
     redirect <- o .?? "redirect"
-    redirect # (flip maybe (pure <<< Redirect state) $ do
+    userUpdated <- o .? "userUpdated"
+    redirect # (flip maybe (\u -> pure $ Redirect state u userUpdated) $ do
       html <- o .? "html"
       css <- o .? "css"
       js <- o .? "js"
@@ -314,4 +324,4 @@ instance decodeLC :: DecodeJson ContentResponse where
       title <- o .? "title"
       fullscreenMode <- o .? "fullscreenMode"
       menuMode <- o .? "menuMode"
-      pure $ LegacyContent {html, state, css, js, script, title, fullscreenMode, menuMode})
+      pure $ LegacyContent {html, state, css, js, script, title, fullscreenMode, menuMode} userUpdated)

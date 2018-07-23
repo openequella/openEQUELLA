@@ -1,7 +1,7 @@
 <#include "/com.tle.web.freemarker@/macro/sections/render.ftl"/><#t/>
 <#assign template = m.template><#t/>
 <!DOCTYPE html>
-<html lang="${m.lang?html}" <#if m.rightToLeft>dir="rtl"</#if> ${m.htmlAttrs}>
+<html class="newui" lang="${m.lang?html}" <#if m.rightToLeft>dir="rtl"</#if> ${m.htmlAttrs}>
     <head>
     	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     	<meta http-equiv="X-UA-Compatible" content="IE=edge" >

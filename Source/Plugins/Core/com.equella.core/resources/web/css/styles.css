@@ -39,6 +39,10 @@ html {
 	overflow-y: scroll; /* Always show a scrollbar for consistency */
 }
 
+html.newui {
+	overflow-y: auto;
+}
+
 body {
 	color: #4b4842;
 	font-size: 11px;
