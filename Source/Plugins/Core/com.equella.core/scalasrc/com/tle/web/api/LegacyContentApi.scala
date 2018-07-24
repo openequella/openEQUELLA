@@ -6,6 +6,7 @@ import java.util.Collections
 
 import com.dytech.common.io.DevNullWriter
 import com.tle.beans.item.ItemTaskId
+import com.tle.common.URLUtils
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.settings.standard.AutoLogin
 import com.tle.common.usermanagement.user.CurrentUser
@@ -43,7 +44,7 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 
-case class RedirectContent(redirect: String, state: Map[String, Array[String]], userUpdated: Boolean)
+case class RedirectContent(redirect: String, userUpdated: Boolean)
 
 case class MenuItem(title: String, href: Option[String], systemIcon: Option[String], route: Option[String])
 
@@ -74,7 +75,6 @@ object LegacyContentController extends AbstractSectionsController {
   }
 
   val RedirectedAttr = "REDIRECTED"
-  val StateAttr = "STATE"
 
   override protected def getTreeForPath(path: String): SectionTree =
     LegacyGuice.treeRegistry.getTreeForPath(path)
@@ -89,17 +89,20 @@ object LegacyContentController extends AbstractSectionsController {
     val minfo = info.getAttributeForClass(classOf[MutableSectionInfo])
     minfo.fireBeforeEvents()
     minfo.processQueue()
-    val redirect = info.isForceRedirect
-    minfo.fireReadyToRespond(redirect)
-    if (redirect) {
-      info.getRequest.setAttribute(RedirectedAttr,
-        minfo.getAttribute[String](SectionInfo.KEY_PATH).substring(1))
-
-      info.getRequest.setAttribute(StateAttr, getBookmarkState(info, new BookmarkEvent()))
+    if (!minfo.isRendered) {
+      val redirect = info.isForceRedirect
+      minfo.fireReadyToRespond(redirect)
+      if (redirect) {
+        info.getRequest.setAttribute(RedirectedAttr,
+          URLUtils.appendQueryString(
+          minfo.getAttribute[String](SectionInfo.KEY_PATH).substring(1),
+          URLUtils.getParameterString(new InfoBookmark(info).getBookmarkParams)))
+      }
     }
   }
 
   override def forwardToUrl(info: SectionInfo, link: String, code: Int): Unit = {
+    info.setRendered()
     info.getRequest.setAttribute(RedirectedAttr, link)
   }
 
@@ -112,11 +115,14 @@ object LegacyContentController extends AbstractSectionsController {
     sectionInfo.setAttribute(SectionInfo.KEY_FORWARDFROM, from)
     sectionInfo.setAttribute(SectionInfo.KEY_BASE_HREF, baseUri)
     LegacyGuice.moderationService.filter(sectionInfo)
+    LegacyGuice.selectionService.get().asInstanceOf[SectionFilter].filter(sectionInfo)
     sectionInfo
   }
 
   override def handleException(info: SectionInfo, exception: Throwable,
-                               event: SectionEvent[_]): Unit = {}
+                               event: SectionEvent[_]): Unit = {
+    throw exception
+  }
 }
 
 @Api("Legacy content")
@@ -136,8 +142,9 @@ class LegacyContentApi {
 
   def withTreePath(_path: String, uriInfo: UriInfo, req: HttpServletRequest, resp: HttpServletResponse,
                    f: MutableSectionInfo => ResponseBuilder): Response = {
-    val (path, attrs) = parsePath(_path)
-    (Option(LegacyGuice.treeRegistry.getTreeForPath(path)) match {
+    val (treePath, attrs) = parsePath(_path)
+    val path = s"/${_path}"
+    (Option(LegacyGuice.treeRegistry.getTreeForPath(treePath)) match {
       case None => Response.status(404)
       case Some(tree) => {
         LegacyGuice.userSessionService.reenableSessionUse()
@@ -197,6 +204,7 @@ class LegacyContentApi {
   }
 
   @POST
+  @GET
   @Path("/ajax/{path : .+}")
   @Produces(value = Array("application/json"))
   def ajaxCall(@PathParam("path") _path: String, @Context uriInfo: UriInfo,
@@ -227,7 +235,7 @@ class LegacyContentApi {
         info.addParametersEvent(paramEvent)
         info.processEvent(paramEvent)
         LegacyContentController.execute(info)
-        Option(req.getAttribute(LegacyContentController.RedirectedAttr).asInstanceOf[String]).map(redirectResponse(req))
+        redirectResponse(info)
           .orElse(renderedResponse(info))
           .orElse(Option(info.getAttributeForClass(classOf[AjaxRenderContext])).map(arc => ajaxResponse(info, arc)))
           .getOrElse(renderFullPage(info))
@@ -240,11 +248,12 @@ class LegacyContentApi {
     idNow != idThen
   }
 
-  def redirectResponse(req: HttpServletRequest)(url: String): ResponseBuilder = {
-    val state = Option(req.getAttribute(LegacyContentController.StateAttr).asInstanceOf[Map[String, Array[String]]])
-      .getOrElse(Map.empty)
-    val fromBase = LegacyGuice.urlService.getBaseUriFromRequest(req).relativize(URI.create(url)).toString
-    Response.ok(RedirectContent(fromBase, state, userChanged(req)))
+  def redirectResponse(info: MutableSectionInfo): Option[ResponseBuilder] = {
+    val req = info.getRequest
+    Option(req.getAttribute(LegacyContentController.RedirectedAttr).asInstanceOf[String]).map { url =>
+      val fromBase = LegacyGuice.urlService.getBaseUriFromRequest(req).relativize(URI.create(url)).toString
+      Response.ok(RedirectContent(fromBase, userChanged(req)))
+    }
   }
 
   def renderFullPage(info: MutableSectionInfo) = {
@@ -258,40 +267,42 @@ class LegacyContentApi {
           firstResult = result
       })
     }
-    val html = firstResult match {
-      case tr: TemplateResult =>
-        val body = SectionUtils.renderToString(context, wrapBody(decs, tr.getNamedResult(context, "body")))
-        val hasoMap = HelpAndScreenOptionsSection.getContent(context).asScala
-        val scrops = hasoMap.get("screenoptions").map(bbr => SectionUtils.renderToString(context, bbr.getRenderable))
-        val crumbs = renderCrumbs(context, decs).map(SectionUtils.renderToString(context, _))
-        Iterable(
-          Some("body" -> body),
-          scrops.map("so" -> _),
-          crumbs.map("crumbs" -> _)
-        ).flatten.toMap
-      case sr: SectionRenderable =>
-        Map("body" -> SectionUtils.renderToString(context, wrapBody(decs, sr)))
+
+    redirectResponse(info).getOrElse {
+      val html = firstResult match {
+        case tr: TemplateResult =>
+          val body = SectionUtils.renderToString(context, wrapBody(decs, tr.getNamedResult(context, "body")))
+          val hasoMap = HelpAndScreenOptionsSection.getContent(context).asScala
+          val scrops = hasoMap.get("screenoptions").map(bbr => SectionUtils.renderToString(context, bbr.getRenderable))
+          val crumbs = renderCrumbs(context, decs).map(SectionUtils.renderToString(context, _))
+          Iterable(
+            Some("body" -> body),
+            scrops.map("so" -> _),
+            crumbs.map("crumbs" -> _)
+          ).flatten.toMap
+        case sr: SectionRenderable =>
+          Map("body" -> SectionUtils.renderToString(context, wrapBody(decs, sr)))
+      }
+
+      context.addStatements(StatementBlock.get(context.dequeueFooterStatements))
+      val ready = context.dequeueReadyStatements
+      if (!ready.isEmpty)
+        context.addStatements(new FunctionCallStatement(JQueryCore.JQUERY,
+          new AnonymousFunction(new StatementBlock(ready).setSeperate(true))))
+
+      val scripts = preRenderPageScripts(context, context).map(_.getStatements(context))
+      val jsFiles = context.getJsFiles.asScala
+      val cssFiles = context.getCssFiles.asScala.collect {
+        case css: CssInclude => css.getHref(context)
+      }
+      val title = Option(decs.getTitle).map(_.getText).getOrElse("")
+      val menuMode = decs.getMenuMode.toString
+      val fullscreenMode = decs.isFullscreen.toString
+      val hideAppBar = !(decs.isBanner || !decs.isMenuHidden || decs.isContent)
+      Response.ok(LegacyContent(html, cssFiles, jsFiles, scripts.mkString("\n"),
+        getBookmarkState(info, new BookmarkEvent(null, true, info)), title,
+        menuMode, fullscreenMode, userChanged(info.getRequest)))
     }
-
-    context.addStatements(StatementBlock.get(context.dequeueFooterStatements))
-    val ready = context.dequeueReadyStatements
-    if (!ready.isEmpty)
-      context.addStatements(new FunctionCallStatement(JQueryCore.JQUERY,
-        new AnonymousFunction(new StatementBlock(ready).setSeperate(true))))
-
-    val scripts = preRenderPageScripts(context, context).map(_.getStatements(context))
-    val jsFiles = context.getJsFiles.asScala
-    val cssFiles = context.getCssFiles.asScala.collect {
-      case css: CssInclude => css.getHref(context)
-    }
-    val title = Option(decs.getTitle).map(_.getText).getOrElse("")
-    val menuMode = decs.getMenuMode.toString
-    val fullscreenMode = decs.isFullscreen.toString
-    val hideAppBar = !(decs.isBanner || !decs.isMenuHidden || decs.isContent)
-    Response.ok(LegacyContent(html, cssFiles, jsFiles, scripts.mkString("\n"),
-      getBookmarkState(info, new BookmarkEvent(null, true, info)), title,
-      menuMode, fullscreenMode, userChanged(info.getRequest)))
-
   }
 
   private def preRenderPageScripts(context: RenderContext, helper: StandardRenderContext): mutable.Buffer[JSStatements] = {

@@ -23,7 +23,10 @@ import Routing.Match (Match, lit, str)
 import Routing.PushState (PushStateInterface, makeInterface)
 import Routing.Types (RoutePart(..))
 
+type ClickableHref = {href::String, onClick :: EffectFn1 SyntheticEvent Unit}
+
 data LegacyURI = LegacyURI String (Object (Array String))
+
 instance legacySG :: Semigroup LegacyURI where 
   append (LegacyURI path1 qp) (LegacyURI path2 qp2) = LegacyURI (case {path1,path2} of 
     {path1:""} -> path2 
@@ -90,7 +93,7 @@ pushRoute r = do
     preventNav <- read navGlobals.preventNav >>= flip runEffectFn1 r
     if preventNav then pure unit else forcePushRoute r
 
-routeHref :: Route -> {href::String, onClick :: EffectFn1 SyntheticEvent Unit}
+routeHref :: Route -> ClickableHref
 routeHref r = 
     let href = routeURI r
         onClick = mkEffectFn1 $ \e -> preventDefault e *> pushRoute r
@@ -103,6 +106,13 @@ routeURI r = (case r of
     CoursesPage -> "page/course"
     NewCourse -> "page/course/new"
     CourseEdit cid -> "page/course/" <> cid <> "/edit"
-    LegacyPage (LegacyURI path o) | isEmpty o -> path
-    LegacyPage (LegacyURI path params) -> path <> "?" <> queryStringObj params
+    LegacyPage (LegacyURI path params) -> 
+        if isEmpty params then path 
+        else path <> "?" <> queryStringObj params
   )
+
+logoutClickable :: ClickableHref 
+logoutClickable = routeHref $ LegacyPage (LegacyURI "logon.do" $ Object.singleton "logout" ["true"])
+
+userPrefsClickable :: ClickableHref
+userPrefsClickable = routeHref $ LegacyPage (LegacyURI "access/user.do" Object.empty)

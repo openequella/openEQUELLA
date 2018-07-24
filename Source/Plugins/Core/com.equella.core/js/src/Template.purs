@@ -49,6 +49,7 @@ import MaterialUI.ListItemText (disableTypography, listItemText, primary)
 import MaterialUI.Menu (anchorEl, menu)
 import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Popover (anchorOrigin, transformOrigin)
+import MaterialUI.PropTypes (toHandler)
 import MaterialUI.Properties (className, classes_, color, component, mkProp, onClick, onClose, variant)
 import MaterialUI.Radio (default)
 import MaterialUI.Styles (MediaQuery, allQuery, cssList, mediaQuery, withStyles)
@@ -68,7 +69,7 @@ import React.DOM (footer, text)
 import React.DOM as D
 import React.DOM.Props as DP
 import ReactDOM (render)
-import Routes (Route, forcePushRoute, matchRoute, pushRoute, routeHref, setPreventNav)
+import Routes (Route, forcePushRoute, logoutClickable, matchRoute, pushRoute, routeHref, setPreventNav, userPrefsClickable)
 import Utils.UI (withCurrentTarget)
 import Web.DOM.NonElementParentNode (getElementById)
 import Web.Event.EventTarget (EventListener, addEventListener, removeEventListener)
@@ -253,7 +254,9 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
         tabsM
       ]
       topBarString = coreString.topbar.link
-
+      linkItem clickable t = menuItem [component "a", 
+                              mkProp "href" clickable.href, 
+                              mkProp "onClick" $ toHandler $ clickable.onClick] [ D.text t ]
       userMaybe :: forall a. Lens' UserData a -> Maybe a
       userMaybe l = user ^? (_Just <<< l)
       userMenu = D.div [DP.className classes.userMenu ] $ (fromMaybe [] $ toMaybe menuExtra) <>
@@ -275,9 +278,9 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
                 anchorOrigin $ { vertical: "top", horizontal: "right" },
                 transformOrigin $ { vertical: "top", horizontal: "right" }
             ] $ catMaybes
-              [ Just $ menuItem [component "a", mkProp "href" "logon.do?logout=true"] [D.text strings.menu.logout],
-                (guard $ fromMaybe false $ userMaybe _prefsEditable) $> menuItem [component "a", mkProp "href" "access/user.do"] 
-                                                                        [D.text strings.menu.prefs]
+              [ Just $ linkItem logoutClickable strings.menu.logout,
+                (guard $ fromMaybe false $ userMaybe _prefsEditable) $> 
+                      linkItem userPrefsClickable strings.menu.prefs
               ]
           ])
       badgedLink iconName count uri tip = 

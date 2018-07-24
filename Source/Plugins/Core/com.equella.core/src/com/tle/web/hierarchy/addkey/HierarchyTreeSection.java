@@ -46,6 +46,7 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.receipt.ReceiptService;
+import com.tle.web.sections.events.BookmarkEvent;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.jquery.Jq;
 import com.tle.web.sections.jquery.libraries.JQueryTreeView;
@@ -87,7 +88,7 @@ public class HierarchyTreeSection extends AbstractContentSection<Object>
 	@Inject
 	private TLEAclManager aclManager;
 
-	@Component(name = "krs", stateful = false)
+	@Component(name = "krs", stateful = false, onlyForContext = BookmarkEvent.CONTEXT_BROWSERURL)
 	private MappedBooleans topicSelections;
 
 	@Component

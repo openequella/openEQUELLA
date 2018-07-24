@@ -47,8 +47,7 @@ import React.DOM (text)
 import React.DOM as D
 import React.DOM.Props (Props, _id, _type)
 import React.DOM.Props as DP
-import Record (merge)
-import Routes (LegacyURI(..), Route(..), pushRoute)
+import Routes (LegacyURI(..), matchRoute, pushRoute)
 import Template (refreshUser, template, template', templateDefaults)
 import Utils.UI (withCurrentTarget)
 import Web.DOM.Document (createElement, getElementsByTagName, toNonElementParentNode)
@@ -101,7 +100,7 @@ type PageContent = {
   menuMode :: String
 }
 
-data ContentResponse = Redirect (Object (Array String)) String Boolean | LegacyContent LegacyContentR Boolean
+data ContentResponse = Redirect String Boolean | LegacyContent LegacyContentR Boolean
 
 divWithHtml :: {divProps :: Array Props, html :: String, script :: Maybe String} -> ReactElement
 divWithHtml = unsafeCreateLeafElement $ component "JQueryDiv" $ \this -> do
@@ -276,9 +275,9 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
     doRefresh true = liftEffect $ withRef tempRef refreshUser
     doRefresh _ = pure unit
 
-    updateContent (Redirect state redir userUpdated) = do 
+    updateContent (Redirect redir userUpdated) = do 
       doRefresh userUpdated
-      liftEffect $ pushRoute $ LegacyPage $ LegacyURI redir state
+      liftEffect $ maybe (pure unit) pushRoute $ matchRoute redir
     updateContent (LegacyContent lc@{css, js, state, html,script, title, fullscreenMode, menuMode} userUpdated) = do 
       doRefresh userUpdated
       lift $ updateIncludes true css js
@@ -313,11 +312,11 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
 instance decodeLC :: DecodeJson ContentResponse where 
   decodeJson v = do 
     o <- decodeJson v 
-    state <- o .? "state"
     redirect <- o .?? "redirect"
     userUpdated <- o .? "userUpdated"
-    redirect # (flip maybe (\u -> pure $ Redirect state u userUpdated) $ do
+    redirect # (flip maybe (\u -> pure $ Redirect u userUpdated) $ do
       html <- o .? "html"
+      state <- o .? "state"
       css <- o .? "css"
       js <- o .? "js"
       script <- o .? "script"

@@ -163,7 +163,7 @@ public abstract class AbstractIntegrationService<T extends IntegrationSessionDat
 	@Override
 	public void forward(SectionInfo info, T data, SectionInfo forward)
 	{
-		info.forward(forward);
+		info.forwardAsBookmark(forward);
 	}
 
 	protected IItem<?> getItemForResource(SelectedResource resource)

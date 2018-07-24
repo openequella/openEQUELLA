@@ -45,7 +45,10 @@ function collectParams(form, command, args)
               return;
         }
       }
-      vals[v.name] = [v.value];
+      var ex = vals[v.name];
+      if (ex) {
+        ex.push(v.value)
+      } else vals[v.name] = [v.value];
     }
   );
   return vals;

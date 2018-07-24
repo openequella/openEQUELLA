@@ -28,6 +28,7 @@ import com.tle.web.sections.SectionsController;
 import com.tle.web.sections.events.SectionEvent;
 import com.tle.web.sections.registry.TreeRegistry;
 import com.tle.web.template.Decorations;
+import com.tle.web.template.RenderNewTemplate;
 
 @Bind
 @Singleton
@@ -41,6 +42,7 @@ public class DefaultExceptionHandler extends AbstractExceptionHandler
 	{
 		SectionTree errorTree = treeRegistry.getTreeForPath(ERRORTREE_KEY);
 		MutableSectionInfo newInfo = controller.createInfoFromTree(errorTree, info);
+		newInfo.setAttribute(RenderNewTemplate.DisableNewUI(), true);
 		newInfo.preventGET();
 		newInfo.setAttribute(SectionInfo.KEY_ORIGINAL_EXCEPTION, exception);
 		newInfo.setAttribute(SectionInfo.KEY_MATCHED_EXCEPTION, getFirstCause(exception));

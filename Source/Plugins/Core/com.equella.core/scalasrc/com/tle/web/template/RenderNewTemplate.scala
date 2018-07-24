@@ -17,8 +17,6 @@
 package com.tle.web.template
 
 import com.tle.common.i18n.{CurrentLocale, LocaleUtils}
-import com.tle.common.settings.standard.AutoLogin
-import com.tle.common.usermanagement.user.{CurrentUser, UserState}
 import com.tle.core.db.RunWithDB
 import com.tle.core.i18n.LocaleLookup
 import com.tle.legacy.LegacyGuice
@@ -27,7 +25,6 @@ import com.tle.web.resources.ResourcesService
 import com.tle.web.sections._
 import com.tle.web.sections.equella.ScalaSectionRenderable
 import com.tle.web.sections.events._
-import com.tle.web.sections.generic.InfoBookmark
 import com.tle.web.sections.jquery.libraries.JQueryCore
 import com.tle.web.sections.js.generic.expression.ObjectExpression
 import com.tle.web.sections.js.generic.function.IncludeFile
@@ -68,22 +65,10 @@ object RenderNewTemplate {
     }
   }
 
-  def userObj(state: UserState) : ObjectExpression = {
-    val prefsEditable = !(state.isSystem || state.isGuest) && !(state.wasAutoLoggedIn &&
-      LegacyGuice.configService.getProperties(new AutoLogin).isEditDetailsDisallowed)
-    new ObjectExpression(
-      "id", state.getUserBean.getUniqueID,
-      "guest", java.lang.Boolean.valueOf(state.isGuest),
-      "autoLogin", java.lang.Boolean.valueOf(state.wasAutoLoggedIn),
-      "prefsEditable", java.lang.Boolean.valueOf(prefsEditable)
-    )
-  }
-
   case object HeaderSection extends ScalaSectionRenderable({
     writer =>
       writer.getInfo() match {
         case src: StandardRenderContext =>
-          writer.writeTag("base", "href", InfoBookmark.getBaseHref(writer).toString)
           src.getJsFiles.asScala.foreach {
             s => writer.writeTag("script", "src", s)
               writer.endTag("script")
@@ -99,8 +84,7 @@ object RenderNewTemplate {
   def renderNewHtml(context: RenderEventContext, viewFactory: FreemarkerFactory): SectionResult =
   {
     val renderData = new ObjectExpression("baseResources", r.url(""),
-      "newUI", java.lang.Boolean.TRUE,
-      "user", userObj(CurrentUser.getUserState))
+      "newUI", java.lang.Boolean.TRUE)
 
     context.preRender(JQueryCore.PRERENDER)
     if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident")))

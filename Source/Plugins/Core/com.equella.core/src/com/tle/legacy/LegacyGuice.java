@@ -53,11 +53,13 @@ import com.tle.web.remotecaching.RemoteCachingPrivilegeTreeProvider;
 import com.tle.web.scheduler.ScheduledTasksPrivilegeTreeProvider;
 import com.tle.web.sections.SectionsController;
 import com.tle.web.sections.registry.TreeRegistry;
+import com.tle.web.selection.SelectionService;
 import com.tle.web.shortcuturls.ShortcutUrlsSettingsPrivilegeTreeProvider;
 import com.tle.web.viewable.impl.ViewableItemFactory;
 import com.tle.web.workflow.tasks.ModerationService;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 public class LegacyGuice extends AbstractModule {
 
@@ -174,6 +176,9 @@ public class LegacyGuice extends AbstractModule {
 
     @Inject
     public static FreeTextService freeTextService;
+
+    @Inject
+    public static Provider<SelectionService> selectionService;
 
     @Override
     protected void configure()
