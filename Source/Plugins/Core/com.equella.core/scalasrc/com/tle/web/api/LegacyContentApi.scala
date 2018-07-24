@@ -57,6 +57,7 @@ case class LegacyContent
  title: String,
  menuMode: String,
  fullscreenMode: String,
+ hideAppBar: Boolean,
  userUpdated: Boolean)
 
 case class ItemCounts(tasks: Int, notifications: Int)
@@ -84,27 +85,45 @@ object LegacyContentController extends AbstractSectionsController {
     q.asScala.toMap
   }
 
+  def prepareJSContext(info: MutableSectionInfo): StandardRenderContext = {
+    val context = info.getRootRenderContext
+    val helper = context.getHelper.asInstanceOf[MutableHeaderHelper]
+    helper.setElementFunction(StandardExpressions.ELEMENT_FUNCTION)
 
-  override def execute(info: SectionInfo): Unit = {
-    val minfo = info.getAttributeForClass(classOf[MutableSectionInfo])
-    minfo.fireBeforeEvents()
-    minfo.processQueue()
-    if (!minfo.isRendered) {
-      val redirect = info.isForceRedirect
-      minfo.fireReadyToRespond(redirect)
-      if (redirect) {
-        info.getRequest.setAttribute(RedirectedAttr,
-          URLUtils.appendQueryString(
-          minfo.getAttribute[String](SectionInfo.KEY_PATH).substring(1),
-          URLUtils.getParameterString(new InfoBookmark(info).getBookmarkParams)))
-      }
+    val bodyTag = context.getBody
+    val formTag = context.getForm
+    if (helper.getFormExpression == null) {
+      formTag.setId(StandardExpressions.FORM_NAME)
+      helper.setFormExpression(StandardExpressions.FORM_EXPRESSION)
     }
+
+    if (!helper.isSubmitFunctionsSet) {
+      helper.setSubmitFunctions(
+        new ExternallyDefinedFunction("EQ.event"),
+        new ExternallyDefinedFunction("EQ.eventnv"),
+        new ExternallyDefinedFunction("EQ.event"),
+        new ExternallyDefinedFunction("EQ.eventnv"))
+    }
+    helper.setTriggerEventFunction(StandardExpressions.TRIGGER_EVENT_FUNCTION)
+    val standardContext = context.getAttributeForClass(classOf[StandardRenderContext])
+    standardContext.setBindFunction(StandardExpressions.BIND_EVENT_FUNCTION)
+    standardContext.setBindW3CFunction(StandardExpressions.BIND_W3C_FUNCTION)
+    standardContext.preRender(RenderTemplate.STYLES_CSS)
+    standardContext
+  }
+
+  override def renderFromRoot(info: SectionInfo): Unit = {
+    prepareJSContext(info.getAttributeForClass(classOf[MutableSectionInfo]))
+    super.renderFromRoot(info)
   }
 
   override def forwardToUrl(info: SectionInfo, link: String, code: Int): Unit = {
     info.setRendered()
     info.getRequest.setAttribute(RedirectedAttr, link)
   }
+
+  lazy val selectionFilter = LegacyGuice.selectionService.get().asInstanceOf[SectionFilter]
+  lazy val integrationFilter = LegacyGuice.integrationService.get().asInstanceOf[SectionFilter]
 
   override def createInfo(tree: SectionTree, path: String, request: HttpServletRequest,
                           response: HttpServletResponse, from: SectionInfo,
@@ -115,7 +134,8 @@ object LegacyContentController extends AbstractSectionsController {
     sectionInfo.setAttribute(SectionInfo.KEY_FORWARDFROM, from)
     sectionInfo.setAttribute(SectionInfo.KEY_BASE_HREF, baseUri)
     LegacyGuice.moderationService.filter(sectionInfo)
-    LegacyGuice.selectionService.get().asInstanceOf[SectionFilter].filter(sectionInfo)
+    selectionFilter.filter(sectionInfo)
+    integrationFilter.filter(sectionInfo)
     sectionInfo
   }
 
@@ -214,6 +234,7 @@ class LegacyContentApi {
 
       val paramEvent = new ParametersEvent(req.getParameterMap, true)
       info.addParametersEvent(paramEvent)
+      info.preventGET()
       info.processEvent(paramEvent)
       LegacyContentController.execute(info)
       renderedResponse(info).getOrElse {
@@ -221,6 +242,8 @@ class LegacyContentApi {
       }
     })
   }
+
+  private val LegacyContentKey = "LegacyContent"
 
   @POST
   @Path("/submit/{path : .+}")
@@ -232,13 +255,17 @@ class LegacyContentApi {
       { info =>
         val javaParams = params.asJava
         val paramEvent = new ParametersEvent(javaParams, true)
+        info.preventGET()
         info.addParametersEvent(paramEvent)
         info.processEvent(paramEvent)
+        info.getRootRenderContext.setRootResultListener(new LegacyResponseListener(info))
         LegacyContentController.execute(info)
         redirectResponse(info)
           .orElse(renderedResponse(info))
           .orElse(Option(info.getAttributeForClass(classOf[AjaxRenderContext])).map(arc => ajaxResponse(info, arc)))
-          .getOrElse(renderFullPage(info))
+          .getOrElse {
+            Response.ok(req.getAttribute(LegacyContentKey))
+          }
       })
   }
 
@@ -256,20 +283,12 @@ class LegacyContentApi {
     }
   }
 
-  def renderFullPage(info: MutableSectionInfo) = {
-    val context = prepareJSContext(info)
-    val rootId = info.getRootId
+  class LegacyResponseListener(info: MutableSectionInfo) extends RenderResultListener {
+    val context = info.getRootRenderContext.asInstanceOf[StandardRenderContext]
     val decs = Decorations.getDecorations(info)
-    var firstResult: SectionResult = null
-    info.processEvent {
-      new RenderEvent(context, rootId, new RenderResultListener {
-        override def returnResult(result: SectionResult, fromId: String): Unit =
-          firstResult = result
-      })
-    }
 
-    redirectResponse(info).getOrElse {
-      val html = firstResult match {
+    override def returnResult(result: SectionResult, fromId: String): Unit = {
+      val html = result match {
         case tr: TemplateResult =>
           val body = SectionUtils.renderToString(context, wrapBody(decs, tr.getNamedResult(context, "body")))
           val hasoMap = HelpAndScreenOptionsSection.getContent(context).asScala
@@ -299,9 +318,12 @@ class LegacyContentApi {
       val menuMode = decs.getMenuMode.toString
       val fullscreenMode = decs.isFullscreen.toString
       val hideAppBar = !(decs.isBanner || !decs.isMenuHidden || decs.isContent)
-      Response.ok(LegacyContent(html, cssFiles, jsFiles, scripts.mkString("\n"),
-        getBookmarkState(info, new BookmarkEvent(null, true, info)), title,
-        menuMode, fullscreenMode, userChanged(info.getRequest)))
+      info.getRequest.setAttribute(LegacyContentKey,
+        LegacyContent(html, cssFiles, jsFiles, scripts.mkString("\n"),
+          getBookmarkState(info, new BookmarkEvent(null, true, info)), title,
+          menuMode, fullscreenMode, hideAppBar, userChanged(info.getRequest)
+        )
+      )
     }
   }
 
@@ -331,32 +353,6 @@ class LegacyContentApi {
     new DivRenderer(citag, new DivRenderer(cbtag, body))
   }
 
-  def prepareJSContext(info: MutableSectionInfo): StandardRenderContext = {
-    val context = info.getRootRenderContext
-    val helper = context.getHelper.asInstanceOf[MutableHeaderHelper]
-    helper.setElementFunction(StandardExpressions.ELEMENT_FUNCTION)
-
-    val bodyTag = context.getBody
-    val formTag = context.getForm
-    if (helper.getFormExpression == null) {
-      formTag.setId(StandardExpressions.FORM_NAME)
-      helper.setFormExpression(StandardExpressions.FORM_EXPRESSION)
-    }
-
-    if (!helper.isSubmitFunctionsSet) {
-      helper.setSubmitFunctions(
-        new ExternallyDefinedFunction("EQ.event"),
-        new ExternallyDefinedFunction("EQ.eventnv"),
-        new ExternallyDefinedFunction("EQ.event"),
-        new ExternallyDefinedFunction("EQ.eventnv"))
-    }
-    helper.setTriggerEventFunction(StandardExpressions.TRIGGER_EVENT_FUNCTION)
-    val standardContext = context.getAttributeForClass(classOf[StandardRenderContext])
-    standardContext.setBindFunction(StandardExpressions.BIND_EVENT_FUNCTION)
-    standardContext.setBindW3CFunction(StandardExpressions.BIND_W3C_FUNCTION)
-    standardContext.preRender(RenderTemplate.STYLES_CSS)
-    standardContext
-  }
 
   def renderCrumbs(context: RenderContext, d: Decorations): Option[SectionRenderable] = {
     val bc = Breadcrumbs.get(context)
@@ -372,13 +368,13 @@ class LegacyContentApi {
 
   def renderedResponse(info: MutableSectionInfo) = {
     Option(info.getRootRenderContext.getRenderedResponse).map { sr =>
-      Response.ok(SectionUtils.renderToString(prepareJSContext(info), sr))
+      Response.ok(SectionUtils.renderToString(LegacyContentController.prepareJSContext(info), sr))
     }
   }
 
   def ajaxResponse(info: MutableSectionInfo, arc: AjaxRenderContext) = {
     var resp: ResponseBuilder = null
-    val context = prepareJSContext(info)
+    val context = LegacyContentController.prepareJSContext(info)
 
     def renderAjaxBody(sr: SectionRenderable): Unit = {
       val body = context.getBody

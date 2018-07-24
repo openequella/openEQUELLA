@@ -30,6 +30,7 @@ import Effect.Ref as Ref
 import Foreign.Object (Object, lookup)
 import Foreign.Object as Object
 import MaterialUI.Color (inherit)
+import MaterialUI.Dialog (fullScreen)
 import MaterialUI.Icon (icon_)
 import MaterialUI.IconButton (iconButton)
 import MaterialUI.Modal (open)
@@ -77,7 +78,6 @@ foreign import setupLegacyHooks :: {
   } -> Effect Unit
 
 type LegacyContentR = {
-  -- baseResources::String, 
   html:: Object String, 
   state :: Object (Array String),
   css :: Array String, 
@@ -85,11 +85,8 @@ type LegacyContentR = {
   script :: String, 
   title :: String, 
   fullscreenMode :: String, 
-  menuMode :: String
-  -- menuItems :: Array (Array MenuItem), 
-  -- hideAppBar :: Boolean,
-  -- newUI::Boolean, 
-  -- user::UserData
+  menuMode :: String, 
+  hideAppBar :: Boolean
 } 
 
 type PageContent = {
@@ -97,7 +94,8 @@ type PageContent = {
   script :: String,
   title :: String, 
   fullscreenMode :: String, 
-  menuMode :: String
+  menuMode :: String,
+  hideAppBar :: Boolean
 }
 
 data ContentResponse = Redirect String Boolean | LegacyContent LegacyContentR Boolean
@@ -229,7 +227,10 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
           ] 
           in template' (templateDefaults title) {
                                 menuExtra = toNullable $ options <$> lookup "so" html, 
-                                innerRef = toNullable $ Just $ saveRef tempRef
+                                innerRef = toNullable $ Just $ saveRef tempRef, 
+                                hideAppBar = c.hideAppBar, 
+                                menuMode = c.menuMode, 
+                                fullscreenMode = c.fullscreenMode
                           } [ mainContent ] 
         Nothing ->  template "Loading" []
       where
@@ -278,10 +279,10 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
     updateContent (Redirect redir userUpdated) = do 
       doRefresh userUpdated
       liftEffect $ maybe (pure unit) pushRoute $ matchRoute redir
-    updateContent (LegacyContent lc@{css, js, state, html,script, title, fullscreenMode, menuMode} userUpdated) = do 
+    updateContent (LegacyContent lc@{css, js, state, html,script, title, fullscreenMode, menuMode, hideAppBar} userUpdated) = do 
       doRefresh userUpdated
       lift $ updateIncludes true css js
-      modifyState \s -> s {content = Just {html, script, title, fullscreenMode, menuMode}, state = state}
+      modifyState \s -> s {content = Just {html, script, title, fullscreenMode, menuMode, hideAppBar}, state = state}
 
   setupLegacyHooks {
       submit: mkEffectFn1 $ d <<< Submit, 
@@ -323,4 +324,5 @@ instance decodeLC :: DecodeJson ContentResponse where
       title <- o .? "title"
       fullscreenMode <- o .? "fullscreenMode"
       menuMode <- o .? "menuMode"
-      pure $ LegacyContent {html, state, css, js, script, title, fullscreenMode, menuMode} userUpdated)
+      hideAppBar <- o .? "hideAppBar"
+      pure $ LegacyContent {html, state, css, js, script, title, fullscreenMode, menuMode, hideAppBar} userUpdated)

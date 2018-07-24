@@ -125,13 +125,13 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 	{
 		boolean oldLayout = !RenderNewTemplate.isNewLayout(context);
 		setupHeaderHelper(context);
-		if (!oldLayout && !context.getBooleanAttribute(RenderNewTemplate.DisableNewUI()))
-		{
-			return RenderNewTemplate.renderNewHtml(context, viewFactory);
-		}
 		if( checkForResponse(context) )
 		{
 			return null;
+		}
+		if (!oldLayout && !context.getBooleanAttribute(RenderNewTemplate.DisableNewUI()))
+		{
+			return RenderNewTemplate.renderNewHtml(context, viewFactory);
 		}
 		RenderTemplateModel model = getModel(context);
 

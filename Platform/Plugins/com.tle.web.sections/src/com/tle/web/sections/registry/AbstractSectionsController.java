@@ -50,14 +50,19 @@ public abstract class AbstractSectionsController implements SectionsController {
             {
                 info.forwardToUrl(info.getPublicBookmark().getHref(), 303);
             }
-            else if( !info.isRendered() )
+            else
             {
-                RenderContext renderContext = info.getRootRenderContext();
-                String rootId = info.getRootId();
-                RenderEvent renderEvent = new RenderEvent(renderContext, rootId, renderContext.getRootResultListener());
-                info.processEvent(renderEvent);
+                renderFromRoot(info);
             }
         }
+    }
+
+    protected void renderFromRoot(SectionInfo info)
+    {
+        RenderContext renderContext = info.getRootRenderContext();
+        String rootId = info.getRootId();
+        RenderEvent renderEvent = new RenderEvent(renderContext, rootId, renderContext.getRootResultListener());
+        info.processEvent(renderEvent);
     }
 
     private boolean isPosted(MutableSectionInfo info)

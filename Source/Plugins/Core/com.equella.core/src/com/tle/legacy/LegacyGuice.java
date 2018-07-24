@@ -39,6 +39,7 @@ import com.tle.web.google.analytics.GoogleAnalyticsPrivilegeTreeProvider;
 import com.tle.web.google.api.privileges.GoogleApiSettingsPrivilegeTreeProvider;
 import com.tle.web.harvesterskipdrmsettings.HarvesterSkipDrmSettingsPrivilegeTreeProvider;
 import com.tle.web.htmleditor.settings.HtmlEditorSettingsPrivilegeTreeProvider;
+import com.tle.web.integration.service.IntegrationService;
 import com.tle.web.language.LanguageSettingsPrivilegeTreeProvider;
 import com.tle.web.loggedinusers.LoggedInUsersPrivilegeTreeProvider;
 import com.tle.web.login.LoginSettingsPrivilegeTreeProvider;
@@ -179,6 +180,9 @@ public class LegacyGuice extends AbstractModule {
 
     @Inject
     public static Provider<SelectionService> selectionService;
+
+    @Inject
+    public static Provider<IntegrationService> integrationService;
 
     @Override
     protected void configure()
