@@ -111,8 +111,8 @@ routeURI r = (case r of
         else path <> "?" <> queryStringObj params
   )
 
-logoutClickable :: ClickableHref 
-logoutClickable = routeHref $ LegacyPage (LegacyURI "logon.do" $ Object.singleton "logout" ["true"])
+logoutRoute :: Route 
+logoutRoute = LegacyPage (LegacyURI "logon.do" $ Object.singleton "logout" ["true"])
 
-userPrefsClickable :: ClickableHref
-userPrefsClickable = routeHref $ LegacyPage (LegacyURI "access/user.do" Object.empty)
+userPrefsRoute :: Route
+userPrefsRoute = LegacyPage (LegacyURI "access/user.do" Object.empty)

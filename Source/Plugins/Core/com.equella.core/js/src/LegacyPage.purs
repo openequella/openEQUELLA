@@ -2,6 +2,7 @@ module LegacyPage where
 
 import Prelude
 
+import Control.Alt ((<|>))
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
 import Control.Monad.Trans.Class (lift)
 import Data.Argonaut (class DecodeJson, Json, decodeJson, encodeJson, (.?), (.??))
@@ -29,6 +30,7 @@ import Effect.Ref (new)
 import Effect.Ref as Ref
 import Foreign.Object (Object, lookup)
 import Foreign.Object as Object
+import MaterialUI.CircularProgress (circularProgress)
 import MaterialUI.Color (inherit)
 import MaterialUI.Dialog (fullScreen)
 import MaterialUI.Icon (icon_)
@@ -63,7 +65,8 @@ import Web.HTML (HTMLElement, window)
 import Web.HTML.HTMLDocument (toDocument)
 import Web.HTML.HTMLLinkElement as Link
 import Web.HTML.HTMLScriptElement as Script
-import Web.HTML.Window (document)
+import Web.HTML.Location (assign)
+import Web.HTML.Window (document, location)
 
 foreign import setInnerHtml :: {node :: ReactRef, html:: String, script::Nullable String } -> Effect Unit
 foreign import clearInnerHtml :: ReactRef -> Effect Unit
@@ -86,7 +89,8 @@ type LegacyContentR = {
   title :: String, 
   fullscreenMode :: String, 
   menuMode :: String, 
-  hideAppBar :: Boolean
+  hideAppBar :: Boolean, 
+  noForm :: Boolean
 } 
 
 type PageContent = {
@@ -98,7 +102,7 @@ type PageContent = {
   hideAppBar :: Boolean
 }
 
-data ContentResponse = Redirect String Boolean | LegacyContent LegacyContentR Boolean
+data ContentResponse = Redirect String | ChangeRoute String Boolean | LegacyContent LegacyContentR Boolean
 
 divWithHtml :: {divProps :: Array Props, html :: String, script :: Maybe String} -> ReactElement
 divWithHtml = unsafeCreateLeafElement $ component "JQueryDiv" $ \this -> do
@@ -129,7 +133,8 @@ type State = {
   content :: Maybe PageContent,
   state :: Object (Array String),
   pagePath :: String,
-  stylesheets :: Array String
+  stylesheets :: Array String, 
+  noForm :: Boolean
 }
 
 resolveUrl :: String -> String 
@@ -217,14 +222,13 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
                   "HIDDEN" -> [] 
                   _ -> [classes.withPadding]
               hiddenState = D.div [DP.style {display: "none"}, DP.className "_hiddenstate"] $ (stateinp <$> toTuples s.state)
-              mainContent = D.form [DP.name "eqForm", DP._id "eqpageForm"] $ [
-                hiddenState,
-                D.div [DP.className $ joinWith " " $ ["content"] <> extraClass] $ catMaybes [ 
+              actualContent = D.div [DP.className $ joinWith " " $ ["content"] <> extraClass] $ catMaybes [ 
                   (divWithHtml <<< {divProps:[_id "breadcrumbs"], script:Nothing, html: _} <$> lookup "crumbs" html),
                   (divWithHtml <<< {divProps:[], script:Nothing, html: _} <$> lookup "upperbody" html),
-                  (divWithHtml <<< {divProps:[], script:Just script, html: _} <$> lookup "body" html)
-                ]
-          ] 
+                  (divWithHtml <<< {divProps:[], script:Just script, html: _} <$> lookup "body" html) ]
+              mainContent = if s.noForm 
+                then actualContent
+                else D.form [DP.name "eqForm", DP._id "eqpageForm"] [hiddenState, actualContent]                
           in template' (templateDefaults title) {
                                 menuExtra = toNullable $ options <$> lookup "so" html, 
                                 innerRef = toNullable $ Just $ saveRef tempRef, 
@@ -232,7 +236,7 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
                                 menuMode = c.menuMode, 
                                 fullscreenMode = c.fullscreenMode
                           } [ mainContent ] 
-        Nothing ->  template "Loading" []
+        Nothing -> D.div [ DP.className classes.progress ] [ circularProgress [] ]
       where
       options html = [ 
           iconButton [color inherit, onClick $ withCurrentTarget $ d <<< OptionsAnchor <<< Just] [ icon_ [text "more_vert"] ],
@@ -276,13 +280,15 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
     doRefresh true = liftEffect $ withRef tempRef refreshUser
     doRefresh _ = pure unit
 
-    updateContent (Redirect redir userUpdated) = do 
+    updateContent (Redirect href) = do 
+      liftEffect $ window >>= location >>= assign href
+    updateContent (ChangeRoute redir userUpdated) = do 
       doRefresh userUpdated
       liftEffect $ maybe (pure unit) pushRoute $ matchRoute redir
     updateContent (LegacyContent lc@{css, js, state, html,script, title, fullscreenMode, menuMode, hideAppBar} userUpdated) = do 
       doRefresh userUpdated
       lift $ updateIncludes true css js
-      modifyState \s -> s {content = Just {html, script, title, fullscreenMode, menuMode, hideAppBar}, state = state}
+      modifyState \s -> s {noForm = lc.noForm, content = Just {html, script, title, fullscreenMode, menuMode, hideAppBar}, state = state}
 
   setupLegacyHooks {
       submit: mkEffectFn1 $ d <<< Submit, 
@@ -293,7 +299,7 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
       updateForm: mkEffectFn1 $ d <<< UpdateForm
     }
   pure {
-    state:{optionsAnchor:Nothing, content: Nothing, pagePath: "", stylesheets: [], state: Object.empty} :: State, 
+    state:{optionsAnchor:Nothing, content: Nothing, pagePath: "", stylesheets: [], state: Object.empty, noForm:false} :: State, 
     render: renderer render this, 
     componentDidMount: d $ LoadPage,
     componentDidUpdate: \{page} _ _ -> d $ Updated page,
@@ -307,22 +313,34 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
     },
     withPadding: {
       padding: t.spacing.unit * 2
+    }, 
+    progress: {
+      display: "flex",
+      justifyContent: "center"
     }
   }
 
 instance decodeLC :: DecodeJson ContentResponse where 
   decodeJson v = do 
     o <- decodeJson v 
-    redirect <- o .?? "redirect"
-    userUpdated <- o .? "userUpdated"
-    redirect # (flip maybe (\u -> pure $ Redirect u userUpdated) $ do
-      html <- o .? "html"
-      state <- o .? "state"
-      css <- o .? "css"
-      js <- o .? "js"
-      script <- o .? "script"
-      title <- o .? "title"
-      fullscreenMode <- o .? "fullscreenMode"
-      menuMode <- o .? "menuMode"
-      hideAppBar <- o .? "hideAppBar"
-      pure $ LegacyContent {html, state, css, js, script, title, fullscreenMode, menuMode, hideAppBar} userUpdated)
+    let decodeChange = do 
+          route <- o .? "route"
+          userUpdated <- o .? "userUpdated"
+          pure $ ChangeRoute route userUpdated
+        decodeRedirect = do 
+          href <- o .? "href"
+          pure $ Redirect href
+        decodeContent = do 
+          html <- o .? "html"
+          state <- o .? "state"
+          css <- o .? "css"
+          js <- o .? "js"
+          script <- o .? "script"
+          title <- o .? "title"
+          fullscreenMode <- o .? "fullscreenMode"
+          menuMode <- o .? "menuMode"
+          hideAppBar <- o .? "hideAppBar"
+          userUpdated <- o .? "userUpdated"
+          noForm <- o .? "noForm"
+          pure $ LegacyContent {html, state, css, js, script, title, fullscreenMode, menuMode, hideAppBar, noForm} userUpdated
+    decodeChange <|> decodeRedirect <|> decodeContent

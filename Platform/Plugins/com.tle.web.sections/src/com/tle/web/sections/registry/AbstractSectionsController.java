@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017 Apereo
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.tle.web.sections.registry;
 
 import com.google.common.base.Throwables;
@@ -48,7 +64,7 @@ public abstract class AbstractSectionsController implements SectionsController {
         {
             if( redirect )
             {
-                info.forwardToUrl(info.getPublicBookmark().getHref(), 303);
+                forwardToUrl(info, info.getPublicBookmark().getHref(), 303);
             }
             else
             {
@@ -133,6 +149,44 @@ public abstract class AbstractSectionsController implements SectionsController {
         sectionInfo.queueTreeEvents(tree);
         return sectionInfo;
     }
+
+    protected abstract List<SectionFilter> getSectionFilters();
+
+    @Override
+    public final MutableSectionInfo createInfo(SectionTree tree, String path, @Nullable HttpServletRequest request,
+                                         @Nullable HttpServletResponse response, @Nullable SectionInfo info, @Nullable Map<String, String[]> params,
+                                         @Nullable Map<Object, Object> attributes)
+    {
+        MutableSectionInfo sectionInfo = createUnfilteredInfo(tree, request, response, attributes);
+        sectionInfo.setAttribute(SectionInfo.KEY_PATH, path);
+        sectionInfo.setAttribute(SectionInfo.KEY_FORWARDFROM, info);
+        List<SectionFilter> filters = getSectionFilters();
+        for( SectionFilter sectionFilter : filters )
+        {
+            sectionFilter.filter(sectionInfo);
+            if( sectionInfo.isRendered() )
+            {
+                break;
+            }
+        }
+        try
+        {
+            if( info != null )
+            {
+                info.processEvent(new ForwardEvent(sectionInfo));
+            }
+            ParametersEvent paramsEvent = new ParametersEvent(params, true);
+            sectionInfo.addParametersEvent(paramsEvent);
+            sectionInfo.processEvent(paramsEvent);
+            return sectionInfo;
+        }
+        catch( Exception ex )
+        {
+            handleException(sectionInfo, ex, null);
+            return sectionInfo;
+        }
+    }
+
 
     @Override
     public SectionInfo createForward(String path)

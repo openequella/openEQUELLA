@@ -83,38 +83,9 @@ public class SectionsControllerImpl extends AbstractSectionsController
 	}
 
 	@Override
-	public MutableSectionInfo createInfo(SectionTree tree, String path, @Nullable HttpServletRequest request,
-		@Nullable HttpServletResponse response, @Nullable SectionInfo info, @Nullable Map<String, String[]> params,
-		@Nullable Map<Object, Object> attributes)
+	public List<SectionFilter> getSectionFilters()
 	{
-		MutableSectionInfo sectionInfo = createUnfilteredInfo(tree, request, response, attributes);
-		sectionInfo.setAttribute(SectionInfo.KEY_PATH, path);
-		sectionInfo.setAttribute(SectionInfo.KEY_FORWARDFROM, info);
-		List<SectionFilter> filters = sectionFilters.getBeanList();
-		for( SectionFilter sectionFilter : filters )
-		{
-			sectionFilter.filter(sectionInfo);
-			if( sectionInfo.isRendered() )
-			{
-				break;
-			}
-		}
-		try
-		{
-			if( info != null )
-			{
-				info.processEvent(new ForwardEvent(sectionInfo));
-			}
-			ParametersEvent paramsEvent = new ParametersEvent(params, true);
-			sectionInfo.addParametersEvent(paramsEvent);
-			sectionInfo.processEvent(paramsEvent);
-			return sectionInfo;
-		}
-		catch( Exception ex )
-		{
-			handleException(sectionInfo, ex, null);
-			return sectionInfo;
-		}
+		return sectionFilters.getBeanList();
 	}
 
 	@Override

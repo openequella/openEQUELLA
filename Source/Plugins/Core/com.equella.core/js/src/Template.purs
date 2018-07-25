@@ -69,7 +69,7 @@ import React.DOM (footer, text)
 import React.DOM as D
 import React.DOM.Props as DP
 import ReactDOM (render)
-import Routes (Route, forcePushRoute, logoutClickable, matchRoute, pushRoute, routeHref, setPreventNav, userPrefsClickable)
+import Routes (ClickableHref, Route, forcePushRoute, logoutRoute, matchRoute, pushRoute, routeHref, routeURI, setPreventNav, userPrefsRoute)
 import Utils.UI (withCurrentTarget)
 import Web.DOM.NonElementParentNode (getElementById)
 import Web.Event.EventTarget (EventListener, addEventListener, removeEventListener)
@@ -82,7 +82,7 @@ newtype ExternalHref = ExternalHref String
 newtype MenuItem = MenuItem {route::Either ExternalHref String, title::String, systemIcon::Maybe String}
 
 data Command = Init | Updated {preventNavigation :: Nullable Boolean, title::String} | AttemptRoute Route | NavAway Boolean
-  | ToggleMenu | UserMenuAnchor (Maybe HTMLElement)  | GoBack
+  | ToggleMenu | UserMenuAnchor (Maybe HTMLElement) | MenuClick Route | GoBack
 
 type Counts = {
   tasks :: Int, 
@@ -191,7 +191,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
                 title:titleText,titleExtra,menuExtra,backRoute}} = muiPickersUtilsProvider [utils momentUtils] [
       D.div [DP.className classes.root] $ [
         cssBaseline_ [],
-        layout props.fullscreenMode props.menuMode props.hideAppBar, 
+        layout, 
         dialog [ open $ isJust attempt] [
           dialogTitle_ [ text strings.navaway.title], 
           dialogContent_ [
@@ -216,24 +216,28 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
           tabsM $> D.div [DP.className classes.tabs] [],
           Just $ D.div [DP.className classes.contentArea] children
         ]
-      fullscreen = D.main' children
-      layout "YES" _ _ = fullscreen
-      layout "YES_WITH_TOOLBAR" _ _ = fullscreen 
-      layout _ _ true = fullscreen
-      layout _ _ _ = D.div [DP.className classes.appFrame] $ [
-        topBar,
-        hidden [ mdUp true ] [
-          drawer [ variant temporary, anchor left, classes_ {paper: classes.drawerPaper},
-                    open mobileOpen, onClose (\_ -> d ToggleMenu) ] menuContent ],
-        hidden [ smDown true, implementation css ] [
-          drawer [variant permanent, anchor left, open true, classes_ {paper: classes.drawerPaper} ] menuContent
-        ],
-        content
-      ] <> catMaybes [
-        toMaybe props.footer <#> \fc -> footer [DP.className classes.footer] [ 
-          fc
+      
+      useFullscreen = 
+        props.hideAppBar || case props.fullscreenMode of 
+          "YES" -> true
+          "YES_WITH_TOOLBAR" -> true
+          _ -> false
+
+      menuParts = if hasMenu then [
+                    hidden [ mdUp true ] [
+                        drawer [ variant temporary, anchor left, classes_ {paper: classes.drawerPaper},
+                                  open mobileOpen, onClose (\_ -> d ToggleMenu) ] menuContent ],
+                    hidden [ smDown true, implementation css ] [
+                      drawer [variant permanent, anchor left, open true, classes_ {paper: classes.drawerPaper} ] menuContent
+                    ]
+                  ] else []
+      layout = if useFullscreen 
+        then D.main' children 
+        else D.div [DP.className classes.appFrame] $ [topBar] <> menuParts <> [content] <> catMaybes [
+          toMaybe props.footer <#> \fc -> footer [DP.className classes.footer] [ 
+            fc
+          ]
         ]
-      ]
       hasMenu = case props.menuMode of 
         "HIDDEN" -> false 
         _ -> true
@@ -255,8 +259,8 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       ]
       topBarString = coreString.topbar.link
       linkItem clickable t = menuItem [component "a", 
-                              mkProp "href" clickable.href, 
-                              mkProp "onClick" $ toHandler $ clickable.onClick] [ D.text t ]
+                              mkProp "href" $ routeURI clickable,
+                              mkProp "onClick" $ toHandler $ \_ -> d $ MenuClick clickable] [ D.text t ]
       userMaybe :: forall a. Lens' UserData a -> Maybe a
       userMaybe l = user ^? (_Just <<< l)
       userMenu = D.div [DP.className classes.userMenu ] $ (fromMaybe [] $ toMaybe menuExtra) <>
@@ -278,9 +282,9 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
                 anchorOrigin $ { vertical: "top", horizontal: "right" },
                 transformOrigin $ { vertical: "top", horizontal: "right" }
             ] $ catMaybes
-              [ Just $ linkItem logoutClickable strings.menu.logout,
+              [ Just $ linkItem logoutRoute strings.menu.logout,
                 (guard $ fromMaybe false $ userMaybe _prefsEditable) $> 
-                      linkItem userPrefsClickable strings.menu.prefs
+                      linkItem userPrefsRoute strings.menu.prefs
               ]
           ])
       badgedLink iconName count uri tip = 
@@ -312,6 +316,9 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
     eval (GoBack) = do 
       {backRoute} <- getProps
       liftEffect $ maybe (pure unit) pushRoute $ toMaybe backRoute  
+    eval (MenuClick route) = do 
+      modifyState _{menuAnchor = Nothing}
+      liftEffect $ pushRoute route
     eval (NavAway n) = do 
       {attempt} <- getState
       liftEffect $ guard n *> attempt # maybe (pure unit) forcePushRoute
@@ -454,8 +461,7 @@ renderReact divId main = do
   where
 
   elm' = do
-    win <- window
-    doc <- document win
+    doc <- window >>= document
     elm <- getElementById divId (toNonElementParentNode doc)
     pure $ unsafePartial (fromJust elm)
 

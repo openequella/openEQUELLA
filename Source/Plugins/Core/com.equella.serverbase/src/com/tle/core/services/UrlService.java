@@ -36,5 +36,7 @@ public interface UrlService
 
 	URI getBaseUriFromRequest(HttpServletRequest request);
 
+	URI getBaseInstitutionURI();
+
 	boolean isRelativeUrl(String url);
 }

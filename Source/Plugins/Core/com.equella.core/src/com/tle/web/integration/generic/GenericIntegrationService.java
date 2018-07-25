@@ -53,13 +53,17 @@ import com.tle.web.lti.LtiData;
 import com.tle.web.lti.usermanagement.LtiUserState;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.RenderContext;
+import com.tle.web.sections.header.FormTag;
 import com.tle.web.sections.header.SimpleFormAction;
+import com.tle.web.sections.jquery.JQuerySelector;
+import com.tle.web.sections.jquery.JQueryStatement;
 import com.tle.web.sections.js.generic.statement.ReloadStatement;
 import com.tle.web.sections.render.HiddenInput;
 import com.tle.web.sections.standard.renderers.DivRenderer;
 import com.tle.web.selection.SelectedResource;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.section.RootSelectionException;
+import com.tle.web.template.Decorations;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.ViewableItemResolver;
 
@@ -106,14 +110,15 @@ public class GenericIntegrationService
 			}
 
 			RenderContext renderContext = info.getRootRenderContext();
-			renderContext.getForm().setAction(new SimpleFormAction(data.getCallbackURL()));
-
+			Decorations.getDecorations(info).setExcludeForm(true);
 			try
 			{
-				DivRenderer divTag = new DivRenderer(
-					new HiddenInput(data.getPrefix() + "links", mapper.writeValueAsString(resources)));
-				divTag.getTagState().addReadyStatements(new ReloadStatement());
-				renderContext.setRenderedBody(divTag);
+				FormTag form = new FormTag();
+				form.setAction(new SimpleFormAction(data.getCallbackURL()));
+				form.addReadyStatements(new JQueryStatement(JQuerySelector.Type.ID, "returnForm", "submit()"));
+				form.setId("returnForm");
+				form.addHidden(new HiddenInput(data.getPrefix() + "links", mapper.writeValueAsString(resources)));
+				renderContext.setRenderedBody(form);
 			}
 			catch( IOException json )
 			{

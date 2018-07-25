@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017 Apereo
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.tle.web.api
 
 import java.net.URI
@@ -5,7 +21,7 @@ import java.util
 import java.util.Collections
 
 import com.dytech.common.io.DevNullWriter
-import com.tle.beans.item.ItemTaskId
+import com.tle.beans.item.{Item, ItemTaskId}
 import com.tle.common.URLUtils
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.settings.standard.AutoLogin
@@ -27,12 +43,14 @@ import com.tle.web.sections.jquery.libraries.JQueryCore
 import com.tle.web.sections.js.JSStatements
 import com.tle.web.sections.js.generic.function.{AnonymousFunction, ExternallyDefinedFunction}
 import com.tle.web.sections.js.generic.statement.{FunctionCallStatement, StatementBlock}
-import com.tle.web.sections.registry.AbstractSectionsController
+import com.tle.web.sections.registry.{AbstractSectionsController, SectionsControllerImpl}
 import com.tle.web.sections.render._
 import com.tle.web.sections.standard.model.HtmlLinkState
 import com.tle.web.sections.standard.renderers.{DivRenderer, LinkRenderer, SpanRenderer}
+import com.tle.web.template.Decorations.MenuMode
 import com.tle.web.template.section.HelpAndScreenOptionsSection
 import com.tle.web.template.{Breadcrumbs, Decorations, RenderTemplate}
+import com.tle.web.viewable.{NewDefaultViewableItem, ViewableItem}
 import com.tle.web.viewable.servlet.ItemServlet
 import io.swagger.annotations.Api
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
@@ -44,7 +62,9 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 
-case class RedirectContent(redirect: String, userUpdated: Boolean)
+case class InternalRedirect(route: String, userUpdated: Boolean)
+
+case class ExternalRedirect(href: URI)
 
 case class MenuItem(title: String, href: Option[String], systemIcon: Option[String], route: Option[String])
 
@@ -58,7 +78,8 @@ case class LegacyContent
  menuMode: String,
  fullscreenMode: String,
  hideAppBar: Boolean,
- userUpdated: Boolean)
+ userUpdated: Boolean,
+ noForm: Boolean)
 
 case class ItemCounts(tasks: Int, notifications: Int)
 
@@ -68,12 +89,31 @@ case class CurrentUserDetails
  autoLoggedIn: Boolean, guest: Boolean, prefsEditable: Boolean,
  menuGroups: Iterable[Iterable[MenuItem]], counts: Option[ItemCounts])
 
-object LegacyContentController extends AbstractSectionsController {
+object LegacyContentController extends AbstractSectionsController with SectionFilter {
 
-  def baseUri: URI = {
-    Option(CurrentInstitution.get()).map(_.getUrlAsUri).
-      getOrElse(LegacyGuice.urlService.getAdminUrl.toURI)
+  import LegacyGuice.urlService
+
+  def relativeURI(uri: URI): Option[URI] = {
+    if (uri.isAbsolute) {
+      val baseUri = urlService.getBaseInstitutionURI
+      Option(baseUri.relativize(new URI(baseUri.getScheme, uri.getRawSchemeSpecificPart, uri.getRawFragment)))
+        .filterNot(_.isAbsolute)
+    } else Some(uri)
   }
+
+  override val getSectionFilters: util.List[SectionFilter] = {
+    val sf = new util.ArrayList[SectionFilter]()
+    sf.add(this)
+    sf.addAll(LegacyGuice.sectionsController.asInstanceOf[SectionsControllerImpl].getSectionFilters)
+    sf.remove(LegacyGuice.templateFilter)
+    sf
+  }
+
+  override def filter(info: MutableSectionInfo): Unit = {
+    info.setAttribute(SectionInfo.KEY_BASE_HREF, baseUri(info.getRequest))
+  }
+
+  def baseUri(req: HttpServletRequest): URI = urlService.getBaseUriFromRequest(req)
 
   val RedirectedAttr = "REDIRECTED"
 
@@ -114,7 +154,12 @@ object LegacyContentController extends AbstractSectionsController {
 
   override def renderFromRoot(info: SectionInfo): Unit = {
     prepareJSContext(info.getAttributeForClass(classOf[MutableSectionInfo]))
-    super.renderFromRoot(info)
+    if (info.getAttributeForClass(classOf[AjaxRenderContext]) == null) {
+      val context = info.getRootRenderContext
+      Option(context.getRenderedBody).map(b => context.getRootResultListener.returnResult(b, null)).getOrElse {
+        super.renderFromRoot(info)
+      }
+    }
   }
 
   override def forwardToUrl(info: SectionInfo, link: String, code: Int): Unit = {
@@ -122,22 +167,6 @@ object LegacyContentController extends AbstractSectionsController {
     info.getRequest.setAttribute(RedirectedAttr, link)
   }
 
-  lazy val selectionFilter = LegacyGuice.selectionService.get().asInstanceOf[SectionFilter]
-  lazy val integrationFilter = LegacyGuice.integrationService.get().asInstanceOf[SectionFilter]
-
-  override def createInfo(tree: SectionTree, path: String, request: HttpServletRequest,
-                          response: HttpServletResponse, from: SectionInfo,
-                          params: util.Map[String, Array[String]],
-                          attrs: util.Map[AnyRef, AnyRef]): MutableSectionInfo = {
-    val sectionInfo = createUnfilteredInfo(tree, request, response, attrs)
-    sectionInfo.setAttribute(SectionInfo.KEY_PATH, path)
-    sectionInfo.setAttribute(SectionInfo.KEY_FORWARDFROM, from)
-    sectionInfo.setAttribute(SectionInfo.KEY_BASE_HREF, baseUri)
-    LegacyGuice.moderationService.filter(sectionInfo)
-    selectionFilter.filter(sectionInfo)
-    integrationFilter.filter(sectionInfo)
-    sectionInfo
-  }
 
   override def handleException(info: SectionInfo, exception: Throwable,
                                event: SectionEvent[_]): Unit = {
@@ -149,27 +178,43 @@ object LegacyContentController extends AbstractSectionsController {
 @Path("content")
 class LegacyContentApi {
 
-  def parsePath(path: String): (String, mutable.Map[AnyRef, AnyRef]) = path match {
-    case p if p.startsWith("items/") => {
-      val itemId = ItemTaskId.parse(p.substring(6))
-      ("/viewitem/viewitem.do", mutable.Map(ItemServlet.VIEWABLE_ITEM ->
-        LegacyGuice.viewableItemFactory.createNewViewableItem(itemId)))
+  def parsePath(path: String): (String, MutableSectionInfo => MutableSectionInfo) = {
+
+    def itemViewer(p: String, f: (SectionInfo, NewDefaultViewableItem) => NewDefaultViewableItem):
+    (String, MutableSectionInfo => MutableSectionInfo) = {
+      val itemId = ItemTaskId.parse(p)
+      ("/viewitem/viewitem.do", { info:MutableSectionInfo =>
+        info.setAttribute(ItemServlet.VIEWABLE_ITEM, f(info, LegacyGuice.viewableItemFactory.createNewViewableItem(itemId)))
+        info
+      })
     }
-    case p => (s"/$p", mutable.Map.empty)
+    path match {
+      case p if p.startsWith("items/") => itemViewer(p.substring(6), (_,vi) => vi)
+      case p if p.startsWith("integ/gen/") => itemViewer(p.substring(10), { (info,vi) =>
+        vi.getState.setIntegrationType("gen")
+        val decs = Decorations.getDecorations(info)
+        decs.setMenuMode(MenuMode.HIDDEN)
+        decs.setBanner(false)
+        decs.setContent(true)
+        vi
+      })
+      case p => (s"/$p", mutable.Map.empty)
+    }
   }
 
   private val UserIdKey = "InitialUserId"
 
-  def withTreePath(_path: String, uriInfo: UriInfo, req: HttpServletRequest, resp: HttpServletResponse,
+  def withTreePath(_path: String, uriInfo: UriInfo,
+                   req: HttpServletRequest, resp: HttpServletResponse, params: util.Map[String, Array[String]],
                    f: MutableSectionInfo => ResponseBuilder): Response = {
-    val (treePath, attrs) = parsePath(_path)
+    val (treePath, setupInfo) = parsePath(_path)
     val path = s"/${_path}"
     (Option(LegacyGuice.treeRegistry.getTreeForPath(treePath)) match {
       case None => Response.status(404)
       case Some(tree) => {
         LegacyGuice.userSessionService.reenableSessionUse()
         req.setAttribute(UserIdKey, CurrentUser.getUserID)
-        val info = LegacyContentController.createInfo(tree, path, req, resp, null, null, attrs.asJava)
+        val info = setupInfo(LegacyContentController.createInfo(tree, path, req, resp, null, params, null))
         info.setAttribute(AjaxGenerator.AJAX_BASEURI, uriInfo.getBaseUriBuilder.
           path(classOf[LegacyContentApi]).path(classOf[LegacyContentApi], "ajaxCall").build(""))
         f(info)
@@ -203,12 +248,12 @@ class LegacyContentApi {
             val menuLink = mc.getLink
             val href = Option(menuLink.getBookmark).getOrElse(
               new BookmarkAndModify(context, menuLink.getHandlerMap.getHandler("click").getModifier)).getHref
-            val relativized = LegacyContentController.baseUri.relativize(URI.create(href)).toString
+            val relativized = LegacyContentController.relativeURI(URI.create(href)).map(_.toString)
 
             MenuItem(menuLink.getLabelText,
-              Option(href).filter(_ != relativized),
+              None,
               Option(mc.getSystemIcon),
-              Option(mc.getRoute).orElse(Option(relativized)))
+              Option(mc.getRoute).orElse(relativized))
           }
       }
     }
@@ -230,12 +275,8 @@ class LegacyContentApi {
   def ajaxCall(@PathParam("path") _path: String, @Context uriInfo: UriInfo,
                @Context req: HttpServletRequest, @Context resp: HttpServletResponse): Response = {
 
-    withTreePath(_path, uriInfo, req, resp, { info =>
-
-      val paramEvent = new ParametersEvent(req.getParameterMap, true)
-      info.addParametersEvent(paramEvent)
+    withTreePath(_path, uriInfo, req, resp, req.getParameterMap, { info =>
       info.preventGET()
-      info.processEvent(paramEvent)
       LegacyContentController.execute(info)
       renderedResponse(info).getOrElse {
         ajaxResponse(info, info.getAttributeForClass(classOf[AjaxRenderContext]))
@@ -251,13 +292,9 @@ class LegacyContentApi {
   def submit(@PathParam("path") _path: String, @Context uriInfo: UriInfo,
              @Context req: HttpServletRequest, @Context resp: HttpServletResponse,
              params: mutable.Map[String, Array[String]]): Response = {
-    withTreePath(_path, uriInfo, req, resp,
+    withTreePath(_path, uriInfo, req, resp, params.asJava,
       { info =>
-        val javaParams = params.asJava
-        val paramEvent = new ParametersEvent(javaParams, true)
         info.preventGET()
-        info.addParametersEvent(paramEvent)
-        info.processEvent(paramEvent)
         info.getRootRenderContext.setRootResultListener(new LegacyResponseListener(info))
         LegacyContentController.execute(info)
         redirectResponse(info)
@@ -278,16 +315,21 @@ class LegacyContentApi {
   def redirectResponse(info: MutableSectionInfo): Option[ResponseBuilder] = {
     val req = info.getRequest
     Option(req.getAttribute(LegacyContentController.RedirectedAttr).asInstanceOf[String]).map { url =>
-      val fromBase = LegacyGuice.urlService.getBaseUriFromRequest(req).relativize(URI.create(url)).toString
-      Response.ok(RedirectContent(fromBase, userChanged(req)))
+      Response.ok {
+        val uri = URI.create(url)
+        LegacyContentController.relativeURI(uri) match {
+          case None => ExternalRedirect(uri)
+          case Some(relative) => InternalRedirect(relative.toString, userChanged(req))
+        }
+      }
     }
   }
 
   class LegacyResponseListener(info: MutableSectionInfo) extends RenderResultListener {
-    val context = info.getRootRenderContext.asInstanceOf[StandardRenderContext]
-    val decs = Decorations.getDecorations(info)
 
     override def returnResult(result: SectionResult, fromId: String): Unit = {
+      val context = info.getRootRenderContext.asInstanceOf[StandardRenderContext]
+      val decs = Decorations.getDecorations(info)
       val html = result match {
         case tr: TemplateResult =>
           val body = SectionUtils.renderToString(context, wrapBody(decs, tr.getNamedResult(context, "body")))
@@ -301,6 +343,8 @@ class LegacyContentApi {
           ).flatten.toMap
         case sr: SectionRenderable =>
           Map("body" -> SectionUtils.renderToString(context, wrapBody(decs, sr)))
+        case pr: PreRenderable =>
+          Map("body" -> SectionUtils.renderToString(context, new PreRenderOnly(pr)))
       }
 
       context.addStatements(StatementBlock.get(context.dequeueFooterStatements))
@@ -321,7 +365,7 @@ class LegacyContentApi {
       info.getRequest.setAttribute(LegacyContentKey,
         LegacyContent(html, cssFiles, jsFiles, scripts.mkString("\n"),
           getBookmarkState(info, new BookmarkEvent(null, true, info)), title,
-          menuMode, fullscreenMode, hideAppBar, userChanged(info.getRequest)
+          menuMode, fullscreenMode, hideAppBar, userChanged(info.getRequest), decs.isExcludeForm
         )
       )
     }

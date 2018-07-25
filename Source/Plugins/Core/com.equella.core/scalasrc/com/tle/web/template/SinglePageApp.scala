@@ -51,7 +51,6 @@ class SinglePageApp extends AbstractScalaSection with HtmlRenderer {
 
   override def renderHtml(context: RenderEventContext): SectionResult = {
     val decs = Decorations.getDecorations(context)
-    decs.setSinglePageApp(true)
     decs.setTitle(new TextLabel("Loading"))
     return new SimpleSectionResult("")
   }

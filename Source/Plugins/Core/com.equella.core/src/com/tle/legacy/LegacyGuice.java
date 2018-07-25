@@ -56,6 +56,7 @@ import com.tle.web.sections.SectionsController;
 import com.tle.web.sections.registry.TreeRegistry;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.shortcuturls.ShortcutUrlsSettingsPrivilegeTreeProvider;
+import com.tle.web.template.TemplateFilter;
 import com.tle.web.viewable.impl.ViewableItemFactory;
 import com.tle.web.workflow.tasks.ModerationService;
 
@@ -179,10 +180,7 @@ public class LegacyGuice extends AbstractModule {
     public static FreeTextService freeTextService;
 
     @Inject
-    public static Provider<SelectionService> selectionService;
-
-    @Inject
-    public static Provider<IntegrationService> integrationService;
+    public static TemplateFilter templateFilter;
 
     @Override
     protected void configure()

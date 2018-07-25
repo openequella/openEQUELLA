@@ -85,7 +85,12 @@ object RenderNewTemplate {
   {
     val renderData = new ObjectExpression("baseResources", r.url(""),
       "newUI", java.lang.Boolean.TRUE)
+    renderReact(context, viewFactory, renderData, reactTemplate)
+  }
 
+  def renderReact(context: RenderEventContext, viewFactory: FreemarkerFactory, renderData: ObjectExpression,
+                  scriptUrl: String): SectionResult =
+  {
     context.preRender(JQueryCore.PRERENDER)
     if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident")))
     {
@@ -95,7 +100,7 @@ object RenderNewTemplate {
     val tempResult = new GenericTemplateResult()
     tempResult.addNamedResult("header", HeaderSection)
     viewFactory.createResultWithModel("layouts/outer/react.ftl",
-      TemplateScript(reactTemplate, renderData, tempResult, ""))
+      TemplateScript(scriptUrl, renderData, tempResult, ""))
   }
 
   case class TemplateScript(getScriptUrl : String,  getRenderJs: ObjectExpression, getTemplate: TemplateResult, htmlAttributes: String)

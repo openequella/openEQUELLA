@@ -22,6 +22,7 @@ import Effect.Timer (setInterval)
 import LegacyPage (legacy)
 import Network.HTTP.Affjax (get)
 import Network.HTTP.Affjax.Response (string)
+import Polyfills (polyfill)
 import React (component, unsafeCreateLeafElement)
 import React.DOM (div')
 import Routes (Route(..), globalNav, matchRoute)
@@ -42,8 +43,6 @@ import Web.HTML.Window (location)
 
 data RouterCommand = Init | ChangeRoute Route
 type State = {route::Maybe Route}
-
-foreign import polyfill :: Effect Unit
 
 parseURI :: String -> Either ParseError (AbsoluteURI UserInfo (HostPortPair Host Port) Path HierPath Query)
 parseURI = flip runParser $ parser {

@@ -122,8 +122,7 @@ public class UrlServiceImpl implements UrlService
 	@Override
 	public URI getUriForRequest(HttpServletRequest request, String query)
 	{
-		Institution institution = CurrentInstitution.get();
-		URI uri = institution.getUrlAsUri();
+		URI uri = getBaseInstitutionURI();
 		UriBuilder builder = UriBuilder.create(uri);
 		builder.setScheme(request.isSecure() ? "https" : "http");
 		builder.setPath(request.getRequestURI());
@@ -134,11 +133,17 @@ public class UrlServiceImpl implements UrlService
 	@Override
 	public URI getBaseUriFromRequest(HttpServletRequest request)
 	{
-		Institution institution = CurrentInstitution.get();
-		URI uri = (institution == null ? URI.create(getAdminUrl().toString()) : institution.getUrlAsUri());
+		URI uri = getBaseInstitutionURI();
 		UriBuilder builder = UriBuilder.create(uri);
 		builder.setScheme(request.isSecure() ? "https" : "http");
 		return builder.build();
+	}
+
+	@Override
+	public URI getBaseInstitutionURI()
+	{
+		Institution institution = CurrentInstitution.get();
+		return (institution == null ? URI.create(getAdminUrl().toString()) : institution.getUrlAsUri());
 	}
 
 	@Override
