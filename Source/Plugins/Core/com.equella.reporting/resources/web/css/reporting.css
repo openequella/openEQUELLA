@@ -6,7 +6,7 @@ body
 html.fullscreen, html.fullscreen body, html.fullscreen form, #reportContent,
 html.fullscreen-toolbar, html.fullscreen-toolbar body, html.fullscreen-toolbar form
 {
-	height: 100%;
+	height: 100vh;
 }
 
 #reportFrame

@@ -121,7 +121,10 @@ public abstract class AbstractListBirtType extends AbstractBirtType
 		ValueThoroughIterator vals = docXml.iterateAllValues(targetNode);
 		while( vals.hasNext() )
 		{
-			texts.add(displayTexts.get(vals.next()));
+			String textVal = displayTexts.get(vals.next());
+			if (textVal != null) {
+				texts.add(textVal);
+			}
 		}
 		return texts.toArray(new String[texts.size()]);
 	}

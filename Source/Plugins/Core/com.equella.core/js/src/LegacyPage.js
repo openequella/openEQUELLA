@@ -37,7 +37,7 @@ function collectParams(form, command, args)
     }
     vals["eventp__" + i] = [outval];
   });
-  form.querySelectorAll("input,select,textarea").forEach(
+  form.querySelectorAll("input,textarea").forEach(
     function (v) { 
       if (v.type)
       {
@@ -55,6 +55,18 @@ function collectParams(form, command, args)
       if (ex) {
         ex.push(v.value)
       } else vals[v.name] = [v.value];
+    }
+  );
+  form.querySelectorAll("select").forEach(
+    function (v) { 
+      var sel = v.selectedOptions;
+      for (i=0; i<sel.length; i++) {
+          var o = sel[i];
+          var ex = vals[v.name];
+          if (ex) {
+            ex.push(o.value)
+          } else vals[v.name] = [o.value];
+      }
     }
   );
   return vals;

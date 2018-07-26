@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import com.tle.web.sections.render.HiddenInput;
 import org.eclipse.birt.report.engine.api.IAction;
 import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
 import org.eclipse.birt.report.engine.api.IHTMLActionHandler;
@@ -267,15 +268,6 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 			return viewFactory.createResult("reporting/reportList.ftl", context);
 		}
 
-		if( !model.isShowWizard() && model.isForceParams() )
-		{
-			WizardPage webPage = getWizardPage(context);
-			model.setShowWizard(true);
-			webPage.ensureTreeAdded(context);
-			webPage.loadFromDocument(context);
-			webPage.setSubmitted(model.isShowErrors());
-			webPage.setShowMandatory(model.isShowErrors());
-		}
 		decs.setFullscreen(FullScreen.YES_WITH_TOOLBAR);
 		decs.clearAllDecorations();
 		decs.setTitle(LABEL_VIEWERTITLE);
@@ -284,9 +276,10 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 		form.setName("WizardForm");
 
 		titleLink.setLabel(context, new BundleLabel(getReport(context).getName(), bundleCache));
-		if( model.isShowWizard() && containsVisibleParams(context) )
+		if( model.isShowWizard())
 		{
 			WizardPage wizPage = getWizardPage(context);
+			wizPage.ensureTreeAdded(context);
 			model.setWizard(wizPage.renderPage(context));
 		}
 		else if( model.isShowReport() )
@@ -359,31 +352,9 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 	{
 		ReportingForm model = getModel(info);
 		model.setReportUuid(reportUuid);
-		model.setForceParams(containsVisibleParams(info));
-	}
-
-	@SuppressWarnings("unchecked")
-	private boolean containsVisibleParams(SectionInfo info)
-	{
-		IGetParameterDefinitionTask paramTask = getParametersTask(info);
-		Collection<IParameterDefn> params = paramTask.getParameterDefns(false);
-		paramTask.close();
-		for( IParameterDefn parameterDefn : params )
-		{
-			if( parameterDefn.getParameterType() == IParameterDefnBase.SCALAR_PARAMETER )
-			{
-				IScalarParameterDefn scalarDef = (IScalarParameterDefn) parameterDefn;
-				if( !scalarDef.isHidden() )
-				{
-					return true;
-				}
-			}
-			else
-			{
-				throw new RuntimeException("Unsupported parameter type:" + parameterDefn.getTypeName());
-			}
-		}
-		return false;
+		boolean showParams = containsVisibleParams(info);
+		model.setParametersValid(!showParams);
+		model.setForceParams(showParams);
 	}
 
 	@EventHandlerMethod
@@ -484,32 +455,30 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 		}
 	}
 
-	@DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
-	public void processWizard(SectionInfo info) throws Exception
+	@SuppressWarnings("unchecked")
+	private boolean containsVisibleParams(SectionInfo info)
 	{
-		ReportingForm model = getModel(info);
-		if( model.isShowWizard() )
+		IGetParameterDefinitionTask paramTask = getParametersTask(info);
+		Collection<IParameterDefn> params = paramTask.getParameterDefns(false);
+		paramTask.close();
+		for( IParameterDefn parameterDefn : params )
 		{
-			Map<String, String[]> paramDisplayNames = new HashMap<String, String[]>();
-			WizardPage webPage = getWizardPage(info);
-			webPage.ensureTreeAdded(info);
-			webPage.loadFromDocument(info);
-			webPage.ensureTreeAdded(info);
-			webPage.saveToDocument(info);
-			webPage.loadFromDocument(info);
-
-			Map<String, String[]> params = model.getParameters();
-			PropBagEx docXml = webPage.getDocBag();
-			List<AbstractBirtType> controls = model.getParamControls();
-			for( AbstractBirtType birtWrapper : controls )
+			if( parameterDefn.getParameterType() == IParameterDefnBase.SCALAR_PARAMETER )
 			{
-				birtWrapper.convertToParams(docXml, params);
-				paramDisplayNames.put(birtWrapper.getName(), birtWrapper.getDisplayTexts(docXml));
+				IScalarParameterDefn scalarDef = (IScalarParameterDefn) parameterDefn;
+				if( !scalarDef.isHidden() )
+				{
+					return true;
+				}
 			}
-			model.setParameters(params);
-			model.setParameterDisplayTexts(paramDisplayNames);
+			else
+			{
+				throw new RuntimeException("Unsupported parameter type:" + parameterDefn.getTypeName());
+			}
 		}
+		return false;
 	}
+
 
 	@EventHandlerMethod
 	public void refreshParameters(SectionInfo info)
@@ -520,19 +489,24 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 		{
 			return;
 		}
-
 		WizardPage webPage = getWizardPage(info);
 		PropBagEx docXml = webPage.getDocBag();
 
-		Map<String, String[]> params = new HashMap<String, String[]>();
-		for( AbstractBirtType control : model.getParamControls() )
+		Map<String, String[]> params = model.getParameters();
+		List<AbstractBirtType> paramControls = model.getParamControls();
+		for( AbstractBirtType control : paramControls)
 		{
-			control.update(model.getParameters(), model.getParamControls(), getParametersTask(info));
+			control.update(params, paramControls, getParametersTask(info));
 			control.convertToParams(docXml, params);
-			model.setParameters(params);
 			try
 			{
-				processWizard(info);
+				webPage.ensureTreeAdded(info);
+				webPage.loadFromDocument(info);
+				webPage.saveToDocument(info);
+				for( AbstractBirtType birtWrapper : paramControls )
+				{
+					birtWrapper.convertToParams(docXml, params);
+				}
 			}
 			catch( Exception e )
 			{
@@ -540,8 +514,7 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 			}
 			// Seems odd but is necessary
 		}
-		model.setForceParams(true);
-		// Prevent the report from running straight away
+		model.setParametersValid(webPage.isValid());
 	}
 
 	@EventHandlerMethod
@@ -556,10 +529,6 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 		if( wizardPage.isValid() )
 		{
 			model.setForceParams(false);
-		}
-		else
-		{
-			model.setShowErrors(true);
 		}
 	}
 
@@ -711,26 +680,28 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 
 	public class ParametersHandler implements BookmarkEventListener, ParametersEventListener
 	{
+
+		public static final String WIZARD_SUBMITTED = "wizardSubmitted";
+
 		@Override
 		public void bookmark(SectionInfo info, BookmarkEvent event)
 		{
 			ReportingForm model = getModel(info);
-			Map<String, String[]> params = model.getParameters();
-			if( params != null )
+			if (event.isRendering() && model.isShowWizard())
 			{
-				for( Map.Entry<String, String[]> entry : params.entrySet() )
-				{
+				event.setParam(WIZARD_SUBMITTED, "true");
+			}
+			Map<String, String[]> params = model.getParameters();
+			if (params != null) {
+				for (Map.Entry<String, String[]> entry : params.entrySet()) {
 					event.setParams(PFX_PARAM + entry.getKey(), Arrays.asList(entry.getValue()));
 				}
 			}
 
 			Map<String, String[]> paramTexts = model.getParameterDisplayTexts();
-			if( paramTexts != null )
-			{
-				for( Map.Entry<String, String[]> entry : paramTexts.entrySet() )
-				{
-					if( entry.getValue() == null )
-					{
+			if (paramTexts != null) {
+				for (Map.Entry<String, String[]> entry : paramTexts.entrySet()) {
+					if (entry.getValue() == null) {
 						continue;
 					}
 					event.setParams(PFX_PARAM_TEXT + entry.getKey(), Arrays.asList(entry.getValue()));
@@ -747,18 +718,44 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 				return;
 			}
 
-			Map<String, String[]> params = new HashMap<String, String[]>();
-			IGetParameterDefinitionTask paramTask = getParametersTask(info);
-			@SuppressWarnings("unchecked")
-			Collection<IParameterDefn> parameterDefs = paramTask.getParameterDefns(false);
-			Map<String, String[]> parameterDisplayTexts = new HashMap<String, String[]>();
-			paramTask.close();
-			boolean allSupplied = true;
-			for( IParameterDefn parameterDefn : parameterDefs )
+			WizardPage wizardPage = getWizardPage(info);
+			if (event.getBooleanParameter(WIZARD_SUBMITTED, false))
 			{
-				if( parameterDefn.getParameterType() == IParameterDefnBase.SCALAR_PARAMETER )
+				wizardPage.ensureTreeAdded(info, true);
+				try {
+					wizardPage.saveToDocument(info);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				wizardPage.setSubmitted(true);
+				wizardPage.setShowMandatory(true);
+				Map<String, String[]> params = new HashMap<String, String[]>();
+				Map<String, String[]> paramDisplayNames = new HashMap<String, String[]>();
+				PropBagEx docXml = wizardPage.getDocBag();
+				List<AbstractBirtType> controls = model.getParamControls();
+				for( AbstractBirtType birtWrapper : controls )
 				{
-					IScalarParameterDefn scalarDef = (IScalarParameterDefn) parameterDefn;
+					birtWrapper.convertToParams(docXml, params);
+					String[] displayTexts = birtWrapper.getDisplayTexts(docXml);
+					if (displayTexts != null) {
+						paramDisplayNames.put(birtWrapper.getName(), displayTexts);
+					}
+				}
+				model.setParameters(params);
+				model.setParameterDisplayTexts(paramDisplayNames);
+				model.setParametersValid(wizardPage.isValid());
+			}
+			else
+			{
+				wizardPage.ensureTreeAdded(info, false);
+
+
+				Map<String, String[]> params = new HashMap<String, String[]>();
+				Map<String, String[]> parameterDisplayTexts = new HashMap<String, String[]>();
+				boolean allSupplied = true;
+				for( AbstractBirtType parameterDefn : model.getParamControls() )
+				{
+					IScalarParameterDefn scalarDef = parameterDefn.getDefinition();
 					String paramName = scalarDef.getName();
 					String[] values = event.getParameterValues(paramName);
 					if( values == null )
@@ -780,14 +777,16 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 						parameterDisplayTexts.put(paramName, event.getParameterValues(PFX_PARAM_TEXT + paramName));
 					}
 				}
-				else
+				PropBagEx docXml = wizardPage.getDocBag();
+				for (AbstractBirtType control : model.getParamControls())
 				{
-					throw new RuntimeException("Unsupported parameter type:" + parameterDefn.getTypeName());
+					control.convertToXml(docXml, params);
 				}
+				wizardPage.loadFromDocument(info);
+				model.setParameterDisplayTexts(parameterDisplayTexts);
+				model.setParameters(params);
+				model.setParametersValid(allSupplied);
 			}
-			model.setParameterDisplayTexts(parameterDisplayTexts);
-			model.setParameters(params);
-			model.setForceParams(model.isForceParams() || !allSupplied);
 		}
 
 		@Override

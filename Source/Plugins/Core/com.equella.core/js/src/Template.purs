@@ -80,7 +80,7 @@ import Web.Event.EventTarget (EventListener, addEventListener, removeEventListen
 import Web.HTML (HTMLElement, window)
 import Web.HTML.Event.BeforeUnloadEvent.EventTypes (beforeunload)
 import Web.HTML.HTMLDocument (toDocument, toNonElementParentNode)
-import Web.HTML.HTMLElement (classList, fromElement, setTitle)
+import Web.HTML.HTMLElement (classList, fromElement)
 import Web.HTML.HTMLElement as HTML
 import Web.HTML.Window (document, toEventTarget)
 
@@ -112,6 +112,8 @@ type RenderData = {
 foreign import preventUnload :: EventListener
 
 foreign import renderData :: RenderData
+
+foreign import setDocumentTitle :: String -> Effect Unit 
 
 nullAny :: forall a. Nullable a
 nullAny = toNullable Nothing
@@ -318,7 +320,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
     htmlElement :: Effect HTMLElement
     htmlElement = unsafePartial $ fromJust <$> bindFlipped HTML.fromElement 
               <$> (window >>= document >>= toDocument >>> documentElement)
-    setWindowTitle title = (htmlElement >>= setTitle (title <> coreString.windowtitlepostfix))
+    setWindowTitle title = setDocumentTitle (title <> coreString.windowtitlepostfix)
     fullscreenClass = case _ of 
       "YES" -> Just "fullscreen"
       "YES_WITH_TOOLBAR" -> Just "fullscreen-toolbar"

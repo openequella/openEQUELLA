@@ -178,6 +178,11 @@ public abstract class AbstractBirtType
 		return parameterHandle.getContainerSlotHandle().findPosn(parameterHandle);
 	}
 
+	public IScalarParameterDefn getDefinition()
+	{
+		return scalarDef;
+	}
+
 	public String getGroupname()
 	{
 		if( group != null )

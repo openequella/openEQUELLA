@@ -21,8 +21,7 @@ import java.util
 import java.util.Collections
 
 import com.dytech.common.io.DevNullWriter
-import com.tle.beans.item.{Item, ItemTaskId}
-import com.tle.common.URLUtils
+import com.tle.beans.item.ItemTaskId
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.settings.standard.AutoLogin
 import com.tle.common.usermanagement.user.CurrentUser
@@ -49,8 +48,8 @@ import com.tle.web.sections.standard.model.HtmlLinkState
 import com.tle.web.sections.standard.renderers.{DivRenderer, LinkRenderer, SpanRenderer}
 import com.tle.web.template.Decorations.MenuMode
 import com.tle.web.template.section.HelpAndScreenOptionsSection
-import com.tle.web.template.{Breadcrumbs, Decorations, RenderTemplate, XSRFAuthoriser}
-import com.tle.web.viewable.{NewDefaultViewableItem, ViewableItem}
+import com.tle.web.template.{Breadcrumbs, Decorations, RenderTemplate}
+import com.tle.web.viewable.NewDefaultViewableItem
 import com.tle.web.viewable.servlet.ItemServlet
 import io.swagger.annotations.Api
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
