@@ -3,6 +3,7 @@ module Template where
 import Prelude
 
 import Common.CommonStrings (commonString)
+import Control.Bind (bindFlipped)
 import Control.Monad.Reader (ReaderT)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
@@ -71,17 +72,22 @@ import React.DOM.Props as DP
 import ReactDOM (render)
 import Routes (ClickableHref, Route, forcePushRoute, logoutRoute, matchRoute, pushRoute, routeHref, routeURI, setPreventNav, userPrefsRoute)
 import Utils.UI (withCurrentTarget)
+import Web.DOM.DOMTokenList (remove)
+import Web.DOM.DOMTokenList as DOMTokens
+import Web.DOM.Document (documentElement)
 import Web.DOM.NonElementParentNode (getElementById)
 import Web.Event.EventTarget (EventListener, addEventListener, removeEventListener)
 import Web.HTML (HTMLElement, window)
 import Web.HTML.Event.BeforeUnloadEvent.EventTypes (beforeunload)
-import Web.HTML.HTMLDocument (toNonElementParentNode)
+import Web.HTML.HTMLDocument (toDocument, toNonElementParentNode)
+import Web.HTML.HTMLElement (classList, fromElement, setTitle)
+import Web.HTML.HTMLElement as HTML
 import Web.HTML.Window (document, toEventTarget)
 
 newtype ExternalHref = ExternalHref String 
 newtype MenuItem = MenuItem {route::Either ExternalHref String, title::String, systemIcon::Maybe String}
 
-data Command = Init | Updated {preventNavigation :: Nullable Boolean, title::String} | AttemptRoute Route | NavAway Boolean
+data Command = Init | Updated {preventNavigation :: Nullable Boolean, title::String, fullscreenMode::String} | AttemptRoute Route | NavAway Boolean
   | ToggleMenu | UserMenuAnchor (Maybe HTMLElement) | MenuClick Route | GoBack
 
 type Counts = {
@@ -106,8 +112,6 @@ type RenderData = {
 foreign import preventUnload :: EventListener
 
 foreign import renderData :: RenderData
-
-foreign import setTitle :: String -> Effect Unit
 
 nullAny :: forall a. Nullable a
 nullAny = toNullable Nothing
@@ -181,11 +185,11 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       (if add then addEventListener else removeEventListener) beforeunload preventUnload false $ toEventTarget w 
 
     setPreventUnload add = do 
-      liftEffect $ setPreventNav (mkEffectFn1 \r -> do 
+      setPreventNav (mkEffectFn1 \r -> do 
         if add then affAction this $ eval (AttemptRoute r) else pure unit
         pure add
       )
-      liftEffect $ setUnloadListener add
+      setUnloadListener add
 
     render {state: state@{mobileOpen,menuAnchor,user,attempt}, props:props@{fixedViewPort:fvp, classes, 
                 title:titleText,titleExtra,menuExtra,backRoute}} = muiPickersUtilsProvider [utils momentUtils] [
@@ -311,8 +315,25 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
                 Left (ExternalHref href) -> [mkProp "href" href]
                 Right r -> [mkProp "href" $ show r]
 
-    setWindowTitle title = liftEffect $ setTitle $ title <> coreString.windowtitlepostfix
+    htmlElement :: Effect HTMLElement
+    htmlElement = unsafePartial $ fromJust <$> bindFlipped HTML.fromElement 
+              <$> (window >>= document >>= toDocument >>> documentElement)
+    setWindowTitle title = (htmlElement >>= setTitle (title <> coreString.windowtitlepostfix))
+    fullscreenClass = case _ of 
+      "YES" -> Just "fullscreen"
+      "YES_WITH_TOOLBAR" -> Just "fullscreen-toolbar"
+      _ -> Nothing
 
+    setHtmlClasses oldMode newMode = do
+      htmlClasses <- htmlElement >>= classList
+      let addClass (Just clz) = DOMTokens.add htmlClasses clz
+          addClass _ = pure unit
+          remClass (Just clz) = DOMTokens.remove htmlClasses clz
+          remClass _ = pure unit
+      remClass (fullscreenClass oldMode)
+      addClass (fullscreenClass newMode)
+
+    maybeEff b e = if b then e else pure unit
     eval (GoBack) = do 
       {backRoute} <- getProps
       liftEffect $ maybe (pure unit) pushRoute $ toMaybe backRoute  
@@ -325,17 +346,20 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       modifyState _{attempt = Nothing}
     eval (AttemptRoute r) = do 
       modifyState _{attempt = Just r}
-    eval (Updated {preventNavigation:oldpn,title:oldtitle}) = do 
-      {preventNavigation, title} <- getProps
+    eval (Updated {preventNavigation:oldpn,title:oldtitle,fullscreenMode:oldfsm}) = do 
+      {preventNavigation, title, fullscreenMode} <- getProps
       let isTrue = fromMaybe false <<< toMaybe
           newPN = isTrue preventNavigation
-      if isTrue oldpn /= newPN then setPreventUnload newPN else pure unit
-      if oldtitle /= title then setWindowTitle title else pure unit
-      pure unit
+      liftEffect $ do 
+        maybeEff (isTrue oldpn /= newPN) $ setPreventUnload newPN
+        maybeEff (oldtitle /= title) $ setWindowTitle title
+        maybeEff (oldfsm /= fullscreenMode) $ setHtmlClasses oldfsm fullscreenMode
     eval Init = do 
-      {title,preventNavigation:pn} <- getProps
-      setWindowTitle title
-      if fromMaybe false $ toMaybe pn then setPreventUnload true else pure unit
+      {title,preventNavigation:pn,fullscreenMode} <- getProps
+      liftEffect $ do 
+        setWindowTitle title
+        setHtmlClasses "NO" fullscreenMode
+        maybeEff (fromMaybe false $ toMaybe pn) $ setPreventUnload true
       loadNewUser
 
     eval ToggleMenu = modifyState \(s :: State) -> s {mobileOpen = not s.mobileOpen}
@@ -345,7 +369,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
     render: renderer render this, 
     state:initialState, 
     componentDidMount: d Init, 
-    componentDidUpdate: \{preventNavigation,title} _ _ -> d $ Updated { preventNavigation, title},
+    componentDidUpdate: \{preventNavigation,title, fullscreenMode} _ _ -> d $ Updated { preventNavigation, title, fullscreenMode},
     componentWillUnmount: setUnloadListener false
   }
   where

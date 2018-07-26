@@ -29,7 +29,13 @@ function collectParams(form, command, args)
     vals["event__"] = [command];
   }
   args.forEach(function (c, i){
-    vals["eventp__" + i] = [c];
+    var outval = c;
+    switch(typeof c) {
+      case 'array': 
+      case 'object':
+        outval = JSON.stringify(c);
+    }
+    vals["eventp__" + i] = [outval];
   });
   form.querySelectorAll("input,select,textarea").forEach(
     function (v) { 

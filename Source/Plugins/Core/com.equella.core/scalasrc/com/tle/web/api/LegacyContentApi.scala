@@ -49,7 +49,7 @@ import com.tle.web.sections.standard.model.HtmlLinkState
 import com.tle.web.sections.standard.renderers.{DivRenderer, LinkRenderer, SpanRenderer}
 import com.tle.web.template.Decorations.MenuMode
 import com.tle.web.template.section.HelpAndScreenOptionsSection
-import com.tle.web.template.{Breadcrumbs, Decorations, RenderTemplate}
+import com.tle.web.template.{Breadcrumbs, Decorations, RenderTemplate, XSRFAuthoriser}
 import com.tle.web.viewable.{NewDefaultViewableItem, ViewableItem}
 import com.tle.web.viewable.servlet.ItemServlet
 import io.swagger.annotations.Api
@@ -111,6 +111,12 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
 
   override def filter(info: MutableSectionInfo): Unit = {
     info.setAttribute(SectionInfo.KEY_BASE_HREF, baseUri(info.getRequest))
+    info.setAttribute(classOf[EventAuthoriser], new EventAuthoriser {
+      override def checkAuthorisation(info: SectionInfo): Unit = {}
+
+      override def addToBookmark(info: SectionInfo, bookmarkState: util.Map[String, Array[String]]): Unit =
+        bookmarkState.put(RenderTemplate.XSRF_PARAM, Array[String](CurrentUser.getSessionID))
+    })
   }
 
   def baseUri(req: HttpServletRequest): URI = urlService.getBaseUriFromRequest(req)
@@ -198,7 +204,7 @@ class LegacyContentApi {
         decs.setContent(true)
         vi
       })
-      case p => (s"/$p", mutable.Map.empty)
+      case p => (s"/$p", identity)
     }
   }
 
