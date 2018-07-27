@@ -22,7 +22,8 @@ invisibleFile i _ p = input (p <> [_id i, style {display: "none"}])
 
 customFile :: String -> Effect Unit -> Array Props -> ReactElement
 customFile i doClick p = div [ className "customfile focus", onClick \_ -> doClick ] [
-  button [className "customfile-button focus btn btn-equella btn-mini" ] [ text "Browse" ],
+  button [className "customfile-button focus btn btn-equella btn-mini", 
+    onClick preventDefault ] [ text "Browse" ],
   span [className "customfile-feedback"] [text "No file selected..."],
   input (p <> [_id i, className "customfile-input"]) 
 ]
