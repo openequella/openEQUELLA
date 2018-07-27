@@ -135,7 +135,6 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
     val helper = context.getHelper.asInstanceOf[MutableHeaderHelper]
     helper.setElementFunction(StandardExpressions.ELEMENT_FUNCTION)
 
-    val bodyTag = context.getBody
     val formTag = context.getForm
     if (helper.getFormExpression == null) {
       formTag.setId(StandardExpressions.FORM_NAME)
@@ -194,6 +193,7 @@ class LegacyContentApi {
       })
     }
     path match {
+      case "" => ("/home.do", identity)
       case p if p.startsWith("items/") => itemViewer(p.substring(6), (_,vi) => vi)
       case p if p.startsWith("integ/gen/") => itemViewer(p.substring(10), { (info,vi) =>
         vi.getState.setIntegrationType("gen")
@@ -337,7 +337,7 @@ class LegacyContentApi {
       val decs = Decorations.getDecorations(info)
       val html = result match {
         case tr: TemplateResult =>
-          val body = SectionUtils.renderToString(context, wrapBody(decs, tr.getNamedResult(context, "body")))
+          val body = SectionUtils.renderToString(context, wrapBody(context, tr.getNamedResult(context, "body")))
           val hasoMap = HelpAndScreenOptionsSection.getContent(context).asScala
           val scrops = hasoMap.get("screenoptions").map(bbr => SectionUtils.renderToString(context, bbr.getRenderable))
           val crumbs = renderCrumbs(context, decs).map(SectionUtils.renderToString(context, _))
@@ -347,7 +347,7 @@ class LegacyContentApi {
             crumbs.map("crumbs" -> _)
           ).flatten.toMap
         case sr: SectionRenderable =>
-          Map("body" -> SectionUtils.renderToString(context, wrapBody(decs, sr)))
+          Map("body" -> SectionUtils.renderToString(context, wrapBody(context, sr)))
         case pr: PreRenderable =>
           Map("body" -> SectionUtils.renderToString(context, new PreRenderOnly(pr)))
       }
@@ -395,9 +395,12 @@ class LegacyContentApi {
     renderedStatements
   }
 
-  def wrapBody(decs: Decorations, body: SectionRenderable): SectionRenderable = {
+  def wrapBody(context: RenderContext, body: SectionRenderable): SectionRenderable = {
+    val decs = Decorations.getDecorations(context)
+    val cbTag = context.getBody
+    cbTag.setId("content-body")
     val citag = new TagState("content-inner").addClass[TagState](decs.getPageLayoutDisplayClass)
-    val cbtag = new TagState("content-body").addClasses[TagState](decs.getContentBodyClasses)
+    val cbtag = cbTag.addClasses[TagState](decs.getContentBodyClasses)
 
     new DivRenderer(citag, new DivRenderer(cbtag, body))
   }

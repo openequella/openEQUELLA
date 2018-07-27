@@ -264,7 +264,10 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
         {page} <- getProps
         if oldPage /= page then eval LoadPage else pure unit
       LoadPage -> do 
-        {page: LegacyURI pagePath params} <- getProps 
+        {page: LegacyURI _pagePath params} <- getProps 
+        let pagePath = case _pagePath of 
+              "" -> "home.do"
+              o -> o
         modifyState _ {pagePath = pagePath}
         submitWithPath pagePath {vals: params, callback: toNullable Nothing}
       Submit s -> do 

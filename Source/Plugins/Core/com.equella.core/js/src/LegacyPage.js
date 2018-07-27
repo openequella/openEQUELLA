@@ -33,7 +33,10 @@ function collectParams(form, command, args)
     switch(typeof c) {
       case 'array': 
       case 'object':
-        outval = JSON.stringify(c);
+        if (c != null)
+        {
+          outval = JSON.stringify(c);
+        }
     }
     vals["eventp__" + i] = [outval];
   });
