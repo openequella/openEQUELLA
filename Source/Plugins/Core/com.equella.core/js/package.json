@@ -11,6 +11,7 @@
     "build:pages": "yarn run build:index && yarn run build:uploadlist",
     "build:index": "node build-bundle.js IndexPage index.js",
     "dev:index": "node build-bundle.js --dev IndexPage index.js",
+    "dev:selection": "node build-bundle.js --dev Selection.Main selection.js",
     "build:uploadlist": "node build-bundle.js --lib Uploads.UploadList uploadlist.js",
     "dev:uploadlist": "node build-bundle.js --dev --lib Uploads.UploadList uploadlist.js",
     "build:langbundle": "cross-env-shell NODE_PATH=target/ts \"pulp build -O --to output/genlang.js -m Tools.GenLangStrings && node output/genlang.js > ${npm_package_config_buildlang}/jsbundle.json\"",

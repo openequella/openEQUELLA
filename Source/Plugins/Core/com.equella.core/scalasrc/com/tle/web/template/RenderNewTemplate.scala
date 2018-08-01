@@ -39,6 +39,8 @@ case class ReactPageModel(getReactScript: String)
 object RenderNewTemplate {
   val r = ResourcesService.getResourceHelper(getClass)
   val DisableNewUI = "DISABLE_NEWUI"
+  val SetupJSKey = "setupJSData"
+  val ReactJSKey = "reactJSBundle"
 
   val reactTemplate = r.url("reactjs/index.js")
 
@@ -83,9 +85,12 @@ object RenderNewTemplate {
 
   def renderNewHtml(context: RenderEventContext, viewFactory: FreemarkerFactory): SectionResult =
   {
-    val renderData = new ObjectExpression("baseResources", r.url(""),
+    val _renderData = new ObjectExpression("baseResources", r.url(""),
       "newUI", java.lang.Boolean.TRUE)
-    renderReact(context, viewFactory, renderData, reactTemplate)
+    val renderData =
+      Option(context.getAttribute[ObjectExpression => ObjectExpression](SetupJSKey)).map(_.apply(_renderData)).getOrElse(_renderData)
+    val bundleJS = Option(context.getAttribute[String](ReactJSKey)).getOrElse(reactTemplate)
+    renderReact(context, viewFactory, renderData, bundleJS)
   }
 
   def renderReact(context: RenderEventContext, viewFactory: FreemarkerFactory, renderData: ObjectExpression,

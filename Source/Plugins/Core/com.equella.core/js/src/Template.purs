@@ -64,15 +64,14 @@ import MaterialUIPicker.MuiPickersUtilsProvider (muiPickersUtilsProvider, utils)
 import Network.HTTP.Affjax (get)
 import Network.HTTP.Affjax.Response as Resp
 import Partial.Unsafe (unsafePartial)
-import React (class ReactPropFields, Children, ReactClass, ReactElement, ReactThis, childrenToArray, createElement)
+import React (Children, ReactClass, ReactElement, ReactThis, childrenToArray, createElement)
 import React as R
 import React.DOM (footer, text)
 import React.DOM as D
 import React.DOM.Props as DP
 import ReactDOM (render)
-import Routes (ClickableHref, Route, forcePushRoute, logoutRoute, matchRoute, pushRoute, routeHref, routeURI, setPreventNav, userPrefsRoute)
+import Routes (Route, forcePushRoute, logoutRoute, matchRoute, pushRoute, routeHref, routeURI, setPreventNav, userPrefsRoute)
 import Utils.UI (withCurrentTarget)
-import Web.DOM.DOMTokenList (remove)
 import Web.DOM.DOMTokenList as DOMTokens
 import Web.DOM.Document (documentElement)
 import Web.DOM.NonElementParentNode (getElementById)
@@ -80,7 +79,7 @@ import Web.Event.EventTarget (EventListener, addEventListener, removeEventListen
 import Web.HTML (HTMLElement, window)
 import Web.HTML.Event.BeforeUnloadEvent.EventTypes (beforeunload)
 import Web.HTML.HTMLDocument (toDocument, toNonElementParentNode)
-import Web.HTML.HTMLElement (classList, fromElement)
+import Web.HTML.HTMLElement (classList)
 import Web.HTML.HTMLElement as HTML
 import Web.HTML.Window (document, toEventTarget)
 
@@ -132,6 +131,7 @@ type TemplateProps = (
   menuMode :: String,
   fullscreenMode :: String,
   hideAppBar :: Boolean, 
+  enableNotifications :: Boolean,
   innerRef :: Nullable (EffectFn1 (Nullable TemplateRef) Unit)
 )
 
@@ -155,7 +155,7 @@ template' :: {|TemplateProps} -> Array ReactElement -> ReactElement
 template' = createElement templateClass
 
 templateDefaults ::  String ->  {|TemplateProps} 
-templateDefaults title = {title,titleExtra:nullAny, fixedViewPort:nullAny,preventNavigation:nullAny, menuExtra:nullAny, 
+templateDefaults title = {title,titleExtra:nullAny, fixedViewPort:nullAny,preventNavigation:nullAny, menuExtra:nullAny, enableNotifications: true,
   tabs:nullAny, backRoute: nullAny, footer: nullAny, menuMode:"", fullscreenMode:"", hideAppBar: false, innerRef:nullAny}
 
 loadNewUser :: forall p. ReaderT (ReactThis p State) Aff Unit
@@ -271,7 +271,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       userMaybe l = user ^? (_Just <<< l)
       userMenu = D.div [DP.className classes.userMenu ] $ (fromMaybe [] $ toMaybe menuExtra) <>
         (
-          (guard $ not $ fromMaybe true $ userMaybe _guest) *>
+          (guard $ props.enableNotifications && (not $ fromMaybe true $ userMaybe _guest)) *>
           [
             badgedLink "assignment" _tasks "access/tasklist.do" topBarString.tasks , 
             badgedLink "notifications" _notifications "access/notifications.do" topBarString.notifications,
