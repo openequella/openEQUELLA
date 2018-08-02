@@ -2,15 +2,16 @@ module Search.SearchControl where
 
 import Prelude
 
-import Data.Maybe (Maybe)
-import Data.Tuple (Tuple)
+import Data.Array (mapMaybe)
+import Data.Maybe (Maybe(..))
+import Data.Tuple (Tuple, fst, snd)
 import Effect (Effect)
 import React (ReactElement)
 import Search.ItemResult (Result)
 import Search.SearchQuery (Query)
 import SearchResults (SearchResults)
 
-data Placement = Filters
+data Placement = Filters | ResultHeader
 derive instance eqP :: Eq Placement 
 
 newtype Chip = Chip {label::String, onDelete::Effect Unit}
@@ -27,3 +28,7 @@ type ControlParams = (
 )
 
 type SearchControl = {|ControlParams} -> ControlRender
+
+placementMatch :: Placement -> Tuple Placement ReactElement -> Maybe ReactElement 
+placementMatch p t | fst t == p = Just $ snd t
+placementMatch _ _ = Nothing

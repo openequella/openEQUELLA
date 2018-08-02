@@ -4,7 +4,7 @@ import Prelude hiding (div)
 
 import Control.Monad.Trans.Class (lift)
 import Data.Argonaut (decodeJson)
-import Data.Array (catMaybes, filter, find, intercalate, length, mapMaybe, mapWithIndex)
+import Data.Array (catMaybes, filter, find, intercalate, length, mapMaybe, mapWithIndex, singleton)
 import Data.Either (Either, either)
 import Data.Int (floor)
 import Data.Lens (_Just, addOver, appendOver, over, setJust)
@@ -17,6 +17,7 @@ import Data.Set (isEmpty)
 import Data.Set as S
 import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
+import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..), fst)
 import Dispatcher (affAction)
 import Dispatcher.React (getState, modifyState, renderer)
@@ -51,8 +52,13 @@ import React (ReactElement, unsafeCreateLeafElement)
 import React as R
 import React.DOM (div, text)
 import React.DOM.Props as DP
+import Search.FacetControl (facetControl)
 import Search.ItemResult (Result, itemResult, itemResultOptions)
-import Search.OrderControl (Order(..), orderEntries, orderName, orderValue)
+import Search.OrderControl (Order(..), orderControl, orderEntries, orderName, orderValue)
+import Search.OwnerControl (ownerControl)
+import Search.SearchControl (Chip(..), Placement(..), SearchControl, placementMatch)
+import Search.SearchQuery (Query, blankQuery, searchQueryParams)
+import Search.WithinLastControl (withinLastControl)
 import SearchResults (SearchResults(..))
 import Settings.UISettings (FacetSetting(..), NewUISettings(..), UISettings(..))
 import TSComponents (appBarQuery)
@@ -71,30 +77,27 @@ type ItemSearchResults = SearchResults Result
 type State = {
   searching :: Boolean,
   loadingNew :: Boolean,
-  query :: String,
-  facetSettings :: Array FacetSetting,
-  facets :: SM.Object (S.Set String),
-  searchResults :: Maybe ItemSearchResults, 
-  order :: Maybe Order
+  query :: Query,
+  facets :: Array SearchControl,
+  searchResults :: Maybe ItemSearchResults
 }
-data Command = InitSearch | Search | QueryUpdate String | ToggledTerm String String 
-  | SetOrder String
-  | Scrolled Event 
+data Command = InitSearch | Search | QueryUpdate String
+  | Scrolled Event | UpdateQuery (Query -> Query)
 
 initialState :: State
 initialState = {
     searching:false
-  , query:""
+  , query: blankQuery
   , searchResults:Nothing
-  , facets:SM.empty
-  , facetSettings: []
+  , facets: []
   , loadingNew: false
-  , order: Nothing
 }
 
 searchPage :: ReactElement
 searchPage = flip unsafeCreateLeafElement {} $ withStyles styles $ R.component "SearchPage" $ \this -> do
+  oc <- ownerControl
   let
+    searchControls = [orderControl, oc, withinLastControl]
     d = eval >>> affAction this
     _id = prop (SProxy :: SProxy "id")
     _searchResults = prop (SProxy :: SProxy "searchResults")
@@ -104,64 +107,49 @@ searchPage = flip unsafeCreateLeafElement {} $ withStyles styles $ R.component "
     string = prepLangStrings rawStrings
     coreString = prepLangStrings coreStrings
 
-    render {state: 
-      {searchResults,query,facets,facetSettings,searching,loadingNew,order}, props:{classes}} = 
-        template' (templateDefaults coreString.title) 
-          {titleExtra= toNullable $ Just $ appBarQuery {query, onChange: mkEffectFn1 $ d <<< QueryUpdate} } [ mainContent ]
-      where
+    render = do 
+      {searchResults,query,facets,searching,loadingNew} <- R.getState this
+      {classes} <- R.getProps this
+      controlsRendered <- traverse (\f -> f {updateQuery: d <<< UpdateQuery, results:searchResults, query}) $ searchControls <> facets
 
-      facetMap = SM.fromFoldable $ (\fac@(FacetSetting {path}) -> Tuple path fac) <$> facetSettings
-
-      queryWithout exclude = joinWith " AND " $ mapMaybe whereClause $ filter (fst >>> notEq exclude) $ SM.toUnfoldable facets
-
-      mainContent = div [DP.className classes.layoutDiv] [
-        paper [className classes.results, elevation 4] $ 
-          renderResults searchResults <> progress,
-        paper [className classes.refinements, elevation 4] $ 
-          [ typography [className classes.filterTitle, variant title] [text string.refineTitle ] ] <>
-          (intercalate [divider []] $ 
-            (pure <<< makeFacet <$> facetSettings))
-      ]
-
-      progress = [
-        let pbar = circularProgress [className classes.progress]
-        in fade [in_ $ searching || loadingNew, timeout $ if loadingNew then 0 else 800] [ pbar ]
-      ]
-
-      facetChips = facetChip <$> (allVals =<< SM.toUnfoldable facets)
-      allVals (Tuple node s) = {name:fromMaybe node $ unwrap >>> _.name <$> lookup node facetMap, node, value: _} <$> S.toUnfoldable s
-      facetChip {name,node,value} = stdChip (name <> ": " <> value) $ ToggledTerm node value
-
-      stdChip l c = chip [className classes.chip, label l, onDelete $ \_ -> d c]
-
-      fullQuery = searchQuery {query}
-
-      makeFacet details@(FacetSetting {path}) = facetDisplay {facet:details, 
-        onClickTerm: d <<< ToggledTerm path,
-        selectedTerms: fromMaybe S.empty $ SM.lookup path facets, 
-        query: fullQuery <> [ Tuple "where" $ queryWithout path ] }
-
-      renderResults (Just (SearchResults {results,available})) =
-        let resultLen = length results
-            orderItem o = menuItem [mkProp "value" $ orderValue o] [ text $ orderName o ]
-            oneResult i r = itemResult $ (itemResultOptions r) {showDivider = i /= (resultLen - 1)}
-        in [
-          div [ DP.className classes.resultHeader ] [
-            typography [className classes.available, component "div", variant TS.subheading] [ 
-                text $ show available <> " " <> string.resultsAvailable ],
-            select [ className classes.ordering, 
-                    value $ orderValue $ fromMaybe Relevance order, 
-                    onChange $ valueChange $ d <<< SetOrder
-                  ] $ (orderItem <$> orderEntries)
-          ],
-          div [ DP.className classes.facetContainer ] $ 
-            facetChips,
-          list [component "section"] $ mapWithIndex oneResult results
+      let 
+        mainContent = div [DP.className classes.layoutDiv] [
+          paper [className classes.results, elevation 4] $ 
+            renderResults searchResults <> progress,
+          paper [className classes.refinements, elevation 4] $ 
+            [ typography [className classes.filterTitle, variant title] [text string.refineTitle ] ] <>
+            (intercalate [divider []] $ (mapMaybe (map singleton <<< placementMatch Filters) <<< _.render =<< controlsRendered))
         ]
-      renderResults Nothing = []
 
+        progress = [
+          let pbar = circularProgress [className classes.progress]
+          in fade [in_ $ searching || loadingNew, timeout $ if loadingNew then 0 else 800] [ pbar ]
+        ]
+        stdChip (Chip c) = chip [className classes.chip, label c.label, onDelete $ \_ -> c.onDelete]
+
+        renderResults (Just (SearchResults {results,available})) =
+          let resultLen = length results
+              orderItem o = menuItem [mkProp "value" $ orderValue o] [ text $ orderName o ]
+              oneResult i r = itemResult $ (itemResultOptions r) {showDivider = i /= (resultLen - 1)}
+          in [
+            div [ DP.className classes.resultHeader ] $ [
+              typography [className classes.available, component "div", variant TS.subheading] [ 
+                  text $ show available <> " " <> string.resultsAvailable ] 
+              ] <> 
+              (mapMaybe (placementMatch ResultHeader) <<< _.render =<< controlsRendered)
+            ,
+            div [ DP.className classes.facetContainer ] $ 
+              (map stdChip <<< _.chips =<< controlsRendered),
+            list [component "section"] $ mapWithIndex oneResult results 
+          ]
+        renderResults Nothing = []
+      pure $ template' (templateDefaults coreString.title) 
+            {titleExtra = toNullable $ Just $ appBarQuery {query: query.query, onChange: mkEffectFn1 $ d <<< QueryUpdate} } [ 
+            mainContent 
+          ]
 
     modifySearchFlag searchFlag f = modifyState $ _{searching=searchFlag} <<< f
+
     searchMore = do 
       s <- getState
       case s of 
@@ -181,41 +169,33 @@ searchPage = flip unsafeCreateLeafElement {} $ withStyles styles $ R.component "
       sr <- lift $ callSearch 0 (f s)
       either (lift <<< log) (modifySearchFlag false <<< setJust _searchResults) $ sr
 
-    toggleFacet node term facMap = SM.insert node (toggle $ fromMaybe S.empty $ SM.lookup node facMap) facMap
-      where
-      toggle set = if S.member term set then S.delete term set else S.insert term set
+    eval = case _ of 
+      InitSearch -> do
+        searchWith identity
+        liftEffect $ do 
+          w <- window
+          l <- eventListener $ affAction this <<< eval <<< Scrolled
+          addEventListener (EventType "scroll") l false (unsafeCoerce w)
+        result <- lift $ get json $ baseUrl <> "api/settings/ui"
+        either (lift <<< log) (\(UISettings {newUI:(NewUISettings {facets})}) -> do 
+          controls <- liftEffect $ traverse facetControl facets
+          modifyState _ {facets = controls}) $ decodeJson result.response
 
-    eval (SetOrder ov) = searchWith _{order = find (orderValue >>> eq ov) orderEntries}
-    eval InitSearch = do
-      searchWith identity
-      liftEffect $ do 
-        w <- window
-        l <- eventListener $ affAction this <<< eval <<< Scrolled
-        addEventListener (EventType "scroll") l false (unsafeCoerce w)
-      result <- lift $ get json $ baseUrl <> "api/settings/ui"
-      either (lift <<< log) (\(UISettings {newUI:(NewUISettings {facets})}) -> 
-        modifyState _ {facetSettings= facets}) $ decodeJson result.response
+      Scrolled e -> do
+        shouldScroll <- liftEffect $ do 
+          w <- window
+          h <- innerHeight w
+          sY <- scrollY w
+          b <- document w >>= body
+          oh <- unsafePartial $ offsetHeight $ fromJust b
+          pure $ h + sY >= (floor oh - 500) 
+        if shouldScroll then searchMore else pure unit
 
-    eval (Scrolled e) = do
-      shouldScroll <- liftEffect $ do 
-        w <- window
-        h <- innerHeight w
-        sY <- scrollY w
-        b <- document w >>= body
-        oh <- unsafePartial $ offsetHeight $ fromJust b
-        pure $ h + sY >= (floor oh - 500) 
-      if shouldScroll then searchMore else pure unit
-
-    eval Search = do
-      searchWith identity
-
-    eval (ToggledTerm node term) = do
-      searchWith \s -> s {facets = toggleFacet node term s.facets }
-
-    eval (QueryUpdate q) = do
-      searchWith _ {query=q}
+      Search -> searchWith identity
+      QueryUpdate q -> searchWith \s -> s {query = s.query {query = q} }
+      UpdateQuery f -> searchWith \s -> s {query = f s.query}
   
-  pure {render: renderer render this, state:initialState, componentDidMount: d InitSearch}
+  pure {render, state:initialState, componentDidMount: d InitSearch}
   where 
   styles theme = {
     results: {
@@ -265,21 +245,12 @@ searchPage = flip unsafeCreateLeafElement {} $ withStyles styles $ R.component "
     }
 }
 
-searchQuery :: { query :: String} -> Array (Tuple String String)
-searchQuery {query} = [
-  Tuple "q" query 
-]
-
 callSearch :: Int -> State -> Aff (Either String ItemSearchResults)
-callSearch offset {facets,query,order} = do
-  let whereXpath = mapMaybe whereClause $ SM.toUnfoldable facets
+callSearch offset {query} = do
   result <- get json $ baseUrl <> "api/search?" <> (queryString $ [
       Tuple "info" "basic,detail,attachment,display",
-      Tuple "start" $ show offset,
-      Tuple "where" $ joinWith " AND " whereXpath
-    ] <> searchQuery {query} <> catMaybes [
-      (orderValue >>> Tuple "order") <$> order
-    ]
+      Tuple "start" $ show offset
+    ] <> searchQueryParams query
   )
   pure $ decodeJson result.response
 

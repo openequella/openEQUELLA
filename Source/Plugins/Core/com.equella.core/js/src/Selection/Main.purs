@@ -43,7 +43,7 @@ import Search.FacetControl (facetControl)
 import Search.ItemResult (Result(..), ItemSelection, itemResult, itemResultOptions)
 import Search.OrderControl (orderControl)
 import Search.OwnerControl (ownerControl)
-import Search.SearchControl (Chip(..), Placement(..), SearchControl)
+import Search.SearchControl (Chip(..), Placement(..), SearchControl, placementMatch)
 import Search.SearchQuery (Query, blankQuery, searchQueryParams)
 import Search.WithinLastControl (withinLastControl)
 import SearchPage (ItemSearchResults)
@@ -100,14 +100,13 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
     render {props:{classes, selection}, state:{selectedFolder,selections,query,searchResults}} = do 
       controlsRendered <- traverse (\f -> f {updateQuery: d <<< UpdateQuery, results:searchResults, query}) controls
       let 
-        placementFilter (f :: Placement) = mapMaybe (\(Tuple p e) -> if p == f then Just e else Nothing)
         stdChip (Chip c) = chip [className classes.chip, label c.label, onDelete $ \_ -> c.onDelete]
         renderResults (SearchResults {results,available}) = 
             list [MUIC.component "section"] $ mapWithIndex oneResult results
           where 
             lastResult = length results - 1
             oneResult i r = itemResult $ (itemResultOptions r) {showDivider = i /= lastResult, onSelect = Just $ d <<< SelectionMade}
-      pure $ div' $ (placementFilter Filters <<< _.render =<< controlsRendered) <> catMaybes [ 
+      pure $ div' $ (mapMaybe (placementMatch Filters) <<< _.render =<< controlsRendered) <> catMaybes [ 
         Just $ div' $ (map stdChip <<< _.chips =<< controlsRendered),
         Just $ MUI.button [onClick $ \_ -> d ReturnSelections] [ text "Return" ],
         searchResults <#> renderResults,

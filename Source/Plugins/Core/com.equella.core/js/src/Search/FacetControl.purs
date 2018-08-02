@@ -31,7 +31,7 @@ import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (text)
 import React.DOM as D
 import Search.SearchControl (Chip(..), ControlParams, Placement(..), SearchControl)
-import Search.SearchQuery (Query, QueryParam(..), searchQueryParams)
+import Search.SearchQuery (Query, QueryParam(..), _params, searchQueryParams)
 import SearchFilters (filterSection)
 import Settings.UISettings (FacetSetting(..))
 
@@ -107,7 +107,10 @@ facetDisplay = unsafeCreateLeafElement $ component "FacetDisplay" $ \this -> do
     searchWith query = do
       modifyState _ {searching=true}
       {facet:(FacetSetting {path})} <- getProps
-      result <- lift $ get json $ baseUrl <> "api/search/facet?" <> (queryString $ [Tuple "nodes" path] <> searchQueryParams query)
+      let withoutOurs = set (_params <<< at path) Nothing query
+      result <- lift $ get json $ baseUrl <> "api/search/facet?" <> 
+        (queryString $ [Tuple "nodes" path] <> 
+        searchQueryParams withoutOurs)
       either log (\r -> modifyState _ {searchResults=Just r}) $ decodeJson result.response
 
     eval Search = do

@@ -4,24 +4,23 @@ import Prelude
 
 import Control.Bind (bindFlipped)
 import Control.MonadZero (guard)
-import Data.Argonaut (Json, jsonNull)
+import Data.Argonaut (class EncodeJson, Json, encodeJson)
 import Data.Array as Array
-import Data.Lens (Lens', Prism', prism')
+import Data.Lens (Lens')
 import Data.Lens.Record (prop)
 import Data.Map (Map)
 import Data.Map as Map
-import Data.Maybe (Maybe(..))
 import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
 import Data.Tuple (Tuple(..))
 
 data QueryParam = Param String String | XPath (Array String) | Params (Array (Tuple String String))
-
+type ParamData = {data::Json, value::QueryParam}
 derive instance eqQP :: Eq QueryParam
 
 type Query = {
     query :: String,
-    params :: Map String {data::Json, value::QueryParam}
+    params :: Map String ParamData
 }
 
 blankQuery :: Query
@@ -39,13 +38,11 @@ _value = prop (SProxy :: SProxy "value")
 _data :: forall r a. Lens' {data::a|r} a
 _data = prop (SProxy :: SProxy "data")
 
-singleParam :: String -> String -> {data::Json, value::QueryParam}
-singleParam n v = {data:jsonNull, value:Param n v}
+singleParam :: forall a. EncodeJson a => a -> String -> String -> ParamData
+singleParam a n v = {data: encodeJson a, value:Param n v}
 
-_Param :: Prism' QueryParam (Tuple String String)
-_Param = prism' (\(Tuple n v) -> Param n v) case _ of 
-    Param n v -> Just $ Tuple n v
-    _ -> Nothing
+emptyQueryParam :: forall a. EncodeJson a => a -> ParamData 
+emptyQueryParam a = {data: encodeJson a, value:Params []}
 
 searchQueryParams :: Query -> Array (Tuple String String)
 searchQueryParams {query,params} = let 

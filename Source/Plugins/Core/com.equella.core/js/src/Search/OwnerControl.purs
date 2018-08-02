@@ -52,9 +52,9 @@ ownerControl = do
       OwnerSelected o -> do 
         modifyState _{selectOwner=false, userDetails = o}
         {updateQuery} <- getProps
-        let ownerParam (UserDetails {id}) = singleParam "owner" id
+        let ownerParam (UserDetails {id}) = singleParam id "owner" id
         liftEffect $ updateQuery $ set (_params <<< _owner) $ ownerParam <$> o
-          
+           
     ownerComponent = unsafeCreateLeafElement $ 
           withStyles styles $ component "OwnerControl" $ \this -> do 
       let 
