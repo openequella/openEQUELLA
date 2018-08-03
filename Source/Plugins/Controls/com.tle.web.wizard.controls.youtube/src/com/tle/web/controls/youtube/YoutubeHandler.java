@@ -468,10 +468,12 @@ public class YoutubeHandler extends BasicAbstractAttachmentHandler<YoutubeHandle
 				{
 					BigInteger numLikes = stats.getLikeCount();
 					BigInteger numDislikes = stats.getDislikeCount();
-					SpanRenderer spinfo = new SpanRenderer("rating-info", new KeyLabel(RATING_INFO, numLikes,
-						numDislikes));
-					addAttachmentDetail(context, RATING, new CombinedRenderer(new YouTubeRating(numLikes.intValue(),
-						numDislikes.intValue()), spinfo));
+					final int likes = (numLikes == null ? 0 : numLikes.intValue());
+					final int dislikes = (numDislikes == null ? 0 : numDislikes.intValue());
+					SpanRenderer spinfo = new SpanRenderer("rating-info", new KeyLabel(RATING_INFO, likes,
+							dislikes));
+					addAttachmentDetail(context, RATING, new CombinedRenderer(new YouTubeRating(likes,
+							dislikes), spinfo));
 				}
 			}
 		}
