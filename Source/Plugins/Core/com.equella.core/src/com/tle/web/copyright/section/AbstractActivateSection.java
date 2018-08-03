@@ -171,10 +171,11 @@ public abstract class AbstractActivateSection extends AbstractContentSection<Abs
 
 		final IntegrationInterface integration = integrationService.getIntegrationInterface(context);
 		final String courseCode = (integration == null ? null : integration.getCourseInfoCode());
+		CourseInfo selectedCourse = null;
 		if( integration != null && courseCode != null )
 		{
-			final CourseInfo c = courseInfoService.getByCode(courseCode);
-			if( c == null )
+			final CourseInfo courseByCode = courseInfoService.getByCode(courseCode);
+			if( courseByCode == null )
 			{
 				if( canAutoCreate(itemInfo.getItem()) )
 				{
@@ -190,7 +191,8 @@ public abstract class AbstractActivateSection extends AbstractContentSection<Abs
 			}
 			else
 			{
-				course.setSelectedValue(context, c);
+				selectedCourse = courseByCode;
+				course.setSelectedValue(context, selectedCourse);
 				updateCourseData(context);
 			}
 		}
@@ -201,6 +203,7 @@ public abstract class AbstractActivateSection extends AbstractContentSection<Abs
 				model.setException(makeException(KEY_NOCOURSES));
 				return fatalError(this);
 			}
+			selectedCourse = course.getSelectedValue(context);
 		}
 
 		final StringBuilder sbuf = new StringBuilder();
@@ -220,7 +223,8 @@ public abstract class AbstractActivateSection extends AbstractContentSection<Abs
 		model.setAttachmentList(sbuf.toString());
 		model.setAddLabel(isSelectingForIntegration(context) ? AbstractCopyrightSummarySection.getActivateAndAddLabel()
 			: AbstractCopyrightSummarySection.getActivateLabel());
-
+		model.setCourseSelected(selectedCourse != null);
+		model.setStudents(selectedCourse == null ? 0 : selectedCourse.getStudents());
 		addDefaultBreadcrumbs(context, itemInfo, LABEL_TITLE);
 
 		return viewFactory.createResult("activate.ftl", this);
@@ -568,6 +572,8 @@ public abstract class AbstractActivateSection extends AbstractContentSection<Abs
 		private LanguageBundle error;
 		private CopyrightViolationException exception;
 		private Label addLabel;
+		private boolean courseSelected;
+		private int students;
 		private CourseInfo autoCourse;
 		@Bookmarked(stateful = false)
 		private boolean courseAutoCreated;
@@ -665,6 +671,26 @@ public abstract class AbstractActivateSection extends AbstractContentSection<Abs
 		public CourseInfo getAutoCourse()
 		{
 			return autoCourse;
+		}
+
+		public boolean isCourseSelected()
+		{
+			return courseSelected;
+		}
+
+		public void setCourseSelected(boolean courseSelected)
+		{
+			this.courseSelected = courseSelected;
+		}
+
+		public int getStudents()
+		{
+			return students;
+		}
+
+		public void setStudents(int students)
+		{
+			this.students = students;
 		}
 	}
 }

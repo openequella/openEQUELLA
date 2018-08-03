@@ -31,7 +31,7 @@
 				</@setting>
 			</#if>
 			
-			<@setting label=b.key("activate.expected")><#if m.course??>${m.course.students}<#else>${b.key("activate.expected.none")}</#if></@setting>
+			<@setting label=b.key("activate.expected")><#if m.courseSelected>${m.students}<#else>${b.key("activate.expected.none")}</#if></@setting>
 
             <@setting label=b.key("activate.makelivefrom") mandatory=true labelFor=s.untilDate ><@calendar section=s.fromDate notAfter=s.untilDate /></@setting>
 
