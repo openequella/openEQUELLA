@@ -8,7 +8,7 @@
 <@css path="mailsettings.css" hasRtl=true />
 
 <div class="area">
-	<h2>${b.key('settings.page.title')}</h2>
+	<h2>${b.key('mail.settings.page.title')}</h2>
 	<@settingContainer mandatory=false>
 		<@div id="required">
 			<@setting label=b.key('settings.label.server') section=s.serverUrl error=m.errors['serverUrl'] />
