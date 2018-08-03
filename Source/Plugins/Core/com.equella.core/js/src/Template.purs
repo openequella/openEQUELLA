@@ -484,7 +484,7 @@ ourTheme :: Theme
 ourTheme = createMuiTheme {
   palette: {
     primary: blue, 
-    secondary: indigo
+    secondary: orange
   }
 }
 
