@@ -20,7 +20,7 @@ import Data.Symbol (SProxy(..))
 import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..), fst)
 import Dispatcher (affAction)
-import Dispatcher.React (getState, modifyState, renderer)
+import Dispatcher.React (getState, modifyState, renderer, stateRenderer)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
@@ -57,6 +57,7 @@ import Search.ItemResult (Result, itemResult, itemResultOptions)
 import Search.OrderControl (Order(..), orderControl, orderEntries, orderName, orderValue)
 import Search.OwnerControl (ownerControl)
 import Search.SearchControl (Chip(..), Placement(..), SearchControl, placementMatch)
+import Search.SearchLayout (searchLayout)
 import Search.SearchQuery (Query, blankQuery, searchQueryParams)
 import Search.WithinLastControl (withinLastControl)
 import SearchResults (SearchResults(..))
@@ -72,192 +73,40 @@ import Web.HTML.HTMLDocument (body)
 import Web.HTML.HTMLElement (offsetHeight)
 import Web.HTML.Window (document, innerHeight, scrollY)
 
-type ItemSearchResults = SearchResults Result
-
 type State = {
-  searching :: Boolean,
-  loadingNew :: Boolean,
-  query :: Query,
-  facets :: Array SearchControl,
-  searchResults :: Maybe ItemSearchResults
+  facets :: Array SearchControl
 }
-data Command = InitSearch | Search | QueryUpdate String
-  | Scrolled Event | UpdateQuery (Query -> Query)
+data Command = InitSearch 
 
 initialState :: State
 initialState = {
-    searching:false
-  , query: blankQuery
-  , searchResults:Nothing
-  , facets: []
-  , loadingNew: false
+    facets: []
 }
 
 searchPage :: ReactElement
 searchPage = flip unsafeCreateLeafElement {} $ withStyles styles $ R.component "SearchPage" $ \this -> do
   oc <- ownerControl
   let
-    searchControls = [orderControl, oc, withinLastControl]
     d = eval >>> affAction this
-    _id = prop (SProxy :: SProxy "id")
-    _searchResults = prop (SProxy :: SProxy "searchResults")
-    _results = prop (SProxy :: SProxy "results")
-    _length = prop (SProxy :: SProxy "length")
-
-    string = prepLangStrings rawStrings
+    searchControls = [orderControl, oc, withinLastControl]
     coreString = prepLangStrings coreStrings
 
-    render = do 
-      {searchResults,query,facets,searching,loadingNew} <- R.getState this
-      {classes} <- R.getProps this
-      controlsRendered <- traverse (\f -> f {updateQuery: d <<< UpdateQuery, results:searchResults, query}) $ searchControls <> facets
-
-      let 
-        mainContent = div [DP.className classes.layoutDiv] [
-          paper [className classes.results, elevation 4] $ 
-            renderResults searchResults <> progress,
-          paper [className classes.refinements, elevation 4] $ 
-            [ typography [className classes.filterTitle, variant title] [text string.refineTitle ] ] <>
-            (intercalate [divider []] $ (mapMaybe (map singleton <<< placementMatch Filters) <<< _.render =<< controlsRendered))
-        ]
-
-        progress = [
-          let pbar = circularProgress [className classes.progress]
-          in fade [in_ $ searching || loadingNew, timeout $ if loadingNew then 0 else 800] [ pbar ]
-        ]
-        stdChip (Chip c) = chip [className classes.chip, label c.label, onDelete $ \_ -> c.onDelete]
-
-        renderResults (Just (SearchResults {results,available})) =
-          let resultLen = length results
-              orderItem o = menuItem [mkProp "value" $ orderValue o] [ text $ orderName o ]
-              oneResult i r = itemResult $ (itemResultOptions r) {showDivider = i /= (resultLen - 1)}
-          in [
-            div [ DP.className classes.resultHeader ] $ [
-              typography [className classes.available, component "div", variant TS.subheading] [ 
-                  text $ show available <> " " <> string.resultsAvailable ] 
-              ] <> 
-              (mapMaybe (placementMatch ResultHeader) <<< _.render =<< controlsRendered)
-            ,
-            div [ DP.className classes.facetContainer ] $ 
-              (map stdChip <<< _.chips =<< controlsRendered),
-            list [component "section"] $ mapWithIndex oneResult results 
-          ]
-        renderResults Nothing = []
-      pure $ template' (templateDefaults coreString.title) 
-            {titleExtra = toNullable $ Just $ appBarQuery {query: query.query, onChange: mkEffectFn1 $ d <<< QueryUpdate} } [ 
-            mainContent 
-          ]
-
-    modifySearchFlag searchFlag f = modifyState $ _{searching=searchFlag} <<< f
-
-    searchMore = do 
-      s <- getState
-      case s of 
-        {searching:false, searchResults:Just (SearchResults {start,length,available})} | start+length < available -> do 
-          modifySearchFlag true identity
-          sr <- lift $ callSearch (start+length) s
-          let appendres (SearchResults newres) = 
-                modifySearchFlag false $ over (_searchResults <<< _Just <<< _Newtype) 
-                  ((appendOver _results newres.results) <<< (addOver _length newres.length))
-          either (lift <<< log) appendres sr
-        _ -> pure unit
-      
-
-    searchWith f = do
-      s <- getState
-      modifySearchFlag true f
-      sr <- lift $ callSearch 0 (f s)
-      either (lift <<< log) (modifySearchFlag false <<< setJust _searchResults) $ sr
-
+    renderTemplate {queryBar,content} = template' (templateDefaults coreString.title) 
+             {titleExtra = toNullable $ Just $ queryBar } [ content ]
+    render {facets} = searchLayout {searchControls: searchControls <> facets, strings:searchStrings, renderTemplate }
     eval = case _ of 
       InitSearch -> do
-        searchWith identity
-        liftEffect $ do 
-          w <- window
-          l <- eventListener $ affAction this <<< eval <<< Scrolled
-          addEventListener (EventType "scroll") l false (unsafeCoerce w)
         result <- lift $ get json $ baseUrl <> "api/settings/ui"
         either (lift <<< log) (\(UISettings {newUI:(NewUISettings {facets})}) -> do 
           controls <- liftEffect $ traverse facetControl facets
           modifyState _ {facets = controls}) $ decodeJson result.response
-
-      Scrolled e -> do
-        shouldScroll <- liftEffect $ do 
-          w <- window
-          h <- innerHeight w
-          sY <- scrollY w
-          b <- document w >>= body
-          oh <- unsafePartial $ offsetHeight $ fromJust b
-          pure $ h + sY >= (floor oh - 500) 
-        if shouldScroll then searchMore else pure unit
-
-      Search -> searchWith identity
-      QueryUpdate q -> searchWith \s -> s {query = s.query {query = q} }
-      UpdateQuery f -> searchWith \s -> s {query = f s.query}
   
-  pure {render, state:initialState, componentDidMount: d InitSearch}
+  pure {render: stateRenderer render this, state:initialState, componentDidMount: d InitSearch}
   where 
   styles theme = {
-    results: {
-      flexBasis: "75%",
-      display: "flex",
-      flexDirection: "column",
-      padding: 16
-    },
-    refinements: {
-      flexBasis: "25%",
-      marginLeft: 16, 
-      display: "flex", 
-      flexDirection: "column",
-      padding: theme.spacing.unit * 2
-    },
-    layoutDiv: {
-      padding: theme.spacing.unit * 2,
-      display: "flex",
-      justifyContent: "space-around"
-    },
-    facetContainer: {
-      display: "flex",
-      flexWrap: "wrap"
-    },
-    chip: {
-      margin: theme.spacing.unit
-    },
-    dateContainer: {
-      margin: theme.spacing.unit
-    },
-    progress: {
-      alignSelf: "center"
-    }, 
-    filterTitle: {
-      alignSelf: "center",
-      margin: theme.spacing.unit
-    }, 
-    resultHeader: {
-      display: "flex", 
-      alignItems: "center"
-    }, 
-    ordering: {
-      width: "10em"
-    },
-    available: {
-      flexGrow: 1
-    }
-}
+  }
 
-callSearch :: Int -> State -> Aff (Either String ItemSearchResults)
-callSearch offset {query} = do
-  result <- get json $ baseUrl <> "api/search?" <> (queryString $ [
-      Tuple "info" "basic,detail,attachment,display",
-      Tuple "start" $ show offset
-    ] <> searchQueryParams query
-  )
-  pure $ decodeJson result.response
-
-whereClause :: Tuple String (S.Set String) -> Maybe String
-whereClause (Tuple node terms) | not isEmpty terms = Just $ "(" <> (joinWith " OR " $ clause <$> S.toUnfoldable terms) <> ")"
-  where clause term = "/xml" <> node <> " = " <> "'" <> term <> "'"
-whereClause _ = Nothing
+searchStrings = prepLangStrings rawStrings
 
 rawStrings :: { prefix :: String
 , strings :: { resultsAvailable :: String

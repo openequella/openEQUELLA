@@ -14,6 +14,7 @@ import Data.Lens.Record (prop)
 import Data.Map (Map, empty)
 import Data.Map as Map
 import Data.Maybe (Maybe(..))
+import Data.Nullable (toNullable)
 import Data.Symbol (SProxy(..))
 import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..), snd)
@@ -44,15 +45,16 @@ import Search.ItemResult (Result(..), ItemSelection, itemResult, itemResultOptio
 import Search.OrderControl (orderControl)
 import Search.OwnerControl (ownerControl)
 import Search.SearchControl (Chip(..), Placement(..), SearchControl, placementMatch)
+import Search.SearchLayout (ItemSearchResults, searchLayout)
 import Search.SearchQuery (Query, blankQuery, searchQueryParams)
 import Search.WithinLastControl (withinLastControl)
-import SearchPage (ItemSearchResults)
+import SearchPage (searchStrings)
 import SearchResults (SearchResults(..))
 import Selection.ReturnResult (ReturnData, decodeReturnData, executeReturn)
 import Settings.UISettings (FacetSetting(..))
-import Template (renderMain)
+import Template (renderMain, template', templateDefaults)
 
-foreign import selectionJson :: String
+foreign import selectionJson :: String 
 
 type CourseData = {
   courseId :: Maybe String, 
@@ -79,13 +81,11 @@ decodeSelection v = do
   returnData <- o .? "returnData" >>= decodeReturnData
   pure {courseData,returnData}
 
-data Command = SelectFolder String | SelectionMade ItemSelection | ReturnSelections | ResetSearch | UpdateQuery (Query -> Query)
+data Command = SelectFolder String | SelectionMade ItemSelection | ReturnSelections 
 
 type State = {
-  query :: Query, 
   selectedFolder :: String, 
-  selections :: Map String (Array ItemSelection), 
-  searchResults :: Maybe ItemSearchResults
+  selections :: Map String (Array ItemSelection)
 }
 
 selectSearch :: {selection::SelectionData} -> ReactElement
@@ -95,24 +95,29 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
   let 
     d = eval >>> affAction this
     _selections = prop (SProxy :: SProxy "selections")
-    controls :: Array SearchControl
-    controls = [orderControl, oc, fc, withinLastControl]
-    render {props:{classes, selection}, state:{selectedFolder,selections,query,searchResults}} = do 
-      controlsRendered <- traverse (\f -> f {updateQuery: d <<< UpdateQuery, results:searchResults, query}) controls
-      let 
-        stdChip (Chip c) = chip [className classes.chip, label c.label, onDelete $ \_ -> c.onDelete]
-        renderResults (SearchResults {results,available}) = 
-            list [MUIC.component "section"] $ mapWithIndex oneResult results
-          where 
-            lastResult = length results - 1
-            oneResult i r = itemResult $ (itemResultOptions r) {showDivider = i /= lastResult, onSelect = Just $ d <<< SelectionMade}
-      pure $ div' $ (mapMaybe (placementMatch Filters) <<< _.render =<< controlsRendered) <> catMaybes [ 
-        Just $ div' $ (map stdChip <<< _.chips =<< controlsRendered),
-        Just $ MUI.button [onClick $ \_ -> d ReturnSelections] [ text "Return" ],
-        searchResults <#> renderResults,
-        -- Just $ itemResult $ (itemResultOptions sampleResult) {showDivider = true, onSelect = Just $ d <<< SelectionMade}, 
-        (courseStructure <<< {selectedFolder, selections, onSelectFolder: d <<< SelectFolder, structure: _}) <$> selection.courseData.structure
-      ]
+    searchControls = [orderControl, oc, fc, withinLastControl]
+
+
+        -- (courseStructure <<< {selectedFolder, selections, onSelectFolder: d <<< SelectFolder, structure: _}) <$> selection.courseData.structure
+
+    renderTemplate {queryBar,content} = template' (templateDefaults "Selection") 
+             {titleExtra = toNullable $ Just $ queryBar } [ content ]
+
+    render {props:{classes, selection}, state:{selectedFolder,selections}} = 
+      searchLayout {searchControls, strings: searchStrings, renderTemplate}
+      -- let 
+      --   stdChip (Chip c) = chip [className classes.chip, label c.label, onDelete $ \_ -> c.onDelete]
+      --   renderResults (SearchResults {results,available}) = 
+      --       list [MUIC.component "section"] $ mapWithIndex oneResult results
+      --     where 
+      --       lastResult = length results - 1
+      --       oneResult i r = itemResult $ (itemResultOptions r) {showDivider = i /= lastResult, onSelect = Just $ d <<< SelectionMade}
+      -- pure $ div' $ (mapMaybe (placementMatch Filters) <<< _.render =<< controlsRendered) <> catMaybes [ 
+      --   Just $ div' $ (map stdChip <<< _.chips =<< controlsRendered),
+      --   Just $ MUI.button [onClick $ \_ -> d ReturnSelections] [ text "Return" ],
+      --   searchResults <#> renderResults,
+      --   -- Just $ itemResult $ (itemResultOptions sampleResult) {showDivider = true, onSelect = Just $ d <<< SelectionMade}, 
+      -- ]
 
     eval = case _ of 
       SelectFolder f -> modifyState _ {selectedFolder = f}
@@ -124,33 +129,15 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
         {selections} <- getState 
         {selection} <- getProps
         liftEffect $ executeReturn selection.returnData (Map.toUnfoldable selections)
-      ResetSearch -> do 
-        {query} <- getState 
-        result <- lift $ Ajax.get Resp.json $ baseUrl <> "api/search?" <> (queryString $ [
-                    Tuple "info" "basic,detail,attachment,display",
-                    Tuple "start" "0"
-                  ] <> searchQueryParams query)
-        either unsafeCrashWith (\sr -> modifyState _ { searchResults = Just sr}) $ decodeJson result.response
-      UpdateQuery f -> do
-        liftEffect $ modifyStateWithCallback this (\s -> s {query = f s.query}) (affAction this (eval ResetSearch))
 
-  pure {render: do 
-          props <- R.getProps this
-          state <- R.getState this
-          render {props,state}
-        , 
-        componentDidMount: d ResetSearch,
+  pure {render: renderer render this, 
         state: {
           selectedFolder:"", 
-          selections:empty, 
-          query: blankQuery, 
-          searchResults: Nothing 
+          selections:empty
         } :: State}
   where 
   styles theme = {
-    chip: {
-      margin: theme.spacing.unit
-    }
+    
   }
 
 main :: Effect Unit
