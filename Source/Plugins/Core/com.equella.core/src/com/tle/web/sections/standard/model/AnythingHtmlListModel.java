@@ -13,14 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.tle.web.sections.standard.model;
 
-import com.tle.beans.item.cal.request.CourseInfo;
-import com.tle.common.NameValue;
 import com.tle.web.sections.SectionInfo;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Always returns whatever was posted as a selected value.  There is no server-side list of allowed values.
