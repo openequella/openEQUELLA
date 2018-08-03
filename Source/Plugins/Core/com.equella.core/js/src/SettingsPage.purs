@@ -123,7 +123,7 @@ settingsPage = unsafeCreateLeafElement $ withStyles styles $ component "Settings
       display: "flex", 
       marginTop: theme.spacing.unit * 4,
       justifyContent: "center"
-    }
+    } 
   }
 
 type GroupStrings = { name :: String, desc :: String }

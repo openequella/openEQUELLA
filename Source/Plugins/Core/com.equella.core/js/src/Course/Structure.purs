@@ -62,7 +62,7 @@ courseStructure = unsafeCreateLeafElement $ withStyles styles $ component "Cours
   where
     styles theme = {
         selected: {
-            backgroundColor: "red"
+            backgroundColor: theme.palette.action.selected
         }
     }
 

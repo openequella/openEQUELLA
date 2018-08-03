@@ -90,7 +90,7 @@ itemResult = unsafeCreateLeafElement $ withStyles styles $ component "ItemResult
     render {classes, showDivider, onSelect, 
         result:item@(Result {name,description,displayFields,uuid,version,attachments,modifiedDate})} =
         let descMarkup descText = typography [] [ text descText ]
-            titleLink = typography [variant TS.subheading, style {textDecoration:"none", color:"blue"},
+            titleLink = typography [variant TS.subheading, className classes.titleLink,
                             MUI.component "a", 
                             mkProp "href" $ baseUrl <> "items/" <> uuid <> "/" <> show version <> "/"] [ 
                                 text name 
@@ -142,6 +142,9 @@ itemResult = unsafeCreateLeafElement $ withStyles styles $ component "ItemResult
             maxWidth: "88px",
             maxHeight: "66px",
             marginRight: "12px"
+        }, 
+        titleLink: {
+            color: theme.palette.primary.dark
         }
     }
 

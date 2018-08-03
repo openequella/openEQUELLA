@@ -17,6 +17,7 @@ import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
 import Data.Traversable (traverse)
+import Debug.Trace (spy)
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
@@ -31,6 +32,7 @@ import MaterialUI.Badge (badge, badgeContent)
 import MaterialUI.Button (button)
 import MaterialUI.Color (inherit, secondary)
 import MaterialUI.Color as C
+import MaterialUI.Colors (blue, green, indigo, orange, purple, red)
 import MaterialUI.CssBaseline (cssBaseline_)
 import MaterialUI.Dialog (dialog)
 import MaterialUI.DialogActions (dialogActions_)
@@ -38,7 +40,7 @@ import MaterialUI.DialogContent (dialogContent_)
 import MaterialUI.DialogContentText (dialogContentText_)
 import MaterialUI.DialogTitle (dialogTitle_)
 import MaterialUI.Divider (divider)
-import MaterialUI.Drawer (anchor, drawer, left, open, permanent, temporary)
+import MaterialUI.Drawer (anchor, drawer, left, permanent, temporary)
 import MaterialUI.Hidden (css, hidden, implementation, mdUp, smDown)
 import MaterialUI.Icon (icon, icon_)
 import MaterialUI.IconButton (iconButton)
@@ -47,15 +49,16 @@ import MaterialUI.ListItem (button) as LI
 import MaterialUI.ListItem (listItem)
 import MaterialUI.ListItemIcon (listItemIcon_)
 import MaterialUI.ListItemText (disableTypography, listItemText, primary)
-import MaterialUI.Menu (anchorEl, menu)
+import MaterialUI.Menu (menu)
 import MaterialUI.MenuItem (menuItem)
-import MaterialUI.Popover (anchorOrigin, transformOrigin)
+import MaterialUI.Popover (anchorEl, anchorOrigin, transformOrigin)
 import MaterialUI.PropTypes (toHandler)
-import MaterialUI.Properties (className, classes_, color, component, mkProp, onClick, onClose, variant)
+import MaterialUI.Properties (className, classes_, color, component, mkProp, onClick, onClose, open, variant)
 import MaterialUI.Radio (default)
-import MaterialUI.Styles (MediaQuery, allQuery, cssList, mediaQuery, withStyles)
+import MaterialUI.Styles (MediaQuery, allQuery, createMuiTheme, cssList, mediaQuery, muiThemeProvider, withStyles)
 import MaterialUI.TextStyle (subheading)
 import MaterialUI.TextStyle as TS
+import MaterialUI.Theme (Theme)
 import MaterialUI.Toolbar (disableGutters, toolbar)
 import MaterialUI.Tooltip (tooltip, title)
 import MaterialUI.Typography (typography)
@@ -194,9 +197,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       setUnloadListener add
 
     render {state: state@{mobileOpen,menuAnchor,user,attempt}, props:props@{fixedViewPort:fvp, classes, 
-                title:titleText,titleExtra,menuExtra,backRoute}} = muiPickersUtilsProvider [utils momentUtils] [
-      D.div [DP.className classes.root] $ [
-        cssBaseline_ [],
+                title:titleText,titleExtra,menuExtra,backRoute}} = rootTag classes.root [
         layout, 
         dialog [ open $ isJust attempt] [
           dialogTitle_ [ text strings.navaway.title], 
@@ -209,7 +210,6 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
           ]
         ]
       ]
-    ]
       where
       children = childrenToArray props.children
       tabsM = toMaybe props.tabs
@@ -480,10 +480,25 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       ]
     }
 
+ourTheme :: Theme
+ourTheme = createMuiTheme {
+  palette: {
+    primary: blue, 
+    secondary: indigo
+  }
+}
+
+rootTag :: String -> Array ReactElement -> ReactElement
+rootTag rootClass content = 
+  muiPickersUtilsProvider [utils momentUtils] [
+      D.div [DP.className rootClass] $ [
+        cssBaseline_ []
+      ] <> content
+  ]
 
 renderReact :: String -> ReactElement -> Effect Unit
 renderReact divId main = do
-  void (elm' >>= render main)
+  void (elm' >>= render (muiThemeProvider {theme:ourTheme} [ main ]))
   where
 
   elm' = do

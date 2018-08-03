@@ -56,6 +56,7 @@ import Search.FacetControl (facetControl)
 import Search.ItemResult (Result, itemResult, itemResultOptions)
 import Search.OrderControl (Order(..), orderControl, orderEntries, orderName, orderValue)
 import Search.OwnerControl (ownerControl)
+import Search.ResultDisplay (renderResults)
 import Search.SearchControl (Chip(..), Placement(..), SearchControl, placementMatch)
 import Search.SearchLayout (searchLayout)
 import Search.SearchQuery (Query, blankQuery, searchQueryParams)
@@ -88,7 +89,7 @@ searchPage = flip unsafeCreateLeafElement {} $ withStyles styles $ R.component "
   oc <- ownerControl
   let
     d = eval >>> affAction this
-    searchControls = [orderControl, oc, withinLastControl]
+    searchControls = [orderControl, oc, withinLastControl, renderResults identity]
     coreString = prepLangStrings coreStrings
 
     renderTemplate {queryBar,content} = template' (templateDefaults coreString.title) 
