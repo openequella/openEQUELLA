@@ -6,6 +6,7 @@ import Control.Monad.Reader (lift, runReaderT)
 import Course.Structure (CourseStructure, courseStructure, decodeStructure)
 import Data.Argonaut (Json, decodeJson, jsonParser, (.?), (.??))
 import Data.Array (catMaybes, length, mapMaybe, mapWithIndex)
+import Data.Array as Array
 import Data.Either (Either, either)
 import Data.Function (apply)
 import Data.Lens (over)
@@ -44,6 +45,7 @@ import Search.FacetControl (facetControl)
 import Search.ItemResult (Result(..), ItemSelection, itemResult, itemResultOptions)
 import Search.OrderControl (orderControl)
 import Search.OwnerControl (ownerControl)
+import Search.ResultDisplay (renderResults)
 import Search.SearchControl (Chip(..), Placement(..), SearchControl, placementMatch)
 import Search.SearchLayout (ItemSearchResults, searchLayout)
 import Search.SearchQuery (Query, blankQuery, searchQueryParams)
@@ -91,33 +93,27 @@ type State = {
 selectSearch :: {selection::SelectionData} -> ReactElement
 selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSearch" $ \this -> do 
   oc <- ownerControl
-  fc <- facetControl $ FacetSetting {name:"Name", path:"/item/name"}
+  -- fc <- facetControl $ FacetSetting {name:"Name", path:"/item/name"}
   let 
     d = eval >>> affAction this
     _selections = prop (SProxy :: SProxy "selections")
-    searchControls = [orderControl, oc, fc, withinLastControl]
 
+    courseControl :: SearchControl
+    courseControl {} = do 
+      {selection} <- R.getProps this
+      {selectedFolder,selections} <- R.getState this
+      let rendered = (courseStructure <<< {selectedFolder, 
+            selections, 
+            onSelectFolder: d <<< SelectFolder, structure: _}) <$> selection.courseData.structure
+      pure { chips:[], render: Array.fromFoldable $ Tuple Selections <$> rendered }
 
-        -- (courseStructure <<< {selectedFolder, selections, onSelectFolder: d <<< SelectFolder, structure: _}) <$> selection.courseData.structure
+    searchControls = [orderControl, oc,  withinLastControl, renderResults _ {onSelect = Just $ d <<< SelectionMade}, courseControl]
 
     renderTemplate {queryBar,content} = template' (templateDefaults "Selection") 
              {titleExtra = toNullable $ Just $ queryBar } [ content ]
 
-    render {props:{classes, selection}, state:{selectedFolder,selections}} = 
+    render {} = 
       searchLayout {searchControls, strings: searchStrings, renderTemplate}
-      -- let 
-      --   stdChip (Chip c) = chip [className classes.chip, label c.label, onDelete $ \_ -> c.onDelete]
-      --   renderResults (SearchResults {results,available}) = 
-      --       list [MUIC.component "section"] $ mapWithIndex oneResult results
-      --     where 
-      --       lastResult = length results - 1
-      --       oneResult i r = itemResult $ (itemResultOptions r) {showDivider = i /= lastResult, onSelect = Just $ d <<< SelectionMade}
-      -- pure $ div' $ (mapMaybe (placementMatch Filters) <<< _.render =<< controlsRendered) <> catMaybes [ 
-      --   Just $ div' $ (map stdChip <<< _.chips =<< controlsRendered),
-      --   Just $ MUI.button [onClick $ \_ -> d ReturnSelections] [ text "Return" ],
-      --   searchResults <#> renderResults,
-      --   -- Just $ itemResult $ (itemResultOptions sampleResult) {showDivider = true, onSelect = Just $ d <<< SelectionMade}, 
-      -- ]
 
     eval = case _ of 
       SelectFolder f -> modifyState _ {selectedFolder = f}

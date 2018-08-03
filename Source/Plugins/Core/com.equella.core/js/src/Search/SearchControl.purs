@@ -2,7 +2,6 @@ module Search.SearchControl where
 
 import Prelude
 
-import Data.Array (mapMaybe)
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple, fst, snd)
 import Effect (Effect)
@@ -11,7 +10,7 @@ import Search.ItemResult (Result)
 import Search.SearchQuery (Query)
 import SearchResults (SearchResults)
 
-data Placement = Filters | ResultHeader
+data Placement = Filters | ResultHeader | Results | Selections
 derive instance eqP :: Eq Placement 
 
 newtype Chip = Chip {label::String, onDelete::Effect Unit}

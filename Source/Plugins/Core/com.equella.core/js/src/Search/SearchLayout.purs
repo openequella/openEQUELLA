@@ -91,15 +91,16 @@ searchLayout = unsafeCreateLeafElement $ withStyles styles $ R.component "Search
     render = do 
       {searchResults,query,searching,loadingNew} <- R.getState this
       {classes,searchControls,strings,renderTemplate} <- R.getProps this
-      controlsRendered <- traverse (\f -> f {updateQuery: d <<< UpdateQuery, results:searchResults, query}) $ searchControls
-
+      controlOutputs <- traverse (\f -> f {updateQuery: d <<< UpdateQuery, results:searchResults, query}) $ searchControls
+      
       let 
+        controlsRendered = controlOutputs >>= _.render
         mainContent = div [DP.className classes.layoutDiv] [
           paper [className classes.results, elevation 4] $ 
             renderResults searchResults <> progress,
-          paper [className classes.refinements, elevation 4] $ 
+          paper [className classes.refinements, elevation 4] $ (mapMaybe (placementMatch Selections) controlsRendered) <>
             [ typography [className classes.filterTitle, variant title] [text strings.refineTitle ] ] <>
-            (intercalate [divider []] $ (mapMaybe (map singleton <<< placementMatch Filters) <<< _.render =<< controlsRendered))
+            (intercalate [divider []] $ (mapMaybe (map singleton <<< placementMatch Filters) controlsRendered))
         ]
 
         progress = [
@@ -108,20 +109,16 @@ searchLayout = unsafeCreateLeafElement $ withStyles styles $ R.component "Search
         ]
         stdChip (Chip c) = chip [className classes.chip, label c.label, onDelete $ \_ -> c.onDelete]
 
-        renderResults (Just (SearchResults {results,available})) =
-          let resultLen = length results
-              oneResult i r = itemResult $ (itemResultOptions r) {showDivider = i /= (resultLen - 1)}
-          in [
-            div [ DP.className classes.resultHeader ] $ [
-              typography [className classes.available, component "div", variant TS.subheading] [ 
-                  text $ show available <> " " <> strings.resultsAvailable ] 
-              ] <> 
-              (mapMaybe (placementMatch ResultHeader) <<< _.render =<< controlsRendered)
-            ,
-            div [ DP.className classes.chipContainer ] $ 
-              (map stdChip <<< _.chips =<< controlsRendered),
-            list [component "section"] $ mapWithIndex oneResult results 
-          ]
+        renderResults (Just (SearchResults {results,available})) = [
+          div [ DP.className classes.resultHeader ] $ [
+            typography [className classes.available, component "div", variant TS.subheading] [ 
+                text $ show available <> " " <> strings.resultsAvailable ] 
+          ] <> 
+          (mapMaybe (placementMatch ResultHeader) controlsRendered)
+          ,
+          div [ DP.className classes.chipContainer ] $ 
+            (map stdChip <<< _.chips =<< controlOutputs)
+        ] <> (mapMaybe (placementMatch Results) controlsRendered) 
         renderResults Nothing = []
         
       pure $  renderTemplate { 
