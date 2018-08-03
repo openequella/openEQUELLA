@@ -107,11 +107,11 @@ public class CourseResourceImpl extends AbstractBaseEntityResource<CourseInfo, B
 	}
 
 	@Override
-	public PagingBean<CourseBean> list(UriInfo uriInfo, String code, String q, Boolean archived, List<String> privilege,
-									   String resumptionToken, int length, boolean full)
+	public PagingBean<CourseBean> list(UriInfo uriInfo, String code, String q, boolean archived, List<String> privilege,
+									   String resumption, int length, boolean full)
 	{
 		final boolean isExport = RestImportExportHelper.isExport(uriInfo);
-		return PagedResults.pagedResults(this, q, privilege, resumptionToken, length, full | isExport, isExport, archived);
+		return PagedResults.pagedResults(this, q, privilege, resumption, length, full | isExport, isExport, archived);
 	}
 
 	public List<String> citation(UriInfo uriInfo, String uuid)

@@ -336,7 +336,7 @@ function updateIncludes(newContents, onFinish)
 			{
 				clearInterval(intervalId);
 			}
-			$.globalEval(newContents.script);
+			execute(newContents.script);
 			wrappedFinish();
 			g_updates--;
 		}
@@ -364,6 +364,21 @@ function updateIncludes(newContents, onFinish)
 
 	updateFormAttributes(newContents);
 	loadNextScript();
+}
+
+function execute(script)
+{
+    try
+    {
+        $.globalEval(script);
+    }
+    catch (ex)
+    {
+        if (debugEnabled){
+            debugger;
+        }
+        throw ex;
+    }
 }
 
 function registerAjaxSuccessCallback(cb)
@@ -452,7 +467,7 @@ function _dialogCallback(elemId, newContents, openCall, stopSpinner)
 				var src = $iframe.attr('src');
 				$iframe.attr('src', 'javascript:void(0);');
 				$oldContents.html($newHtml);
-				$.globalEval(newBody.script);
+				execute(newBody.script);
 				openCall();
 				$iframe.attr('src', src);
 				stopSpinner();
@@ -461,7 +476,7 @@ function _dialogCallback(elemId, newContents, openCall, stopSpinner)
 		}
 
 		$oldContents.html(newBody.html);
-		$.globalEval(newBody.script);
+		execute(newBody.script);
 		openCall();
 		stopSpinner();
 	});
@@ -536,7 +551,7 @@ function submitBody(formElem, validate, blockFurtherSubmission)
 			$detachedIframes.remove();
 			// End workaround
 			$oldContents.html($newHtml);
-			$.globalEval(newBody.script);
+			execute(newBody.script);
 			setTimeout(function()
 			{
 				if ($('html.accessibility #fancybox-inner .focus').length != 0)

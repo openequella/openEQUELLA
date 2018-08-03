@@ -29,6 +29,8 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.rometools.utils.Strings;
+import com.tle.core.entity.EnumerateOptions;
 import com.tle.core.schema.service.SchemaService;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Propagation;
@@ -101,6 +103,16 @@ public class CourseInfoServiceImpl extends AbstractEntityServiceImpl<EntityEditi
 	public List<CourseInfo> enumerateAll()
 	{
 		return dao.enumerateAll();
+	}
+
+	@Override
+	public List<CourseInfo> query(EnumerateOptions options)
+	{
+		if (!Strings.isEmpty(options.getQuery()))
+		{
+			options.addParameter("code", options.getQuery());
+		}
+		return dao.enumerateAll(options);
 	}
 
 	@Override
