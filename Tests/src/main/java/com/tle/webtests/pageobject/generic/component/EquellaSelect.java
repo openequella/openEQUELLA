@@ -13,13 +13,12 @@ import com.tle.webtests.pageobject.AbstractPage;
 
 public class EquellaSelect extends AbstractPage<EquellaSelect>
 {
-	private WebElement dropDiv;
 	private final WebElement origSelect;
 	private WebElement textDiv;
 
 	public EquellaSelect(PageContext context, WebElement select)
 	{
-		super(context, By.xpath("following-sibling::div[contains(@class, 'newListSelected')]"));
+		super(context, By.xpath("following-sibling::span[contains(@class, 'select2-container--default')]"));
 		origSelect = select;
 		setRelativeTo(origSelect);
 		get();
@@ -29,16 +28,15 @@ public class EquellaSelect extends AbstractPage<EquellaSelect>
 	public void checkLoaded() throws Error
 	{
 		super.checkLoaded();
-		dropDiv = origSelect.findElement(loadedBy);
-		textDiv = dropDiv.findElement(By.xpath("div[@class='selectedTxt']"));
+		WebElement container = origSelect.findElement(loadedBy);
+		textDiv = container.findElement(By.xpath(".//span[contains(@class, 'select2-selection__rendered')]"));
 	}
-	
+
 	public void selectByVisibleText(String name)
 	{
-		textDiv.click();
+		WebElement dropDiv = clickOn();
 		WebElement entry = dropDiv.findElement(
-			By.xpath("id(" + quoteXPath(origSelect.getAttribute("id")) + ")/following-sibling::div[1]//a[text()="
-				+ quoteXPath(name) + "]"));
+			By.xpath(".//li[text()=" + quoteXPath(name) + "]"));
 		scrollToElement(entry);
 		entry.click();
 	}
@@ -63,14 +61,14 @@ public class EquellaSelect extends AbstractPage<EquellaSelect>
 	 */
 	public void selectByIndex(int index)
 	{
-		textDiv.click();
+		WebElement dropDiv = clickOn();
 		try
 		{
-			dropDiv.findElement(By.xpath(".//a[" + (index + 1) + "]")).click();
+			dropDiv.findElement(By.xpath(".//li[" + (index + 1) + "]")).click();
 		}
 		catch( NoSuchElementException noseeum )
 		{
-			List<WebElement> allLinks = dropDiv.findElements(By.xpath(".//a"));
+			List<WebElement> allLinks = dropDiv.findElements(By.xpath(".//li"));
 			if( allLinks.size() > index )
 			{
 				allLinks.get(index).click();
@@ -102,10 +100,7 @@ public class EquellaSelect extends AbstractPage<EquellaSelect>
 
 	public List<WebElement> getSelectableHyperinks()
 	{
-		// first click opens the list
-		textDiv.click();
-		String theXpath = "id(" + quoteXPath(origSelect.getAttribute("id")) + ")/..//a";
-		List<WebElement> foundElements = dropDiv.findElements(By.xpath(theXpath));
+		List<WebElement> foundElements = clickOn().findElements(By.xpath(".//li"));
 		// we may need to click again to close the list, but can't do it yet
 		return foundElements;
 	}
@@ -115,14 +110,14 @@ public class EquellaSelect extends AbstractPage<EquellaSelect>
 		return textDiv.getText();
 	}
 
-	public void clickOn()
+	public WebElement clickOn()
 	{
 		textDiv.click();
+		return driver.findElement(By.xpath("/html/body/span/span[contains(@class, 'select2-dropdown')]"));
 	}
 
 	public boolean isDisabled()
 	{
 		return !origSelect.isEnabled();
 	}
-
 }
