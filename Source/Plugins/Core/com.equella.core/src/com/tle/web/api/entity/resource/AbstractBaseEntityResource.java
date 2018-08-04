@@ -30,7 +30,6 @@ import javax.ws.rs.core.UriInfo;
 
 import com.tle.common.security.TargetList;
 import com.tle.common.security.TargetListEntry;
-import com.tle.core.entity.EnumerateOptions;
 import com.tle.core.i18n.CoreStrings;
 import com.tle.web.api.entity.PagedResults;
 import com.tle.web.api.interfaces.beans.*;
@@ -42,13 +41,8 @@ import com.google.common.collect.Lists;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.EntityLock;
 import com.tle.beans.security.AccessEntry;
-import com.tle.beans.security.AccessExpression;
-import com.tle.common.Check;
 import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.beans.exception.NotFoundException;
-import com.tle.common.beans.exception.ValidationError;
-import com.tle.common.i18n.CurrentLocale;
-import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.SecurityConstants;
 import com.tle.common.usermanagement.user.CurrentUser;
@@ -65,7 +59,6 @@ import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.interfaces.beans.security.TargetListEntryBean;
 import com.tle.web.remoting.rest.service.RestImportExportHelper;
 import com.tle.web.remoting.rest.service.UrlLinkService;
-import scala.Option;
 
 /**
  * FIXME: I'm not sure about having all these Transactionals in the REST
@@ -99,11 +92,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	}
 
 	@Inject
-	private AclDao aclDao;
-	@Inject
 	protected TLEAclManager aclManager;
-	@Inject
-	private AccessExpressionDao accessExpressionDao;
 	@Inject
 	private EntityLockingService lockingService;
 	@Inject

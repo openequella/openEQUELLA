@@ -82,7 +82,7 @@ object PagedResults {
     val actualLen = results.length
     pb.setStart(start)
     pb.setLength(actualLen)
-    pb.setAvailable(res.getEntityService.countAll(new EnumerateOptions(q, 0, -1, system, if (includeDisabled) null else true)).toInt)
+    pb.setAvailable(res.getEntityService.countAll(new EnumerateOptions(q, 0, -1, system, if (includeDisabled) null else false)).toInt)
     if (actualLen == length) pb.setResumptionToken(s"$nextOffset:${start+actualLen}")
     pb.setResults(results.map { case (be,canFull,privs) => addPrivs(privs, res.serialize(be, null, canFull)) }.asJava)
     pb
