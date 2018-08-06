@@ -30,17 +30,24 @@ import Effect.Ref (new)
 import Effect.Ref as Ref
 import Foreign.Object (Object, lookup)
 import Foreign.Object as Object
+import MaterialUI.Card (card)
+import MaterialUI.CardContent (cardContent)
+import MaterialUI.CardHeader (cardHeader)
 import MaterialUI.CircularProgress (circularProgress)
 import MaterialUI.Color (inherit)
 import MaterialUI.Dialog (fullScreen)
 import MaterialUI.Icon (icon_)
 import MaterialUI.IconButton (iconButton)
 import MaterialUI.Popover (anchorEl, anchorOrigin, marginThreshold, popover)
-import MaterialUI.Properties (color, onClick, onClose, open)
+import MaterialUI.Properties (color, onClick, onClose, open, variant)
 import MaterialUI.Styles (withStyles)
+import MaterialUI.TextStyle (display1, headline)
+import MaterialUI.Typography (typography)
+import MaterialUI.Typography as Type
 import Network.HTTP.Affjax (post)
 import Network.HTTP.Affjax.Request as Req
 import Network.HTTP.Affjax.Response as Resp
+import Network.HTTP.StatusCode (StatusCode(..))
 import Partial.Unsafe (unsafePartial)
 import QueryString (toTuples)
 import React (ReactElement, ReactRef, component, unsafeCreateLeafElement)
@@ -50,6 +57,7 @@ import React.DOM as D
 import React.DOM.Props (Props, _id, _type)
 import React.DOM.Props as DP
 import Routes (LegacyURI(..), matchRoute, pushRoute)
+import TSComponents (messageInfo)
 import Template (refreshUser, template, template', templateDefaults)
 import Utils.UI (withCurrentTarget)
 import Web.DOM.Document (createElement, getElementsByTagName, toNonElementParentNode)
@@ -124,16 +132,21 @@ divWithHtml = unsafeCreateLeafElement $ component "JQueryDiv" $ \this -> do
 data Command = OptionsAnchor (Maybe HTMLElement) 
   | Submit SubmitOptions 
   | LoadPage 
+  | CloseError
   | Updated LegacyURI
   | UpdateForm {state :: Object (Array String), partial :: Boolean}
+
+type PageError = {code :: Int, error::String, description::Maybe String}
 
 type State = {
   optionsAnchor::Maybe HTMLElement, 
   content :: Maybe PageContent,
+  errored :: Maybe PageError,
   state :: Object (Array String),
   pagePath :: String,
   stylesheets :: Array String, 
-  noForm :: Boolean
+  noForm :: Boolean, 
+  errorShowing :: Boolean
 }
 
 resolveUrl :: String -> String 
@@ -212,7 +225,7 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
   let 
     d = eval >>> affAction this
     stateinp (Tuple name value) = D.input [_type "hidden", DP.name name, DP.value value ]
-    render {state:s@{content}, props:{classes}} = case content of 
+    render {state:s@{content,errored}, props:{classes}} = case content of 
         Just (c@{html,title,script}) -> 
           let extraClass = case c.fullscreenMode of 
                 "YES" -> []
@@ -234,7 +247,22 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
                                 hideAppBar = c.hideAppBar, 
                                 menuMode = c.menuMode, 
                                 fullscreenMode = c.fullscreenMode
-                          } [ mainContent ] 
+                          } $ catMaybes [ Just mainContent, 
+                            errored <#> \{code, error, description} -> messageInfo {
+                              open: s.errorShowing, 
+                              onClose: d CloseError, title:error, 
+                              code: toNullable $ Just code, 
+                              variant: Type.error
+                            } 
+                          ] 
+        Nothing | Just {code,error,description} <- errored -> template' (templateDefaults error) [ 
+          card [] [
+            cardContent [] $ catMaybes [
+              Just $ typography [variant headline] [ text $ "Error code:" <> show code ], 
+              description <#> \desc -> typography [variant display1] [ text desc ]
+            ]
+          ]
+        ]
         Nothing -> D.div [ DP.className classes.progress ] [ circularProgress [] ]
       where
       options html = [ 
@@ -250,18 +278,22 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
 
 
     submitWithPath path {vals,callback} = do 
-        let cb = toMaybe callback
-            ajax = isJust cb
-        {response} <- lift $ post (Resp.json) (baseUrl <> "api/content/submit/" <> path)
-                        (Req.json $ encodeJson vals)
-        cb # maybe (either log updateContent $ decodeJson response) 
-                  (liftEffect <<< flip runEffectFn1 response)
+        resp <- lift $ post (Resp.json) (baseUrl <> "api/content/submit/" <> path)
+                        (Req.json $ encodeJson vals) 
+        case resp.status of 
+          (StatusCode 200) | Just cb <- toMaybe callback -> liftEffect $ runEffectFn1 cb resp.response
+          (StatusCode 200) -> either log updateContent $ decodeJson resp.response
+          (StatusCode code) -> 
+                  let errorPage = decodeError resp.response # either 
+                          (\_ -> {code, error:resp.statusText, description:Nothing}) identity                                                            
+                  in modifyState _ {errored = Just errorPage, errorShowing = true}
 
     eval = case _ of 
       (OptionsAnchor el) -> modifyState _ {optionsAnchor = el}
       Updated oldPage -> do 
         {page} <- getProps
         if oldPage /= page then eval LoadPage else pure unit
+      CloseError -> modifyState _ {errorShowing = false}
       LoadPage -> do 
         {page: LegacyURI _pagePath params} <- getProps 
         let pagePath = case _pagePath of 
@@ -290,7 +322,8 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
     updateContent (LegacyContent lc@{css, js, state, html,script, title, fullscreenMode, menuMode, hideAppBar} userUpdated) = do 
       doRefresh userUpdated
       lift $ updateIncludes true css js
-      modifyState \s -> s {noForm = lc.noForm, content = Just {html, script, title, fullscreenMode, menuMode, hideAppBar}, state = state}
+      modifyState \s -> s {noForm = lc.noForm, errorShowing = s.errorShowing && isJust s.content, 
+        content = Just {html, script, title, fullscreenMode, menuMode, hideAppBar}, state = state}
 
   setupLegacyHooks {
       submit: mkEffectFn1 $ d <<< Submit, 
@@ -301,7 +334,16 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
       updateForm: mkEffectFn1 $ d <<< UpdateForm
     }
   pure {
-    state:{optionsAnchor:Nothing, content: Nothing, pagePath: "", stylesheets: [], state: Object.empty, noForm:false} :: State, 
+    state:{ 
+      optionsAnchor:Nothing, 
+      content: Nothing, 
+      pagePath: "", 
+      stylesheets: [], 
+      errored: Nothing, 
+      errorShowing: false,
+      state: Object.empty, 
+      noForm: false
+    } :: State, 
     render: renderer render this, 
     componentDidMount: d $ LoadPage,
     componentDidUpdate: \{page} _ _ -> d $ Updated page,
@@ -321,6 +363,14 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
       justifyContent: "center"
     }
   }
+
+decodeError :: Json -> Either String PageError
+decodeError v = do 
+  o <- decodeJson v 
+  code <- o .? "code"
+  error <- o .? "error"
+  description <- o .?? "error_description"
+  pure {code,error,description}
 
 instance decodeLC :: DecodeJson ContentResponse where 
   decodeJson v = do 

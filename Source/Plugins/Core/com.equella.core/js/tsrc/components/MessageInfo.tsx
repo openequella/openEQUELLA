@@ -50,7 +50,6 @@ interface MessageInfoProps
     onClose: () => void;
     title: string;
     code?: number;
-    message?: string;
     variant: 'success'|'warning'|'error'|'info';
 }
 

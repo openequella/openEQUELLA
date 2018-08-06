@@ -306,6 +306,7 @@ class LegacyContentApi {
           .orElse(renderedResponse(info))
           .orElse(Option(info.getAttributeForClass(classOf[AjaxRenderContext])).map(arc => ajaxResponse(info, arc)))
           .getOrElse {
+            info.setRendered()
             Response.ok(req.getAttribute(LegacyContentKey))
           }
       })
@@ -420,6 +421,7 @@ class LegacyContentApi {
 
   def renderedResponse(info: MutableSectionInfo) = {
     Option(info.getRootRenderContext.getRenderedResponse).map { sr =>
+      info.setRendered()
       Response.ok(SectionUtils.renderToString(LegacyContentController.prepareJSContext(info), sr))
     }
   }
@@ -455,6 +457,7 @@ class LegacyContentApi {
     }
     renderAjaxBody(renderedBody)
     val responseCallback = arc.getJSONResponseCallback
+    info.setRendered()
     Response.ok(responseCallback.getResponseObject(arc))
   }
 }
