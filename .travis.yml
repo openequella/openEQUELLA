@@ -11,6 +11,7 @@ addons:
     packages:
     - libav-tools
     - imagemagick
+  postgresql: "9.4"
 cache:
   directories:
   - "$HOME/.ivy2"
