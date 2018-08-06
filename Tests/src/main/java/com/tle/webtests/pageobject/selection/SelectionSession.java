@@ -20,16 +20,24 @@ import com.tle.webtests.pageobject.wizard.WizardPageTab;
 public class SelectionSession extends AbstractPage<SelectionSession>
 {
 
-	@FindBy(id = "{quickSearchSectionId}_q")
-	private WebElement quickSearchField;
-	@FindBy(id = "{quickSearchSectionId}_s")
-	private WebElement quickSearchButton;
+	private WebElement getQuickSearchField()
+	{
+		return driver.findElement(By.id(getQuickSearchSectionId("_q")));
+	}
+
+	private WebElement getQuickSearchButton()
+	{
+		return driver.findElement(By.id(getQuickSearchSectionId("_s")));
+	}
 
 	@FindBy(id = "srsh_box")
 	private WebElement recentBox;
 
-	@FindBy(id = "{quickUploadSectionId}_fileUploader")
-	private WebElement quickFile;
+	private WebElement getQuickFile()
+	{
+		return driver.findElement(By.id(getQuickUploadSectionId("_fileUploader")));
+	}
+
 	@FindBy(id = "{quickUploadSectionId}_uploadButton")
 	private WebElement quickButton;
 	@FindBy(id = "{quickUploadContributeSectionId}_contributeButton")
@@ -45,9 +53,9 @@ public class SelectionSession extends AbstractPage<SelectionSession>
 		super(context);
 	}
 
-	public String getQuickSearchSectionId()
+	public String getQuickSearchSectionId(String postFix)
 	{
-		return "psp";
+		return "psp"+postFix;
 	}
 
 	public String getQuickUploadContributeSectionId()
@@ -55,9 +63,9 @@ public class SelectionSession extends AbstractPage<SelectionSession>
 		return "quc";
 	}
 
-	public String getQuickUploadSectionId()
+	public String getQuickUploadSectionId(String postFix)
 	{
-		return "qu";
+		return "qu"+postFix;
 	}
 
 	@Override
@@ -69,7 +77,6 @@ public class SelectionSession extends AbstractPage<SelectionSession>
 	/**
 	 * Will only work if "searchResources" was used
 	 * 
-	 * @param query
 	 * @return
 	 */
 	public SearchPage getSearchPage()
@@ -89,7 +96,7 @@ public class SelectionSession extends AbstractPage<SelectionSession>
 
 	public ItemListPage homeSearch(String query)
 	{
-		quickSearchField.clear();
+		getQuickSearchField().clear();
 		/*
 		 * BUG in Selenium -
 		 * http://code.google.com/p/selenium/issues/detail?id=1723
@@ -98,8 +105,8 @@ public class SelectionSession extends AbstractPage<SelectionSession>
 		{
 			query = query.replace("(", Keys.chord(Keys.SHIFT, "9"));
 		}
-		quickSearchField.sendKeys(query);
-		quickSearchButton.click();
+		getQuickSearchField().sendKeys(query);
+		getQuickSearchButton().click();
 		return new ItemListPage(context).get();
 	}
 
@@ -156,7 +163,7 @@ public class SelectionSession extends AbstractPage<SelectionSession>
 
 	public <T extends PageObject> T quickContribute(URL file, WaitingPageObject<T> returnTo)
 	{
-		quickFile.sendKeys(getPathFromUrl(file));
+		getQuickFile().sendKeys(getPathFromUrl(file));
 		quickButton.click();
 		return returnTo.get();
 	}

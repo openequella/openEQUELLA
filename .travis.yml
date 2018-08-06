@@ -7,7 +7,6 @@ services:
 - postgresql
 addons:
   chrome: stable
-  firefox: "54.0"
   apt:
     packages:
     - libav-tools
@@ -16,21 +15,17 @@ cache:
   directories:
   - "$HOME/.ivy2"
 before_install:
-- "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1400x1024x16"
 - nvm install $NODE_JS_VERSION
 - node --version
 - npm install -g purescript pulp psc-package
 install:
 - curl -OL https://s3.amazonaws.com/edalexdev/equella_artifacts/master/latest/equella-installer-6.7.zip
 - curl -OL curl -OL https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip
-- curl -OL https://github.com/mozilla/geckodriver/releases/download/v0.17.0/geckodriver-v0.17.0-linux64.tar.gz
 - unzip chromedriver_linux64.zip
-- tar zxvf geckodriver-v0.17.0-linux64.tar.gz
 - curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
 before_script:
 - psql -c "CREATE USER equellatests WITH PASSWORD 'password';" -U postgres
 - psql -c 'CREATE DATABASE equellatests WITH OWNER = equellatests;' -U postgres
-- export DISPLAY=:99.0
 script:
 - cd IntegTester/ps ; npm install ; psc-package install ; npm run build
 - cd $TRAVIS_BUILD_DIR ; sbt IntegTester/assembly

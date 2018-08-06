@@ -83,7 +83,7 @@ public class StandardDriverFactory {
             driver = new Augmenter().augment(driver);
         } else {
             if (chrome) {
-                DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+                DesiredCapabilities capabilities = new DesiredCapabilities();
                 ChromeOptions options = new ChromeOptions();
                 if (chromeBinary != null) {
                     options.setBinary(chromeBinary);
