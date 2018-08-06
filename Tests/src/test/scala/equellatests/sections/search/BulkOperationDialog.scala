@@ -30,8 +30,11 @@ trait BulkOperationDialog extends WaitingBrowserPage {
 
   def selectAction(name: String) : Unit = {
     val waitUp = updatedBy(By.xpath("id('bss_bulkDialogfooter')/*[1]"))
-    new EquellaSelect(ctx, findElementById("bss_bulkDialog_operationList")).selectByVisibleText(name)
-    waitFor(waitUp)
+    val sel = new EquellaSelect(ctx, findElementById("bss_bulkDialog_operationList"))
+    if (sel.getSelectedText != name) {
+      sel.selectByVisibleText(name)
+      waitFor(waitUp)
+    }
   }
 
   def next[P <: WaitingBrowserPage](p: PageContext => P): P = {
