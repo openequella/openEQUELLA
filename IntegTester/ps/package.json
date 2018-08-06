@@ -6,7 +6,9 @@
   },
   "dependencies": {
     "blueimp-md5": "^2.7.0",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4"
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
+    "text-encoding": "^0.6.4",
+    "tweetnacl-util": "^0.15.0"
   }
 }

@@ -1,11 +1,12 @@
 module IntegTester where
 
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Now (now)
-import Control.Monad.Eff.Unsafe (unsafePerformEff)
+import Prelude hiding (div)
+
+import Control.Monad.Reader (runReaderT)
 import Control.MonadZero (guard)
-import DOM (DOM)
 import Data.Array (catMaybes, head, length, mapMaybe)
+import Data.ArrayBuffer.Base64 (encodeBase64)
+import Data.Bifunctor (bimap)
 import Data.DateTime.Instant (Instant, unInstant)
 import Data.Functor.Contravariant (cmap)
 import Data.Lens (lens, set, view)
@@ -14,18 +15,21 @@ import Data.List (fromFoldable)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Newtype (unwrap)
 import Data.Number.Format (fixed, toStringWith)
-import Data.StrMap (StrMap, toUnfoldable)
+import Data.TextEncoder (Encoding(..), encode)
 import Data.Tuple (Tuple(..), fst, snd)
-import Data.URI.Query (Query(..), printQuery)
-import Dispatcher (DispatchEff(..), effEval)
-import Dispatcher.React (createComponent, modifyState, renderWithSelector)
-import Global (encodeURIComponent)
-import React (ReactElement, createFactory)
+import Dispatcher.React (modifyState)
+import Effect (Effect)
+import Effect.Now (now)
+import Effect.Unsafe (unsafePerformEffect)
+import Global.Unsafe (unsafeEncodeURIComponent)
+import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (a, div, div', form, input, label', option, select, text, textarea)
 import React.DOM.Props (Props, _type, action, checked, className, href, method, name, onChange, onClick, value)
-import Text.Base64 (encode64)
+import URI.Extra.QueryPairs (QueryPairs(..), keyFromString, valueFromString)
+import URI.Extra.QueryPairs as QueryPairs
+import URI.Query (Query)
+import URI.Query as Query
 import Unsafe.Coerce (unsafeCoerce)
-import Prelude hiding (div)
 
 foreign import md5 :: String -> String
 
@@ -57,13 +61,13 @@ type State = {
   , clickUrl :: Maybe String
 }
 
-type FormContext = {change :: DispatchEff (State -> State), state::State}
+type FormContext = {change :: (State -> State) -> Effect Unit, state::State}
 
-changeStr :: DispatchEff (State -> State) -> Lens' State String -> Props
-changeStr (DispatchEff d) l = onChange $ d \e -> set l (unsafeCoerce  e).target.value
+changeStr :: ((State -> State) -> Effect Unit) -> Lens' State String -> Props
+changeStr d l = onChange \e -> d $ set l (unsafeCoerce  e).target.value
 
-changeChecked :: DispatchEff (State -> State) -> Lens' State Boolean -> Props
-changeChecked (DispatchEff d) l = onChange $ d \e -> set l (unsafeCoerce  e).target.checked
+changeChecked :: ((State -> State) -> Effect Unit) -> Lens' State Boolean -> Props
+changeChecked d l = onChange \e -> d $ set l (unsafeCoerce  e).target.checked
 
 selectList :: String -> Array String -> Lens' State String -> FormContext -> ReactElement
 selectList n os l {change,state} =
@@ -73,14 +77,14 @@ selectList n os l {change,state} =
 
 textBox :: String -> Lens' State String -> FormContext -> ReactElement
 textBox n l {state,change} = input [ name n, className "formcontrol",
-     _type "text", value (view l state), changeStr change l ] []
+     _type "text", value (view l state), changeStr change l ]
 
 textArea :: String -> Lens' State String -> FormContext -> ReactElement
 textArea n l {state,change} = textarea [ name n, className "itemXml", changeStr change l ] [ text (view l state)]
 
 checkBox :: String -> Lens' State Boolean -> FormContext -> ReactElement
 checkBox n l {state,change} = input [ name n, _type "checkbox",
-    checked (view l state), changeChecked change l] []
+    checked (view l state), changeChecked change l]
 
 controls :: Array
   { label :: String
@@ -106,7 +110,7 @@ controls = [
 , {label: "Generate Return URL:", control:checkBox "makeReturn" (lens _.makeReturn _{makeReturn = _})}
 , {label: "Initial item XML:", control:textArea "itemXml" (lens _.itemXml _{itemXml = _})}
 , {label: "Initial powersearch XML:", control:textArea "powerXml" (lens _.powerXml _{powerXml = _})}
-, {label: "", control: \{change:(DispatchEff d)} -> input [ _type "submit", onClick $ d \_ s -> s{clickUrl=Just $ createUrl s}  ] []}
+, {label: "", control: (\{change:d} -> input [ _type "submit", onClick \_ -> d $ \s -> s{clickUrl=Just $ createUrl s}  ]) }
 ]
 
 -- 		<div class="formrow">
@@ -131,21 +135,22 @@ data Actions = Update (State -> State)
 
 createToken :: {username::String, id::String, sharedSecret :: String, data :: Maybe String, curTime :: Instant} -> String
 createToken s = let timeStr = toStringWith (fixed 0) (unwrap $ unInstant s.curTime)
-    in encodeURIComponent s.username
-    <> ":" <> encodeURIComponent s.id
+    in unsafeEncodeURIComponent s.username
+    <> ":" <> unsafeEncodeURIComponent s.id
     <> ":" <> timeStr
-    <> ":" <> encode64 (md5 $ s.username <> s.id <> timeStr <> s.sharedSecret)
+    <> ":" <> (encodeBase64 $ encode Utf8 (md5 $ s.username <> s.id <> timeStr <> s.sharedSecret))
     <> (fromMaybe "" $ (append ":") <$> s.data)
 
 createUrl :: State -> String
-createUrl s@{username, sharedSecret, url} = url <> (printQuery (Query $ fromFoldable $
+createUrl s@{username, sharedSecret, url} = url <> (Query.print $ QueryPairs.print keyFromString valueFromString 
+  (QueryPairs $
     [
       p "token" $ createToken {
                             username,
                             id: s.sharedSecretId,
                             sharedSecret,
                             data: Nothing,
-                            curTime: unsafePerformEff now }
+                            curTime: unsafePerformEffect now }
     , p "method" s.method
     , p "action" s.action
     , p "returnprefix" ""
@@ -169,10 +174,12 @@ createUrl s@{username, sharedSecret, url} = url <> (printQuery (Query $ fromFold
     p n v = Tuple n (Just v)
 
 integ :: Array (Tuple String String) -> ReactElement
-integ postVals = createFactory (createComponent initialState render (effEval eval)) {}
-  where
+integ postVals = flip unsafeCreateLeafElement {} $ component "IntegTester" $ \this -> do
+  let
+    d :: Actions -> Effect Unit
+    d = eval >>> flip runReaderT this
     eval (Update f) = modifyState f
-    render s@{clickUrl} d = div' $ catMaybes [
+    render s@{clickUrl} = div' $ catMaybes [
                                     Just (div' $ writeControl <$> controls)
                                     , haveUrl <$> clickUrl
                                     , (div' (writeParam <$> postVals)) <$ guard (length postVals > 0)
@@ -180,16 +187,16 @@ integ postVals = createFactory (createComponent initialState render (effEval eva
   		where
         haveUrl url = form [ method "POST", action url ] $ hiddenVals <> [
               a [ href url ] [ text url ]
-            , div' [ input [ _type "submit", value "POST to this URL"] [] ]
+            , div' [ input [ _type "submit", value "POST to this URL"] ]
             ]
-        hiddenInput (Tuple n v) = input [ _type "hidden", name n, value v] []
+        hiddenInput (Tuple n v) = input [ _type "hidden", name n, value v]
         hiddenVals = hiddenInput <$> [Tuple "itemXml" s.itemXml, Tuple "powerXml" s.powerXml]
         writeControl {label, control} = div [ className "formrow" ] [
           label' [ text label ]
-        , control {state:s, change: cmap Update d}
+        , control {state:s, change: d <<< Update}
         ]
         writeParam (Tuple n v) = writeControl {label:n <> ":", control: \_ -> textarea [ className "itemXml" ] [ text v ]}
-
+  pure {}
 -- MainForm form = (MainForm) formData;
 -- 		String secretId = form.getSharedSecretId();
 -- 		if( Check.isEmpty(secretId) )

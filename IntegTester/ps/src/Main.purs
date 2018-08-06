@@ -1,31 +1,35 @@
 module Main where
 
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
-import DOM (DOM)
-import DOM.HTML (window)
-import DOM.HTML.Location (pathname)
-import DOM.HTML.Window (location)
-import Data.Array (head, mapMaybe)
-import Data.StrMap (StrMap, toUnfoldable)
-import Data.Tuple (Tuple(..))
-import Dispatcher.React (renderWithSelector)
-import IntegTester (integ)
 import Prelude hiding (div)
 
-foreign import postValues :: StrMap (Array String)
+import Data.Array (head, mapMaybe)
+import Data.Maybe (fromJust)
+import Data.Tuple (Tuple(..))
+import Effect (Effect)
+import Effect.Class.Console (log)
+import Foreign.Object (Object)
+import Foreign.Object as Object
+import IntegTester (integ)
+import Partial.Unsafe (unsafePartial)
+import ReactDOM (render)
+import Web.DOM.Document (toNonElementParentNode)
+import Web.DOM.NonElementParentNode (getElementById)
+import Web.HTML (window)
+import Web.HTML.HTMLDocument (toDocument)
+import Web.HTML.Location (pathname)
+import Web.HTML.Window (document, location)
+
+foreign import postValues :: Object (Array String)
 
 postFirst :: Array (Tuple String String)
-postFirst = mapMaybe (\(Tuple n vs) -> Tuple n <$> head vs) $ toUnfoldable postValues
+postFirst = mapMaybe (\(Tuple n vs) -> Tuple n <$> head vs) $ Object.toUnfoldable postValues
 
-main :: forall t40.
-  Eff ( dom :: DOM
-    , console :: CONSOLE
-               | t40
-               )
-               Unit
-main = void $ do
-    path <- window >>= location >>= pathname
+main :: Effect Unit
+main = unsafePartial $ void $ do
+    w <- window
+    doc <- document w
+    path <- location w >>= pathname
     log path
-    renderWithSelector "#app" $ case path of
+    rootElem <- fromJust <$> getElementById "app" (toNonElementParentNode $ toDocument doc)
+    flip render rootElem $ case path of
         _ ->  (integ postFirst)

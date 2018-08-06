@@ -1,0 +1,22 @@
+{
+  "name": "js",
+  "set": "equella-06082018",
+  "source": "https://github.com/equella/package-sets.git",
+  "depends": [
+    "react-dom",
+    "console",
+    "web-html",
+    "web-dom",
+    "transformers",
+    "encoding",
+    "now",
+    "uri",
+    "base64",
+    "numbers",
+    "formatters",
+    "profunctor-lenses",
+    "effect",
+    "dispatcher-react",
+    "prelude"
+  ]
+}

@@ -19,7 +19,7 @@ before_install:
 - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1400x1024x16"
 - nvm install $NODE_JS_VERSION
 - node --version
-- npm install -g purescript bower pulp psc-package
+- npm install -g purescript pulp psc-package
 install:
 - curl -OL https://s3.amazonaws.com/edalexdev/equella_artifacts/master/latest/equella-installer-6.7.zip
 - curl -OL https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
@@ -32,7 +32,7 @@ before_script:
 - psql -c 'CREATE DATABASE equellatests WITH OWNER = equellatests;' -U postgres
 - export DISPLAY=:99.0
 script:
-- cd IntegTester/ps ; npm install ; bower install ; travis_wait 20 npm run build
+- cd IntegTester/ps ; npm install ; psc-package install ; travis_wait 20 npm run build
 - cd $TRAVIS_BUILD_DIR ; sbt IntegTester/assembly
 - java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
 - sbt -Dwebdriver.gecko.driver=$TRAVIS_BUILD_DIR/geckodriver -Dwebdriver.firefox.logfile=/dev/null -Dconfig.file=travis.conf installEquella startEquella
