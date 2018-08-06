@@ -2,3 +2,5 @@
 target/
 config/resources/application.conf
 /equella-install
+*.code-workspace
+
