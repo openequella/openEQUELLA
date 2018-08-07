@@ -164,6 +164,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
         val uploadArgs = new ObjectExpression("elem", ts,
           "ctrlId", id,
           "editable", java.lang.Boolean.valueOf(repo.isEditable),
+          "canUpload", java.lang.Boolean.valueOf(fileSettingsO.isDefined),
           "maxAttachments", (if (definition.isMaxFilesEnabled) Some(definition.getMaxFiles)
                         else Some(1).filterNot(_ => definition.isMultipleSelection)).map(Integer.valueOf).orNull,
           "entries", CirceUtils.circeToExpression(entries(topLevelAttachments, true)),
