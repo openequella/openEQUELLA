@@ -58,6 +58,7 @@ inlineUpload :: {
     maxAttachments :: Nullable Int,
     dialog :: IOFn2 String String Unit,
     onAdd :: IOSync Unit,
+    canUpload :: Boolean,
     editable :: Boolean,
     commandUrl :: URL,
     strings :: ControlStrings
@@ -94,9 +95,9 @@ inlineUpload props@{strings,ctrlId,commandUrl} = unsafePerformEff $ do
     orNone [] = [\_ -> row "none" 0 $ [ td' [ text strings.none ] ]]
     orNone a = a
 
-    addMore = [
-      dialogLink [ _id $ ctrlId <> "_addLink", className "add", title strings.add ] strings.add "" "",
-      fileDrop {fileInput: invisibleFile $ ctrlId <> "_fileUpload_file", dropText:strings.drop, onFiles: liftEff <<< d UploadFiles}
+    addMore = catMaybes [
+      Just $ dialogLink [ _id $ ctrlId <> "_addLink", className "add", title strings.add ] strings.add "" "",
+      guard props.canUpload $> fileDrop {fileInput: invisibleFile $ ctrlId <> "_fileUpload_file", dropText:strings.drop, onFiles: liftEff <<< d UploadFiles}
     ]  
     dialogLink p name a1 a2 = a (p <> [jsVoid, onClick \_ -> runIOFn2 props.dialog a1 a2 ]) [ text name ]
 
