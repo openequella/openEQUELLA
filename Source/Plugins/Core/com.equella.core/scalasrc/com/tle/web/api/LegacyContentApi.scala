@@ -339,11 +339,13 @@ class LegacyContentApi {
       val html = result match {
         case tr: TemplateResult =>
           val body = SectionUtils.renderToString(context, wrapBody(context, tr.getNamedResult(context, "body")))
+          val upperbody = SectionUtils.renderToString(context, tr.getNamedResult(context, "upperbody"))
           val hasoMap = HelpAndScreenOptionsSection.getContent(context).asScala
           val scrops = hasoMap.get("screenoptions").map(bbr => SectionUtils.renderToString(context, bbr.getRenderable))
           val crumbs = renderCrumbs(context, decs).map(SectionUtils.renderToString(context, _))
           Iterable(
             Some("body" -> body),
+            Option(upperbody).filter(_.nonEmpty).map("upperbody" -> _),
             scrops.map("so" -> _),
             crumbs.map("crumbs" -> _)
           ).flatten.toMap

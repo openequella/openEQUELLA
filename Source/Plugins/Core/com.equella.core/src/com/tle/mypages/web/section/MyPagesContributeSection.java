@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import com.dytech.edge.wizard.WizardException;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
@@ -299,8 +300,15 @@ public class MyPagesContributeSection extends AbstractMyPagesSection<MyPagesCont
 	public void readyToRespond(SectionInfo info, boolean redirect)
 	{
 		final String wizid = getModel(info).getSession();
-		final WizardStateInterface state = myPagesService.getState(info, wizid);
-		myPagesService.updateSession(info, state);
+		try
+		{
+			final WizardStateInterface state = myPagesService.getState(info, wizid);
+			myPagesService.updateSession(info, state);
+		}
+		catch (WizardException we)
+		{
+			// ignore
+		}
 	}
 
 	protected boolean isSelection(SectionInfo info)

@@ -69,7 +69,8 @@ legacyRoute = foldMap toLegURI <$> remainingParts
     toLegURI (Query qm) = LegacyURI "" $ pure <$> (Object.fromFoldable $ Map.toUnfoldable qm :: Array (Tuple String String))
 
 routeMatch :: Match Route
-routeMatch = lit "page" *>
+routeMatch = SettingsPage <$ (lit "access" *> lit "settings.do") <|>
+    lit "page" *>
     (SearchPage <$ (lit "search") <|>
     SettingsPage <$ (lit "settings") <|>
     NewCourse <$ (lit "course" *> lit "new") <|>

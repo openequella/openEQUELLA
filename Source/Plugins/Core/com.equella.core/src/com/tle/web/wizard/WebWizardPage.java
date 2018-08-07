@@ -357,10 +357,12 @@ public class WebWizardPage extends WizardPage implements com.tle.web.wizard.page
 
 	public void removeTrees(SectionInfo info)
 	{
+		Map<SectionTree, SectionTree> registered = getRegisterTreeMap(info);
 		MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
 		for( DefaultSectionTree sectionTree : sectionTrees.values() )
 		{
 			minfo.removeTree(sectionTree);
+			registered.remove(sectionTree);
 		}
 	}
 

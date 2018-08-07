@@ -30,6 +30,7 @@ import com.tle.common.security.SecurityConstants;
 import com.tle.core.item.ViewCountJavaDao;
 import com.tle.core.security.TLEAclManager;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,7 +52,7 @@ public class AttachmentScriptTypeImpl implements AttachmentScriptType
 	protected boolean viewCountRetrieved;
 
 	@Inject
-	protected AttachmentScriptTypeImpl(@Assisted("attachment") Attachment attachment, @Assisted("staging") FileHandle staging)
+	protected AttachmentScriptTypeImpl(@Assisted("attachment") Attachment attachment, @Nullable @Assisted("staging") FileHandle staging)
 	{
 		this.wrapped = attachment;
 		this.staging = staging;

@@ -1,6 +1,6 @@
 module LegacyPage where
 
-import Prelude
+import Prelude hiding (div)
 
 import Control.Alt ((<|>))
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
@@ -32,16 +32,14 @@ import Foreign.Object (Object, lookup)
 import Foreign.Object as Object
 import MaterialUI.Card (card)
 import MaterialUI.CardContent (cardContent)
-import MaterialUI.CardHeader (cardHeader)
 import MaterialUI.CircularProgress (circularProgress)
 import MaterialUI.Color (inherit)
-import MaterialUI.Dialog (fullScreen)
 import MaterialUI.Icon (icon_)
 import MaterialUI.IconButton (iconButton)
 import MaterialUI.Popover (anchorEl, anchorOrigin, marginThreshold, popover)
 import MaterialUI.Properties (color, onClick, onClose, open, variant)
 import MaterialUI.Styles (withStyles)
-import MaterialUI.TextStyle (display1, headline)
+import MaterialUI.TextStyle (display2, headline)
 import MaterialUI.Typography (typography)
 import MaterialUI.Typography as Type
 import Network.HTTP.Affjax (post)
@@ -52,14 +50,14 @@ import Partial.Unsafe (unsafePartial)
 import QueryString (toTuples)
 import React (ReactElement, ReactRef, component, unsafeCreateLeafElement)
 import React as R
-import React.DOM (text)
+import React.DOM (div, text)
 import React.DOM as D
 import React.DOM.Props (Props, _id, _type)
 import React.DOM.Props as DP
 import Routes (LegacyURI(..), matchRoute, pushRoute)
 import TSComponents (messageInfo)
-import Template (refreshUser, template, template', templateDefaults)
-import Utils.UI (withCurrentTarget)
+import Template (refreshUser, template', templateDefaults)
+import Utils.UI (scrollWindowToTop, withCurrentTarget)
 import Web.DOM.Document (createElement, getElementsByTagName, toNonElementParentNode)
 import Web.DOM.Element as Elem
 import Web.DOM.HTMLCollection (item, toArray)
@@ -214,8 +212,8 @@ updateStylesheets replace _sheets = unsafePartial $ makeAff $ \cb -> do
         insertBefore (Link.toNode l) (Elem.toNode insertPoint) head
       deleteSheet c = removeChild (Link.toNode c) head
       toDelete = Map.filterKeys (not <<< flip Set.member $ Set.fromFoldable sheets) previous
-  if replace then traverse_ deleteSheet (Map.values toDelete) else pure unit
   sequence_ $ mapWithIndex createLink newSheets
+  if replace then traverse_ deleteSheet (Map.values toDelete) else pure unit
   if sheetCount == 0 then (cb $ Right unit) else pure unit
   pure nonCanceler
 
@@ -256,10 +254,12 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
                             } 
                           ] 
         Nothing | Just {code,error,description} <- errored -> template' (templateDefaults error) [ 
-          card [] [
-            cardContent [] $ catMaybes [
-              Just $ typography [variant headline] [ text $ "Error code:" <> show code ], 
-              description <#> \desc -> typography [variant display1] [ text desc ]
+          div [DP.className classes.errorPage] [
+            card [] [
+              cardContent [] $ catMaybes [
+                Just $ typography [variant display2] [ text $ "Error code:" <> show code ], 
+                description <#> \desc -> typography [variant headline] [ text desc ]
+              ]
             ]
           ]
         ]
@@ -277,7 +277,7 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
       ]
 
 
-    submitWithPath path {vals,callback} = do 
+    submitWithPath fullError path {vals,callback} = do 
         resp <- lift $ post (Resp.json) (baseUrl <> "api/content/submit/" <> path)
                         (Req.json $ encodeJson vals) 
         case resp.status of 
@@ -286,7 +286,8 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
           (StatusCode code) -> 
                   let errorPage = decodeError resp.response # either 
                           (\_ -> {code, error:resp.statusText, description:Nothing}) identity                                                            
-                  in modifyState _ {errored = Just errorPage, errorShowing = true}
+                  in modifyState \s -> s {errored = Just errorPage, errorShowing = true, 
+                        content = if fullError then Nothing else s.content}
 
     eval = case _ of 
       (OptionsAnchor el) -> modifyState _ {optionsAnchor = el}
@@ -300,10 +301,12 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
               "" -> "home.do"
               o -> o
         modifyState _ {pagePath = pagePath}
-        submitWithPath pagePath {vals: params, callback: toNullable Nothing}
+        submitWithPath true pagePath {vals: params, callback: toNullable Nothing}
+        liftEffect $ scrollWindowToTop
+
       Submit s -> do 
         {pagePath} <- getState
-        submitWithPath pagePath s
+        submitWithPath false pagePath s
       UpdateForm {state,partial} -> do 
         modifyState \s -> s {state = if partial then Object.union s.state state else state}
 
@@ -361,6 +364,11 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
     progress: {
       display: "flex",
       justifyContent: "center"
+    }, 
+    errorPage: {
+      display: "flex",
+      justifyContent: "center", 
+      marginTop: t.spacing.unit * 8
     }
   }
 

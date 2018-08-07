@@ -88,10 +88,9 @@ public class AjaxEventCreator implements ParameterizedEvent
 			{
 				info.preventGET();
 				Object[] args = new Object[params.length + 1];
-				AjaxRenderContext ajaxContext = null;
+				AjaxRenderContext ajaxContext = new StandardAjaxRenderContext(info.getRootRenderContext());
 				if( firstParamType == AjaxRenderContext.class )
 				{
-					ajaxContext = new StandardAjaxRenderContext(info.getRootRenderContext());
 					args[0] = ajaxContext;
 				}
 				else
