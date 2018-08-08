@@ -11,7 +11,7 @@ import Data.Either (Either(..), either)
 import Data.Foldable (sequence_, traverse_)
 import Data.FunctorWithIndex (mapWithIndex)
 import Data.Map as Map
-import Data.Maybe (Maybe(..), fromJust, isJust, maybe)
+import Data.Maybe (Maybe(..), fromJust, fromMaybe, isJust, maybe)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.Set (Set)
 import Data.Set as Set
@@ -249,7 +249,8 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
                           } $ catMaybes [ Just mainContent, 
                             errored <#> \{code, error, description} -> messageInfo {
                               open: s.errorShowing, 
-                              onClose: d CloseError, title:error, 
+                              onClose: d CloseError, 
+                              title: fromMaybe error description, 
                               code: toNullable $ Just code, 
                               variant: Type.error
                             } 
