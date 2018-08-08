@@ -1076,10 +1076,43 @@ public class PropBagEx implements Serializable
 	public PropBagEx getParent()
 	{
 		ensureRoot();
-		final Element root = (Element) m_elRoot.getParentNode();
+		final Node rootNode = m_elRoot.getParentNode();
+		if(rootNode instanceof Element) {
+			final Element root = (Element) m_elRoot.getParentNode();
+			if( root != null )
+			{
+				return new PropBagEx(root, true);
+			}
+			else
+			{
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Creates a List of new PropBags rooted at each of the children of this PropBag, sharing the
+	 * same DOM nodes as the creator.
+	 *
+	 * @return List<PropBagEx> A list of children or null if the node does not exist.
+	 */
+	public List<PropBagEx> getChildren()
+	{
+		ensureRoot();
+		final Element root = (Element) m_elRoot;
 		if( root != null )
 		{
-			return new PropBagEx(root, true);
+			List<PropBagEx> childrenPropBagEx = new ArrayList<>();
+			NodeList childrenNodes = root.getChildNodes();
+			for(int i = 0; i < childrenNodes.getLength(); i++) {
+				Node n = childrenNodes.item(i);
+				if(n.getNodeType() == Node.ELEMENT_NODE) {
+					childrenPropBagEx.add(new PropBagEx(n, true));
+				}
+			}
+			return childrenPropBagEx;
 		}
 		else
 		{
@@ -1179,7 +1212,7 @@ public class PropBagEx implements Serializable
 	/**
 	 * Retrieves a node as an int value given it's name.
 	 * 
-	 * @param szFullNodeName full name of the node, parents qualified by '/'
+	 * @param path full name of the node, parents qualified by '/'
 	 * @return int value of the node
 	 */
 	public int getIntNode(final String path)
@@ -1193,7 +1226,7 @@ public class PropBagEx implements Serializable
 	 * exist or its value is an invalid integer, then the default value is
 	 * returned.
 	 * 
-	 * @param szFullNodeName full name of the node, parents qualified by '/'
+	 * @param path full name of the node, parents qualified by '/'
 	 * @param defaultValue A default value to return if the node does not exist.
 	 * @return value of the node.
 	 */

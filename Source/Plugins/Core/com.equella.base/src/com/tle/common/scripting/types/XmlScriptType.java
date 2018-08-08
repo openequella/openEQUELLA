@@ -208,4 +208,27 @@ public interface XmlScriptType extends Serializable
 	 * @return A string representation of the XML
 	 */
 	String asString();
+
+	/**
+	 * Returns an XmlScriptType object for the sub-tree that is rooted at
+	 * 'this' object.
+	 *
+	 * @return The sub-tree rooted at the parent of the calling node.
+	 */
+	XmlScriptType getParent();
+
+	/**
+	 * Returns a List of XmlScriptType objects for the sub-trees rooted at
+	 * each of the children of 'this' object.
+	 *
+	 * @return The children of the calling node.
+	 */
+	List<XmlScriptType> getChildren();
+
+	/**
+	 * Returns 'this' XmlScriptType's name.
+	 *
+	 * @return The name of the calling node.
+	 */
+	String getName();
 }
