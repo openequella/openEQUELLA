@@ -419,7 +419,8 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
           position: "fixed"
         },
         allQuery { 
-          width: drawerWidth 
+          width: drawerWidth,
+          zIndex: 1100
         }
       ],
       tabs: {

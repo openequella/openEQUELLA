@@ -20,6 +20,7 @@ import com.tle.common.i18n.{CurrentLocale, LocaleUtils}
 import com.tle.core.db.RunWithDB
 import com.tle.core.i18n.LocaleLookup
 import com.tle.legacy.LegacyGuice
+import com.tle.web.DebugSettings
 import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.resources.ResourcesService
 import com.tle.web.sections._
@@ -97,6 +98,10 @@ object RenderNewTemplate {
                   scriptUrl: String): SectionResult =
   {
     context.preRender(JQueryCore.PRERENDER)
+    if (DebugSettings.isAutoTestMode) {
+      context.preRender(RenderTemplate.AUTOTEST_JS)
+    }
+
     if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident")))
     {
       context.getPreRenderContext.addJs("https://cdn.polyfill.io/v2/polyfill.min.js?features=es6")

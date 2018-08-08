@@ -51,6 +51,7 @@ import com.tle.web.template.section.HelpAndScreenOptionsSection
 import com.tle.web.template.{Breadcrumbs, Decorations, RenderTemplate}
 import com.tle.web.viewable.NewDefaultViewableItem
 import com.tle.web.viewable.servlet.ItemServlet
+import io.lemonlabs.uri.{Path => _, _}
 import io.swagger.annotations.Api
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.ws.rs._
@@ -63,7 +64,7 @@ import scala.collection.mutable
 
 case class InternalRedirect(route: String, userUpdated: Boolean)
 
-case class ExternalRedirect(href: URI)
+case class ExternalRedirect(href: String)
 
 case class MenuItem(title: String, href: Option[String], systemIcon: Option[String], route: Option[String])
 
@@ -92,12 +93,17 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
 
   import LegacyGuice.urlService
 
-  def relativeURI(uri: URI): Option[URI] = {
-    if (uri.isAbsolute) {
-      val baseUri = urlService.getBaseInstitutionURI
-      Option(baseUri.relativize(new URI(baseUri.getScheme, uri.getRawSchemeSpecificPart, uri.getRawFragment)))
-        .filterNot(_.isAbsolute)
-    } else Some(uri)
+  def relativeURI(uri: String): Option[String] = {
+    val baseUrl = AbsoluteUrl.parse(urlService.getBaseInstitutionURI.toString)
+    val Host = baseUrl.host
+    val Port = baseUrl.port
+    val basePaths = baseUrl.path.parts.filter(_.length > 0)
+    Url.parse(uri) match {
+      case RelativeUrl(RootlessPath(_), _, _) => Some(uri)
+      case AbsoluteUrl(_, Authority(_, Host, Port), path, q, f) if path.parts.startsWith(basePaths) =>
+        Some(RelativeUrl(RootlessPath(path.parts.drop(basePaths.length)), q, f).toString())
+      case _ => None
+    }
   }
 
   override val getSectionFilters: util.List[SectionFilter] = {
@@ -157,8 +163,8 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
   }
 
   override def renderFromRoot(info: SectionInfo): Unit = {
-    prepareJSContext(info.getAttributeForClass(classOf[MutableSectionInfo]))
     if (info.getAttributeForClass(classOf[AjaxRenderContext]) == null) {
+      prepareJSContext(info.getAttributeForClass(classOf[MutableSectionInfo]))
       val context = info.getRootRenderContext
       Option(context.getRenderedBody).map(b => context.getRootResultListener.returnResult(b, null)).getOrElse {
         super.renderFromRoot(info)
@@ -253,7 +259,7 @@ class LegacyContentApi {
             val menuLink = mc.getLink
             val href = Option(menuLink.getBookmark).getOrElse(
               new BookmarkAndModify(context, menuLink.getHandlerMap.getHandler("click").getModifier)).getHref
-            val relativized = LegacyContentController.relativeURI(URI.create(href)).map(_.toString)
+            val relativized = LegacyContentController.relativeURI(href)
 
             MenuItem(menuLink.getLabelText,
               None,
@@ -322,9 +328,8 @@ class LegacyContentApi {
     val req = info.getRequest
     Option(req.getAttribute(LegacyContentController.RedirectedAttr).asInstanceOf[String]).map { url =>
       Response.ok {
-        val uri = URI.create(url)
-        LegacyContentController.relativeURI(uri) match {
-          case None => ExternalRedirect(uri)
+        LegacyContentController.relativeURI(url) match {
+          case None => ExternalRedirect(url)
           case Some(relative) => InternalRedirect(relative.toString, userChanged(req))
         }
       }
