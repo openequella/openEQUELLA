@@ -40,7 +40,8 @@ import MaterialUI.Popover (anchorEl, anchorOrigin, marginThreshold, popover)
 import MaterialUI.Properties (color, onClick, onClose, open, variant)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.TextStyle (display2, headline)
-import MaterialUI.Typography (typography)
+import MaterialUI.Typography (error, typography)
+import MaterialUI.Typography as Color
 import MaterialUI.Typography as Type
 import Network.HTTP.Affjax (post)
 import Network.HTTP.Affjax.Request as Req
@@ -257,7 +258,7 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
           div [DP.className classes.errorPage] [
             card [] [
               cardContent [] $ catMaybes [
-                Just $ typography [variant display2] [ text $ "Error code:" <> show code ], 
+                Just $ typography [variant display2, color Color.error] [ text $ show code <> " : " <> error], 
                 description <#> \desc -> typography [variant headline] [ text desc ]
               ]
             ]
@@ -285,9 +286,12 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
           (StatusCode 200) -> either log updateContent $ decodeJson resp.response
           (StatusCode code) -> 
                   let errorPage = decodeError resp.response # either 
-                          (\_ -> {code, error:resp.statusText, description:Nothing}) identity                                                            
+                          (\_ -> {code, error: titleForCode code, description:Nothing}) identity                                                            
                   in modifyState \s -> s {errored = Just errorPage, errorShowing = true, 
                         content = if fullError then Nothing else s.content}
+
+    titleForCode 404 = "Page not found"
+    titleForCode _ = "Server error"
 
     eval = case _ of 
       (OptionsAnchor el) -> modifyState _ {optionsAnchor = el}
@@ -305,6 +309,7 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
         liftEffect $ scrollWindowToTop
 
       Submit s -> do 
+        modifyState _ {optionsAnchor = Nothing}
         {pagePath} <- getState
         submitWithPath false pagePath s
       UpdateForm {state,partial} -> do 
