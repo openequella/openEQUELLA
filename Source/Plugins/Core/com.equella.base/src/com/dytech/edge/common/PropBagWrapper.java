@@ -337,6 +337,25 @@ public class PropBagWrapper implements XmlScriptType
 		}
 	}
 
+
+	@Override
+	public XmlScriptType getParent() {
+		PathOverride override = getOverride("/", 0, bag); //$NON-NLS-1$
+		return override.getParent();
+	}
+
+	@Override
+	public List<XmlScriptType> getChildren() {
+		PathOverride override = getOverride("/", 0, bag); //$NON-NLS-1$
+		return override.getChildren();
+	}
+
+	@Override
+	public String getName() {
+		PathOverride override = getOverride("/", 0, bag); //$NON-NLS-1$
+		return override.getName();
+	}
+
 	private static class PathOverride
 	{
 		String path;
@@ -525,6 +544,40 @@ public class PropBagWrapper implements XmlScriptType
 				return;
 			}
 			override.appendChildren(path, docToAppend.bag);
+		}
+
+		public PropBagWrapper getParent() {
+			if(override == null) {
+				return null;
+			}
+
+			PropBagEx parent = override.getParent();
+			if(parent == null) {
+				return null;
+			} else {
+				return new PropBagWrapper(parent);
+			}
+		}
+
+		public List<XmlScriptType> getChildren() {
+			if(override == null) {
+				return null;
+			}
+
+			List<PropBagEx> rawResults = override.getChildren();
+			List<XmlScriptType> results = new ArrayList<>();
+			for(PropBagEx propBag : rawResults) {
+				results.add(new PropBagWrapper(propBag));
+			}
+			return results;
+		}
+
+		public String getName() {
+			if(override == null) {
+				return null;
+			}
+
+			return override.getNodeName();
 		}
 	}
 
