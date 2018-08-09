@@ -9,6 +9,10 @@ var AjaxUploads = {
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
             s4() + '-' + s4() + s4() + s4();
     },
+    simpleUploadEntry: function(parent, canceller, uid, filename, xhr) {
+        var newEntry = $('<div class="file-upload"><div id="u'+uid+'" class="progress-bar"></div></div>');
+        newEntry.appendTo(parent);
+    },
     addUploadEntry: function(parent, canceller, uid, filename, xhr) {
         var newEntry = $('<div class="file-upload"><span class="file-name"></span><span class="file-upload-progress"><div id="u'+uid+
                             '" class="progress-bar"></div><a class="unselect"></a></span></div>');
@@ -31,19 +35,23 @@ var AjaxUploads = {
 	            return false;
 	        }
             var uploadId = AjaxUploads.guid();
-            xhr.onreadystatechange = function() {
-                if (this.readyState == this.DONE) {
-                    if (this.onreadystatechange) {
-                        xhr.onreadystatechange = null;
-                        if (xhr.status == 200)
-                        {
-                            done(uploadId);
-                        }
-                    }
-                }
-            }
 	        startUpload(uploadId, f.name, xhr);
             xhr.setRequestHeader("X_UUID", uploadId);
+            xhr.onerror = function() {
+                done(uploadId, {code: 500, error: "Interal server error"});
+            };
+            xhr.onload = function() {
+                var result;
+                if (xhr.status == 200)
+                {
+                    result = xhr.response;
+                }
+                else
+                {
+                    result = {code: xhr.status, error: xhr.statusText};
+                }
+                done(uploadId, result);
+            }
             xhr.upload.addEventListener("progress", function(e) {
                 var percent = 100 * (e.loaded / e.total);
                 $('#u'+uploadId).progression({Current:percent, AnimateTimeOut : 100});

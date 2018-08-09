@@ -53,8 +53,9 @@ import React (ReactElement, ReactRef, component, unsafeCreateLeafElement)
 import React as R
 import React.DOM (div, text)
 import React.DOM as D
-import React.DOM.Props (Props, _id, _type)
+import React.DOM.Props (Props, _id, _type, onSubmit)
 import React.DOM.Props as DP
+import React.SyntheticEvent (preventDefault, stopPropagation)
 import Routes (LegacyURI(..), matchRoute, pushRoute)
 import TSComponents (messageInfo)
 import Template (refreshUser, template', templateDefaults)
@@ -239,7 +240,7 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
                   (divWithHtml <<< {divProps:[], script:Just script, html: _} <$> lookup "body" html) ]
               mainContent = if s.noForm 
                 then actualContent
-                else D.form [DP.name "eqForm", DP._id "eqpageForm"] [hiddenState, actualContent]                
+                else D.form [DP.name "eqForm", DP._id "eqpageForm", onSubmit preventDefault] [hiddenState, actualContent]                
           in template' (templateDefaults title) {
                                 menuExtra = toNullable $ options <$> lookup "so" html, 
                                 innerRef = toNullable $ Just $ saveRef tempRef, 
