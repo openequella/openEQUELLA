@@ -62,6 +62,7 @@ public class FilterByCourseSection extends AbstractPrototypeSection<Object>
 	public void registered(String id, SectionTree tree)
 	{
 		super.registered(id, tree);
+		selectCourse.setShowArchived(true);
 		tree.setLayout(id, SearchResultsActionsSection.AREA_FILTER);
 	}
 

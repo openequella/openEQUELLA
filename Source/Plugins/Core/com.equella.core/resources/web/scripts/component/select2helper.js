@@ -14,11 +14,15 @@ var select2helper = {};
                 },
                 data: function (ajaxParams) {
                     var start = (ajaxParams.page ? (ajaxParams.page - 1) * perpage : undefined);
-                    return {
+                    var queryParams = {
                         q: ajaxParams.term,
                         length: perpage,
                         resumption: (start ? start + ':' + (start + perpage) : undefined)
                     };
+                    if (extension && extension.processParameters) {
+                        queryParams = extension.processParameters(queryParams, params, ajaxParams);
+                    }
+                    return queryParams;
                 },
                 processResults: function (data) {
                     var res = {

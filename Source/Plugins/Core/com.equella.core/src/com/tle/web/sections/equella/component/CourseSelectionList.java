@@ -27,6 +27,8 @@ import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
+import com.tle.web.sections.equella.render.AutocompleteDropdownRenderer;
+import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.js.JSCallAndReference;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
@@ -38,6 +40,8 @@ import com.tle.web.sections.standard.model.Option;
 
 import javax.inject.Inject;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Bind
 @NonNullByDefault
@@ -54,6 +58,8 @@ public class CourseSelectionList extends SingleSelectionList<CourseInfo>
 	private InstitutionService institutionService;
 	@Inject
 	private CourseInfoService courseInfoService;
+
+	private boolean showArchived;
 
 	public CourseSelectionList()
 	{
@@ -90,14 +96,43 @@ public class CourseSelectionList extends SingleSelectionList<CourseInfo>
 		super.extraHtmlRender(info);
 
 		final HtmlListState listState = getModel(info);
-		listState.setAttribute("ajaxurl", institutionService.institutionalise("api/course"));
-		listState.setAttribute("ajaxurlparam", "q");
-		listState.setAttribute("ajaxextension", EXTENSION);
+		listState.setAttribute(AutocompleteDropdownRenderer.AutocompleteDropdownRenderOptions.class,
+				new AutocompleteDropdownRenderer.AutocompleteDropdownRenderOptions(){
+			@Override
+			public JSCallAndReference getExtension(PreRenderContext info)
+			{
+				return EXTENSION;
+			}
+
+			@Override
+			public Map<String, Object> getParameters(PreRenderContext info)
+			{
+				final Map<String, Object> params = new HashMap<>();
+				params.put("ajaxurl", institutionService.institutionalise("api/course"));
+				params.put("ajaxurlparam", "q");
+				if (showArchived)
+				{
+					params.put("showArchived", true);
+				}
+				return params;
+			}
+		});
 
 		final CourseInfo course = getSelectedValue(info);
 		if (course != null)
 		{
 			listState.setOptions(Collections.singletonList(convertToOption(course)));
 		}
+	}
+
+	public boolean isShowArchived()
+	{
+		return showArchived;
+	}
+
+	public void setShowArchived(boolean showArchived)
+	{
+		ensureBuildingTree();
+		this.showArchived = showArchived;
 	}
 }

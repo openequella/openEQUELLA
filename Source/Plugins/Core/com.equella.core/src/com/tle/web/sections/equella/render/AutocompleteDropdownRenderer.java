@@ -38,6 +38,7 @@ import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlListState;
 import com.tle.web.sections.standard.renderers.list.DropDownRenderer;
 
+import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("nls")
@@ -94,12 +95,19 @@ public class AutocompleteDropdownRenderer extends DropDownRenderer
 			}
 		}
 		params.put("class", classString.toString());
-		params.put("ajaxurl", selectState.getAttribute("ajaxurl"));
-		params.put("ajaxurlparam", selectState.getAttribute("ajaxurlparam"));
 		params.put("placeholderText", CurrentLocale.get(PLACEHOLDER_KEY));
 		params.put("searchingText", CurrentLocale.get(SEARCHING_KEY));
 
-		final JSCallAndReference extension = selectState.getAttribute("ajaxextension");
+		JSCallAndReference extension = null;
+		final AutocompleteDropdownRenderOptions options = selectState.getAttribute(AutocompleteDropdownRenderOptions.class);
+		if (options != null)
+		{
+			extension = options.getExtension(info);
+			for (Map.Entry<String, Object> kv : options.getParameters(info).entrySet())
+			{
+				params.put(kv.getKey(), kv.getValue());
+			}
+		}
 
 		info.addReadyStatements(new FunctionCallStatement(SETUP, new JQuerySelector(this), params, extension));
 		super.preRender(info);
@@ -121,5 +129,12 @@ public class AutocompleteDropdownRenderer extends DropDownRenderer
 	public JSCallable createResetFunction()
 	{
 		return new PrependedParameterFunction(RESET, this);
+	}
+
+	public interface AutocompleteDropdownRenderOptions
+	{
+		JSCallAndReference getExtension(PreRenderContext info);
+
+		Map<String, Object> getParameters(PreRenderContext info);
 	}
 }

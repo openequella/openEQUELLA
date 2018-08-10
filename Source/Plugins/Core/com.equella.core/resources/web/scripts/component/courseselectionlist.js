@@ -34,6 +34,13 @@ var select2courseExtension = {};
         };
     }
 
+    this.processParameters = function(queryParams, params, ajaxParams){
+        if (params.showArchived){
+            queryParams.archived = "true";
+        }
+        return queryParams;
+    };
+
     this.processResultsExt = function(res, data){
         for (var i = 0; i < res.results.length; i++){
             var course = res.results[i];
@@ -41,7 +48,7 @@ var select2courseExtension = {};
             course.text = course.code + ' - ' + course.name;
         }
         return res;
-    }
+    };
 
     this.options = function(params){
         return {
