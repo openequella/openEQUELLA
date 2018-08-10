@@ -5924,7 +5924,6 @@
     <parameter id="rendererId" value="bootstrapsplitdropdown" />
     <parameter id="rendererId" value="bootstrapsplitnavbardropdown" />
     <parameter id="rendererId" value="dropdown" />
-    <parameter id="rendererId" value="stylish" />
     <parameter id="rendererId" value="defaultdropdown" />
     <parameter id="stateClassName" value="com.tle.web.sections.standard.model.HtmlListState" />
     <parameter id="class" value="bean:com.tle.web.sections.equella.render.EquellaDropdownExtension" />

@@ -15,8 +15,7 @@ line 3563 : autocomplete: function(cm) {CodeMirror.showHint(cm);}
 line 3577 : "Ctrl-Space": "autocomplete"
 
 
-- old cross-browser indexOf doesn't work well, so update the following codes in jquery.stylish-select.js
-affected areas : codemirror.js line 5480 & javascript-hint.js line 18 
+- old cross-browser indexOf doesn't work well, so update the following affected areas : codemirror.js line 5480 & javascript-hint.js line 18
 
 //Cross-browser implementation of indexOf from MDN: https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/indexOf
 	  if (!Array.prototype.indexOf){

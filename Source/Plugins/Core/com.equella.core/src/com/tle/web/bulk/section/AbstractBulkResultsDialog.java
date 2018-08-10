@@ -52,7 +52,6 @@ import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.dialog.EquellaDialog;
 import com.tle.web.sections.equella.render.ButtonRenderer.ButtonType;
-import com.tle.web.sections.equella.render.StylishDropDownRenderer;
 import com.tle.web.sections.events.BookmarkEvent;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.js.JSHandler;
@@ -339,8 +338,6 @@ public abstract class AbstractBulkResultsDialog<T extends ItemKey>
 			}
 
 			operationList.addClass(context, "bulkactions");
-			// friggen stylish select HAX
-			operationList.getState(context).setAttribute(StylishDropDownRenderer.KEY_MAX_HEIGHT, 300);
 
 			if( op != null && op.hasExtraNavigation(context, opId) && model.isShowOptions() )
 			{

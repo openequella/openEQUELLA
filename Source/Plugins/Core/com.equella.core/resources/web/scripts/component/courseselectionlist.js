@@ -9,10 +9,10 @@ var select2courseExtension = {};
 
             var markup = '<div class="autocomplete-result">' +
                 '<div class="autocomplete-result-title">' + course.code + ' - ' + course.name + '</div>';
-
+            /*
             if (course.description) {
                 markup += '<div class="autocomplete-result-description">' + course.description + '</div>';
-            }
+            }*/
             markup += '</div>';
 
             return markup;

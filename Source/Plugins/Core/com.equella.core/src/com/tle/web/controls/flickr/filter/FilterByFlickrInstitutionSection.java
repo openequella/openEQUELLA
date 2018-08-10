@@ -33,7 +33,6 @@ import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.sections.equella.annotation.PlugKey;
-import com.tle.web.sections.equella.render.StylishDropDownRenderer;
 import com.tle.web.sections.equella.search.SearchResultsActionsSection;
 import com.tle.web.sections.equella.search.event.SearchEventListener;
 import com.tle.web.sections.events.RenderEventContext;
@@ -154,8 +153,6 @@ public class FilterByFlickrInstitutionSection extends AbstractPrototypeSection<O
 	@Override
 	public SectionResult renderHtml(RenderEventContext context)
 	{
-		flickrInstitutionSelector.getState(context).setAttribute(StylishDropDownRenderer.KEY_ALWAYS_DISPLAY_UP, true);
-
 		return viewFactory.createResult("filter/filterbyflickrinstitution.ftl", this);
 	}
 
