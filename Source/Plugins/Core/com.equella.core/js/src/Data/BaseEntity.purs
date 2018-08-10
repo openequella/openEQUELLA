@@ -15,13 +15,13 @@ type BaseEntityShort r = {
 
 type BaseEntityLabel = BaseEntityShort ()
 
-newtype BaseEntity = BaseEntity {security :: { rules :: Array TargetListEntry }}
+newtype BaseEntity = BaseEntity {security :: { entries :: Array TargetListEntry }}
 
 instance decBase :: DecodeJson BaseEntity where 
   decodeJson v = do 
     o <- decodeJson v 
-    rules <- (o .? "security") >>= flip getField "rules"
-    pure $ BaseEntity {security:{rules}}
+    entries <- (o .? "security") >>= flip getField "entries"
+    pure $ BaseEntity {security:{entries}}
 
 
 decodeBaseEntityLabel :: Json -> Either String BaseEntityLabel

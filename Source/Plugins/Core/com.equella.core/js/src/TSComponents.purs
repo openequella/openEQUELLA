@@ -14,6 +14,8 @@ import React (ReactClass, ReactElement, unsafeCreateLeafElement)
  
 foreign import data Store :: Type
 foreign import store :: Store
+foreign import searchPrivileges :: forall a. ReactClass a
+foreign import editPrivilege :: forall a. ReactClass a
 foreign import searchCourses :: forall a. ReactClass a
 foreign import editCourse :: forall a. ReactClass a
 foreign import appBarQueryClass ::  ReactClass {query :: String, onChange :: EffectFn1 String Unit}
@@ -22,11 +24,17 @@ foreign import courseSelectClass :: forall a. ReactClass a
 
 foreign import themePageClass :: forall a. ReactClass a
 
+privilegesPage :: ReactElement
+privilegesPage = unsafeCreateLeafElement searchPrivileges {store:store, bridge: tsBridge}
+
+privilegeEdit :: Maybe String -> ReactElement
+privilegeEdit targetNode = unsafeCreateLeafElement editPrivilege {store:store, bridge: tsBridge, targetNode: toNullable $ targetNode}
+
 coursesPage :: ReactElement
 coursesPage = unsafeCreateLeafElement searchCourses {store:store, bridge: tsBridge}
 
 courseEdit :: Maybe String -> ReactElement
-courseEdit cid = unsafeCreateLeafElement editCourse {store:store, bridge: tsBridge, uuid: toNullable $ cid}
+courseEdit cid = unsafeCreateLeafElement editCourse {store:store, bridge: tsBridge, id: toNullable $ cid}
 
 appBarQuery :: { query :: String, onChange :: EffectFn1 String Unit} -> ReactElement
 appBarQuery = unsafeCreateLeafElement appBarQueryClass

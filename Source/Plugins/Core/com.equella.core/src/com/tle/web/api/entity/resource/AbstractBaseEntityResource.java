@@ -63,7 +63,7 @@ import com.tle.web.remoting.rest.service.UrlLinkService;
 /**
  * FIXME: I'm not sure about having all these Transactionals in the REST
  * resource...
- * 
+ *
  * @author Aaron
  * @param <BE> Base Entity type
  * @param <SB> Security Bean type
@@ -123,6 +123,8 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 		}
 
 		securityBean.setRules(entryBeans);
+		securityBean.setEntries(entryBeans);
+
 		return securityBean;
 	}
 
@@ -130,12 +132,25 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	@Transactional
 	protected void updateAcls(SB securityBean)
 	{
-		List<TargetListEntry> entries = new ArrayList<>();
-		List<TargetListEntryBean> rules = securityBean.getRules();
-		for( TargetListEntryBean rule : rules )
+		final List<TargetListEntry> entries = new ArrayList<>();
+		final List<TargetListEntryBean> ent = securityBean.getEntries();
+		final List<TargetListEntryBean> rules = securityBean.getRules();
+		if (ent != null)
 		{
-			entries.add(new TargetListEntry(rule.isGranted(), rule.isOverride(), rule.getPrivilege(), rule.getWho()));
+			for( TargetListEntryBean rule : ent )
+			{
+				entries.add(new TargetListEntry(rule.isGranted(), rule.isOverride(), rule.getPrivilege(), rule.getWho()));
+			}
 		}
+		// rules is deprecated
+		else if (rules != null)
+		{
+			for( TargetListEntryBean rule : rules )
+			{
+				entries.add(new TargetListEntry(rule.isGranted(), rule.isOverride(), rule.getPrivilege(), rule.getWho()));
+			}
+		}
+
 		aclManager.setTargetList(getAllNodes()[0], null, new TargetList(entries));
 	}
 
@@ -167,7 +182,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 
 	/**
 	 * Implementation for various entity endpoints.
-	 * 
+	 *
 	 * @param uriInfo
 	 * @param uuid
 	 * @return
@@ -189,7 +204,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 
 	/**
 	 * Implementation for various entity endpoints.
-	 * 
+	 *
 	 * @param uriInfo
 	 * @param uuid
 	 * @return
@@ -214,7 +229,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 
 	/**
 	 * Implementation for various entity endpoints.
-	 * 
+	 *
 	 * @param uuid
 	 * @return
 	 */
@@ -266,7 +281,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 
 	/**
 	 * Implementation for various entity endpoints.
-	 * 
+	 *
 	 * @param uriInfo
 	 * @param uuid
 	 * @return
@@ -289,7 +304,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 
 	/**
 	 * Implementation for various entity endpoints.
-	 * 
+	 *
 	 * @param uuid
 	 * @return
 	 */
@@ -307,7 +322,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 
 	/**
 	 * Implementation for various entity endpoints.
-	 * 
+	 *
 	 * @param bean
 	 * @param stagingUuid
 	 * @return
@@ -336,7 +351,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 	 * No-op by default, rely on entityService to validate. You may need to
 	 * override this for checking uniqueness before Hibernate bullshit comes
 	 * into play
-	 * 
+	 *
 	 * @param uuid
 	 * @param bean
 	 */

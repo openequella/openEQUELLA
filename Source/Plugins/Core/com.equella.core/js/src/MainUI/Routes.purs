@@ -36,8 +36,9 @@ instance legacyMonoid :: Monoid LegacyURI where
   mempty = LegacyURI "" Object.empty
 derive instance eqLURI :: Eq LegacyURI 
 
-data Route = 
-    LegacyPage LegacyURI |
+data Route = LegacyPage LegacyURI |
+    PrivilegesPage |
+    PrivilegeEdit String |
     SearchPage | 
     SettingsPage | 
     CoursesPage | 
@@ -76,6 +77,8 @@ routeMatch =
     SettingsPage <$ (lit "access" *> lit "settings.do")
     <|> lit "page" *>
         (SearchPage <$ (lit "search") <|>
+        PrivilegeEdit <$> (lit "security" *> str <* lit "edit") <|>
+        PrivilegesPage <$ (lit "security") <|>
         SettingsPage <$ (lit "settings") <|>
         NewCourse <$ (lit "course" *> lit "new") <|>
         CourseEdit <$> (lit "course" *> str <* lit "edit") <|>
@@ -118,6 +121,8 @@ routeHref r =
 
 routeURI :: Route -> String
 routeURI r = (case r of 
+    PrivilegesPage -> "page/security"
+    PrivilegeEdit targetNode -> "page/security/" <> targetNode <> "/edit"
     SearchPage -> "page/search"
     SettingsPage -> "page/settings"
     CoursesPage -> "page/course"

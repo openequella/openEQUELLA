@@ -207,6 +207,7 @@ public abstract class AbstractBaseEntitySerializer<BE extends BaseEntity, BEB ex
 			List<TargetListEntryBean> targetListEntryBean = getEntityACLs(source);
 			BaseEntitySecurityBean security = new BaseEntitySecurityBean();
 			security.setRules(targetListEntryBean);
+			security.setEntries(targetListEntryBean);
 			target.setSecurity(security);
 
 		}

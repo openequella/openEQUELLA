@@ -29,6 +29,7 @@ class ConvertToStrings a where
 
 foreign import courseString :: DynamicString
 foreign import courseEditString :: DynamicString
+foreign import privilegeEditString :: DynamicString
 foreign import entityStrings :: DynamicString
 foreign import uiThemeSettingStrings :: DynamicString
 foreign import genStringsDynamic :: (String -> String -> Tuple String String) -> String -> DynamicString -> Array (Tuple String String)
@@ -73,6 +74,7 @@ main = do
     genTopLevel {prefix:"common", strings:commonString} <> 
     genTopLevel {prefix:"courses", strings:courseString} <> 
     genTopLevel {prefix:"courseedit", strings:courseEditString} <>
+    genTopLevel {prefix:"privilegeedit", strings:privilegeEditString} <>
     genTopLevel {prefix:"entity", strings:entityStrings} <>
     genTopLevel {prefix:"newuisettings", strings: uiThemeSettingStrings} <>
     genTopLevel aclRawStrings <>

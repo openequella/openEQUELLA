@@ -234,7 +234,19 @@ public abstract class AbstractBaseEntityEditor<BE extends BaseEntity, BEB extend
 		final List<TargetListEntry> tles = new ArrayList<>();
 		tl.setEntries(tles);
 		final List<TargetListEntryBean> rules = security.getRules();
-		if( rules != null )
+		final List<TargetListEntryBean> entries = security.getEntries();
+
+		if (entries != null)
+		{
+			for( TargetListEntryBean rule : entries )
+			{
+				TargetListEntry tle = new TargetListEntry(rule.isGranted(), rule.isOverride(), rule.getPrivilege(),
+					rule.getWho());
+				tles.add(tle);
+			}
+		}
+		// rules is deprecated, but check it whilst we still support it
+		else if( rules != null )
 		{
 			for( TargetListEntryBean rule : rules )
 			{

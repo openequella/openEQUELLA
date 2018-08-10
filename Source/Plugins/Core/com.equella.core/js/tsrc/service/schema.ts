@@ -3,8 +3,8 @@ import { Dispatch } from 'redux';
 import { AsyncActionCreators } from 'typescript-fsa';
 import { Schema } from '../api';
 import { Config } from '../config';
-import { EntityState, extendedEntityService } from '../entity/index';
 import { actionCreator, wrapAsyncWorker } from '../util/actionutil';
+import { EntityState, extendedEntityService } from './entity';
 
 
 interface SchemaExtActions {

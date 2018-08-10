@@ -20,7 +20,11 @@ import java.util.List;
 
 import com.tle.web.api.interfaces.beans.RestBean;
 
-public class BaseEntitySecurityBean implements RestBean
+/**
+ * To be replaced with TargetListBean
+ */
+@Deprecated
+public class BaseEntitySecurityBean extends TargetListBean
 {
 	private List<TargetListEntryBean> rules;
 

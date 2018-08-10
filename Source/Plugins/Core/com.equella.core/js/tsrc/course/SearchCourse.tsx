@@ -3,17 +3,18 @@ import List from '@material-ui/core/List';
 import withStyles, { StyleRules, WithStyles } from '@material-ui/core/styles/withStyles';
 import AddIcon from '@material-ui/icons/Add';
 import * as React from 'react';
-import { Dispatch, connect } from 'react-redux';
-import { searchCourses } from '.';
+import { connect, Dispatch } from 'react-redux';
 import { Course } from '../api';
 import { Bridge } from '../api/bridge';
 import AppBarQuery from '../components/AppBarQuery';
 import ConfirmDialog from '../components/ConfirmDialog';
 import SearchResult from '../components/SearchResult';
+import { searchCourses } from '../service/course';
 import { courseService } from '../services';
 import { StoreState } from '../store';
 import { prepLangStrings, sizedString } from '../util/langstrings';
 import VisibilitySensor = require('react-visibility-sensor');
+import { sprintf } from 'sprintf-js';
 
 const styles = (theme: Theme) => ({
     overall: {
@@ -48,7 +49,7 @@ const styles = (theme: Theme) => ({
 interface SearchCourseProps extends WithStyles<'results' | 'overall' | 'fab' 
     | 'resultHeader' | 'resultText' | 'resultList' | 'progress'> {
     bridge: Bridge;
-    deleteCourse: (uuid: string) => Promise<{uuid:string}>;
+    deleteCourse: (id: string) => Promise<{id:string}>;
     checkCreate: () => Promise<boolean>;
 }
 
@@ -250,10 +251,9 @@ function mapStateToProps(state: StoreState) {
 function mapDispatchToProps(dispatch: Dispatch<any>) {
     const { workers } = courseService;
     return {
-        deleteCourse: (uuid: string) => workers.delete(dispatch, {uuid}), 
+        deleteCourse: (id: string) => workers.delete(dispatch, {id}), 
         checkCreate: () => workers.checkPrivs(dispatch, {privilege:["CREATE_COURSE_INFO"]}).then(p => p.indexOf("CREATE_COURSE_INFO") != -1)
     }
 }
 
-// What's with these any's? 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(SearchCourse));

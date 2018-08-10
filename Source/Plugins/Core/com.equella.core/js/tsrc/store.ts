@@ -1,10 +1,10 @@
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { createLogger } from 'redux-logger';
 import thunkMiddleware from 'redux-thunk';
-import { AclState } from './acl/index';
-import { CourseState } from './course/index';
-import { SchemaState } from './schema/index';
-import { courseService, schemaService, aclService } from './services';
+import { AclState } from './service/acl';
+import { CourseState } from './service/course';
+import { SchemaState } from './service/schema';
+import { aclService, courseService, schemaService } from './services';
 
 export class StoreState {
     course: CourseState;

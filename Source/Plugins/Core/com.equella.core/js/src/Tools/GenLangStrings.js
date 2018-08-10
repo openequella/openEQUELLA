@@ -1,7 +1,9 @@
 exports.courseString = require("course/SearchCourse").strings;
 exports.courseEditString = require("course/EditCourse").strings;
-exports.entityStrings = require("entity").entityStrings;
+exports.privilegeString = require("security/SearchPrivilege").strings;
+exports.privilegeEditString = require("security/EditPrivilege").strings;
 exports.uiThemeSettingStrings = require("theme/ThemePage").strings;
+exports.entityStrings = require("service/entity").entityStrings;
 exports.genStringsDynamic = function(t)
 {
     var strings = [];

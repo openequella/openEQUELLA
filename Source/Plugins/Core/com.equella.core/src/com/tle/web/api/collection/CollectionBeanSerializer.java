@@ -181,6 +181,7 @@ public class CollectionBeanSerializer
 		if( entityACLs != null )
 		{
 			security.setRules(entityACLs);
+			security.setEntries(entityACLs);
 		}
 
 		bean.setSecurity(security);

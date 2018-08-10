@@ -1,6 +1,6 @@
-import acl from './acl/index';
-import course from './course/index';
-import schema from './schema/index';
+import acl from './service/acl';
+import course from './service/course';
+import schema from './service/schema';
 
 export const courseService = course;
 export const schemaService = schema;

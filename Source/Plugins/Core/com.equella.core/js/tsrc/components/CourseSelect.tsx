@@ -4,7 +4,7 @@ import Downshift, { GetItemPropsOptions } from 'downshift';
 import { withStyles, Theme, createStyles, WithStyles } from '@material-ui/core/styles';
 import { Course, PagingResults } from '../api';
 import { TextField, MenuItem, Paper } from '@material-ui/core';
-import { searchCourses } from '../course';
+import { searchCourses } from '../service/course';
 import { TextFieldProps } from '@material-ui/core/TextField';
 
 const styles = (theme : Theme) => createStyles({
