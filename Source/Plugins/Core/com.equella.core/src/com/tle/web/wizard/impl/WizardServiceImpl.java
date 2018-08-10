@@ -50,7 +50,6 @@ import com.dytech.edge.wizard.beans.NavPage;
 import com.dytech.edge.wizard.beans.WizardPage;
 import com.google.common.base.Strings;
 import com.google.inject.Provider;
-import com.google.inject.assistedinject.Assisted;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.Wizard;
@@ -79,6 +78,7 @@ import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
 import com.tle.core.guice.BindFactory;
+import com.tle.core.hibernate.equella.service.InitialiserService;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.service.ItemService;
@@ -122,6 +122,7 @@ import com.tle.web.wizard.scripting.objects.impl.PageScriptWrapper;
 import com.tle.web.wizard.section.SelectThumbnailSection.ThumbnailOption;
 import com.tle.web.wizard.section.model.DuplicateData;
 import com.tle.web.workflow.tasks.ModerationService;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author jmaginnis
@@ -537,8 +538,6 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 	/**
 	 * @param state
 	 * @param cloneOp
-	 * @param newItem Would only be false for a Move into new collection
-	 *            operation
 	 * @return
 	 */
 	protected WizardState cloneItemInternal(WizardState state, AbstractCloneOperation cloneOp)
@@ -1388,10 +1387,14 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 				if (wizards == null) {
 					wizards = new HashSet<WizardInfo>();
 				}
-				WizardInfo winfo = new WizardInfo();
+				final WizardInfo winfo = new WizardInfo();
 				winfo.setUuid(state.getWizid());
-				Item item = state.getItem();
-				winfo.setCollectionName(CurrentLocale.get(item.getItemDefinition().getName()));
+
+				final Item item = state.getItem();
+				// The item in the wizard state could be a deserialised one.
+				// Can't just read complex values (e.g. collection name) out of it.
+				final ItemDefinition collection = itemDefinitionService.get(item.getItemDefinition().getId());
+				winfo.setCollectionName(CurrentLocale.get(collection.getName()));
 				winfo.setItemUuid(item.getUuid());
 				winfo.setItemVersion(item.getVersion());
 				winfo.setNewItem(item.isNewItem());

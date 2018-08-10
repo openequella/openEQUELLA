@@ -37,12 +37,10 @@ import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.valuebean.GroupBean;
 import com.tle.common.usermanagement.user.valuebean.RoleBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
-import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;
 
 import javax.inject.Inject;
 
-//@Bind(UserScriptObject.class)
 public class UserScriptWrapper extends AbstractScriptWrapper implements UserScriptObject
 {
 	private static final long serialVersionUID = 1L;

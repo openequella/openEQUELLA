@@ -47,12 +47,20 @@ public interface NavigationScriptObject extends ScriptObject
 
 	/**
 	 * Add a navigation node to the item navigation tree.
-	 * 
+	 *
 	 * @param description A display name for the node
 	 * @param parentNode Specify null for the root level
 	 * @return The new node that was added
 	 */
 	NavigationNodeScriptType addNode(String description, NavigationNodeScriptType parentNode);
+
+	/**
+	 * Add a root level navigation node to the item navigation tree.
+	 *
+	 * @param description A display name for the node
+	 * @return The new node that was added
+	 */
+	NavigationNodeScriptType addNode(String description);
 
 	/**
 	 * Remove a node from the item navigation tree.

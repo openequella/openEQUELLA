@@ -43,7 +43,6 @@ public class NavigationScriptWrapper extends AbstractScriptWrapper implements Na
 
 	@Inject
 	private ScriptTypeFactory scriptTypeFactory;
-
 	@Inject
 	private ItemNavigationService itemNavService;
 
@@ -59,6 +58,12 @@ public class NavigationScriptWrapper extends AbstractScriptWrapper implements Na
 		this.itemNodeToScriptNode = new IdentityHashMap<>();
 
 		rebuildTree();
+	}
+
+	@Override
+	public NavigationNodeScriptType addNode(String description)
+	{
+		return addNode(description, null);
 	}
 
 	@Override
