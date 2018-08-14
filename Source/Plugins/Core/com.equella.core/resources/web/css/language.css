@@ -14,7 +14,7 @@ table.zebra td.exportdelete
 	text-align: right;
 }
 
-div.importlink
+#uploadProgress
 {
-	margin-top: 13px;
+	height: 32px;
 }

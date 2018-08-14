@@ -45,8 +45,10 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxGenerator;
 import com.tle.web.sections.ajax.AjaxGenerator.EffectType;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
+import com.tle.web.sections.ajax.handler.AjaxMethod;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
+import com.tle.web.sections.equella.ajaxupload.AjaxUpload;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.component.SelectionsTable;
 import com.tle.web.sections.equella.component.model.DynamicSelectionsTableModel;
@@ -57,10 +59,14 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.js.BookmarkAndModify;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.events.js.JSHandler;
+import com.tle.web.sections.js.JSAssignable;
 import com.tle.web.sections.js.JSCallable;
+import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.js.generic.expression.FunctionCallExpression;
 import com.tle.web.sections.js.generic.expression.NullExpression;
+import com.tle.web.sections.js.generic.function.AnonymousFunction;
+import com.tle.web.sections.js.generic.function.PartiallyApply;
 import com.tle.web.sections.js.generic.function.ReloadFunction;
 import com.tle.web.sections.js.validators.Confirm;
 import com.tle.web.sections.render.GenericTemplateResult;
@@ -103,10 +109,6 @@ public class RootLanguageSection extends OneColumnLayout<OneColumnLayout.OneColu
 	@PlugKey("language.locale.default.name")
 	private static Label LABEL_LOCALE_DEFAULT_NAME;
 
-	@Component(name = "imprtlnk")
-	@PlugKey("importlocale.link")
-	private Link importLocaleLink;
-
 	@Component(name = "fiup")
 	private FileUpload fileUploader;
 
@@ -143,18 +145,13 @@ public class RootLanguageSection extends OneColumnLayout<OneColumnLayout.OneColu
 
 	private JSCallable deleteLocaleHandler;
 	private JSCallable deleteContribHandler;
+	private JSAssignable importValidate;
 
 	@Override
 	public void registered(String id, SectionTree tree)
 	{
 		super.registered(id, tree);
 
-		importLocaleLink.setDisablable(true);
-		importLocaleLink.setClickHandler(events.getNamedHandler("importLocale"));
-		importLocaleLink.setStyleClass("add");
-
-		fileUploader.addEventStatements(JSHandler.EVENT_CHANGE,
-			jscall(new FunctionCallExpression(importLocaleLink.createDisableFunction(), false)));
 		addContribLangLink.setClickHandler(addLanguageDialog.getOpenFunction(), "", "");
 		addContribLangLink.setStyleClass("add");
 		addLanguageDialog.setOkCallback(new ReloadFunction());
@@ -166,15 +163,16 @@ public class RootLanguageSection extends OneColumnLayout<OneColumnLayout.OneColu
 			ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), "contriblanglist");
 		contributionLanguageTbl.setSelectionsModel(new ContributionLanguageTableModel());
 
+		importValidate = AjaxUpload.simpleUploadValidator("uploadProgress",
+				new AnonymousFunction(new ReloadFunction()));
 	}
 
 	@Override
 	protected TemplateResult setupTemplate(RenderEventContext info)
 	{
 		securityProvider.checkAuthorised();
-		// enabled via change to fileUpload.
-		importLocaleLink.setDisabled(info, true);
-
+		fileUploader.setAjaxUploadUrl(info, ajax.getAjaxUrl(info, "importLocale"));
+		fileUploader.setValidateFile(info, importValidate);
 		return new GenericTemplateResult(viewFactory.createNamedResult(BODY, "language.ftl", this));
 	}
 
@@ -254,8 +252,8 @@ public class RootLanguageSection extends OneColumnLayout<OneColumnLayout.OneColu
 		}
 	}
 
-	@EventHandlerMethod
-	public void importLocale(SectionInfo info)
+	@AjaxMethod
+	public boolean importLocale(SectionInfo info)
 	{
 		String uploadFilename = fileUploader.getFilename(info);
 		if( !Check.isEmpty(uploadFilename) )
@@ -281,6 +279,7 @@ public class RootLanguageSection extends OneColumnLayout<OneColumnLayout.OneColu
 				}
 			}
 		}
+		return true;
 	}
 
 	@EventHandlerMethod
@@ -396,11 +395,6 @@ public class RootLanguageSection extends OneColumnLayout<OneColumnLayout.OneColu
 	public FileUpload getFileUploader()
 	{
 		return fileUploader;
-	}
-
-	public Link getImportLocaleLink()
-	{
-		return importLocaleLink;
 	}
 
 	public SelectionsTable getContributionLanguageTbl()

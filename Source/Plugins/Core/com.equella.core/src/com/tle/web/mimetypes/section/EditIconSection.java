@@ -44,20 +44,29 @@ import com.tle.web.mimetypes.service.WebMimeTypeService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
+import com.tle.web.sections.ajax.AjaxGenerator;
+import com.tle.web.sections.ajax.handler.AjaxEventCreator;
+import com.tle.web.sections.ajax.handler.AjaxFactory;
+import com.tle.web.sections.ajax.handler.AjaxMethod;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.annotations.DirectEvent;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
+import com.tle.web.sections.equella.ajaxupload.AjaxCallbackResponse;
+import com.tle.web.sections.equella.ajaxupload.AjaxUpload;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.js.BookmarkAndModify;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
+import com.tle.web.sections.js.JSAssignable;
 import com.tle.web.sections.js.generic.ReloadHandler;
+import com.tle.web.sections.js.generic.function.PartiallyApply;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.FileUpload;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.stream.ContentStreamWriter;
+import org.joda.time.Partial;
 
 @SuppressWarnings("nls")
 @Bind
@@ -84,6 +93,8 @@ public class EditIconSection extends AbstractPrototypeSection<EditIconSection.Ed
 	private FreemarkerFactory viewFactory;
 	@EventFactory
 	private EventGenerator events;
+	@AjaxFactory
+	private AjaxGenerator ajax;
 
 	@Component(name = "iu")
 	private FileUpload iconUpload;
@@ -91,6 +102,7 @@ public class EditIconSection extends AbstractPrototypeSection<EditIconSection.Ed
 	private Button uploadButton;
 	@Component(name = "ri")
 	private Button removeIconButton;
+	private JSAssignable validateFile;
 
 	@Override
 	public Class<EditIconModel> getModelClass()
@@ -110,6 +122,8 @@ public class EditIconSection extends AbstractPrototypeSection<EditIconSection.Ed
 		super.registered(id, tree);
 		uploadButton.setClickHandler(new ReloadHandler());
 		removeIconButton.setClickHandler(events.getNamedHandler("removeIcon"));
+		validateFile = AjaxUpload.simpleUploadValidator("uploadProgress",
+				PartiallyApply.partial(events.getSubmitValuesFunction("checkFileUpload"), 2));
 	}
 
 	@Override
@@ -117,7 +131,8 @@ public class EditIconSection extends AbstractPrototypeSection<EditIconSection.Ed
 	{
 		BookmarkAndModify stagingIcon = new BookmarkAndModify(context, events.getNamedModifier("showCurrentIcon"));
 		getModel(context).setDisplayIconUrl(stagingIcon.getHref());
-
+		iconUpload.setAjaxUploadUrl(context, ajax.getAjaxUrl(context, "uploadIcon"));
+		iconUpload.setValidateFile(context, validateFile);
 		return viewFactory.createResult("iconedit.ftl", context);
 	}
 
@@ -138,55 +153,75 @@ public class EditIconSection extends AbstractPrototypeSection<EditIconSection.Ed
 		}
 	}
 
-	@DirectEvent
-	public void checkFileUpload(SectionInfo info)
+	public static class UploadValidation extends AjaxCallbackResponse
 	{
-		if( iconUpload.getFileSize(info) > 0 )
+		private String errorKey;
+		private String stagingId;
+
+		public String getErrorKey()
 		{
-			final EditIconModel model = getModel(info);
-			model.setErrorKey(null);
+			return errorKey;
+		}
 
-			final String stagingId = model.getStagingId();
-			StagingFile stagingFile;
-			if( stagingId == null )
-			{
-				stagingFile = stagingService.createStagingArea();
-				model.setStagingId(stagingFile.getUuid());
-			}
-			else
-			{
-				stagingFile = new StagingFile(stagingId);
-			}
+		public void setErrorKey(String errorKey)
+		{
+			this.errorKey = errorKey;
+		}
 
-			try( InputStream iconStream = iconUpload.getInputStream(info) )
-			{
-				fileSystemService.write(stagingFile, PRE_THUMB_FILENAME, iconStream, false);
-				generateThumbnail(stagingFile);
+		public String getStagingId()
+		{
+			return stagingId;
+		}
 
-				model.setHasCustomIcon(true);
-				// Stop the image being cached - setting the cache control http
-				// header doesn't seem to work
-				model.setRand(new Random().nextInt(10000));
-			}
-			catch( ImageMagickException ime )
-			{
-				setIconError(model);
-			}
-			catch( IOException e )
-			{
-				setIconError(model);
-			}
-			catch( RuntimeException e )
-			{
-				setIconError(model);
-			}
+		public void setStagingId(String stagingId)
+		{
+			this.stagingId = stagingId;
 		}
 	}
 
-	private void setIconError(final EditIconModel model)
+	@AjaxMethod
+	public UploadValidation uploadIcon(SectionInfo info)
 	{
-		model.setErrorKey("upload");
-		model.setStagingId(null);
+		UploadValidation val = new UploadValidation();
+		EditIconModel model = getModel(info);
+
+		final String stagingId = model.getStagingId();
+		StagingFile stagingFile;
+		if( stagingId == null )
+		{
+			stagingFile = stagingService.createStagingArea();
+		}
+		else
+		{
+			stagingFile = new StagingFile(stagingId);
+		}
+
+		try( InputStream iconStream = iconUpload.getInputStream(info) )
+		{
+			fileSystemService.write(stagingFile, PRE_THUMB_FILENAME, iconStream, false);
+			generateThumbnail(stagingFile);
+			val.setStagingId(stagingFile.getUuid());
+		}
+		catch (Exception e)
+		{
+			val.setErrorKey("upload");
+		}
+		return val;
+	}
+
+	@EventHandlerMethod
+	public void checkFileUpload(SectionInfo info, String fileId, UploadValidation upload)
+	{
+		final EditIconModel model = getModel(info);
+		model.setStagingId(upload.getStagingId());
+		String errorKey = upload.getErrorKey();
+		model.setErrorKey(errorKey);
+		if (errorKey == null) {
+			model.setHasCustomIcon(true);
+			// Stop the image being cached - setting the cache control http
+			// header doesn't seem to work
+			model.setRand(new Random().nextInt(10000));
+		}
 	}
 
 	@EventHandlerMethod

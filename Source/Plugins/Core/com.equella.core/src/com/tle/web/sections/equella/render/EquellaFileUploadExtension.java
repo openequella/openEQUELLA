@@ -28,6 +28,7 @@ import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionWriter;
+import com.tle.web.sections.SectionsRuntimeException;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.events.js.JSHandler;
 import com.tle.web.sections.jquery.Jq;
@@ -144,7 +145,7 @@ public class EquellaFileUploadExtension implements RendererFactoryExtension
 					}
 					else
 					{
-						info.getForm().setEncoding("multipart/form-data");
+						throw new SectionsRuntimeException("Must set an ajax upload url for fileupload");
 					}
 					info.addReadyStatements(Js.call_s(INIT, this, oe));
 				}

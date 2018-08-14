@@ -24,6 +24,13 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import com.tle.web.sections.ajax.AjaxGenerator;
+import com.tle.web.sections.ajax.handler.AjaxFactory;
+import com.tle.web.sections.ajax.handler.AjaxMethod;
+import com.tle.web.sections.equella.ajaxupload.AjaxCallbackResponse;
+import com.tle.web.sections.equella.ajaxupload.AjaxUpload;
+import com.tle.web.sections.js.JSAssignable;
+import com.tle.web.sections.js.generic.function.PartiallyApply;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -85,11 +92,12 @@ public class ImportTab extends AbstractInstitutionTab<ImportTab.ImportTabModel>
 	private FreemarkerFactory viewFactory;
 	@EventFactory
 	private EventGenerator events;
+	@AjaxFactory
+	private AjaxGenerator ajax;
 
 	@Component
 	private FileUpload fileUpload;
-	@Component
-	private Button uploadButton;
+	private JSAssignable validateFile;
 
 	public static class ImportTabModel
 	{
@@ -147,13 +155,25 @@ public class ImportTab extends AbstractInstitutionTab<ImportTab.ImportTabModel>
 	{
 		super.registered(id, tree);
 		tree.registerInnerSection(importSection, id);
-		uploadButton.setClickHandler(events.getNamedHandler("uploadedFile"));
+		validateFile = AjaxUpload.simpleUploadValidator("uploadProgress",
+				PartiallyApply.partial(events.getSubmitValuesFunction("startUnzip"), 2));
 	}
 
-	public void startUnzip(SectionInfo info, final ImportFile stagingFile, final String filename, long length)
+	@EventHandlerMethod
+	public void startUnzip(SectionInfo info, String uploadId, UploadValidation upload)
 		throws IOException
 	{
 		ImportTabModel model = getModel(info);
+		final String filename = upload.getFilename();
+		if (filename == null)
+		{
+			info.preventGET();
+			model.setUploaded(true);
+			return;
+		}
+		final String uuid = upload.getUuid();
+		final ImportFile stagingFile = new ImportFile(filename + "-" + uuid);;
+		long length = fileSystemService.fileLength(stagingFile, ARCHIVE_FILE);
 
 		final String stagingUuid = stagingFile.getMyPathComponent();
 		model.setStagingId(stagingUuid);
@@ -205,28 +225,57 @@ public class ImportTab extends AbstractInstitutionTab<ImportTab.ImportTabModel>
 		model.setStagingId(null);
 	}
 
-	@EventHandlerMethod
-	public void uploadedFile(SectionInfo info) throws IOException
+	public static class UploadValidation extends AjaxCallbackResponse
 	{
+		private String filename;
+		private String uuid;
+
+		public String getFilename()
+		{
+			return filename;
+		}
+
+		public void setFilename(String filename)
+		{
+			this.filename = filename;
+		}
+
+		public String getUuid()
+		{
+			return uuid;
+		}
+
+		public void setUuid(String uuid)
+		{
+			this.uuid = uuid;
+		}
+	}
+
+	@AjaxMethod
+	public UploadValidation uploadedFile(SectionInfo info) throws IOException
+	{
+		UploadValidation val = new UploadValidation();
 		final String filename = fileUpload.getFilename(info);
 		ImportTabModel model = getModel(info);
 		if( Check.isEmpty(filename) )
 		{
-			model.setUploaded(true);
-			return;
+			return val;
 		}
 
 		// Add a uuid to the import to avoid conflicts if uploading an
 		// institution with the same filename at the same time. See issue #3888
 		// for more information.
-		final ImportFile importFile = new ImportFile(filename + "-" + UUID.randomUUID().toString());
+		String uuid = UUID.randomUUID().toString();
+		final ImportFile importFile = new ImportFile(filename + "-" + uuid);
 
 		try( InputStream in = fileUpload.getInputStream(info) )
 		{
 			fileSystemService.removeFile(importFile);
 			fileSystemService.write(importFile, ARCHIVE_FILE, in, false);
-			startUnzip(info, importFile, filename, fileSystemService.fileLength(importFile, ARCHIVE_FILE));
 		}
+		val.setFilename(filename);
+		val.setUuid(uuid);
+		return val;
 	}
 
 	@Override
@@ -237,9 +286,12 @@ public class ImportTab extends AbstractInstitutionTab<ImportTab.ImportTabModel>
 			return viewFactory.createResult("tab/nodatabases.ftl", this);
 		}
 
+		fileUpload.setAjaxUploadUrl(context, ajax.getAjaxUrl(context, "uploadedFile"));
+		fileUpload.setValidateFile(context, validateFile);
 		ImportTabModel model = getModel(context);
-		if( model.isUploaded() && Check.isEmpty(fileUpload.getFilename(context)) )
+		if( model.isUploaded())
 		{
+			model.setUploaded(false);
 			model.getErrors().put("file", LABEL_EMPTY.getText());
 		}
 
@@ -259,9 +311,6 @@ public class ImportTab extends AbstractInstitutionTab<ImportTab.ImportTabModel>
 				Js.call_s(ProgressRenderer.WEBKIT_PROGRESS_FRAME, JQueryCore.getJQueryCoreUrl()), Js.call_s(
 					ProgressRenderer.SHOW_PROGRESS_FUNCTION, urlService.getAdminUrl() + "progress/?id=" + stagingId));
 		}
-
-		model.setUploaded(false);
-
 		return viewFactory.createResult("tab/uploadimport.ftl", context);
 	}
 
@@ -280,10 +329,5 @@ public class ImportTab extends AbstractInstitutionTab<ImportTab.ImportTabModel>
 	public FileUpload getFileUpload()
 	{
 		return fileUpload;
-	}
-
-	public Button getUploadButton()
-	{
-		return uploadButton;
 	}
 }

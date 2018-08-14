@@ -17,7 +17,6 @@
 package com.tle.web.customlinks.section;
 
 import com.dytech.common.GeneralConstants;
-import com.dytech.edge.wizard.WizardTimeoutException;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.tle.annotation.NonNullByDefault;
@@ -55,7 +54,6 @@ import com.tle.web.sections.ajax.AjaxGenerator.EffectType;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
 import com.tle.web.sections.ajax.handler.AjaxMethod;
 import com.tle.web.sections.annotations.Bookmarked;
-import com.tle.web.sections.annotations.DirectEvent;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.ajaxupload.AjaxCallbackResponse;
@@ -63,7 +61,6 @@ import com.tle.web.sections.equella.ajaxupload.AjaxUpload;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.component.MultiEditBox;
 import com.tle.web.sections.equella.layout.OneColumnLayout;
-import com.tle.web.sections.events.ReadyToRespondListener;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.RespondingListener;
 import com.tle.web.sections.events.js.BookmarkAndModify;

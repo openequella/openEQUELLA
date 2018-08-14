@@ -37,12 +37,19 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ViewableChildInterface;
+import com.tle.web.sections.ajax.AjaxGenerator;
+import com.tle.web.sections.ajax.handler.AjaxFactory;
+import com.tle.web.sections.ajax.handler.AjaxMethod;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
+import com.tle.web.sections.equella.ajaxupload.AjaxCallbackResponse;
+import com.tle.web.sections.equella.ajaxupload.AjaxUpload;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
+import com.tle.web.sections.js.JSAssignable;
+import com.tle.web.sections.js.generic.function.PartiallyApply;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.BundleLabel;
@@ -69,15 +76,14 @@ public class QuickUploadSection extends AbstractPrototypeSection<QuickUploadMode
 		ViewableChildInterface,
 		AttachmentSelectorEventListener
 {
-	@PlugKey("uploadbutton")
-	@Component
-	private Button uploadButton;
 	@Component
 	private FileUpload fileUploader;
 	@ViewFactory
 	private FreemarkerFactory viewFactory;
 	@EventFactory
 	protected EventGenerator events;
+	@AjaxFactory
+	private AjaxGenerator ajax;
 
 	@Inject
 	private QuickUploadService quickUploadService;
@@ -89,12 +95,15 @@ public class QuickUploadSection extends AbstractPrototypeSection<QuickUploadMode
 	private ItemResolver itemResolver;
 	@Inject
 	private ViewableItemResolver viewableItemResolver;
+	private JSAssignable validateFile;
 
 	@Override
 	public SectionResult renderHtml(RenderEventContext context)
 	{
 		if( canView(context) )
 		{
+			fileUploader.setValidateFile(context, validateFile);
+			fileUploader.setAjaxUploadUrl(context, ajax.getAjaxUrl(context, "upload"));
 			final ItemDefinition collection = quickUploadService.getOneClickItemDef();
 			if( collection != null )
 			{
@@ -113,12 +122,39 @@ public class QuickUploadSection extends AbstractPrototypeSection<QuickUploadMode
 	{
 		super.registered(id, tree);
 		tree.addListener(null, AttachmentSelectorEventListener.class, this);
-		uploadButton.setClickHandler(events.getNamedHandler("upload"));
+		validateFile = AjaxUpload.simpleUploadValidator("uploadProgress",
+				PartiallyApply.partial(events.getSubmitValuesFunction("finishedUpload"), 2));
+	}
+
+	public static class UploadValidation extends AjaxCallbackResponse
+	{
+		private boolean returnFromSession;
+
+		public boolean isReturnFromSession()
+		{
+			return returnFromSession;
+		}
+
+		public void setReturnFromSession(boolean returnFromSession)
+		{
+			this.returnFromSession = returnFromSession;
+		}
 	}
 
 	@EventHandlerMethod
-	public void upload(SectionInfo info) throws Exception
+	public void finishedUpload(SectionInfo info, String uploadId, UploadValidation upload)
 	{
+		if (upload.isReturnFromSession())
+		{
+			selectionService.returnFromSession(info);
+		}
+	}
+
+
+	@AjaxMethod
+	public UploadValidation upload(SectionInfo info) throws Exception
+	{
+		UploadValidation val = new UploadValidation();
 		final String filename = fileUploader.getFilename(info);
 		if( fileUploader.getFileSize(info) > 0 && !Check.isEmpty(filename) )
 		{
@@ -135,7 +171,7 @@ public class QuickUploadSection extends AbstractPrototypeSection<QuickUploadMode
 				{
 					selectAttachmentHandler.handleAttachmentSelection(info, attInfo.getFirst(), attInfo.getSecond(),
 						null);
-					selectionService.returnFromSession(info);
+					val.setReturnFromSession(true);
 				}
 			}
 			catch( IOException e )
@@ -143,6 +179,7 @@ public class QuickUploadSection extends AbstractPrototypeSection<QuickUploadMode
 				Throwables.propagate(e);
 			}
 		}
+		return val;
 	}
 
 	@Override
@@ -192,11 +229,6 @@ public class QuickUploadSection extends AbstractPrototypeSection<QuickUploadMode
 	public Object instantiateModel(SectionInfo info)
 	{
 		return new QuickUploadModel();
-	}
-
-	public Button getUploadButton()
-	{
-		return uploadButton;
 	}
 
 	public FileUpload getFileUploader()

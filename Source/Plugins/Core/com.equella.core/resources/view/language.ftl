@@ -20,9 +20,7 @@
 		<div>
 			<@file section=s.fileUploader class="uploadfield" />
 		</div>
-		<div class="importlink">
-			<@render section=s.importLocaleLink/>
-		</div>
+        <div id="uploadProgress" class="uploadsprogress"></div>
 	</@>
 
 	<br>
