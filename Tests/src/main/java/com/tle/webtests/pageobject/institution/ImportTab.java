@@ -26,9 +26,6 @@ public class ImportTab extends InstitutionTab<ImportTab> implements DbSelectable
 	@FindBy(id = "isii_fileUpload")
 	private WebElement chooseFile;
 
-	@FindBy(id = "isii_uploadButton")
-	private WebElement uploadButton;
-
 	@FindBy(id = "isimp_actionButton")
 	private WebElement importButton;
 
@@ -61,7 +58,6 @@ public class ImportTab extends InstitutionTab<ImportTab> implements DbSelectable
 	public StatusPage<ImportTab> importInstitution(final String url, String shortName, File file, long timeout)
 	{
 		chooseFile.sendKeys(file.getAbsolutePath());
-		uploadButton.click();
 		waiter.until(new ExpectedCondition<Boolean>()
 		{
 			@Override

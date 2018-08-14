@@ -16,8 +16,10 @@ public class ResourceUniversalControlType extends NewAbstractWizardControl<Resou
 		AttachmentType<ResourceUniversalControlType, GenericAttachmentEditPage>
 {
 
-	@FindBy(id = "{wizid}_dialog_rh_displayName")
-	private WebElement displayName;
+	private WebElement getDisplayName()
+	{
+		return byWizId("_dialog_rh_displayName");
+	}
 
 	private UniversalControl universalControl;
 
@@ -41,7 +43,21 @@ public class ResourceUniversalControlType extends NewAbstractWizardControl<Resou
 
 	public WaitingPageObject<GenericAttachmentEditPage> editPage()
 	{
-		return new GenericAttachmentEditPage(universalControl, displayName, null);
+		return new GenericAttachmentEditPage(universalControl)
+		{
+
+			@Override
+			protected WebElement getNameField()
+			{
+				return getDisplayName();
+			}
+
+			@Override
+			protected WebElement getPreviewCheckbox()
+			{
+				return null;
+			}
+		};
 	}
 
 	@Override

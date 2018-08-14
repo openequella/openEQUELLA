@@ -171,11 +171,15 @@ public class ItemAdminPage extends AbstractBulkResultsPage<ItemAdminPage, ItemLi
 
 	public ItemAdminPage all()
 	{
-		WaitingPageObject<ItemListPage> waiter = resultsPageObject.getUpdateWaiter();
 		openFilters();
 		statusSelect = new EquellaSelect(context, statusDropDown);
-		statusSelect.selectByIndex(0);
-		return waitForResultsReload(waiter);
+		if (!statusSelect.getSelectedText().equals("All statuses"))
+		{
+			WaitingPageObject<ItemListPage> waiter = resultsPageObject.getUpdateWaiter();
+			statusSelect.selectByVisibleText("All statuses");
+			return waitForResultsReload(waiter);
+		}
+		return this;
 	}
 
 	public SummaryPage viewItem(String itemName)

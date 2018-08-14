@@ -85,7 +85,7 @@ public class CALWizardPage
 		ResourceUniversalControlType resource = control.addDefaultResource(new ResourceUniversalControlType(control));
 		SelectionSession session = resource.getSelectionSession();
 		ItemListPage results = session.homeSearch('"' + title + '"');
-		results.viewFromTitle(title).selectItem(resource.editPage()).save();
+		results.viewFromTitle(title).selectItem(wizardPage);
 	}
 
 	public SummaryPage publish()

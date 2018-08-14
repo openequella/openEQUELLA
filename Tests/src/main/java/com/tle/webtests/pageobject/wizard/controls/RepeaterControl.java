@@ -13,10 +13,15 @@ import com.tle.webtests.pageobject.wizard.SubWizardPage;
 
 public class RepeaterControl extends AbstractWizardControl<RepeaterControl>
 {
-	@FindBy(id = "{wizid}_groups")
-	private WebElement groups;
-	@FindBy(id = "{wizid}_addButton")
-	private WebElement addButton;
+	private WebElement getGroups()
+	{
+		return byWizId("_groups");
+	}
+
+	private WebElement getAddButton()
+	{
+		return byWizId("_addButton");
+	}
 
 	public RepeaterControl(PageContext context, int ctrlnum, AbstractWizardControlPage<?> page)
 	{
@@ -27,12 +32,12 @@ public class RepeaterControl extends AbstractWizardControl<RepeaterControl>
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return groups;
+		return getGroups();
 	}
 
 	private int groupCount()
 	{
-		return groups.findElements(By.xpath("div[contains(@class, 'repeater')]")).size();
+		return getGroups().findElements(By.xpath("div[contains(@class, 'repeater')]")).size();
 	}
 
 	private By getByForIndex(int index)
@@ -49,8 +54,8 @@ public class RepeaterControl extends AbstractWizardControl<RepeaterControl>
 	{
 		SubWizardPage subWizard = getControls(treenum, ctrlOffset);
 		ExpectWaiter<SubWizardPage> controlWaiter = ExpectWaiter.waiter(
-			ExpectedConditions2.visibilityOfElementLocated(groups, getByForIndex(groupCount() + 1)), subWizard);
-		addButton.click();
+			ExpectedConditions2.visibilityOfElementLocated(getGroups(), getByForIndex(groupCount() + 1)), subWizard);
+		getAddButton().click();
 		return controlWaiter.get();
 	}
 
@@ -70,12 +75,12 @@ public class RepeaterControl extends AbstractWizardControl<RepeaterControl>
 
 	public boolean isAddDisabled()
 	{
-		return !addButton.isEnabled();
+		return !getAddButton().isEnabled();
 	}
 
 	public String getAddNoun()
 	{
-		return addButton.getText().substring(4);
+		return getAddButton().getText().substring(4);
 	}
 
 	public boolean isDisabled()

@@ -38,7 +38,21 @@ public abstract class AbstractUniversalControlType<T extends AbstractUniversalCo
 
 	public GenericAttachmentEditPage editPage()
 	{
-		return new GenericAttachmentEditPage(control, getNameField(), getPreviewCheckbox());
+		return new GenericAttachmentEditPage(control)
+		{
+
+			@Override
+			protected WebElement getNameField()
+			{
+				return AbstractUniversalControlType.this.getNameField();
+			}
+
+			@Override
+			protected WebElement getPreviewCheckbox()
+			{
+				return AbstractUniversalControlType.this.getPreviewCheckbox();
+			}
+		};
 	}
 
 	protected WebElement getPreviewCheckbox()

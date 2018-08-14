@@ -884,7 +884,9 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest
 		wizard.editbox(1, itemName);
 		UniversalControl control = wizard.universalControl(3);
 		FileUniversalControlType fc = control.addDefaultResource(new FileUniversalControlType(control));
-		fc.uploadFile(Attachments.get("fireworks.dng")).setDisplayName(attName).save();
+		fc.uploadFile(Attachments.get("fireworks.dng"));
+		if (true) throw new Error("Needs to be re-written");
+				// .setDisplayName(attName).save();
 
 		clickAscButton("Get metadata for attachment", wizard);
 		assertEquals(getAscMessage().getText(), "Successfully retrieved Metadata for attachment");

@@ -6,6 +6,7 @@ import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.PageObject;
 import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
+import org.openqa.selenium.WebElement;
 
 public class NewAbstractWizardControl<T extends PageObject> extends AbstractPage<T>
 {
@@ -23,6 +24,11 @@ public class NewAbstractWizardControl<T extends PageObject> extends AbstractPage
 		super(context, by);
 		this.ctrlnum = ctrlNum;
 		this.page = page;
+	}
+
+	protected WebElement byWizId(String postfix)
+	{
+		return driver.findElement(By.id(getWizid()+postfix));
 	}
 
 	public String getWizid()

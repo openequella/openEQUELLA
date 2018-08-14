@@ -1,5 +1,6 @@
 package com.tle.webtests.pageobject.wizard.controls.universal;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -57,11 +58,21 @@ public abstract class AbstractAttachmentDialogPage<T extends AbstractAttachmentD
 	{
 		try
 		{
-			return addButton.isDisplayed();
+			return getAddButton().isDisplayed();
 		}
 		catch( NoSuchElementException nse )
 		{
 			return false;
 		}
+	}
+
+	protected By getAddButtonBy()
+	{
+		return By.xpath(getButtonbar()+"button[normalize-space(text())='Add' or normalize-space(text())='Replace']");
+	}
+
+	protected WebElement getAddButton()
+	{
+		return driver.findElement(getAddButtonBy());
 	}
 }

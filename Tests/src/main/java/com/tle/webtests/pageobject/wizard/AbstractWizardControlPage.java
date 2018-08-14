@@ -137,7 +137,7 @@ public abstract class AbstractWizardControlPage<T extends AbstractWizardControlP
 		UniversalControl universalControl = universalControl(ctrlNum);
 		FileUniversalControlType fileControl = universalControl.addDefaultResource(new FileUniversalControlType(
 			universalControl));
-		fileControl.uploadFile(file).save();
+		fileControl.uploadFile(file);
 	}
 
 	public void addFile(int ctrlNum, String file)
@@ -156,10 +156,11 @@ public abstract class AbstractWizardControlPage<T extends AbstractWizardControlP
 		FileUniversalControlType fileControl = universalControl.addResource(new FileUniversalControlType(
 			universalControl));
 
-		FileAttachmentEditPage edit = fileControl.uploadFile(file);
-		if( preview != null )
-			edit.setPreview(preview);
-		edit.save();
+		fileControl.uploadFile(file);
+		if (preview != null)
+		{
+			throw new Error("This needs to be re-written, doesn't edit the file anymore");
+		}
 	}
 
 	public void addFile(int ctrlNum, File file)

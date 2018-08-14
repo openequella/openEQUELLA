@@ -22,10 +22,14 @@ import com.tle.webtests.pageobject.wizard.controls.universal.PickAttachmentTypeD
 public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
 {
 	private static final By BY_ALLRESOURCES = By.xpath(".//tr[td[contains(@class, 'name')]]");
-	@FindBy(id = "{wizid}_addLink")
-	private WebElement addResourceButton;
-	@FindBy(id = "{wizid}universalresources")
-	private WebElement rootElem;
+	private WebElement getAddResourceButton()
+	{
+		return byWizId("_addLink");
+	}
+	private WebElement getRootElem()
+	{
+		return byWizId("universalresources");
+	}
 
 	public UniversalControl(PageContext context, int ctrlnum, AbstractWizardControlPage<?> page)
 	{
@@ -45,12 +49,12 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return rootElem;
+		return getRootElem();
 	}
 
 	public <T extends AttachmentType<T, ?>> T addDefaultResource(T type)
 	{
-		addResourceButton.click();
+		getAddResourceButton().click();
 		return type.get();
 	}
 
@@ -61,7 +65,7 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
 	 */
 	public <T extends AttachmentType<T, ?>> T addResource(T type)
 	{
-		addResourceButton.click();
+		getAddResourceButton().click();
 		PickAttachmentTypeDialog dialog = new PickAttachmentTypeDialog(this).get();
 		return dialog.clickType(type);
 	}
@@ -73,7 +77,7 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
 
 	public ExpectedCondition<WebElement> getResourceExpectation(String title, boolean disabled)
 	{
-		return ExpectedConditions2.visibilityOfElementLocated(rootElem, getRowByTitle(title, disabled));
+		return ExpectedConditions2.visibilityOfElementLocated(getRootElem(), getRowByTitle(title, disabled));
 	}
 
 	public ExpectedCondition<Boolean> getResourceGoneExpectation(String title)
@@ -83,7 +87,7 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
 
 	public ExpectedCondition<Boolean> getResourceGoneExpectation(String title, boolean wasDisabled)
 	{
-		return ExpectedConditions.stalenessOf(((WrapsElement) rootElem.findElement(getRowByTitle(title, wasDisabled)))
+		return ExpectedConditions.stalenessOf(((WrapsElement) getRootElem().findElement(getRowByTitle(title, wasDisabled)))
 			.getWrappedElement());
 	}
 
@@ -104,7 +108,7 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
 
 	private void clickAction(By rowBy, String action)
 	{
-		rootElem.findElement(new ByChained(rowBy, getActionLink(action))).click();
+		getRootElem().findElement(new ByChained(rowBy, getActionLink(action))).click();
 	}
 
 	public <P extends AttachmentEditPage, T extends AttachmentType<T, P>> P editResource(T type, String title)
@@ -153,19 +157,19 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
 
 	public String getAttachmentUuid(String title)
 	{
-		String url = rootElem.findElement(By.xpath(".//a[text()=" + quoteXPath(title) + "]")).getAttribute("href");
+		String url = getRootElem().findElement(By.xpath(".//a[text()=" + quoteXPath(title) + "]")).getAttribute("href");
 
 		return url.substring(url.length() - 36);
 	}
 
 	public boolean hasResource(String title)
 	{
-		return isPresent(rootElem, getRowByTitle(title));
+		return isPresent(getRootElem(), getRowByTitle(title));
 	}
 
 	public int resourceCount()
 	{
-		return rootElem.findElements(BY_ALLRESOURCES).size();
+		return getRootElem().findElements(BY_ALLRESOURCES).size();
 	}
 
 	public WaitingPageObject<UniversalControl> attachNameWaiter(String newName, boolean disabled)
@@ -180,7 +184,7 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
 
 	public WaitingPageObject<UniversalControl> attachmentCountExpectation(int newAttachments)
 	{
-		ExpectedCondition<List<WebElement>> expectedCondition = ExpectedConditions2.numberOfElementLocated(rootElem,
+		ExpectedCondition<List<WebElement>> expectedCondition = ExpectedConditions2.numberOfElementLocated(getRootElem(),
 			BY_ALLRESOURCES, resourceCount() + newAttachments);
 		return ExpectWaiter.waiter(expectedCondition, this);
 	}

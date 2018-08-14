@@ -4,32 +4,26 @@ import org.openqa.selenium.WebElement;
 
 import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 
-public class GenericAttachmentEditPage extends AbstractAttachmentEditPage<GenericAttachmentEditPage>
+public abstract class GenericAttachmentEditPage extends AbstractAttachmentEditPage<GenericAttachmentEditPage>
 {
-	private WebElement nameField;
-	private WebElement previewCheckbox;
 
-	public GenericAttachmentEditPage(UniversalControl universalControl, WebElement nameField, WebElement previewCheckbox)
+	protected GenericAttachmentEditPage(UniversalControl universalControl)
 	{
 		super(universalControl);
-		this.nameField = nameField;
-		this.previewCheckbox = previewCheckbox;
 	}
 
-	@Override
-	protected WebElement getNameField()
-	{
-		return nameField;
-	}
+	protected abstract WebElement getNameField();
+	protected abstract WebElement getPreviewCheckbox();
 
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return nameField;
+		return getNameField();
 	}
 
 	public GenericAttachmentEditPage setPreview(boolean preview)
 	{
+		WebElement previewCheckbox = getPreviewCheckbox();
 		if( previewCheckbox.isSelected() != preview )
 		{
 			previewCheckbox.click();
@@ -39,7 +33,7 @@ public class GenericAttachmentEditPage extends AbstractAttachmentEditPage<Generi
 
 	public boolean canPreview()
 	{
-		return isPresent(previewCheckbox);
+		return isPresent(getPreviewCheckbox());
 	}
 
 }

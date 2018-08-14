@@ -9,12 +9,20 @@ import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
 
 public class ShuffleListControl extends AbstractWizardControl<ShuffleListControl>
 {
-	@FindBy(id = "{wizid}_addButton")
-	private WebElement addButton;
-	@FindBy(id = "{wizid}_text")
-	private WebElement textField;
-	@FindBy(id = "{wizid}_div")
-	private WebElement div;
+	private WebElement getAddButton()
+	{
+		return byWizId("_addButton");
+	}
+
+	private WebElement getTextField()
+	{
+		return byWizId("_text");
+	}
+
+	private WebElement getDiv()
+	{
+		return byWizId("_div");
+	}
 
 	public ShuffleListControl(PageContext context, int ctrlnum, AbstractWizardControlPage<?> page)
 	{
@@ -24,7 +32,7 @@ public class ShuffleListControl extends AbstractWizardControl<ShuffleListControl
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return textField;
+		return getTextField();
 	}
 
 	protected By getRowForValue(String value)
@@ -34,25 +42,26 @@ public class ShuffleListControl extends AbstractWizardControl<ShuffleListControl
 
 	public void add(String value)
 	{
+		WebElement textField = getTextField();
 		textField.clear();
 		textField.sendKeys(value);
-		addButton.click();
+		getAddButton().click();
 		waitForElement(getRowForValue(value));
 	}
 
 	public void remove(String value)
 	{
-		div.findElement(getRowForValue(value)).findElement(By.className("shuffle-remove")).click();
+		getDiv().findElement(getRowForValue(value)).findElement(By.className("shuffle-remove")).click();
 	}
 
 	public void edit(String value)
 	{
-		div.findElement(getRowForValue(value)).findElement(By.className("shuffle-edit")).click();
+		getDiv().findElement(getRowForValue(value)).findElement(By.className("shuffle-edit")).click();
 	}
 
 	public boolean isDisabled()
 	{
-		return (" " + div.getAttribute("class").trim()).contains(" disabled");
+		return (" " + getDiv().getAttribute("class").trim()).contains(" disabled");
 	}
 
 }
