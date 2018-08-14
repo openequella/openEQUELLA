@@ -37,7 +37,7 @@ public final class StandardExpressions
 	// Other classes will need this, such as the ZebraTableRenderer
 	public static final IncludeFile STANDARD_JS = new IncludeFile(URL_HELPER.url("scripts/standard.js"),
 		JQueryCore.PRERENDER);
-	private static final IncludeFile SUBMIT_JS = new IncludeFile(URL_HELPER.url("scripts/submit.js"), STANDARD_JS,
+	public static final IncludeFile SUBMIT_JS = new IncludeFile(URL_HELPER.url("scripts/submit.js"), STANDARD_JS,
 		BundleLabel.setupGlobalText(URL_HELPER.key("alreadysubmitting")));
 
 	public static final String FORM_NAME = "eqpageForm";
