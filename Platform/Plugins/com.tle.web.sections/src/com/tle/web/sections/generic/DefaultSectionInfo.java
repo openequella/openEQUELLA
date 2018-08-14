@@ -39,7 +39,6 @@ import com.tle.annotation.Nullable;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.MutableSectionInfo;
 import com.tle.web.sections.NoTreeForIdException;
-import com.tle.web.sections.PathGenerator;
 import com.tle.web.sections.PublicBookmarkFactory;
 import com.tle.web.sections.Section;
 import com.tle.web.sections.SectionContext;
@@ -50,7 +49,6 @@ import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.SectionsController;
 import com.tle.web.sections.SectionsRuntimeException;
 import com.tle.web.sections.SimpleSectionId;
-import com.tle.web.sections.StandardPathGenerator;
 import com.tle.web.sections.events.BeforeEventsEvent;
 import com.tle.web.sections.events.BookmarkEvent;
 import com.tle.web.sections.events.InfoEvent;
@@ -72,7 +70,6 @@ public class DefaultSectionInfo implements MutableSectionInfo
 	protected final Queue<SectionEvent<EventListener>> eventQueue = new PriorityQueue<SectionEvent<EventListener>>();
 	private final Map<Object, Object> attributeMap = new HashMap<Object, Object>();
 	private final List<ParametersEvent> parametersEvents = Lists.newArrayList();
-	private final PathGenerator pathGenerator = new StandardPathGenerator();
 	private final SectionsController controller;
 
 	@Nullable
@@ -861,12 +858,6 @@ public class DefaultSectionInfo implements MutableSectionInfo
 	public void addParametersEvent(ParametersEvent event)
 	{
 		parametersEvents.add(event);
-	}
-
-	@Override
-	public PathGenerator getPathGenerator()
-	{
-		return pathGenerator;
 	}
 
 	@Override

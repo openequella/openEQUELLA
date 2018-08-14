@@ -60,6 +60,8 @@ public class HelpAndScreenOptionsSection
 	extends
 		AbstractPrototypeSection<HelpAndScreenOptionsSection.HelpAndScreenOptionsModel> implements HtmlRenderer
 {
+	private static final String KEY_TABS = "BlueBarRenderables";
+
 	private static final PluginResourceHelper resources = ResourcesService
 		.getResourceHelper(HelpAndScreenOptionsSection.class);
 	private static final ExternallyDefinedFunction BLIND = new ExternallyDefinedFunction("blindDomResults",
@@ -144,12 +146,6 @@ public class HelpAndScreenOptionsSection
 		model.setShown(null);
 	}
 
-	public static Map<String, BlueBarRenderable> getContent(SectionInfo info)
-	{
-		return info.lookupSection(HelpAndScreenOptionsSection.class).getModel(info).getTabMap();
-	}
-
-
 	@Override
 	public void registered(String id, SectionTree tree)
 	{
@@ -165,6 +161,18 @@ public class HelpAndScreenOptionsSection
 	public String getDefaultPropertyName()
 	{
 		return "hao";
+	}
+
+	@Override
+	public HelpAndScreenOptionsModel getModel(SectionInfo context)
+	{
+		return super.getModel(context);
+	}
+
+	@Override
+	public Object instantiateModel(SectionInfo info)
+	{
+		return new HelpAndScreenOptionsModel(info);
 	}
 
 	@Override
@@ -201,15 +209,21 @@ public class HelpAndScreenOptionsSection
 
 	public static class HelpAndScreenOptionsModel
 	{
+		private final SectionInfo info;
+
+		public HelpAndScreenOptionsModel(SectionInfo info)
+		{
+			this.info = info;
+		}
+
 		@Bookmarked(stateful = false, name = "sh")
 		private String shown;
 		private List<HtmlComponentState> buttons;
 		private BlueBarContent content;
-		private final Map<String, BlueBarRenderable> tabMap = new HashMap<String, BlueBarRenderable>();
 
 		public Map<String, BlueBarRenderable> getTabMap()
 		{
-			return tabMap;
+			return HelpAndScreenOptionsSection.getContent(info);
 		}
 
 		public String getShown()
@@ -243,9 +257,9 @@ public class HelpAndScreenOptionsSection
 		}
 	}
 
-	public void addTabs(SectionInfo info, List<BlueBarRenderable> results)
+	public static void addTabs(SectionInfo info, List<BlueBarRenderable> results)
 	{
-		Map<String, BlueBarRenderable> renderables = getModel(info).getTabMap();
+		Map<String, BlueBarRenderable> renderables = getContent(info);
 		for( BlueBarRenderable blueBarRenderable : results )
 		{
 			String key = blueBarRenderable.getKey();
@@ -261,22 +275,21 @@ public class HelpAndScreenOptionsSection
 		}
 	}
 
-	public void addTab(SectionInfo info, BlueBarRenderable result)
+	public static Map<String, BlueBarRenderable> getContent(SectionInfo info)
 	{
-		addTabs(info, Collections.singletonList(result));
+		return info.getAttributeSafe(KEY_TABS, HashMap.class);
 	}
 
-	private static void addTabInternal(RenderContext context, BlueBarRenderable content)
+	public static void addTab(SectionInfo info, BlueBarRenderable result)
 	{
-		HelpAndScreenOptionsSection help = context.lookupSection(HelpAndScreenOptionsSection.class);
-		help.addTabs(context, Collections.singletonList(content));
+		addTabs(info, Collections.singletonList(result));
 	}
 
 	public static void addHelp(RenderContext context, SectionRenderable renderable)
 	{
 		if( renderable != null )
 		{
-			addTabInternal(context, BlueBarConstants.Type.HELP.content(renderable));
+			addTab(context, BlueBarConstants.Type.HELP.content(renderable));
 		}
 	}
 
@@ -284,7 +297,7 @@ public class HelpAndScreenOptionsSection
 	{
 		if( renderable != null )
 		{
-			addTabInternal(context, BlueBarConstants.Type.SCREENOPTIONS.content(renderable));
+			addTab(context, BlueBarConstants.Type.SCREENOPTIONS.content(renderable));
 		}
 	}
 }

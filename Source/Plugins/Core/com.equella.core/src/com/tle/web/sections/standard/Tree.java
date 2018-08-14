@@ -75,7 +75,7 @@ public class Tree extends AbstractDisablerComponent<Tree.TreeModel> implements H
 	@Override
 	public Bookmark getAjaxUrlForNode(SectionInfo info, String nodeId)
 	{
-		return new BookmarkAndModify(info, ajaxMethods.getModifier("getTreeNodes", nodeId)); //$NON-NLS-1$
+		return ajaxMethods.getAjaxUrl(info, "getTreeNodes", nodeId); //$NON-NLS-1$
 	}
 
 	@AjaxMethod

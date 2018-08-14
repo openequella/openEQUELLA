@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.web.sections.Bookmark;
-import com.tle.web.sections.PathGenerator;
 import com.tle.web.sections.SectionContext;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
@@ -316,12 +315,6 @@ public abstract class WrappedSectionInfo implements SectionInfo
 	public List<SectionId> getAllChildIds(SectionId id)
 	{
 		return info.getAllChildIds(id);
-	}
-
-	@Override
-	public PathGenerator getPathGenerator()
-	{
-		return info.getPathGenerator();
 	}
 
 	@Override

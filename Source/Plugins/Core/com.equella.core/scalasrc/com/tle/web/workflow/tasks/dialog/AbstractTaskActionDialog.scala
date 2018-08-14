@@ -146,7 +146,7 @@ abstract class AbstractTaskActionDialog extends AbstractOkayableDialog[TaskActio
         u
     }
     model.getStagingFiles = files.toList.asJava
-    _fileDrop.setAjaxUploadUrl(context, new BookmarkAndModify(context, ajaxEvents.getModifier("dndUpload")))
+    _fileDrop.setAjaxUploadUrl(context, ajaxEvents.getAjaxUrl(context, "dndUpload"))
     _fileDrop.setValidateFile(context, validateFile)
   }
 

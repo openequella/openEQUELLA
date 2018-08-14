@@ -17,20 +17,25 @@
 package com.tle.web.sections.equella.ajaxupload
 
 import java.io.{FilterInputStream, InputStream}
+import java.util.Collections
 import java.util.concurrent.atomic.AtomicReference
 
 import com.dytech.edge.common.FileInfo
 import com.tle.web.resources.ResourcesService
 import com.tle.web.sections.jquery.JQuerySelector
-import com.tle.web.sections.js.JSExpression
+import com.tle.web.sections.jquery.libraries.JQueryProgression
+import com.tle.web.sections.js.{JSAssignable, JSExpression}
 import com.tle.web.sections.js.generic.Js
-import com.tle.web.sections.js.generic.function.{ExternallyDefinedFunction, IncludeFile, PartiallyApply}
+import com.tle.web.sections.js.generic.expression.FunctionCallExpression
+import com.tle.web.sections.js.generic.function.{AnonymousFunction, ExternallyDefinedFunction, IncludeFile, PartiallyApply}
+import com.tle.web.sections.js.generic.statement.ReloadStatement
 import com.tle.web.sections.render.CssInclude
 import com.tle.web.upload.StreamKilledException
 import io.circe.generic.extras._
 import io.circe.generic.extras.semiauto._
 import io.circe.{Decoder, Encoder}
 
+import scala.beans.BeanProperty
 import scala.util.Try
 
 case class AjaxFileEntry(id: String, name: String, link: String, editable: Boolean, preview: Boolean, children: Iterable[AjaxFileEntry])
@@ -68,10 +73,11 @@ object AjaxUploadResponse
 object AjaxUpload {
   val r = ResourcesService.getResourceHelper(getClass)
   val CSS_INCLUDE = new CssInclude(r.url("css/render/ajaxupload.css"))
-  private val INCLUDE = new IncludeFile(r.url("scripts/render/ajaxupload.js"), CSS_INCLUDE)
+  private val INCLUDE = new IncludeFile(r.url("scripts/render/ajaxupload.js"), CSS_INCLUDE, JQueryProgression.PRERENDER)
   private val FILE_UPLOAD_HANDLER_CLASS = new ExternallyDefinedFunction("AjaxUploads", INCLUDE)
   private val VALIDATE_FUNC = new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "validateFile", 5)
   private val ADD_UPLOAD_FUNC = new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "addUploadEntry", 4)
+  private val PROGESSONLY_UPLOAD_FUNC = new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "simpleUploadEntry", 4)
 
   def createValidate(maxSize: Long, mimeTypes: java.util.List[String], errorCallback: JSExpression,
                      startedUpload: JSExpression, doneCallback: JSExpression) = Js.call(AjaxUpload.VALIDATE_FUNC,
@@ -79,6 +85,9 @@ object AjaxUpload {
 
   def createProgressFunc(jquery: JQuerySelector, cancelCallback: Object) =
     PartiallyApply.partial(ADD_UPLOAD_FUNC, 3, jquery, cancelCallback)
+
+  def createSimpleProgressFunc(jquery: JQuerySelector, cancelCallback: Object) =
+    PartiallyApply.partial(PROGESSONLY_UPLOAD_FUNC, 3, jquery, cancelCallback)
 
   def writeCancellableStream(writeFile: InputStream => FileInfo, stream: InputStream, cancelled: AtomicReference[Boolean]): Try[FileInfo] = {
     val str = new FilterInputStream(stream) {
@@ -97,6 +106,13 @@ object AjaxUpload {
       }
     }
     Try(writeFile(str))
+  }
+
+  def simpleUploadValidator(id: String, completed: JSExpression): JSAssignable = {
+    val startedUpload = createSimpleProgressFunc(new JQuerySelector(JQuerySelector.Type.ID, id), null)
+
+    Js.functionValue(AjaxUpload.createValidate(0, Collections.emptyList[String], completed,
+      startedUpload, completed))
   }
 
 }

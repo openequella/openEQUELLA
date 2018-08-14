@@ -27,7 +27,6 @@ var Scrapbook = {
 
             xhr.upload.addEventListener("progress", function(e) {
                 var percent = 100 * (e.loaded / e.total);
-                console.log("HIH");
                 progDiv.progression({Current:percent, AnimateTimeOut : 600});
             });
             return true;

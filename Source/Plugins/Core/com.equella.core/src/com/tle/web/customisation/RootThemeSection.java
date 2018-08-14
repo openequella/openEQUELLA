@@ -16,11 +16,6 @@
 
 package com.tle.web.customisation;
 
-import java.io.IOException;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
-
 import com.tle.common.filesystem.FileEntry;
 import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.core.filesystem.CustomisationFile;
@@ -34,21 +29,32 @@ import com.tle.web.sections.SectionContext;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
+import com.tle.web.sections.ajax.AjaxGenerator;
+import com.tle.web.sections.ajax.handler.AjaxFactory;
+import com.tle.web.sections.ajax.handler.AjaxMethod;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.annotations.DirectEvent;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
+import com.tle.web.sections.equella.ajaxupload.AjaxUpload;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.layout.OneColumnLayout;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.SectionEvent;
 import com.tle.web.sections.events.js.BookmarkAndModify;
 import com.tle.web.sections.events.js.EventGenerator;
+import com.tle.web.sections.events.js.SubmitValuesFunction;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
+import com.tle.web.sections.jquery.JQuerySelector;
+import com.tle.web.sections.js.JSAssignable;
+import com.tle.web.sections.js.generic.Js;
+import com.tle.web.sections.js.generic.function.AnonymousFunction;
+import com.tle.web.sections.js.generic.function.PartiallyApply;
+import com.tle.web.sections.js.generic.statement.ReloadStatement;
 import com.tle.web.sections.render.GenericTemplateResult;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.Label;
-import com.tle.web.sections.standard.Button;
+import com.tle.web.sections.standard.FileDrop;
 import com.tle.web.sections.standard.FileUpload;
 import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.annotations.Component;
@@ -56,6 +62,11 @@ import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.section.HelpAndScreenOptionsSection;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Collections;
 
 @Bind
 public class RootThemeSection extends AbstractPrototypeSection<RootThemeSection.RootCustomisationModel>
@@ -69,6 +80,8 @@ public class RootThemeSection extends AbstractPrototypeSection<RootThemeSection.
 	private EventGenerator events;
 	@ViewFactory
 	private FreemarkerFactory viewFactory;
+	@AjaxFactory
+	protected AjaxGenerator ajax;
 
 	@Inject
 	private FileSystemService fileSystemService;
@@ -85,9 +98,7 @@ public class RootThemeSection extends AbstractPrototypeSection<RootThemeSection.
 	private Link delete;
 	@Component
 	private FileUpload upload;
-	@Component
-	@PlugKey("upload.button")
-	private Button uploadButton;
+	private JSAssignable validateFile;
 
 	@Override
 	public void registered(String id, SectionTree tree)
@@ -95,7 +106,8 @@ public class RootThemeSection extends AbstractPrototypeSection<RootThemeSection.
 		super.registered(id, tree);
 
 		delete.setEventHandler("click", events.getNamedHandler("delete"));
-		uploadButton.setEventHandler("click", events.getNamedHandler("upload"));
+		validateFile = AjaxUpload.simpleUploadValidator("uploads",
+				new AnonymousFunction(new ReloadStatement()));
 	}
 
 	@DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
@@ -117,6 +129,8 @@ public class RootThemeSection extends AbstractPrototypeSection<RootThemeSection.
 	@Override
 	public SectionResult renderHtml(RenderEventContext context) throws IOException
 	{
+		upload.setAjaxUploadUrl(context, ajax.getAjaxUrl(context, "upload"));
+		upload.setValidateFile(context, validateFile);
 		RootCustomisationModel model = getModel(context);
 		if( model.isDoDownload() )
 		{
@@ -146,12 +160,13 @@ public class RootThemeSection extends AbstractPrototypeSection<RootThemeSection.
 		return gtr;
 	}
 
-	@EventHandlerMethod
-	public void upload(SectionContext context) throws IOException
+	@AjaxMethod
+	public boolean upload(SectionInfo info) throws IOException
 	{
 		StagingFile staging = stagingService.createStagingArea();
-		fileSystemService.unzipFile(staging, upload.getInputStream(context), ArchiveType.ZIP);
+		fileSystemService.unzipFile(staging, upload.getInputStream(info), ArchiveType.ZIP);
 		fileSystemService.commitFiles(staging, new CustomisationFile());
+		return true;
 	}
 
 	@EventHandlerMethod
@@ -181,11 +196,6 @@ public class RootThemeSection extends AbstractPrototypeSection<RootThemeSection.
 	public FileUpload getUpload()
 	{
 		return upload;
-	}
-
-	public Button getUploadButton()
-	{
-		return uploadButton;
 	}
 
 	@Override

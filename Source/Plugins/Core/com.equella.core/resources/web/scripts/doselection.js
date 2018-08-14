@@ -6,7 +6,7 @@ var DoSelection = {
 
 	sm : function(cb)
 	{
-		if (!tinyMCEPopup.domLoaded)
+		if (!tinyMCEPopup.dom.events.domLoaded)
 		{
 			tinyMCEPopup.onInit.add(cb);
 		}

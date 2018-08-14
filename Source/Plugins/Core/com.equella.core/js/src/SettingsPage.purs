@@ -31,7 +31,7 @@ import React.DOM (a, div, text) as D
 import React.DOM.Props (_id)
 import React.DOM.Props as DP
 import Settings.UISettings (uiSettingsEditor)
-import Template (template)
+import Template (template, template', templateDefaults)
 
 newtype Setting = Setting {
   id :: String,
@@ -74,7 +74,7 @@ settingsPage = unsafeCreateLeafElement $ withStyles styles $ component "Settings
     coreString = prepLangStrings coreStrings 
 
     render {state:{settings}, props:{legacyMode,classes}} = if not legacyMode
-                        then template coreString.title [ mainContent ]
+                        then template' (templateDefaults coreString.title) [ mainContent ]
                         else mainContent
       where
       mainContent = maybe (D.div [DP.className classes.progress] [ circularProgress [] ]) renderSettings settings
@@ -123,7 +123,7 @@ settingsPage = unsafeCreateLeafElement $ withStyles styles $ component "Settings
       display: "flex", 
       marginTop: theme.spacing.unit * 4,
       justifyContent: "center"
-    }
+    } 
   }
 
 type GroupStrings = { name :: String, desc :: String }

@@ -31,6 +31,7 @@ import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.events.BeforeEventsListener;
+import com.tle.web.sections.events.ReadyToRespondListener;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
@@ -55,8 +56,8 @@ public class HtmlEditorSettingsFrontPageSection
 	extends
 		AbstractPrototypeSection<HtmlEditorSettingsFrontPageSection.HtmlEditorSettingsFrontPageModel>
 	implements
-		HtmlRenderer,
-		BeforeEventsListener
+		ReadyToRespondListener, HtmlRenderer
+
 {
 	@PlugKey("settings.front.table.heading")
 	private static Label LABEL_TABLE_HEADING;
@@ -106,7 +107,7 @@ public class HtmlEditorSettingsFrontPageSection
 	}
 
 	@Override
-	public void beforeEvents(SectionInfo info)
+	public void readyToRespond(SectionInfo info, boolean redirect)
 	{
 		final HtmlEditorSettingsFrontPageModel model = getModel(info);
 		final String link = model.getLink();

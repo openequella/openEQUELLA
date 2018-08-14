@@ -303,14 +303,4 @@ public class Decorations
 	{
 		return excludeForm;
 	}
-
-	public void setSinglePageApp(boolean singlePageApp)
-	{
-		this.singlePageApp = singlePageApp;
-	}
-
-	public boolean isSinglePageApp()
-	{
-		return singlePageApp;
-	}
 }

@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import com.tle.web.sections.Bookmark;
 import org.apache.log4j.Logger;
 
 import com.google.common.cache.Cache;
@@ -115,8 +116,7 @@ public class ShowHtmlEditorPluginsSection
 	protected SectionRenderable renderTop(RenderEventContext context)
 	{
 		final String uploadId = UUID.randomUUID().toString();
-		final BookmarkAndModify ajaxUploadUrl = new BookmarkAndModify(context, ajax.getModifier("uploadPlugin",
-			uploadId));
+		final Bookmark ajaxUploadUrl = ajax.getAjaxUrl(context,"uploadPlugin", uploadId);
 		uploadPluginFile.setAjaxUploadUrl(context, ajaxUploadUrl);
 		uploadPluginFile.setAjaxAfterUpload(context, Js.call_s(updateFunction, uploadId));
 

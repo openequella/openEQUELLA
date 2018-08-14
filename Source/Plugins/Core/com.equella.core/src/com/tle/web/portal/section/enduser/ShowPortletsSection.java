@@ -83,11 +83,17 @@ public class ShowPortletsSection extends AbstractPrototypeSection<ShowPortletsSe
 	private AjaxGenerator ajax;
 
 	@Override
+	public Object instantiateModel(SectionInfo info)
+	{
+		return new ShowPortletsModel(info);
+	}
+
+	@Override
 	@SuppressWarnings("nls")
 	public SectionResult renderHtml(RenderEventContext context)
 	{
 		final ShowPortletsModel model = getModel(context);
-		final SectionTree tree = model.getTree();
+		final SectionTree tree = model.getTree(false);
 
 		// Redmine #4496 - Allow TLE_ADMINISTRATOR to fix portal noobage by not
 		// having any portals.
@@ -130,11 +136,7 @@ public class ShowPortletsSection extends AbstractPrototypeSection<ShowPortletsSe
 	@Override
 	public void afterParameters(SectionInfo info, ParametersEvent event)
 	{
-		final SectionTree portalTree = portletWebService.getPortletRendererTree(info);
-
-		MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
-		minfo.addTreeToBottom(portalTree, true);
-		getModel(info).setTree(portalTree);
+		getModel(info).getTree(true);
 	}
 
 	@AjaxMethod
@@ -185,19 +187,34 @@ public class ShowPortletsSection extends AbstractPrototypeSection<ShowPortletsSe
 		}
 	}
 
-	public static class ShowPortletsModel
+	public class ShowPortletsModel
 	{
-		private boolean createPrivs;
-		private SectionTree tree;
+		private SectionInfo info;
 
-		public SectionTree getTree()
+		public ShowPortletsModel(SectionInfo info)
 		{
-			return tree;
+			this.info = info;
 		}
 
-		public void setTree(SectionTree tree)
+		private boolean createPrivs;
+		private SectionTree lastTree;
+
+		public SectionTree getTree(boolean processParams)
 		{
-			this.tree = tree;
+			final SectionTree portalTree = portletWebService.getPortletRendererTree(info);
+
+			if (lastTree == portalTree)
+			{
+				return lastTree;
+			}
+			MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
+			if (lastTree != null)
+			{
+				minfo.removeTree(lastTree);
+			}
+			minfo.addTreeToBottom(portalTree, processParams);
+			lastTree = portalTree;
+			return portalTree;
 		}
 
 		public boolean isCreatePrivs()

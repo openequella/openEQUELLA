@@ -188,8 +188,12 @@ function postAjaxEvent(action, formData, name, params, callback)
 
 function postAjaxJSON(form, name, params, callback, errorcallback)
 {
-	var f = $(form);
 	_trigger("presubmit");
+    if (window.EQ)
+    {
+        return window.EQ.postAjax(form, name, params, callback, errorcallback);
+    }
+	var f = $(form);
 	var formData = $("input, select, textarea", f).serializeArray();
 	return postAjaxEvent(f.attr("action"), formData, name, params, callback, errorcallback);
 }
@@ -244,6 +248,11 @@ function ensureIncludes()
 
 function updateIncludes(newContents, onFinish)
 {
+    if (window.EQ)
+    {
+        updateFormAttributes(newContents);
+        return window.EQ.updateIncludes(newContents, onFinish);
+    }
 	var wrappedFinish = function()
 	{
 		if (onFinish)
@@ -391,6 +400,10 @@ function updateFormAttributes(newContents)
 	var params = newContents.formParams;
 	if (params)
 	{
+	    if (window.EQ && params.id == 'eqpageForm')
+	    {
+	        return window.EQ.updateForm(params);
+	    }
 		var form = $("#" + params.id);
 		if (params.action)
 		{

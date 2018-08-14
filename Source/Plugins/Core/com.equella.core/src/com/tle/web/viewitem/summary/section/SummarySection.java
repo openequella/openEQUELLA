@@ -25,6 +25,7 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.viewitem.section.ParentViewItemSectionUtils;
 import com.tle.web.viewitem.section.PathMapper.Type;
 import com.tle.web.viewitem.section.ResourceViewerAware;
@@ -77,6 +78,7 @@ public class SummarySection extends AbstractItemSummarySection<Item> implements 
 	@Override
 	public void beforeRender(SectionInfo info, ViewItemResource resource)
 	{
+		info.setAttribute(RenderNewTemplate.DisableNewUI(), false);
 		summarySection.ensureTree(info, resource);
 	}
 

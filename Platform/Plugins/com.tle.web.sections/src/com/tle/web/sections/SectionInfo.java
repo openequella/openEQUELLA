@@ -395,8 +395,6 @@ public interface SectionInfo extends InfoCreator
 	@Nullable
 	SectionId getSectionForId(SectionId id);
 
-	PathGenerator getPathGenerator();
-
 	boolean isReal();
 
 	boolean isErrored();

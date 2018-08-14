@@ -41,10 +41,9 @@ public class NavigationScriptWrapper extends AbstractScriptWrapper implements Na
 {
 	private static final long serialVersionUID = 1L;
 
-	@Inject
-	private ScriptTypeFactory scriptTypeFactory;
-	@Inject
-	private ItemNavigationService itemNavService;
+	private final ScriptTypeFactory scriptTypeFactory;
+
+	private final ItemNavigationService itemNavService;
 
 	private final Item item;
 
@@ -52,8 +51,11 @@ public class NavigationScriptWrapper extends AbstractScriptWrapper implements Na
 	private ItemNavigationTree tree;
 
 	@Inject
-	protected NavigationScriptWrapper(@Assisted("item") Item item)
+	protected NavigationScriptWrapper(@Assisted("item") Item item, ScriptTypeFactory scriptTypeFactory,
+									  ItemNavigationService itemNavService)
 	{
+		this.scriptTypeFactory = scriptTypeFactory;
+		this.itemNavService = itemNavService;
 		this.item = item;
 		this.itemNodeToScriptNode = new IdentityHashMap<>();
 

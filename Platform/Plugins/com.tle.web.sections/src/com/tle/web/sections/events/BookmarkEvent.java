@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.tle.web.sections.BookmarkContextHolder;
-import com.tle.web.sections.PathGenerator;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.annotations.Bookmarked;

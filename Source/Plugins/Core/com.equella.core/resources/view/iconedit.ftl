@@ -16,7 +16,8 @@
 
 <br>
 <@setting label=b.key('editicon.uploadnew')>
-	<@file s.iconUpload/>&nbsp;<@button section=s.uploadButton icon="upload" class="uploadButton">${b.key("editicon.uploadbutton")}</@button>
+	<@file s.iconUpload/>
+	<div id="uploadProgress" class="uploadsprogress"></div>
 </@setting>
 
 <#if m.errorKey??>

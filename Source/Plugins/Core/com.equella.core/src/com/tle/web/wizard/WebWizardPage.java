@@ -353,7 +353,17 @@ public class WebWizardPage extends WizardPage implements com.tle.web.wizard.page
 				minfo.addTreeToBottom(sectionTree, processParams);
 			}
 		}
+	}
 
+	public void removeTrees(SectionInfo info)
+	{
+		Map<SectionTree, SectionTree> registered = getRegisterTreeMap(info);
+		MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
+		for( DefaultSectionTree sectionTree : sectionTrees.values() )
+		{
+			minfo.removeTree(sectionTree);
+			registered.remove(sectionTree);
+		}
 	}
 
 	private Map<SectionTree, SectionTree> getRegisterTreeMap(SectionInfo info)

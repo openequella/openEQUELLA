@@ -618,12 +618,6 @@ public class SectionWriter extends PrintWriter implements PreRenderContext
 	}
 
 	@Override
-	public PathGenerator getPathGenerator()
-	{
-		return renderContext.getPathGenerator();
-	}
-
-	@Override
 	public void close()
 	{
 		// nothing to close

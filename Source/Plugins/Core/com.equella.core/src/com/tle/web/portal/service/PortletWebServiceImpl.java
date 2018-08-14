@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -99,14 +101,21 @@ public class PortletWebServiceImpl implements PortletWebService, PortletsUpdated
 
 	private DefaultSectionTree getTree(String userId)
 	{
-		long institutionId = CurrentInstitution.get().getUniqueId();
-		Cache<String, DefaultSectionTree> instMap = sectionCache.getIfPresent(institutionId);
-		if( instMap == null )
-		{
-			instMap = CacheBuilder.newBuilder().softValues().expireAfterAccess(30, TimeUnit.MINUTES).build();
-			sectionCache.put(institutionId, instMap);
+        Cache<String, DefaultSectionTree> instMap;
+        synchronized(this) {
+            long institutionId = CurrentInstitution.get().getUniqueId();
+            instMap = sectionCache.getIfPresent(institutionId);
+            if( instMap == null )
+            {
+                instMap = CacheBuilder.newBuilder().softValues().expireAfterAccess(30, TimeUnit.MINUTES).build();
+                sectionCache.put(institutionId, instMap);
+            }
 		}
-		return instMap.getIfPresent(userId);
+		try {
+			return instMap.get(userId, () -> buildRendererTree(userId));
+		} catch (ExecutionException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void clearTree(Institution inst, String userId)
@@ -324,18 +333,10 @@ public class PortletWebServiceImpl implements PortletWebService, PortletsUpdated
 	public SectionTree getPortletRendererTree(SectionInfo info)
 	{
 		String userId = CurrentUser.getUserID();
-		DefaultSectionTree tree = getTree(userId);
-		if( tree == null )
-		{
-			tree = buildRendererTree(info, userId);
-			final Cache<String, DefaultSectionTree> instMap = sectionCache
-				.getIfPresent(CurrentInstitution.get().getUniqueId());
-			instMap.put(userId, tree);
-		}
-		return tree;
+		return getTree(userId);
 	}
 
-	protected DefaultSectionTree buildRendererTree(SectionInfo info, String userId)
+	protected DefaultSectionTree buildRendererTree(String userId)
 	{
 		// IMPORTANT: This prefix is relied upon in portal.js
 		final DefaultSectionTree renderTree = new DefaultSectionTree(controller, new SectionNode("p")); //$NON-NLS-1$

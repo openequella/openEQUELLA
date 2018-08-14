@@ -28,8 +28,8 @@ import com.tle.core.i18n.BundleCache;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.web.freemarker.FreemarkerSectionResult;
 import com.tle.web.freemarker.PluginFreemarkerFactory;
-import com.tle.web.sections.PathGenerator;
 import com.tle.web.sections.SectionWriter;
+import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.sections.render.TextUtils;
 import com.tle.web.sections.result.util.BundleWriter;
 import com.tle.web.sections.result.util.HeaderUtils;
@@ -74,8 +74,7 @@ public class QuestionFreemarkerFactory extends PluginFreemarkerFactory
 		{
 			SectionWriter sWriter = (SectionWriter) writer;
 			map.put("head", new HeaderUtils(sWriter)); //$NON-NLS-1$
-			PathGenerator pathGen = sWriter.getPathGenerator();
-			map.put("baseHref", pathGen.getBaseHref(sWriter).toString()); //$NON-NLS-1$
+			map.put("baseHref", InfoBookmark.getBaseHref(sWriter).toString()); //$NON-NLS-1$
 		}
 	}
 }

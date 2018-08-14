@@ -20,9 +20,7 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
-import com.tle.web.sections.BookmarkModifier;
-import com.tle.web.sections.SectionId;
-import com.tle.web.sections.SectionTree;
+import com.tle.web.sections.*;
 import com.tle.web.sections.ajax.handler.AjaxFunction;
 import com.tle.web.sections.ajax.handler.UpdateDomFunction;
 import com.tle.web.sections.events.js.ParameterizedEvent;
@@ -40,6 +38,7 @@ public interface AjaxGenerator
 {
 	PluginResourceHelper urlHelper = ResourcesService.getResourceHelper(AjaxFunction.class);
 
+	String AJAX_BASEURI = "AJAX_BASEURI";
 	String AJAXID_BODY = "<BODY>";
 
 	String URL_SPINNER = urlHelper.url("images/ajax/doing.gif");
@@ -66,7 +65,9 @@ public interface AjaxGenerator
 		REPLACE_WITH_LOADING, REPLACE_IN_PLACE, FADEIN, FADEOUTIN, FADEOUTIN_ONRESULTS, ACTIVITY
 	}
 
-	BookmarkModifier getModifier(String name, Object... params);
+	Bookmark getModifiedAjaxUrl(SectionInfo info, BookmarkModifier modifier, String name, Object... params);
+
+	Bookmark getAjaxUrl(SectionInfo info, String name, Object... params);
 
 	/**
 	 * Create a function which can return a JSON object from the server.

@@ -23,6 +23,7 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
 import com.tle.web.sections.equella.receipt.ReceiptService;
 import com.tle.web.sections.render.Label;
+import com.tle.web.wizard.WebWizardPage;
 import com.tle.web.wizard.WizardService;
 import com.tle.web.wizard.WizardState;
 import com.tle.web.wizard.impl.WizardCommand;
@@ -60,6 +61,13 @@ public class SaveAndContinue extends WizardCommand
 		WizardState state = winfo.getWizardState();
 		wizardService.doSave(state, false);
 		receiptService.setReceipt(SUCCESS_CONTINUE_RECEIPT_LABEL);
+		if (state.getPages() != null)
+		{
+			for (WebWizardPage page : state.getPages())
+			{
+				page.removeTrees(info);
+			}
+		}
 		wizardService.reloadSaveAndContinue(state);
 		moderationService.setEditing(info, true);
 	}

@@ -194,7 +194,7 @@ class SearchCourse extends React.Component<SearchCourseProps, SearchCourseState>
         return <Template title={strings.title} titleExtra={<AppBarQuery query={query} onChange={this.handleQuery}/>}>
             {canCreate && 
                 <Button variant="fab" className={classes.fab} 
-                href={hrefNew} onClick={clickNew} color="primary"><AddIcon/></Button>}
+                href={hrefNew} onClick={clickNew} color="secondary"><AddIcon/></Button>}
             <div className={classes.overall}>
                 {this.state.deleteDetails && 
                     <ConfirmDialog open={confirmOpen} 

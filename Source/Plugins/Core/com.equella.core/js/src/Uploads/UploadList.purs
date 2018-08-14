@@ -13,14 +13,16 @@ import Data.Unfoldable as U
 import Dispatcher (affAction)
 import Dispatcher.React (stateRenderer)
 import Effect (Effect)
-import Effect.Uncurried (EffectFn2, runEffectFn2)
+import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn1, runEffectFn2)
 import Effect.Unsafe (unsafePerformEffect)
 import Network.HTTP.Affjax (URL)
-import React (ReactElement, component, getState, unsafeCreateLeafElement)
+import React (ReactClass, ReactElement, component, getState, unsafeCreateLeafElement)
+import React as R
 import React.DOM (a, div, p, strong', table, tbody', td, text, tr)
 import React.DOM.Dynamic (span, td')
 import React.DOM.Props (Props, _id, className, href, key, onClick, target, title)
 import ReactDOM (render) as RD
+import Unsafe.Coerce (unsafeCoerce)
 import Uploads.FileDrop (fileDrop, invisibleFile, customFile)
 import Uploads.ProgressBar (progressBar)
 import Uploads.UploadModel (Command(..), FileElement(..), State, commandEval, fileToEntry)
@@ -49,19 +51,21 @@ renderError msg = div [ className "ctrlinvalid" ] [ p [ className "ctrlinvalidme
 foreign import updateCtrlErrorText :: EffectFn2 String String Unit
 foreign import simpleFormat :: String -> Array String -> String 
 
-inlineUpload :: {
-    elem :: Element,
+type InlineProps = (
     ctrlId :: String,
     entries :: Array FileElement,
     maxAttachments :: Nullable Int,
+    canUpload :: Boolean,
     dialog :: EffectFn2 String String Unit,
     onAdd :: Effect Unit,
     editable :: Boolean,
     commandUrl :: URL,
     strings :: ControlStrings
-  } -> Unit
-inlineUpload props@{strings,ctrlId,commandUrl} = unsafePerformEffect $ void $ flip RD.render props.elem $ 
-    flip unsafeCreateLeafElement {} $ component "InlineUpload" $ \this -> do 
+)
+
+inlineUploadClass :: ReactClass {|InlineProps}
+inlineUploadClass = component "InlineUpload" $ \this -> do 
+  props@{commandUrl,ctrlId,strings} <- R.getProps this
   let 
     d = commandEval {commandUrl,updateUI:Nothing} >>> affAction this
     maxAttach = toMaybe props.maxAttachments
@@ -94,9 +98,9 @@ inlineUpload props@{strings,ctrlId,commandUrl} = unsafePerformEffect $ void $ fl
       orNone [] = [\_ -> row "none" 0 $ [ td' [ text strings.none ] ]]
       orNone a = a
 
-      addMore = [
-        dialogLink [ _id $ ctrlId <> "_addLink", className "add", title strings.add ] strings.add "" "",
-        fileDrop {fileInput: invisibleFile $ ctrlId <> "_fileUpload_file", dropText:strings.drop, onFiles: d <<< UploadFiles}
+      addMore = catMaybes [
+        Just $ dialogLink [ _id $ ctrlId <> "_addLink", className "add", title strings.add ] strings.add "" "",
+        guard props.canUpload $> fileDrop {fileInput: invisibleFile $ ctrlId <> "_fileUpload_file", dropText:strings.drop, onFiles: d <<< UploadFiles}
       ]  
       dialogLink p name a1 a2 = a (p <> [jsVoid, onClick \_ -> runEffectFn2 props.dialog a1 a2 ]) [ text name ]
 
@@ -126,6 +130,9 @@ inlineUpload props@{strings,ctrlId,commandUrl} = unsafePerformEffect $ void $ fl
     flattened indented (FileElement {id,name,link,editable,preview,children}) = 
       [Left {id,name,link,preview,editable,indented}] <> (flattened true =<< children)
   pure {state:initialState, render: stateRenderer render this, componentDidUpdate}
+
+inlineUpload :: EffectFn1 { elem :: Element | InlineProps } Unit
+inlineUpload = mkEffectFn1 $ \props -> void $ flip RD.render props.elem $ unsafeCreateLeafElement inlineUploadClass (unsafeCoerce props)
 
 universalUpload :: {
     elem :: Element,

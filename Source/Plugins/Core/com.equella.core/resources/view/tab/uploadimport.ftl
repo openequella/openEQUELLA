@@ -18,11 +18,9 @@
 		<@settingContainer false>
 			<@setting label=b.key("institution.upload.title") error=m.errors['file'] labelFor=s.fileUpload >
 				<@file section=s.fileUpload size=35/>
+           		<div id="uploadProgress" class="uploadsprogress"></div>
 			</@setting>
 		</@settingContainer>
 		
-		<div class="button-strip">
-			<@render s.uploadButton>${b.gkey("institutions.import.action.name")}</@render>
-		</div>
 	</#if>
 </div>

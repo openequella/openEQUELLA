@@ -236,7 +236,7 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 	{
 		final MyResourceModel model = getModel(context);
 
-		fileDrop.setAjaxUploadUrl(context, new BookmarkAndModify(context, ajax.getModifier("dndUpload")));
+		fileDrop.setAjaxUploadUrl(context, ajax.getAjaxUrl(context, "dndUpload"));
 		fileDrop.setValidateFile(context, Js.functionValue(Js.call(VALIDATE_FILE,
 				PartiallyApply.partial(ajax.getAjaxFunction("contributeDND"), 3))));
 

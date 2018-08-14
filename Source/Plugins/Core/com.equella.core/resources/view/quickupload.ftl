@@ -9,5 +9,5 @@
 <div class="contribute-div">
 	<@file section=s.fileUploader class="uploadfield" />
 	<br>
-	<@button section=s.uploadButton class="upload-button" icon="upload" />
+	<div id="uploadProgress" class="uploadsprogress"></div>
 </div>

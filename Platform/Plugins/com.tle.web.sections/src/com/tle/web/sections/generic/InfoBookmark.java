@@ -16,13 +16,17 @@
 
 package com.tle.web.sections.generic;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 import com.tle.web.sections.Bookmark;
-import com.tle.web.sections.PathGenerator;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.events.BookmarkEvent;
+import hurl.build.UriBuilder;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * A {@link Bookmark} implementation which generates a URI based on a
@@ -36,12 +40,19 @@ public class InfoBookmark implements Bookmark
 	private String href;
 	private String query;
 	private String path;
+	private URI baseURI;
 	private Map<String, String[]> bookmarkParams;
 	private BookmarkEvent bookmarkEvent;
 
 	public InfoBookmark(SectionInfo info)
 	{
 		this(info, new BookmarkEvent());
+	}
+
+	public InfoBookmark(SectionInfo info, URI baseURI)
+	{
+		this(info, new BookmarkEvent());
+		this.baseURI = baseURI;
 	}
 
 	public InfoBookmark(SectionInfo info, BookmarkEvent bookmarkEvent)
@@ -68,12 +79,58 @@ public class InfoBookmark implements Bookmark
 		return href;
 	}
 
+	public static URI getBaseHref(SectionInfo info)
+	{
+		URI baseHref = info.getAttribute(SectionInfo.KEY_BASE_HREF);
+		if( baseHref == null )
+		{
+			baseHref = createFromRequest(info.getRequest());
+		}
+		return baseHref;
+	}
+
+	private static URI createFromRequest(HttpServletRequest request)
+	{
+		UriBuilder uriBuilder = UriBuilder.create(request.getRequestURI());
+		uriBuilder.setScheme(request.getScheme());
+		uriBuilder.setHost(request.getServerName());
+		uriBuilder.setPort(request.getServerPort());
+		return uriBuilder.build();
+	}
+
+	public URI getRelativeURI()
+	{
+		String path = info.getAttribute(SectionInfo.KEY_PATH);
+		try
+		{
+			return new URI(null, null, path.substring(1), null);
+		}
+		catch( URISyntaxException e )
+		{
+			throw new IllegalArgumentException();
+		}
+	}
+
+	public URI getBaseURI()
+	{
+		if (baseURI == null)
+		{
+			baseURI = getBaseHref(info);
+		}
+		return baseURI;
+	}
+
+	public URI getFullURI()
+	{
+		return getBaseURI().resolve(getRelativeURI());
+	}
+
+
 	public String getPath()
 	{
 		if( path == null )
 		{
-			PathGenerator pathGen = info.getPathGenerator();
-			path = pathGen.getFullURI(info).toString();
+			path = getFullURI().toString();
 		}
 		return path;
 	}

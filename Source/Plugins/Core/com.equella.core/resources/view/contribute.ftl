@@ -96,4 +96,4 @@
 <div class="button-strip">
 	<@button section=s.cancelButton showAs="prev" />
 	<@button section=s.saveButton showAs="save"/>
-</div>	
+</div>

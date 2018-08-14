@@ -87,7 +87,7 @@ public class PortletDaoImpl extends AbstractEntityDaoImpl<Portlet> implements Po
 		{
 			super(new EnabledCallback(
 					new PagedListCallback(null, offset, max),
-					true),
+					null),
 					freetext);
 			this.owner = owner;
 			this.type = type;

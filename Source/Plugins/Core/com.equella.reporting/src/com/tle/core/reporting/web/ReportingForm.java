@@ -32,15 +32,12 @@ public class ReportingForm
 	private String reportUuid;
 	@Bookmarked
 	private boolean forceParams;
-	@Bookmarked
-	private boolean showErrors;
 	@Bookmarked(parameter = "df")
 	private String designFile;
-	@Bookmarked(stateful = false)
-	private boolean showWizard;
 	@Bookmarked(name = "r")
 	private String generatedReportId;
 
+	private boolean parametersValid;
 	private boolean showReport;
 	private boolean containsParameters;
 	private String reportUrl;
@@ -119,16 +116,6 @@ public class ReportingForm
 		this.forceParams = forceParams;
 	}
 
-	public boolean isShowWizard()
-	{
-		return showWizard;
-	}
-
-	public void setShowWizard(boolean showWizard)
-	{
-		this.showWizard = showWizard;
-	}
-
 	public String getReportUrl()
 	{
 		return reportUrl;
@@ -157,16 +144,6 @@ public class ReportingForm
 	public void setParamControls(List<AbstractBirtType> paramControls)
 	{
 		this.paramControls = paramControls;
-	}
-
-	public boolean isShowErrors()
-	{
-		return showErrors;
-	}
-
-	public void setShowErrors(boolean showErrors)
-	{
-		this.showErrors = showErrors;
 	}
 
 	public boolean isContainsParameters()
@@ -217,5 +194,20 @@ public class ReportingForm
 	public void setHasGroups(boolean hasGroups)
 	{
 		this.hasGroups = hasGroups;
+	}
+
+	public boolean isParametersValid()
+	{
+		return parametersValid;
+	}
+
+	public void setParametersValid(boolean parametersValid)
+	{
+		this.parametersValid = parametersValid;
+	}
+
+	public boolean isShowWizard()
+	{
+		return !parametersValid || forceParams;
 	}
 }

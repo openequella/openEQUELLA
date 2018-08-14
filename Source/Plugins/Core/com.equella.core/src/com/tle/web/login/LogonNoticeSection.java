@@ -40,11 +40,7 @@ import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.header.BodyTag;
 import com.tle.web.sections.js.generic.expression.FunctionCallExpression;
 import com.tle.web.sections.js.validators.Confirm;
-import com.tle.web.sections.render.GenericNamedResult;
-import com.tle.web.sections.render.HtmlRenderer;
-import com.tle.web.sections.render.Label;
-import com.tle.web.sections.render.LabelRenderer;
-import com.tle.web.sections.render.TextLabel;
+import com.tle.web.sections.render.*;
 import com.tle.web.template.Decorations;
 
 @Bind
@@ -90,7 +86,7 @@ public class LogonNoticeSection extends AbstractPrototypeSection<LogonNoticeSect
 		Decorations decs = Decorations.getDecorations(context);
 		decs.clearAllDecorations();
 		decs.setTitle(TITLE_LABEL);
-		return new GenericNamedResult("pagetitle", new LabelRenderer(TITLE_LABEL)); //$NON-NLS-1$
+		return new SimpleSectionResult("");
 	}
 
 	@SuppressWarnings("nls")

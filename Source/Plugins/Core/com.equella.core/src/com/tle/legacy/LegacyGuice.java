@@ -18,10 +18,13 @@ package com.tle.legacy;
 
 import com.google.inject.AbstractModule;
 import com.tle.core.events.services.EventService;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.i18n.service.LanguageService;
 import com.tle.core.institution.InstitutionService;
+import com.tle.core.notification.NotificationService;
 import com.tle.core.search.service.impl.SearchPrivilegeTreeProvider;
 import com.tle.core.security.TLEAclManager;
+import com.tle.core.services.UrlService;
 import com.tle.core.services.user.UserPreferenceService;
 import com.tle.core.services.user.UserService;
 import com.tle.core.services.user.UserSessionService;
@@ -36,21 +39,29 @@ import com.tle.web.google.analytics.GoogleAnalyticsPrivilegeTreeProvider;
 import com.tle.web.google.api.privileges.GoogleApiSettingsPrivilegeTreeProvider;
 import com.tle.web.harvesterskipdrmsettings.HarvesterSkipDrmSettingsPrivilegeTreeProvider;
 import com.tle.web.htmleditor.settings.HtmlEditorSettingsPrivilegeTreeProvider;
+import com.tle.web.integration.service.IntegrationService;
 import com.tle.web.language.LanguageSettingsPrivilegeTreeProvider;
 import com.tle.web.loggedinusers.LoggedInUsersPrivilegeTreeProvider;
 import com.tle.web.login.LoginSettingsPrivilegeTreeProvider;
 import com.tle.web.mail.MailSettingsPrivilegeTreeProvider;
 import com.tle.web.manualdatafixes.ManualDataFixesPrivilegeTreeProvider;
 import com.tle.web.mimetypes.MimeSearchPrivilegeTreeProvider;
+import com.tle.web.navigation.MenuService;
 import com.tle.web.oaiidentifier.OaiIdentifierSettingsPrivilegeTreeProvider;
 import com.tle.web.portal.service.PortletWebService;
 import com.tle.web.quickcontributeandversion.QuickContributeAndVersionSettingsPrivilegeTreeProvider;
 import com.tle.web.remotecaching.RemoteCachingPrivilegeTreeProvider;
 import com.tle.web.scheduler.ScheduledTasksPrivilegeTreeProvider;
+import com.tle.web.sections.SectionsController;
 import com.tle.web.sections.registry.TreeRegistry;
+import com.tle.web.selection.SelectionService;
 import com.tle.web.shortcuturls.ShortcutUrlsSettingsPrivilegeTreeProvider;
+import com.tle.web.template.TemplateFilter;
+import com.tle.web.viewable.impl.ViewableItemFactory;
+import com.tle.web.workflow.tasks.ModerationService;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 public class LegacyGuice extends AbstractModule {
 
@@ -148,7 +159,28 @@ public class LegacyGuice extends AbstractModule {
     public static TreeRegistry treeRegistry;
 
     @Inject
+    public static SectionsController sectionsController;
+
+    @Inject
     public static TLEUserDao tleUserDao;
+
+    @Inject
+    public static UrlService urlService;
+
+    @Inject
+    public static MenuService menuService;
+
+    @Inject
+    public static ViewableItemFactory viewableItemFactory;
+
+    @Inject
+    public static ModerationService moderationService;
+
+    @Inject
+    public static FreeTextService freeTextService;
+
+    @Inject
+    public static TemplateFilter templateFilter;
 
     @Override
     protected void configure()

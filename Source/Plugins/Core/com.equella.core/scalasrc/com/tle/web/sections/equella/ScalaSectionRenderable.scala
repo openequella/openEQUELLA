@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.tle.web.sections;
+package com.tle.web.sections.equella
 
-import java.net.URI;
+import com.tle.web.sections.SectionWriter
+import com.tle.web.sections.events.PreRenderContext
+import com.tle.web.sections.render.SectionRenderable
 
-public interface PathGenerator
-{
-	URI getBaseHref(SectionInfo info);
-
-	URI getRelativeURI(SectionInfo info);
-
-	URI getFullURI(SectionInfo info);
+class ScalaSectionRenderable(render: SectionWriter => Unit, prerender: PreRenderContext => Unit = _ => ()) extends SectionRenderable {
+  override def realRender(writer: SectionWriter): Unit = render(writer)
+  override def preRender(info: PreRenderContext): Unit = prerender(info)
 }
