@@ -573,4 +573,10 @@ public abstract class AbstractHTMLControl implements Serializable, HTMLControl
 	{
 		this.parent = parent;
 	}
+
+	@Override
+	public int getIndex(HTMLControl child) {
+		// By default.  Override if your control creates a list of controls, such as GroupsCtrl
+		return -1;
+	}
 }

@@ -136,4 +136,6 @@ public interface HTMLControl
 	HTMLControl getParent();
 
 	void setParent(HTMLControl parent);
+
+	int getIndex(HTMLControl child);
 }

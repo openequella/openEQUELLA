@@ -104,4 +104,21 @@ public interface ControlScriptObject extends ScriptObject
 	 * @return The ID or ID-prefix as rendered in the HTML
 	 */
 	String getFormId();
+
+	/**
+	 * Returns the parent of the calling ControlScriptObject.  A parent will exist
+	 * generally in the case when a control is nested in a group / repeater.
+	 * @return The ControlScriptObject parent, null if not available.
+	 */
+	ControlScriptObject getParent();
+
+	/**
+	 * Returns the index of the ControlScriptObject parameter, assuming there
+	 * is a direct parent-child relationship with the ControlScriptObject making
+	 * the call, and the parent is a list of ControlScriptObjects, such as a repeater.
+	 *
+	 * @return The index of the ControlScriptObject parameter, relative to it's parent.  -1 if not available.
+	 */
+	int getIndex(ControlScriptObject child);
+
 }
