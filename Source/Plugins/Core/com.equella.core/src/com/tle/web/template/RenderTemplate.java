@@ -129,7 +129,8 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 		{
 			return null;
 		}
-		if (!oldLayout && !context.getBooleanAttribute(RenderNewTemplate.DisableNewUI()))
+		if (!oldLayout && context.getAttributeForClass(AjaxRenderContext.class) == null
+				&& !context.getBooleanAttribute(RenderNewTemplate.DisableNewUI()))
 		{
 			return RenderNewTemplate.renderNewHtml(context, viewFactory);
 		}

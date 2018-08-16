@@ -29,6 +29,7 @@ import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.SectionsRuntimeException;
 import com.tle.web.sections.ajax.AjaxGenerator;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
+import com.tle.web.sections.ajax.handler.InnerBodyEvent;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.events.ReadyToRespondListener;
@@ -189,6 +190,7 @@ public abstract class AbstractDialog<S extends DialogModel> extends AbstractRend
 	{
 		if( ajax )
 		{
+			InnerBodyEvent.ensureRegistered(tree);
 			showContents = ajaxEvents.getUpdateDomModifier(tree, this, AjaxGenerator.AJAXID_BODY, getAjaxShowEvent());
 		}
 		else

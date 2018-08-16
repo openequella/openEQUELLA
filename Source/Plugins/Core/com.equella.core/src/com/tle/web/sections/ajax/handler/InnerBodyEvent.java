@@ -56,10 +56,8 @@ public final class InnerBodyEvent extends UpdateDomEvent
 		return -1;
 	}
 
-	public static void ensureRegistered(SectionInfo info)
+	public static void ensureRegistered(SectionTree tree)
 	{
-		MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
-		SectionTree tree = minfo.getRootTree();
 		EventGeneratorListener listener = EventGeneratorListener.getForTree(tree);
 		synchronized( listener )
 		{
@@ -68,5 +66,11 @@ public final class InnerBodyEvent extends UpdateDomEvent
 				listener.registerHandler(INSTANCE);
 			}
 		}
+	}
+
+	public static void ensureRegistered(SectionInfo info)
+	{
+		MutableSectionInfo minfo = info.getAttributeForClass(MutableSectionInfo.class);
+		ensureRegistered(minfo.getRootTree());
 	}
 }

@@ -8,6 +8,7 @@ import Data.Maybe (Maybe(..), fromMaybe)
 import Dispatcher.React (propsRenderer)
 import EQUELLA.Environment (baseUrl, prepLangStrings)
 import Effect (Effect)
+import Effect.Uncurried (EffectFn1)
 import MaterialUI.Button (button)
 import MaterialUI.DialogTitle (disableTypography)
 import MaterialUI.List (disablePadding, list)
@@ -15,6 +16,7 @@ import MaterialUI.ListItem (disableGutters, listItem)
 import MaterialUI.ListItem as LI
 import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
 import MaterialUI.ListItemText (listItemText, primary, secondary)
+import MaterialUI.PropTypes (toHandler)
 import MaterialUI.Properties (className, classes_, color, mkProp, onClick, style, variant)
 import MaterialUI.Properties as MUI
 import MaterialUI.Styles (withStyles)
@@ -23,6 +25,8 @@ import MaterialUI.Typography (textSecondary, typography)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (div, div', img, text)
 import React.DOM.Props as DP
+import React.SyntheticEvent (SyntheticEvent)
+import Routes (ClickableHref, routeHref, routeURI, viewItemRoute)
 import TimeAgo (timeAgo)
 
 newtype Attachment = Attachment {thumbnailHref::String}
@@ -77,22 +81,24 @@ instance rDecode :: DecodeJson Result where
 type ItemResultOptions = { 
     showDivider :: Boolean, 
     result :: Result, 
-    onSelect :: Maybe (ItemSelection -> Effect Unit)
+    onSelect :: Maybe (ItemSelection -> Effect Unit),
+    href :: String,  
+    onClick :: EffectFn1 SyntheticEvent Unit
 }
 
-itemResultOptions :: Result -> ItemResultOptions
-itemResultOptions result = {showDivider:false, result, onSelect:Nothing }
+itemResultOptions :: ClickableHref -> Result -> ItemResultOptions
+itemResultOptions {href, onClick} result = {showDivider:false, result, onSelect:Nothing, href, onClick }
 
 itemResult :: ItemResultOptions -> ReactElement
 itemResult = unsafeCreateLeafElement $ withStyles styles $ component "ItemResult" $ \this -> do
   let 
     string = prepLangStrings rawStrings
-    render {classes, showDivider, onSelect, 
+    render p@{classes, showDivider, onSelect, 
         result:item@(Result {name,description,displayFields,uuid,version,attachments,modifiedDate})} =
         let descMarkup descText = typography [] [ text descText ]
             titleLink = typography [variant TS.subheading, className classes.titleLink,
                             MUI.component "a", 
-                            mkProp "href" $ baseUrl <> "items/" <> uuid <> "/" <> show version <> "/"] [ 
+                            mkProp "href" p.href, mkProp "onClick" $ toHandler p.onClick] [ 
                                 text name 
                             ]
             attachThumb (Attachment {thumbnailHref}) = Just $ img [

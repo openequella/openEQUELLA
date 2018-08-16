@@ -20,6 +20,7 @@ import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer)
 import Effect (Effect)
 import Effect.Class (liftEffect)
+import Effect.Uncurried (mkEffectFn1)
 import Foreign.Object (Object)
 import MaterialUI.AppBar (appBar, position, sticky)
 import MaterialUI.Styles (withStyles)
@@ -28,7 +29,7 @@ import Partial.Unsafe (unsafeCrashWith)
 import Polyfills (polyfill)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React as R
-import Search.ItemResult (ItemSelection)
+import Search.ItemResult (ItemSelection, Result(..), itemResultOptions)
 import Search.OrderControl (orderControl)
 import Search.OwnerControl (ownerControl)
 import Search.ResultDisplay (renderResults)
@@ -90,7 +91,10 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
             onSelectFolder: d <<< SelectFolder, structure: _}) <$> selection.courseData.structure
       pure { chips:[], render: Array.fromFoldable $ Tuple Selections <$> rendered }
 
-    searchControls = [orderControl, oc,  withinLastControl, renderResults _ {onSelect = Just $ d <<< SelectionMade}, courseControl]
+    searchControls = [orderControl, oc,  withinLastControl, 
+      renderResults \r@Result {uuid,version} -> 
+        (itemResultOptions {href:"", onClick: mkEffectFn1 $ \_ -> pure unit} r) {onSelect = Just $ d <<< SelectionMade}, 
+      courseControl]
 
 
     render {props:{classes}} = 

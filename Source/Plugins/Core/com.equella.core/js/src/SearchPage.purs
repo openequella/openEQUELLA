@@ -52,8 +52,9 @@ import React (ReactElement, unsafeCreateLeafElement)
 import React as R
 import React.DOM (div, text)
 import React.DOM.Props as DP
+import Routes (routeHref, viewItemRoute)
 import Search.FacetControl (facetControl)
-import Search.ItemResult (Result, itemResult, itemResultOptions)
+import Search.ItemResult (Result(..), itemResult, itemResultOptions)
 import Search.OrderControl (Order(..), orderControl, orderEntries, orderName, orderValue)
 import Search.OwnerControl (ownerControl)
 import Search.ResultDisplay (renderResults)
@@ -89,7 +90,8 @@ searchPage = flip unsafeCreateLeafElement {} $ withStyles styles $ R.component "
   oc <- ownerControl
   let
     d = eval >>> affAction this
-    searchControls = [orderControl, oc, withinLastControl, renderResults identity]
+    searchControls = [orderControl, oc, withinLastControl, renderResults \r@Result {uuid,version} -> 
+      itemResultOptions (routeHref $ viewItemRoute uuid version) r]
     coreString = prepLangStrings coreStrings
 
     renderTemplate {queryBar,content} = template' (templateDefaults coreString.title) 

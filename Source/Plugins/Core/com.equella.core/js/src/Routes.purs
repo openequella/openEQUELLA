@@ -117,3 +117,6 @@ logoutRoute = LegacyPage (LegacyURI "logon.do" $ Object.singleton "logout" ["tru
 
 userPrefsRoute :: Route
 userPrefsRoute = LegacyPage (LegacyURI "access/user.do" Object.empty)
+
+viewItemRoute :: String -> Int -> Route 
+viewItemRoute uuid version = LegacyPage (LegacyURI ("items/" <> uuid <> "/" <> show version <> "/" ) Object.empty)
