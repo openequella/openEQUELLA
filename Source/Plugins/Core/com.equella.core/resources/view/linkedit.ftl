@@ -30,7 +30,7 @@
 			<hr>
 			<@setting label=b.key("edit.upload.label") error=m.errors["upload"] labelFor=s.file>
 				<@file section=s.file/>
-				<div id="uploader" class="uploadsprogress"/>
+				<div id="uploader" class="uploadsprogress"></div>
 			</@setting>
 			<@setting label=b.key("edit.download.label") help=b.key("edit.download.help")>
 				<@button section=s.downloadButton icon="download" />
