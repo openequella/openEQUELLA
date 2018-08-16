@@ -25,7 +25,7 @@ import com.tle.mycontent.service.MyContentFields;
 @BindFactory
 public interface OperationFactory
 {
-	EditMyContentOperation create(MyContentFields fields, String filename, InputStream inputStream,
+	EditMyContentOperation create(MyContentFields fields, String filename,
 		@Assisted("staginguuid") String stagingUuid, @Assisted("remove") boolean removeExistingAttachments,
 		@Assisted("use") boolean useExistingAttachment);
 

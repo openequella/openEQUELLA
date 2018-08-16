@@ -21,7 +21,9 @@ import Dispatcher.React (getProps, getState, modifyState, renderer)
 import Effect (Effect)
 import Effect.Class (liftEffect)
 import Foreign.Object (Object)
+import MaterialUI.AppBar (appBar, position, sticky)
 import MaterialUI.Styles (withStyles)
+import MaterialUI.Toolbar (toolbar)
 import Partial.Unsafe (unsafeCrashWith)
 import Polyfills (polyfill)
 import React (ReactElement, component, unsafeCreateLeafElement)
@@ -92,7 +94,14 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
 
 
     render {props:{classes}} = 
-      let renderTemplate {queryBar,content} = rootTag classes.root [ content ]
+      let renderTemplate {queryBar,content} = rootTag classes.root [ 
+        appBar [position sticky] [
+          toolbar [] [
+            queryBar
+          ]
+        ],
+        content 
+      ]
       in searchLayout {searchControls, strings: searchStrings, renderTemplate}
 
     eval = case _ of 

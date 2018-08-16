@@ -64,6 +64,8 @@ import com.tle.web.sections.ajax.handler.AjaxMethod;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
+import com.tle.web.sections.equella.ajaxupload.AjaxCallbackResponse;
+import com.tle.web.sections.equella.ajaxupload.AjaxUpload;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.receipt.ReceiptService;
 import com.tle.web.sections.events.RenderContext;
@@ -75,6 +77,7 @@ import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.sections.jquery.JQuerySelector.Type;
 import com.tle.web.sections.jquery.Jq;
+import com.tle.web.sections.js.JSAssignable;
 import com.tle.web.sections.js.JSCallAndReference;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.Js;
@@ -147,12 +150,8 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 	private static Label LABEL_SAVE_EDIT;
 	@PlugKey("breadcrumb.link.scrapbook")
 	private static Label LABEL_SCRAPBOOK;
-	@PlugKey("label.upload.single")
-	private static Label LABEL_UPLOAD_SINGLE;
 	@PlugKey("label.edit.single")
 	private static Label LABEL_EDIT_SINGLE;
-	@PlugKey("label.selectfile")
-	private static Label LABEL_SELECT_FILE;
 	@PlugKey("label.download.officeintegration")
 	private static Label LABEL_DOWNLOAD_OFFICE_INTEGRATION;
 
@@ -230,7 +229,17 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 
 	private static final ExternallyDefinedFunction VALIDATE_FILE = new ExternallyDefinedFunction(SCRAPBOOK_CLASS,
 			"validateFile", 0);
+	private JSAssignable validateFile;
 
+	public Label getEditTitle()
+	{
+		return LABEL_EDIT_SINGLE;
+	}
+
+	public Label getEditFileLabel()
+	{
+		return LABEL_REPLACE_FILE;
+	}
 	@Override
 	public SectionResult renderHtml(RenderEventContext context)
 	{
@@ -240,6 +249,8 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 		fileDrop.setValidateFile(context, Js.functionValue(Js.call(VALIDATE_FILE,
 				PartiallyApply.partial(ajax.getAjaxFunction("contributeDND"), 3))));
 
+		saveButton.setLabel(context, model.isEditing() ? LABEL_SAVE_EDIT : LABEL_UPLOAD);
+		archiveOptionsDropDown.setRendererType(context, "bootstrapsplitdropdown");
 
 		if( model.isEditing() )
 		{
@@ -251,19 +262,15 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 			final ImageRenderer thumbImage = attachmentResource.createStandardThumbnailRenderer(description);
 			model.setThumbnail(thumbImage);
 			model.setFilenameLabel(new TextLabel(attachment.getFilename(), false));
-			model.setSelectFileLabel(LABEL_REPLACE_FILE);
-			model.setSingleTitle(LABEL_EDIT_SINGLE);
+			fileUploader.setAjaxUploadUrl(context, ajax.getAjaxUrl(context, "replaceFile"));
+			fileUploader.setValidateFile(context, validateFile);
+			return viewFactory.createResult("editscrapbook.ftl", context);
 		}
 		else
 		{
-			model.setSelectFileLabel(LABEL_SELECT_FILE);
-			model.setSingleTitle(LABEL_UPLOAD_SINGLE);
+			return viewFactory.createResult("contributescrapbook.ftl", context);
 		}
 
-		saveButton.setLabel(context, model.isEditing() ? LABEL_SAVE_EDIT : LABEL_UPLOAD);
-		archiveOptionsDropDown.setRendererType(context, "bootstrapsplitdropdown");
-
-		return viewFactory.createResult("contribute.ftl", context);
 	}
 
 	@Override
@@ -305,6 +312,8 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 
 		editFileDiv.addReadyStatements(Js.call_s(new InPlaceEditFunction()));
 		editFileDiv.setStyleClass("editfilediv");
+		validateFile = AjaxUpload.simpleUploadValidator("uploadProgress", PartiallyApply.partial(
+				events.getSubmitValuesFunction("finishedFile"), 2));
 	}
 
 	public class InPlaceEditFunction extends RuntimeFunction
@@ -405,8 +414,14 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 		fields.setResourceId(MyResourceConstants.MYRESOURCE_CONTENT_TYPE);
 		fields.setTags(tags);
 		fields.setTitle(filename);
+		StagingFile staging = stagingService.createStagingArea();
+		try {
+			fileSystemService.write(staging, filename, stream, false);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 
-		ops.add(myContentService.getEditOperation(fields, filename, stream, null, !newItem, !newItem));
+		ops.add(myContentService.getEditOperation(fields, filename, staging.getUuid(), !newItem, !newItem));
 		ops.add(workflowFactory.save());
 		itemService.operation(itemId, ops.toArray(new WorkflowOperation[ops.size()]));
 	}
@@ -494,66 +509,85 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 		return staging.getUuid();
 	}
 
-	@EventHandlerMethod
-	public void contribute(SectionInfo info) throws IOException
+	public static class UploadValidation extends AjaxCallbackResponse
 	{
-		final ItemId itemId = getItemId(info);
-		final boolean newItem = (itemId == null);
-		String filename = fileUploader.getFilename(info);
-		boolean fileAttached = (filename != null && fileUploader.getFileSize(info) > 0);
-		if( !validate(info, newItem, fileAttached) )
+		private String filename;
+		private String uuid;
+
+		public String getFilename()
 		{
-			return;
+			return filename;
 		}
 
+		public void setFilename(String filename)
+		{
+			this.filename = filename;
+		}
+
+		public String getUuid()
+		{
+			return uuid;
+		}
+
+		public void setUuid(String uuid)
+		{
+			this.uuid = uuid;
+		}
+	}
+
+
+	@EventHandlerMethod
+	public void finishedFile(SectionInfo info, String uploadId, UploadValidation upload)
+	{
+		MyResourceModel model = getModel(info);
+		model.setStagingId(upload.uuid);
+		model.setFilename(upload.filename);
+	}
+
+	@EventHandlerMethod
+	public void contribute(SectionInfo info)
+	{
+		final List<WorkflowOperation> ops = new ArrayList<WorkflowOperation>();
+		MyResourceModel model = getModel(info);
+		ItemId itemId = getItemId(info);
 		final String tags = tagsField.getValue(info);
 		String title = descriptionField.getValue(info).trim();
+		String filename = model.getFilename();
 		if( Check.isEmpty(title) )
 		{
 			title = filename;
 		}
-
-		InputStream stream = null;
-		if( fileAttached )
-		{
-			stream = fileUploader.getInputStream(info);
-		}
-		else
-		{
-			stream = fileStreamFromStaging(info, itemId); // the applet will put
-			// stuff here
-			if( stream != null )
-			{
-				fileAttached = true;
-				filename = getAttachment(info, itemId).getFilename();
-			}
-		}
-
-		final List<WorkflowOperation> ops = new ArrayList<WorkflowOperation>();
-		if( newItem )
-		{
-			ops.add(workflowFactory.create(myContentService.getMyContentItemDef(), ItemStatus.PERSONAL));
-		}
-		else
-		{
-			ops.add(workflowFactory.startEdit(fileAttached));
-		}
+		boolean fileAttached = model.getStagingId() != null;
+		ops.add(workflowFactory.startEdit(fileAttached));
 
 		final MyContentFields fields = new MyContentFields();
 		fields.setResourceId(MyResourceConstants.MYRESOURCE_CONTENT_TYPE);
 		fields.setTags(tags);
 		fields.setTitle(title);
 
-		ops.add(myContentService.getEditOperation(fields, filename, stream, null, fileAttached && !newItem,
-				fileAttached && !newItem));
+		ops.add(myContentService.getEditOperation(fields, filename, model.getStagingId(), fileAttached, fileAttached));
 		ops.add(workflowFactory.save());
 
 		itemService.operation(itemId, ops.toArray(new WorkflowOperation[ops.size()]));
 
-		String key = URL_HELPER.key((newItem ? "upload.success" : "edit.success"));
+		String key = URL_HELPER.key("edit.success");
 		receiptService.setReceipt(new KeyLabel(key, Utils.ent(title)));
 
 		myContentService.returnFromContribute(info);
+	}
+
+	@AjaxMethod
+	public UploadValidation replaceFile(SectionInfo info) throws IOException
+	{
+		UploadValidation val = new UploadValidation();
+		String filename = fileUploader.getFilename(info);
+
+		InputStream stream = fileUploader.getInputStream(info);
+		StagingFile staging = stagingService.createStagingArea();
+		fileSystemService.write(staging, filename, stream, false);
+		val.setUuid(staging.getUuid());
+		val.setFilename(filename);
+		return val;
 	}
 
 	private InputStream fileStreamFromStaging(SectionInfo info, ItemId itemId) throws IOException
@@ -592,18 +626,6 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 			itemId = new ItemId(editItem);
 		}
 		return itemId;
-	}
-
-	private boolean validate(SectionInfo info, boolean newItem, boolean fileAttached)
-	{
-		MyResourceModel model = getModel(info);
-		if( newItem && !fileAttached )
-		{
-			model.setErrorKey("nofile");
-			return false;
-		}
-		model.setErrorKey(null);
-		return true;
 	}
 
 	public TextField getTagsField()
@@ -729,9 +751,6 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 		@Bookmarked(name = "e")
 		private String errorKey;
 
-		private Label singleTitle;
-		private Label selectFileLabel;
-
 		private ImageRenderer thumbnail;
 		private Label filenameLabel;
 
@@ -739,6 +758,8 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 		private boolean openWith;
 		@Bookmarked(name = "s")
 		private String stagingId;
+		@Bookmarked(name = "fn")
+		private String filename;
 		@Bookmarked(name = "w")
 		private boolean editWith;
 
@@ -765,26 +786,6 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 		public void setEditItem(String editItem)
 		{
 			this.editItem = editItem;
-		}
-
-		public Label getSingleTitle()
-		{
-			return singleTitle;
-		}
-
-		public void setSingleTitle(Label singleTitle)
-		{
-			this.singleTitle = singleTitle;
-		}
-
-		public Label getSelectFileLabel()
-		{
-			return selectFileLabel;
-		}
-
-		public void setSelectFileLabel(Label selectFileLabel)
-		{
-			this.selectFileLabel = selectFileLabel;
 		}
 
 		public ImageRenderer getThumbnail()
@@ -845,6 +846,16 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 		public void setEditWith(boolean editWith)
 		{
 			this.editWith = editWith;
+		}
+
+		public String getFilename()
+		{
+			return filename;
+		}
+
+		public void setFilename(String filename)
+		{
+			this.filename = filename;
 		}
 	}
 }

@@ -17,6 +17,7 @@
 package com.tle.mycontent.soap;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,12 +35,15 @@ import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemPack;
 import com.tle.beans.item.ItemStatus;
 import com.tle.common.Check;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.searching.Search.SortType;
+import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.core.services.FileSystemService;
 import com.tle.core.services.item.FreetextResult;
 import com.tle.core.services.item.FreetextSearchResults;
 import com.tle.core.soap.service.SoapXMLService;
@@ -70,6 +74,10 @@ public class ScrapbookSoapServiceImpl implements ScrapbookSoapService
 	private ViewItemUrlFactory urlFactory;
 	@Inject
 	private ItemOperationFactory workflowFactory;
+	@Inject
+	private FileSystemService fileSystemService;
+	@Inject
+	private StagingService stagingService;
 
 	@Override
 	public String search(String query, String[] resourceTypes, String[] mimeTypes, int sortType, int offset, int length)
@@ -152,8 +160,16 @@ public class ScrapbookSoapServiceImpl implements ScrapbookSoapService
 
 		final List<WorkflowOperation> ops = new ArrayList<WorkflowOperation>();
 		ops.add(workflowFactory.create(myContentService.getMyContentItemDef(), ItemStatus.PERSONAL));
-		ops.add(myContentService.getEditOperation(fields, filename,
-			new ByteArrayInputStream(new Base64().decode(base64Data)), null, false, false));
+		ByteArrayInputStream stream = new ByteArrayInputStream(new Base64().decode(base64Data));
+
+		StagingFile staging = stagingService.createStagingArea();
+		try {
+			fileSystemService.write(staging, filename, stream, false);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		ops.add(myContentService.getEditOperation(fields, filename, staging.getUuid(), false, false));
 		ops.add(workflowFactory.save());
 
 		final ItemPack newItem = itemService.operation(itemId, ops.toArray(new WorkflowOperation[ops.size()]));
@@ -187,6 +203,12 @@ public class ScrapbookSoapServiceImpl implements ScrapbookSoapService
 			final byte[] bytes = new Base64().decode(base64Data);
 			stream = new ByteArrayInputStream(bytes);
 		}
+		StagingFile staging = stagingService.createStagingArea();
+		try {
+			fileSystemService.write(staging, filename, stream, false);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 
 		final MyContentFields fields = new MyContentFields();
 		fields.setResourceId(resourceType);
@@ -195,7 +217,7 @@ public class ScrapbookSoapServiceImpl implements ScrapbookSoapService
 
 		final List<WorkflowOperation> ops = new ArrayList<WorkflowOperation>();
 		ops.add(workflowFactory.startEdit(true));
-		ops.add(myContentService.getEditOperation(fields, filename, stream, null, false, true));
+		ops.add(myContentService.getEditOperation(fields, filename, staging.getUuid(), false, true));
 		ops.add(workflowFactory.save());
 
 		final ItemPack item = itemService.operation(itemId, ops.toArray(new WorkflowOperation[ops.size()]));

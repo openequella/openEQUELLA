@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import java.util.Map;
 
 import com.tle.web.sections.Bookmark;
+import com.tle.web.sections.QueryParams;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.events.BookmarkEvent;
@@ -139,7 +140,7 @@ public class InfoBookmark implements Bookmark
 	{
 		if( query == null )
 		{
-			query = SectionUtils.getParameterString(SectionUtils.getParameterNameValues(getBookmarkParams(), false));
+			query = QueryParams.paramString(getBookmarkParams());
 		}
 		return query;
 	}

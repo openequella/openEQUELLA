@@ -12,35 +12,8 @@
 <@css "myresourcecontribute.css" />
 <@css "bulkupload.css"/>
 
-<#if !m.editing>
-	<p id="dndHelpTxt"><@bundlekey 'dnd.helptext'/></p>
-	<div id="dndTagForm">
-		<div class="control ctrlbody">
-			<label for="${s.dndTagsField}">
-				<h3><@bundlekey 'dnd.providetags'/></h3>
-			</label>
-			<@textfield section=s.dndTagsField />
-		</div>
-	</div>
-	<div id="scrapbook-upload-progress" class="filedrop-progress-container">
-		<div class="clear"></div>
-	</div>
-	<div id="dndfiles">
-	</div>
-	<div id="dndOptionsList">
-		<div class="control ctrlbody">
-			<label for="${s.archiveOptionsDropDown}">
-				<h3><@bundlekey 'dnd.archiveoptionlabel'/></h3>
-			</label>
-			<@render s.archiveOptionsDropDown />
-		</div>
-	</div>
-	<@filedrop section=s.fileDrop/>
-</#if>
+<h3>${s.editTitle}</h3>
 
-<h3>${m.singleTitle}</h3>
-
-<#if m.editing>
 <div class="editing">
 	<#-- floated right -->
 	<@div id="editFileAjaxDiv" class="inplaceAppletDiv">
@@ -62,14 +35,15 @@
 
 	<div class="clear"></div>
 </div>
-</#if>
 
 <div>
 	<div class="control ctrlbody">
 		<#if m.errorKey??><p class="ctrlinvalidmessage"><@bundlekey m.errorKey /></p></#if>
 
-		<h3>${m.selectFileLabel}</h3>
-		<@file section=s.fileUploader />
+		<h3>${s.editFileLabel}</h3>
+        <@render s.fileUploader/>
+        <div id="uploadProgress" class="uploadsprogress"></div>
+        <br>
 	</div>
 </div>
 

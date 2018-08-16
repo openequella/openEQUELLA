@@ -50,8 +50,7 @@ public interface MyContentService
 
 	ContentHandler getHandlerForId(String handlerId);
 
-	WorkflowOperation getEditOperation(MyContentFields fields, String filename, InputStream inputStream,
-		String stagingUuid, boolean removeExistingAttachments, boolean useExistingAttachment);
+	WorkflowOperation getEditOperation(MyContentFields fields, String filename, String stagingUuid, boolean removeExistingAttachments, boolean useExistingAttachment);
 
 	MyContentFields getFieldsForItem(ItemId itemId);
 

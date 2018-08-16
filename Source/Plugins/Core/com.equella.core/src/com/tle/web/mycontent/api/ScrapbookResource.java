@@ -17,6 +17,7 @@
 package com.tle.web.mycontent.api;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -288,8 +289,15 @@ public class ScrapbookResource
 				}
 				else
 				{
+					StagingFile staging = stagingService.createStagingArea();
+					try {
+						fileSystemService.write(staging, filename,
+								new ByteArrayInputStream(page.get("html").getBytes()), false);
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
 					operations.add(myContentService.getEditOperation(fields, filename,
-						new ByteArrayInputStream(page.get("html").getBytes()), null, false, false));
+							staging.getUuid(), false, false));
 				}
 
 			}
@@ -304,12 +312,12 @@ public class ScrapbookResource
 				throw new WebApplicationException(Status.NOT_FOUND);
 			}
 
-			operations.add(myContentService.getEditOperation(fields, (String) file.get("filename"), null, stagingId,
+			operations.add(myContentService.getEditOperation(fields, (String) file.get("filename"), stagingId,
 				false, false));
 		}
 		else
 		{
-			operations.add(myContentService.getEditOperation(fields, null, null, null, false, true));
+			operations.add(myContentService.getEditOperation(fields, null, null, false, true));
 		}
 		operations.add(workflowFactory.save());
 		return itemService.operation(itemId, operations.toArray(new WorkflowOperation[operations.size()]));

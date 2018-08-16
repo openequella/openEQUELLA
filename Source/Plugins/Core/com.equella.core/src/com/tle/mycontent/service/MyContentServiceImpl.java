@@ -130,10 +130,10 @@ public class MyContentServiceImpl implements MyContentService
 	}
 
 	@Override
-	public WorkflowOperation getEditOperation(MyContentFields fields, String filename, InputStream inputStream,
+	public WorkflowOperation getEditOperation(MyContentFields fields, String filename,
 		String stagingUuid, boolean removeExistingAttachments, boolean useExistingAttachments)
 	{
-		return editOpFactory.create(fields, filename, inputStream, stagingUuid, removeExistingAttachments,
+		return editOpFactory.create(fields, filename, stagingUuid, removeExistingAttachments,
 			useExistingAttachments);
 	}
 

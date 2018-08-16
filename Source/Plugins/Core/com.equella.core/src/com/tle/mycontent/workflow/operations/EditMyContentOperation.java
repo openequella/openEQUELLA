@@ -48,7 +48,6 @@ import com.tle.mycontent.service.MyContentFields;
 // static methods or fields', but methinks thats bunkum
 public class EditMyContentOperation extends AbstractWorkflowOperation // NOSONAR
 {
-	private final InputStream inputStream;
 	private final String filename;
 	private final boolean removeExistingAttachments;
 	private final boolean useExistingAttachment;
@@ -64,11 +63,10 @@ public class EditMyContentOperation extends AbstractWorkflowOperation // NOSONAR
 
 	@AssistedInject
 	private EditMyContentOperation(@Assisted MyContentFields fields, @Assisted @Nullable String filename,
-		@Assisted @Nullable InputStream inputStream, @Assisted("staginguuid") @Nullable String stagingUuid,
+		@Assisted("staginguuid") @Nullable String stagingUuid,
 		@Assisted("remove") boolean removeExistingAttachments, @Assisted("use") boolean useExistingAttachment)
 	{
 		this.fields = fields;
-		this.inputStream = inputStream;
 		this.filename = filename;
 		this.stagingUuid = stagingUuid;
 		this.removeExistingAttachments = removeExistingAttachments;
@@ -136,10 +134,8 @@ public class EditMyContentOperation extends AbstractWorkflowOperation // NOSONAR
 				fattach.setDescription(filename);
 			}
 
-			if( inputStream != null )
+			if( filename != null && stagingUuid != null)
 			{
-				fileSystemService.write(staging, filename, inputStream, false);
-				inputStream.close();
 				fattach.setSize(fileSystemService.fileLength(staging, filename));
 				final String thumbnail = thumbnailService.submitThumbnailRequest(getItemId(), staging, filename, false, true);
 				if( thumbnail != null ) {
