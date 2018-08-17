@@ -23,6 +23,7 @@ import com.tle.web.sections.events.RenderEventContext
 import com.tle.web.sections.registry.SectionsServlet
 import com.tle.web.sections.render.{HtmlRenderer, SimpleSectionResult, TextLabel}
 import com.tle.web.sections.{SectionInfo, SectionResult, SectionTree}
+import com.tle.web.selection.NewSelectionPage
 import javax.servlet.http.HttpServletRequest
 
 import scala.collection.JavaConverters._
@@ -35,6 +36,10 @@ class SinglePageAppServlet extends SectionsServlet
   override def lookupTree(request: HttpServletRequest): SectionTree = tree
 
   override def getServletPath(request: HttpServletRequest): String = {
+    request.getServletPath match {
+      case "/selection" => NewSelectionPage.setupSelection(request)
+      case o => ()
+    }
     request.getServletPath + request.getPathInfo
   }
 

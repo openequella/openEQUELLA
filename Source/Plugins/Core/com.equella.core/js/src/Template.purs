@@ -74,6 +74,7 @@ import React.DOM as D
 import React.DOM.Props as DP
 import ReactDOM (render)
 import Routes (Route, forcePushRoute, logoutRoute, matchRoute, pushRoute, routeHref, routeURI, setPreventNav, userPrefsRoute)
+import Utils.Interop (nullAny)
 import Utils.UI (withCurrentTarget)
 import Web.DOM.DOMTokenList as DOMTokens
 import Web.DOM.Document (documentElement)
@@ -116,9 +117,6 @@ foreign import preventUnload :: EventListener
 foreign import renderData :: RenderData
 
 foreign import setDocumentTitle :: String -> Effect Unit 
-
-nullAny :: forall a. Nullable a
-nullAny = toNullable Nothing
 
 newtype TemplateRef = TemplateRef (ReactThis {|TemplateProps} State)
 

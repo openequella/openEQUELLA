@@ -31,6 +31,11 @@ public class TreeLookupCallback implements ModalSessionCallback
 		this.treeKey = treeKey;
 	}
 
+	public Serializable getTreeKey()
+	{
+		return treeKey;
+	}
+
 	@Override
 	public void executeModalFinished(SectionInfo info, ModalSession session)
 	{

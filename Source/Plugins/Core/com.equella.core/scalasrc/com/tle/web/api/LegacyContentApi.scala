@@ -193,15 +193,15 @@ class LegacyContentApi {
     def itemViewer(p: String, f: (SectionInfo, NewDefaultViewableItem) => NewDefaultViewableItem):
     (String, MutableSectionInfo => MutableSectionInfo) = {
       val itemId = ItemTaskId.parse(p)
-      ("/viewitem/viewitem.do", { info:MutableSectionInfo =>
+      (s"/viewitem/viewitem.do", { info:MutableSectionInfo =>
         info.setAttribute(ItemServlet.VIEWABLE_ITEM, f(info, LegacyGuice.viewableItemFactory.createNewViewableItem(itemId)))
         info
       })
     }
     path match {
       case "" => ("/home.do", identity)
-      case p if p.startsWith("items/") => itemViewer(p.substring(6), (_,vi) => vi)
-      case p if p.startsWith("integ/gen/") => itemViewer(p.substring(10), { (info,vi) =>
+      case p if p.startsWith("items/") => itemViewer(p.substring("items/".length), (_,vi) => vi)
+      case p if p.startsWith("integ/gen/") => itemViewer(p.substring("integ/gen/".length), { (info,vi) =>
         vi.getState.setIntegrationType("gen")
         val decs = Decorations.getDecorations(info)
         decs.setMenuMode(MenuMode.HIDDEN)

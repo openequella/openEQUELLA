@@ -27,20 +27,10 @@ import scala.collection.JavaConverters._
 
 case class LookupQuery(users: Seq[String], groups: Seq[String], roles: Seq[String])
 
-case class UserQueryResult(id: String, username: String, firstName: String,
-                           lastName: String, email: Option[String])
 
 case class GroupQueryResult(id: String, name: String)
 
 case class RoleQueryResult(id: String, name: String)
-
-object UserQueryResult
-{
-  def apply(ub: UserBean): UserQueryResult = UserQueryResult(ub.getUniqueID,
-    ub.getUsername, ub.getFirstName,
-    ub.getLastName, Option(ub.getEmailAddress))
-}
-
 
 object GroupQueryResult
 {
@@ -53,7 +43,7 @@ object RoleQueryResult
   def apply(rb: RoleBean): RoleQueryResult = RoleQueryResult(rb.getUniqueID, rb.getName)
 }
 
-case class LookupQueryResult(users: Iterable[UserQueryResult], groups: Iterable[GroupQueryResult],
+case class LookupQueryResult(users: Iterable[UserDetails], groups: Iterable[GroupQueryResult],
                              roles: Iterable[RoleQueryResult])
 
 @Path("userquery/")
@@ -69,7 +59,7 @@ class UserQueryResource {
     val users = us.getInformationForUsers(queries.users.asJava)
     val groups = us.getInformationForGroups(queries.groups.asJava)
     val roles = us.getInformationForRoles(queries.roles.asJava)
-    LookupQueryResult(users.asScala.values.map(UserQueryResult.apply),
+    LookupQueryResult(users.asScala.values.map(UserDetails.apply),
       groups.asScala.values.map(GroupQueryResult.apply),
       roles.asScala.values.map(RoleQueryResult.apply))
   }
@@ -84,7 +74,7 @@ class UserQueryResource {
     val users = if (susers) us.searchUsers(q).asScala else Iterable.empty
     val groups = if (sgroups) us.searchGroups(q).asScala else Iterable.empty
     val roles = if (sroles) us.searchRoles(q).asScala else Iterable.empty
-    LookupQueryResult(users.map(UserQueryResult.apply),
+    LookupQueryResult(users.map(UserDetails.apply),
       groups.map(GroupQueryResult.apply),
       roles.filterNot(r => exclude(r.getUniqueID)).map(RoleQueryResult.apply))
   }

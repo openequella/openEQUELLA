@@ -17,10 +17,16 @@
 package com.tle.legacy;
 
 import com.google.inject.AbstractModule;
+import com.tle.cal.service.CALService;
+import com.tle.cal.web.service.CALWebServiceImpl;
+import com.tle.common.scripting.service.ScriptingService;
+import com.tle.core.activation.service.ActivationService;
 import com.tle.core.events.services.EventService;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.i18n.service.LanguageService;
 import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.standard.service.ItemCommentService;
+import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.notification.NotificationService;
 import com.tle.core.search.service.impl.SearchPrivilegeTreeProvider;
 import com.tle.core.security.TLEAclManager;
@@ -30,11 +36,13 @@ import com.tle.core.services.user.UserService;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.core.usermanagement.standard.dao.TLEUserDao;
+import com.tle.core.xml.service.XmlService;
 import com.tle.web.contentrestrictions.ContentRestrictionsPrivilegeTreeProvider;
 import com.tle.web.coursedefaults.CourseDefaultsSettingsPrivilegeTreeProvider;
 import com.tle.web.customdateformat.DateFormatSettingsPrivilegeTreeProvider;
 import com.tle.web.customisation.ThemePrivilegeTreeProvider;
 import com.tle.web.diagnostics.security.DiagnosticsSettingsPrivilegeTreeProvider;
+import com.tle.web.freemarker.BasicFreemarkerFactory;
 import com.tle.web.google.analytics.GoogleAnalyticsPrivilegeTreeProvider;
 import com.tle.web.google.api.privileges.GoogleApiSettingsPrivilegeTreeProvider;
 import com.tle.web.harvesterskipdrmsettings.HarvesterSkipDrmSettingsPrivilegeTreeProvider;
@@ -58,6 +66,9 @@ import com.tle.web.selection.SelectionService;
 import com.tle.web.shortcuturls.ShortcutUrlsSettingsPrivilegeTreeProvider;
 import com.tle.web.template.TemplateFilter;
 import com.tle.web.viewable.impl.ViewableItemFactory;
+import com.tle.web.viewitem.service.ItemXsltService;
+import com.tle.web.viewurl.ViewItemService;
+import com.tle.web.viewurl.attachments.AttachmentResourceService;
 import com.tle.web.workflow.tasks.ModerationService;
 
 import javax.inject.Inject;
@@ -181,6 +192,36 @@ public class LegacyGuice extends AbstractModule {
 
     @Inject
     public static TemplateFilter templateFilter;
+
+    @Inject
+    public static ObjectMapperService objectMapperService;
+
+    @Inject
+    public static AttachmentResourceService attachmentResourceService;
+
+    @Inject
+    public static ItemXsltService itemXsltService;
+
+    @Inject
+    public static ScriptingService scriptingService;
+
+    @Inject
+    public static BasicFreemarkerFactory basicFreemarkerFactory;
+
+    @Inject
+    public static ItemCommentService itemCommentService;
+
+    @Inject
+    public static CALService calService;
+
+    @Inject
+    public static ActivationService activationService;
+
+    @Inject
+    public static CALWebServiceImpl calWebService;
+
+    @Inject
+    public static ViewItemService viewItemService;
 
     @Override
     protected void configure()

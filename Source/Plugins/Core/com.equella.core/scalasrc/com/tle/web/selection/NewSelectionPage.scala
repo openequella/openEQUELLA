@@ -16,52 +16,49 @@
 
 package com.tle.web.selection
 
-import com.tle.web.integration.SingleSignonForm
+import com.tle.legacy.LegacyGuice
+import com.tle.web.integration.IntegrationSessionData
 import com.tle.web.sections.SectionInfo
 import com.tle.web.sections.js.generic.expression.ObjectExpression
-import com.tle.web.sections.render.SimpleSectionResult
+import com.tle.web.selection.section.RootSelectionSection
 import com.tle.web.template.RenderNewTemplate
 import com.tle.web.template.RenderNewTemplate.r
-import io.circe.Json
-import io.circe.syntax._
 import io.circe.generic.auto._
-import io.circe.parser._
+import io.lemonlabs.uri.{AbsolutePath, AbsoluteUrl}
+import javax.servlet.http.HttpServletRequest
 
 object NewSelectionPage {
 
   val selectionJS = r.url("reactjs/selection.js")
 
-  case class CourseSelection(courseId: Option[String], courseCode: Option[String], structure: Option[Json])
 
-  case class ReturnData(returnurl: Option[String], returnprefix: Option[String], cancelurl: Option[String],
-                        forcePost: Boolean, cancelDisabled: Boolean)
+  val mapper = LegacyGuice.objectMapperService.createObjectMapper()
 
-  case class SelectionData(returnData: ReturnData, courseData: CourseSelection, itemonly: Boolean, packageonly: Boolean,
-                           attachmentonly: Boolean, selectMultiple: Boolean, useDownloadPrivilege: Boolean, attachmentUuidUrls: Boolean,
-                           itemXml: Option[String], powerXml: Option[String])
-
-  object SelectionData
-  {
-    def apply(formData: SingleSignonForm): SelectionData = {
-      SelectionData(ReturnData(Option(formData.getReturnurl), Option(formData.getReturnprefix),
-        Option(formData.getCancelurl), formData.isForcePost, formData.isCancelDisabled),
-        CourseSelection(Option(formData.getCourseId), Option(formData.getCourseCode), Option(formData.getStructure)
-          .flatMap(s => parse(s).toOption)),
-        formData.isItemonly, formData.isPackageonly, formData.isAttachmentonly, formData.isSelectMultiple,
-        formData.isUseDownloadPrivilege, formData.isAttachmentUuidUrls, Option(formData.getItemXml), Option(formData.getPowerXml))
+  def setupSelection(req: HttpServletRequest): Unit = {
+    val _sessionId = req.getPathInfo.substring(1)
+    val (sessionId, integId) = _sessionId.indexOf(':') match
+    {
+      case -1 => (_sessionId, None)
+      case i => (_sessionId.substring(0, i), Some(_sessionId.substring(i+1)))
     }
+    val ss = LegacyGuice.userSessionService.getAttribute(sessionId).asInstanceOf[SelectionSession]
+    req.setAttribute(RenderNewTemplate.ReactJSKey, NewSelectionPage.selectionJS)
+    req.setAttribute(RenderNewTemplate.SetupJSKey,
+      { oe: ObjectExpression => oe.put("selection", mapper.writeValueAsString(ss))
+        integId.flatMap(i => Option(LegacyGuice.userSessionService.getAttribute(i).asInstanceOf[IntegrationSessionData])).foreach { isd =>
+          oe.put("integration", mapper.writeValueAsString(isd))
+        }
+        oe
+      }
+    )
   }
 
-  def renderNewSelection(info: SectionInfo, formData: SingleSignonForm): Unit = {
-
-    def prepareJSData(data: ObjectExpression): ObjectExpression = {
-      data.put("selection", SelectionData(formData).asJson.noSpaces)
-      data
-    }
-
-    info.setAttribute(RenderNewTemplate.SetupJSKey, prepareJSData _)
-    info.setAttribute(RenderNewTemplate.ReactJSKey, selectionJS)
-    info.preventGET()
-    info.getRootRenderContext.setRenderedBody(new SimpleSectionResult(""))
+  def selectionUrl(info: SectionInfo, integId: String) : String = {
+    val rootsel = info.lookupSection[RootSelectionSection, RootSelectionSection](classOf[RootSelectionSection])
+    val sessionid = rootsel.getSessionId(info)
+    val request = info.getRequest
+    val baseUri = AbsoluteUrl.parse(LegacyGuice.urlService.getBaseUriFromRequest(request).toString)
+    val baseParts = baseUri.path.parts.filter(_.nonEmpty)
+    baseUri.withPath(AbsolutePath(baseParts).addParts("selection", s"$sessionid:$integId")).toString()
   }
 }

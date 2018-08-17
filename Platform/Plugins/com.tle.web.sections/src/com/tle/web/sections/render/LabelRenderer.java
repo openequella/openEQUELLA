@@ -26,6 +26,11 @@ public class LabelRenderer implements SectionRenderable
 {
 	protected final Label label;
 
+	public Label getLabel()
+	{
+		return label;
+	}
+
 	public LabelRenderer(Label label)
 	{
 		this.label = label;

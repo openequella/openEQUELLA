@@ -42,6 +42,8 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import com.tle.web.api.item.ItemSummaryApi;
+import com.tle.web.api.item.interfaces.beans.*;
 import org.jboss.resteasy.util.DateUtil;
 
 import com.dytech.devlib.PropBagEx;
@@ -92,15 +94,6 @@ import com.tle.web.api.item.ItemLinkService;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
 import com.tle.web.api.item.interfaces.ItemLockResource;
 import com.tle.web.api.item.interfaces.ItemResource;
-import com.tle.web.api.item.interfaces.beans.AttachmentBean;
-import com.tle.web.api.item.interfaces.beans.CommentBean;
-import com.tle.web.api.item.interfaces.beans.HistoryEventBean;
-import com.tle.web.api.item.interfaces.beans.ItemBean;
-import com.tle.web.api.item.interfaces.beans.ItemExportBean;
-import com.tle.web.api.item.interfaces.beans.ItemLockBean;
-import com.tle.web.api.item.interfaces.beans.NavigationNodeBean;
-import com.tle.web.api.item.interfaces.beans.NavigationTabBean;
-import com.tle.web.api.item.interfaces.beans.NavigationTreeBean;
 import com.tle.web.api.item.resource.EquellaItemResource;
 import com.tle.web.remoting.rest.service.RestImportExportHelper;
 import com.tle.web.remoting.rest.service.UrlLinkService;
@@ -706,5 +699,11 @@ public class ItemResourceImpl implements EquellaItemResource
 		lockBean.setUuid(lock.getUserSession());
 		lockBean.set("links", linkMap);
 		return lockBean;
+	}
+
+	@Override
+	public ItemSummary getSummary(String uuid, int version)
+	{
+		return ItemSummaryApi.getItemSummary(uuid, version);
 	}
 }

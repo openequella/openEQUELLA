@@ -80,7 +80,7 @@ public class CommentsSection extends AbstractParentViewItemSection<CommentsSecti
 	implements
 		DisplaySectionConfiguration
 {
-	private static enum NameDisplayType
+	public static enum NameDisplayType
 	{
 		BOTH, FIRST, LAST;
 	}

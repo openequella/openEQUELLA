@@ -46,6 +46,7 @@ import Search.SearchControl (Chip(..), Placement(..), SearchControl, placementMa
 import Search.SearchQuery (Query, blankQuery, searchQueryParams)
 import SearchResults (SearchResults(..))
 import TSComponents (appBarQuery)
+import UIComp.DualPane (dualPane)
 import Unsafe.Coerce (unsafeCoerce)
 import Web.Event.Event (EventType(..))
 import Web.Event.EventTarget (addEventListener, eventListener)
@@ -94,13 +95,12 @@ searchLayout = unsafeCreateLeafElement $ withStyles styles $ R.component "Search
       
       let 
         controlsRendered = controlOutputs >>= _.render
-        mainContent = div [DP.className classes.layoutDiv] [
-          paper [className classes.results, elevation 4] $ 
-            renderResults searchResults <> progress,
-          paper [className classes.refinements, elevation 4] $ (mapMaybe (placementMatch Selections) controlsRendered) <>
+        mainContent = dualPane { 
+          left: renderResults searchResults <> progress, 
+          right: (mapMaybe (placementMatch Selections) controlsRendered) <>
             [ typography [className classes.filterTitle, variant title] [text strings.refineTitle ] ] <>
             (intercalate [divider []] $ (mapMaybe (map singleton <<< placementMatch Filters) controlsRendered))
-        ]
+        }
 
         progress = [
           let pbar = circularProgress [className classes.progress]
@@ -171,24 +171,6 @@ searchLayout = unsafeCreateLeafElement $ withStyles styles $ R.component "Search
   pure {render, state:initialState, componentDidMount: d InitSearch}
   where 
   styles theme = {
-    results: {
-      flexBasis: "75%",
-      display: "flex",
-      flexDirection: "column",
-      padding: 16
-    },
-    refinements: {
-      flexBasis: "25%",
-      marginLeft: 16, 
-      display: "flex", 
-      flexDirection: "column",
-      padding: theme.spacing.unit * 2
-    },
-    layoutDiv: {
-      padding: theme.spacing.unit * 2,
-      display: "flex",
-      justifyContent: "space-around"
-    },
     chipContainer: {
       display: "flex",
       flexWrap: "wrap"
