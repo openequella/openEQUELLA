@@ -119,4 +119,28 @@ public class ControlScriptWrapper implements ControlScriptObject
 		}
 		return "p" + page.getPageNumber() + control.getFormName(); //$NON-NLS-1$
 	}
+
+	@Override
+	public ControlScriptObject getParent()
+	{
+		// Controls of the same lineage are always on the same page.
+		if(control.getParent() == null)
+		{
+			return null;
+		}
+		else
+		{
+			return new ControlScriptWrapper(control.getParent(), control.getWizardPage());
+		}
+	}
+
+	@Override
+	public int getIndex(ControlScriptObject child)
+	{
+		if(child instanceof ControlScriptWrapper)
+		{
+			return control.getIndex(((ControlScriptWrapper) child).control);
+		}
+		return -1;
+	}
 }
