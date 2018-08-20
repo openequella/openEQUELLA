@@ -276,10 +276,14 @@ public class GroupsCtrl extends OptionCtrl
 	}
 
 	@Override
-	public int getIndex(HTMLControl child) {
-		for(int i = 0; i < groups.size(); i ++) {
-			for(HTMLControl control : groups.get(i).getControls()) {
-				if(control == child) {
+	public int getIndex(HTMLControl child)
+	{
+		for(int i = 0; i < groups.size(); i ++)
+		{
+			for(HTMLControl control : groups.get(i).getControls())
+			{
+				if(control == child)
+				{
 					return i;
 				}
 			}

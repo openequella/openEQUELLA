@@ -1077,7 +1077,8 @@ public class PropBagEx implements Serializable
 	{
 		ensureRoot();
 		final Node rootNode = m_elRoot.getParentNode();
-		if(rootNode instanceof Element) {
+		if(rootNode instanceof Element)
+		{
 			final Element root = (Element) m_elRoot.getParentNode();
 			if( root != null )
 			{
@@ -1087,7 +1088,9 @@ public class PropBagEx implements Serializable
 			{
 				return null;
 			}
-		} else {
+		}
+		else
+		{
 			return null;
 		}
 	}
@@ -1106,9 +1109,11 @@ public class PropBagEx implements Serializable
 		{
 			List<PropBagEx> childrenPropBagEx = new ArrayList<>();
 			NodeList childrenNodes = root.getChildNodes();
-			for(int i = 0; i < childrenNodes.getLength(); i++) {
+			for(int i = 0; i < childrenNodes.getLength(); i++)
+			{
 				Node n = childrenNodes.item(i);
-				if(n.getNodeType() == Node.ELEMENT_NODE) {
+				if(n.getNodeType() == Node.ELEMENT_NODE)
+				{
 					childrenPropBagEx.add(new PropBagEx(n, true));
 				}
 			}

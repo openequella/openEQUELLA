@@ -318,7 +318,8 @@ public class HTMLCtrlWrapper implements HTMLControl
 	}
 
 	@Override
-	public int getIndex(HTMLControl child) {
+	public int getIndex(HTMLControl child)
+	{
 		return control.getIndex(child);
 	}
 }
