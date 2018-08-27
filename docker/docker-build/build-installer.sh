@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-cd /repo/Equella
+cd /home/equella/repo/Equella
 sbt installerZip

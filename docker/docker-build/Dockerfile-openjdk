@@ -44,10 +44,10 @@ USER equella
 
 # Pull down the master branch of openEQUELLA
 RUN \
-  mkdir /repo \
-  && cd /repo \
+  mkdir /home/equella/repo \
+  && cd /home/equella/repo \
   && git clone https://github.com/equella/Equella.git \
-  && cd Equella \
+  && cd /home/equella/repo/Equella \
 # Could add a 'git checkout' for a specific version if sbt 1.1.1 is bumped for later versions.
 # Run a arbitrary, no-op task in the Equella/ directory to pull a bunch of the SBT deps.
   && sbt sbtVersion
@@ -56,13 +56,13 @@ RUN \
 
 ENV VERSION_PSC_PACKAGE v0.4.2
 
-RUN curl --create-dirs -Lo /tools/pscPackage/bundle/linux64.tar.gz https://github.com/purescript/psc-package/releases/download/$VERSION_PSC_PACKAGE/linux64.tar.gz \
-  && cd /tools/pscPackage \
+RUN curl --create-dirs -Lo /home/equella/tools/pscPackage/bundle/linux64.tar.gz https://github.com/purescript/psc-package/releases/download/$VERSION_PSC_PACKAGE/linux64.tar.gz \
+  && cd /home/equella/tools/pscPackage \
   && echo "bdf25acc5b4397bd03fd1da024896c5f33af85ce  bundle/linux64.tar.gz" | shasum -c - \
-  && cd /tools \
+  && cd /home/equella/tools \
   && tar -xvzf pscPackage/bundle/linux64.tar.gz \
-  && rm -r /tools/pscPackage
-ENV PATH "$PATH:/tools/psc-package"
+  && rm -r /home/equella/tools/pscPackage
+ENV PATH "$PATH:/home/equella/tools/psc-package"
 
 COPY move-installer-to-host.sh ./
 COPY build-installer.sh ./
