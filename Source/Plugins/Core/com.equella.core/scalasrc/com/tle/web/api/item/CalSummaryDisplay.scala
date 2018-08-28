@@ -31,6 +31,7 @@ import com.tle.core.i18n.CoreStrings
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.interfaces.beans._
 import com.tle.web.sections.SectionInfo
+import com.tle.web.viewable.NewDefaultViewableItem
 import com.tle.web.viewurl.ItemSectionInfo
 import org.jsoup.Jsoup
 
@@ -64,13 +65,24 @@ object CalSummaryDisplay {
     } else attachment.getDescription
   }
 
+  def copyrightAttachment(info: SectionInfo, item: Item, vi: NewDefaultViewableItem, at: Attachment) = {
+    val vr = LegacyGuice.attachmentResourceService.getViewableResource(info, vi, at)
+    val ls = LegacyGuice.viewItemService.getViewableLink(info, vr, null).getLinkState
+    val href = Option(ls.getBookmark).map(b => ItemUrlDisplay.addBaseUri(b.getHref))
+    val atUuid = at.getUuid
+    val status = LegacyGuice.calWebService.getStatus(info, item, atUuid) match {
+      case ActivateRequest.TYPE_ACTIVE => "active"
+      case ActivateRequest.TYPE_INACTIVE => "inactive"
+      case ActivateRequest.TYPE_PENDING => "pending"
+    }
+    CopyrightAttachment(item.getItemId, href, attachmentDisplayName(at), atUuid, status)
+  }
+
   def bookData(info: SectionInfo, holding: CALHolding, activatable: util.Set[Item]): HoldingSummary = {
-    val calWebService = LegacyGuice.calWebService
-    val calService = LegacyGuice.calService
     val bookPortions = holding.getPortions.asScala.map { p =>
       val item = p.getItem
 
-      val attachMap = calWebService.getAttachmentMap(info, item).asScala
+      val attachMap = LegacyGuice.calWebService.getAttachmentMap(info, item).asScala
       val vi = LegacyGuice.viewableItemFactory.createNewViewableItem(item.getItemId)
       val title = LangUtils.getString(item.getName, CoreStrings.text("summary.unnamedportion"))
       val sections = p.getSections.asScala.flatMap { s =>
@@ -78,21 +90,33 @@ object CalSummaryDisplay {
         val pageCount = PageCounter.countTotalRange(range)
         val atUuid = s.getAttachment
         attachMap.get(atUuid).map { at =>
-          val vr = LegacyGuice.attachmentResourceService.getViewableResource(info, vi, at)
-          val ls = LegacyGuice.viewItemService.getViewableLink(info, vr, null).getLinkState
-          val href = Option(ls.getBookmark).map(b => ItemUrlDisplay.addBaseUri(b.getHref))
-          val attachment = CopyrightAttachment(href, attachmentDisplayName(at))
-          val status = calWebService.getStatus(info, item, atUuid) match {
-            case ActivateRequest.TYPE_ACTIVE => "active"
-            case ActivateRequest.TYPE_INACTIVE => "inactive"
-            case ActivateRequest.TYPE_PENDING => "pending"
-          }
-          BookSection(attachment, range, pageCount, status, s.isIllustration)
+          val attachment = copyrightAttachment(info, item, vi, at)
+          BookSection(attachment, range, pageCount, s.isIllustration)
         }
       }
-      BookChapter(item.getItemId, title, p.getChapter, activatable.contains(item), sections)
+      BookChapter(title, p.getChapter, activatable.contains(item), sections)
     }
     BookSummary(PageCounter.countTotalPages(holding.getLength), bookPortions.sortWith(chapterNameCompare))
+  }
+
+  def journalData(info: SectionInfo, holding: CALHolding): HoldingSummary = {
+    val calWebService = LegacyGuice.calWebService
+    val journalPortions = holding.getPortions.asScala.flatMap { p =>
+      val item = p.getItem
+      val vi = LegacyGuice.viewableItemFactory.createNewViewableItem(item.getItemId)
+      val attachMap = calWebService.getAttachmentMap(info, item).asScala
+      val sections = p.getSections.asScala.flatMap { s =>
+        val atUuid = s.getAttachment
+        attachMap.get(atUuid).map { at =>
+          p.getTitle -> JournalSection(copyrightAttachment(info, item, vi, at))
+        }
+      }
+      sections.groupBy(_._1).map {
+        case (title, s) => JournalPortion(title, s.map(_._2))
+      }
+    }
+
+    JournalSummary(Option(holding.getVolume), Option(holding.getIssueNumber), journalPortions)
   }
 
   def copyrightData(info: SectionInfo, ii: ItemSectionInfo): Option[CopyrightData] = {
@@ -105,6 +129,7 @@ object CalSummaryDisplay {
         holding.getPortions.asScala.map(_.getItem).asJava))
       val holdingSummary = holding.getType match {
         case CALConstants.BOOK => bookData(info, holding, activatableItems)
+        case CALConstants.JOURNAL => journalData(info, holding)
       }
       CopyrightData(holding.getItem.getItemId, holdingSummary)
     }

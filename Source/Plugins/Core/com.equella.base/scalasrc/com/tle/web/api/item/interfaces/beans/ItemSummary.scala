@@ -77,14 +77,22 @@ sealed trait HoldingSummary {
   def `type`: String
 }
 
-case class CopyrightAttachment(href: Option[String], title: String)
+case class CopyrightAttachment(item: ItemRef, href: Option[String], title: String, uuid: String, status: String)
 
-case class BookSection(attachment: CopyrightAttachment, range: String, pageCount: Int, status: String, illustration: Boolean)
+case class BookSection(attachment: CopyrightAttachment, range: String, pageCount: Int, illustration: Boolean)
 
-case class BookChapter(portionItem: ItemRef, title: String, chapterName: String, canActivate: Boolean, sections: Iterable[BookSection])
+case class BookChapter(title: String, chapterName: String, canActivate: Boolean, sections: Iterable[BookSection])
 
-case class BookSummary(totalPage: Int, chapters: Iterable[BookChapter]) extends HoldingSummary {
+case class BookSummary(totalPages: Int, chapters: Iterable[BookChapter]) extends HoldingSummary {
   val `type` = "book"
+}
+
+case class JournalSection(attachment: CopyrightAttachment)
+
+case class JournalPortion(title: String, sections: Iterable[JournalSection])
+
+case class JournalSummary(volume: Option[String], issueNumber: Option[String], portions: Iterable[JournalPortion]) extends HoldingSummary {
+  val `type` = "journal"
 }
 
 case class CopyrightData(holdingItem: ItemRef, holding: HoldingSummary)
