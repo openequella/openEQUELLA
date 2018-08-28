@@ -48,13 +48,13 @@ type ReturnData = {
   cancelDisabled:: Boolean
 }
 
-decodeReturnData :: Object Json -> Either String ReturnData
-decodeReturnData o = do 
-  returnurl <- o .?? "returnurl"
-  cancelurl <- o .?? "cancelurl"
-  cancelDisabled <- o .? "cancelDisabled"
-  forcePost <- o .? "forcePost"
-  returnprefix <- o .?? "returnprefix"
+decodeReturnData :: Object Json -> Object Json -> Either String ReturnData
+decodeReturnData s o = do 
+  returnurl <- o .?? "callbackURL"
+  cancelurl <- o .?? "cancelURL"
+  cancelDisabled <- s .? "cancelDisabled"
+  forcePost <- s .? "forcePost"
+  returnprefix <- o .?? "prefix"
   pure {returnurl, cancelurl, cancelDisabled, forcePost, returnprefix}
 
 selectionNameDesc :: SelectionType -> Result -> {name::String, description::String, thumbnail::String}

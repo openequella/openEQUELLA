@@ -64,12 +64,9 @@ import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.SectionsController;
 import com.tle.web.sections.SectionsRuntimeException;
 import com.tle.web.sections.generic.AbstractSectionFilter;
-import com.tle.web.selection.SelectableInterface;
-import com.tle.web.selection.SelectedResource;
-import com.tle.web.selection.SelectionService;
-import com.tle.web.selection.SelectionSession;
-import com.tle.web.selection.TreeLookupSelectionCallback;
+import com.tle.web.selection.*;
 import com.tle.web.selection.section.RootSelectionSection.Layout;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.viewable.ViewableItemResolver;
 import com.tle.web.viewurl.ViewAuditEntry;
 import com.tle.web.viewurl.ViewableResource;
@@ -395,7 +392,14 @@ public class IntegrationServiceImpl extends AbstractSectionFilter implements Int
 			SelectableInterface selectableObj = selectionService.getNamedSelectable(selectable);
 			forwardInfo = selectionService.getSelectionSessionForward(info, session, selectableObj);
 		}
-		setupSessionData(forwardInfo, data);
+		String id = setupSessionData(forwardInfo, data);
+		if (RenderNewTemplate.isNewLayout(info))
+		{
+
+			info.forwardToUrl(NewSelectionPage.selectionUrl(forwardInfo, id));
+			return;
+		}
+
 		integration.forward(info, data, forwardInfo);
 		//What is this?? Not required
 		//info.forwardAsBookmark(forwardInfo);

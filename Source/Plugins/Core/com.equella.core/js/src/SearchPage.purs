@@ -7,7 +7,6 @@ import Data.Argonaut (decodeJson)
 import Data.Array (catMaybes, filter, find, intercalate, length, mapMaybe, mapWithIndex, singleton)
 import Data.Either (Either, either)
 import Data.Int (floor)
-import Data.Lens (_Just, addOver, appendOver, over, setJust)
 import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
 import Data.Maybe (Maybe(Nothing, Just), fromJust, fromMaybe)
@@ -90,7 +89,7 @@ searchPage = flip unsafeCreateLeafElement {} $ withStyles styles $ R.component "
   oc <- ownerControl
   let
     d = eval >>> affAction this
-    searchControls = [orderControl, oc, withinLastControl, renderResults \r@Result {uuid,version} -> 
+    searchControls = [orderControl, oc, withinLastControl, renderResults $ pure \r@Result {uuid,version} -> 
       itemResultOptions (routeHref $ viewItemRoute uuid version) r]
     coreString = prepLangStrings coreStrings
 

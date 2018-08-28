@@ -76,7 +76,7 @@ function collectParams(form, command, args)
 }
 
 
-exports.setupLegacyHooks = function(ps) {
+exports.setupLegacyHooks_ = function(ps) {
     function stdSubmit(validate) {
       return function(command) {
         if (window._trigger)

@@ -44,7 +44,7 @@ data Route =
     CourseEdit String |
     NewCourse
 
-navGlobals :: {nav::PushStateInterface, preventNav :: Ref (EffectFn1 Route Boolean)}
+navGlobals :: forall route. {nav::PushStateInterface, preventNav :: Ref (EffectFn1 route Boolean)}
 navGlobals = unsafePerformEffect do 
     nav <- makeInterface 
     preventNav <- new emptyPreventNav
@@ -53,7 +53,7 @@ navGlobals = unsafePerformEffect do
 globalNav :: PushStateInterface
 globalNav = navGlobals.nav
 
-emptyPreventNav :: EffectFn1 Route Boolean
+emptyPreventNav :: forall route. EffectFn1 route Boolean
 emptyPreventNav = mkEffectFn1 $ const $ pure false
 
 homeSlash :: Match Unit
@@ -80,19 +80,24 @@ routeMatch = SettingsPage <$ (lit "access" *> lit "settings.do") <|>
 matchRoute :: String -> Maybe Route 
 matchRoute = match routeMatch >>> (either (const Nothing) Just)
 
-setPreventNav :: EffectFn1 Route Boolean -> Effect Unit
+setPreventNav :: forall route. EffectFn1 route Boolean -> Effect Unit
 setPreventNav preventNav = write preventNav navGlobals.preventNav
 
 forcePushRoute :: Route -> Effect Unit
-forcePushRoute r = do 
-    let href = routeURI r
+forcePushRoute = forcePushRoute' <<< routeURI
+
+forcePushRoute' :: String -> Effect Unit
+forcePushRoute' href = do 
     write emptyPreventNav navGlobals.preventNav
     globalNav.pushState (unsafeToForeign {}) href
 
 pushRoute :: Route -> Effect Unit
-pushRoute r = do 
+pushRoute = pushRoute' routeURI
+
+pushRoute' :: forall route. (route -> String) -> route -> Effect Unit
+pushRoute' f r = do 
     preventNav <- read navGlobals.preventNav >>= flip runEffectFn1 r
-    if preventNav then pure unit else forcePushRoute r
+    if preventNav then pure unit else forcePushRoute' $ f r
 
 routeHref :: Route -> ClickableHref
 routeHref r = 

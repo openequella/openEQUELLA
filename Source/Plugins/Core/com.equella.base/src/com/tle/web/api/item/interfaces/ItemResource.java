@@ -35,6 +35,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import com.tle.web.api.item.interfaces.beans.ItemSummary;
 import org.jboss.resteasy.annotations.cache.Cache;
 
 import com.tle.common.interfaces.CsvList;
@@ -174,6 +175,13 @@ public interface ItemResource
 		@ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version);
 	// @formatter:on
 
+	@GET
+	@Path("/{uuid}/{version}/summary")
+	@ApiOperation(value = "Get information suitable for displaying in a summary page")
+	public ItemSummary getSummary(@ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
+								  @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version);
+
+
 	@HEAD
 	@Path("/{uuid}/{version}/file/{path:(.*)}")
 	@ApiOperation(value = "Get file metadata")
@@ -196,4 +204,6 @@ public interface ItemResource
 		@ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,  
 		@ApiParam("File path") @PathParam("path") String path);
 	// @formatter:on
+
+
 }

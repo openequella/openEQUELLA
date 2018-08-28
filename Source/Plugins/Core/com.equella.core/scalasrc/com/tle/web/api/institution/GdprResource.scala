@@ -27,7 +27,7 @@ import com.tle.core.db.types.UserId
 import com.tle.core.db.{DBSchema, RunWithDB}
 import com.tle.exceptions.AccessDeniedException
 import com.tle.legacy.LegacyGuice
-import com.tle.web.api.users.UserQueryResult
+import com.tle.web.api.users.UserDetails
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.doolse.simpledba.jdbc._
@@ -91,7 +91,7 @@ class GdprResource {
           def writeUser() = Option(tleUserDao.findByUuid(user)).foreach {
             tleUser =>
               print.print("\"user\": ")
-              print.print(UserQueryResult.apply(tleUser).asJson.spaces2)
+              print.print(UserDetails.apply(tleUser).asJson.spaces2)
               print.println("\n, ")
           }
           def writeLogs() = {

@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package com.tle.web.sections
+package com.tle.web.api.users
 
-import io.lemonlabs.uri.QueryString
-import scala.collection.JavaConverters._
+import com.tle.common.usermanagement.user.valuebean.UserBean
 
-object QueryParams {
-
-
-  def paramString(map: java.util.Map[String, Array[String]]): String =
-    QueryString(map.asScala.flatMap {
-      case (n, vals) => vals.map(v => n -> Some(v)
-)    }.toVector).toString() match {
-      case "" => ""
-      case o => o.substring(1)
-    }
+case class UserDetails(id: String, username: String, firstName: String,
+                           lastName: String, email: Option[String])
+object UserDetails {
+  def apply(ub: UserBean): UserDetails = UserDetails(ub.getUniqueID,
+    ub.getUsername, ub.getFirstName,
+    ub.getLastName, Option(ub.getEmailAddress))
 }

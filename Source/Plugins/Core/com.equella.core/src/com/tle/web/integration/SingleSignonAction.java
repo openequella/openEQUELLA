@@ -74,13 +74,6 @@ public class SingleSignonAction extends AbstractPrototypeSection<SingleSignonFor
 		{
 			formDataAction = IntegrationModule.SELECT_OR_ADD_DEFAULT_ACTION;
 		}
-		if (RenderNewTemplate.isNewLayout(info)) {
-			if (formDataAction.equalsIgnoreCase("structured"))
-			{
-				NewSelectionPage.renderNewSelection(info, formData);
-				return;
-			}
-		}
 		final IntegrationActionInfo action = integrationService.getActionInfo(formDataAction, formData.getOptions());
 		integrationService.standardForward(info, convertToForward(action, formData), data, action, formData);
 	}

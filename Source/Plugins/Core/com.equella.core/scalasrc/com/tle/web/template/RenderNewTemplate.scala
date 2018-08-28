@@ -86,11 +86,12 @@ object RenderNewTemplate {
 
   def renderNewHtml(context: RenderEventContext, viewFactory: FreemarkerFactory): SectionResult =
   {
+    val req = context.getRequest
     val _renderData = new ObjectExpression("baseResources", r.url(""),
       "newUI", java.lang.Boolean.TRUE)
     val renderData =
-      Option(context.getAttribute[ObjectExpression => ObjectExpression](SetupJSKey)).map(_.apply(_renderData)).getOrElse(_renderData)
-    val bundleJS = Option(context.getAttribute[String](ReactJSKey)).getOrElse(reactTemplate)
+      Option(req.getAttribute(SetupJSKey).asInstanceOf[ObjectExpression => ObjectExpression]).map(_.apply(_renderData)).getOrElse(_renderData)
+    val bundleJS = Option(req.getAttribute(ReactJSKey).asInstanceOf[String]).getOrElse(reactTemplate)
     renderReact(context, viewFactory, renderData, bundleJS)
   }
 

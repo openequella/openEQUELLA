@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-package com.tle.web.sections
+package com.tle.web.api.item
 
-import io.lemonlabs.uri.QueryString
+import com.dytech.devlib.PropBagEx
+import com.tle.beans.entity.itemdef.DisplayNode
+import com.tle.common.i18n.LangUtils
+import com.tle.web.api.item.interfaces.beans.MetaDisplay
+
 import scala.collection.JavaConverters._
 
-object QueryParams {
 
+object DisplayNodes {
 
-  def paramString(map: java.util.Map[String, Array[String]]): String =
-    QueryString(map.asScala.flatMap {
-      case (n, vals) => vals.map(v => n -> Some(v)
-)    }.toVector).toString() match {
-      case "" => ""
-      case o => o.substring(1)
+  def create(itemxml: PropBagEx)(dn: DisplayNode): Option[MetaDisplay] = {
+    val valueText = itemxml.iterateAll(dn.getNode).iterator().asScala.map { x =>
+      LangUtils.getString(LangUtils.getBundleFromXml(x), "")
+    }.mkString(dn.getSplitter)
+    if (valueText.nonEmpty) Some {
+      MetaDisplay(LangUtils.getString(dn.getTitle), valueText, dn.isDoubleMode, dn.getType)
     }
+    else None
+  }
 }

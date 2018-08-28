@@ -1,1 +1,2 @@
-exports.selectionJson = window.renderData.selection;
+exports.selectionJson = window.renderData;
+

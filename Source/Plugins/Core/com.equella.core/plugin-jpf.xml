@@ -552,11 +552,6 @@
     <parameter id="nameKey" value="com.equella.core.name" />
     <parameter id="class" value="bean:com.tle.web.viewitem.htmlfiveviewer.HtmlFiveViewer" />
   </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="htmlFiveViewerSection">
-    <parameter id="class" value="bean:com.tle.web.viewitem.htmlfiveviewer.HtmlFiveViewerSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="" />
-  </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="htmlFiveMimeTypeAndPlayerMigration">
     <parameter id="id" value="com.tle.web.viewitem.htmlfiveviewer.HtmlFiveMimeTypeAndPlayerMigration" />
     <parameter id="bean" value="bean:com.tle.web.viewitem.htmlfiveviewer.migration.HtmlFiveMimeTypeAndPlayerMigration" />
@@ -709,11 +704,6 @@
     <parameter id="nameKey" value="com.equella.core.flv.name" />
     <parameter id="class" value="bean:com.tle.web.viewitem.flvviewer.FLVViewer" />
   </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="flvSection">
-    <parameter id="class" value="bean:com.tle.web.viewitem.flvviewer.FLVViewerSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="" />
-  </extension>
   <extension plugin-id="com.tle.core.institution.convert" point-id="itemxmlmigration" id="fixActivations">
     <parameter id="id" value="com.tle.core.activation.migration.MigrateActivations" />
     <parameter id="bean" value="bean:com.tle.core.activation.convert.migration.MigrateActivations" />
@@ -766,11 +756,6 @@
     <parameter id="id" value="externalLinkViewer" />
     <parameter id="nameKey" value="com.equella.core.extlink.name" />
     <parameter id="class" value="bean:com.tle.web.viewitem.externallinkviewer.ExternalLinkViewer" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="externalLinkSection">
-    <parameter id="class" value="bean:com.tle.web.viewitem.externallinkviewer.ExternalLinkViewerSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="" />
   </extension>
   <extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="filestoreConverter">
     <parameter id="id" value="FILES" />
@@ -1022,11 +1007,6 @@
     <parameter id="class" value="bean:com.tle.web.echo.viewer.EchoPodcastViewer" />
     <parameter id="order" value="4" />
   </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="echoViewerSection">
-    <parameter id="class" value="bean:com.tle.web.echo.viewer.EchoViewerSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="" />
-  </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="createEchoSchema">
     <parameter id="id" value="com.tle.core.echo.migration.CreateEchoEntities" />
     <parameter id="bean" value="bean:com.tle.core.echo.migration.CreateEchoEntities" />
@@ -1086,11 +1066,6 @@
   <extension plugin-id="com.tle.web.wizard" point-id="exceptionHandler" id="copyrightExceptionHandler">
     <parameter id="bean" value="bean:com.tle.web.copyright.section.CopyrightViolationHandler" />
     <parameter id="exceptionClass" value="com.tle.core.copyright.exception.CopyrightViolationException" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="viewByRequest">
-    <parameter id="class" value="bean:com.tle.web.copyright.section.ViewByRequestSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="" />
   </extension>
   <extension plugin-id="com.tle.web.sections" point-id="section" id="copyrightException">
     <parameter id="class" value="bean:com.tle.web.copyright.section.CopyrightViolationHandler" />
@@ -1323,11 +1298,6 @@
     <parameter id="class" value="com.tle.core.remoting.RemoteExternalToolsService" />
     <parameter id="bean" value="bean:com.tle.core.externaltools.service.ExternalToolsService" />
   </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="toolViewerSection">
-    <parameter id="class" value="bean:com.tle.web.externaltools.viewer.ExternalToolViewerSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="" />
-  </extension>
   <extension plugin-id="com.tle.web.viewurl" point-id="resourceViewer" id="externalToolViewer">
     <parameter id="id" value="externalToolViewer" />
     <parameter id="nameKey" value="com.equella.core.viewer.title" />
@@ -1359,11 +1329,6 @@
   <extension plugin-id="com.tle.web.wizard.controls.universal" point-id="universalResourceHandler" id="echoHandler">
     <parameter id="class" value="bean:com.tle.web.controls.echo.EchoHandler" />
     <parameter id="order" value="700" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="content">
-    <parameter id="class" value="bean:com.tle.web.viewitem.sharing.ShareWithOthersContentSection" />
-    <parameter id="path" value="/viewitem/viewitem.do" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_CONTENT" />
   </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="equellaTree">
     <parameter id="path" value="/access/equella.do" />
@@ -1576,11 +1541,6 @@
     <parameter id="bean" value="bean:com.tle.web.controls.youtube.migration.UpdateOlderYoutubeAttachmentsXmlMigration" />
     <parameter id="forconverter" value="items" />
   </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="myPagesViewerSection">
-    <parameter id="class" value="bean:com.tle.mypages.mypagesviewer.section.MyPagesViewerSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="" />
-  </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="RemoveNavigationGroupsAndLinksOnMigration">
     <parameter id="id" value="com.tle.core.legacy.migration.RemoveNavigationGroupsAndLinks" />
     <parameter id="bean" value="bean:com.tle.core.legacy.migration.RemoveNavigationGroupsAndLinks" />
@@ -1761,11 +1721,6 @@
   </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="htmleditorSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.htmleditor.settings.HtmlEditorSettingsPrivilegeTreeProvider" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="contentSection">
-    <parameter id="class" value="bean:com.tle.web.cloneormove.section.RootCloneOrMoveSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_CONTENT" />
   </extension>
   <extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="move">
     <parameter id="id" value="move" />
@@ -2002,11 +1957,6 @@
     <parameter id="nameKey" value="com.equella.core.viewer.name" />
     <parameter id="class" value="bean:com.tle.web.qti.viewer.QtiPlayViewer" />
   </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="qtiPlayViewerSection">
-    <parameter id="class" value="bean:com.tle.web.qti.viewer.QtiPlayViewerSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="" />
-  </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="searching_2_2">
     <parameter id="path" value="/access/contentrestrictions.do" />
     <parameter id="root" value="bean:/access/contentrestrictions" />
@@ -2017,27 +1967,12 @@
   <extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="OAuthRestService">
     <parameter id="class" value="com.tle.web.api.oauth.interfaces.OAuthResource" />
   </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="summarySection">
-    <parameter id="class" value="bean:com.tle.cla.web.viewitem.summary.CLASummarySection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_MAINCONTENT" />
-  </extension>
   <extension plugin-id="com.tle.web.viewitem" point-id="contentFilter" id="filestoreFilter">
     <parameter id="bean" value="bean:com.tle.cla.web.CLAFilestoreFilter" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="agreementSection">
-    <parameter id="class" value="bean:com.tle.cla.web.viewitem.summary.CLAAgreementSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="" />
   </extension>
   <extension plugin-id="com.tle.web.viewurl" point-id="resourceViewerFilter" id="calViewerFilter_2">
     <parameter id="id" value="claFilter" />
     <parameter id="class" value="bean:com.tle.cla.web.CLAResourceViewerFilter" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="activateSection">
-    <parameter id="class" value="bean:com.tle.cla.web.viewitem.summary.CLAActivateSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_CONTENT" />
   </extension>
   <extension plugin-id="com.tle.web.viewitem.summary" point-id="attachmentViewFilter" id="claAttachmentViewFilter">
     <parameter id="class" value="bean:com.tle.cla.web.CLAAttachmentViewFilter" />
@@ -2111,11 +2046,6 @@
     <parameter id="id" value="com.tle.web.hierarchy.migration.SavedSearchToFavouriteSearchXml" />
     <parameter id="bean" value="bean:com.tle.web.hierarchy.migration.SavedSearchToFavouriteSearchXml" />
     <parameter id="date" value="1970-02-07" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="keyResourceSection">
-    <parameter id="class" value="bean:com.tle.web.hierarchy.addkey.HierarchyTreeSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_CONTENT" />
   </extension>
   <extension plugin-id="com.tle.web.viewitem.summary" point-id="minorAction" id="addToHierarchy">
     <parameter id="id" value="addToHierarchy" />
@@ -2197,11 +2127,6 @@
   <extension plugin-id="com.tle.web.viewitem.treeviewer" point-id="modifyNavigation" id="scormNavigation">
     <parameter id="class" value="bean:com.tle.web.scorm.ScormNavigationExtension" />
   </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="scormTreeSection">
-    <parameter id="class" value="bean:com.tle.web.scorm.treeviewer.ScormTreeNavigationSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="" />
-  </extension>
   <extension plugin-id="com.tle.web.viewitem.treeviewer" point-id="downloadLink" id="scormDownloadLink">
     <parameter id="id" value="equella/scorm-package" />
     <parameter id="class" value="com.tle.web.scorm.DownloadScormPackageLink" />
@@ -2258,11 +2183,6 @@
   <extension plugin-id="com.tle.web.connectors" point-id="connectorEditor" id="moodleEditor">
     <parameter id="id" value="moodle" />
     <parameter id="class" value="bean:com.tle.web.connectors.moodle.editor.MoodleConnectorEditor" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="largeImageSection">
-    <parameter id="class" value="bean:com.tle.web.viewitem.largeimageviewer.LargeImageViewerSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="" />
   </extension>
   <extension plugin-id="com.tle.web.viewurl" point-id="resourceViewer" id="livNavTreeViewer">
     <parameter id="id" value="livNavTreeViewer" />
@@ -2384,18 +2304,8 @@
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="mailSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.mail.MailSettingsPrivilegeTreeProvider" />
   </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="calSection">
-    <parameter id="class" value="bean:com.tle.cal.web.viewitem.summary.CALSummarySection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_MAINCONTENT" />
-  </extension>
   <extension plugin-id="com.tle.web.viewitem" point-id="contentFilter" id="calFilestoreFilter">
     <parameter id="bean" value="bean:com.tle.cal.web.CALFilestoreFilter" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="calItemFile">
-    <parameter id="class" value="bean:com.tle.cal.web.viewitem.summary.CALAgreementSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="" />
   </extension>
   <extension plugin-id="com.tle.web.itemlist" point-id="itemListExtension" id="citationListExtension">
     <parameter id="bean" value="bean:com.tle.cal.web.itemlist.CALListExtension" />
@@ -2406,11 +2316,6 @@
   <extension plugin-id="com.tle.web.viewurl" point-id="resourceViewerFilter" id="calViewerFilter">
     <parameter id="id" value="calFilter" />
     <parameter id="class" value="bean:com.tle.cal.web.CALResourceViewerFilter" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="calActivateSection">
-    <parameter id="class" value="bean:com.tle.cal.web.viewitem.summary.CALActivateSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_CONTENT" />
   </extension>
   <extension plugin-id="com.tle.web.viewitem.summary" point-id="summaryTabExtension" id="citationSummarySection">
     <parameter id="id" value="citationSummarySection" />
@@ -2462,12 +2367,6 @@
     <parameter id="type" value="contribute" />
     <parameter id="class" value="bean:com.tle.web.contribute.navigation.ContributeBreadcrumbProvider" />
   </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="unlocksection">
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="class" value="bean:com.tle.web.contribute.ResumeSection" />
-    <parameter id="class" value="bean:com.tle.web.contribute.DiscardSection" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.sidebar.LOCKED_BY" />
-  </extension>
   <extension plugin-id="com.tle.ims" point-id="imsAttachmentExporter" id="qtiAttachmentExporter">
     <parameter id="id" value="qtiAttachmentExporter" />
     <parameter id="class" value="bean:com.tle.qti.QTIAttachmentExporter" />
@@ -2476,11 +2375,6 @@
     <parameter id="id" value="qti" />
     <parameter id="nameKey" value="com.equella.core.qtiv1.viewer.title" />
     <parameter id="class" value="bean:com.tle.qti.QTIViewer" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="qtiSection">
-    <parameter id="class" value="bean:com.tle.qti.QTIViewerSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="" />
   </extension>
   <extension plugin-id="com.tle.web.sections.equella" point-id="breadcrumb" id="searchCollection">
     <parameter id="type" value="searchCollection" />
@@ -3741,11 +3635,6 @@
     <parameter id="bean" value="bean:com.tle.web.workflow.tasks.portal.TaskListPortalExtension" />
     <parameter id="order" value="100" />
   </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="workflowProgress">
-    <parameter id="path" value="/viewitem/viewitem.do" />
-    <parameter id="class" value="bean:com.tle.web.workflow.view.CurrentModerationContentSection" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_CONTENT" />
-  </extension>
   <extension plugin-id="com.tle.web.portal" point-id="portletRenderer" id="taskStatisticsPortletRenderer">
     <parameter id="id" value="taskstatistics" />
     <parameter id="class" value="bean:com.tle.web.workflow.portal.TaskStatisticsPortletRenderer" />
@@ -3986,21 +3875,6 @@
     <parameter id="serviceInterface" value="com.tle.web.workflow.soap.TaskListSoapInterface" />
     <parameter id="bean" value="bean:com.tle.web.workflow.soap.TaskListSoapService" />
   </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="activationsSection">
-    <parameter id="class" value="bean:com.tle.web.activation.viewitem.summary.section.ShowActivationsSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_CONTENT" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="editActivationsSection">
-    <parameter id="class" value="bean:com.tle.web.activation.viewitem.summary.section.EditActivationSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_CONTENT" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="activationsLinkSection">
-    <parameter id="class" value="bean:com.tle.web.activation.viewitem.sidebar.summary.ActivationsLinkSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.sidebar.DETAILS_GROUP" />
-  </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="activations">
     <parameter id="path" value="/access/activations.do" />
     <parameter id="root" value="bean:/access/activations" />
@@ -4061,21 +3935,6 @@
     <parameter id="class" value="bean:com.tle.web.connectors.export.LMSExportActionSection" />
     <parameter id="order" value="700" />
   </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="addToExternalSystemPage">
-    <parameter id="class" value="bean:com.tle.web.connectors.export.LMSExportSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_CONTENT" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="findUsesLinkSection">
-    <parameter id="class" value="bean:com.tle.web.connectors.viewitem.FindUsesLinkSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.sidebar.DETAILS_GROUP" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="findUsesContentSection">
-    <parameter id="class" value="bean:com.tle.web.connectors.viewitem.FindUsesContentSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_CONTENT" />
-  </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="connectorManage">
     <parameter id="path" value="/access/manageconnectors.do" />
     <parameter id="root" value="bean:/access/manageconnectors" />
@@ -4134,16 +3993,6 @@
     <parameter id="id" value="myContentWithin" />
     <parameter id="bean" value="bean:com.tle.mycontent.ItemAdminWithinExtension" />
   </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="treeSection">
-    <parameter id="class" value="bean:com.tle.web.viewitem.treeviewer.TreeNavigationSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="newTreeSection">
-    <parameter id="class" value="bean:com.tle.web.viewitem.treeviewer.NewTreeNavigationSection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="" />
-  </extension>
   <extension plugin-id="com.tle.core.item" point-id="itemHelpers" id="navNodeHelper">
     <parameter id="bean" value="bean:com.tle.core.item.navigation.NavigationNodeHelper" />
     <parameter id="display" value="true" />
@@ -4179,11 +4028,6 @@
     <parameter id="path" value="/viewitem/viewitem.do" />
     <parameter id="root" value="bean:/viewitem/viewitem" />
     <parameter id="url" value="false" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="section" id="itemDetailsMainSection">
-    <parameter id="class" value="bean:com.tle.web.viewitem.summary.section.ItemDetailsAndActionsSummarySection" />
-    <parameter id="path" value="/viewitem/viewitem" />
-    <parameter id="parentid" value="com.tle.web.viewitem.summary.SUMMARY_SIDEBAR" />
   </extension>
   <extension plugin-id="com.tle.web.viewitem" point-id="itemXslt" id="selectFunctions">
     <parameter id="id" value="selectFunctions" />
@@ -5801,6 +5645,7 @@
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="newPagesServlet">
     <parameter id="bean" value="bean:com.tle.web.template.SinglePageAppServlet" />
     <parameter id="url-pattern" value="/page/*" />
+    <parameter id="url-pattern" value="/selection/*" />
   </extension>
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="integrationItemServlet">
     <parameter id="bean" value="bean:com.tle.web.viewable.servlet.IntegrationItemServlet" />
