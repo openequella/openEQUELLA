@@ -348,7 +348,7 @@ public class CanvasIntegration extends AbstractIntegrationService<CanvasSessionD
 			final String canvasApiDomain = data.getApiDomain();
 			if( canvasApiDomain != null )
 			{
-				final String canvasUrl = "https://" + canvasApiDomain;
+				final String canvasUrl = "://" + canvasApiDomain;
 
 				final List<Connector> connectors = connectorService.enumerateForUrl(canvasUrl);
 				if( connectors.size() == 1 )

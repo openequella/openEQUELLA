@@ -53,7 +53,7 @@ public class ConnectorDaoImpl extends AbstractEntityDaoImpl<Connector> implement
 			public void processQuery(Query query)
 			{
 				super.processQuery(query);
-				query.setParameter("serverUrl", url + "%");
+				query.setParameter("serverUrl", "%" + url + "%");
 			}
 		});
 	}
