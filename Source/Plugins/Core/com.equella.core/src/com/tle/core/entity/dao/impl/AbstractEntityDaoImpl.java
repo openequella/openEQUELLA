@@ -314,7 +314,7 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity> extends Generi
 	public List<T> search(String freetext, boolean allowArchived, int offset, int perPage)
 	{
 		return enumerateAll(getSearchListCallback(null,
-				new EnumerateOptions(freetext, offset, perPage, false, allowArchived)));
+				new EnumerateOptions(freetext, offset, perPage, false, allowArchived ? null : false)));
 	}
 
 	protected DefaultSearchListCallback getSearchListCallback(final ListCallback nestedCallback, final EnumerateOptions options)
@@ -323,7 +323,7 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity> extends Generi
 		final Boolean includeDisabled = options.isIncludeDisabled();
 		if (includeDisabled != null)
 		{
-			callback = new EnabledCallback(callback, includeDisabled);
+			callback = new EnabledCallback(callback, !includeDisabled);
 		}
 		if (options.getOffset() != 0 || options.getMax() != -1)
 		{

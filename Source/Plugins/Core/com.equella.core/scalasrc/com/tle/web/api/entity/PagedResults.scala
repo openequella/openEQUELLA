@@ -54,7 +54,7 @@ object PagedResults {
       if (len <= 0 || tried >= MaxEntities) (offset, vec)
       else {
         val amountToTry = if (tried == 0) len * 2 else MaxEntities - tried
-        val nextLot = res.getEntityService.query(new EnumerateOptions(q, offset, amountToTry, system, if (includeDisabled) null else true))
+        val nextLot = res.getEntityService.query(new EnumerateOptions(q, offset, amountToTry, system, if (includeDisabled) null else false))
         val nextOffset = offset + nextLot.size()
         if (nextOffset == offset)
         {
