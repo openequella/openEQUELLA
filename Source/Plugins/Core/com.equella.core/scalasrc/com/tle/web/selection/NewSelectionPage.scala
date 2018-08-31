@@ -41,11 +41,12 @@ object NewSelectionPage {
       case -1 => (_sessionId, None)
       case i => (_sessionId.substring(0, i), Some(_sessionId.substring(i+1)))
     }
-    val ss = LegacyGuice.userSessionService.getAttribute(sessionId).asInstanceOf[SelectionSession]
+    val uss = LegacyGuice.userSessionService
+    val ss = uss.getAttribute(sessionId).asInstanceOf[SelectionSession]
     req.setAttribute(RenderNewTemplate.ReactJSKey, NewSelectionPage.selectionJS)
     req.setAttribute(RenderNewTemplate.SetupJSKey,
       { oe: ObjectExpression => oe.put("selection", mapper.writeValueAsString(ss))
-        integId.flatMap(i => Option(LegacyGuice.userSessionService.getAttribute(i).asInstanceOf[IntegrationSessionData])).foreach { isd =>
+        integId.flatMap(i => Option(uss.getAttribute(i).asInstanceOf[IntegrationSessionData])).foreach { isd =>
           oe.put("integration", mapper.writeValueAsString(isd))
         }
         oe

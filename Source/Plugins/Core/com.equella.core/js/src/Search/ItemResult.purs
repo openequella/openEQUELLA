@@ -35,7 +35,15 @@ newtype DisplayField = DisplayField {name :: String, html::String}
 data SelectionType = Summary | AttachmentUUID String | Filepath String
 
 type ItemSelection = {
-    item :: Result,
+    item :: {
+        uuid::String,
+        version::Int, 
+        name :: String,
+        description :: Maybe String
+    },
+    thumbnail :: String,
+    name :: String,
+    description :: String,
     selected :: SelectionType
 }
 
@@ -94,7 +102,7 @@ itemResult = unsafeCreateLeafElement $ withStyles styles $ component "ItemResult
   let 
     string = prepLangStrings rawStrings
     render p@{classes, showDivider, onSelect, 
-        result:item@(Result {name,description,displayFields,uuid,version,attachments,modifiedDate})} =
+        result:item@(Result {name,description,displayFields,thumbnail,uuid,version,attachments,modifiedDate})} =
         let descMarkup descText = typography [] [ text descText ]
             titleLink = typography [variant TS.subheading, className classes.titleLink,
                             MUI.component "a", 
@@ -121,7 +129,9 @@ itemResult = unsafeCreateLeafElement $ withStyles styles $ component "ItemResult
                 ]
         in listItem [LI.button true, LI.divider showDivider] $ catMaybes [
             Just $ listItemText [ disableTypography true, primary titleLink, secondary itemContent ], 
-            (\ons -> listItemSecondaryAction_ [ button [onClick \_ -> ons {item, selected: Summary}] [ text "Select"] ]) <$> onSelect
+            (\ons -> listItemSecondaryAction_ [ button [
+                onClick \_ -> ons {item: {uuid, version, description, name}, thumbnail, 
+                   description: name, name, selected: Summary}] [ text "Select"] ]) <$> onSelect
         ]
         where
         metaTitle n = typography [variant TS.body1, className classes.metaLabel ] [ text n ]

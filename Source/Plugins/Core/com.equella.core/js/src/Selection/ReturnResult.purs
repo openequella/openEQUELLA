@@ -2,16 +2,26 @@ module Selection.ReturnResult where
 
 import Prelude
 
-import Data.Argonaut (Json, fromArray, stringify, (.?), (.??))
+import Data.Argonaut (Json, fromArray, jsonEmptyObject, stringify, (.?), (.??), (:=), (~>))
+import Data.Argonaut.Encode ((~>?))
 import Data.Either (Either)
 import Data.Maybe (Maybe(..), fromJust, fromMaybe)
 import Data.Tuple (Tuple(..))
+import Data.Unfoldable as U
 import Debug.Trace (traceM)
 import EQUELLA.Environment (baseUrl)
 import Effect (Effect)
+import Effect.Aff (Aff)
 import Foreign.Object (Object)
+import Global.Unsafe (unsafeEncodeURI, unsafeEncodeURIComponent)
+import Network.HTTP.Affjax as Ajax
+import Network.HTTP.Affjax.Request as Req
+import Network.HTTP.Affjax.Response as Resp
 import Partial.Unsafe (unsafeCrashWith, unsafePartial)
+import QueryString (queryString)
+import React.DOM.Dynamic (a, base)
 import Search.ItemResult (ItemSelection, Result(..), SelectionType(..))
+import Selection.Route (SessionParams(..))
 import Text.Parsing.Indent ((<-/>))
 import Unsafe.Coerce (unsafeCoerce)
 import Web.DOM.Document (createElement)
@@ -57,40 +67,54 @@ decodeReturnData s o = do
   returnprefix <- o .?? "prefix"
   pure {returnurl, cancelurl, cancelDisabled, forcePost, returnprefix}
 
-selectionNameDesc :: SelectionType -> Result -> {name::String, description::String, thumbnail::String}
-selectionNameDesc = case _ of 
-  Summary -> \(Result i@{name,thumbnail}) -> {name,description: fromMaybe "" i.description, thumbnail}
-  _ -> unsafeCrashWith "Unimplemented"
+urlForSelection:: ItemSelection -> String 
+urlForSelection {item:i, selected} = 
+  let base = baseUrl <> "integ/gen/" <> i.uuid <> "/" <> show i.version <> "/"
+  in case selected of 
+    AttachmentUUID attuuid -> base <> "?attachment.uuid=" <> unsafeEncodeURI attuuid 
+    Summary -> base
+    Filepath fp -> baseUrl <> unsafeEncodeURIComponent fp
 
-selectionToJson :: String -> ItemSelection -> Json
-selectionToJson folder {item:item@Result i, selected} = 
-  let {name,description,thumbnail} = selectionNameDesc selected item
-  in unsafeCoerce {
-      url: baseUrl <> "integ/gen/" <> i.uuid <> "/" <> show i.version <> "/",
-      uuid: i.uuid, 
-      name, 
-      description,
-      thumbnail,
-      folder,
-      version: i.version,
-      itemName: i.name, 
-      itemDescription: i.description
-  }
-
-executeReturn :: ReturnData -> Array (Tuple String (Array ItemSelection)) -> Effect Unit 
-executeReturn rd@{returnurl:Just returnurl} sel = unsafePartial $ do 
-  let prefix = fromMaybe "" rd.returnprefix
+callReturn :: SessionParams -> Effect Unit
+callReturn (Session sessid integid) = unsafePartial do 
   doc <- window >>= document
   let hdoc = HTMLDoc.toDocument doc
   bodyElem <- fromJust <$> (body doc)
   formElem <- fromJust <$> Form.fromElement <$> (createElement "form" hdoc)
-  _ <- setAction returnurl formElem
+  let formUrl = baseUrl <> "api/selection/" <> unsafeEncodeURIComponent sessid <> "/return?" <>
+                  (queryString $ U.fromMaybe $ (Tuple "integid" <$> integid))
+  _ <- setAction formUrl formElem
   _ <- setMethod "POST" formElem
   _ <- appendChild (Form.toNode formElem) (Elem.toNode bodyElem) 
-  linkField <- fromJust <$> Input.fromElement <$> createElement "input" hdoc
-  Input.setName (prefix <> "links") linkField 
-  Input.setType "hidden" linkField
-  Input.setValue (stringify $ fromArray $ (\(Tuple folder m) -> selectionToJson folder <$> m) =<< sel) linkField
-  _ <- appendChild (Input.toNode linkField) (Form.toNode formElem) 
   submit formElem
-executeReturn _ _ = pure unit
+
+-- case class SelectionKey(uuid: String, version: Int, `type`: String,
+--                         attachmentUuid: Option[String], folderId: Option[String], url: Option[String])
+
+-- case class ResourceSelection(key: SelectionKey, title: String)  
+
+encodeSelectionKey :: String -> ItemSelection -> Json 
+encodeSelectionKey folderId {item,selected} = 
+     "uuid" := item.uuid 
+  ~> "version" := item.version
+  ~> "type" := (case selected of 
+    Summary -> "p"
+    AttachmentUUID a -> "a"
+    Filepath fp -> "p")
+  ~> (case selected of 
+    AttachmentUUID a -> Just $ "attachmentUuid" := a
+    _ -> Nothing)
+  ~>? "folderId" := folderId
+  ~> jsonEmptyObject
+
+encodeSelection :: String -> ItemSelection -> Json
+encodeSelection folderId is@{name} = 
+     "key" := encodeSelectionKey folderId is 
+  ~> "title" := name
+  ~> jsonEmptyObject
+
+addSelection :: SessionParams -> String -> ItemSelection -> Aff Unit
+addSelection (Session sessid _) folderId s = do 
+  let addUrl = baseUrl <> "api/selection/" <> unsafeEncodeURIComponent sessid <> "/add"
+  _ <- Ajax.post (Resp.string) addUrl (Req.json $ encodeSelection folderId s)
+  pure unit

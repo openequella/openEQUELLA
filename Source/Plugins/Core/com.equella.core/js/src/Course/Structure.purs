@@ -1,38 +1,46 @@
 module Course.Structure where 
 
-import Prelude
+import Prelude hiding (div)
 
 import Control.Alt ((<|>))
 import Control.MonadZero (guard)
 import Data.Argonaut (Json, decodeJson, (.?), (.??))
+import Data.Array (head, mapWithIndex)
 import Data.Either (Either)
 import Data.Map (Map, lookup)
-import Data.Maybe (fromMaybe, maybe)
+import Data.Maybe (Maybe, fromMaybe, maybe)
+import Data.Newtype (class Newtype, unwrap)
 import Data.String (joinWith)
-import Data.Traversable (traverse)
+import Data.Traversable (find, traverse)
+import Debug.Trace (spy)
 import Dispatcher.React (propsRenderer)
 import Effect (Effect)
 import Foreign.Object (Object)
 import MaterialUI.Icon (icon, icon_)
-import MaterialUI.List (list)
-import MaterialUI.ListItem (button, listItem)
+import MaterialUI.List (disablePadding, list)
+import MaterialUI.ListItem (button, disableGutters, listItem)
 import MaterialUI.ListItemIcon (listItemIcon, listItemIcon_)
 import MaterialUI.ListItemText (listItemText, primary)
-import MaterialUI.Properties (className, onClick)
+import MaterialUI.Properties (className, mkProp, onClick, variant)
 import MaterialUI.Styles (withStyles)
+import MaterialUI.TextStyle (title)
+import MaterialUI.Typography (typography)
 import React (ReactElement, component, unsafeCreateLeafElement)
-import React.DOM (text)
+import React.DOM (div, text)
+import React.DOM.Dynamic (div')
+import React.DOM.Props (key)
 import Search.ItemResult (ItemSelection, Result(..))
 
-type BasicNode r = (
+newtype CourseNode = CourseNode {
     id::String, 
     name::String, 
     targetable::Boolean, 
-    folders::Array CourseNode
-    | r
-)
-newtype CourseNode = CourseNode (Record (BasicNode (defaultFolder::Boolean)))
-newtype CourseStructure = CourseStructure (Record (BasicNode ()))
+    folders::Array CourseNode,
+    defaultFolder :: Boolean
+}
+derive instance ntCN :: Newtype CourseNode _ 
+
+type CourseStructure = {name::String, folders :: Array CourseNode}
 
 type CourseStructureProps = {
     structure :: CourseStructure, 
@@ -44,10 +52,10 @@ type CourseStructureProps = {
 courseStructure :: CourseStructureProps -> ReactElement
 courseStructure = unsafeCreateLeafElement $ withStyles styles $ component "CourseStructure" $ \this -> do 
   let
-    render {classes, selections, selectedFolder, onSelectFolder, structure: CourseStructure cs} = let 
-      selectionsFor {item:Result {name}, selected} = listItem [] [listItemText [ primary name ]]
-      nodeList :: forall r. {|BasicNode r} -> Array ReactElement
-      nodeList {name,id,folders} = [ 
+    render {classes, selections, selectedFolder, onSelectFolder, structure: cs} = let 
+      selectionsFor i {description, selected} = listItem [mkProp "key" $ i] [listItemText [ primary description ]]
+      nodeList :: CourseNode -> Array ReactElement
+      nodeList (CourseNode {name,id,folders}) = [ 
           listItem [
             button true, 
             className $ joinWith " " $ guard (selectedFolder == id) *> [classes.selected],
@@ -56,8 +64,11 @@ courseStructure = unsafeCreateLeafElement $ withStyles styles $ component "Cours
               listItemIcon_ [ icon_ [ text "folder" ] ],
               listItemText [ primary name ]
           ]
-      ] <> (maybe [] (map selectionsFor) $ lookup id selections) <> (bind folders \(CourseNode cn) -> nodeList cn)
-      in list [] $ nodeList cs
+      ] <> (maybe [] (mapWithIndex selectionsFor) $ lookup id selections) <> (folders >>= nodeList)
+      in div [key "courses"] [ 
+          typography [variant title]  [text cs.name],
+          list [disablePadding true] $ cs.folders >>= nodeList
+      ]
   pure {render: propsRenderer render this}
   where
     styles theme = {
@@ -66,24 +77,26 @@ courseStructure = unsafeCreateLeafElement $ withStyles styles $ component "Cours
         }
     }
 
+
+
+findDefaultFolder :: CourseStructure -> Maybe String
+findDefaultFolder {folders} = (unwrap >>> _.id) <$> (find isDefault folders <|> head folders)
+  where 
+  isDefault (CourseNode {defaultFolder}) = defaultFolder
+
 decodeCourseNode :: Json -> Either String CourseNode
 decodeCourseNode v = do 
     o <- decodeJson v
     defaultFolder <- fromMaybe false <$> (o .?? "defaultFolder")
-    {id,name,targetable,folders} <- decodeBasicNode o
-    pure $ CourseNode {id,name,targetable,folders,defaultFolder}
-
-
-decodeBasicNode :: Object Json -> Either String {|BasicNode ()}
-decodeBasicNode o = do 
     id <- ((show :: Number -> String) <$> o .? "id") <|> o .? "id"
     name <- o .? "name"
     targetable <- fromMaybe false <$> o .?? "targetable"
     folders <- o .? "folders" >>= traverse decodeCourseNode  
-    pure {id,name,targetable,folders}
+    pure $ CourseNode {id,name,targetable,folders,defaultFolder}
 
 decodeStructure :: Json -> Either String CourseStructure
 decodeStructure v = do 
     o <- decodeJson v
-    {id,name,targetable,folders} <- decodeBasicNode o
-    pure $ CourseStructure {id,name,targetable,folders}
+    folders <- o .? "folders" >>= traverse decodeCourseNode  
+    name <- o .? "name"
+    pure $ {name,folders}

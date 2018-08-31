@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import com.tle.web.navigation.MenuService;
+import com.tle.web.sections.render.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -70,13 +71,7 @@ import com.tle.web.sections.jquery.libraries.JQueryDraggable;
 import com.tle.web.sections.jquery.libraries.JQueryResizable;
 import com.tle.web.sections.jquery.libraries.JQueryTimer;
 import com.tle.web.sections.js.generic.function.IncludeFile;
-import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.CssInclude.Priority;
-import com.tle.web.sections.render.FallbackTemplateResult;
-import com.tle.web.sections.render.HtmlRenderer;
-import com.tle.web.sections.render.SectionRenderable;
-import com.tle.web.sections.render.TemplateResult;
-import com.tle.web.sections.render.TemplateResultCollector;
 import com.tle.web.template.Decorations.MenuMode;
 import com.tle.web.template.section.HeaderSection;
 import com.tle.web.template.section.HtmlStyleClass;
@@ -223,7 +218,8 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 			formTag.setAction(new InfoFormAction(new InfoBookmark(context, bookmarkEvent)));
 		}
 
-		model.setForm(formTag);
+
+		model.setForm(Decorations.getDecorations(context).isExcludeForm() ? new ContentOnlyRenderable() : formTag);
 		model.setBody(bodyTag);
 	}
 
@@ -399,7 +395,7 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 		private TemplateResult template;
 		private Decorations decorations;
 		private String htmlAttrs = "";
-		private FormTag form;
+		private SectionRenderable form;
 		private BodyTag body;
 		// Do not ever change
 		@Bookmarked(name = "hn", contexts = BookmarkEvent.CONTEXT_SESSION)
@@ -410,12 +406,12 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 		private String lang;
 		private boolean rightToLeft;
 
-		public FormTag getForm()
+		public SectionRenderable getForm()
 		{
 			return form;
 		}
 
-		public void setForm(FormTag form)
+		public void setForm(SectionRenderable form)
 		{
 			this.form = form;
 		}

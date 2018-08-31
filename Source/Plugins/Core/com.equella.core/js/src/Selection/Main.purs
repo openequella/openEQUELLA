@@ -2,14 +2,16 @@ module Selection.Main where
 
 import Prelude
 
-import Course.Structure (CourseStructure(..), courseStructure, decodeStructure)
+import Control.Monad.Trans.Class (lift)
+import Course.Structure (CourseStructure, courseStructure, decodeStructure, findDefaultFolder)
 import Data.Argonaut (Json, decodeJson, jsonParser, (.??))
 import Data.Either (Either, either)
 import Data.Lens (over)
 import Data.Lens.At (at)
 import Data.Lens.Record (prop)
 import Data.Map (Map, empty)
-import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Map as Map
+import Data.Maybe (Maybe(..), fromJust, fromMaybe, maybe)
 import Data.Nullable (Nullable, toMaybe)
 import Data.String (Pattern(..), stripPrefix)
 import Data.Symbol (SProxy(..))
@@ -18,26 +20,32 @@ import Data.Tuple (Tuple(..))
 import Debug.Trace (traceM)
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer)
-import EQUELLA.Environment (basePath, startHearbeat)
+import EQUELLA.Environment (basePath, baseUrl, startHearbeat)
 import Effect (Effect)
 import Effect.Class (liftEffect)
 import Effect.Exception (throw)
 import Effect.Uncurried (mkEffectFn1)
 import Foreign.Object (Object)
+import Global.Unsafe (unsafeEncodeURIComponent)
 import ItemSummary.ViewItem (viewItem)
 import MaterialUI.AppBar (appBar, position, sticky)
+import MaterialUI.Button (button)
 import MaterialUI.CircularProgress (inherit)
-import MaterialUI.Properties (color, variant)
+import MaterialUI.Properties (color, onClick, variant)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.TextStyle (headline)
 import MaterialUI.Toolbar (toolbar)
 import MaterialUI.Typography (typography)
-import Partial.Unsafe (unsafeCrashWith)
+import Network.HTTP.Affjax as Ajax
+import Network.HTTP.Affjax.Response as Resp
+import Partial.Unsafe (unsafeCrashWith, unsafePartial)
 import Polyfills (polyfill)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React as R
 import React.DOM (text)
+import React.DOM as RD
 import React.DOM.Dynamic (div')
+import React.DOM.Props (key)
 import Routes (globalNav)
 import Routing.PushState (matchesWith)
 import Search.ItemResult (ItemSelection, Result(..), itemResultOptions)
@@ -48,10 +56,13 @@ import Search.SearchControl (Placement(..), SearchControl)
 import Search.SearchLayout (searchLayout)
 import Search.WithinLastControl (withinLastControl)
 import SearchPage (searchStrings)
-import Selection.ReturnResult (ReturnData, decodeReturnData)
-import Selection.Route (SelectionPage(..), SelectionRoute(..), matchSelection, selectionClicker, withPage)
+import Selection.ReturnResult (ReturnData, addSelection, callReturn, decodeReturnData)
+import Selection.Route (SelectionPage(..), SelectionRoute(..), SessionParams(..), matchSelection, selectionClicker, withPage)
 import Template (renderMain, rootTag)
 import UIComp.DualPane (dualPane)
+import Web.HTML (window)
+import Web.HTML.Location (pathname)
+import Web.HTML.Window (location)
 
 foreign import selectionJson :: {selection::String, integration::Nullable String}
 
@@ -95,7 +106,7 @@ type State = {
   title :: Maybe String
 }
 
-selectSearch :: {selection::SelectionData} -> ReactElement
+selectSearch :: {sessionParams :: SessionParams, selection::SelectionData} -> ReactElement
 selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSearch" $ \this -> do 
   oc <- ownerControl
   -- fc <- facetControl $ FacetSetting {name:"Name", path:"/item/name"}
@@ -103,11 +114,16 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
     d = eval >>> affAction this
     _selections = prop (SProxy :: SProxy "selections")
 
-    blankStructure = CourseStructure {id:"", name: "Selections", targetable:true, folders:[]}
+    blankStructure = {name: "Selections", folders:[]}
 
-    renderStructure selection {selectedFolder, selections} = courseStructure $ {selectedFolder, 
-            selections, 
-            onSelectFolder: d <<< SelectFolder, structure: fromMaybe blankStructure selection.courseData.structure}
+    renderStructure selection {selectedFolder, selections} = RD.div [key "courseStructure"] [ 
+      courseStructure $ {
+        selectedFolder, 
+        selections,  
+        onSelectFolder: d <<< SelectFolder, 
+        structure: fromMaybe blankStructure selection.courseData.structure}, 
+      button [ onClick $ \_ -> d ReturnSelections] [ text "Return" ]
+    ]
 
     courseControl :: SearchControl
     courseControl {} = do 
@@ -127,12 +143,12 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
     render {props:{classes,selection}, state:{title, route: Just (Route params r), selectedFolder,selections}} = case r of 
       Search ->
         let renderTemplate {queryBar,content} = rootTag classes.root [ 
-          appBar [position sticky] [
+          appBar [position sticky] [ 
             toolbar [] [
               queryBar
             ]
           ],
-          content 
+          content
         ]
         in searchLayout {searchControls, strings: searchStrings, renderTemplate}
       ViewItem uuid version -> rootTag classes.root [ 
@@ -144,7 +160,8 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
           dualPane {
             left: [viewItem {uuid,version, 
                 titleUpdate: mkEffectFn1 $ d <<< UpdateTitle, 
-                onError: mkEffectFn1 traceM}], 
+                onError: mkEffectFn1 traceM,
+                onSelect: Just $ d <<< SelectionMade }],  
             right:[
               renderStructure selection {selectedFolder, selections}
             ]
@@ -155,20 +172,31 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
     eval = case _ of 
       UpdateTitle t -> modifyState _ {title = Just t}
       SelectFolder f -> modifyState _ {selectedFolder = f}
-      SelectionMade sel -> let 
-        addToFolder (Just f) = Just $ (f <> [sel])
-        addToFolder Nothing = Just [sel]
-        in modifyState $ \s@{selectedFolder} -> over (_selections <<< at selectedFolder) addToFolder s
+      SelectionMade sel -> do 
+        let 
+          addToFolder (Just f) = Just $ (f <> [sel])
+          addToFolder Nothing = Just [sel]
+        {selectedFolder} <- getState
+        modifyState $over (_selections <<< at selectedFolder) addToFolder
+        {sessionParams} <- getProps
+        lift $ addSelection sessionParams selectedFolder sel
+
       ReturnSelections -> do
-        {selections} <- getState 
-        {selection} <- getProps
-        pure unit
-        -- liftEffect $ executeReturn selection.returnData (Map.toUnfoldable selections)
-      Init -> liftEffect $ do
-        bp <- either (throw <<< show) pure basePath
-        let baseStripped p = fromMaybe p $ stripPrefix (Pattern $ bp) p
-        void $ matchesWith (matchSelection <<< baseStripped) (\_ -> affAction this <<< eval <<< ChangeRoute) globalNav
+        {sessionParams} <- getProps
+        liftEffect $ callReturn sessionParams
+      Init -> do 
+        selectDefaultFolder
+        liftEffect $ do
+          bp <- either (throw <<< show) pure basePath
+          let baseStripped p = fromMaybe p $ stripPrefix (Pattern $ bp) p
+          void $ matchesWith (matchSelection <<< baseStripped) (\_ -> affAction this <<< eval <<< ChangeRoute) globalNav
       ChangeRoute r -> modifyState _ {route=Just r}
+
+    selectDefaultFolder = do 
+      {selection} <- getProps 
+      case selection of 
+        {courseData:{structure: Just s}} | Just defaultFolder <- findDefaultFolder s -> eval $ SelectFolder defaultFolder 
+        _ -> pure unit 
 
   pure {render: renderer render this, 
         state: { 
@@ -187,8 +215,13 @@ main :: Effect Unit
 main = do
   polyfill
   startHearbeat
+  bp <- either (throw <<< show) pure basePath
+  loc <- window >>= location
+  pagePath <- pathname loc
+  let baseStripped p = fromMaybe p $ stripPrefix (Pattern $ bp) p
+      (Route sp _) = unsafePartial $ fromJust $ matchSelection (baseStripped pagePath)
   let decoded = do 
         sjs <- jsonParser selectionJson.selection
         ijs <- traverse jsonParser (toMaybe selectionJson.integration)
         decodeSelection sjs ijs
-  either unsafeCrashWith (\s -> renderMain $ selectSearch {selection:s}) decoded
+  either unsafeCrashWith (\s -> renderMain $ selectSearch {selection:s, sessionParams: sp}) decoded

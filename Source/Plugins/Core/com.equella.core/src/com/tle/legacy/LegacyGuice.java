@@ -223,6 +223,12 @@ public class LegacyGuice extends AbstractModule {
     @Inject
     public static ViewItemService viewItemService;
 
+    @Inject
+    public static Provider<IntegrationService> integrationService;
+
+    @Inject
+    public static Provider<SelectionService> selectionService;
+
     @Override
     protected void configure()
     {

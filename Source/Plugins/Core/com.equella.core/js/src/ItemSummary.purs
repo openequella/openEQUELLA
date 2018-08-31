@@ -28,12 +28,21 @@ type AttachmentView = {
   details :: Array MetaDisplay
 }
 
+type ItemComment = {
+  id :: Int,
+  comment :: String, 
+  rating :: Number, 
+  date :: String,
+  anonymous :: Boolean,
+  userText :: String
+}
+
 data ItemSummarySection = 
       BasicDetails {title::String, description::Maybe String} 
     | DisplayNodes {sectionTitle::String, meta::Array MetaDisplay}
     | Attachments {sectionTitle::String, attachments::Array AttachmentNode}
     | HtmlSummarySection {sectionTitle::String, html::String}
-    | CommentsSummarySection {sectionTitle::String }
+    | CommentsSummarySection {sectionTitle::String, comments :: Array ItemComment }
 
 type ItemSummary = {
   title :: String,
@@ -91,10 +100,21 @@ decodeHtmlSection o = do
   html <- o .? "html"
   pure $ HtmlSummarySection {sectionTitle,html}
 
+decodeComment :: Object Json -> Either String ItemComment 
+decodeComment o = do 
+  id <- o .? "id"
+  anonymous <- o .? "anonymous"
+  comment <- o .? "comment"
+  rating <- o .? "rating"
+  date <- o .? "date"
+  userText <- o .? "userText"
+  pure {id,comment,rating,date,userText,anonymous}
+
 decodeCommentsSection :: Object Json -> Either String ItemSummarySection
 decodeCommentsSection o = do 
   sectionTitle <- o .? "sectionTitle"
-  pure $ CommentsSummarySection {sectionTitle}
+  comments <- o .? "comments"  >>= traverse decodeComment
+  pure $ CommentsSummarySection {sectionTitle,comments}
 
 decodeSection :: Json -> Either String ItemSummarySection
 decodeSection v = do 
