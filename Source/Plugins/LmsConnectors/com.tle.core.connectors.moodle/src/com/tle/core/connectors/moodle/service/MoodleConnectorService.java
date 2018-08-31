@@ -37,6 +37,18 @@ import java.util.Map.Entry;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.tle.beans.item.attachments.AttachmentType;
+import com.tle.beans.item.attachments.FileAttachment;
+import com.tle.core.plugins.AbstractPluginService;
+import com.tle.core.plugins.PluginService;
+import com.tle.core.plugins.impl.PluginServiceImpl;
+import com.tle.web.sections.SectionInfo;
+import com.tle.web.sections.SectionsController;
+import com.tle.web.selection.SelectedResourceKey;
+import com.tle.web.viewable.ViewableItem;
+import com.tle.web.viewable.ViewableItemResolver;
+import com.tle.web.viewurl.ViewableResource;
+import com.tle.web.viewurl.attachments.AttachmentResourceService;
 import org.apache.log4j.Logger;
 import org.ccil.cowan.tagsoup.Parser;
 import org.w3c.dom.Node;
@@ -91,6 +103,14 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
 	private HttpService httpService;
 	@Inject
 	private ConfigurationService configService;
+	@Inject
+	private AttachmentResourceService attachmentResourceService;
+	@Inject
+	private ViewableItemResolver viewableItemResolver;
+	@Inject
+	private SectionsController sectionsController;
+
+	private static String KEY_PFX = AbstractPluginService.getMyPluginId(MoodleConnectorService.class)+".";
 
 	@Override
 	public boolean isRequiresAuthentication(Connector connector)
@@ -126,6 +146,23 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
 		param(data, "description", lmsLink.getDescription());
 		final IAttachment attachment = lmsLinkInfo.getResourceAttachment();
 		param(data, "attachmentUuid", attachment == null ? "" : attachment.getUuid());
+		if (attachment != null)
+		{
+			final SelectedResourceKey key = selectedResource.getKey();
+			// FIXME: shouldn't NEED an info. this is just DODGE-O-RAMA
+			final SectionInfo info = sectionsController.createForward("/viewitem/viewitem.do");
+			final ViewableItem<?> viewableItem = viewableItemResolver.createViewableItem(item, key.getExtensionType());
+			final ViewableResource viewableResource = attachmentResourceService.getViewableResource(info, viewableItem,
+					attachment);
+			param(data, "mimetype", viewableResource.getMimeType());
+
+			if( attachment.getAttachmentType() == AttachmentType.FILE )
+			{
+				FileAttachment fileAttachment = (FileAttachment) attachment;
+				//param(data, "filesize", String.valueOf(fileAttachment.getSize()));
+				param(data, "filename", fileAttachment.getFilename());
+			}
+		}
 
 		ConnectorCourse course = null;
 		ConnectorFolder folder = null;
