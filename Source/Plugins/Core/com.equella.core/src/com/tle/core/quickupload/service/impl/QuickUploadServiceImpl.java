@@ -128,23 +128,6 @@ public class QuickUploadServiceImpl implements QuickUploadService
 				{
 					PropBagEx root = new PropBagEx("<xml/>");
 
-					if (params.containsKey("item/title"))
-					{
-						String itemNamePath = collection.getSchema().getItemNamePath();
-						for (String v : params.get("item/title"))
-						{
-							root.setNode(itemNamePath, v);
-						}
-					}
-					if (params.containsKey("item/description"))
-					{
-						String itemDescriptionPath = collection.getSchema().getItemDescriptionPath();
-						for (String v : params.get("item/description"))
-						{
-							root.setNode(itemDescriptionPath, v);
-						}
-					}
-
 					List<WorkflowOperation> ops = new ArrayList<WorkflowOperation>();
 					FileAttachment fa = new FileAttachment();
 					fa.setFilename(filename);
@@ -154,6 +137,22 @@ public class QuickUploadServiceImpl implements QuickUploadService
 
 					if( !Check.isEmpty(params) )
 					{
+						if (params.containsKey("item/title"))
+						{
+							String itemNamePath = collection.getSchema().getItemNamePath();
+							for (String v : params.get("item/title"))
+							{
+								root.setNode(itemNamePath, v);
+							}
+						}
+						if (params.containsKey("item/description"))
+						{
+							String itemDescriptionPath = collection.getSchema().getItemDescriptionPath();
+							for (String v : params.get("item/description"))
+							{
+								root.setNode(itemDescriptionPath, v);
+							}
+						}
 						for( Map.Entry<String, List<String>> entry : params.entrySet() )
 						{
 							String name = entry.getKey();
