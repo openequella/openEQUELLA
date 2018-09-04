@@ -155,8 +155,8 @@ object WebFileUploads {
     else StandardFileCreate.fileAttachmentFromUpload(v.s, ctx.controlSettings.isSuppressThumbnails)
   }
 
-  def uniqueName(filename: String, id: UUID, ctx: ControlContext): String = {
-    val rootNames = ctx.stagingContext.listRootFilenames()
+  def uniqueName(filename: String, replacing: Option[String], id: UUID, ctx: ControlContext): String = {
+    val rootNames = ctx.stagingContext.listRootFilenames() -- replacing.map(_.toLowerCase())
     val p = PathUtils.fileParts(filename)
 
     @tailrec
@@ -169,11 +169,6 @@ object WebFileUploads {
     }
 
     registerName((p.getFirst, if (p.getSecond.isEmpty) "" else "."+p.getSecond), 1)
-  }
-
-  def initUpload(filename: String, id: UUID, ctx: ControlContext): CurrentUpload = {
-    val actualName = uniqueName(filename, id, ctx)
-    ctx.state.initialiseUpload(id, actualName, actualName)
   }
 
   def errorMessage(allUploads: Iterable[CurrentUpload]): Option[Label] = {
