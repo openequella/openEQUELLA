@@ -59,7 +59,7 @@ class QtiPackageAttachmentHandlerNew extends PackageAttachmentExtension {
       stg.setPackageFolder(pkgFolder)
       stg.deregisterFilename(upload.id)
       qti
-    }, (a,stg) => delete(ctx, a).deleteFiles(stg))
+    }, (a,stg) => a, (a,stg) => delete(ctx, a).deleteFiles(stg))
   }
 
   def handles(a: Attachment) : Boolean = a match {

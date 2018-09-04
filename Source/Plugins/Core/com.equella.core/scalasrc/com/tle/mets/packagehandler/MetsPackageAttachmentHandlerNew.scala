@@ -53,7 +53,7 @@ class MetsPackageAttachmentHandlerNew extends PackageAttachmentExtension {
       stg.setPackageFolder(pkgFolder)
       ma.setUrl(destFile)
       ma
-    }, (a, stg) => delete(ctx, a).deleteFiles(stg)
+    }, (a,stg) => a, (a, stg) => delete(ctx, a).deleteFiles(stg)
     )
   }
 

@@ -596,6 +596,10 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
 
 		File from = getFile(handle, filename);
 		File to = getFile(handle, newname);
+		if (LOGGER.isDebugEnabled())
+		{
+			LOGGER.debug("rename: from "+from+" to "+to);
+		}
 		return FileSystemHelper.renameOnly(from, to);
 	}
 
@@ -606,6 +610,10 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
 
 		File from = getFile(handle, filename);
 		File to = getFile(newHandle, newname);
+		if (LOGGER.isDebugEnabled())
+		{
+			LOGGER.debug("move: from "+from+" to "+to);
+		}
 		return FileSystemHelper.rename(from, to, false);
 	}
 
@@ -637,7 +645,10 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
 		{
 			ensureNotBanned(newname);
 		}
-
+		if (LOGGER.isDebugEnabled())
+		{
+			LOGGER.debug("copy: from "+from+" to "+to);
+		}
 		return new FileInfo(doCopy(from, to, false), to.getName());
 	}
 

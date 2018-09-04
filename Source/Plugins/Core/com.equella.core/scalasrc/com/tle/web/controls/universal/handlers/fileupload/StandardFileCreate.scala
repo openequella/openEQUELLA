@@ -16,23 +16,33 @@
 
 package com.tle.web.controls.universal.handlers.fileupload
 
-import com.tle.beans.item.attachments.FileAttachment
+import com.tle.beans.item.attachments.{Attachment, FileAttachment}
+import com.tle.web.controls.universal.StagingContext
 
 object StandardFileCreate {
 
-  def fileAttachmentFromUpload(uploaded: SuccessfulUpload, suppressThumb: Boolean): AttachmentCreate =
-    AttachmentCreate({ stg =>
-      stg.moveFile(uploaded.uploadPath, uploaded.originalFilename)
-      stg.deregisterFilename(uploaded.id)
+  def fileAttachmentFromUpload(uploaded: SuccessfulUpload, suppressThumb: Boolean): AttachmentCreate = {
+    def createStaged(stg: StagingContext) = {
       val fa = new FileAttachment
-      fa.setFilename(uploaded.originalFilename)
+      fa.setFilename(uploaded.uploadPath)
       fa.setDescription(uploaded.description)
       fa.setMd5sum(uploaded.fileInfo.getMd5CheckSum)
       fa.setSize(uploaded.fileInfo.getLength)
-      fa.setThumbnail(if (suppressThumb) WebFileUploads.SUPPRESS_THUMB_VALUE else stg.thumbRequest(uploaded.originalFilename))
       stg.gatherAdditionalMetadata(uploaded.originalFilename).foreach { a =>
         fa.setData(a._1, a._2)
       }
       fa
-    }, (_,stg) => stg.delete(uploaded.originalFilename))
+    }
+
+    def commit(a: Attachment, stg: StagingContext): Attachment = a match {
+      case fa: FileAttachment =>
+        stg.moveFile(uploaded.uploadPath, uploaded.originalFilename)
+        fa.setFilename(uploaded.originalFilename)
+        fa.setThumbnail(if (suppressThumb) WebFileUploads.SUPPRESS_THUMB_VALUE else stg.thumbRequest(uploaded.originalFilename))
+        stg.deregisterFilename(uploaded.id)
+        fa
+    }
+
+    AttachmentCreate(createStaged, commit, (_, stg) => stg.delete(uploaded.uploadPath))
+  }
 }
