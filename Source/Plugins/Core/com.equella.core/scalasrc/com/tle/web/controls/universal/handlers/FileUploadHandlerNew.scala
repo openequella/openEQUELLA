@@ -234,6 +234,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
       if (WebFileUploads.isPackageAttachment(a)) packageEditDetails else fileEditDetails
 
     case class DetailsEditState(a: Attachment, page: DetailsPage,
+                                commitFiles: (Attachment, StagingContext) => Attachment,
                                 cleanupFiles: (Attachment, StagingContext) => Unit,
                                 zipAttachment: Boolean, editingArea: Option[StagingFile] = None,
                                 commitUnzipPaths: Option[(String, String)] = None, zipProgress: Option[ZipProgress] = None) {
@@ -247,7 +248,9 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
         case (za: ZipAttachment, false) =>
           stagingContext.delete(za.getUrl)
           stagingContext.moveFile(WebFileUploads.zipPath(za.getUrl), za.getUrl)
-        case _ => commitUnzipPaths.foreach(p => stagingContext.delete(p._1))
+        case (a, _) =>
+          commitFiles(a, stagingContext)
+          commitUnzipPaths.foreach(p => stagingContext.delete(p._1))
       }
 
 
@@ -343,10 +346,10 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
     def resolvedType(info: SectionInfo, vu: ValidatedUpload): Unit = {
       getModel(info).resolved = true
       val creator = WebFileUploads.attachmentCreatorForUpload(info, this, vu)
-      val a = creator.create(stagingContext)
+      val a = creator.createStaged(stagingContext)
       val ed = detailsEditorForAttachment(a)
       state.remove(vu.id)
-      setEditState(DetailsEditState(a, ed, creator.cancel, false))
+      setEditState(DetailsEditState(a, ed, creator.commit, creator.cancel, false))
       ed.prepareUI(info)
     }
 
@@ -360,7 +363,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
     def loadForEdit(info: SectionInfo, attachment: Attachment): Unit = {
       val page = detailsEditorForAttachment(attachment)
-      setEditState(DetailsEditState(attachment, page, (_, _) => (), WebFileUploads.zipAttachment(attachment).isDefined))
+      setEditState(DetailsEditState(attachment, page, (a, _) => a, (_, _) => (), WebFileUploads.zipAttachment(attachment).isDefined))
       page.prepareUI(info)
     }
 
@@ -404,10 +407,11 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
       else {
         allValidatedUploads.zipWithIndex.foreach { case (vu,i) =>
           val c = WebFileUploads.attachmentCreatorForUpload(info, this, vu)
-          val a = c.create(stagingContext)
+          val a = c.createStaged(stagingContext)
           val repUuid = uuid.filter(_ => i == 0)
           val u = repUuid.getOrElse(UUID.randomUUID()).toString
           a.setUuid(u)
+          c.commit(a, stagingContext)
           controlState.addAttachment(info, a)
           if (repUuid.isEmpty) {
             controlState.addMetadataUuid(info, u)
@@ -493,7 +497,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
         val files: java.util.List[FileAttachment] = new UnmodifiableAttachments(item).getList(AttachmentType.FILE)
         files.asScala.foreach { fa =>
           val u = UUID.randomUUID()
-          val fn = WebFileUploads.uniqueName(fa.getFilename, u, this)
+          val fn = WebFileUploads.uniqueName(fa.getFilename, None, u, this)
           WebFileUploads.uploadStream(u, fn, resource.getTitle, fa.getSize, mimeTypeForFilename(fn), () =>
             fileSystemService.read(itemFileService.getItemFile(item), fa.getFilename), this)
         }
@@ -614,6 +618,10 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
         }
       }
 
+      def replaceFilename = Option(dialogState.getDialog.getReplacedAttachment(info)).collect {
+        case fa: FileAttachment => fa.getFilename
+      }
+
       val response = Option(request.getParameter("uploadId")).map(UUID.fromString).map(uploadStream).getOrElse {
         val maxStream = ByteStreams.limit(request.getInputStream, 32 * 1024)
         val jsonSource = Source.fromInputStream(maxStream, "UTF-8").mkString
@@ -623,7 +631,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
             RemoveEntries(Iterable(uploadId))
           case NewUpload(filename, size) =>
             val uploadId = UUID.randomUUID()
-            val uniqueName = WebFileUploads.uniqueName(filename, uploadId, this)
+            val uniqueName = WebFileUploads.uniqueName(filename, replaceFilename, uploadId, this)
             WebFileUploads.validateBeforeUpload(mimeTypeForFilename(filename), size, controlSettings).map { reason =>
               UploadFailed( WebFileUploads.labelForIllegalReason(reason, filename).getText )
             }.getOrElse {

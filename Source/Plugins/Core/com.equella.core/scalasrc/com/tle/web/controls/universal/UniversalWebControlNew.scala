@@ -235,11 +235,12 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
                       stateAction(info) {
                         val v = ValidatedUpload(uf.success(fileInfo), detected)
                         val create = attachmentCreatorForUpload(info, this, v)
-                        val a = create.create(stagingContext)
+                        val a = create.createStaged(stagingContext)
                         val uuid = UUID.randomUUID().toString
                         a.setUuid(uuid)
                         controlState.addAttachment(info, a)
                         controlState.addMetadataUuid(info, uuid)
+                        create.commit(a, stagingContext)
                         repo.unregisterFilename(uploadId)
                         UpdateEntry(entryForAttachment(info, a, true, Iterable.empty))
                       }
@@ -264,7 +265,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
             }
           case NewUpload(filename, size) => stateAction(info) {
             val uploadId = UUID.randomUUID()
-            val uniqueName = WebFileUploads.uniqueName(filename, uploadId, this)
+            val uniqueName = WebFileUploads.uniqueName(filename, None, uploadId, this)
             WebFileUploads.validateBeforeUpload(mimeTypeForFilename(filename), size, controlSettings).map { reason =>
               UploadFailed(WebFileUploads.labelForIllegalReason(reason, filename).getText)
             }.getOrElse {

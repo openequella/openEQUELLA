@@ -110,7 +110,7 @@ object IMSPackageExtension extends PackageAttachmentExtension {
       standardPackageDetails(imsa, pkgInfo, upload)
       commitFiles(stg, pkgUnzip, upload)
       imsa
-    }, (a,stg) => deleteIMSFiles(stg, a))
+    }, (a,stg) => a, (a,stg) => deleteIMSFiles(stg, a))
   }
 
   val treatAsLabel = WebFileUploads.label("handlers.file.packageoptions.aspackage")
@@ -132,7 +132,7 @@ object ScormPackageExtension extends PackageAttachmentExtension {
       standardPackageDetails(attachment, pkgInfo, upload)
       commitFiles(stg, pkgUnzip, upload)
       attachment
-    }, (a, stg) => IMSPackageExtension.deleteIMSFiles(stg, a))
+    }, (a,stg) => a, (a, stg) => IMSPackageExtension.deleteIMSFiles(stg, a))
   }
 
   override def delete(ctx: ControlContext, a: Attachment): AttachmentDelete = AttachmentDelete(Seq(a),
