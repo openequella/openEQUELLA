@@ -193,7 +193,7 @@ object WebFileUploads {
   def deleteAttachment(ctx: ControlContext, a: Attachment): AttachmentDelete = a match {
     case fa: FileAttachment => AttachmentDelete(Iterable(fa), stg => if (!isSelectedInAZip(fa)) stg.delete(fa.getFilename))
     case za: ZipAttachment => AttachmentDelete(a +: findAttachments(ctx.repo, isSelectedInZip(za)), { stg =>
-      stg.delete(zipPath(za.getUrl))
+      stg.delete(removeZipPath(za.getUrl))
       stg.delete(za.getUrl)
     })
     case a: Attachment => PackageFileCreate.extensionForAttachment(a).get.delete(ctx, a)
