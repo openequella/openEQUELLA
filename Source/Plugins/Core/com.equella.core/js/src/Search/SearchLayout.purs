@@ -49,12 +49,13 @@ import TSComponents (appBarQuery)
 import UIComp.DualPane (dualPane)
 import Unsafe.Coerce (unsafeCoerce)
 import Web.Event.Event (EventType(..))
-import Web.Event.EventTarget (addEventListener, eventListener)
+import Web.Event.EventTarget (EventListener, addEventListener, eventListener, removeEventListener)
 import Web.Event.Internal.Types (Event)
 import Web.HTML (window)
 import Web.HTML.HTMLDocument (body)
 import Web.HTML.HTMLElement (offsetHeight)
 import Web.HTML.Window (document, innerHeight, scrollY)
+import Web.HTML.Window as Window
 
 type ItemSearchResults = SearchResults Result
 
@@ -64,7 +65,7 @@ type State = {
   query :: Query,
   searchResults :: Maybe ItemSearchResults
 }
-data Command = InitSearch | Search | QueryUpdate String
+data Command = InitSearch EventListener | Search | QueryUpdate String
   | Scrolled Event | UpdateQuery (Query -> Query)
 
 initialState :: State
@@ -147,13 +148,11 @@ searchLayout = unsafeCreateLeafElement $ withStyles styles $ R.component "Search
       either (lift <<< log) (modifySearchFlag false <<< setJust _searchResults) $ sr
 
     eval = case _ of 
-      InitSearch -> do
+      InitSearch l -> do
         searchWith identity
         liftEffect $ do 
           w <- window
-          l <- eventListener $ affAction this <<< eval <<< Scrolled
           addEventListener (EventType "scroll") l false (unsafeCoerce w)
-
       Scrolled e -> do
         shouldScroll <- liftEffect $ do 
           w <- window
@@ -167,8 +166,10 @@ searchLayout = unsafeCreateLeafElement $ withStyles styles $ R.component "Search
       Search -> searchWith identity
       QueryUpdate q -> searchWith \s -> s {query = s.query {query = q} }
       UpdateQuery f -> searchWith \s -> s {query = f s.query}
-  
-  pure {render, state:initialState, componentDidMount: d InitSearch}
+  scrollListener <- eventListener $ d <<< Scrolled  
+  pure {render, state:initialState, 
+    componentDidMount: d $ InitSearch scrollListener, 
+    componentWillUnmount: Window.toEventTarget <$> window >>= removeEventListener (EventType "scroll") scrollListener false}
   where 
   styles theme = {
     chipContainer: {

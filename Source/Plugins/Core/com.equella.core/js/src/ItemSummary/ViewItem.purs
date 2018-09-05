@@ -3,12 +3,10 @@ module ItemSummary.ViewItem where
 import Prelude hiding (div)
 
 import AjaxRequests (ErrorResponse, getJson)
-import Common.Icons (userIcon)
 import Control.Monad.Trans.Class (lift)
 import Data.Array (catMaybes)
 import Data.Either (either)
 import Data.Maybe (Maybe(..), maybe)
-import Debug.Trace (spy)
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, modifyState, renderer)
 import Effect (Effect)
@@ -16,39 +14,34 @@ import Effect.Aff (runAff_)
 import Effect.Class (liftEffect)
 import Effect.Uncurried (EffectFn1, runEffectFn1)
 import ItemSummary (AttachmentNode(..), ItemSummary, ItemSummarySection(..), decodeItemSummary)
+import ItemSummary.Api (itemApiPath)
+import ItemSummary.ItemComments (itemComments)
 import LegacyContent (updateStylesheets)
-import MaterialUI.Button (button, raised)
+import MaterialUI.Button (button)
 import MaterialUI.Color as Color
 import MaterialUI.DialogTitle (disableTypography)
-import MaterialUI.Icon (icon)
-import MaterialUI.Input (fullWidth, multiline, placeholder)
 import MaterialUI.List (disablePadding, list)
 import MaterialUI.ListItem (disableGutters, listItem)
-import MaterialUI.ListItemIcon (listItemIcon, listItemIcon_)
-import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction, listItemSecondaryAction_)
+import MaterialUI.ListItemIcon (listItemIcon_)
+import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
 import MaterialUI.ListItemText (listItemText, primary, secondary)
 import MaterialUI.Properties (className, classes_, color, mkProp, onClick, variant)
 import MaterialUI.Properties as MUI
 import MaterialUI.Styles (withStyles)
-import MaterialUI.TextField (helperText, label, rows, rowsMax, textField)
-import MaterialUI.TextStyle (body1, display1, display3, subheading, title)
+import MaterialUI.TextStyle (body1, display1, subheading, title)
 import MaterialUI.Typography (textSecondary, typography)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (div, div', img, text)
 import React.DOM.Props (dangerouslySetInnerHTML, src)
 import React.DOM.Props as DP
-import React.DOM.Props as RP
 import Search.ItemResult (ItemSelection, SelectionType(..))
 import Unsafe.Coerce (unsafeCoerce)
 
-data Command = LoadPage
+data Command = LoadPage 
 
 type State = {
   content :: Maybe ItemSummary
 }
-
-itemPath :: String -> Int -> String
-itemPath uuid version = "api/item/" <> uuid <> "/" <> show version <> "/summary"
 
 type ViewItemProps = {
   uuid :: String, 
@@ -84,30 +77,11 @@ viewItem = unsafeCreateLeafElement $ withStyles styles $ component "SelectionVie
         HtmlSummarySection {html} -> [
           div [ dangerouslySetInnerHTML {__html:html}] []
         ]
-        CommentsSummarySection {sectionTitle:st,comments} -> 
-          let renderComment c = listItem [disableGutters true] [
-            -- listItemIcon_ [ userIcon ],
-            listItemText [primary c.comment, secondary c.date ] 
-          ]
+        CommentsSummarySection {sectionTitle:st,canAdd,canDelete,anonymousOnly,allowAnonymous} -> 
+          let {uuid,version,onError} = p
           in [
-            sectionTitle st,
-        --     <TextField
-        --   id="full-width"
-        --   label="Label"
-        --   InputLabelProps={{
-        --     shrink: true,
-        --   }}
-        --   placeholder="Placeholder"
-        --   helperText="Full width!"
-        --   fullWidth
-        --   margin="normal"
-        -- />
-            textField [label "Enter comment", placeholder "Enter comment", rowsMax 3, multiline true, fullWidth true], 
-            div [RP.className classes.commentButtons] [ 
-              button [color Color.primary] [text "Cancel"],
-              button [variant raised, color Color.primary] [text "Comment"]
-            ], 
-            list [ disablePadding true ] $ renderComment <$> comments
+            sectionTitle st, 
+            itemComments {uuid,version,onError,canAdd,canDelete,anonymousOnly,allowAnonymous}
           ]
         Attachments att -> 
           let 
@@ -146,16 +120,16 @@ viewItem = unsafeCreateLeafElement $ withStyles styles $ component "SelectionVie
     render _ = div' []
  
     eval = case _ of 
-      LoadPage -> do 
+      LoadPage -> do
         {uuid,version,onError,titleUpdate} <- getProps
-        resp <- lift $ getJson decodeItemSummary (itemPath uuid version)
+        resp <- lift $ getJson (itemApiPath uuid version <> "/summary") decodeItemSummary
         let updateContent is@{title} = do 
                 liftEffect $ runEffectFn1 titleUpdate "Summary"
                 modifyState _ {content = Just is}
         either (liftEffect <<< runEffectFn1 onError) (updateContent) resp
 
   pure { render: renderer render this, 
-    state: {content:Nothing } :: State,
+    state: {content:Nothing} :: State,
     componentDidMount: d LoadPage, 
     componentWillUnmount: runAff_ (const $ pure unit) $ updateStylesheets true []
   }
@@ -169,17 +143,12 @@ viewItem = unsafeCreateLeafElement $ withStyles styles $ component "SelectionVie
     },
     detailList: {
       -- display: "flex"
-    }, 
+    },
     metaTitle: {
       paddingRight: t.spacing.unit
     }, 
     sectionTitle: {
       marginTop: t.spacing.unit,
       marginBottom: t.spacing.unit
-    }, 
-    commentButtons: {
-      marginTop: t.spacing.unit,
-      display: "flex", 
-      justifyContent: "flex-end"
     }
   }

@@ -16,16 +16,9 @@
 
 package com.tle.web.api.item
 
-import java.util
-import java.util.{List, Set}
-
 import com.dytech.devlib.PropBagEx
-import com.tle.beans.item.Comment
 import com.tle.common.Check
-import com.tle.core.i18n.CoreStrings
-import com.tle.legacy.LegacyGuice
-import com.tle.web.api.item.interfaces.beans.{CommentDisplay, CommentSummarySection, ItemSummarySection}
-import com.tle.web.api.users.UserDetails
+import com.tle.web.api.item.interfaces.beans.{CommentSummarySection, ItemSummarySection}
 import com.tle.web.viewitem.summary.section.CommentsSection.NameDisplayType
 import com.tle.web.viewurl.ItemSectionInfo
 
@@ -45,7 +38,7 @@ object CommentsDisplay {
     if (!canCreate && !canView) {
       None
     } else Some {
-      val (displayIdentity, allowAnonymous, displayUsername, whichName) = if (!Check.isEmpty(config)) {
+      val (displayIdentity, allowAnonymous, hideUsername, whichName) = if (!Check.isEmpty(config)) {
         val xml = new PropBagEx(config)
 
         def boolFlag(str: String): Boolean = {
@@ -54,34 +47,14 @@ object CommentsDisplay {
         }
         if (boolFlag("DISPLAY_IDENTITY_KEY")) {
           (true, boolFlag("ANONYMOUSLY_COMMENTS_KEY"),
-            !boolFlag("SUPPRESS_USERNAME_KEY"), NameDisplayType.valueOf(xml.getNode("DISPLAY_NAME_KEY")))
-        } else (false, false, false, NameDisplayType.BOTH)
+            boolFlag("SUPPRESS_USERNAME_KEY"), NameDisplayType.valueOf(xml.getNode("DISPLAY_NAME_KEY")))
+        } else (false, true, true, NameDisplayType.BOTH)
       }
       else {
-        (true, true, true, NameDisplayType.BOTH)
+        (true, true, false, NameDisplayType.BOTH)
       }
-      val comments = if (!canView) Iterable.empty else
-        LegacyGuice.itemCommentService.getComments(ii.getItem, null, null, -1).asScala.map {
-          c =>
-            val commenter = if (!c.isAnonymous)
-              Option(LegacyGuice.userService.getInformationForUser(c.getOwner)).map(UserDetails.apply)
-            else None
-
-            val userText = commenter.map { user =>
-              val displayString = whichName match {
-                case NameDisplayType.FIRST =>
-                  user.firstName
-                case NameDisplayType.LAST =>
-                  user.lastName
-                case _ =>
-                  user.firstName + " " + user.lastName
-              }
-              if (displayUsername) displayString + " [" + user.username + "]" else displayString
-            }.getOrElse(CoreStrings.text("comments.anonymous") )
-            CommentDisplay(c.getId, c.getComment, c.getRating, c.getDateCreated, c.isAnonymous, userText, commenter)
-        }
-
-      CommentSummarySection(sectionTitle, !displayIdentity, canView, canCreate, canDelete, comments)
+      CommentSummarySection(sectionTitle, canView, canCreate, canDelete, whichName.toString,
+        !displayIdentity, hideUsername, allowAnonymous)
     }
 
   }

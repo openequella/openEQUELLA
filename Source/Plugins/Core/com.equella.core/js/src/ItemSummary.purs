@@ -2,9 +2,9 @@ module ItemSummary where
 
 import Prelude
 
-import Data.Argonaut (Json, decodeJson, (.?), (.??))
+import Data.Argonaut (Json, decodeJson, getField, (.?), (.??))
 import Data.Either (Either(..))
-import Data.Maybe (Maybe)
+import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Traversable (traverse)
 import Foreign.Object (Object)
 
@@ -29,12 +29,12 @@ type AttachmentView = {
 }
 
 type ItemComment = {
-  id :: Int,
+  uuid :: String,
   comment :: String, 
   rating :: Number, 
   date :: String,
   anonymous :: Boolean,
-  userText :: String
+  user :: Maybe String
 }
 
 data ItemSummarySection = 
@@ -42,7 +42,8 @@ data ItemSummarySection =
     | DisplayNodes {sectionTitle::String, meta::Array MetaDisplay}
     | Attachments {sectionTitle::String, attachments::Array AttachmentNode}
     | HtmlSummarySection {sectionTitle::String, html::String}
-    | CommentsSummarySection {sectionTitle::String, comments :: Array ItemComment }
+    | CommentsSummarySection {sectionTitle::String, canAdd::Boolean, 
+          canDelete::Boolean, anonymousOnly :: Boolean, hideUsername :: Boolean, allowAnonymous :: Boolean }
 
 type ItemSummary = {
   title :: String,
@@ -100,21 +101,26 @@ decodeHtmlSection o = do
   html <- o .? "html"
   pure $ HtmlSummarySection {sectionTitle,html}
 
-decodeComment :: Object Json -> Either String ItemComment 
-decodeComment o = do 
-  id <- o .? "id"
+decodeComment :: Json -> Either String ItemComment 
+decodeComment v = do 
+  o <- decodeJson v
+  uuid <- o .? "uuid"
   anonymous <- o .? "anonymous"
-  comment <- o .? "comment"
+  comment <- o .?? "comment"
   rating <- o .? "rating"
-  date <- o .? "date"
-  userText <- o .? "userText"
-  pure {id,comment,rating,date,userText,anonymous}
+  date <- o .? "postedDate"
+  user <- o .?? "postedBy" >>= traverse (flip getField "id")
+  pure {uuid,comment: fromMaybe "" comment,rating,date,user,anonymous}
 
 decodeCommentsSection :: Object Json -> Either String ItemSummarySection
 decodeCommentsSection o = do 
   sectionTitle <- o .? "sectionTitle"
-  comments <- o .? "comments"  >>= traverse decodeComment
-  pure $ CommentsSummarySection {sectionTitle,comments}
+  canAdd <- o .? "canAdd"
+  canDelete <- o .? "canDelete"
+  anonymousOnly <- o .? "anonymousOnly"
+  hideUsername <- o .? "hideUsername"
+  allowAnonymous <- o .? "allowAnonymous"
+  pure $ CommentsSummarySection {sectionTitle,canAdd,canDelete,anonymousOnly,hideUsername,allowAnonymous}
 
 decodeSection :: Json -> Either String ItemSummarySection
 decodeSection v = do 

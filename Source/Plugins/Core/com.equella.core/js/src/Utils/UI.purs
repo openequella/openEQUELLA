@@ -8,6 +8,7 @@ import Data.Traversable (traverse)
 import Effect (Effect)
 import Effect.Ref (Ref)
 import Effect.Ref as Ref
+import Effect.Uncurried (EffectFn2, mkEffectFn2)
 import MaterialUI.PropTypes (EventHandler, toHandler)
 import MaterialUI.Properties (IProp, onChange)
 import React (ReactRef, ReactThis)
@@ -41,3 +42,6 @@ scrollWindowToTop = do
     doc <- window >>= document
     elem <- documentElement $ HTMLDoc.toDocument doc
     maybe (pure unit) (setScrollTop 0.0) elem
+
+checkChange :: forall e. (Boolean -> Effect Unit) -> EffectFn2 e Boolean Unit
+checkChange f = mkEffectFn2 \_ c -> f c

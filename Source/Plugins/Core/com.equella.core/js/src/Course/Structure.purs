@@ -17,9 +17,11 @@ import Dispatcher.React (propsRenderer)
 import Effect (Effect)
 import Foreign.Object (Object)
 import MaterialUI.Icon (icon, icon_)
+import MaterialUI.IconButton (iconButton)
 import MaterialUI.List (disablePadding, list)
 import MaterialUI.ListItem (button, disableGutters, listItem)
 import MaterialUI.ListItemIcon (listItemIcon, listItemIcon_)
+import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction, listItemSecondaryAction_)
 import MaterialUI.ListItemText (listItemText, primary)
 import MaterialUI.Properties (className, mkProp, onClick, variant)
 import MaterialUI.Styles (withStyles)
@@ -43,17 +45,24 @@ derive instance ntCN :: Newtype CourseNode _
 type CourseStructure = {name::String, folders :: Array CourseNode}
 
 type CourseStructureProps = {
-    structure :: CourseStructure, 
-    selectedFolder :: String, 
-    selections :: Map String (Array ItemSelection), 
-    onSelectFolder :: String -> Effect Unit
+  structure :: CourseStructure, 
+  selectedFolder :: String, 
+  selections :: Map String (Array ItemSelection), 
+  onSelectFolder :: String -> Effect Unit,
+  onRemove :: String -> ItemSelection -> Effect Unit
 }
 
 courseStructure :: CourseStructureProps -> ReactElement
 courseStructure = unsafeCreateLeafElement $ withStyles styles $ component "CourseStructure" $ \this -> do 
   let
-    render {classes, selections, selectedFolder, onSelectFolder, structure: cs} = let 
-      selectionsFor i {description, selected} = listItem [mkProp "key" $ i] [listItemText [ primary description ]]
+    render {classes, selections, selectedFolder, onRemove, onSelectFolder, structure: cs} = let 
+      selectionsFor folderId i is@{description, selected} = listItem [mkProp "key" $ folderId <> "_" <> show i] [
+          listItemText [ primary description ], 
+          listItemSecondaryAction_ [ 
+            iconButton [onClick \_ -> onRemove folderId is] 
+              [ icon_ [ text "delete" ] ] 
+          ]
+      ]
       nodeList :: CourseNode -> Array ReactElement
       nodeList (CourseNode {name,id,folders}) = [ 
           listItem [
@@ -64,7 +73,7 @@ courseStructure = unsafeCreateLeafElement $ withStyles styles $ component "Cours
               listItemIcon_ [ icon_ [ text "folder" ] ],
               listItemText [ primary name ]
           ]
-      ] <> (maybe [] (mapWithIndex selectionsFor) $ lookup id selections) <> (folders >>= nodeList)
+      ] <> (maybe [] (mapWithIndex $ selectionsFor id) $ lookup id selections) <> (folders >>= nodeList)
       in div [key "courses"] [ 
           typography [variant title]  [text cs.name],
           list [disablePadding true] $ cs.folders >>= nodeList

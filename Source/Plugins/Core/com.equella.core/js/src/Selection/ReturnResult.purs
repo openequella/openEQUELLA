@@ -2,28 +2,22 @@ module Selection.ReturnResult where
 
 import Prelude
 
-import Data.Argonaut (Json, fromArray, jsonEmptyObject, stringify, (.?), (.??), (:=), (~>))
+import AjaxRequests (ErrorResponse, postJson)
+import Data.Argonaut (Json, jsonEmptyObject, (.?), (.??), (:=), (~>))
 import Data.Argonaut.Encode ((~>?))
 import Data.Either (Either)
-import Data.Maybe (Maybe(..), fromJust, fromMaybe)
+import Data.Maybe (Maybe(..), fromJust)
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable as U
-import Debug.Trace (traceM)
 import EQUELLA.Environment (baseUrl)
 import Effect (Effect)
 import Effect.Aff (Aff)
 import Foreign.Object (Object)
 import Global.Unsafe (unsafeEncodeURI, unsafeEncodeURIComponent)
-import Network.HTTP.Affjax as Ajax
-import Network.HTTP.Affjax.Request as Req
-import Network.HTTP.Affjax.Response as Resp
-import Partial.Unsafe (unsafeCrashWith, unsafePartial)
+import Partial.Unsafe (unsafePartial)
 import QueryString (queryString)
-import React.DOM.Dynamic (a, base)
-import Search.ItemResult (ItemSelection, Result(..), SelectionType(..))
+import Search.ItemResult (ItemSelection, SelectionType(..))
 import Selection.Route (SessionParams(..))
-import Text.Parsing.Indent ((<-/>))
-import Unsafe.Coerce (unsafeCoerce)
 import Web.DOM.Document (createElement)
 import Web.DOM.Node (appendChild)
 import Web.HTML (window)
@@ -32,23 +26,8 @@ import Web.HTML.HTMLDocument as HTMLDoc
 import Web.HTML.HTMLElement as Elem
 import Web.HTML.HTMLFormElement (setAction, setMethod, submit)
 import Web.HTML.HTMLFormElement as Form
-import Web.HTML.HTMLInputElement as Input
 import Web.HTML.Window (document)
 
--- {"url":"http://boorah:8080/fiveo/integ/gen/4653997f-47f4-ad05-9365-2fe3dc80dc0f/1/",
--- "name":"SearchFilters - Basic Item",
--- "description":"This is a basic item owned by DoNotUse",
--- "attachmentUuid":"",
--- "folder":"0",
--- "thumbnail":"http://boorah:8080/fiveo/thumbs/4653997f-47f4-ad05-9365-2fe3dc80dc0f/1/",
--- "uuid":"4653997f-47f4-ad05-9365-2fe3dc80dc0f",
--- "version":1,
--- "datecreated":1300943344489,
--- "datemodified":1532389656919,
--- "itemName":"SearchFilters - Basic Item",
--- "itemDescription":"This is a basic item owned by DoNotUse",
--- "owner":"A User [DoNotUse]" 
--- }
 
 type ReturnData = {
   returnurl :: Maybe String,
@@ -88,11 +67,6 @@ callReturn (Session sessid integid) = unsafePartial do
   _ <- appendChild (Form.toNode formElem) (Elem.toNode bodyElem) 
   submit formElem
 
--- case class SelectionKey(uuid: String, version: Int, `type`: String,
---                         attachmentUuid: Option[String], folderId: Option[String], url: Option[String])
-
--- case class ResourceSelection(key: SelectionKey, title: String)  
-
 encodeSelectionKey :: String -> ItemSelection -> Json 
 encodeSelectionKey folderId {item,selected} = 
      "uuid" := item.uuid 
@@ -113,8 +87,12 @@ encodeSelection folderId is@{name} =
   ~> "title" := name
   ~> jsonEmptyObject
 
-addSelection :: SessionParams -> String -> ItemSelection -> Aff Unit
+addSelection :: SessionParams -> String -> ItemSelection -> Aff (Either ErrorResponse Unit)
 addSelection (Session sessid _) folderId s = do 
-  let addUrl = baseUrl <> "api/selection/" <> unsafeEncodeURIComponent sessid <> "/add"
-  _ <- Ajax.post (Resp.string) addUrl (Req.json $ encodeSelection folderId s)
-  pure unit
+  let addUrl = "api/selection/" <> unsafeEncodeURIComponent sessid <> "/add"
+  void <$> postJson addUrl (encodeSelection folderId s)
+
+removeSelection :: SessionParams -> String -> ItemSelection -> Aff (Either ErrorResponse Unit)
+removeSelection (Session sessid _) folderId s = do 
+  let remUrl = "api/selection/" <> unsafeEncodeURIComponent sessid <> "/remove"
+  void <$> postJson remUrl (encodeSelectionKey folderId s)

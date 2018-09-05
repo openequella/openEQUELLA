@@ -63,15 +63,29 @@ class SelectionApi {
                   resource: ResourceSelection): Response = {
     LegacyGuice.userSessionService.reenableSessionUse()
     val info = setupSession(sessid, None, request, response)
-    val resKey = resource.key
+    val res = new SelectedResource(toSRK(resource.key))
+    res.setTitle(resource.title)
+    selectionService.addSelectedResource(info, res, false)
+    Response.ok().build()
+  }
+
+  def toSRK(resKey: SelectionKey): SelectedResourceKey = {
     val key = new SelectedResourceKey(new ItemId(resKey.uuid, resKey.version), null)
     key.setType(resKey.`type`.charAt(0))
     resKey.folderId.foreach(key.setFolderId)
     resKey.attachmentUuid.foreach(key.setAttachmentUuid)
     resKey.url.foreach(key.setUrl)
-    val res = new SelectedResource(key)
-    res.setTitle(resource.title)
-    selectionService.addSelectedResource(info, res, false)
+    key
+  }
+
+  @POST
+  @Path("{sessid}/remove")
+  def removeResource(@PathParam("sessid") sessid: String,
+                  @Context request: HttpServletRequest, @Context response: HttpServletResponse,
+                     resKey: SelectionKey): Response = {
+    LegacyGuice.userSessionService.reenableSessionUse()
+    val info = setupSession(sessid, None, request, response)
+    selectionService.removeSelectedResource(info, toSRK(resKey))
     Response.ok().build()
   }
 

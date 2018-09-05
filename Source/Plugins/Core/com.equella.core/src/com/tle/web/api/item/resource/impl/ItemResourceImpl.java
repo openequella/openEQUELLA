@@ -42,6 +42,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import com.tle.beans.item.*;
 import com.tle.web.api.item.ItemSummaryApi;
 import com.tle.web.api.item.interfaces.beans.*;
 import org.jboss.resteasy.util.DateUtil;
@@ -52,13 +53,6 @@ import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.tle.beans.item.Comment;
-import com.tle.beans.item.HistoryEvent;
-import com.tle.beans.item.Item;
-import com.tle.beans.item.ItemEditingException;
-import com.tle.beans.item.ItemId;
-import com.tle.beans.item.ItemIdKey;
-import com.tle.beans.item.ItemLock;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.common.Check;
 import com.tle.common.Pair;
@@ -612,11 +606,12 @@ public class ItemResourceImpl implements EquellaItemResource
 	public Response postComments(UriInfo uriInfo, String uuid, int version, CommentBean commentBean)
 	{
 		UserBean postedBy = commentBean.getPostedBy();
-		itemCommentService.addComment(new ItemId(uuid, version), commentBean.getComment(), commentBean.getRating(),
+		ItemPack<Item> pack = itemCommentService.addComment(new ItemId(uuid, version), commentBean.getComment(), commentBean.getRating(),
 			commentBean.isAnonymous(),
 			postedBy != null && RestImportExportHelper.isImport(uriInfo) ? postedBy.getId() : "");
 
-		return Response.status(Status.CREATED).build();
+		String commentUuid = pack.getAttribute("commentUuid");
+		return Response.status(Status.CREATED).header("X-UUID", commentUuid).build();
 	}
 
 	@Override

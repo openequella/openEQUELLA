@@ -65,10 +65,9 @@ case class DisplayNodesSummarySection(sectionTitle: String, meta: Iterable[MetaD
   val `type` = "displayNodes"
 }
 
-case class CommentDisplay(id: Long, comment: String, rating: Int, date: Date, anonymous: Boolean, userText: String, user: Option[UserDetails])
-
-case class CommentSummarySection(sectionTitle: String, anonymousOnly: Boolean, canView: Boolean, canAdd: Boolean,
-                                 canDelete: Boolean, comments: Iterable[CommentDisplay]) extends ItemSummarySection
+case class CommentSummarySection(sectionTitle: String, canView: Boolean, canAdd: Boolean,
+                                 canDelete: Boolean, userDisplay: String, anonymousOnly: Boolean,
+                                 hideUsername: Boolean, allowAnonymous: Boolean) extends ItemSummarySection
 {
   val `type` = "comments"
 }

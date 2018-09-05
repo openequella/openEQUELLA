@@ -6,7 +6,7 @@ import Data.Argonaut (class DecodeJson, decodeJson, (.?), (.??))
 import Data.Array (catMaybes, findMap, fromFoldable)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Dispatcher.React (propsRenderer)
-import EQUELLA.Environment (baseUrl, prepLangStrings)
+import EQUELLA.Environment (prepLangStrings)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn1)
 import MaterialUI.Button (button)
@@ -17,7 +17,7 @@ import MaterialUI.ListItem as LI
 import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
 import MaterialUI.ListItemText (listItemText, primary, secondary)
 import MaterialUI.PropTypes (toHandler)
-import MaterialUI.Properties (className, classes_, color, mkProp, onClick, style, variant)
+import MaterialUI.Properties (className, classes_, color, mkProp, onClick, variant)
 import MaterialUI.Properties as MUI
 import MaterialUI.Styles (withStyles)
 import MaterialUI.TextStyle as TS
@@ -26,13 +26,14 @@ import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (div, div', img, text)
 import React.DOM.Props as DP
 import React.SyntheticEvent (SyntheticEvent)
-import Routes (ClickableHref, routeHref, routeURI, viewItemRoute)
+import Routes (ClickableHref)
 import TimeAgo (timeAgo)
 
 newtype Attachment = Attachment {thumbnailHref::String}
 newtype DisplayField = DisplayField {name :: String, html::String}
 
 data SelectionType = Summary | AttachmentUUID String | Filepath String
+derive instance stEQ :: Eq SelectionType
 
 type ItemSelection = {
     item :: {
