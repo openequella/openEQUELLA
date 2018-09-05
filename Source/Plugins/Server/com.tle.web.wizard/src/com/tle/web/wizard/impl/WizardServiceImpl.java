@@ -208,9 +208,11 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 		String stagingId = state.getStagingId();
 		if( !Check.isEmpty(stagingId) )
 		{
+			StagingFile stagingFile = new StagingFile(stagingId);
+			fileSystemService.removeFile(stagingFile, "_uploads");
 			try
 			{
-				quotaService.checkQuotaAndReturnNewItemSize(state.getItem(), new StagingFile(stagingId));
+				quotaService.checkQuotaAndReturnNewItemSize(state.getItem(), stagingFile);
 			}
 			catch( QuotaExceededException e )
 			{
