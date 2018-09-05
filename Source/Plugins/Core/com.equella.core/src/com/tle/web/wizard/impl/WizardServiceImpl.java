@@ -99,6 +99,8 @@ import com.tle.core.services.FileSystemService;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.core.wizard.LERepository;
 import com.tle.core.wizard.controls.HTMLControl;
+import com.tle.web.controls.universal.handlers.fileupload.FileUploadState;
+import com.tle.web.controls.universal.handlers.fileupload.WebFileUploads;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewable.PreviewableItem;
@@ -206,9 +208,11 @@ public class WizardServiceImpl implements WizardService, WizardScriptObjectContr
 		String stagingId = state.getStagingId();
 		if( !Check.isEmpty(stagingId) )
 		{
+			StagingFile stagingFile = new StagingFile(stagingId);
+			fileSystemService.removeFile(stagingFile, FileUploadState.UPLOADS_FOLDER());
 			try
 			{
-				quotaService.checkQuotaAndReturnNewItemSize(state.getItem(), new StagingFile(stagingId));
+				quotaService.checkQuotaAndReturnNewItemSize(state.getItem(), stagingFile);
 			}
 			catch( QuotaExceededException e )
 			{
