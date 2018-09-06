@@ -44,7 +44,7 @@ case class BasicDetails(sectionTitle: String, title: String, description: Option
   override val `type` = "basic"
 }
 
-case class HtmlSummarySection(sectionTitle: String, sourceType: String, html: String) extends ItemSummarySection
+case class HtmlSummarySection(sectionTitle: String, showTitle: Boolean, sourceType: String, html: String) extends ItemSummarySection
 {
   val `type` = "html"
 }

@@ -41,7 +41,7 @@ data ItemSummarySection =
       BasicDetails {title::String, description::Maybe String} 
     | DisplayNodes {sectionTitle::String, meta::Array MetaDisplay}
     | Attachments {sectionTitle::String, attachments::Array AttachmentNode}
-    | HtmlSummarySection {sectionTitle::String, html::String}
+    | HtmlSummarySection {sectionTitle::String, showTitle:: Boolean, html::String}
     | CommentsSummarySection {sectionTitle::String, canAdd::Boolean, 
           canDelete::Boolean, anonymousOnly :: Boolean, hideUsername :: Boolean, allowAnonymous :: Boolean }
 
@@ -99,7 +99,8 @@ decodeHtmlSection :: Object Json -> Either String ItemSummarySection
 decodeHtmlSection o = do 
   sectionTitle <- o .? "sectionTitle"
   html <- o .? "html"
-  pure $ HtmlSummarySection {sectionTitle,html}
+  showTitle <- o .? "showTitle"
+  pure $ HtmlSummarySection {sectionTitle,showTitle,html}
 
 decodeComment :: Json -> Either String ItemComment 
 decodeComment v = do 

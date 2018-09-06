@@ -4,6 +4,7 @@ import Prelude hiding (div)
 
 import AjaxRequests (ErrorResponse, getJson)
 import Control.Monad.Trans.Class (lift)
+import Control.MonadZero (guard)
 import Data.Array (catMaybes)
 import Data.Either (either)
 import Data.Maybe (Maybe(..), maybe)
@@ -55,32 +56,32 @@ viewItem :: ViewItemProps -> ReactElement
 viewItem = unsafeCreateLeafElement $ withStyles styles $ component "SelectionViewItem" $ \this -> do
   let 
     d = eval >>> affAction this
-    render {state:s@{content:Just {sections,title:itemName} }, props:p@{classes, onSelect}} = div' $ renderSection =<< sections
+    render {state:s@{content:Just {sections,title:itemName} }, props:p@{classes, onSelect}} = div' $ renderSection <$> sections
       where
-      sectionTitle t = typography [
+      titleText t = typography [
         variant title, 
         color Color.secondary, 
         className classes.sectionTitle] [text t]
-      renderSection = case _ of 
+      renderSection section = div [DP.className classes.section ] $ case section of 
         BasicDetails {description} -> maybe [] (\desc -> [
           typography [variant display1] [ text itemName ],
-          sectionTitle "Description",
+          titleText "Description",
           typography [variant subheading] [text desc] ]) description
         DisplayNodes dn -> 
           let node {value:t,title} = listItem [disableGutters true] [ 
                   listItemText [primary title, secondary t] 
                 ]
           in [
-            sectionTitle dn.sectionTitle, 
+            titleText dn.sectionTitle, 
             list [disablePadding true] $ node <$> dn.meta
           ]
-        HtmlSummarySection {html} -> [
-          div [ dangerouslySetInnerHTML {__html:html}] []
+        HtmlSummarySection hs -> (guard hs.showTitle $> titleText hs.sectionTitle) <> [
+          div [ dangerouslySetInnerHTML {__html:hs.html}] []
         ]
-        CommentsSummarySection {sectionTitle:st,canAdd,canDelete,anonymousOnly,allowAnonymous} -> 
+        CommentsSummarySection {sectionTitle,canAdd,canDelete,anonymousOnly,allowAnonymous} -> 
           let {uuid,version,onError} = p
           in [
-            sectionTitle st, 
+            titleText sectionTitle, 
             itemComments {uuid,version,onError,canAdd,canDelete,anonymousOnly,allowAnonymous}
           ]
         Attachments att -> 
@@ -113,8 +114,8 @@ viewItem = unsafeCreateLeafElement $ withStyles styles $ component "SelectionVie
                 }] [ text "Select"]) <$> onSelect
               ]
             ] 
-          in pure $ div [DP.className classes.section] [
-            sectionTitle att.sectionTitle, 
+          in [
+            titleText att.sectionTitle, 
             list [disablePadding true] $ attachView <$> att.attachments
           ]
     render _ = div' []
@@ -136,7 +137,7 @@ viewItem = unsafeCreateLeafElement $ withStyles styles $ component "SelectionVie
   where
   styles t = {
     section: {
-      marginTop: t.spacing.unit * 4
+      marginTop: t.spacing.unit * 2
     },
     attachmentMeta: {
       padding: 0

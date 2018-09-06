@@ -59,6 +59,6 @@ object FreemarkerDisplay {
     for (entry <- scriptContext.getScriptObjects.entrySet.asScala) {
       result.addExtraObject(entry.getKey, entry.getValue)
     }
-    HtmlSummarySection(sectionTitle, "freemarker", SectionUtils.renderToString(context, result))
+    HtmlSummarySection(sectionTitle, false, "freemarker", SectionUtils.renderToString(context, result))
   }
 }

@@ -7,9 +7,12 @@ import Control.Monad.Except (ExceptT(..), runExceptT, throwError)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
 import Data.Argonaut (Json, decodeJson, jsonEmptyObject, (:=), (~>))
+import Data.Argonaut.Encode ((~>?))
 import Data.Array (catMaybes, findMap)
 import Data.Array as Array
-import Data.Maybe (Maybe(..))
+import Data.Int (fromString)
+import Data.List.Lazy (range)
+import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..))
 import Dispatcher (affAction)
@@ -20,16 +23,20 @@ import ItemSummary (ItemComment, decodeComment)
 import ItemSummary.Api (itemApiPath, uuidHeader)
 import MaterialUI.Button (button, raised)
 import MaterialUI.Color as Color
+import MaterialUI.FormControl (formControl, formControl_)
 import MaterialUI.FormControlLabel (control, formControlLabel)
 import MaterialUI.FormGroup (formGroup_)
 import MaterialUI.Icon (icon_)
 import MaterialUI.IconButton (iconButton)
 import MaterialUI.Input (fullWidth, multiline, placeholder, rowsMax, value)
+import MaterialUI.InputLabel (inputLabel, inputLabel_)
 import MaterialUI.List (disablePadding, list)
 import MaterialUI.ListItem (disableGutters, listItem)
 import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
 import MaterialUI.ListItemText (listItemText, primary, secondary)
-import MaterialUI.Properties (color, onChange, onClick, variant)
+import MaterialUI.MenuItem (menuItem)
+import MaterialUI.Properties (className, color, mkProp, onChange, onClick, variant)
+import MaterialUI.Select (select)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.Switch (switch)
 import MaterialUI.SwitchBase (checked)
@@ -37,11 +44,17 @@ import MaterialUI.TextField (label, textField)
 import Network.HTTP.Affjax as Ajax
 import QueryString (queryString)
 import React (ReactElement, component, unsafeCreateLeafElement)
-import React.DOM (div, div', text)
+import React.DOM (div, div', em', text)
 import React.DOM.Props as RP
 import Utils.UI (checkChange, textChange)
+import Utils.UI as Utils
 
-data Command = CommentText String | AnonymousFlag Boolean | MakeComment | DeleteComment String | LoadComments
+data Command = CommentText String 
+  | AnonymousFlag Boolean 
+  | SetRating String
+  | MakeComment 
+  | DeleteComment String 
+  | LoadComments
 
 type ItemCommentProps = {
   uuid :: String, 
@@ -56,14 +69,16 @@ type ItemCommentProps = {
 type State = {
   commentText :: String, 
   anonymous :: Boolean,
+  rating :: Maybe Int,
   comments :: Array ItemComment
 }
 
-encodeComment :: {comment::String, anonymous::Boolean} -> Json
-encodeComment {comment, anonymous} = 
-  "comment" := comment 
-  ~> "anonymous" := anonymous
-  ~> jsonEmptyObject
+encodeComment :: {comment::String, anonymous::Boolean, rating::Maybe Int} -> Json
+encodeComment {comment, anonymous, rating} = 
+  "comment" := comment ~> 
+  "anonymous" := anonymous ~> 
+  ((:=) "rating" <$> rating) ~>? 
+  jsonEmptyObject
 
 itemComments :: ItemCommentProps -> ReactElement
 itemComments = unsafeCreateLeafElement $ withStyles styles $ component "ItemComments" $ \this -> do
@@ -72,14 +87,16 @@ itemComments = unsafeCreateLeafElement $ withStyles styles $ component "ItemComm
 
     renderComment canDelete c = listItem [disableGutters true] $ catMaybes [
             -- listItemIcon_ [ userIcon ],
-            Just $ listItemText [primary c.comment, secondary c.date ], 
+            Just $ listItemText [primary c.comment, secondary $ c.date <> " - " <> show c.rating ], 
             guard canDelete $> listItemSecondaryAction_ [ 
                                   iconButton [onClick \_ -> d $ DeleteComment c.uuid] 
                                   [ icon_ [ text "delete" ] ] 
                                 ]
           ]
 
-    render {props:{classes,canAdd,canDelete,anonymousOnly,allowAnonymous}, state:{commentText,comments,anonymous}} = let 
+    ratingItem v = let sv = show v in menuItem [mkProp "value" $ show v] [ text $ show v ]
+
+    render {props:{classes,canAdd,canDelete,anonymousOnly,allowAnonymous}, state:{rating,commentText,comments,anonymous}} = let 
       renderAdd = [
         textField [textChange d CommentText, value commentText, 
                   label "Enter comment", 
@@ -88,14 +105,21 @@ itemComments = unsafeCreateLeafElement $ withStyles styles $ component "ItemComm
                   multiline true, 
                   fullWidth true], 
         div [RP.className classes.commentButtons] $ catMaybes [ 
+          Just $ formControl [className classes.ratingField ] [
+            inputLabel_ [ text "Rating" ], 
+            select [ value $ fromMaybe "" (show <$> rating), onChange $ Utils.valueChange (d <<< SetRating) ] $ 
+              [ 
+                menuItem [mkProp "value" ""] [ em' [ text "No rating" ] ] 
+              ] <> (ratingItem <$> Array.range 1 5)
+          ],
           (guard $ not anonymousOnly && allowAnonymous) $> formGroup_ [
-                            formControlLabel [
-                              label "Anonymous", 
-                              control $ switch [
-                                checked anonymous, 
-                                onChange $ checkChange $ d <<< AnonymousFlag] 
-                            ]
-                          ],
+              formControlLabel [
+                label "Anonymous", 
+                control $ switch [
+                  checked anonymous, 
+                  onChange $ checkChange $ d <<< AnonymousFlag] 
+              ]
+            ],
           Just $ button [onClick \_ -> d MakeComment, variant raised, color Color.primary] [text "Comment"]
         ]
       ]
@@ -105,6 +129,8 @@ itemComments = unsafeCreateLeafElement $ withStyles styles $ component "ItemComm
       ]
     
     eval = case _ of 
+      SetRating r -> 
+        modifyState _ {rating = fromString r}
       LoadComments -> do 
         {uuid,version,onError} <- getProps
         (lift $ getJson (itemApiPath uuid version <> "/comment") (decodeJson >=> traverse decodeComment)) >>= 
@@ -112,11 +138,12 @@ itemComments = unsafeCreateLeafElement $ withStyles styles $ component "ItemComm
       CommentText t -> modifyState _ {commentText = t}
       AnonymousFlag b -> modifyState _ {anonymous = b}
       MakeComment -> do 
-        {commentText,comments,anonymous:anon} <- getState
+        {commentText,comments,anonymous:anon,rating} <- getState
         {uuid,version,anonymousOnly,allowAnonymous} <- getProps
         res <- lift $ runExceptT $ do
           let anonymous = anonymousOnly || (allowAnonymous && anon)
-          {headers} <- ExceptT $ postJsonExpect 201 (itemApiPath uuid version <> "/comment") (encodeComment {comment:commentText, anonymous})
+              commentJson = encodeComment {comment:commentText, anonymous,rating}
+          {headers} <- ExceptT $ postJsonExpect 201 (itemApiPath uuid version <> "/comment")  commentJson
           case findMap uuidHeader headers of 
               Nothing -> throwError {code:500,description:Nothing,error:"No UUID header for comment"}
               Just commentUuid -> do 
@@ -129,7 +156,7 @@ itemComments = unsafeCreateLeafElement $ withStyles styles $ component "ItemComm
         modifyState \s -> s {comments = Array.filter (_.uuid >>> notEq commentUuid) s.comments}
   pure {
     render:renderer render this, 
-    state:{commentText:"", comments:[], anonymous:false} :: State, 
+    state: { commentText:"", comments:[], anonymous:false, rating: Nothing} :: State, 
     componentDidMount: d LoadComments
   }
   where
@@ -138,5 +165,9 @@ itemComments = unsafeCreateLeafElement $ withStyles styles $ component "ItemComm
       marginTop: t.spacing.unit,
       display: "flex", 
       justifyContent: "flex-end"
+    }, 
+    ratingField: {
+      width: "5em", 
+      marginRight: t.spacing.unit
     }
   }

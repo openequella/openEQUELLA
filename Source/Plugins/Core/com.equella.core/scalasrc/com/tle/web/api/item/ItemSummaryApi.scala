@@ -69,13 +69,13 @@ object ItemSummaryApi {
       case "attachmentsSection" => AttachmentsDisplay.create(info, vitem, itemXml, sectionTitle, config)
       case "xsltSection" =>
         val html = LegacyGuice.itemXsltService.renderSimpleXsltResult(new StandardRenderContext(info), ii, config)
-        Some(HtmlSummarySection(sectionTitle, "xslt", html))
+        Some(HtmlSummarySection(sectionTitle, false, "xslt", html))
       case "freemarkerSection" =>
         Some(FreemarkerDisplay.create(info, ii, sectionTitle, config))
       case "commentsSection" =>
         CommentsDisplay.create(ii, sectionTitle, config)
       case "citationSummarySection" =>
-        CalSummaryDisplay.citationForItem(item).map(h => HtmlSummarySection(sectionTitle, "citation", h))
+        CalSummaryDisplay.citationForItem(item).map(h => HtmlSummarySection(sectionTitle, true, "citation", h))
       case _ =>
         Logger.error(s"No summary for $summaryType:$config")
         None
