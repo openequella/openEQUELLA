@@ -60,7 +60,7 @@ class QtiPackageAttachmentHandlerNew extends PackageAttachmentExtension {
       stg.setPackageFolder(pkgFolder)
       stg.deregisterFilename(upload.id)
       qti
-    }, (a,stg) => a, (a,stg) => delete(ctx, a).deleteFiles(stg))
+    }, QtiPackageCommit)
   }
 
   def handles(a: Attachment) : Boolean = a match {
@@ -97,4 +97,11 @@ class QtiPackageAttachmentHandlerNew extends PackageAttachmentExtension {
   def delete(ctx: ControlContext, a: Attachment) : AttachmentDelete = AttachmentDelete(Seq(a), stg =>
     stg.delete(QtiConstants.QTI_FOLDER_PATH)
   )
+
+  object QtiPackageCommit extends AttachmentCommit
+  {
+    override def apply(a: Attachment, stg: StagingContext): Attachment = a
+
+    override def cancel(a: Attachment, stg: StagingContext): Unit = stg.delete(QtiConstants.QTI_FOLDER_PATH)
+  }
 }

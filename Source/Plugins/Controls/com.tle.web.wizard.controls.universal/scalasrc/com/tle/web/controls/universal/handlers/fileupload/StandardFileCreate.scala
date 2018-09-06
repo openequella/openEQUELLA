@@ -16,8 +16,82 @@
 
 package com.tle.web.controls.universal.handlers.fileupload
 
-import com.tle.beans.item.attachments.{Attachment, FileAttachment}
+import com.tle.beans.item.attachments.{Attachment, FileAttachment, ZipAttachment}
 import com.tle.web.controls.universal.StagingContext
+
+case class StandardFileCommit(uploaded: SuccessfulUpload, suppressThumb: Boolean, unzippedTo: Option[String]) extends AttachmentCommit
+{
+  def apply(a: Attachment, stg: StagingContext): Attachment = a match {
+    case fa: FileAttachment =>
+      stg.moveFile(uploaded.uploadPath, uploaded.originalFilename)
+      fa.setFilename(uploaded.originalFilename)
+      fa.setThumbnail(if (suppressThumb) WebFileUploads.SUPPRESS_THUMB_VALUE else stg.thumbRequest(uploaded.originalFilename))
+      stg.deregisterFilename(uploaded.id)
+      unzippedTo.foreach(stg.delete)
+      fa
+  }
+
+  def cancel(a: Attachment, stg: StagingContext): Unit =
+  {
+    stg.delete(uploaded.uploadPath)
+    unzippedTo.foreach(stg.delete)
+    stg.deregisterFilename(uploaded.id)
+  }
+}
+
+case class ZipFileCommit(original: Option[StandardFileCommit], unzippedPath: String) extends AttachmentCommit
+{
+  def apply(a: Attachment, stg: StagingContext): Attachment = {
+    original match {
+      case Some(sfc) =>
+        val up = sfc.uploaded
+        stg.deregisterFilename(up.id)
+        a match {
+          case fa: FileAttachment => fa.setFilename(up.originalFilename)
+        }
+        stg.moveFile(up.uploadPath, WebFileUploads.zipPath(up.originalFilename))
+        stg.moveFile(unzippedPath, up.originalFilename)
+      case None => a match {
+        case fa: FileAttachment =>
+          stg.moveFile(fa.getFilename, WebFileUploads.zipPath(fa.getFilename))
+          stg.moveFile(unzippedPath, fa.getFilename)
+      }
+    }
+    a
+  }
+
+  override def cancel(a: Attachment, stg: StagingContext): Unit = {
+    original.foreach(_.cancel(a, stg))
+  }
+}
+
+case class CleanupUnzipCommit(unzippedPath: String) extends AttachmentCommit
+{
+  override def apply(a: Attachment, stg: StagingContext): Attachment = {
+    stg.delete(unzippedPath)
+    a
+  }
+
+  override def cancel(a: Attachment, stg: StagingContext): Unit = {
+    stg.delete(unzippedPath)
+  }
+}
+
+object RemoveZipCommit extends AttachmentCommit {
+  override def apply(a: Attachment, stg: StagingContext): Attachment = {
+    a match {
+      case zf: ZipAttachment =>
+        val newFn = WebFileUploads.removeZipPath(zf.getUrl)
+        stg.delete(newFn)
+        stg.moveFile(zf.getUrl, newFn)
+    }
+    a
+  }
+
+  override def cancel(a: Attachment, stg: StagingContext): Unit = {
+
+  }
+}
 
 object StandardFileCreate {
 
@@ -34,15 +108,6 @@ object StandardFileCreate {
       fa
     }
 
-    def commit(a: Attachment, stg: StagingContext): Attachment = a match {
-      case fa: FileAttachment =>
-        stg.moveFile(uploaded.uploadPath, uploaded.originalFilename)
-        fa.setFilename(uploaded.originalFilename)
-        fa.setThumbnail(if (suppressThumb) WebFileUploads.SUPPRESS_THUMB_VALUE else stg.thumbRequest(uploaded.originalFilename))
-        stg.deregisterFilename(uploaded.id)
-        fa
-    }
-
-    AttachmentCreate(createStaged, commit, (_, stg) => stg.delete(uploaded.uploadPath))
+    AttachmentCreate(createStaged, StandardFileCommit(uploaded,suppressThumb, None))
   }
 }

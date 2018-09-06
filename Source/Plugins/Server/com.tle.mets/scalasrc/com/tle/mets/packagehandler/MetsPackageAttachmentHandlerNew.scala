@@ -17,14 +17,13 @@
 package com.tle.mets.packagehandler
 
 import javax.inject.Inject
-
 import com.tle.beans.item.Item
 import com.tle.beans.item.attachments.{Attachment, CustomAttachment}
 import com.tle.common.PathUtils
 import com.tle.core.guice.Bind
 import com.tle.core.qti.QtiConstants
 import com.tle.mets.metsimport.METSTreeBuilder
-import com.tle.web.controls.universal.ControlContext
+import com.tle.web.controls.universal.{ControlContext, StagingContext}
 import com.tle.web.controls.universal.handlers.fileupload._
 import com.tle.web.controls.universal.handlers.fileupload.packages.{IMSPackageExtension, PackageAttachmentExtension}
 import com.tle.web.resources.ResourcesService
@@ -56,24 +55,29 @@ class MetsPackageAttachmentHandlerNew extends PackageAttachmentExtension {
       stg.setPackageFolder(pkgFolder)
       ma.setUrl(destFile)
       ma
-    }, (a,stg) => a, (a, stg) => delete(ctx, a).deleteFiles(stg)
-    )
+    }, MetsPackageCommit)
   }
 
   val r = ResourcesService.getResourceHelper(getClass)
   val treatAsLabel = new KeyLabel(r.key("handlers.file.packageoptions.aspackage"))
 
   override def delete(ctx: ControlContext, a: Attachment): AttachmentDelete = AttachmentDelete(
-    Seq(a), { stg =>
-      stg.delete(a.getUrl)
-      if (a.getUrl.startsWith("_METS/")) {
-        stg.delete(a.getUrl.substring(6))
-      }
-    }
+    Seq(a), { stg => MetsPackageCommit.cancel(a, stg)}
   )
 
   def handles(a: Attachment): Boolean = a match {
     case ca: CustomAttachment if ca.getType == "mets" => true
     case _ => false
+  }
+
+  object MetsPackageCommit extends AttachmentCommit {
+    override def apply(a: Attachment, stg: StagingContext): Attachment = a
+
+    override def cancel(a: Attachment, stg: StagingContext): Unit = {
+      stg.delete(a.getUrl)
+      if (a.getUrl.startsWith("_METS/")) {
+        stg.delete(a.getUrl.substring(6))
+      }
+    }
   }
 }

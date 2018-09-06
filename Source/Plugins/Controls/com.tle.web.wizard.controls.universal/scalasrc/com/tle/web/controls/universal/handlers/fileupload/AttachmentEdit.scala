@@ -16,10 +16,20 @@
 
 package com.tle.web.controls.universal.handlers.fileupload
 
-import java.util.UUID
-
 import com.tle.beans.item.attachments.Attachment
 import com.tle.web.controls.universal.StagingContext
 
-case class AttachmentCreate(createStaged: StagingContext => Attachment, commit: (Attachment, StagingContext) => Attachment, cancel: (Attachment, StagingContext) => Unit)
+trait AttachmentCommit
+{
+  def apply(a: Attachment, stg: StagingContext): Attachment
+  def cancel(a: Attachment, stg: StagingContext): Unit
+}
+
+object EmptyAttachmentCommit extends AttachmentCommit
+{
+  def apply(a: Attachment, stg: StagingContext): Attachment = a
+  def cancel(a: Attachment, stg: StagingContext): Unit = {}
+}
+
+case class AttachmentCreate(createStaged: StagingContext => Attachment, commit: AttachmentCommit)
 case class AttachmentDelete(attachments: Iterable[Attachment], deleteFiles: StagingContext => Unit)
