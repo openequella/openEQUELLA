@@ -2,6 +2,7 @@ module Routes where
 
 import Prelude
 
+import Common.Data (ItemRef(..))
 import Control.Alt ((<|>))
 import Data.Either (either)
 import Data.List (List, foldMap)
@@ -19,7 +20,7 @@ import Foreign.Object as Object
 import QueryString (queryStringObj)
 import React.SyntheticEvent (SyntheticEvent, preventDefault)
 import Routing (match)
-import Routing.Match (Match, lit, str)
+import Routing.Match (Match, int, lit, str)
 import Routing.PushState (PushStateInterface, makeInterface)
 import Routing.Types (RoutePart(..))
 
@@ -42,6 +43,7 @@ data Route =
     SettingsPage | 
     CoursesPage | 
     CourseEdit String |
+    ViewItemPage ItemRef |
     NewCourse
 
 navGlobals :: forall route. {nav::PushStateInterface, preventNav :: Ref (EffectFn1 route Boolean)}
@@ -69,13 +71,16 @@ legacyRoute = foldMap toLegURI <$> remainingParts
     toLegURI (Query qm) = LegacyURI "" $ pure <$> (Object.fromFoldable $ Map.toUnfoldable qm :: Array (Tuple String String))
 
 routeMatch :: Match Route
-routeMatch = SettingsPage <$ (lit "access" *> lit "settings.do") <|>
-    lit "page" *>
-    (SearchPage <$ (lit "search") <|>
-    SettingsPage <$ (lit "settings") <|>
-    NewCourse <$ (lit "course" *> lit "new") <|>
-    CourseEdit <$> (lit "course" *> str <* lit "edit") <|>
-    CoursesPage <$ (lit "course")) <|> (LegacyPage <$> legacyRoute)
+routeMatch = 
+    ViewItemPage <$> (ItemRef <$> (lit "items" *> str) <*> int) <|>
+    SettingsPage <$ (lit "access" *> lit "settings.do")
+    <|> lit "page" *>
+        (SearchPage <$ (lit "search") <|>
+        SettingsPage <$ (lit "settings") <|>
+        NewCourse <$ (lit "course" *> lit "new") <|>
+        CourseEdit <$> (lit "course" *> str <* lit "edit") <|>
+        CoursesPage <$ (lit "course")) 
+    <|> (LegacyPage <$> legacyRoute)
 
 matchRoute :: String -> Maybe Route 
 matchRoute = match routeMatch >>> (either (const Nothing) Just)
@@ -112,6 +117,7 @@ routeURI r = (case r of
     CoursesPage -> "page/course"
     NewCourse -> "page/course/new"
     CourseEdit cid -> "page/course/" <> cid <> "/edit"
+    ViewItemPage (ItemRef uuid version) -> "items/" <> uuid <> "/" <> show version
     LegacyPage (LegacyURI path params) -> 
         if isEmpty params then path 
         else path <> "?" <> queryStringObj params

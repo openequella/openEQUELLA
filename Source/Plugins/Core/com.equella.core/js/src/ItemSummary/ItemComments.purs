@@ -11,7 +11,6 @@ import Data.Argonaut.Encode ((~>?))
 import Data.Array (catMaybes, findMap)
 import Data.Array as Array
 import Data.Int (fromString)
-import Data.List.Lazy (range)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..))
@@ -23,13 +22,13 @@ import ItemSummary (ItemComment, decodeComment)
 import ItemSummary.Api (itemApiPath, uuidHeader)
 import MaterialUI.Button (button, raised)
 import MaterialUI.Color as Color
-import MaterialUI.FormControl (formControl, formControl_)
+import MaterialUI.FormControl (formControl)
 import MaterialUI.FormControlLabel (control, formControlLabel)
 import MaterialUI.FormGroup (formGroup_)
 import MaterialUI.Icon (icon_)
 import MaterialUI.IconButton (iconButton)
 import MaterialUI.Input (fullWidth, multiline, placeholder, rowsMax, value)
-import MaterialUI.InputLabel (inputLabel, inputLabel_)
+import MaterialUI.InputLabel (inputLabel_)
 import MaterialUI.List (disablePadding, list)
 import MaterialUI.ListItem (disableGutters, listItem)
 import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
@@ -98,19 +97,19 @@ itemComments = unsafeCreateLeafElement $ withStyles styles $ component "ItemComm
 
     render {props:{classes,canAdd,canDelete,anonymousOnly,allowAnonymous}, state:{rating,commentText,comments,anonymous}} = let 
       renderAdd = [
-        textField [textChange d CommentText, value commentText, 
-                  label "Enter comment", 
-                  placeholder "Enter comment", 
-                  rowsMax 3, 
-                  multiline true, 
-                  fullWidth true], 
+        textField [
+          textChange d CommentText, value commentText, 
+          label "Enter comment", 
+          placeholder "Enter comment", 
+          rowsMax 3, 
+          multiline true, 
+          fullWidth true], 
         div [RP.className classes.commentButtons] $ catMaybes [ 
           Just $ formControl [className classes.ratingField ] [
             inputLabel_ [ text "Rating" ], 
             select [ value $ fromMaybe "" (show <$> rating), onChange $ Utils.valueChange (d <<< SetRating) ] $ 
-              [ 
-                menuItem [mkProp "value" ""] [ em' [ text "No rating" ] ] 
-              ] <> (ratingItem <$> Array.range 1 5)
+              [ menuItem [mkProp "value" ""] [ em' [ text "No rating" ] ] ] 
+                <> (ratingItem <$> Array.range 1 5)
           ],
           (guard $ not anonymousOnly && allowAnonymous) $> formGroup_ [
               formControlLabel [
@@ -124,9 +123,7 @@ itemComments = unsafeCreateLeafElement $ withStyles styles $ component "ItemComm
         ]
       ]
      in div' $ guard canAdd *> renderAdd <> 
-      [
-        list [ disablePadding true ] $ renderComment canDelete <$> comments
-      ]
+      [ list [ disablePadding true ] $ renderComment canDelete <$> comments ]
     
     eval = case _ of 
       SetRating r -> 

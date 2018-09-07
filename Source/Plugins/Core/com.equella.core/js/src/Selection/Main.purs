@@ -104,7 +104,7 @@ data Command = Init
 type State = {
   selectedFolder :: String, 
   selections :: Map String (Array ItemSelection), 
-  route :: Maybe SelectionRoute, 
+  route :: Maybe SelectionRoute,
   title :: Maybe String, 
   error :: Maybe ErrorResponse, 
   errorOpen :: Boolean
@@ -168,7 +168,6 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
           ],
           dualPane {
             left: [viewItem {uuid,version, 
-                titleUpdate: mkEffectFn1 $ d <<< UpdateTitle, 
                 onError: mkEffectFn1 $ d <<< Errored,
                 onSelect: Just $ d <<< SelectionMade }],  
             right:[

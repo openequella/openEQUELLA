@@ -2,9 +2,11 @@ module ItemSummary where
 
 import Prelude
 
+import AjaxRequests (ErrorResponse)
+import Common.Data (ItemRef)
 import Data.Argonaut (Json, decodeJson, getField, (.?), (.??))
 import Data.Either (Either(..))
-import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Maybe (Maybe, fromMaybe)
 import Data.Traversable (traverse)
 import Foreign.Object (Object)
 
@@ -45,9 +47,49 @@ data ItemSummarySection =
     | CommentsSummarySection {sectionTitle::String, canAdd::Boolean, 
           canDelete::Boolean, anonymousOnly :: Boolean, hideUsername :: Boolean, allowAnonymous :: Boolean }
 
+type CopyrightAttachment = {
+  item :: ItemRef, 
+  href :: Maybe String, 
+  title :: String, 
+  uuid :: String, 
+  status :: String
+}
+type JournalSection = {
+  attachment :: CopyrightAttachment
+}
+
+type JournalPortion = {
+  title :: String, 
+  sections :: Array JournalSection
+}
+
+type BookSection = {
+  attachment :: CopyrightAttachment, 
+  range :: String, 
+  pageCount :: Int, 
+  illustration :: Boolean
+}
+
+type BookChapter = {
+  title :: String, 
+  chapterName :: String, 
+  canActivate :: Boolean, 
+  sections :: Array BookSection
+}
+
+data HoldingSummary = 
+    BookSummary {totalPages:: Int, chapters:: Array BookChapter } 
+  | JournalSummary { volume :: Maybe String, issueNumber:: Maybe String, portions:: Array JournalPortion}
+
+type CopyrightSummary = {
+  holdingItem :: ItemRef, 
+  holding :: HoldingSummary
+}
+
 type ItemSummary = {
   title :: String,
-  sections :: Array ItemSummarySection
+  sections :: Array ItemSummarySection, 
+  copyright :: Maybe CopyrightSummary
 }
 
 decodeBasic :: Object Json -> Either String ItemSummarySection
@@ -140,4 +182,59 @@ decodeItemSummary v = do
   o <- decodeJson v
   title <- o .? "title"
   sections <- o .? "sections" >>= traverse decodeSection
-  pure {title, sections}
+  copyright <- o .?? "copyright" >>= traverse decodeCopyrightSummary
+  pure {title, sections, copyright}
+
+decodeCopyrightAttachment :: Object Json -> Either String CopyrightAttachment
+decodeCopyrightAttachment o = do 
+  item <- o .? "item"
+  title <- o .? "title"
+  href <- o .?? "href"
+  status <- o .? "status"
+  uuid <- o .? "uuid"
+  pure {item, title, href, status, uuid}
+
+decodeBookChapter :: Object Json -> Either String BookChapter
+decodeBookChapter o = do 
+  title <- o .? "title"
+  chapterName <- o .? "chapterName"
+  canActivate <- o .? "canActivate"
+  sections <- o .? "sections" >>= traverse decodeBookSection
+  pure {title,chapterName,canActivate,sections}
+  where 
+  decodeBookSection b = do 
+    attachment <- b .? "attachment" >>= decodeCopyrightAttachment
+    illustration <- b .? "illustration" 
+    pageCount <- b .? "pageCount" 
+    range <- b .? "range"
+    pure {attachment,illustration,pageCount,range}
+
+decodeJournalSection :: Object Json -> Either String JournalSection
+decodeJournalSection s = {attachment: _} <$> (s .? "attachment" >>= decodeCopyrightAttachment)
+
+decodeJournalPortion :: Object Json -> Either String JournalPortion
+decodeJournalPortion o = do 
+  title <- o .? "title"
+  sections <- o .? "sections" >>= traverse decodeJournalSection
+  pure {title,sections}
+
+decodeHolding :: Object Json -> Either String HoldingSummary 
+decodeHolding o = o .? "type" >>= case _ of 
+  "book" -> do 
+    totalPages <- o .? "totalPages"
+    chapters <- o .? "chapters" >>= traverse decodeBookChapter
+    pure $ BookSummary {totalPages,chapters}
+  "journal" -> do 
+    volume <- o .?? "volume"
+    issueNumber <- o .?? "issueNumber"
+    portions <- o .? "portions" >>= traverse decodeJournalPortion
+    pure $ JournalSummary {volume, issueNumber, portions}
+  t -> Left $ "Unknown holding type: " <> t
+
+decodeCopyrightSummary :: Json -> Either String CopyrightSummary
+decodeCopyrightSummary v = do 
+  o <- decodeJson v
+  holdingItem <- o .? "holdingItem"
+  holding <- o .? "holding" >>= decodeHolding
+  pure $ {holdingItem,holding}
+
