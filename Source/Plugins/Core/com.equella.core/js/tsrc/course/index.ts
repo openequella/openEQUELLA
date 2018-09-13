@@ -22,7 +22,7 @@ function validate(entity: Course, errors: IDictionary<string>): void {
     }
 }
 
-export function searchCourses(query: string, includeArchived: boolean, resumption: string|undefined, length: number): Promise<PagingResults<Course>>
+export function searchCourses(query: string, includeArchived: boolean, length: number, resumption?: string|undefined): Promise<PagingResults<Course>>
 {
     const qs = encodeQuery({q: query, length, archived: includeArchived, resumption, privilege:["EDIT_COURSE_INFO", "DELETE_COURSE_INFO"]})
     return Axios.get<PagingResults<Course>>(`${Config.baseUrl}api/course${qs}`).then(res => (res.data)); 

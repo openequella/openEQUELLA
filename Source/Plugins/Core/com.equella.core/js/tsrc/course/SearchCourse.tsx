@@ -120,7 +120,7 @@ class SearchCourse extends React.Component<SearchCourseProps, SearchCourseState>
         const doReset = resumptionToken == undefined;
         const { bottomVisible } = this.state;
         this.setState({searching:true});
-        searchCourses(q, includeArchived, resumptionToken, 30).then(sr => {
+        searchCourses(q, includeArchived, 30, resumptionToken).then(sr => {
             if (sr.resumptionToken && bottomVisible) setTimeout(this.maybeKeepSearching, 250);
             this.setState((prevState) => ({...prevState, 
                 courses: doReset ? sr.results : prevState.courses.concat(sr.results), 

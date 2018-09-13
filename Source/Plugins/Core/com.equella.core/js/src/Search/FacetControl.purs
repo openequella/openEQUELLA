@@ -2,7 +2,6 @@ module Search.FacetControl where
 
 import Prelude
 
-import CheckList (checkList)
 import Control.Monad.Trans.Class (lift)
 import Data.Argonaut (class DecodeJson, Json, decodeJson, fromBoolean, fromObject, toObject, (.?))
 import Data.Either (either)
@@ -14,7 +13,6 @@ import Data.Tuple (Tuple(..))
 import Data.Unfoldable as Array
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, modifyState, renderer)
-import EQUELLA.Environment (baseUrl)
 import Effect (Effect)
 import Effect.Class.Console (log)
 import Effect.Uncurried (mkEffectFn2)
@@ -26,14 +24,16 @@ import MaterialUI.Properties (onChange)
 import MaterialUI.SwitchBase (checked)
 import Network.HTTP.Affjax (get)
 import Network.HTTP.Affjax.Response (json)
-import QueryString (queryString)
+import OEQ.Data.Settings (FacetSetting(..))
+import OEQ.Environment (baseUrl)
+import OEQ.UI.CheckList (checkList)
+import OEQ.UI.SearchFilters (filterSection)
+import OEQ.Utils.QueryString (queryString)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (text)
 import React.DOM as D
 import Search.SearchControl (Chip(..), ControlParams, Placement(..), SearchControl)
 import Search.SearchQuery (Query, QueryParam(..), _params, searchQueryParams)
-import SearchFilters (filterSection)
-import Settings.UISettings (FacetSetting(..))
 
 newtype FacetResult = FacetResult {term::String, count::Int}
 newtype FacetResults = FacetResults (Array FacetResult)

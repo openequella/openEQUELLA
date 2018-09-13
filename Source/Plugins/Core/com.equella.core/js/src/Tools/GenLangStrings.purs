@@ -13,12 +13,12 @@ import Effect.Class.Console (log)
 import Foreign.Object as SM
 import Prim.Row (class Cons)
 import Record (get)
-import SearchPage (coreStrings, rawStrings) as SearchPage
-import Security.ACLEditor (aclRawStrings)
-import Security.TermSelection (termRawStrings)
-import Settings.UISettings (rawStrings) as UISettings
-import SettingsPage (coreStrings, rawStrings) as SettingsPage
-import Template (rawStrings, coreStrings) as Template
+import OEQ.MainUI.SearchPage (coreStrings, rawStrings) as SearchPage
+import OEQ.UI.Security.ACLEditor (aclRawStrings)
+import OEQ.UI.Security.TermSelection (termRawStrings)
+import OEQ.UI.Settings.UISettings (rawStrings) as UISettings
+import OEQ.MainUI.SettingsPage (coreStrings, rawStrings) as SettingsPage
+import OEQ.MainUI.Template (rawStrings, coreStrings) as Template
 import Type.Row (class RowToList, Cons, Nil, RLProxy(..))
 
 foreign import data DynamicString :: Type

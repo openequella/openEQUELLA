@@ -7,7 +7,7 @@ import Data.Lens (_2, _Just, preview, set)
 import Data.Lens.At (at)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Tuple (Tuple(..))
-import EQUELLA.Environment (prepLangStrings)
+import OEQ.Environment (prepLangStrings)
 import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Properties (className, mkProp, onChange)
 import MaterialUI.Select (select, value)
@@ -16,7 +16,7 @@ import React (statelessComponent, unsafeCreateLeafElement)
 import React.DOM (text)
 import Search.SearchControl (Placement(..), SearchControl)
 import Search.SearchQuery (QueryParam(..), _data, _params, _value, singleParam)
-import Utils.UI (valueChange)
+import OEQ.UI.Common (valueChange)
 
 data Order = Relevance | DateModified | Name | Rating | DateCreated
 

@@ -1,1 +1,0 @@
-exports.momentUtils = require('material-ui-pickers/utils/moment-utils').default;

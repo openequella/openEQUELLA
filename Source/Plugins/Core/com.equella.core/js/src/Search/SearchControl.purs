@@ -8,7 +8,7 @@ import Effect (Effect)
 import React (ReactElement)
 import Search.ItemResult (Result)
 import Search.SearchQuery (Query)
-import SearchResults (SearchResults)
+import OEQ.Data.SearchResults (SearchResults)
 
 data Placement = Filters | ResultHeader | Results | Selections
 derive instance eqP :: Eq Placement 

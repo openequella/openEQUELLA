@@ -1,4 +1,4 @@
-module EQUELLA.Environment where
+module OEQ.Environment where
 
 import Prelude
 

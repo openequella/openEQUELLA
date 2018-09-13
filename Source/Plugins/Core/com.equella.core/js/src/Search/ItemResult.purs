@@ -6,7 +6,6 @@ import Data.Argonaut (class DecodeJson, decodeJson, (.?), (.??))
 import Data.Array (catMaybes, findMap, fromFoldable)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Dispatcher.React (propsRenderer)
-import EQUELLA.Environment (prepLangStrings)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn1)
 import MaterialUI.Button (button)
@@ -22,12 +21,13 @@ import MaterialUI.Properties as MUI
 import MaterialUI.Styles (withStyles)
 import MaterialUI.TextStyle as TS
 import MaterialUI.Typography (textSecondary, typography)
+import OEQ.Environment (prepLangStrings)
+import OEQ.UI.Common (ClickableHref)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (div, div', img, text)
 import React.DOM.Props as DP
 import React.SyntheticEvent (SyntheticEvent)
-import Routes (ClickableHref)
-import TimeAgo (timeAgo)
+import ExtUI.TimeAgo (timeAgo)
 
 newtype Attachment = Attachment {thumbnailHref::String}
 newtype DisplayField = DisplayField {name :: String, html::String}

@@ -11,7 +11,7 @@ import MaterialUI.List (list)
 import MaterialUI.Properties (component)
 import Search.ItemResult (ItemResultOptions, Result, itemResult)
 import Search.SearchControl (Placement(..), SearchControl)
-import SearchResults (SearchResults(..))
+import OEQ.Data.SearchResults (SearchResults(..))
 
 renderResults :: Effect (Result -> ItemResultOptions) -> SearchControl
 renderResults ef = case _ of 

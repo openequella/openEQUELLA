@@ -3,7 +3,7 @@ module Search.OwnerControl where
 import Prelude
 
 import Common.CommonStrings (commonString)
-import Common.Icons (userIcon, userIconName)
+import OEQ.UI.Icons (userIcon, userIconName)
 import Data.Array (head)
 import Data.Array as Array
 import Data.Lens (set)
@@ -14,7 +14,9 @@ import Data.Symbol (SProxy(..))
 import Data.Tuple (Tuple(..))
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, modifyState, renderer, saveRef)
-import EQUELLA.Environment (prepLangStrings)
+import OEQ.Data.User (UserDetails(..), UserGroupRoles(..))
+import OEQ.Environment (prepLangStrings)
+import OEQ.UI.SearchUser (UGREnabled(..), userSearch)
 import Effect (Effect)
 import Effect.Class (liftEffect)
 import Effect.Ref as Ref
@@ -31,10 +33,8 @@ import React as R
 import React.DOM (text)
 import Search.SearchControl (Chip(..), Placement(..), SearchControl)
 import Search.SearchQuery (_params, singleParam)
-import SearchFilters (filterSection)
-import Users.SearchUser (UGREnabled(..), userSearch)
-import Users.UserLookup (UserDetails(..), UserGroupRoles(..))
-import Utils.UI (unsafeWithRef)
+import OEQ.UI.SearchFilters (filterSection)
+import OEQ.UI.Common (unsafeWithRef)
 
 data Command = SelectOwner | OwnerSelected (Maybe UserDetails) | CloseOwner
 type State = {selectOwner::Boolean, userDetails:: Maybe UserDetails}

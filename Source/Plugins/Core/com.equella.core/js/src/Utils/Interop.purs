@@ -1,4 +1,4 @@
-module Utils.Interop where
+module OEQ.Utils.Interop where
 
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toNullable)

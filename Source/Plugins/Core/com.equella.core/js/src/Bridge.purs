@@ -6,9 +6,9 @@ import Effect.Uncurried (EffectFn1)
 import Foreign (Foreign)
 import React (ReactClass)
 import React.SyntheticEvent (SyntheticEvent)
-import Routes (Route(..), routeHref)
-import Security.ACLEditor (aclEditorClass)
-import Template (templateClass)
+import OEQ.MainUI.Routes (Route(..), routeHref)
+import OEQ.UI.Security.ACLEditor (aclEditorClass)
+import OEQ.MainUI.Template (templateClass)
 import Unsafe.Coerce (unsafeCoerce)
 
 type Bridge = {
