@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { WithStyles, Icon, withStyles, Theme } from "@material-ui/core";
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import { StyleRules } from '@material-ui/core/styles';
+import { createStyles } from '@material-ui/core/styles';
 import { commonString } from '../util/commonstrings';
 
 interface AppBarQueryProps {
@@ -10,8 +10,7 @@ interface AppBarQueryProps {
     query: string;
 }
 
-const decorate = withStyles((theme: Theme) => {
-    const style: StyleRules = {
+const styles = (theme : Theme) => createStyles({
     queryWrapper: {
         position: 'relative',
         fontFamily: theme.typography.fontFamily,
@@ -43,9 +42,8 @@ const decorate = withStyles((theme: Theme) => {
         color: "inherit",
         width: "100%"
     }
-}
-return style;
-})
+});
+
 
 class AppBarQuery extends React.Component<AppBarQueryProps & WithStyles<'queryWrapper' | 'queryIcon' | 'queryField'>>
 {
@@ -62,4 +60,4 @@ class AppBarQuery extends React.Component<AppBarQueryProps & WithStyles<'queryWr
     }
 }
 
-export default decorate<AppBarQueryProps>(AppBarQuery)
+export default withStyles(styles)(AppBarQuery)

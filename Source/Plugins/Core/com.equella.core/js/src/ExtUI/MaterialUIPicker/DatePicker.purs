@@ -8,7 +8,7 @@ import Data.JSDate (JSDate)
 import Data.Maybe (Maybe)
 import Data.Nullable (Nullable, toNullable)
 import Effect.Uncurried (EffectFn1)
-import MaterialUI.PropTypes (Untyped)
+import MaterialUI.PropTypes (ReactNode, Untyped)
 import MaterialUI.Properties (mkProp, IProp, mkPropRecord)
 import OEQ.Utils.Dates (LuxonDate)
 import Prim.Row (class Union)
@@ -17,6 +17,8 @@ import Unsafe.Coerce (unsafeCoerce)
 
 type DatePickerPropsExt r = (
   value :: Nullable JSDate {-Identifier:MaterialUiPickersDate-},
+  label :: ReactNode,
+  keyboard :: Boolean,
   minDate :: JSDate {-Identifier:DateType-},
   maxDate :: JSDate {-Identifier:DateType-},
   clearable :: Boolean,

@@ -42,6 +42,10 @@ interface CourseItemState {
   courses: Course[];
 }
 
+function courseToString(c: Course): string {
+  return `${c.code} - ${c.name}`
+}
+
 class CourseItems extends React.Component<CourseItemProps, CourseItemState>
 {
   constructor(props: CourseItemProps)
@@ -75,7 +79,7 @@ class CourseItems extends React.Component<CourseItemProps, CourseItemState>
       return <MenuItem {...itemProps} 
         key={course.name} 
         component="div">
-        {course.name}
+        {courseToString(course)}
       </MenuItem>
     });
   }
@@ -83,6 +87,8 @@ class CourseItems extends React.Component<CourseItemProps, CourseItemState>
 
 interface CourseSelectProps  {
   course: Course | null;
+  required?: boolean;
+  title: string;
   onCourseSelect: (course: Course) => void;
 }
 
@@ -99,7 +105,7 @@ class CourseSelect extends React.Component<CourseSelectProps & WithStyles<typeof
     }
 
     itemChanged = (selectedItem: Course) => {
-      this.setState({inputValue: selectedItem.name});
+      this.setState({inputValue: courseToString(selectedItem)});
       this.props.onCourseSelect(selectedItem)
     }
     handleInputChange = (event: any) => {
@@ -107,7 +113,7 @@ class CourseSelect extends React.Component<CourseSelectProps & WithStyles<typeof
       this.setState({ inputValue });
     };
     render() {
-        const {classes, course} = this.props;
+        const {classes, title, course} = this.props;
         const {inputValue } = this.state;
         return <Downshift itemToString={(c: Course) => ""} inputValue={inputValue} selectedItem={course} onChange={ this.itemChanged } 
         >
@@ -121,6 +127,9 @@ class CourseSelect extends React.Component<CourseSelectProps & WithStyles<typeof
           selectedItem,
         }) => <div className={classes.container}>
             <TextField 
+            required={this.props.required}
+            label={title}
+            placeholder={"Search on name and code..."}
             InputProps={...getInputProps(
               {onChange: this.handleInputChange}
             )}

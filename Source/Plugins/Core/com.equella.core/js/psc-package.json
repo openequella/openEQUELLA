@@ -1,8 +1,9 @@
 {
   "name": "js",
-  "set": "equella-03082018",
+  "set": "equella-2018-09-18",
   "source": "https://github.com/equella/package-sets.git",
   "depends": [
+    "tscompat",
     "aff-promise",
     "unsafe-reference",
     "js-timers",

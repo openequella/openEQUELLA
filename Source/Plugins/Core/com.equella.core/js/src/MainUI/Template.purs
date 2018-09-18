@@ -57,18 +57,21 @@ import MaterialUI.TextStyle as TS
 import MaterialUI.Toolbar (disableGutters, toolbar)
 import MaterialUI.Tooltip (tooltip, title)
 import MaterialUI.Typography (typography)
+import MaterialUI.Typography as Type
 import Network.HTTP.Affjax (get)
 import Network.HTTP.Affjax.Response as Resp
+import OEQ.Data.Error (ErrorResponse)
 import OEQ.Environment (baseUrl, prepLangStrings)
+import OEQ.MainUI.Routes (Route, forcePushRoute, logoutRoute, matchRoute, pushRoute, routeHref, routeURI, setPreventNav, userPrefsRoute)
 import OEQ.UI.Common (rootTag, withCurrentTarget)
+import OEQ.UI.MessageInfo (messageInfo)
+import OEQ.Utils.Interop (nullAny)
 import Partial.Unsafe (unsafePartial)
 import React (Children, ReactClass, ReactElement, ReactThis, childrenToArray, createElement)
 import React as R
 import React.DOM (footer, text)
 import React.DOM as D
 import React.DOM.Props as DP
-import OEQ.MainUI.Routes (Route, forcePushRoute, logoutRoute, matchRoute, pushRoute, routeHref, routeURI, setPreventNav, userPrefsRoute)
-import OEQ.Utils.Interop (nullAny)
 import Web.DOM.DOMTokenList as DOMTokens
 import Web.DOM.Document (documentElement)
 import Web.Event.EventTarget (EventListener, addEventListener, removeEventListener)
@@ -82,8 +85,8 @@ import Web.HTML.Window (document, toEventTarget)
 newtype ExternalHref = ExternalHref String 
 newtype MenuItem = MenuItem {route::Either ExternalHref String, title::String, systemIcon::Maybe String}
 
-data Command = Init | Updated {preventNavigation :: Nullable Boolean, title::String, fullscreenMode::String} | AttemptRoute Route | NavAway Boolean
-  | ToggleMenu | UserMenuAnchor (Maybe HTMLElement) | MenuClick Route | GoBack
+data Command = Init | AttemptRoute Route | NavAway Boolean
+  | ToggleMenu | UserMenuAnchor (Maybe HTMLElement) | MenuClick Route | GoBack | CloseError
 
 type Counts = {
   tasks :: Int, 
@@ -125,20 +128,25 @@ type TemplateProps = (
   fullscreenMode :: String,
   hideAppBar :: Boolean, 
   enableNotifications :: Boolean,
-  innerRef :: Nullable (EffectFn1 (Nullable TemplateRef) Unit)
+  innerRef :: Nullable (EffectFn1 (Nullable TemplateRef) Unit),
+  errorResponse :: Nullable ErrorResponse
 )
 
 type State = {
   mobileOpen::Boolean, 
   menuAnchor::Maybe HTMLElement, 
   user :: Maybe UserData,
-  attempt :: Maybe Route
+  attempt :: Maybe Route,
+  errorOpen :: Boolean
 }
 
 initialState :: State
 initialState = {
-  mobileOpen: false, menuAnchor: Nothing, user: Nothing, 
-    attempt: Nothing
+  mobileOpen: false, 
+  menuAnchor: Nothing, 
+  user: Nothing, 
+  attempt: Nothing, 
+  errorOpen: false
 }
 
 template :: String -> Array ReactElement -> ReactElement
@@ -148,8 +156,22 @@ template' :: {|TemplateProps} -> Array ReactElement -> ReactElement
 template' = createElement templateClass
 
 templateDefaults ::  String ->  {|TemplateProps} 
-templateDefaults title = {title,titleExtra:nullAny, fixedViewPort:nullAny,preventNavigation:nullAny, menuExtra:nullAny, enableNotifications: true,
-  tabs:nullAny, backRoute: nullAny, footer: nullAny, menuMode:"", fullscreenMode:"", hideAppBar: false, innerRef:nullAny}
+templateDefaults title = {
+    title,
+    titleExtra:nullAny, 
+    fixedViewPort:nullAny,
+    preventNavigation:nullAny, 
+    menuExtra:nullAny, 
+    enableNotifications: true,
+    tabs:nullAny, 
+    backRoute: nullAny, 
+    footer: nullAny, 
+    menuMode:"", 
+    fullscreenMode:"", 
+    hideAppBar: false, 
+    innerRef:nullAny, 
+    errorResponse: nullAny
+}
 
 loadNewUser :: forall p. ReaderT (ReactThis p State) Aff Unit
 loadNewUser = do 
@@ -187,7 +209,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       setUnloadListener add
 
     render {state: state@{mobileOpen,menuAnchor,user,attempt}, props:props@{fixedViewPort:fvp, classes, 
-                title:titleText,titleExtra,menuExtra,backRoute}} = rootTag classes.root [
+                title:titleText,titleExtra,menuExtra,backRoute}} = rootTag classes.root $ [
         layout, 
         dialog [ open $ isJust attempt] [
           dialogTitle_ [ text strings.navaway.title], 
@@ -198,7 +220,14 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
             button [onClick $ \_ -> d $ NavAway false, color C.secondary] [text commonString.action.cancel],
             button [onClick $ \_ -> d $ NavAway true, color C.primary] [text commonString.action.discard]
           ]
-        ]
+        ] ] <> catMaybes [
+        toMaybe props.errorResponse <#> \{code, error, description} -> messageInfo {
+                              open: state.errorOpen, 
+                              onClose: d CloseError, 
+                              title: fromMaybe error description, 
+                              code: toNullable $ Just code, 
+                              variant: Type.error
+                            }
       ]
       where
       children = childrenToArray props.children
@@ -326,6 +355,8 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       addClass (fullscreenClass newMode)
 
     maybeEff b e = if b then e else pure unit
+    eval (CloseError) = do 
+      modifyState _{errorOpen=false}
     eval (GoBack) = do 
       {backRoute} <- getProps
       liftEffect $ maybe (pure unit) pushRoute $ toMaybe backRoute  
@@ -338,14 +369,6 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       modifyState _{attempt = Nothing}
     eval (AttemptRoute r) = do 
       modifyState _{attempt = Just r}
-    eval (Updated {preventNavigation:oldpn,title:oldtitle,fullscreenMode:oldfsm}) = do 
-      {preventNavigation, title, fullscreenMode} <- getProps
-      let isTrue = fromMaybe false <<< toMaybe
-          newPN = isTrue preventNavigation
-      liftEffect $ do 
-        maybeEff (isTrue oldpn /= newPN) $ setPreventUnload newPN
-        maybeEff (oldtitle /= title) $ setWindowTitle title
-        maybeEff (oldfsm /= fullscreenMode) $ setHtmlClasses oldfsm fullscreenMode
     eval Init = do 
       {title,preventNavigation:pn,fullscreenMode} <- getProps
       liftEffect $ do 
@@ -361,8 +384,17 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
     render: renderer render this, 
     state:initialState, 
     componentDidMount: d Init, 
-    componentDidUpdate: \{preventNavigation,title, fullscreenMode} _ _ -> d $ Updated { preventNavigation, title, fullscreenMode},
-    componentWillUnmount: setUnloadListener false
+    componentDidUpdate: \oldProps@{fullscreenMode:oldfsm} _ _ -> do
+      p@{preventNavigation, title, fullscreenMode} <- R.getProps this
+      let isTrue = fromMaybe false <<< toMaybe
+          newPN = isTrue preventNavigation
+      maybeEff (isTrue oldProps.preventNavigation /= newPN) $ setPreventUnload newPN
+      maybeEff (oldProps.title /= title) $ setWindowTitle title
+      maybeEff (oldfsm /= fullscreenMode) $ setHtmlClasses oldfsm fullscreenMode
+      maybeEff (oldProps.errorResponse /= p.errorResponse) $ do 
+        log "Error changed!"
+        R.setState this {errorOpen: true}
+    , componentWillUnmount: setUnloadListener false
   }
   where
     drawerWidth = 240

@@ -2,7 +2,6 @@ module OEQ.UI.ItemSummary.ItemComments where
 
 import Prelude hiding (div)
 
-import OEQ.API.Requests (errorOr, getJson, postJsonExpect)
 import Control.Monad.Except (ExceptT(..), runExceptT, throwError)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
@@ -16,11 +15,8 @@ import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..))
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer)
-import OEQ.Data.Error (ErrorResponse)
-import OEQ.Data.Item (ItemComment, decodeComment)
 import Effect.Uncurried (EffectFn1)
 import Global.Unsafe (unsafeEncodeURIComponent)
-import OEQ.API.Item (itemApiPath, uuidHeader)
 import MaterialUI.Button (button, raised)
 import MaterialUI.Color as Color
 import MaterialUI.FormControl (formControl)
@@ -42,12 +38,16 @@ import MaterialUI.Switch (switch)
 import MaterialUI.SwitchBase (checked)
 import MaterialUI.TextField (label, textField)
 import Network.HTTP.Affjax as Ajax
+import OEQ.API.Item (itemApiPath, uuidHeader)
+import OEQ.API.Requests (errorOr, getJson, postJsonExpect)
+import OEQ.Data.Error (ErrorResponse, mkUniqueError)
+import OEQ.Data.Item (ItemComment, decodeComment)
+import OEQ.UI.Common (checkChange, textChange)
+import OEQ.UI.Common as Utils
 import OEQ.Utils.QueryString (queryString)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (div, div', em', text)
 import React.DOM.Props as RP
-import OEQ.UI.Common (checkChange, textChange)
-import OEQ.UI.Common as Utils
 
 data Command = CommentText String 
   | AnonymousFlag Boolean 
@@ -143,7 +143,7 @@ itemComments = unsafeCreateLeafElement $ withStyles styles $ component "ItemComm
               commentJson = encodeComment {comment:commentText, anonymous,rating}
           {headers} <- ExceptT $ postJsonExpect 201 (itemApiPath uuid version <> "/comment")  commentJson
           case findMap uuidHeader headers of 
-              Nothing -> throwError {code:500,description:Nothing,error:"No UUID header for comment"}
+              Nothing -> throwError $ mkUniqueError 500 "No UUID header for comment" Nothing
               Just commentUuid -> do 
                   ExceptT $ getJson (itemApiPath uuid version <> "/comment/" <> unsafeEncodeURIComponent commentUuid) (decodeComment)
         errorOr (\c -> modifyState \s -> s {commentText = "", comments = Array.cons c s.comments}) res

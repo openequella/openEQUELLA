@@ -1,8 +1,11 @@
 module OEQ.Data.Activation where 
 
 import Prelude
+
 import Data.Argonaut (Json, jsonEmptyObject, (:=), (~>))
+import Data.Argonaut.Encode ((:=?), (~>?))
 import Data.Date (Date)
+import Data.Maybe (Maybe)
 import OEQ.Data.Item (ItemRef)
 import OEQ.Utils.Dates (dateToLuxon, luxonDateToIso)
 
@@ -16,14 +19,15 @@ type ActivationBase r = (
     | r
 )
 
-type ActivateReqest = Record (ActivationBase ())
+type ActivateReqest = Record (ActivationBase (citation :: Maybe String))
 
 encodeActivateRequset :: ActivateReqest -> Json
-encodeActivateRequset ar@{item, attachmentUuid, courseUuid, from, until} = 
+encodeActivateRequset ar = 
     "type" := ar."type" ~> 
-    "item" := item ~>
-    "attachment" := attachmentUuid ~>
-    "course" := ("uuid" := courseUuid ~> jsonEmptyObject) ~>
-    "from" := (luxonDateToIso $ dateToLuxon from) ~>
-    "until" := (luxonDateToIso $ dateToLuxon until) ~>
+    "item" := ar.item ~>
+    "attachment" := ar.attachmentUuid ~>
+    "course" := ("uuid" := ar.courseUuid ~> jsonEmptyObject) ~>
+    "from" := (luxonDateToIso $ dateToLuxon ar.from) ~>
+    "until" := (luxonDateToIso $ dateToLuxon ar.until) ~>
+    "citation" :=? ar.citation ~>?
     jsonEmptyObject

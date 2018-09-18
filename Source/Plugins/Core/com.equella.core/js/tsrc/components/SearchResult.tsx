@@ -1,9 +1,9 @@
-import { IconButton, ListItem, ListItemSecondaryAction, ListItemText, Theme, WithStyles, withStyles } from '@material-ui/core';
+import { IconButton, ListItem, ListItemSecondaryAction, ListItemText, Theme, WithStyles, withStyles, createStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import DeleteIcon from '@material-ui/icons/Delete';
 import * as React from 'react';
 
-const styles = withStyles((theme: Theme) => (
+const styles = (theme:Theme) => createStyles(
 {
     searchResultContent: {
         marginTop: theme.spacing.unit
@@ -19,7 +19,7 @@ const styles = withStyles((theme: Theme) => (
     details: {
         marginTop: theme.spacing.unit
     }
-}));
+});
 
 export interface SearchResultExtraDetail {
     label: string;
@@ -74,4 +74,4 @@ class SearchResult extends React.Component<PropsWithStyles> {
     }
 }
 
-export default styles<SearchResultProps>(SearchResult);
+export default withStyles(styles)(SearchResult);

@@ -5,7 +5,7 @@ import Prelude hiding (div)
 import Control.Monad.Trans.Class (lift)
 import Data.Array (catMaybes)
 import Data.Either (Either(..))
-import Data.Maybe (Maybe(..), fromMaybe, isJust, maybe)
+import Data.Maybe (Maybe(..), isJust, maybe)
 import Data.Nullable (toNullable)
 import Data.String (joinWith)
 import Dispatcher (affAction)
@@ -31,14 +31,12 @@ import MaterialUI.Styles (withStyles)
 import MaterialUI.TextStyle (display2, headline)
 import MaterialUI.Typography (typography)
 import MaterialUI.Typography as Color
-import MaterialUI.Typography as Type
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (div, text)
 import React.DOM as D
 import React.DOM.Props (_id)
 import React.DOM.Props as DP
 import OEQ.MainUI.Routes (LegacyURI(..), matchRoute, pushRoute)
-import TSComponents (messageInfo)
 import OEQ.MainUI.Template (refreshUser, template', templateDefaults)
 import OEQ.UI.Common (scrollWindowToTop, withCurrentTarget)
 import Web.HTML (HTMLElement, window)
@@ -57,7 +55,6 @@ type PageContent = {
 data Command = OptionsAnchor (Maybe HTMLElement) 
   | Submit SubmitOptions
   | LoadPage 
-  | CloseError
   | Updated LegacyURI
   | UpdateForm FormUpdate
 
@@ -67,8 +64,7 @@ type State = {
   errored :: Maybe ErrorResponse,
   state :: Object (Array String),
   pagePath :: String,
-  noForm :: Boolean, 
-  errorShowing :: Boolean
+  noForm :: Boolean
 }
 
 legacy :: {page :: LegacyURI} -> ReactElement
@@ -98,16 +94,9 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
                                 innerRef = toNullable $ Just $ saveRef tempRef, 
                                 hideAppBar = c.hideAppBar, 
                                 menuMode = c.menuMode, 
-                                fullscreenMode = c.fullscreenMode
-                          } $ catMaybes [ Just mainContent, 
-                            errored <#> \{code, error, description} -> messageInfo {
-                              open: s.errorShowing, 
-                              onClose: d CloseError, 
-                              title: fromMaybe error description, 
-                              code: toNullable $ Just code, 
-                              variant: Type.error
-                            } 
-                          ] 
+                                fullscreenMode = c.fullscreenMode, 
+                                errorResponse = toNullable errored
+                          } [ mainContent ] 
         Nothing | Just {code,error,description} <- errored -> template' (templateDefaults error) [ 
           div [DP.className classes.errorPage] [
             card [] [
@@ -135,19 +124,14 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
     submitWithPath fullError path opts = do 
         (lift $ submitRequest path opts) >>= case _ of 
           Left errorPage -> modifyState \s -> s {errored = Just errorPage, 
-                        errorShowing = true, 
                         content = if fullError then Nothing else s.content}
           Right resp -> updateContent resp
-
-    titleForCode 404 = "Page not found"
-    titleForCode _ = "Server error"
 
     eval = case _ of 
       (OptionsAnchor el) -> modifyState _ {optionsAnchor = el}
       Updated oldPage -> do 
         {page} <- getProps
         if oldPage /= page then eval LoadPage else pure unit
-      CloseError -> modifyState _ {errorShowing = false}
       LoadPage -> do 
         {page: LegacyURI _pagePath params} <- getProps 
         let pagePath = case _pagePath of 
@@ -176,7 +160,7 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
     updateContent (LegacyContent lc@{css, js, state, html,script, title, fullscreenMode, menuMode, hideAppBar} userUpdated) = do 
       doRefresh userUpdated
       lift $ updateIncludes true css js
-      modifyState \s -> s {noForm = lc.noForm, errorShowing = s.errorShowing && isJust s.content, 
+      modifyState \s -> s {noForm = lc.noForm,
         content = Just {html, script, title, fullscreenMode, menuMode, hideAppBar}, state = state}
 
   pure {
@@ -185,7 +169,6 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
       content: Nothing, 
       pagePath: "", 
       errored: Nothing, 
-      errorShowing: false,
       state: Object.empty, 
       noForm: false
     } :: State, 

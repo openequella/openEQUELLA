@@ -1,78 +1,123 @@
-module OEQ.UI.Activation (createActivation)
-where 
+module OEQ.UI.Activation where 
 
-import Prelude
+import Prelude hiding (div)
 
 import Control.Alt ((<|>))
 import Control.Monad.Trans.Class (lift)
+import Control.MonadZero (guard)
 import Data.Date (Date)
 import Data.Lens (Lens', set, view)
 import Data.Lens.Record (prop)
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.Symbol (SProxy(..))
 import Dispatcher (affAction)
-import Dispatcher.React (getProps, getState, modifyState, stateRenderer)
-import Effect.Uncurried (mkEffectFn1)
+import Dispatcher.React (getProps, modifyState, renderer)
+import Effect (Effect)
+import Effect.Class (liftEffect)
+import Effect.Uncurried (EffectFn1, mkEffectFn1)
 import ExtUI.MaterialUIPicker.DatePicker (datePicker, mkProps)
-import MaterialUI.Button (button)
-import MaterialUI.Properties (onClick)
-import OEQ.API.Requests (postJson)
-import OEQ.Data.Activation (encodeActivateRequset)
-import OEQ.Data.Item (ItemRef)
+import Foreign.Object (Object)
+import MaterialUI.Styles (withStyles)
+import MaterialUI.TextField as OldMui
+import OEQ.API.Requests (errorOr)
+import OEQ.API.Schema (listAllCitations)
+import OEQ.Data.Error (ErrorResponse)
+import OEQ.UI.Common (valueChange)
 import OEQ.Utils.Dates (LuxonDate, luxonToDate, parseIsoToLuxon)
 import OEQ.Utils.Dates as Dates
 import React (ReactElement, component, unsafeCreateLeafElement)
-import React.DOM (div', text)
+import React.DOM (div', div, text)
+import React.DOM.Props as RP
+import ReactMUI.MenuItem (menuItem)
+import ReactMUI.TextField (textField)
 import TSComponents (CourseEntity, courseSelectClass)
 
-type State = {
+type ActivationData = {
   startDate :: Maybe Date, 
   endDate :: Maybe Date, 
-  course :: Maybe CourseEntity
+  course :: Maybe CourseEntity, 
+  citation :: Maybe String
 }
-data Command = SetDate (Maybe Date -> State -> State) (Nullable LuxonDate) | SetCourse CourseEntity | Activate
 
-createActivation :: { attachmentUuid :: String, item :: ItemRef } -> ReactElement
-createActivation = unsafeCreateLeafElement $ component "CreateActivation" $ \this -> do
+type State = {
+  citations :: Array String
+}
+data Command = SetDate (Maybe Date -> ActivationData -> ActivationData) (Nullable LuxonDate) 
+  | SetCourse CourseEntity 
+  | SetCitation String
+  | Init 
+
+
+activationParams :: { data :: ActivationData, 
+  onChange :: ActivationData -> Effect Unit, 
+  errors :: Object String,
+  onError :: EffectFn1 ErrorResponse Unit } -> ReactElement
+activationParams = unsafeCreateLeafElement $ withStyles styles $ component "ActivationParams" $ \this -> do
   let 
     _startDate = prop (SProxy :: SProxy "startDate")
     _endDate = prop (SProxy :: SProxy "endDate")
     d = eval >>> affAction this
 
-    render s = div' [
-        dc _startDate,
-        dc _endDate, 
-        button [onClick $ \_ -> d $ Activate] [ text "Activate"],
+    render {props:{classes, data:ad}, state:s} = div [RP.className classes.container] [
         unsafeCreateLeafElement courseSelectClass {
-          course: toNullable s.course,  
-          onCourseSelect: mkEffectFn1 $ d <<< SetCourse }
+          course: toNullable ad.course,  
+          required: true,
+          title: "Course",
+          onCourseSelect: mkEffectFn1 $ d <<< SetCourse },
+        dc _startDate "Start date",
+        dc _endDate "End date", 
+        div' [
+          textField { 
+            label: "Citation",  
+            className: classes.field, 
+            select: true,  
+            value: fromMaybe "" ad.citation,
+            onChange: mkEffectFn1 $ valueChange (d <<< SetCitation) } $ 
+                [menuItem {value: ""} [text "Default"]] <>  
+                  ((\c -> menuItem {value: c} [text c]) <$> s.citations)
+        ]
     ]
       where 
-      dc :: Lens' State (Maybe Date) -> ReactElement
-      dc l = datePicker [
-        mkProps {clearable: true, value: toNullable $ Dates.dateToLocalJSDate <$> view l s, 
-        onChange: mkEffectFn1 $ d <<< SetDate (set l)}]
+      dc :: Lens' ActivationData (Maybe Date) -> String -> ReactElement
+      dc l lab = div [RP.className classes.field] [ 
+        datePicker [
+          OldMui.label $ lab <> " *",
+          mkProps {
+            clearable: true, value: toNullable $ Dates.dateToLocalJSDate <$> view l ad, 
+            onChange: mkEffectFn1 $ d <<< SetDate (set l)}
+        ]
+      ]
 
+    modifyData f = do 
+      p <- getProps 
+      liftEffect $ p.onChange $ f p."data"
     eval = case _ of 
-      SetDate f jsd -> modifyState (f $ Dates.luxonToDate <$> toMaybe jsd)
+      Init -> (lift $ listAllCitations) >>= errorOr (\c -> modifyState _ {citations=c}) 
+      SetDate f jsd -> modifyData (f $ Dates.luxonToDate <$> toMaybe jsd)
+      SetCitation c -> modifyData _ {citation = (guard $ c /= "") $> c}
       SetCourse c -> 
         let fromIso = toMaybe >>> map (luxonToDate <<< parseIsoToLuxon) 
-        in modifyState \s -> s {
+        in modifyData \s -> s {
         course = Just c, 
         startDate = fromIso c.from <|> s.startDate, 
-        endDate = fromIso c.until <|> s.endDate
+        endDate = fromIso c.until <|> s.endDate, 
+        citation = toMaybe c.citation <|> s.citation
       }
-      Activate -> do 
-        {attachmentUuid, item} <- getProps
-        getState >>= case _ of 
-          {startDate: Just from, endDate: Just until, course: Just {uuid:courseUuid}} -> do
-            _ <- lift $ postJson "api/activation" $ 
-              encodeActivateRequset {"type": "cal", item, attachmentUuid, from, until, courseUuid}
-            pure unit 
-          _ -> pure unit
-  pure {render:stateRenderer render this, state:{
-    startDate: Nothing, 
-    endDate: Nothing, 
-    course : Nothing
-  } :: State}
+  pure {
+    render:renderer render this, 
+    componentDidMount: d Init,
+    state:{
+      citations : []
+    } :: State}
+  where 
+    styles theme = {
+      container: {
+        display: "flex", 
+        flexDirection: "column"
+      }, 
+      field: {
+        margin: show theme.spacing.unit <> "px 0px",
+        width: "15em"
+      }
+    }

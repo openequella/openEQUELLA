@@ -73,15 +73,15 @@ viewItem = unsafeCreateLeafElement $ component "ViewItem" \this -> do
 viewItemSummary :: ViewItemSummaryProps -> ReactElement
 viewItemSummary = unsafeCreateLeafElement $ withStyles styles $ statelessComponent render
   where
-  render p@{classes, onSelect, content:{title:itemName,copyright,sections}} = 
+  render p@{classes, onError, onSelect, content:{title:itemName,copyright,sections}} = 
     div' $ (renderSection <$> sections)
       <> (Array.fromFoldable $ renderCopyright <$> copyright)
     where
     renderCopyright c = div [DP.className classes.section ] [ 
       titleText "Copyright",
-      copyrightSummary {copyright:c}
+      copyrightSummary {onError, copyright:c}
     ]
-    titleText t = typography [
+    titleText t = typography [ 
       variant title, 
       color Color.secondary, 
       className classes.sectionTitle] [text t]
