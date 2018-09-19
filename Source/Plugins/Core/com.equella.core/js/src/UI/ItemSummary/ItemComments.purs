@@ -15,39 +15,35 @@ import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..))
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer)
-import Effect.Uncurried (EffectFn1)
+import Effect.Uncurried (EffectFn1, mkEffectFn1)
 import Global.Unsafe (unsafeEncodeURIComponent)
-import MaterialUI.Button (button, raised)
-import MaterialUI.Color as Color
-import MaterialUI.FormControl (formControl)
-import MaterialUI.FormControlLabel (control, formControlLabel)
-import MaterialUI.FormGroup (formGroup_)
-import MaterialUI.Icon (icon_)
-import MaterialUI.IconButton (iconButton)
-import MaterialUI.Input (fullWidth, multiline, placeholder, rowsMax, value)
-import MaterialUI.InputLabel (inputLabel_)
-import MaterialUI.List (disablePadding, list)
-import MaterialUI.ListItem (disableGutters, listItem)
-import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
-import MaterialUI.ListItemText (listItemText, primary, secondary)
-import MaterialUI.MenuItem (menuItem)
-import MaterialUI.Properties (className, color, mkProp, onChange, onClick, variant)
-import MaterialUI.Select (select)
 import MaterialUI.Styles (withStyles)
-import MaterialUI.Switch (switch)
-import MaterialUI.SwitchBase (checked)
-import MaterialUI.TextField (label, textField)
 import Network.HTTP.Affjax as Ajax
 import OEQ.API.Item (itemApiPath, uuidHeader)
 import OEQ.API.Requests (errorOr, getJson, postJsonExpect)
 import OEQ.Data.Error (ErrorResponse, mkUniqueError)
 import OEQ.Data.Item (ItemComment, decodeComment)
-import OEQ.UI.Common (checkChange, textChange)
+import OEQ.UI.Common (checkChange, textChange, valueChange)
 import OEQ.UI.Common as Utils
 import OEQ.Utils.QueryString (queryString)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (div, div', em', text)
 import React.DOM.Props as RP
+import ReactMUI.Button (button)
+import ReactMUI.Enums (primary, raised)
+import ReactMUI.FormControl (formControl)
+import ReactMUI.FormControlLabel (formControlLabel)
+import ReactMUI.FormGroup (formGroup_)
+import ReactMUI.Icon (icon_)
+import ReactMUI.IconButton (iconButton)
+import ReactMUI.InputLabel (inputLabel_)
+import ReactMUI.List (list)
+import ReactMUI.ListItem (listItem)
+import ReactMUI.ListItemSecondaryAction (listItemSecondaryAction_)
+import ReactMUI.ListItemText (listItemText)
+import ReactMUI.MenuItem (menuItem)
+import ReactMUI.Switch (switch)
+import ReactMUI.TextField (textField)
 
 data Command = CommentText String 
   | AnonymousFlag Boolean 
@@ -85,46 +81,46 @@ itemComments = unsafeCreateLeafElement $ withStyles styles $ component "ItemComm
   let 
     d = eval >>> affAction this
 
-    renderComment canDelete c = listItem [disableGutters true] $ catMaybes [
+    renderComment canDelete c = listItem {disableGutters: true} $ catMaybes [
             -- listItemIcon_ [ userIcon ],
-            Just $ listItemText [primary c.comment, secondary $ c.date <> " - " <> show c.rating ], 
+            Just $ listItemText {primary: c.comment, secondary: c.date <> " - " <> show c.rating } [], 
             guard canDelete $> listItemSecondaryAction_ [ 
-                                  iconButton [onClick \_ -> d $ DeleteComment c.uuid] 
+                                  iconButton {onClick: d $ DeleteComment c.uuid}
                                   [ icon_ [ text "delete" ] ] 
                                 ]
           ]
 
-    ratingItem v = let sv = show v in menuItem [mkProp "value" $ show v] [ text $ show v ]
+    ratingItem v = let sv = show v in menuItem {value: show v } [ text $ show v ]
 
     render {props:{classes,canAdd,canDelete,anonymousOnly,allowAnonymous}, state:{rating,commentText,comments,anonymous}} = let 
       renderAdd = [
-        textField [
-          textChange d CommentText, value commentText, 
-          label "Enter comment", 
-          placeholder "Enter comment", 
-          rowsMax 3, 
-          multiline true, 
-          fullWidth true], 
+        textField {
+          onChange: mkEffectFn1 $ valueChange (d <<< CommentText),
+          value: commentText, 
+          label: "Enter comment", 
+          placeholder: "Enter comment", 
+          rowsMax: 3, 
+          multiline: true, 
+          fullWidth: true} [], 
         div [RP.className classes.commentButtons] $ catMaybes [ 
-          Just $ formControl [className classes.ratingField ] [
-            inputLabel_ [ text "Rating" ], 
-            select [ value $ fromMaybe "" (show <$> rating), onChange $ Utils.valueChange (d <<< SetRating) ] $ 
-              [ menuItem [mkProp "value" ""] [ em' [ text "No rating" ] ] ] 
-                <> (ratingItem <$> Array.range 1 5)
-          ],
+          Just $ textField {
+                  className: classes.ratingField,
+                  label: "Rating", select:true, 
+                  value: fromMaybe "" (show <$> rating),
+                  onChange: mkEffectFn1 $ Utils.valueChange (d <<< SetRating) } $ 
+                    [ menuItem {value: ""} [ em' [ text "No rating" ] ] ] 
+                      <> (ratingItem <$> Array.range 1 5),
           (guard $ not anonymousOnly && allowAnonymous) $> formGroup_ [
-              formControlLabel [
-                label "Anonymous", 
-                control $ switch [
-                  checked anonymous, 
-                  onChange $ checkChange $ d <<< AnonymousFlag] 
-              ]
+              formControlLabel {
+                label: "Anonymous",
+                control: switch { checked: anonymous, onChange: checkChange $ d <<< AnonymousFlag} []
+              } []
             ],
-          Just $ button [onClick \_ -> d MakeComment, variant raised, color Color.primary] [text "Comment"]
+          Just $ button {onClick: d MakeComment, variant: raised, color: primary} [text "Comment"]
         ]
       ]
      in div' $ guard canAdd *> renderAdd <> 
-      [ list [ disablePadding true ] $ renderComment canDelete <$> comments ]
+      [ list { disablePadding: true } $ renderComment canDelete <$> comments ]
     
     eval = case _ of 
       SetRating r -> 

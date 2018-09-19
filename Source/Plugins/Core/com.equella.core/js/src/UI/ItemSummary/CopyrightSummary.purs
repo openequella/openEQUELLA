@@ -29,13 +29,13 @@ import React.DOM.Props (href)
 import React.DOM.Props as RP
 import ReactMUI.Button (button)
 import ReactMUI.Dialog (dialog)
-import ReactMUI.DialogActions (dialogActions)
+import ReactMUI.DialogActions (dialogActions, dialogActions_)
 import ReactMUI.DialogContent (dialogContent)
-import ReactMUI.DialogTitle (dialogTitle)
+import ReactMUI.DialogTitle (dialogTitle, dialogTitle_)
 import ReactMUI.Enums (primary)
-import ReactMUI.List (list)
-import ReactMUI.ListItem (listItem)
-import ReactMUI.ListItemSecondaryAction (listItemSecondaryAction)
+import ReactMUI.List (list, list_)
+import ReactMUI.ListItem (listItem, listItem_)
+import ReactMUI.ListItemSecondaryAction (listItemSecondaryAction, listItemSecondaryAction_)
 import ReactMUI.ListItemText (listItemText)
 
 type CopyrightProps = {
@@ -58,15 +58,15 @@ copyrightSummary = unsafeCreateLeafElement $ withStyles styles $ component "Copy
     d = eval >>> affAction this
     render {props: {classes, onError, copyright: {holding}}, state:{currentActivation:ca}} = let 
       attachmentLink {title,href:h} = a [href $ fromMaybe "" h] [ text title ]
-      bookSection {pageCount,attachment} = listItem {} [
-        list {} $ map metaEntry [
+      bookSection {pageCount,attachment} = listItem_ [
+        list_ $ map metaEntry [
           {title: "Pages:", value: Text $ show pageCount},
           {title: "Resource:", value: case attachment.href of 
             Nothing -> Text attachment.title
             Just h -> React $ a [href h] [ text attachment.title ]
           }
         ],
-        listItemSecondaryAction {} [
+        listItemSecondaryAction_ [
           button {color: primary,  onClick: d $ Activate attachment} [ text "Activate" ]
         ]
         -- createActivation {onError, item: attachment.item, attachmentUuid: attachment.uuid}
@@ -83,11 +83,11 @@ copyrightSummary = unsafeCreateLeafElement $ withStyles styles $ component "Copy
               open: a.open, 
               onClose: d CancelDialog 
              } [
-              dialogTitle {} [ text "Activate" ],
+              dialogTitle_ [ text "Activate" ],
               dialogContent {className: classes.activateDialog} [
                 activationParams {"data": a.activation, errors:empty, onChange: d <<< ChangeData, onError}
               ], 
-              dialogActions {} [
+              dialogActions_ [
                 button {color: primary, onClick: d CancelDialog } [text "Cancel"],
                 button {color: primary, onClick: d FinishActivate } [text "Activate"]
               ]
