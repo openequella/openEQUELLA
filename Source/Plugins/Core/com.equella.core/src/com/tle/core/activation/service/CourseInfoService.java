@@ -26,6 +26,9 @@ import com.tle.core.remoting.RemoteCourseInfoService;
 
 public interface CourseInfoService extends RemoteCourseInfoService, AbstractEntityService<EntityEditingBean, CourseInfo>
 {
+	String PRIV_CREATE_COURSE = "CREATE_COURSE_INFO";
+	String PRIV_EDIT_COURSE = "EDIT_COURSE_INFO";
+
 	void edit(CourseInfo course);
 
 	CourseInfo getByCode(String code);

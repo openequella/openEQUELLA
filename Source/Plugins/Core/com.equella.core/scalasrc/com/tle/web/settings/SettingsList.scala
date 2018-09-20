@@ -19,7 +19,9 @@ package com.tle.web.settings
 import com.tle.common.connectors.ConnectorConstants.{PRIV_CREATE_CONNECTOR, PRIV_EDIT_CONNECTOR}
 import com.tle.common.externaltools.constants.ExternalToolConstants
 import com.tle.common.lti.consumers.LtiConsumerConstants
+import com.tle.common.security.SecurityConstants
 import com.tle.common.userscripts.UserScriptsConstants
+import com.tle.core.activation.service.CourseInfoService
 import com.tle.core.db.{DB, RunWithDB}
 import com.tle.core.echo.EchoConstants
 import com.tle.core.i18n.CoreStrings
@@ -156,7 +158,8 @@ object SettingsList {
       "access/portaladmin.do", portletWebService.canAdminister),
 
     CoreSettingsPage("courses", Integration, "courses.title", "courses.description",
-      "page/course", () => true)
+      "page/course", () => !aclManager.filterNonGrantedPrivileges(CourseInfoService.PRIV_CREATE_COURSE,
+        CourseInfoService.PRIV_EDIT_COURSE).isEmpty)
 
 //    CoreSettingsPage("schemas", "entities", "schemas.title", "schemas.description",
 //      "page/schema", () => true),

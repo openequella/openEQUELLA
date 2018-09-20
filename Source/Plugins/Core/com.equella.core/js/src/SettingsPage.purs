@@ -80,10 +80,12 @@ settingsPage = unsafeCreateLeafElement $ withStyles styles $ component "Settings
       mainContent = maybe (D.div [DP.className classes.progress] [ circularProgress [] ]) renderSettings settings
       renderSettings allSettings =
         let groupMap = SM.fromFoldableWith append $ (\(Setting s) -> Tuple s.group [s]) <$> allSettings
-            renderGroup (Tuple "ui" details) = Just $ settingGroup details uiSettingsEditor
             renderGroup (Tuple id details) | Just _pages <- SM.lookup id groupMap =
               let pages = sortWith _.name _pages
-              in Just $ settingGroup details $ expansionPanelDetails_ [ list_ $ mapMaybe pageLink pages ]
+                  linksOrEditor = case id of 
+                    "ui" -> uiSettingsEditor
+                    o -> expansionPanelDetails_ [ list_ $ mapMaybe pageLink pages ]
+              in Just $ settingGroup details linksOrEditor
             renderGroup _ = Nothing
         in D.div [_id "settingsPage"] $ mapMaybe renderGroup groupDetails
 
