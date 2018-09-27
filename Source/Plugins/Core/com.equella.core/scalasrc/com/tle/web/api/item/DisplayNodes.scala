@@ -18,6 +18,7 @@ package com.tle.web.api.item
 
 import com.dytech.devlib.PropBagEx
 import com.tle.beans.entity.itemdef.DisplayNode
+import com.tle.common.Utils
 import com.tle.common.i18n.LangUtils
 import com.tle.web.api.item.interfaces.beans.MetaDisplay
 
@@ -27,11 +28,19 @@ import scala.collection.JavaConverters._
 object DisplayNodes {
 
   def create(itemxml: PropBagEx)(dn: DisplayNode): Option[MetaDisplay] = {
-    val valueText = itemxml.iterateAll(dn.getNode).iterator().asScala.map { x =>
-      LangUtils.getString(LangUtils.getBundleFromXml(x), "")
-    }.mkString(dn.getSplitter)
+    val nodePath = dn.getNode
+    val valueText = if (nodePath.indexOf('@') != -1)
+    {
+      itemxml.getNode(nodePath)
+    } else {
+      val _splitter = dn.getSplitter
+      val splitter = if (dn.getType == "text") Utils.unent(_splitter) else _splitter
+      itemxml.iterateAll(nodePath).iterator().asScala.map { x =>
+        LangUtils.getString(LangUtils.getBundleFromXml(x), "")
+      }.mkString(splitter)
+    }
     if (valueText.nonEmpty) Some {
-      MetaDisplay(LangUtils.getString(dn.getTitle), valueText, dn.isDoubleMode, dn.getType)
+      MetaDisplay(LangUtils.getString(dn.getTitle), valueText, !dn.isDoubleMode, dn.getType)
     }
     else None
   }

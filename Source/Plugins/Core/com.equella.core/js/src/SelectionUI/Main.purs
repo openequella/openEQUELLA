@@ -23,15 +23,13 @@ import Effect.Class (liftEffect)
 import Effect.Exception (throw)
 import Effect.Uncurried (mkEffectFn1)
 import Foreign.Object (Object)
-import MaterialUI.AppBar (appBar, position, sticky)
+import MaterialUI.AppBar (appBar)
 import MaterialUI.Button (button)
-import MaterialUI.CircularProgress (inherit)
-import MaterialUI.Properties (color, onClick, variant)
+import MaterialUI.Enums (headline, inherit, sticky)
+import MaterialUI.Enums as Enum
 import MaterialUI.Styles (withStyles)
-import MaterialUI.TextStyle (headline)
-import MaterialUI.Toolbar (toolbar)
+import MaterialUI.Toolbar (toolbar_)
 import MaterialUI.Typography (typography)
-import MaterialUI.Typography as Typo
 import OEQ.Data.Error (ErrorResponse)
 import OEQ.Environment (basePath, startHearbeat)
 import OEQ.MainUI.Routes (globalNav)
@@ -126,7 +124,7 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
         onSelectFolder: d <<< SelectFolder, 
         onRemove: \fid -> d <<< RemoveSelection fid,
         structure: fromMaybe blankStructure selection.courseData.structure}, 
-      button [ onClick $ \_ -> d ReturnSelections] [ text "Return" ]
+      button {onClick: d ReturnSelections} [ text "Return" ]
     ]
 
     courseControl :: SearchControl
@@ -144,15 +142,15 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
       courseControl]
 
 
-    renderError {error:Just {error:title,code}, errorOpen} = [ messageInfo {open:errorOpen, variant: Typo.error, 
+    renderError {error:Just {error:title,code}, errorOpen} = [ messageInfo {open:errorOpen, variant: Enum.error, 
       onClose: d CloseError, title, code: toNullable $ Just code  } ]
     renderError _ = []
 
     render {props:{classes,selection}, state:s@{title, route: Just (Route params r), selectedFolder,selections}} = case r of 
       Search -> let 
         renderTemplate {queryBar,content} = rootTag classes.root $ [ 
-          appBar [position sticky] [ 
-            toolbar [] [
+          appBar {position: sticky} [ 
+            toolbar_ [
               queryBar
             ]
           ],
@@ -160,9 +158,9 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
         ] <> renderError s
         in searchLayout {searchControls, strings: searchStrings, renderTemplate}
       ViewItem uuid version -> rootTag classes.root $ [
-          appBar [position sticky] [
-            toolbar [] [
-              typography [variant headline, color inherit] [text $ fromMaybe "" title]
+          appBar {position: sticky} [
+            toolbar_ [
+              typography {variant: headline, color: inherit} [text $ fromMaybe "" title]
             ]
           ],
           dualPane {

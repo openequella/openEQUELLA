@@ -14,34 +14,32 @@ import Data.String (length)
 import Data.Symbol (SProxy(..))
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer)
-import OEQ.API.User (listTokens)
-import OEQ.Data.Security (ExpressionTerm(..), IpRange(..), ResolvedTerm(..), _ip1, _ip2, _ip3, _ip4, _ipm, validMasks, validRange)
-import OEQ.Data.User (UserGroupRoles(..))
-import OEQ.Environment (prepLangStrings)
-import OEQ.UI.SearchUser (UGREnabled(..), userSearch)
 import Effect (Effect)
 import Effect.Class (liftEffect)
 import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
 import MaterialUI.Button (button)
-import MaterialUI.Checkbox (checkbox)
-import MaterialUI.Color as C
+import MaterialUI.Checkbox (checkbox, checkbox')
 import MaterialUI.Dialog (dialog)
 import MaterialUI.DialogActions (dialogActions_)
 import MaterialUI.DialogContent (dialogContent)
 import MaterialUI.DialogTitle (dialogTitle_)
-import MaterialUI.FormControlLabel (control, formControlLabel, label)
-import MaterialUI.FormGroup (formGroup, row)
+import MaterialUI.Enums (primary, secondary)
+import MaterialUI.FormControlLabel (formControlLabel, formControlLabel')
+import MaterialUI.FormGroup (formGroup)
 import MaterialUI.MenuItem (menuItem)
-import MaterialUI.Properties (className, color, disabled, mkProp, onChange, onClick, onClose, open)
 import MaterialUI.Select (select)
 import MaterialUI.Styles (withStyles)
-import MaterialUI.SwitchBase (checked)
-import MaterialUI.TextField (textField, value)
+import MaterialUI.TextField (textField, textField')
+import OEQ.API.User (listTokens)
+import OEQ.Data.Security (ExpressionTerm(..), IpRange(..), ResolvedTerm(..), _ip1, _ip2, _ip3, _ip4, _ipm, validMasks, validRange)
+import OEQ.Data.User (UserGroupRoles(..))
+import OEQ.Environment (prepLangStrings)
+import OEQ.UI.Common (textChange)
+import OEQ.UI.SearchUser (UGREnabled(..), userSearch)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React (getProps) as R
 import React.DOM (div, span, text)
 import React.DOM.Props as P
-import OEQ.UI.Common (textChange)
 
 data DialogType = UserDialog UGREnabled | IpDialog IpRange | ReferrerDialog String | SecretDialog String
 
@@ -100,23 +98,21 @@ termDialog = unsafeCreateLeafElement $ withStyles styles $ component "TermDialog
           dialogStyle = case s.dt of 
             UserDialog _ -> classes.dialog
             _ -> classes.smallDialog
-      in dialog [open o, onClose $ const $ cancel] [ 
+      in dialog {open: o, onClose: cancel} [ 
         dialogTitle_ [text title],
-        dialogContent [className dialogStyle] content,
+        dialogContent {className: dialogStyle} content,
         dialogActions_ $ catMaybes [
-          (\e -> button [color C.primary, onClick $ command Add, disabled $ not e ] [text commonAction.add]) <$> add,
-          Just $ button [color C.secondary, onClick $ \_ -> cancel] [ text commonAction.cancel ]
+          (\e -> button {color: primary, onClick: d Add, disabled: not e} [text commonAction.add]) <$> add,
+          Just $ button {color: secondary, onClick: cancel} [ text commonAction.cancel ]
         ]
       ]
       where
-      command :: forall a. TermCommand -> a -> Effect Unit
-      command c = \_ -> d c
-      stdText v l = textField [value v, textChange d $ Change <<< set l]
-      ugrCheck lab l b = formControlLabel [control $ checkbox [checked b, onChange $ 
-                    command $ Change (over (_dialogUGR <<< _Newtype <<< l) not) ], label lab]
+      stdText v l = textField' {value: v, onChange: textChange d $ Change <<< set l}
+      ugrCheck lab l b = formControlLabel' {control: checkbox' {checked: b, onChange: 
+                    d $ Change (over (_dialogUGR <<< _Newtype <<< l) not) }, label: lab}
       dialogContents = case s.dt of 
         UserDialog enabled@UGREnabled {users,groups,roles} -> {title: titles.ugr, add: Nothing, content: [
-            formGroup [row true] [ 
+            formGroup {row: true} [ 
               ugrCheck commonString.users _users users,
               ugrCheck commonString.groups _groups groups,
               ugrCheck commonString.roles _roles roles
@@ -124,8 +120,9 @@ termDialog = unsafeCreateLeafElement $ withStyles styles $ component "TermDialog
             userSearch {onSelect: mkEffectFn1 $ termsForUsers >>> runEffectFn1 onAdd, clickEntry:true, onCancel: cancel, enabled}
           ]}
         IpDialog r@(IpRange i1 i2 i3 i4 im) ->
-            let ipField v l = textField [className classes.ipField, value $ if v == -1 then "" else show v, textChange d $ 
-                              \t -> Change $ (set $ _ipRange <<< l) $ fromMaybe (-1) $ fromString t]
+            let ipField v l = textField' {className: classes.ipField, 
+                            value: if v == -1 then "" else show v, 
+                            onChange: textChange d $ \t -> Change $ (set $ _ipRange <<< l) $ fromMaybe (-1) $ fromString t}
                 ipSepText t = span [P.className classes.ipSep] [ text t ]
                 dot = ipSepText "."
                 slash = ipSepText "/"
@@ -137,10 +134,10 @@ termDialog = unsafeCreateLeafElement $ withStyles styles $ component "TermDialog
                 ipField i2 _ip2, dot,
                 ipField i3 _ip3, dot,
                 ipField i4 _ip4, slash,
-                select [value im, className classes.ipMask,
-                  textChange d $ \t -> Change $ set (_ipRange <<< _ipm) $ fromMaybe 8 $ fromString t
-                  ] $ 
-                  (\m -> menuItem [mkProp "value" m] [text $ show m]) <$> validMasks
+                select {value: im, className: classes.ipMask,
+                  onChange: textChange d $ \t -> Change $ set (_ipRange <<< _ipm) $ fromMaybe 8 $ fromString t
+                 } $ 
+                  (\m -> menuItem {value:m} [text $ show m]) <$> validMasks
             ]]}
         ReferrerDialog referrer -> {
           title: titles.referrer, 
@@ -149,8 +146,8 @@ termDialog = unsafeCreateLeafElement $ withStyles styles $ component "TermDialog
         }
         SecretDialog secret -> {
           title: titles.token, 
-          content: [ select [value secret, className classes.secretField, textChange d $ Change <<< set _dialogSecret] $  
-            maybe [] (map (\m -> menuItem [mkProp "value" m] [text m])) s.tokens 
+          content: [ select {value: secret, className: classes.secretField, onChange: textChange d $ Change <<< set _dialogSecret} $  
+            maybe [] (map (\m -> menuItem {value:m} [text m])) s.tokens 
           ], 
           add:Just $ length secret > 0
         }

@@ -7,27 +7,22 @@ import Data.Array (catMaybes, findMap, fromFoldable)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Dispatcher.React (propsRenderer)
 import Effect (Effect)
-import Effect.Uncurried (EffectFn1)
-import MaterialUI.Button (button)
-import MaterialUI.DialogTitle (disableTypography)
-import MaterialUI.List (disablePadding, list)
-import MaterialUI.ListItem (disableGutters, listItem)
-import MaterialUI.ListItem as LI
-import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
-import MaterialUI.ListItemText (listItemText, primary, secondary)
-import MaterialUI.PropTypes (toHandler)
-import MaterialUI.Properties (className, classes_, color, mkProp, onClick, variant)
-import MaterialUI.Properties as MUI
+import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
+import ExtUI.TimeAgo (timeAgo)
 import MaterialUI.Styles (withStyles)
-import MaterialUI.TextStyle as TS
-import MaterialUI.Typography (textSecondary, typography)
 import OEQ.Environment (prepLangStrings)
 import OEQ.UI.Common (ClickableHref)
 import React (ReactElement, component, unsafeCreateLeafElement)
-import React.DOM (div, div', img, text)
+import React.DOM (a, div, div', img, text)
 import React.DOM.Props as DP
-import React.SyntheticEvent (SyntheticEvent)
-import ExtUI.TimeAgo (timeAgo)
+import React.SyntheticEvent (SyntheticEvent, SyntheticEvent_)
+import MaterialUI.Button (button)
+import MaterialUI.Enums as TS
+import MaterialUI.List (list)
+import MaterialUI.ListItem (listItem)
+import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
+import MaterialUI.ListItemText (listItemText)
+import MaterialUI.Typography (typography)
 
 newtype Attachment = Attachment {thumbnailHref::String}
 newtype DisplayField = DisplayField {name :: String, html::String}
@@ -91,12 +86,11 @@ type ItemResultOptions = {
     showDivider :: Boolean, 
     result :: Result, 
     onSelect :: Maybe (ItemSelection -> Effect Unit),
-    href :: String,  
-    onClick :: EffectFn1 SyntheticEvent Unit
+    clickable :: ClickableHref
 }
 
 itemResultOptions :: ClickableHref -> Result -> ItemResultOptions
-itemResultOptions {href, onClick} result = {showDivider:false, result, onSelect:Nothing, href, onClick }
+itemResultOptions clickable result = {showDivider:false, result, onSelect:Nothing, clickable }
 
 itemResult :: ItemResultOptions -> ReactElement
 itemResult = unsafeCreateLeafElement $ withStyles styles $ component "ItemResult" $ \this -> do
@@ -104,11 +98,9 @@ itemResult = unsafeCreateLeafElement $ withStyles styles $ component "ItemResult
     string = prepLangStrings rawStrings
     render p@{classes, showDivider, onSelect, 
         result:item@(Result {name,description,displayFields,thumbnail,uuid,version,attachments,modifiedDate})} =
-        let descMarkup descText = typography [] [ text descText ]
-            titleLink = typography [variant TS.subheading, className classes.titleLink,
-                            MUI.component "a", 
-                            mkProp "href" p.href, mkProp "onClick" $ toHandler p.onClick] [ 
-                                text name 
+        let descMarkup descText = typography {} [ text descText ]
+            titleLink = typography {variant: TS.subheading, className: classes.titleLink} [ 
+                                a [DP.href p.clickable.href, DP.onClick $ runEffectFn1 $ p.clickable.onClick] [ text name ]
                             ]
             attachThumb (Attachment {thumbnailHref}) = Just $ img [
                     DP.aria {hidden:true}, 
@@ -117,27 +109,29 @@ itemResult = unsafeCreateLeafElement $ withStyles styles $ component "ItemResult
                 ]
             firstThumb = fromFoldable $ findMap attachThumb attachments
             extraDeets = [
-                listItem [classes_ {default: classes.displayNode}, disableGutters true] [
+                listItem {classes: {default: classes.displayNode}, disableGutters: true} [
                     metaTitle string.modifiedDate,
                     metaContent [
-                        timeAgo modifiedDate []
+                        timeAgo {datetime:modifiedDate}
                     ]
                 ]
             ]
             extraFields = (fieldDiv <$> displayFields) <> extraDeets
             itemContent = div [ DP.className classes.searchResultContent ] $ firstThumb <> [ 
-                    div' $ fromFoldable (descMarkup <$> description) <> [ list [disablePadding true] extraFields ] 
+                    div' $ fromFoldable (descMarkup <$> description) <> [ list {disablePadding: true} extraFields ] 
                 ]
-        in listItem [LI.button true, LI.divider showDivider] $ catMaybes [
-            Just $ listItemText [ disableTypography true, primary titleLink, secondary itemContent ], 
-            (\ons -> listItemSecondaryAction_ [ button [
-                onClick \_ -> ons {item: {uuid, version, description, name}, thumbnail, 
-                   description: name, name, selected: Summary}] [ text "Select"] ]) <$> onSelect
+        in listItem {button: true, divider: showDivider, onClick: p.clickable.onClick} $ catMaybes [
+            Just $ listItemText {disableTypography: true, primary: titleLink, secondary: itemContent } [], 
+            (\ons -> listItemSecondaryAction_  [ button {
+                    onClick: ons {item: {uuid, version, description, name}, 
+                    thumbnail, 
+                    description: name, name, selected: Summary} 
+                } [ text "Select"] ] ) <$> onSelect
         ]
         where
-        metaTitle n = typography [variant TS.body1, className classes.metaLabel ] [ text n ]
-        metaContent c = typography [MUI.component "div", color textSecondary] c 
-        fieldDiv (DisplayField {name:n,html}) = listItem [classes_ {default: classes.displayNode}, disableGutters true] [
+        metaTitle n = typography {variant: TS.body1, className: classes.metaLabel } [ text n ]
+        metaContent c = typography {component: "div", color: TS.textSecondary} c 
+        fieldDiv (DisplayField {name:n,html}) = listItem {classes: {default: classes.displayNode}, disableGutters: true} [
             metaTitle n,
             metaContent [ div [DP.dangerouslySetInnerHTML {__html: html}] [] ]
         ]

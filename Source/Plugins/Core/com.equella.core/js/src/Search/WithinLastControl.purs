@@ -14,23 +14,23 @@ import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Newtype (unwrap)
 import Data.Time.Duration (class Duration, Days(..), Milliseconds(..), fromDuration)
 import Data.Tuple (Tuple(..))
-import OEQ.Environment (prepLangStrings)
 import Effect.Now (now)
+import Effect.Uncurried (mkEffectFn2, runEffectFn1)
 import Effect.Unsafe (unsafePerformEffect)
 import MaterialUI.FormControl (formControl_)
 import MaterialUI.Icon (icon_)
 import MaterialUI.InputLabel (inputLabel_)
 import MaterialUI.MenuItem (menuItem)
-import MaterialUI.Properties (className, mkProp, onChange)
-import MaterialUI.Select (select, value)
+import MaterialUI.Select (select)
 import MaterialUI.Styles (withStyles)
+import OEQ.Environment (prepLangStrings)
+import OEQ.UI.Common (valueChange)
+import OEQ.UI.SearchFilters (filterSection)
 import Partial.Unsafe (unsafePartial)
 import React (statelessComponent, unsafeCreateLeafElement)
 import React.DOM (em', text)
 import Search.SearchControl (Chip(..), Placement(..), SearchControl)
 import Search.SearchQuery (QueryParam, _data, _params, emptyQueryParam, singleParam)
-import OEQ.UI.SearchFilters (filterSection)
-import OEQ.UI.Common (valueChange)
 
 type AgoEntry = {name::String, emmed::Boolean, duration::Milliseconds}
 
@@ -65,7 +65,7 @@ agoEntries = let s = string.filterLast in [
 withinLastControl :: SearchControl
 withinLastControl =
   let 
-    agoItem {name,emmed,duration:(Milliseconds ms)} = menuItem [mkProp "value" ms] $ 
+    agoItem {name,emmed,duration:(Milliseconds ms)} = menuItem {value:ms} $ 
         (if emmed then pure <<< em' else identity) [text name]
     _modifiedLast = at "modifiedLast"
     agoMs query = preview (_modifiedLast <<< _Just <<< _data <<< _Number) query.params
@@ -77,10 +77,10 @@ withinLastControl =
         } [ 
           formControl_ [
             inputLabel_ [text string.filterLast.label],
-            select [ className classes.selectFilter, 
-              value $ fromMaybe 0.0 $ agoMs query,
-              onChange $ valueChange $ updateMs updateQuery
-            ] $ (agoItem <$> agoEntries)
+            select { className: classes.selectFilter, 
+              value: fromMaybe 0.0 $ agoMs query,
+              onChange: mkEffectFn2 \e _ -> runEffectFn1 (valueChange (updateMs updateQuery)) e
+             } $ (agoItem <$> agoEntries)
           ]
         ]
 

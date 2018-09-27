@@ -16,6 +16,8 @@ import Data.Maybe (Maybe(Just, Nothing), fromJust, fromMaybe, isJust, maybe)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
+import Data.TSCompat (OneOf, StringConst)
+import Data.TSCompat.Class (class IsTSEq, asTS)
 import Data.Traversable (traverse)
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer)
@@ -23,41 +25,33 @@ import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
 import Effect.Class.Console (log)
-import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
+import Effect.Uncurried (EffectFn1, mkEffectFn1)
 import Foreign.Object as Object
 import MaterialUI.AppBar (appBar)
-import MaterialUI.Badge (badge, badgeContent)
+import MaterialUI.Badge (badge)
 import MaterialUI.Button (button)
-import MaterialUI.Color (inherit, secondary)
-import MaterialUI.Color as C
 import MaterialUI.Dialog (dialog)
 import MaterialUI.DialogActions (dialogActions_)
 import MaterialUI.DialogContent (dialogContent_)
 import MaterialUI.DialogContentText (dialogContentText_)
 import MaterialUI.DialogTitle (dialogTitle_)
-import MaterialUI.Divider (divider)
-import MaterialUI.Drawer (anchor, drawer, left, permanent, temporary)
-import MaterialUI.Hidden (css, hidden, implementation, mdUp, smDown)
+import MaterialUI.Divider (divider_)
+import MaterialUI.Drawer (drawer)
+import MaterialUI.Enums (css, default, headline, inherit, left, permanent, primary, secondary, subheading, temporary)
+import MaterialUI.Enums as String
+import MaterialUI.Hidden (hidden)
 import MaterialUI.Icon (icon, icon_)
 import MaterialUI.IconButton (iconButton)
 import MaterialUI.List (list)
-import MaterialUI.ListItem (button) as LI
-import MaterialUI.ListItem (listItem)
+import MaterialUI.ListItem as RMUI
 import MaterialUI.ListItemIcon (listItemIcon_)
-import MaterialUI.ListItemText (disableTypography, listItemText, primary)
+import MaterialUI.ListItemText (listItemText')
 import MaterialUI.Menu (menu)
 import MaterialUI.MenuItem (menuItem)
-import MaterialUI.Popover (anchorEl, anchorOrigin, transformOrigin)
-import MaterialUI.PropTypes (toHandler)
-import MaterialUI.Properties (className, classes_, color, component, mkProp, onClick, onClose, open, variant)
-import MaterialUI.Radio (default)
 import MaterialUI.Styles (MediaQuery, allQuery, cssList, mediaQuery, withStyles)
-import MaterialUI.TextStyle (subheading)
-import MaterialUI.TextStyle as TS
-import MaterialUI.Toolbar (disableGutters, toolbar)
-import MaterialUI.Tooltip (tooltip, title)
+import MaterialUI.Toolbar (toolbar)
+import MaterialUI.Tooltip (tooltip)
 import MaterialUI.Typography (typography)
-import MaterialUI.Typography as Type
 import Network.HTTP.Affjax (get)
 import Network.HTTP.Affjax.Response as Resp
 import OEQ.Data.Error (ErrorResponse)
@@ -106,6 +100,12 @@ type RenderData = {
   baseResources::String, 
   newUI::Boolean
 }
+
+type ButtonColors = OneOf (
+    typed :: StringConst "inherit",
+    typed :: StringConst "default",
+    typed :: StringConst "primary",
+    typed :: StringConst "secondary")
 
 foreign import preventUnload :: EventListener
 
@@ -201,7 +201,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       w <- window
       (if add then addEventListener else removeEventListener) beforeunload preventUnload false $ toEventTarget w 
 
-    setPreventUnload add = do 
+    setPreventUnload add = do
       setPreventNav (mkEffectFn1 \r -> do 
         if add then affAction this $ eval (AttemptRoute r) else pure unit
         pure add
@@ -211,14 +211,14 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
     render {state: state@{mobileOpen,menuAnchor,user,attempt}, props:props@{fixedViewPort:fvp, classes, 
                 title:titleText,titleExtra,menuExtra,backRoute}} = rootTag classes.root $ [
         layout, 
-        dialog [ open $ isJust attempt] [
+        dialog {open: isJust attempt} [
           dialogTitle_ [ text strings.navaway.title], 
           dialogContent_ [
             dialogContentText_ [ text strings.navaway.content ]
           ], 
           dialogActions_ [
-            button [onClick $ \_ -> d $ NavAway false, color C.secondary] [text commonString.action.cancel],
-            button [onClick $ \_ -> d $ NavAway true, color C.primary] [text commonString.action.discard]
+            button {onClick: d $ NavAway false, color: secondary} [text commonString.action.cancel],
+            button {onClick: d $ NavAway true, color: primary} [text commonString.action.discard]
           ]
         ] ] <> catMaybes [
         toMaybe props.errorResponse <#> \{code, error, description} -> messageInfo {
@@ -226,7 +226,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
                               onClose: d CloseError, 
                               title: fromMaybe error description, 
                               code: toNullable $ Just code, 
-                              variant: Type.error
+                              variant: String.error 
                             }
       ]
       where
@@ -249,11 +249,11 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
           _ -> false
 
       menuParts = if hasMenu then [
-                    hidden [ mdUp true ] [
-                        drawer [ variant temporary, anchor left, classes_ {paper: classes.drawerPaper},
-                                  open mobileOpen, onClose (\_ -> d ToggleMenu) ] menuContent ],
-                    hidden [ smDown true, implementation css ] [
-                      drawer [variant permanent, anchor left, open true, classes_ {paper: classes.drawerPaper} ] menuContent
+                    hidden {mdUp: true} [
+                        drawer {variant: temporary, anchor: left, classes: {paper: classes.drawerPaper},
+                                  open: mobileOpen, onClose: d ToggleMenu } menuContent ],
+                    hidden {smDown: true, implementation: css} [
+                      drawer {variant: permanent, anchor: left, open: true, classes: {paper: classes.drawerPaper} } menuContent
                     ]
                   ] else []
       layout = if useFullscreen 
@@ -266,15 +266,15 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       hasMenu = case props.menuMode of 
         "HIDDEN" -> false 
         _ -> true
-      topBar = appBar [className $ classes.appBar] $ catMaybes [
-        Just $ toolbar [disableGutters true] $ concat [
-          guard hasMenu $> iconButton [
-              color C.inherit, className classes.navIconHide, 
-              onClick $ \_ -> d $ ToggleMenu] [ icon_ [D.text "menu" ] 
+      topBar = appBar {className: classes.appBar} $ catMaybes [
+        Just $ toolbar {disableGutters: true} $ concat [
+          guard hasMenu $> iconButton {
+              color: inherit, className: classes.navIconHide, 
+              onClick: d ToggleMenu } [ icon_ [D.text "menu" ] 
           ], [
             D.div [DP.className classes.titleArea] $ catMaybes [
-              toMaybe backRoute $> iconButton [color C.inherit, onClick $ \_ -> d GoBack] [ icon_ [D.text "arrow_back" ] ],
-              Just $ typography [variant TS.headline, color C.inherit, className classes.title] [ D.text titleText ], 
+              toMaybe backRoute $> iconButton {color: inherit, onClick: d GoBack} [ icon_ [D.text "arrow_back" ] ],
+              Just $ typography {variant: headline, color: inherit, className: classes.title} [ D.text titleText ], 
               toMaybe titleExtra
             ],
             userMenu 
@@ -283,9 +283,9 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
         tabsM
       ]
       topBarString = coreString.topbar.link
-      linkItem clickable t = menuItem [component "a", 
-                              mkProp "href" $ routeURI clickable,
-                              mkProp "onClick" $ toHandler $ \_ -> d $ MenuClick clickable] [ D.text t ]
+      linkItem clickable t = menuItem { component: "a", 
+                              href:  routeURI clickable,
+                              onClick: d $ MenuClick clickable} [ D.text t ]
       userMaybe :: forall a. Lens' UserData a -> Maybe a
       userMaybe l = user ^? (_Just <<< l)
       userMenu = D.div [DP.className classes.userMenu ] $ (fromMaybe [] $ toMaybe menuExtra) <>
@@ -294,47 +294,47 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
           [
             badgedLink "assignment" _tasks "access/tasklist.do" topBarString.tasks , 
             badgedLink "notifications" _notifications "access/notifications.do" topBarString.notifications,
-            tooltip [title strings.menu.title] [ 
-              iconButton [color inherit, mkProp "aria-label" strings.menu.title, 
-                onClick $ withCurrentTarget $ d <<< UserMenuAnchor <<< Just] [
-                icon_ [ D.text "account_circle"]
-              ]
-            ],
-            menu [
-                anchorEl $ toNullable menuAnchor,
-                open $ isJust menuAnchor,
-                onClose $ \_ -> d $ UserMenuAnchor Nothing,
-                anchorOrigin $ { vertical: "top", horizontal: "right" },
-                transformOrigin $ { vertical: "top", horizontal: "right" }
-            ] $ catMaybes
+            tooltip {title: strings.menu.title} $ 
+              iconButton {"aria-label": strings.menu.title, 
+                          color: inherit, 
+                          onClick: withCurrentTarget $ d <<< UserMenuAnchor <<< Just} 
+                [ icon_ [ D.text "account_circle"] ],
+            menu {
+                anchorEl: toNullable menuAnchor,
+                open: isJust menuAnchor,
+                onClose: d $ UserMenuAnchor Nothing,
+                anchorOrigin: { vertical: "top", horizontal: "right" },
+                transformOrigin: { vertical: "top", horizontal: "right" }
+             } $ catMaybes
               [ Just $ linkItem logoutRoute strings.menu.logout,
                 (guard $ fromMaybe false $ userMaybe _prefsEditable) $> 
                       linkItem userPrefsRoute strings.menu.prefs
               ]
           ])
       badgedLink iconName count uri tip = 
-        let iconOnly = icon_ [ D.text iconName ]
-            buttonLink col linkContent = iconButton [mkProp "href" uri, color col, mkProp "aria-label" tip ] [ linkContent ]
-        in tooltip [ title tip ] [ 
+        let iconOnly = icon_ [ D.text iconName ] 
+            buttonLink :: forall a. IsTSEq a ButtonColors => a -> ReactElement -> ReactElement
+            buttonLink col linkContent = iconButton {"aria-label": tip, href: uri, color: asTS col :: ButtonColors} [ linkContent ] 
+        in tooltip {title: tip}
           case fromMaybe 0 $ preview (_Just <<< _counts <<< _Just <<< count) user of
               0 -> buttonLink default iconOnly
-              c -> buttonLink inherit $ badge [badgeContent c, color secondary] [iconOnly]
-        ]
+              c -> buttonLink inherit $ badge {badgeContent: c, color: secondary} [iconOnly]
+        
       menuContent = [D.div [DP.className classes.logo] [ D.img [ DP.role "presentation", DP.src logoSrc] ]] <>
-                    intercalate [divider []] (map group $ fromMaybe [] $ userMaybe _menuGroups)
-        where
+                    intercalate [divider_ []] (map group $ fromMaybe [] $ userMaybe _menuGroups)
+        where 
           logoSrc = renderData.baseResources <> "images/new-equella-logo.png"
-          group items = [list [component "nav"] (navItem <$> items)]
-          navItem (MenuItem {title,systemIcon,route}) = listItem (linkProps <> [LI.button true, component "a"])
+          group items = [list {component: "nav"} (navItem <$> items)]
+          navItem (MenuItem {title,systemIcon,route}) = linkProps
             [
-              listItemIcon_ [icon [ color C.inherit ] [ D.text $ fromMaybe "folder" $ systemIcon ] ],
-              listItemText [disableTypography true, primary $ typography [variant subheading, component "div"] [text title]]
+              listItemIcon_ $ icon {color: inherit} [ D.text $ fromMaybe "folder" $ systemIcon ],
+              listItemText' {disableTypography: true, primary: typography {variant: subheading, component: "div"} [text title] }
             ]
             where 
               linkProps = case route of 
-                Right r | Just m <- routeHref <$> matchRoute r -> [mkProp "href" m.href, onClick $ runEffectFn1 m.onClick]
-                Left (ExternalHref href) -> [mkProp "href" href]
-                Right r -> [mkProp "href" $ show r]
+                Right r | Just m <- routeHref <$> matchRoute r -> RMUI.listItem { component: "a", href: m.href, onClick: m.onClick }
+                Left (ExternalHref href) -> RMUI.listItem { component: "a", href }
+                Right r -> RMUI.listItem {component: "a", href: show r}
 
     htmlElement :: Effect HTMLElement
     htmlElement = unsafePartial $ fromJust <$> bindFlipped HTML.fromElement 

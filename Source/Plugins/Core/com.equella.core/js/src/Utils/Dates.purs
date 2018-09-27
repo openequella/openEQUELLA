@@ -12,9 +12,20 @@ import Partial.Unsafe (unsafePartial)
 
 type LuxonDate = {year::Int, month::Int, day :: Int}
 
+foreign import data LuxonFormat :: Type
+
+foreign import luxonFormats :: {
+  "DATE_SHORT" :: LuxonFormat, 
+  "DATE_MED" :: LuxonFormat,
+  "DATE_FULL" :: LuxonFormat,
+  "DATE_HUGE" :: LuxonFormat
+}
+
 foreign import parseIsoToLuxon :: String -> LuxonDate 
 
 foreign import luxonDateToIso :: LuxonDate -> String 
+
+foreign import luxonFormat :: LuxonDate -> LuxonFormat -> String 
 
 foreign import _dateToLuxon :: {y::Int, m::Int, d::Int} -> LuxonDate 
 

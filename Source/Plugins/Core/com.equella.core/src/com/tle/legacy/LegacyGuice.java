@@ -25,6 +25,7 @@ import com.tle.core.events.services.EventService;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.i18n.service.LanguageService;
 import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.item.standard.service.ItemCommentService;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.notification.NotificationService;
@@ -222,6 +223,9 @@ public class LegacyGuice extends AbstractModule {
 
     @Inject
     public static ViewItemService viewItemService;
+
+    @Inject
+    public static ItemHelper itemHelper;
 
     @Inject
     public static Provider<IntegrationService> integrationService;

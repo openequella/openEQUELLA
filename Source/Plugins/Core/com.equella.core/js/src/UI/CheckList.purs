@@ -2,25 +2,24 @@ module OEQ.UI.CheckList where
 
 import Prelude
 
+import Data.TSCompat (Any)
+import Data.TSCompat.Class (asTS)
 import Dispatcher.React (propsRenderer)
-import MaterialUI.Checkbox (CheckboxProps, checkbox)
-import MaterialUI.List (disablePadding, list)
-import MaterialUI.ListItem (disableGutters, listItem)
-import MaterialUI.ListItemText (ListItemTextProps, listItemText)
-import MaterialUI.Properties (IProp, className, classes_)
+import MaterialUI.List (list)
+import MaterialUI.ListItem (listItem)
 import MaterialUI.Styles (withStyles)
 import React (ReactElement, component, unsafeCreateLeafElement)
 
 
 
-checkList :: {entries :: Array {checkProps::Array (IProp CheckboxProps), textProps::Array (IProp ListItemTextProps)}} -> ReactElement
+checkList :: {entries :: Array {checkbox:: {classes::Any} -> ReactElement, text:: {className::String} -> ReactElement}} -> ReactElement
 checkList = unsafeCreateLeafElement $ withStyles styles $ component "CheckList" $ \this -> do 
-  let render {entries,classes} = list [disablePadding true] $ entry <$> entries  
+  let render {entries,classes} = list {disablePadding: true} $ entry <$> entries  
         where 
-        entry {checkProps, textProps} = 
-          listItem [classes_ {default:classes.reallyDense}, disableGutters true] [
-              checkbox $ [classes_ {root:classes.smallerCheckbox} ] <> checkProps,
-              listItemText $ [className classes.listText] <> textProps
+        entry e = 
+          listItem {classes: {default:classes.reallyDense}, disableGutters: true} [
+              e.checkbox {classes: asTS {root:classes.smallerCheckbox}},
+              e.text {className: classes.listText}
           ]
   pure {render: propsRenderer render this}
   where 
@@ -29,8 +28,7 @@ checkList = unsafeCreateLeafElement $ withStyles styles $ component "CheckList" 
       padding: 0
     },
     smallerCheckbox: {
-      height: "auto",
-      width: "auto"
+      padding: 0
     },
     listText: {
       display: "flex",

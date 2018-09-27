@@ -3,9 +3,7 @@ module OEQ.UI.Layout where
 
 import Prelude hiding (div)
 
-import MaterialUI.Drawer (elevation)
 import MaterialUI.Paper (paper)
-import MaterialUI.Properties (className)
 import MaterialUI.Styles (withStyles)
 import React (ReactElement, statelessComponent, unsafeCreateLeafElement)
 import React.DOM (div)
@@ -14,8 +12,8 @@ import React.DOM.Props as DP
 dualPane :: { left :: Array ReactElement, right :: Array ReactElement } -> ReactElement
 dualPane = unsafeCreateLeafElement $ withStyles styles $ statelessComponent \{classes,left,right} ->
     div [DP.className classes.layoutDiv] [
-          paper [className classes.results, elevation 4] left,
-          paper [className classes.refinements, elevation 4] right
+          paper {className: classes.results, elevation: 4} left,
+          paper {className: classes.refinements, elevation: 4} right
     ]
   where 
   styles theme = {

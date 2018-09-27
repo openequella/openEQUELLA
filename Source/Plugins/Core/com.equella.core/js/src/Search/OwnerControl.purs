@@ -3,7 +3,6 @@ module Search.OwnerControl where
 import Prelude
 
 import Common.CommonStrings (commonString)
-import OEQ.UI.Icons (userIcon, userIconName)
 import Data.Array (head)
 import Data.Array as Array
 import Data.Lens (set)
@@ -14,27 +13,28 @@ import Data.Symbol (SProxy(..))
 import Data.Tuple (Tuple(..))
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, modifyState, renderer, saveRef)
-import OEQ.Data.User (UserDetails(..), UserGroupRoles(..))
-import OEQ.Environment (prepLangStrings)
-import OEQ.UI.SearchUser (UGREnabled(..), userSearch)
 import Effect (Effect)
 import Effect.Class (liftEffect)
 import Effect.Ref as Ref
 import Effect.Uncurried (mkEffectFn1)
-import MaterialUI.Button (button, raised)
+import MaterialUI.Button (button)
 import MaterialUI.Dialog (dialog)
 import MaterialUI.DialogContent (dialogContent)
 import MaterialUI.DialogTitle (dialogTitle_)
+import MaterialUI.Enums (raised)
 import MaterialUI.Icon (icon)
-import MaterialUI.Properties (className, onClick, onClose, open, variant)
 import MaterialUI.Styles (withStyles)
+import OEQ.Data.User (UserDetails(..), UserGroupRoles(..))
+import OEQ.Environment (prepLangStrings)
+import OEQ.UI.Common (unsafeWithRef)
+import OEQ.UI.Icons (userIcon, userIconName)
+import OEQ.UI.SearchFilters (filterSection)
+import OEQ.UI.SearchUser (UGREnabled(..), userSearch)
 import React (component, unsafeCreateLeafElement)
 import React as R
 import React.DOM (text)
 import Search.SearchControl (Chip(..), Placement(..), SearchControl)
 import Search.SearchQuery (_params, singleParam)
-import OEQ.UI.SearchFilters (filterSection)
-import OEQ.UI.Common (unsafeWithRef)
 
 data Command = SelectOwner | OwnerSelected (Maybe UserDetails) | CloseOwner
 type State = {selectOwner::Boolean, userDetails:: Maybe UserDetails}
@@ -60,13 +60,13 @@ ownerControl = do
         d = eval >>> affAction this 
         render {props:{classes,updateQuery}, state:{selectOwner}} = 
           filterSection {name:string.filterOwner.title, icon: userIcon} $ [
-            button [ variant raised, onClick $ \_ -> d SelectOwner ] [ 
-              icon [className classes.ownerIcon] [text userIconName],
+            button {variant: raised, onClick: d SelectOwner } [ 
+              icon {className: classes.ownerIcon} [text userIconName],
               text commonString.action.select
             ],
-            dialog [ open selectOwner, onClose $ \_ -> d CloseOwner] [
+            dialog {open: selectOwner, onClose: d CloseOwner} [
               dialogTitle_ [ text string.filterOwner.selectTitle ],
-              dialogContent [className classes.ownerDialog  ] [
+              dialogContent {className: classes.ownerDialog} [
                 userSearch {
                     onSelect: mkEffectFn1 $ d <<< ownerSelected, 
                     onCancel: d CloseOwner, 

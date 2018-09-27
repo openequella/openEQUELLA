@@ -3,7 +3,7 @@ module OEQ.MainUI.SettingsPage where
 import Prelude
 
 import Control.Monad.Trans.Class (lift)
-import Data.Argonaut (class DecodeJson, decodeJson, (.?), (.??))
+import Data.Argonaut (decodeJson)
 import Data.Array (mapMaybe, sortWith)
 import Data.Either (either)
 import Data.Maybe (Maybe(..), maybe)
@@ -12,14 +12,13 @@ import Dispatcher (affAction)
 import Dispatcher.React (modifyState, renderer)
 import Effect.Class.Console (log)
 import Foreign.Object as SM
-import MaterialUI.CircularProgress (circularProgress)
+import MaterialUI.CircularProgress (circularProgress_)
 import MaterialUI.ExpansionPanel (expansionPanel_)
 import MaterialUI.ExpansionPanelDetails (expansionPanelDetails_)
-import MaterialUI.ExpansionPanelSummary (expandIcon, expansionPanelSummary)
+import MaterialUI.ExpansionPanelSummary (expansionPanelSummary)
 import MaterialUI.List (list_)
 import MaterialUI.ListItem (listItem_)
-import MaterialUI.ListItemText (listItemText, primary, secondary)
-import MaterialUI.Properties (className)
+import MaterialUI.ListItemText (listItemText')
 import MaterialUI.Styles (withStyles)
 import MaterialUI.Typography (typography)
 import Network.HTTP.Affjax (get)
@@ -58,7 +57,7 @@ settingsPage = unsafeCreateLeafElement $ withStyles styles $ component "Settings
                         then template' (templateDefaults coreString.title) [ mainContent ]
                         else mainContent
       where
-      mainContent = maybe (D.div [DP.className classes.progress] [ circularProgress [] ]) renderSettings settings
+      mainContent = maybe (D.div [DP.className classes.progress] [ circularProgress_ [] ]) renderSettings settings
       renderSettings allSettings =
         let groupMap = SM.fromFoldableWith append $ (\(Setting s) -> Tuple s.group [s]) <$> allSettings
             renderGroup (Tuple id details) | Just _pages <- SM.lookup id groupMap =
@@ -71,18 +70,18 @@ settingsPage = unsafeCreateLeafElement $ withStyles styles $ component "Settings
         in D.div [_id "settingsPage"] $ mapMaybe renderGroup groupDetails
 
       settingGroup {name,desc} contents = expansionPanel_ [
-        expansionPanelSummary [expandIcon expandMoreIcon ] [
-          typography [className classes.heading] [ D.text name ],
-          typography [className classes.secondaryHeading] [ D.text desc ]
+        expansionPanelSummary {expandIcon: expandMoreIcon} [
+          typography {className: classes.heading} [ D.text name ],
+          typography {className: classes.secondaryHeading} [ D.text desc ]
         ],
         contents
       ]
 
       pageLink s@{pageUrl:Just pageUrl} = Just $ listItem_ [
-        listItemText [
-          primary $ D.a [DP.href pageUrl] [ D.text s.name ],
-          secondary s.description
-        ]
+        listItemText' {
+          primary: D.a [DP.href pageUrl] [ D.text s.name ],
+          secondary: s.description
+        }
       ]
       pageLink _ = Nothing
 

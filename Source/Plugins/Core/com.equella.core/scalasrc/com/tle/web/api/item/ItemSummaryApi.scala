@@ -18,9 +18,10 @@ package com.tle.web.api.item
 
 import com.thoughtworks.xstream.XStream
 import com.tle.beans.entity.itemdef.DisplayNode
-import com.tle.beans.item.ItemId
+import com.tle.beans.item.{Item, ItemId, ItemPack}
 import com.tle.common.i18n.LangUtils
 import com.tle.common.security.SecurityConstants
+import com.tle.core.item.helper.ItemHelper
 import com.tle.exceptions.{AccessDeniedException, PrivilegeRequiredException}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.interfaces.beans._
@@ -65,7 +66,9 @@ object ItemSummaryApi {
         Option(LangUtils.getString(item.getDescription, null:String))))
       case "displayNodes" =>
         val dn = xstream.fromXML(config).asInstanceOf[java.util.List[DisplayNode]].asScala
-        Some(DisplayNodesSummarySection(sectionTitle, dn.flatMap(DisplayNodes.create(itemXml))))
+        val fullItemXml = LegacyGuice.itemHelper.convertToXml(
+          new ItemPack[Item](item, itemXml, ""), new ItemHelper.ItemHelperSettings(true))
+        Some(DisplayNodesSummarySection(sectionTitle, dn.flatMap(DisplayNodes.create(fullItemXml))))
       case "attachmentsSection" => AttachmentsDisplay.create(info, vitem, itemXml, sectionTitle, config)
       case "xsltSection" =>
         val html = LegacyGuice.itemXsltService.renderSimpleXsltResult(new StandardRenderContext(info), ii, config)

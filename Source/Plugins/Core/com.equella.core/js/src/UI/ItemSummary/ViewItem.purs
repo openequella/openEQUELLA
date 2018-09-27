@@ -4,37 +4,36 @@ import Prelude hiding (div)
 
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero (guard)
-import Data.Array (catMaybes)
+import Data.Array (catMaybes, groupBy)
 import Data.Array as Array
 import Data.Either (either)
 import Data.Maybe (Maybe(..), maybe)
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, modifyState, renderer)
-import OEQ.Data.Error (ErrorResponse)
-import OEQ.Data.Item (AttachmentNode(..), ItemSummary, ItemSummarySection(..))
 import Effect (Effect)
 import Effect.Class (liftEffect)
 import Effect.Uncurried (EffectFn1, runEffectFn1)
+import MaterialUI.Button (button)
+import MaterialUI.Enums as E
+import MaterialUI.List (list)
+import MaterialUI.ListItem (listItem)
+import MaterialUI.ListItemIcon (listItemIcon_)
+import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
+import MaterialUI.ListItemText (listItemText)
+import MaterialUI.Styles (withStyles)
+import MaterialUI.Typography (typography, typography_)
 import OEQ.API.Item (loadItemSummary)
+import OEQ.Data.Error (ErrorResponse)
+import OEQ.Data.Item (AttachmentNode(..), ItemSummary, ItemSummarySection(..), MetaType(..))
 import OEQ.UI.ItemSummary.CopyrightSummary (copyrightSummary)
 import OEQ.UI.ItemSummary.ItemComments (itemComments)
 import OEQ.UI.ItemSummary.MetadataList (metaEntry)
 import OEQ.UI.ItemSummary.MetadataList as ME
-import MaterialUI.Button (button)
-import MaterialUI.Color as Color
-import MaterialUI.DialogTitle (disableTypography)
-import MaterialUI.List (disablePadding, list)
-import MaterialUI.ListItem (disableGutters, listItem)
-import MaterialUI.ListItemIcon (listItemIcon_)
-import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
-import MaterialUI.ListItemText (listItemText, primary, secondary)
-import MaterialUI.Properties (className, color, onClick, variant)
-import MaterialUI.Styles (withStyles)
-import MaterialUI.TextStyle (body1, display1, subheading, title)
-import MaterialUI.Typography (typography)
+import OEQ.Utils.Dates (luxonFormat, luxonFormats, parseIsoToLuxon)
 import React (ReactElement, component, statelessComponent, unsafeCreateLeafElement)
-import React.DOM (div, div', img, text)
+import React.DOM (a, div, div', img, text)
 import React.DOM.Props (dangerouslySetInnerHTML, src)
+import React.DOM.Props as D
 import React.DOM.Props as DP
 import Search.ItemResult (ItemSelection, SelectionType(..))
 
@@ -81,43 +80,52 @@ viewItemSummary = unsafeCreateLeafElement $ withStyles styles $ statelessCompone
       titleText "Copyright",
       copyrightSummary {onError, copyright:c}
     ]
-    titleText t = typography [ 
-      variant title, 
-      color Color.secondary, 
-      className classes.sectionTitle] [text t]
+    titleText t = typography { 
+      className: classes.sectionTitle, 
+      variant: E.title, 
+      color: E.secondary
+      } [text t]
     renderSection section = div [DP.className classes.section ] $ case section of 
-      BasicDetails {description} -> [ typography [variant display1] [ text itemName ] ] <> 
-        maybe [] (\desc -> [ titleText "Description", typography [variant subheading] [text desc] ]) description
+      BasicDetails {description} -> [ typography {variant: E.display1} [ text itemName ] ] <> 
+        maybe [] (\desc -> [ titleText "Description", typography {variant: E.subheading} [text desc] ]) description
       DisplayNodes dn -> 
-        let node {value:t,title} = listItem [disableGutters true] [ 
-                listItemText [primary title, secondary t] 
+        let nodes near = div [DP.className classes.metaRow] $ node <$> Array.fromFoldable near
+            node {value:t,title,metaType} = 
+              let secondary = case metaType of 
+                    HTML -> div [dangerouslySetInnerHTML {__html:t} ] []
+                    Date -> text $ luxonFormat (parseIsoToLuxon t) (luxonFormats."DATE_FULL")
+                    Text -> text t
+                    URL -> a [DP.href t] [text t]
+              in listItem {component: "div", disableGutters: true} [ 
+                listItemText {primary: title, secondaryTypographyProps:{component:"div"}, secondary} [] 
               ]
+            nonFullWidth a b = not a.fullWidth && not b.fullWidth
         in [
           titleText dn.sectionTitle, 
-          list [disablePadding true] $ node <$> dn.meta
+          list {component:"div", disablePadding: true} $ nodes <$> groupBy nonFullWidth dn.meta
         ]
       HtmlSummarySection hs -> (guard hs.showTitle $> titleText hs.sectionTitle) <> [
-        div [ dangerouslySetInnerHTML {__html:hs.html}] []
+        typography_ [ div [ dangerouslySetInnerHTML {__html:hs.html}] [] ]
       ]
       CommentsSummarySection {sectionTitle,canAdd,canDelete,anonymousOnly,allowAnonymous} -> 
         let {uuid,version,onError} = p
         in [
-          titleText sectionTitle, 
+          titleText sectionTitle,
           itemComments {uuid,version,onError,canAdd,canDelete,anonymousOnly,allowAnonymous}
         ]
       Attachments att -> 
         let 
-        attachView (Attachment {title,thumbnailHref,details,uuid} _) = let 
-          toMeta {title:t,value} = {title:t, value : ME.HTML value}
-          extraDeets = list [disablePadding true] $ toMeta >>> metaEntry <$> details 
-          in listItem [disableGutters true] [ 
-            listItemIcon_ [img [src thumbnailHref]],
-            listItemText [disableTypography true, 
-              primary $ typography [variant body1] [text title], 
-              secondary extraDeets 
-            ], 
+        attachView (Attachment {title,href,thumbnailHref,details,uuid} _) = let 
+          toMeta {title:t,value} = {key:t, title:t, value : ME.HTML value}
+          extraDeets = list {disablePadding: true} $ toMeta >>> metaEntry <$> details 
+          in listItem {disableGutters: true} [ 
+            listItemIcon_ $ img [src thumbnailHref],
+            listItemText {disableTypography: true,  
+              primary: typography {variant: E.body1} [a [D.href href] [text title]], 
+              secondary: extraDeets 
+            } [],
             listItemSecondaryAction_ $ catMaybes [
-              (\os -> button [onClick $ \_ -> os {
+              (\os -> button {onClick: os {
                 item:{
                   uuid:p.uuid, 
                   version:p.version, 
@@ -128,12 +136,12 @@ viewItemSummary = unsafeCreateLeafElement $ withStyles styles $ statelessCompone
                 name:title, 
                 description:title, 
                 thumbnail:thumbnailHref
-              }] [ text "Select"]) <$> onSelect
+              }} [ text "Select"]) <$> onSelect
             ]
           ] 
         in [
           titleText att.sectionTitle, 
-          list [disablePadding true] $ attachView <$> att.attachments
+          list {disablePadding: true} $ attachView <$> att.attachments
         ]
   styles t = {
     section: {
@@ -145,5 +153,8 @@ viewItemSummary = unsafeCreateLeafElement $ withStyles styles $ statelessCompone
     sectionTitle: {
       marginTop: t.spacing.unit,
       marginBottom: t.spacing.unit
+    }, 
+    metaRow: {
+      display: "flex"
     }
   }

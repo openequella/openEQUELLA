@@ -3,17 +3,25 @@ module OEQ.UI.MessageInfo where
 import Prelude
 
 import Data.Nullable (Nullable)
+import Data.TSCompat (OneOf, OptionRecord, StringConst)
+import Data.TSCompat.Class (class IsTSEq)
 import Effect (Effect)
-import MaterialUI.Properties (Enum)
 import React (ReactClass, ReactElement, unsafeCreateLeafElement)
 
 foreign import messageInfoClass :: forall a. ReactClass a
 
-messageInfo :: {
+type MessageInfoProps = (
     open :: Boolean,
     onClose :: Effect Unit,
     title :: String,
     code :: Nullable Int,
-    variant :: Enum (success ::String, warning :: String, error::String, info::String)
-} -> ReactElement
+    variant :: OneOf (
+        typed :: StringConst "success", 
+        typed :: StringConst "warning", 
+        typed :: StringConst "error", 
+        typed :: StringConst "info"
+    )
+)
+
+messageInfo :: forall a. IsTSEq a (OptionRecord MessageInfoProps MessageInfoProps) => a -> ReactElement
 messageInfo = unsafeCreateLeafElement messageInfoClass

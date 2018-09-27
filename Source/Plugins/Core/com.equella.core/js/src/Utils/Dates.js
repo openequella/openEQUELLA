@@ -11,3 +11,12 @@ exports.luxonDateToIso = function (d) {
 exports._dateToLuxon = function (o) {
     return Luxon.DateTime.local(o.y, o.m, o.d);
 }
+
+exports.luxonFormats = Luxon.DateTime;
+
+exports.luxonFormat = function (dt) {
+    return function (format)
+    {
+        return dt.toLocaleString(format);
+    }
+}

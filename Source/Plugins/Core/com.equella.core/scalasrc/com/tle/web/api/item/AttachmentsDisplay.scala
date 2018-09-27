@@ -42,8 +42,9 @@ object AttachmentsDisplay {
       val descHtml = SectionUtils.renderToString(rc, ad.getDescription)
       MetaDisplay(ad.getName.getText, descHtml, true, "html")
     }
+    val attachmentUrl = LegacyGuice.institutionService.institutionalise(vr.createDefaultViewerUrl().getHref)
     AttachmentSummary(vr.getDescription, uuid,
-      vr.createDefaultViewerUrl().getHref, vr.createStandardThumbnailRenderer(new TextLabel("HELLO")).getSource,
+      attachmentUrl, vr.createStandardThumbnailRenderer(new TextLabel("HELLO")).getSource,
       Map.empty, deets, None)
   }
 

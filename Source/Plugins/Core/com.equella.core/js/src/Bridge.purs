@@ -4,16 +4,16 @@ import Prelude
 
 import Effect.Uncurried (EffectFn1)
 import Foreign (Foreign)
-import React (ReactClass)
-import React.SyntheticEvent (SyntheticEvent)
 import OEQ.MainUI.Routes (Route(..), routeHref)
-import OEQ.UI.Security.ACLEditor (aclEditorClass)
 import OEQ.MainUI.Template (templateClass)
+import OEQ.UI.Security.ACLEditor (aclEditorClass)
+import React (ReactClass)
+import React.SyntheticEvent (SyntheticMouseEvent)
 import Unsafe.Coerce (unsafeCoerce)
 
 type Bridge = {
     routes :: Foreign,
-    router :: Route -> {href::String, onClick :: EffectFn1 SyntheticEvent Unit},
+    router :: Route -> {href::String, onClick :: EffectFn1 SyntheticMouseEvent Unit},
     "Template" :: forall p. ReactClass p,
     "AclEditor" :: forall p. ReactClass p
 }

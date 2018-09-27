@@ -18,10 +18,9 @@ import Effect.Class.Console (log)
 import Effect.Uncurried (mkEffectFn2)
 import Foreign.Object (Object)
 import Foreign.Object as Object
+import MaterialUI.Checkbox (checkbox')
 import MaterialUI.Icon (icon_)
-import MaterialUI.ListItemText (primary, secondary)
-import MaterialUI.Properties (onChange)
-import MaterialUI.SwitchBase (checked)
+import MaterialUI.ListItemText (listItemText')
 import Network.HTTP.Affjax (get)
 import Network.HTTP.Affjax.Response (json)
 import OEQ.Data.Settings (FacetSetting(..))
@@ -96,8 +95,9 @@ facetDisplay = unsafeCreateLeafElement $ component "FacetDisplay" $ \this -> do
         renderResults (Just (FacetResults results)) = checkList {entries: result <$> results}
             where
             result (FacetResult {term,count}) = {
-              checkProps : [checked $ Object.member term selectedTerms, onChange $ (mkEffectFn2 \e c -> updateQuery $ updateValue c path term)],
-              textProps : [primary term, secondary $ show count]
+              checkbox: \{classes} -> checkbox' {classes, checked: Object.member term selectedTerms, 
+                onChange: mkEffectFn2 \e c -> updateQuery $ updateValue c path term},
+              text: \{className} -> listItemText' {className, primary: term, secondary: show count}
             }
         renderResults _ = D.div' []
       in filterSection {name, icon: icon_ [text "view_list"] } [

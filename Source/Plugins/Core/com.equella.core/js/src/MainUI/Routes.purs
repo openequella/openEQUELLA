@@ -19,7 +19,7 @@ import Foreign.Object as Object
 import OEQ.Data.Item (ItemRef(..))
 import OEQ.UI.Common (ClickableHref)
 import OEQ.Utils.QueryString (queryStringObj)
-import React.SyntheticEvent (SyntheticEvent, preventDefault)
+import React.SyntheticEvent (SyntheticEvent, SyntheticEvent_, preventDefault)
 import Routing (match)
 import Routing.Match (Match, int, lit, str)
 import Routing.PushState (PushStateInterface, makeInterface)
@@ -47,7 +47,7 @@ data Route =
 
 navGlobals :: forall route. {nav::PushStateInterface, preventNav :: Ref (EffectFn1 route Boolean)}
 navGlobals = unsafePerformEffect do 
-    nav <- makeInterface 
+    nav <- makeInterface  
     preventNav <- new emptyPreventNav
     pure {nav, preventNav}
 
@@ -106,6 +106,7 @@ pushRoute' f r = do
 routeHref :: Route -> ClickableHref
 routeHref r = 
     let href = routeURI r
+        onClick :: forall e. EffectFn1 (SyntheticEvent_ e) Unit
         onClick = mkEffectFn1 $ \e -> preventDefault e *> pushRoute r
     in { href, onClick }
 

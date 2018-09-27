@@ -10,35 +10,33 @@ import Data.Nullable (toNullable)
 import Data.String (joinWith)
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer, saveRef, withRef)
-import OEQ.API.LegacyContent (submitRequest)
-import OEQ.Data.Error (ErrorResponse)
-import OEQ.UI.LegacyContent (FormUpdate, divWithHtml, setupLegacyHooks, updateIncludes, updateStylesheets, writeForm)
-import OEQ.Data.LegacyContent (ContentResponse(..), SubmitOptions)
 import Effect.Aff (runAff_)
 import Effect.Class (liftEffect)
 import Effect.Ref (new)
 import Foreign.Object (Object, lookup)
 import Foreign.Object as Object
-import MaterialUI.Card (card)
-import MaterialUI.CardContent (cardContent)
-import MaterialUI.CircularProgress (circularProgress)
-import MaterialUI.Color (inherit)
+import MaterialUI.Card (card_)
+import MaterialUI.CardContent (cardContent_)
+import MaterialUI.CircularProgress (circularProgress_)
+import MaterialUI.Enums (display2, headline, inherit)
+import MaterialUI.Enums as String
 import MaterialUI.Icon (icon_)
 import MaterialUI.IconButton (iconButton)
-import MaterialUI.Popover (anchorEl, anchorOrigin, marginThreshold, popover)
-import MaterialUI.Properties (color, onClick, onClose, open, variant)
+import MaterialUI.Popover (popover)
 import MaterialUI.Styles (withStyles)
-import MaterialUI.TextStyle (display2, headline)
 import MaterialUI.Typography (typography)
-import MaterialUI.Typography as Color
+import OEQ.API.LegacyContent (submitRequest)
+import OEQ.Data.Error (ErrorResponse)
+import OEQ.Data.LegacyContent (ContentResponse(..), SubmitOptions)
+import OEQ.MainUI.Routes (LegacyURI(..), matchRoute, pushRoute)
+import OEQ.MainUI.Template (refreshUser, template', templateDefaults)
+import OEQ.UI.Common (scrollWindowToTop, withCurrentTarget)
+import OEQ.UI.LegacyContent (FormUpdate, divWithHtml, setupLegacyHooks, updateIncludes, updateStylesheets, writeForm)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (div, text)
 import React.DOM as D
 import React.DOM.Props (_id)
 import React.DOM.Props as DP
-import OEQ.MainUI.Routes (LegacyURI(..), matchRoute, pushRoute)
-import OEQ.MainUI.Template (refreshUser, template', templateDefaults)
-import OEQ.UI.Common (scrollWindowToTop, withCurrentTarget)
 import Web.HTML (HTMLElement, window)
 import Web.HTML.Location (assign)
 import Web.HTML.Window (location)
@@ -99,22 +97,23 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
                           } [ mainContent ] 
         Nothing | Just {code,error,description} <- errored -> template' (templateDefaults error) [ 
           div [DP.className classes.errorPage] [
-            card [] [
-              cardContent [] $ catMaybes [
-                Just $ typography [variant display2, color Color.error] [ text $ show code <> " : " <> error], 
-                description <#> \desc -> typography [variant headline] [ text desc ]
+            card_ [
+              cardContent_ $ catMaybes [
+                Just $ typography {variant: display2, color: String.error} [ text $ show code <> " : " <> error], 
+                description <#> \desc -> typography {variant: headline} [ text desc ]
               ]
             ]
           ]
         ]
-        Nothing -> D.div [ DP.className classes.progress ] [ circularProgress [] ]
+        Nothing -> D.div [ DP.className classes.progress ] [ circularProgress_ [] ]
       where
       options html = [ 
-          iconButton [color inherit, onClick $ withCurrentTarget $ d <<< OptionsAnchor <<< Just] [ icon_ [text "more_vert"] ],
-          popover [ open $ isJust s.optionsAnchor, marginThreshold 64
-              , anchorOrigin {vertical:"bottom",horizontal:"left"}
-              , onClose (\_ -> d $ OptionsAnchor Nothing)
-              , anchorEl $ toNullable s.optionsAnchor ] 
+          iconButton {color: inherit, onClick: withCurrentTarget $ d <<< OptionsAnchor <<< Just} [ icon_ [text "more_vert"] ],
+          popover { open: isJust s.optionsAnchor
+              , marginThreshold: 64
+              , anchorOrigin: {vertical:"bottom",horizontal:"left"}
+              , onClose: d $ OptionsAnchor Nothing
+              , anchorEl: toNullable s.optionsAnchor }
           [ 
               divWithHtml {divProps:[DP.className $ classes.screenOptions], html, script:Nothing}
           ]

@@ -16,7 +16,7 @@ instance irDec :: DecodeJson ItemRef where
 instance irEnc :: EncodeJson ItemRef where 
   encodeJson (ItemRef uuid version) = "uuid" := uuid ~> "version" := version ~> jsonEmptyObject
 
-data MetaType = Text | HTML | Date 
+data MetaType = Text | HTML | Date | URL
 
 type MetaDisplay = {
   title :: String,
@@ -113,6 +113,7 @@ decodeMeta o = do
     "text" -> pure Text 
     "html" -> pure HTML 
     "date" -> pure Date 
+    "url" -> pure URL
     nd -> Left $ "Unknown display node type: '" <> nd <> "'"
   pure {title,value,fullWidth,metaType}
 

@@ -4,7 +4,6 @@ module OEQ.UI.Security.ACLEditor where
 import Prelude hiding (div)
 
 import Common.CommonStrings (commonAction, commonString)
-import OEQ.UI.Icons (groupIconName, roleIconName, userIconName)
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
 import Control.Monad.Reader (runReaderT)
 import Control.Monad.State (State, execState, get, gets, modify, runState)
@@ -27,53 +26,48 @@ import Data.Traversable (traverse, traverse_)
 import Data.Tuple (Tuple(Tuple), fst, snd)
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer)
-import ExtUI.DragNDrop.Beautiful (DropResult, dragDropContext, draggable, droppable)
-import OEQ.API.User (lookupUsers)
-import OEQ.Data.Security (AccessEntry(..), Expression(..), ExpressionTerm(..), IpRange(..), OpType(..), ParsedTerm(..), ResolvedExpression(..), ResolvedTerm(..), TargetListEntry(..), collapseZero, entryToTargetList, expressionText, findExprInsert, findExprModify, parseTerm, parseWho, resolvedToTerm, termToWho, textForExpression, textForTerm, traverseExpr)
-import OEQ.Data.User (GroupDetails(GroupDetails), RoleDetails(RoleDetails), UserDetails(UserDetails), UserGroupRoles(UserGroupRoles))
-import OEQ.Environment (baseUrl, prepLangStrings)
-import OEQ.UI.SearchUser (UGREnabled(..))
-import ExtUI.SpeedDial (speedDialActionU, speedDialIconU, speedDialU)
-import OEQ.UI.Security.TermSelection (DialogType(..), termDialog)
 import Effect (Effect)
 import Effect.Aff (forkAff)
 import Effect.Aff.Class (liftAff)
 import Effect.Class (liftEffect)
 import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
-import MaterialUI.Button (button, disableRipple, raised)
-import MaterialUI.Checkbox (checkbox)
-import MaterialUI.Color as C
+import ExtUI.DragNDrop.Beautiful (DropResult, dragDropContext, draggable, droppable)
+import ExtUI.SpeedDial (speedDialActionU, speedDialIconU, speedDialU)
+import MaterialUI.Button (button)
+import MaterialUI.Checkbox (checkbox')
 import MaterialUI.Dialog (dialog)
 import MaterialUI.DialogActions (dialogActions_)
 import MaterialUI.DialogContent (dialogContent)
-import MaterialUI.Divider (divider)
+import MaterialUI.Divider (divider')
+import MaterialUI.Enums (body1, caption, headline, raised, secondary, subheading, textSecondary, title)
+import MaterialUI.Enums as SEnum
 import MaterialUI.FormControl (formControl)
-import MaterialUI.FormControlLabel (control, formControlLabel, label)
+import MaterialUI.FormControlLabel (formControlLabel')
 import MaterialUI.Icon (icon_)
 import MaterialUI.IconButton (iconButton)
-import MaterialUI.Input (id) as P
 import MaterialUI.InputLabel (inputLabel)
-import MaterialUI.List (disablePadding, list, list_)
-import MaterialUI.ListItem (button) as P
+import MaterialUI.List (list, list_)
 import MaterialUI.ListItem (listItem)
 import MaterialUI.ListItemIcon (listItemIcon_)
-import MaterialUI.ListItemText (disableTypography, listItemText)
-import MaterialUI.ListItemText (primary, secondary) as P
+import MaterialUI.ListItemText (listItemText')
 import MaterialUI.Menu (menu)
 import MaterialUI.MenuItem (menuItem, menuItem_)
 import MaterialUI.Paper (paper)
-import MaterialUI.Popover (anchorEl)
-import MaterialUI.PropTypes (toHandler)
-import MaterialUI.Properties (className, color, component, disabled, mkProp, onChange, onClick, onClose, open, variant)
-import MaterialUI.Select (select, value)
+import MaterialUI.Select (select)
 import MaterialUI.Styles (withStyles)
-import MaterialUI.SwitchBase (checked)
-import MaterialUI.TextStyle (body1, caption, headline, subheading, title) as TS
-import MaterialUI.Tooltip (tooltip, title)
-import MaterialUI.Typography (error, textSecondary, typography)
+import MaterialUI.Tooltip (tooltip)
+import MaterialUI.Typography (typography)
 import Network.HTTP.Affjax (get, post_) as AJ
 import Network.HTTP.Affjax.Request (json)
 import Network.HTTP.Affjax.Response (json) as Resp
+import OEQ.API.User (lookupUsers)
+import OEQ.Data.Security (AccessEntry(..), Expression(..), ExpressionTerm(..), IpRange(..), OpType(..), ParsedTerm(..), ResolvedExpression(..), ResolvedTerm(..), TargetListEntry(..), collapseZero, entryToTargetList, expressionText, findExprInsert, findExprModify, parseTerm, parseWho, resolvedToTerm, termToWho, textForExpression, textForTerm, traverseExpr)
+import OEQ.Data.User (GroupDetails(GroupDetails), RoleDetails(RoleDetails), UserDetails(UserDetails), UserGroupRoles(UserGroupRoles))
+import OEQ.Environment (baseUrl, prepLangStrings)
+import OEQ.UI.Common (textChange)
+import OEQ.UI.Icons (groupIconName, roleIconName, userIconName)
+import OEQ.UI.SearchUser (UGREnabled(..))
+import OEQ.UI.Security.TermSelection (DialogType(..), termDialog)
 import React (ReactClass, ReactElement)
 import React as R
 import React.DOM (div, div', text)
@@ -82,7 +76,6 @@ import React.DOM.Props (unsafeMkProps)
 import React.SyntheticEvent (currentTarget, stopPropagation)
 import Unsafe.Coerce (unsafeCoerce)
 import Unsafe.Reference (unsafeRefEq)
-import OEQ.UI.Common (textChange)
 import Web.DOM (Node)
 import Web.DOM.Document (createElement, toParentNode)
 import Web.DOM.Element (toNode)
@@ -220,15 +213,15 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
       in dragDropContext { onDragEnd: mkEffectFn1 (d <<< HandleDrop) } $ [ 
         div [P.className classes.overallPanel] [
           div [P.className classes.editorPanels] [
-            paper [className classes.entryList] [
-              typography [variant TS.title, className classes.flexCentered] [ text aclString.privileges],
+            paper {className: classes.entryList} [
+              typography {variant: title, className: classes.flexCentered} [ text aclString.privileges],
               createNewPriv,
               div [ P.className classes.scrollable ] [aclEntries]
             ],
-            paper [className classes.currentEntryPanel ] $ [ 
-              typography [variant TS.title, className classes.flexCentered] [ text aclString.expression]
+            paper {className: classes.currentEntryPanel } $ [ 
+              typography {variant: title, className: classes.flexCentered } [ text aclString.expression]
             ] <> maybe placeholderExpr expressionContents expressionM,
-            paper [className classes.commonPanel] commonPanel 
+            paper {className: classes.commonPanel} commonPanel 
           ]
         ]
       ] <> (catMaybes [ 
@@ -237,23 +230,23 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
       ])
       where 
       renderDialog dt = termDialog {open:showDialog, onAdd: mkEffectFn1 $ d <<< AddFromDialog, cancel: d CloseDialog, dt}
-      renderNewPriv = dialog [open s.newPrivDialog, onClose close] [
-          dialogContent [className classes.privDialog] [
-            typography [variant TS.headline] [ text aclString.selectpriv],
+      renderNewPriv = dialog {open: s.newPrivDialog, onClose: close} [
+          dialogContent {className: classes.privDialog} [
+            typography {variant: headline} [ text aclString.selectpriv],
             list_ $ privItem <$> allowedPrivs
           ], 
           dialogActions_ [
-            button [color C.secondary, onClick $ close] [ text commonAction.cancel ]
+            button {color: secondary, onClick: close} [ text commonAction.cancel ]
           ]
         ]
         where 
-        close = \_ -> d $ FinishNewPriv Nothing
-        privItem i = listItem [P.button true, onClick $ \_ -> d $ FinishNewPriv (Just i)] [
-          listItemText [P.primary i]
+        close = d $ FinishNewPriv Nothing
+        privItem i = listItem {button: true, onClick: d $ FinishNewPriv (Just i)} [
+          listItemText' {primary: i}
         ]
 
       commonPanel = let 
-        dialChange = toHandler <<< command <<< DialState
+        dialChange = DialState
         closeDial = dialChange $ const false
         openDial = dialChange $ const true
         in [ 
@@ -270,7 +263,7 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
             action "http" aclString.new.referrer $ ReferrerDialog "http://*",
             action "apps" aclString.new.token $ SecretDialog ""
           ],
-          typography [variant TS.title, className classes.flexCentered] [ text aclString.targets],
+          typography {variant: title, className: classes.flexCentered} [ text aclString.targets],
           div [P.className classes.scrollable ] [
             droppable {droppableId:"common"} \p _ -> 
               div [unsafeMkProps "ref" p.innerRef, p.droppableProps, P.style {width: "100%"}] $
@@ -280,44 +273,42 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
           ]
         ]
         where 
-        action i title dt = speedDialActionU {icon: icon_ [text i], title, onClick: toHandler $ command $ OpenDialog dt }
+        action i title dt = speedDialActionU {icon: icon_ [text i], title, onClick: d $ OpenDialog dt }
         targetActions i = div [P.className classes.termActions] $ [
-              tooltip [ title commonAction.clear ] [ iconButton [ onClick $ command $ ClearTarget i ] [ icon_ [ text "clear" ] ] ]
+              tooltip { title: commonAction.clear } $ iconButton { onClick: d $ ClearTarget i } [ icon_ [ text "clear" ] ]
             ]
 
 
-      command :: forall a. Command -> (a -> Effect Unit)
-      command c = \_ -> d c
-      placeholderExpr = [ typography [ variant TS.caption, className classes.flexCentered ] [ text aclString.privplaceholder] ]
+      placeholderExpr = [ typography {variant: caption, className: classes.flexCentered } [ text aclString.privplaceholder] ]
       createNewPriv = div' [ 
-        button [variant raised, className classes.privSelect, onClick $ command NewPriv ] [text aclString.addpriv], 
-        button [variant raised, disabled cantUndo, onClick $ command Undo ] [ text commonString.action.undo ]
+        button {variant: raised, className: classes.privSelect, onClick: d NewPriv } [text aclString.addpriv], 
+        button {variant: raised, disabled: cantUndo, onClick: d Undo } [ text commonString.action.undo ]
       ]
       droppedOnClass snap = if snap.isDraggingOver then classes.beingDraggedOver else classes.notBeingDragged
       cantUndo = null undoList
-
+ 
       aclEntries = droppable {droppableId:"list", "type": "entry"} \p snap -> 
         div [unsafeMkProps "ref" p.innerRef, p.droppableProps, P.className $ droppedOnClass snap ] [
-          list [disablePadding true] $ mapWithIndex entryRow acls,
+          list {disablePadding: true} $ mapWithIndex entryRow acls,
           p.placeholder
         ]
 
       expressionContents (Tuple i {expr:exprType, priv}) =
         let exprEntries = case exprType of 
               Resolved expression -> [ 
-                list [disablePadding true] $ 
+                list {disablePadding: true} $ 
                   mapWithIndex (#) $ fromFoldable $ makeExpression 0 false expression Nil 
               ]
               _ -> []
-            dropText = typography [ variant TS.caption, className $ joinWith " " [classes.flexCentered, classes.dropText] ] 
+            dropText = typography {variant: caption, className: joinWith " " [classes.flexCentered, classes.dropText] } 
                           [ text aclString.dropplaceholder]
         in  [
-          formControl [className classes.privSelect] [ 
-            inputLabel [mkProp "htmlFor" "privSelect"] [text aclString.privilege],
-            select [value priv, P.id "privSelect", textChange d $ EditEntry i <<< set _priv] $ 
-              (\p -> menuItem [mkProp "value" p] [text p]) <$> allowedPrivs
+          formControl {className: classes.privSelect} [ 
+            inputLabel {"htmlFor": "privSelect"} [text aclString.privilege],
+            select {value: priv, id: "privSelect", onChange: textChange d $ EditEntry i <<< set _priv } $ 
+              (\p -> menuItem {value:p} [text p]) <$> allowedPrivs
           ],
-          divider [className classes.divideEntry],
+          divider' {className: classes.divideEntry},
           div [ P.className classes.scrollable] $ (if length exprEntries == 0 then [dropText] else []) <> [
             droppable {droppableId:"currentEntry"} \p _ -> 
               div [unsafeMkProps "ref" p.innerRef, p.droppableProps, P.className classes.currentEntryDrop] exprEntries
@@ -328,21 +319,24 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
         in if ds.isDragging then maybe child (flip renderToPortal child) dragPortal else child
 
       makeExpression indent multi expr l = case expr of       
-          RTerm t n -> 
-            let termActions i = div [P.className classes.termActions] $
-              (guard  multi $> tooltip [title aclString.convertGroup] [ 
-                iconButton [ onClick $ command $ Expand i ] [ icon_ [ text "keyboard_arrow_right" ] ] 
-              ]) <> [
-              formControlLabel [control $ checkbox [checked n, onChange $ command $ ToggleNot i ], label aclString.not ],
-              iconButton [ onClick $ command $ DeleteExpr i ] [ icon_ [ text "delete" ] ] 
-            ]
+          RTerm t n -> let 
+            termActions i = let 
+              expander = tooltip {title: aclString.convertGroup} $
+                iconButton { onClick: d $ Expand i } [ 
+                  icon_ [ text "keyboard_arrow_right" ] 
+                ]
+              in div [P.className classes.termActions] $
+              (guard multi $> expander) <> [
+                formControlLabel' { control: checkbox' {checked: n, onChange: d $ ToggleNot i }, label: aclString.not },
+                iconButton { onClick: d $ DeleteExpr i } [ icon_ [ text "delete" ] ] 
+              ]
             in Cons (\i -> commonExpr "term" [P.style {paddingLeft: indentPixels}] [termActions i] n i (ResolvedTerm t)) l
           ROp op exprs n -> (Cons $ opEntry op n) (foldr (makeExpression (indent + 1) (length exprs > 1)) l exprs)
         where 
         opEntry op n i = draggable {draggableId: "op" <> show i, index:i} $ \p _ -> 
           div [unsafeMkProps "ref" p.innerRef, p.draggableProps] [
             div [ P.className classes.opDrop, P.style {marginLeft: indentPixels} ] [ 
-                select [value $ opValue op n, textChange d $ ChangeOp i ] opItems,
+                select {value: opValue op n, onChange: textChange d $ ChangeOp i } opItems,
                 div [P.style {display:"none"}, p.dragHandleProps] []
             ]
           ]
@@ -351,7 +345,7 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
       commonExpr pfx props actions n i rt = draggable {draggableId: pfx <> show i, index:i} $ withPortal \p _ -> 
         div [unsafeMkProps "ref"  p.innerRef, p.draggableProps, p.dragHandleProps] $ [
           div ([P.className classes.termEntry] <> props) $ [ 
-            listItemIcon_ [ icon_ [ text $ iconNameForTermType rt ] ], 
+            listItemIcon_ $ icon_ [ text $ iconNameForTermType rt ], 
             listTextForTermType n rt ] <> actions
         ]
 
@@ -361,14 +355,18 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
           div' [
             let selected = eq i <$> selectedIndex # fromMaybe false
                 menuOpen = (fst >>> eq i <$> s.entryMenu) # fromMaybe false
-                props = guard selected $> className classes.selectedEntry
-            in listItem (props <> [ P.button true, disableRipple true, onClick $ \_ -> d $ SelectEntry i]) [ 
+            in listItem {
+                className: toNullable $ guard selected $> classes.selectedEntry, 
+                button: true, 
+                disableRipple: true, 
+                onClick: d $ SelectEntry i} [
               div [P.className classes.exprLine ] [
-                listItemText [ className classes.entryText, disableTypography true, P.primary $ privText, P.secondary secondLine ],
+                listItemText' {className: classes.entryText, disableTypography: true, 
+                  primary: privText, secondary: secondLine },
                 div [ P.className classes.termActions ] [ 
-                  iconButton [ onClick $ command $ DeleteEntry i ] [ icon_ [ text "delete" ] ], 
-                  iconButton [ onClick $ \e -> currentTarget e >>= \t -> d $ EntryMenuAnchor $ Just $ Tuple i (unsafeCoerce t) ] [ icon_ [text "more_vert"]],
-                  menu [open menuOpen, anchorEl $ toNullable $ snd <$> s.entryMenu, onClose $ \_ -> d $ EntryMenuAnchor Nothing] [
+                  iconButton {onClick: d $ DeleteEntry i } [ icon_ [ text "delete" ] ], 
+                  iconButton {onClick: mkEffectFn1 \e -> currentTarget e >>= \t -> d $ EntryMenuAnchor $ Just $ Tuple i (unsafeCoerce t) } [ icon_ [text "more_vert"]],
+                  menu {open: menuOpen, anchorEl: toNullable $ snd <$> s.entryMenu, onClose: d $ EntryMenuAnchor Nothing} [
                     menuItem_ [ check (not granted) _granted aclString.revoked ],
                     menuItem_ [ check override _override aclString.override ]
                   ]
@@ -384,25 +382,24 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
                     [] -> priv 
                     o -> joinWith ", " o <> " - " <> priv
               secondLine = textForExprType expr
-              check o l t = formControlLabel [control $ checkbox [checked o, toggler l ], label t ]
-              toggler l = mkProp "onClick" $ toHandler $ \e -> do 
+              check o l t = formControlLabel' {control: checkbox' {checked: o, onClick: toggler l}, label: t}
+              toggler l = mkEffectFn1 \e -> do 
                 stopPropagation (unsafeCoerce e)
                 d $ EditEntry i (over l not)
 
-      firstLine t = typography [variant TS.subheading, className classes.ellipsed] [text t]
-      stdExprLine t = typography [variant TS.body1, className classes.ellipsed, color textSecondary ] [ text t ] 
+      firstLine t = typography {variant: subheading, className: classes.ellipsed} [text t]
+      stdExprLine t = typography {variant: body1, className: classes.ellipsed, color: textSecondary } [ text t ] 
 
       textForExprType (Unresolved std) = stdExprLine $ textForExpression std 
       textForExprType (Resolved rexpr) = stdExprLine $ expressionText textForResolved rexpr
-      textForExprType (InvalidExpr msg) = typography [component "span", color error] [ text msg ]
+      textForExprType (InvalidExpr msg) = typography {component: "span", color: SEnum.error} [ text msg ]
 
-      ellipsed a b = listItemText $ [
-        className classes.entryText, 
-        disableTypography true,
-        P.primary $ firstLine a
-      ] <> catMaybes [ 
-        (P.secondary <<< stdExprLine) <$> b
-      ]
+      ellipsed a b = listItemText' {
+        className: classes.entryText, 
+        disableTypography: true,
+        primary: firstLine a,
+        secondary: toNullable $ stdExprLine <$> b
+      }
 
       listTextForResolved n = case _ of 
         Already std -> txt (textForTerm std) Nothing
@@ -678,7 +675,7 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
     opItems :: Array ReactElement
     opItems = mkOp <$> [ Tuple OR false, Tuple AND false, Tuple OR true, Tuple AND true ]
       where 
-      mkOp (Tuple o n) = menuItem [mkProp "value" $ opValue o n] [ text $ opName o n]
+      mkOp (Tuple o n) = menuItem {value: opValue o n} [ text $ opName o n]
   initialProps <- R.getProps this
   pure {
     state:initialState initialProps, 

@@ -11,14 +11,15 @@ import Data.Tuple (Tuple(..))
 import Effect (Effect)
 import Effect.Class.Console (log)
 import Foreign.Object as SM
-import Prim.Row (class Cons)
-import Record (get)
 import OEQ.MainUI.SearchPage (coreStrings, rawStrings) as SearchPage
+import OEQ.MainUI.SettingsPage (coreStrings, rawStrings) as SettingsPage
+import OEQ.MainUI.Template (rawStrings, coreStrings) as Template
+import OEQ.UI.ItemSummary.ItemComments as ItemComments
 import OEQ.UI.Security.ACLEditor (aclRawStrings)
 import OEQ.UI.Security.TermSelection (termRawStrings)
 import OEQ.UI.Settings.UISettings (rawStrings) as UISettings
-import OEQ.MainUI.SettingsPage (coreStrings, rawStrings) as SettingsPage
-import OEQ.MainUI.Template (rawStrings, coreStrings) as Template
+import Prim.Row (class Cons)
+import Record (get)
 import Type.Row (class RowToList, Cons, Nil, RLProxy(..))
 
 foreign import data DynamicString :: Type
@@ -73,4 +74,5 @@ main = do
     genTopLevel {prefix:"courseedit", strings:courseEditString} <>
     genTopLevel {prefix:"entity", strings:entityStrings} <>
     genTopLevel aclRawStrings <>
-    genTopLevel termRawStrings 
+    genTopLevel termRawStrings <>
+    genTopLevel ItemComments.coreStrings

@@ -1,25 +1,18 @@
 module ExtUI.TimeAgo where
 
-import Prelude
 
-import MaterialUI.Properties (IProp, PropValue, mkPropF, mkPropRecord)
-import React (ReactClass, ReactElement, unsafeCreateElement)
-import Unsafe.Coerce (unsafeCoerce)
+import Data.TSCompat (OptionRecord)
+import Data.TSCompat.Class (class IsTSEq)
+import React (ReactClass, ReactElement, unsafeCreateLeafElement)
 
 foreign import timeAgoClass :: forall p. ReactClass p
-
-class IsTimeAgoDate a where
-  toProp :: a -> PropValue
-
-instance stringDate :: IsTimeAgoDate String where
-  toProp = unsafeCoerce
-
 
 type TimeAgoProps = (
   live :: Boolean,
   className :: String,
-  locale :: String
+  locale :: String,
+  datetime :: String
 )
 
-timeAgo :: forall a. IsTimeAgoDate a => a -> Array (IProp TimeAgoProps) -> ReactElement
-timeAgo dt p = unsafeCreateElement timeAgoClass (mkPropRecord $ [mkPropF "datetime" $ toProp dt] <> p) []
+timeAgo :: forall a. IsTSEq (Record a) (OptionRecord TimeAgoProps ()) => Record a -> ReactElement
+timeAgo = unsafeCreateLeafElement timeAgoClass

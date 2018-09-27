@@ -5,6 +5,7 @@ import { withStyles, Theme, createStyles, WithStyles } from '@material-ui/core/s
 import { Course, PagingResults } from '../api';
 import { TextField, MenuItem, Paper } from '@material-ui/core';
 import { searchCourses } from '../course';
+import { TextFieldProps } from '@material-ui/core/TextField';
 
 const styles = (theme : Theme) => createStyles({
   root: {
@@ -35,6 +36,7 @@ const styles = (theme : Theme) => createStyles({
 
 interface CourseItemProps {
   query: string;
+  maxResults: number;
   getItemProps(options: (GetItemPropsOptions<Course>)): any;
 }
 
@@ -54,8 +56,8 @@ class CourseItems extends React.Component<CourseItemProps, CourseItemState>
         this.state = {courses:[] };
   }
   loadCourses = () => {
-    const {query} = this.props;
-    searchCourses(query, false, 5).then(
+    const {query,maxResults} = this.props;
+    searchCourses(query, false, maxResults).then(
       (value: PagingResults<Course>) => this.setState({courses: value.results})
     )
   };
@@ -87,9 +89,10 @@ class CourseItems extends React.Component<CourseItemProps, CourseItemState>
 
 interface CourseSelectProps  {
   course: Course | null;
-  required?: boolean;
+  TextFieldProps?: TextFieldProps;
   title: string;
-  onCourseSelect: (course: Course) => void;
+  maxResults: number;
+  onCourseSelect: (course: Course | null) => void;
 }
 
 interface CourseSelectState {
@@ -111,6 +114,7 @@ class CourseSelect extends React.Component<CourseSelectProps & WithStyles<typeof
     handleInputChange = (event: any) => {
       let inputValue = event.target.value;
       this.setState({ inputValue });
+      this.props.onCourseSelect(null);
     };
     render() {
         const {classes, title, course} = this.props;
@@ -126,8 +130,7 @@ class CourseSelect extends React.Component<CourseSelectProps & WithStyles<typeof
           isOpen,
           selectedItem,
         }) => <div className={classes.container}>
-            <TextField 
-            required={this.props.required}
+            <TextField {...this.props.TextFieldProps}
             label={title}
             placeholder={"Search on name and code..."}
             InputProps={...getInputProps(
@@ -136,7 +139,7 @@ class CourseSelect extends React.Component<CourseSelectProps & WithStyles<typeof
             />
             {isOpen && inputValue ? 
             <Paper className={classes.paper} square {...getMenuProps()}>
-              <CourseItems query={inputValue} getItemProps={getItemProps}/> 
+              <CourseItems query={inputValue} maxResults={this.props.maxResults} getItemProps={getItemProps}/> 
             </Paper> : null}
           </div>
         }

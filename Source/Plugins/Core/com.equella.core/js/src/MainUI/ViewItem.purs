@@ -4,7 +4,6 @@ import Prelude hiding (div)
 
 import Data.Maybe (Maybe(..))
 import Data.Nullable (toNullable)
-import Debug.Trace (spy, traceM)
 import Dispatcher (affAction)
 import Dispatcher.React (modifyState, renderer)
 import Effect.Uncurried (mkEffectFn1)

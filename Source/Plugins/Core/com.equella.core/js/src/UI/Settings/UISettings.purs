@@ -18,17 +18,15 @@ import Dispatcher.React (getState, modifyState, renderer)
 import Effect.Aff (Fiber, Milliseconds(..), delay, error, forkAff, killFiber)
 import Effect.Class.Console (log)
 import Effect.Uncurried (mkEffectFn2)
-import MaterialUI.Button (button, fab)
+import MaterialUI.Button (button)
+import MaterialUI.Enums (fab, subheading)
 import MaterialUI.ExpansionPanelDetails (expansionPanelDetails_)
 import MaterialUI.FormControl (formControl_)
-import MaterialUI.FormControlLabel (control, formControlLabel, label)
+import MaterialUI.FormControlLabel (formControlLabel')
 import MaterialUI.Icon (icon_)
-import MaterialUI.Properties (IProp, className, disabled, onChange, onClick, variant)
 import MaterialUI.Styles (withStyles)
-import MaterialUI.Switch (switch)
-import MaterialUI.SwitchBase (checked)
-import MaterialUI.TextField (margin, placeholder, textField, value)
-import MaterialUI.TextStyle (subheading)
+import MaterialUI.Switch (switch')
+import MaterialUI.TextField (textField')
 import MaterialUI.Typography (typography)
 import Network.HTTP.Affjax (get, put_)
 import Network.HTTP.Affjax.Request (json)
@@ -71,33 +69,36 @@ uiSettingsEditor = flip unsafeCreateLeafElement {} $ withStyles styles $ compone
 
     render {state: s@{settings:UISettings uis@{newUI: (NewUISettings newUI)}}, props: {classes}} =
       let
-        dis :: forall r. IProp (disabled::Boolean|r)
-        dis = disabled $ not newUI.enabled
+        disabled = not newUI.enabled
         facetEditor ind (FacetSetting {name,path}) = D.div' [
-          textField [dis, label $ string.facet.name, margin "normal", value name, changeField _name, placeholder string.facet.name],
-          textField [className classes.pathField, dis, margin "normal", label "Path", value path, changeField _path,
-            placeholder "/item/metadata/path" ],
-          button [dis, onClick $ \_ -> d $ RemoveFacet ind ] [ icon_ [ text "delete"] ]
+          textField' {disabled, 
+            label: string.facet.name, 
+            value: name, 
+            onChange: changeField _name, 
+            placeholder: string.facet.name},
+          textField' {className: classes.pathField, disabled, label: "Path", value: path, onChange: changeField _path,
+            placeholder: "/item/metadata/path" },
+          button {disabled, onClick: d $ RemoveFacet ind } [ icon_ [ text "delete"] ]
         ]
           where changeField l = textChange d (ModifyFacet ind <<< set (_Newtype <<< l))
       in
       expansionPanelDetails_ [
         D.div [DP.className classes.enableColumn] [
           formControl_ [
-            formControlLabel [ label string.enableNew, control $ switch [checked newUI.enabled,
-                            disabled s.disabled, onChange $ mkEffectFn2 $ \e -> d <<< SetNewUI]]
+            formControlLabel' { label: string.enableNew, control: switch' { checked: newUI.enabled,
+                            disabled: s.disabled, onChange: mkEffectFn2 $ \e -> d <<< SetNewUI} }
           ]
         ],
         D.div [DP.className classes.facetColumn] $ [
           formControl_ [
-            formControlLabel [ label string.enableSearch, control $ switch [checked newUI.newSearch,
-                            dis, onChange $ mkEffectFn2 \e -> d <<< SetNewSearch ]]
+            formControlLabel' {label: string.enableSearch, control: switch' {checked: newUI.newSearch,
+                            disabled, onChange: mkEffectFn2 \e -> d <<< SetNewSearch }}
           ],
           D.div [DP.className classes.facetConfig ] $ [
-            typography [variant subheading] [text string.facet.title]
+            typography {variant: subheading} [text string.facet.title]
           ] <> (mapWithIndex facetEditor newUI.facets) <>
           [
-            button [dis, variant fab, className classes.fab, onClick $ \e -> d AddFacet] [ icon_ [text "add"] ]
+            button {disabled, variant: fab, className: classes.fab, onClick: d AddFacet} [ icon_ [text "add"] ]
           ]
         ]
       ]

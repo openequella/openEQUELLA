@@ -17,25 +17,24 @@ import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..))
 import Dispatcher (affAction)
 import Dispatcher.React (getState, modifyState)
-import OEQ.Environment (baseUrl)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
 import Effect.Class.Console (log)
 import Effect.Uncurried (mkEffectFn1)
-import MaterialUI.Chip (chip, label)
-import MaterialUI.CircularProgress (circularProgress)
-import MaterialUI.Divider (divider)
+import MaterialUI.Chip (chip')
+import MaterialUI.CircularProgress (circularProgress')
+import MaterialUI.Divider (divider_)
+import MaterialUI.Enums (subheading, title)
 import MaterialUI.Fade (fade)
-import MaterialUI.Properties (className, component, onDelete, variant)
 import MaterialUI.Styles (withStyles)
-import MaterialUI.TextStyle (title)
-import MaterialUI.TextStyle as TS
-import MaterialUI.Transition (in_, timeout)
 import MaterialUI.Typography (typography)
 import Network.HTTP.Affjax (get)
 import Network.HTTP.Affjax.Response (json)
-import Partial.Unsafe (unsafePartial)
+import OEQ.Data.SearchResults (SearchResults(..))
+import OEQ.Environment (baseUrl)
+import OEQ.UI.Layout (dualPane)
 import OEQ.Utils.QueryString (queryString)
+import Partial.Unsafe (unsafePartial)
 import React (ReactElement, unsafeCreateLeafElement)
 import React as R
 import React.DOM (div, text)
@@ -43,9 +42,7 @@ import React.DOM.Props as DP
 import Search.ItemResult (Result)
 import Search.SearchControl (Chip(..), Placement(..), SearchControl, placementMatch)
 import Search.SearchQuery (Query, blankQuery, searchQueryParams)
-import OEQ.Data.SearchResults (SearchResults(..))
 import TSComponents (appBarQuery)
-import OEQ.UI.Layout (dualPane)
 import Unsafe.Coerce (unsafeCoerce)
 import Web.Event.Event (EventType(..))
 import Web.Event.EventTarget (EventListener, addEventListener, eventListener, removeEventListener)
@@ -98,19 +95,19 @@ searchLayout = unsafeCreateLeafElement $ withStyles styles $ R.component "Search
         mainContent = dualPane { 
           left: renderResults searchResults <> progress, 
           right: (mapMaybe (placementMatch Selections) controlsRendered) <>
-            [ typography [className classes.filterTitle, variant title] [text strings.refineTitle ] ] <>
-            (intercalate [divider []] $ (mapMaybe (map singleton <<< placementMatch Filters) controlsRendered))
+            [ typography {className: classes.filterTitle, variant: title} [text strings.refineTitle ] ] <>
+            (intercalate [divider_ []] $ (mapMaybe (map singleton <<< placementMatch Filters) controlsRendered))
         }
 
         progress = [
-          let pbar = circularProgress [className classes.progress]
-          in fade [in_ $ searching || loadingNew, timeout $ if loadingNew then 0 else 800] [ pbar ]
+          let pbar = circularProgress' {className: classes.progress}
+          in fade {"in": searching || loadingNew, timeout: if loadingNew then 0 else 800} [ pbar ]
         ]
-        stdChip (Chip c) = chip [className classes.chip, label c.label, onDelete $ \_ -> c.onDelete]
+        stdChip (Chip c) = chip' {className: classes.chip, label: c.label, onDelete: c.onDelete}
 
         renderResults (Just (SearchResults {results,available})) = [
           div [ DP.className classes.resultHeader ] $ [
-            typography [className classes.available, component "div", variant TS.subheading] [ 
+            typography {className: classes.available, component: "div", variant: subheading} [ 
                 text $ show available <> " " <> strings.resultsAvailable ] 
           ] <> 
           (mapMaybe (placementMatch ResultHeader) controlsRendered)

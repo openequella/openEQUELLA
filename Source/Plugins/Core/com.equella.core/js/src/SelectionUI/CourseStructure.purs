@@ -12,26 +12,22 @@ import Data.Maybe (Maybe, fromMaybe, maybe)
 import Data.Newtype (class Newtype, unwrap)
 import Data.String (joinWith)
 import Data.Traversable (find, traverse)
-import Debug.Trace (spy)
 import Dispatcher.React (propsRenderer)
 import Effect (Effect)
-import Foreign.Object (Object)
-import MaterialUI.Icon (icon, icon_)
-import MaterialUI.IconButton (iconButton)
-import MaterialUI.List (disablePadding, list)
-import MaterialUI.ListItem (button, disableGutters, listItem)
-import MaterialUI.ListItemIcon (listItemIcon, listItemIcon_)
-import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction, listItemSecondaryAction_)
-import MaterialUI.ListItemText (listItemText, primary)
-import MaterialUI.Properties (className, mkProp, onClick, variant)
+import MaterialUI.Enums (title)
+import MaterialUI.Icon (icon_)
+import MaterialUI.IconButton (iconButton) 
+import MaterialUI.List (list)
+import MaterialUI.ListItem (listItem)
+import MaterialUI.ListItemIcon (listItemIcon_)
+import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
+import MaterialUI.ListItemText (listItemText')
 import MaterialUI.Styles (withStyles)
-import MaterialUI.TextStyle (title)
 import MaterialUI.Typography (typography)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (div, text)
-import React.DOM.Dynamic (div')
 import React.DOM.Props (key)
-import Search.ItemResult (ItemSelection, Result(..))
+import Search.ItemResult (ItemSelection)
 
 newtype CourseNode = CourseNode {
     id::String, 
@@ -56,27 +52,27 @@ courseStructure :: CourseStructureProps -> ReactElement
 courseStructure = unsafeCreateLeafElement $ withStyles styles $ component "CourseStructure" $ \this -> do 
   let
     render {classes, selections, selectedFolder, onRemove, onSelectFolder, structure: cs} = let 
-      selectionsFor folderId i is@{description, selected} = listItem [mkProp "key" $ folderId <> "_" <> show i] [
-          listItemText [ primary description ], 
+      selectionsFor folderId i is@{description, selected} = listItem {"key": folderId <> "_" <> show i} [
+          listItemText' { primary: description }, 
           listItemSecondaryAction_ [ 
-            iconButton [onClick \_ -> onRemove folderId is] 
+            iconButton {onClick: onRemove folderId is} 
               [ icon_ [ text "delete" ] ] 
           ]
       ]
       nodeList :: CourseNode -> Array ReactElement
       nodeList (CourseNode {name,id,folders}) = [ 
-          listItem [
-            button true, 
-            className $ joinWith " " $ guard (selectedFolder == id) *> [classes.selected],
-            onClick $ \_ -> onSelectFolder id
-          ] $ [
-              listItemIcon_ [ icon_ [ text "folder" ] ],
-              listItemText [ primary name ]
+          listItem {
+            button: true, 
+            className: joinWith " " $ guard (selectedFolder == id) *> [classes.selected],
+            onClick: onSelectFolder id
+           } $ [
+              listItemIcon_ $ icon_ [ text "folder" ],
+              listItemText' { primary: name }
           ]
       ] <> (maybe [] (mapWithIndex $ selectionsFor id) $ lookup id selections) <> (folders >>= nodeList)
       in div [key "courses"] [ 
-          typography [variant title]  [text cs.name],
-          list [disablePadding true] $ cs.folders >>= nodeList
+          typography {variant: title}  [text cs.name],
+          list {disablePadding: true} $ cs.folders >>= nodeList
       ]
   pure {render: propsRenderer render this}
   where

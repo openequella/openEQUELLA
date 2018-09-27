@@ -4,39 +4,46 @@ import Prelude hiding (div)
 
 import Control.Monad.Trans.Class (lift)
 import Data.Array (catMaybes)
+import Data.Date (Date)
 import Data.Lens (_Just, set)
 import Data.Lens.Record (prop)
-import Data.Maybe (Maybe(..), fromMaybe, isJust)
+import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Ord (lessThan)
 import Data.Symbol (SProxy(..))
+import Data.Tuple (Tuple(..))
+import Data.Validation.Semigroup (V, invalid, unV)
 import Dispatcher (affAction)
 import Dispatcher.React (getState, modifyState, renderer)
-import Effect (Effect)
 import Effect.Class (liftEffect)
-import Effect.Class.Console (log)
-import Effect.Uncurried (EffectFn1, mkEffectFn1)
-import Foreign.Object (empty)
+import Effect.Now (nowDate)
+import Effect.Uncurried (EffectFn1)
+import Foreign.Object (Object)
+import Foreign.Object as Object
+import MaterialUI.Button (button)
+import MaterialUI.Colors (fade)
+import MaterialUI.Dialog (dialog)
+import MaterialUI.DialogActions (dialogActions_)
+import MaterialUI.DialogContent (dialogContent_)
+import MaterialUI.DialogTitle (dialogTitle_)
+import MaterialUI.Enums (lg, primary)
+import MaterialUI.Enums as E
+import MaterialUI.List (list)
+import MaterialUI.Paper (paper_)
 import MaterialUI.Styles (withStyles)
-import OEQ.API.Requests (errorOr, postJson, postJsonExpect)
-import OEQ.Data.Activation (encodeActivateRequset)
+import MaterialUI.Table (table_)
+import MaterialUI.TableBody (tableBody_)
+import MaterialUI.TableCell (classTableCell, tableCell_)
+import MaterialUI.TableHead (tableHead_)
+import MaterialUI.TableRow (tableRow, tableRow_)
+import OEQ.API.Requests (errorOr, postJsonExpect)
+import OEQ.Data.Activation (ActivateReqest, encodeActivateRequset)
 import OEQ.Data.Error (ErrorResponse)
-import OEQ.Data.Item (CopyrightSummary, HoldingSummary(..), ItemRef(..), CopyrightAttachment)
+import OEQ.Data.Item (CopyrightAttachment, CopyrightSummary, HoldingSummary(..), ItemRef)
 import OEQ.UI.Activation (ActivationData, activationParams)
-import OEQ.UI.ItemSummary.MetadataList (MetaValue(..), metaEntry)
-import React (ReactElement, component, unsafeCreateLeafElement)
-import React.DOM (div', div, text)
-import React.DOM.Dynamic (a, h1, h1')
+import React (ReactElement, component, unsafeCreateElement, unsafeCreateLeafElement)
+import React.DOM (div', text)
+import React.DOM.Dynamic (a)
 import React.DOM.Props (href)
-import React.DOM.Props as RP
-import ReactMUI.Button (button)
-import ReactMUI.Dialog (dialog)
-import ReactMUI.DialogActions (dialogActions, dialogActions_)
-import ReactMUI.DialogContent (dialogContent)
-import ReactMUI.DialogTitle (dialogTitle, dialogTitle_)
-import ReactMUI.Enums (primary)
-import ReactMUI.List (list, list_)
-import ReactMUI.ListItem (listItem, listItem_)
-import ReactMUI.ListItemSecondaryAction (listItemSecondaryAction, listItemSecondaryAction_)
-import ReactMUI.ListItemText (listItemText)
 
 type CopyrightProps = {
   onError :: EffectFn1 ErrorResponse Unit,
@@ -46,33 +53,68 @@ type CopyrightProps = {
 data Command = Activate CopyrightAttachment | ChangeData ActivationData | CancelDialog | FinishActivate
 
 type State = {
-  currentActivation :: Maybe {open::Boolean, attachment::CopyrightAttachment, activation :: ActivationData }
+  currentActivation :: Maybe {open::Boolean, attachment::CopyrightAttachment, activation :: ActivationData },
+  errors :: Object String
 }
+
+type Error = Tuple String String
+
+errored :: forall a. String -> String -> V (Array Error) a 
+errored field msg = invalid [Tuple field msg]
+
+validate :: Date -> ActivationData -> ItemRef -> String ->  V (Array Error) ActivateReqest
+validate nowd ad item attachmentUuid = ado 
+    from <- validateDate "startDate" ad.startDate
+    until <- validateDate "endDate" ad.endDate
+    courseUuid <- validateCourse
+    if maybe true (lessThan nowd) ad.endDate
+       then pure unit else errored "endDate" "Must be in the future"
+  in {"type": "cal", item, attachmentUuid, from, until, courseUuid, citation: ad.citation}
+  where 
+  validateCourse = maybe (errored "course" "You must select a course") (pure <<< _.uuid) ad.course
+  validateDate field date = maybe (errored field "You must enter a date") pure date
 
 copyrightSummary :: CopyrightProps -> ReactElement
 copyrightSummary = unsafeCreateLeafElement $ withStyles styles $ component "CopyrightSummary" $ \this -> do
   let
+    copyrightCell = unsafeCreateElement $ withStyles (\theme -> { 
+        head: {
+          backgroundColor: fade theme.palette.primary.main 0.05
+          -- height: "2em"
+        }
+    }) classTableCell
+    emptyErrors :: Object String
+    emptyErrors = Object.empty
     _currentActivation = prop (SProxy :: SProxy "currentActivation")
     _activation = prop (SProxy :: SProxy "activation")
     _open = prop (SProxy :: SProxy "open")
     d = eval >>> affAction this
-    render {props: {classes, onError, copyright: {holding}}, state:{currentActivation:ca}} = let 
+    render {props: {classes, onError, copyright: {holding}}, state:{currentActivation:ca, errors}} = let 
       attachmentLink {title,href:h} = a [href $ fromMaybe "" h] [ text title ]
-      bookSection {pageCount,attachment} = listItem_ [
-        list_ $ map metaEntry [
-          {title: "Pages:", value: Text $ show pageCount},
-          {title: "Resource:", value: case attachment.href of 
-            Nothing -> Text attachment.title
-            Just h -> React $ a [href h] [ text attachment.title ]
-          }
+      bookSection {pageCount,attachment} = tableRow {key:attachment.uuid} [
+        tableCell_ [ case attachment.href of 
+            Nothing -> text attachment.title
+            Just h -> a [href h] [ text attachment.title ]
         ],
-        listItemSecondaryAction_ [
-          button {color: primary,  onClick: d $ Activate attachment} [ text "Activate" ]
+        tableCell_ [ text $ show pageCount ], 
+        tableCell_ [
+          button {color: E.primary, variant: E.raised, onClick: d $ Activate attachment} [ text "Activate" ]
         ]
-        -- createActivation {onError, item: attachment.item, attachmentUuid: attachment.uuid}
       ]
-      bookChapter {title, sections} = [ listItem {} [listItemText { primary: title} [] ] ] <> (bookSection <$> sections)
-      renderHolding (BookSummary {totalPages,chapters}) = list {} $ bookChapter =<< chapters
+      bookChapter {title, sections} = [ 
+        table_ [
+          tableHead_ [
+            tableRow_ [
+              copyrightCell {variant: E.head, className: classes.resourceCell} [ text $ "Chapter : " <> title ],
+              copyrightCell {variant: E.head, className: classes.pageCell} [ text "Pages" ],
+              copyrightCell {variant: E.head, className: classes.actionCell} []
+            ]
+          ],
+          tableBody_ $ bookSection <$> sections
+        ]
+      ]
+        -- listItem {key:title} [listItemText { primary: title} [] ] ] <> ()
+      renderHolding (BookSummary {totalPages,chapters}) = list {} $ [paper_ $ bookChapter =<< chapters ]
       renderHolding (JournalSummary {}) = div' [ 
 
       ]
@@ -81,11 +123,13 @@ copyrightSummary = unsafeCreateLeafElement $ withStyles styles $ component "Copy
           ca <#> (\a ->
             dialog {
               open: a.open, 
-              onClose: d CancelDialog 
+              onClose: d CancelDialog, 
+              maxWidth: lg,
+              fullWidth: true
              } [
               dialogTitle_ [ text "Activate" ],
-              dialogContent {className: classes.activateDialog} [
-                activationParams {"data": a.activation, errors:empty, onChange: d <<< ChangeData, onError}
+              dialogContent_ [
+                activationParams {"data": a.activation, errors, onChange: d <<< ChangeData, onError}
               ], 
               dialogActions_ [
                 button {color: primary, onClick: d CancelDialog } [text "Cancel"],
@@ -94,36 +138,30 @@ copyrightSummary = unsafeCreateLeafElement $ withStyles styles $ component "Copy
             ])
       ] 
     eval = case _ of 
-      Activate a -> modifyState _ {currentActivation = Just {attachment:a, open:true,
+      Activate a -> modifyState _ {errors = emptyErrors, currentActivation = Just {attachment:a, open:true,
         activation:{startDate:Nothing, course:Nothing, endDate:Nothing, citation:Nothing}}}
       ChangeData ad -> modifyState $ set (_currentActivation <<< _Just <<< _activation) ad
       CancelDialog -> modifyState $ set (_currentActivation <<< _Just <<< _open) false
       FinishActivate -> do 
-        eval CancelDialog
         {currentActivation} <- getState
+        nowd <- liftEffect $ nowDate
         case currentActivation of 
-          Just { attachment:{item, uuid:attachmentUuid}, 
-            activation:{startDate: Just from, 
-                      endDate: Just until, 
-                      citation, 
-                      course: Just {uuid:courseUuid} 
-                     } 
-          } -> do
-            errorOr (\_ -> pure unit) <=< lift $ postJsonExpect 201 "api/activation" $ 
-              encodeActivateRequset {"type": "cal", 
-                  item, attachmentUuid, 
-                  from, 
-                  until, 
-                  courseUuid, 
-                  citation
-                }
+          Just { attachment:a, activation } -> do
+            let doReq actreq = errorOr (\_ -> eval CancelDialog) <=< 
+                    lift $ postJsonExpect 201 "api/activation" $ encodeActivateRequset actreq
+            unV (\e -> modifyState _ {errors = Object.fromFoldable e}) doReq $ validate nowd activation a.item a.uuid
           _ -> pure unit
 
-  pure {render: renderer render this, state:{currentActivation:Nothing}::State}
+  pure {render: renderer render this, state:{currentActivation:Nothing, errors:emptyErrors}::State}
   where 
   styles theme = {
-    activateDialog: {
-      height: "30em",
-      width: "30em"
+    resourceCell: {
+      width: "50%"
+    },
+    pageCell: {
+      width: "30%"
+    },
+    actionCell: {
+      width: "20%"
     }
   }

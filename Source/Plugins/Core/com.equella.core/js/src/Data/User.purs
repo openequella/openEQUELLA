@@ -24,6 +24,9 @@ derive instance eqRD :: Eq RoleDetails
 
 newtype UserGroupRoles u g r = UserGroupRoles {users:: Array u, groups :: Array g, roles:: Array r}
 
+userIds :: Array String -> UserGroupRoles String String String 
+userIds users = UserGroupRoles {users,groups:[],roles:[]}
+
 class ToUGRDetail a where 
   toUGR :: a -> UGRDetail
 

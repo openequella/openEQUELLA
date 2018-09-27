@@ -3,20 +3,20 @@ module Search.OrderControl where
 import Prelude
 
 import Data.Argonaut (_String)
-import Data.Lens (_2, _Just, preview, set)
+import Data.Lens (_Just, preview, set)
 import Data.Lens.At (at)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Tuple (Tuple(..))
-import OEQ.Environment (prepLangStrings)
+import Effect.Uncurried (mkEffectFn2, runEffectFn1)
 import MaterialUI.MenuItem (menuItem)
-import MaterialUI.Properties (className, mkProp, onChange)
-import MaterialUI.Select (select, value)
+import MaterialUI.Select (select)
 import MaterialUI.Styles (withStyles)
+import OEQ.Environment (prepLangStrings)
+import OEQ.UI.Common (valueChange)
 import React (statelessComponent, unsafeCreateLeafElement)
 import React.DOM (text)
 import Search.SearchControl (Placement(..), SearchControl)
-import Search.SearchQuery (QueryParam(..), _data, _params, _value, singleParam)
-import OEQ.UI.Common (valueChange)
+import Search.SearchQuery (_data, _params, singleParam)
 
 data Order = Relevance | DateModified | Name | Rating | DateCreated
 
@@ -43,16 +43,16 @@ orderName = case _ of
 orderControl :: SearchControl
 orderControl = let 
   _order = at "order"
-  orderItem o = menuItem [mkProp "value" $ orderValue o] [ text $ orderName o ]
+  orderItem o = menuItem {value: orderValue o} [ text $ orderName o ]
   in \{updateQuery, query} -> do 
     let 
       order = preview (_order <<< _Just <<< _data <<< _String) query.params
       updateOrder v = updateQuery $ set (_params <<< _order) $ Just $ singleParam v "order" v
-      render {classes} = select [ 
-              className classes.ordering, 
-              value $ fromMaybe "relevance" order, 
-              onChange $ valueChange $ updateOrder
-          ] $ (orderItem <$> orderEntries)
+      render {classes} = select { 
+              className: classes.ordering, 
+              value: fromMaybe "relevance" order, 
+              onChange: mkEffectFn2 \e _ -> runEffectFn1 (valueChange updateOrder) e
+          } $ (orderItem <$> orderEntries)
       orderSelect = unsafeCreateLeafElement $ withStyles styles $ statelessComponent render
     pure $ { 
       render:[Tuple ResultHeader $ orderSelect {}], chips:[]

@@ -8,7 +8,7 @@ import Control.MonadZero (guard)
 import Data.Date (Date)
 import Data.Lens (Lens', set, view)
 import Data.Lens.Record (prop)
-import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Maybe (Maybe(..), fromMaybe, isNothing, maybe)
 import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.Symbol (SProxy(..))
 import Dispatcher (affAction)
@@ -16,10 +16,9 @@ import Dispatcher.React (getProps, modifyState, renderer)
 import Effect (Effect)
 import Effect.Class (liftEffect)
 import Effect.Uncurried (EffectFn1, mkEffectFn1)
-import ExtUI.MaterialUIPicker.DatePicker (datePicker, mkProps)
-import Foreign.Object (Object)
+import ExtUI.MaterialUIPicker.DatePicker (datePicker)
+import Foreign.Object (Object, lookup, member)
 import MaterialUI.Styles (withStyles)
-import MaterialUI.TextField as OldMui
 import OEQ.API.Requests (errorOr)
 import OEQ.API.Schema (listAllCitations)
 import OEQ.Data.Error (ErrorResponse)
@@ -29,12 +28,13 @@ import OEQ.Utils.Dates as Dates
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (div', div, text)
 import React.DOM.Props as RP
-import ReactMUI.MenuItem (menuItem)
-import ReactMUI.TextField (textField)
-import TSComponents (CourseEntity, courseSelectClass)
+import MaterialUI.Enums as E
+import MaterialUI.MenuItem (menuItem)
+import MaterialUI.TextField (textField)
+import TSComponents (CourseEntity, courseSelect)
 
 type ActivationData = {
-  startDate :: Maybe Date, 
+  startDate :: Maybe Date,
   endDate :: Maybe Date, 
   course :: Maybe CourseEntity, 
   citation :: Maybe String
@@ -44,10 +44,9 @@ type State = {
   citations :: Array String
 }
 data Command = SetDate (Maybe Date -> ActivationData -> ActivationData) (Nullable LuxonDate) 
-  | SetCourse CourseEntity 
+  | SetCourse (Nullable CourseEntity)
   | SetCitation String
   | Init 
-
 
 activationParams :: { data :: ActivationData, 
   onChange :: ActivationData -> Effect Unit, 
@@ -59,34 +58,52 @@ activationParams = unsafeCreateLeafElement $ withStyles styles $ component "Acti
     _endDate = prop (SProxy :: SProxy "endDate")
     d = eval >>> affAction this
 
-    render {props:{classes, data:ad}, state:s} = div [RP.className classes.container] [
-        unsafeCreateLeafElement courseSelectClass {
+    render {props:{errors, classes, data:ad}, state:s} = let disabled = isNothing ad.course
+      in div [RP.className classes.container] [
+        courseSelect {
+          maxResults: 4,
+          "TextFieldProps": {
+            className: classes.field, 
+            required: true,
+            margin: E.dense,
+            helperText: fromMaybe " " $ lookup "course" errors,
+            error: member "course" errors,
+            fullWidth: true
+          },
           course: toNullable ad.course,  
-          required: true,
-          title: "Course",
+          title: "Course", 
           onCourseSelect: mkEffectFn1 $ d <<< SetCourse },
-        dc _startDate "Start date",
-        dc _endDate "End date", 
+        dc _startDate "startDate" {label: "Start date", disabled, disablePast:false},
+        dc _endDate "endDate" {label:"End date", disabled, disablePast:true},
         div' [
           textField { 
             label: "Citation",  
             className: classes.field, 
             select: true,  
+            margin: E.dense,
             value: fromMaybe "" ad.citation,
-            onChange: mkEffectFn1 $ valueChange (d <<< SetCitation) } $ 
+            disabled,
+            onChange: valueChange (d <<< SetCitation) } $ 
                 [menuItem {value: ""} [text "Default"]] <>  
                   ((\c -> menuItem {value: c} [text c]) <$> s.citations)
         ]
     ]
       where 
-      dc :: Lens' ActivationData (Maybe Date) -> String -> ReactElement
-      dc l lab = div [RP.className classes.field] [ 
-        datePicker [
-          OldMui.label $ lab <> " *",
-          mkProps {
-            clearable: true, value: toNullable $ Dates.dateToLocalJSDate <$> view l ad, 
-            onChange: mkEffectFn1 $ d <<< SetDate (set l)}
-        ]
+      dc :: Lens' ActivationData (Maybe Date) -> String -> {label:: String, disabled :: Boolean, disablePast::Boolean} -> ReactElement
+      dc l field {label, disabled, disablePast} = div [RP.className classes.field] [ 
+        datePicker {
+          label: label <> " *",
+          clearable: true, 
+          disabled,
+          keyboard: true,
+          format: "dd/MM/yyyy",
+          disablePast,
+          margin: E.dense,
+          value: toNullable $ Dates.dateToLocalJSDate <$> view l ad, 
+          helperText: fromMaybe " " $ lookup field errors,
+          error: member field errors,
+          onChange: mkEffectFn1 $ d <<< SetDate (set l)
+        }
       ]
 
     modifyData f = do 
@@ -96,14 +113,16 @@ activationParams = unsafeCreateLeafElement $ withStyles styles $ component "Acti
       Init -> (lift $ listAllCitations) >>= errorOr (\c -> modifyState _ {citations=c}) 
       SetDate f jsd -> modifyData (f $ Dates.luxonToDate <$> toMaybe jsd)
       SetCitation c -> modifyData _ {citation = (guard $ c /= "") $> c}
-      SetCourse c -> 
+      SetCourse cm -> 
         let fromIso = toMaybe >>> map (luxonToDate <<< parseIsoToLuxon) 
-        in modifyData \s -> s {
-        course = Just c, 
-        startDate = fromIso c.from <|> s.startDate, 
-        endDate = fromIso c.until <|> s.endDate, 
-        citation = toMaybe c.citation <|> s.citation
-      }
+            resetFromCourse c = 
+              modifyData \s -> s {
+                  course = Just c, 
+                  startDate = fromIso c.from <|> s.startDate, 
+                  endDate = fromIso c.until <|> s.endDate, 
+                  citation = toMaybe c.citation <|> s.citation
+                }
+        in maybe (modifyData _ { course = Nothing}) resetFromCourse $ toMaybe cm
   pure {
     render:renderer render this, 
     componentDidMount: d Init,
@@ -117,7 +136,7 @@ activationParams = unsafeCreateLeafElement $ withStyles styles $ component "Acti
         flexDirection: "column"
       }, 
       field: {
-        margin: show theme.spacing.unit <> "px 0px",
-        width: "15em"
+        marginTop: theme.spacing.unit,
+        width: "20em"
       }
     }
