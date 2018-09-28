@@ -3,17 +3,17 @@ module OEQ.UI.ItemSummary.CopyrightSummary where
 import Prelude hiding (div)
 
 import Control.Monad.Trans.Class (lift)
-import Data.Array (catMaybes)
+import Data.Array (catMaybes, mapWithIndex)
 import Data.Date (Date)
 import Data.Lens (_Just, set)
 import Data.Lens.Record (prop)
-import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Maybe (Maybe(..), fromMaybe, isNothing, maybe)
 import Data.Ord (lessThan)
 import Data.Symbol (SProxy(..))
 import Data.Tuple (Tuple(..))
 import Data.Validation.Semigroup (V, invalid, unV)
 import Dispatcher (affAction)
-import Dispatcher.React (getState, modifyState, renderer)
+import Dispatcher.React (getProps, getState, modifyState, renderer)
 import Effect.Class (liftEffect)
 import Effect.Now (nowDate)
 import Effect.Uncurried (EffectFn1)
@@ -25,35 +25,43 @@ import MaterialUI.Dialog (dialog)
 import MaterialUI.DialogActions (dialogActions_)
 import MaterialUI.DialogContent (dialogContent_)
 import MaterialUI.DialogTitle (dialogTitle_)
-import MaterialUI.Enums (lg, primary)
+import MaterialUI.Enums (md, primary, raised)
 import MaterialUI.Enums as E
-import MaterialUI.List (list)
-import MaterialUI.Paper (paper_)
+import MaterialUI.Paper (paper, paper_)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.Table (table_)
 import MaterialUI.TableBody (tableBody_)
 import MaterialUI.TableCell (classTableCell, tableCell_)
 import MaterialUI.TableHead (tableHead_)
 import MaterialUI.TableRow (tableRow, tableRow_)
+import OEQ.API.Course (getCourseByCode)
 import OEQ.API.Requests (errorOr, postJsonExpect)
 import OEQ.Data.Activation (ActivateReqest, encodeActivateRequset)
+import OEQ.Data.Course (CourseEntity)
 import OEQ.Data.Error (ErrorResponse)
-import OEQ.Data.Item (CopyrightAttachment, CopyrightSummary, HoldingSummary(..), ItemRef)
-import OEQ.UI.Activation (ActivationData, activationParams)
+import OEQ.Data.Item (ActivationStatus(..), CopyrightAttachment, CopyrightSummary, HoldingSummary(..), ItemRef)
+import OEQ.UI.Activation (ActivationData, activationDefaults, activationParams)
 import React (ReactElement, component, unsafeCreateElement, unsafeCreateLeafElement)
-import React.DOM (div', text)
+import React.DOM (div, text)
 import React.DOM.Dynamic (a)
 import React.DOM.Props (href)
+import React.DOM.Props as DP
 
 type CopyrightProps = {
   onError :: EffectFn1 ErrorResponse Unit,
-  copyright :: CopyrightSummary
+  copyright :: CopyrightSummary,
+  courseCode :: Maybe String
 }
 
-data Command = Activate CopyrightAttachment | ChangeData ActivationData | CancelDialog | FinishActivate
+data Command = Activate CopyrightAttachment 
+  | ChangeData ActivationData 
+  | Init
+  | CancelDialog 
+  | FinishActivate
 
 type State = {
   currentActivation :: Maybe {open::Boolean, attachment::CopyrightAttachment, activation :: ActivationData },
+  currentCourse :: Maybe CourseEntity,
   errors :: Object String
 }
 
@@ -83,65 +91,105 @@ copyrightSummary = unsafeCreateLeafElement $ withStyles styles $ component "Copy
           -- height: "2em"
         }
     }) classTableCell
+    
     emptyErrors :: Object String
     emptyErrors = Object.empty
+    
     _currentActivation = prop (SProxy :: SProxy "currentActivation")
     _activation = prop (SProxy :: SProxy "activation")
     _open = prop (SProxy :: SProxy "open")
+    
     d = eval >>> affAction this
-    render {props: {classes, onError, copyright: {holding}}, state:{currentActivation:ca, errors}} = let 
+
+    render {props: {classes, onError, copyright: {holding}}, state:s@{currentActivation:ca, errors}} = let 
       attachmentLink {title,href:h} = a [href $ fromMaybe "" h] [ text title ]
-      bookSection {pageCount,attachment} = tableRow {key:attachment.uuid} [
-        tableCell_ [ case attachment.href of 
-            Nothing -> text attachment.title
-            Just h -> a [href h] [ text attachment.title ]
-        ],
-        tableCell_ [ text $ show pageCount ], 
-        tableCell_ [
-          button {color: E.primary, variant: E.raised, onClick: d $ Activate attachment} [ text "Activate" ]
-        ]
+      headerCell className t = copyrightCell {variant: E.head, className } [t] 
+      attachmentCell attachment = tableCell_ [ case attachment.href of 
+          Nothing -> text attachment.title
+          Just h -> a [href h] [ text attachment.title ]
       ]
-      bookChapter {title, sections} = [ 
-        table_ [
+      statusCell attachment = tableCell_ [ text $ statusString attachment.status]
+      activateCell attachment = tableCell_ [
+          button {color: E.primary, variant: E.raised, onClick: d $ Activate attachment} [ text "Activate" ]
+      ]
+      bookSection {pageCount,attachment} = tableRow {key:attachment.uuid} [
+        attachmentCell attachment,
+        tableCell_ [ text $ show pageCount ], 
+        statusCell attachment,
+        activateCell attachment
+      ]
+      bookChapter i {title, sections} = let ft t = if i == 0 then t else ""
+        in table_ [
           tableHead_ [
             tableRow_ [
-              copyrightCell {variant: E.head, className: classes.resourceCell} [ text $ "Chapter : " <> title ],
-              copyrightCell {variant: E.head, className: classes.pageCell} [ text "Pages" ],
-              copyrightCell {variant: E.head, className: classes.actionCell} []
+              headerCell classes.resourceCell $ text $ "Chapter : " <> title,
+              headerCell classes.pageCell $ text $ ft "Pages",
+              headerCell classes.statusCell $ text $ ft "Status",
+              headerCell classes.actionCell $ text "Actions"
             ]
           ],
           tableBody_ $ bookSection <$> sections
         ]
-      ]
-        -- listItem {key:title} [listItemText { primary: title} [] ] ] <> ()
-      renderHolding (BookSummary {totalPages,chapters}) = list {} $ [paper_ $ bookChapter =<< chapters ]
-      renderHolding (JournalSummary {}) = div' [ 
 
+      journalSection {attachment} = tableRow {key:attachment.uuid} [
+        attachmentCell attachment,
+        statusCell attachment,
+        activateCell attachment
       ]
-      in div' $ catMaybes [
+      journalPortion {title, sections} = [ 
+        table_ [
+          tableHead_ [
+            tableRow_ [
+              headerCell classes.resourceCell $ text title,
+              headerCell classes.statusCell $ text "Status",
+              headerCell classes.actionCell $ text "Actions"
+            ]
+          ],
+          tableBody_ $ journalSection <$> sections
+        ]
+      ]
+      
+      renderHolding (BookSummary {totalPages,chapters}) = paper {className:classes.tablePaper} $ mapWithIndex bookChapter chapters
+      renderHolding (JournalSummary {portions}) = paper {className:classes.tablePaper} $ journalPortion =<< portions 
+
+      in div [DP.className classes.copyrightTable] $ catMaybes [
           Just $ renderHolding holding,
           ca <#> (\a ->
             dialog {
               open: a.open, 
               onClose: d CancelDialog, 
-              maxWidth: lg,
+              maxWidth: md,
               fullWidth: true
              } [
               dialogTitle_ [ text "Activate" ],
               dialogContent_ [
-                activationParams {"data": a.activation, errors, onChange: d <<< ChangeData, onError}
+                activationParams {
+                  "data": a.activation, errors, 
+                  onChange: d <<< ChangeData, onError, 
+                  canEditCourse: isNothing s.currentCourse
+                }
               ], 
               dialogActions_ [
                 button {color: primary, onClick: d CancelDialog } [text "Cancel"],
-                button {color: primary, onClick: d FinishActivate } [text "Activate"]
+                button {color: primary, variant: raised, onClick: d FinishActivate } [text "Activate"]
               ]
             ])
       ] 
     eval = case _ of 
-      Activate a -> modifyState _ {errors = emptyErrors, currentActivation = Just {attachment:a, open:true,
-        activation:{startDate:Nothing, course:Nothing, endDate:Nothing, citation:Nothing}}}
+      Activate a -> modifyState \s -> s {errors = emptyErrors, currentActivation = Just {
+          attachment:a, 
+          open:true,
+          activation: s.currentCourse # maybe {startDate:Nothing, course:Nothing, 
+                                endDate:Nothing, citation:Nothing} activationDefaults 
+        }
+      }
       ChangeData ad -> modifyState $ set (_currentActivation <<< _Just <<< _activation) ad
       CancelDialog -> modifyState $ set (_currentActivation <<< _Just <<< _open) false
+      Init -> do 
+        {courseCode} <- getProps
+        courseCode # maybe (pure unit) \cc -> do
+          (lift $ getCourseByCode cc) >>= 
+            errorOr (\c -> modifyState _ {currentCourse=Just c})
       FinishActivate -> do 
         {currentActivation} <- getState
         nowd <- liftEffect $ nowDate
@@ -149,10 +197,15 @@ copyrightSummary = unsafeCreateLeafElement $ withStyles styles $ component "Copy
           Just { attachment:a, activation } -> do
             let doReq actreq = errorOr (\_ -> eval CancelDialog) <=< 
                     lift $ postJsonExpect 201 "api/activation" $ encodeActivateRequset actreq
-            unV (\e -> modifyState _ {errors = Object.fromFoldable e}) doReq $ validate nowd activation a.item a.uuid
-          _ -> pure unit
+            validate nowd activation a.item a.uuid # 
+              unV (\e -> modifyState _ {errors = Object.fromFoldable e}) doReq
+          _ -> pure unit 
 
-  pure {render: renderer render this, state:{currentActivation:Nothing, errors:emptyErrors}::State}
+  pure {
+    render: renderer render this, 
+    state:{currentActivation:Nothing, errors:emptyErrors, currentCourse: Nothing}::State,
+    componentDidMount: d Init
+  }
   where 
   styles theme = {
     resourceCell: {
@@ -162,6 +215,22 @@ copyrightSummary = unsafeCreateLeafElement $ withStyles styles $ component "Copy
       width: "30%"
     },
     actionCell: {
-      width: "20%"
+      width: "10%"
+    },
+    statusCell: {
+      width: "10%"
+    },
+    copyrightTable: {
+      maxWidth: 1024
+    }, 
+    tablePaper: {
+      width: "100%",
+      overflowX: "auto"
     }
   }
+
+statusString :: ActivationStatus -> String 
+statusString = case _ of 
+  Active -> "Active"
+  Inactive -> "Inactive"
+  Pending -> "Pending"

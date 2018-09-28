@@ -29,7 +29,8 @@ type DatePickerPropsO = (
   required :: Boolean, 
   error :: Boolean, 
   helperText :: String,
-  format :: String
+  format :: String,
+  fullWidth :: Boolean
 ) 
 
 foreign import datePickerClass :: forall props. ReactClass props

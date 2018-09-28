@@ -100,6 +100,10 @@
     csstype "^2.0.0"
     indefinite-observable "^1.0.1"
 
+"@types/luxon@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@types/luxon/-/luxon-1.2.2.tgz#3b402da20bd8ca357123851e062d2142cdbdd9bc"
+
 "@types/node@*":
   version "10.10.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.10.1.tgz#d5c96ca246a418404914d180b7fdd625ad18eca6"
@@ -5527,10 +5531,6 @@ mold-source-map@^0.4.0:
   dependencies:
     convert-source-map "^1.1.0"
     through "~2.2.7"
-
-moment@^2.22.2:
-  version "2.22.2"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
 
 move-concurrently@^1.0.1:
   version "1.0.1"

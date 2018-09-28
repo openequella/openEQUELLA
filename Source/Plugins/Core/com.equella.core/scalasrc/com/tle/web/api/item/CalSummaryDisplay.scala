@@ -123,8 +123,7 @@ object CalSummaryDisplay {
     val calService = LegacyGuice.calService
     val activationService = LegacyGuice.activationService
     val item = ii.getItem
-    if (!calService.isCopyrightedItem(item)) None else Some {
-      val holding = calService.getHoldingForItem(item)
+    if (!calService.isCopyrightedItem(item)) None else Option(calService.getHoldingForItem(item)).map { holding =>
       val activatableItems = activationService.filterActivatableItems(new util.HashSet[Item](
         holding.getPortions.asScala.map(_.getItem).asJava))
       val holdingSummary = holding.getType match {

@@ -30,6 +30,7 @@ import com.tle.web.workflow.tasks.RootTaskListSection
 import javax.inject.Inject
 
 import scala.collection.JavaConverters._
+import scala.util.Try
 
 trait NotificationLookup
 {
@@ -61,7 +62,7 @@ trait NotificationLookup
 
   trait TaskNotification extends ItemNotification
   {
-    val itemTaskId = new ItemTaskId(note.getItemid)
+    val itemTaskId = Try(new ItemTaskId(note.getItemid)).getOrElse(new ItemTaskId(new ItemId(note.getItemidOnly), ""))
     def taskId = itemTaskId.getTaskId
     def getTaskName = taskLabel(taskId)
     def getTaskLink = linkToTask(taskId)

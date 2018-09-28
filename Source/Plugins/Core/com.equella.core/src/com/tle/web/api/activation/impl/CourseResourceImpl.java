@@ -37,6 +37,7 @@ import com.tle.core.entity.EnumerateOptions;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.security.TLEAclManager;
+import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.activation.CourseBean;
 import com.tle.web.api.activation.CourseBeanSerializer;
 import com.tle.web.api.activation.CourseResource;
@@ -112,6 +113,21 @@ public class CourseResourceImpl extends AbstractBaseEntityResource<CourseInfo, B
 	{
 		final boolean isExport = RestImportExportHelper.isExport(uriInfo);
 		return PagedResults.pagedResults(this, q, privilege, resumption, length, full | isExport, isExport, archived);
+	}
+
+	@Override
+	public CourseBean getByCode(UriInfo uriInfo, String code)
+	{
+		CourseInfo entity = courseService.getByCode(code);
+		if( entity == null )
+		{
+			throw entityNotFound(code);
+		}
+		if( !courseService.canViewOrEdit(entity) )
+		{
+			throw new AccessDeniedException(getString("error.entity.viewpriv"));
+		}
+		return serialize(entity, null, true);
 	}
 
 	public List<String> citation(UriInfo uriInfo, String uuid)

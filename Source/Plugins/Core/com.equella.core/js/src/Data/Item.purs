@@ -53,12 +53,14 @@ data ItemSummarySection =
     | CommentsSummarySection {sectionTitle::String, canAdd::Boolean, 
           canDelete::Boolean, anonymousOnly :: Boolean, hideUsername :: Boolean, allowAnonymous :: Boolean }
 
+data ActivationStatus = Active | Pending | Inactive
+
 type CopyrightAttachment = {
   item :: ItemRef, 
   href :: Maybe String, 
   title :: String, 
   uuid :: String, 
-  status :: String
+  status :: ActivationStatus
 }
 type JournalSection = {
   attachment :: CopyrightAttachment
@@ -197,7 +199,10 @@ decodeCopyrightAttachment o = do
   item <- o .? "item"
   title <- o .? "title"
   href <- o .?? "href"
-  status <- o .? "status"
+  status <- o .? "status" <#> case _ of 
+    "active" -> Active
+    "pending" -> Pending
+    _ -> Inactive
   uuid <- o .? "uuid"
   pure {item, title, href, status, uuid}
 

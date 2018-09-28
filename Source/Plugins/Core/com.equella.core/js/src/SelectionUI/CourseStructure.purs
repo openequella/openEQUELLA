@@ -16,7 +16,7 @@ import Dispatcher.React (propsRenderer)
 import Effect (Effect)
 import MaterialUI.Enums (title)
 import MaterialUI.Icon (icon_)
-import MaterialUI.IconButton (iconButton) 
+import MaterialUI.IconButton (iconButton)
 import MaterialUI.List (list)
 import MaterialUI.ListItem (listItem)
 import MaterialUI.ListItemIcon (listItemIcon_)
@@ -24,21 +24,11 @@ import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
 import MaterialUI.ListItemText (listItemText')
 import MaterialUI.Styles (withStyles)
 import MaterialUI.Typography (typography)
+import OEQ.Data.Selection (CourseNode(..), CourseStructure)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (div, text)
 import React.DOM.Props (key)
 import Search.ItemResult (ItemSelection)
-
-newtype CourseNode = CourseNode {
-    id::String, 
-    name::String, 
-    targetable::Boolean, 
-    folders::Array CourseNode,
-    defaultFolder :: Boolean
-}
-derive instance ntCN :: Newtype CourseNode _ 
-
-type CourseStructure = {name::String, folders :: Array CourseNode}
 
 type CourseStructureProps = {
   structure :: CourseStructure, 
@@ -81,27 +71,3 @@ courseStructure = unsafeCreateLeafElement $ withStyles styles $ component "Cours
             backgroundColor: theme.palette.action.selected
         }
     }
-
-
-
-findDefaultFolder :: CourseStructure -> Maybe String
-findDefaultFolder {folders} = (unwrap >>> _.id) <$> (find isDefault folders <|> head folders)
-  where 
-  isDefault (CourseNode {defaultFolder}) = defaultFolder
-
-decodeCourseNode :: Json -> Either String CourseNode
-decodeCourseNode v = do 
-    o <- decodeJson v
-    defaultFolder <- fromMaybe false <$> (o .?? "defaultFolder")
-    id <- ((show :: Number -> String) <$> o .? "id") <|> o .? "id"
-    name <- o .? "name"
-    targetable <- fromMaybe false <$> o .?? "targetable"
-    folders <- o .? "folders" >>= traverse decodeCourseNode  
-    pure $ CourseNode {id,name,targetable,folders,defaultFolder}
-
-decodeStructure :: Json -> Either String CourseStructure
-decodeStructure v = do 
-    o <- decodeJson v
-    folders <- o .? "folders" >>= traverse decodeCourseNode  
-    name <- o .? "name"
-    pure $ {name,folders}

@@ -8,12 +8,7 @@ import { searchCourses } from '../course';
 import { TextFieldProps } from '@material-ui/core/TextField';
 
 const styles = (theme : Theme) => createStyles({
-  root: {
-    flexGrow: 1,
-    height: 250,
-  },
   container: {
-    flexGrow: 1,
     position: 'relative',
   },
   paper: {
@@ -134,7 +129,7 @@ class CourseSelect extends React.Component<CourseSelectProps & WithStyles<typeof
             label={title}
             placeholder={"Search on name and code..."}
             InputProps={...getInputProps(
-              {onChange: this.handleInputChange}
+              {onChange: this.handleInputChange, onFocus: (e) => e.target.select()}
             )}
             />
             {isOpen && inputValue ? 

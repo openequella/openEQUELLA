@@ -14,10 +14,10 @@ import { EditEntityDispatchProps, EditEntityProps, EditEntityStateProps, entityS
 import schemaService from '../schema/index';
 import { StoreState } from '../store';
 import { commonString } from '../util/commonstrings';
-import { formatISO, parseISO } from '../util/dates';
 import { properties } from '../util/dictionary';
 import { prepLangStrings } from '../util/langstrings';
 import MessageInfo from '../components/MessageInfo';
+import { DateTime } from 'luxon';
 
 const styles = (theme: Theme) => {
     //TODO: get drawerWidth passed in somehow
@@ -225,9 +225,9 @@ class EditCourse extends React.Component<Props, EditCourseState> {
         };
     }
 
-    handleDateChange(stateFieldName: string): (date?: Date) => void {
-        return (date?: Date) => {
-            this.modifyEntity({ [stateFieldName]: date ? formatISO(date) : null});
+    handleDateChange(stateFieldName: string): (date?: DateTime) => void {
+        return (date?: DateTime) => {
+            this.modifyEntity({ [stateFieldName]: date ? date.toISO() : null});
         };
     }
 
@@ -273,8 +273,8 @@ class EditCourse extends React.Component<Props, EditCourseState> {
             until, versionSelection, archived, security, validationErrors } = entity;
         const { activeTab, changed, canSave, justSaved, errored } = this.state;
         const vs = (versionSelection ? versionSelection : "DEFAULT");
-        const fromDate = (from ? parseISO(from) : null);
-        const untilDate = (until ? parseISO(until) : null);
+        const fromDate = (from ? DateTime.fromISO(from) : null);
+        const untilDate = (until ? DateTime.fromISO(until) : null);
         const val = validationErrors || {};
 
         let rules: TargetListEntry[] = [];
@@ -380,7 +380,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
 
                             <DatePicker id="from"
                                 label={strings.startdate.label} 
-                                format="MMMM Do YYYY"
+                                // format="MMMM Do YYYY"
                                 value={fromDate}
                                 onChange={this.handleDateChange('from')}
                                 clearable 
@@ -390,7 +390,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                             
                             <DatePicker id="until"
                                 label={strings.enddate.label} 
-                                format="MMMM Do YYYY"
+                                // format="MMMM Do YYYY"
                                 value={untilDate}
                                 onChange={this.handleDateChange('until')}
                                 clearable

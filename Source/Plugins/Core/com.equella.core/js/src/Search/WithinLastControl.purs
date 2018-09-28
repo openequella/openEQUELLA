@@ -15,14 +15,12 @@ import Data.Newtype (unwrap)
 import Data.Time.Duration (class Duration, Days(..), Milliseconds(..), fromDuration)
 import Data.Tuple (Tuple(..))
 import Effect.Now (now)
-import Effect.Uncurried (mkEffectFn2, runEffectFn1)
+import Effect.Uncurried (mkEffectFn1, runEffectFn1)
 import Effect.Unsafe (unsafePerformEffect)
-import MaterialUI.FormControl (formControl_)
 import MaterialUI.Icon (icon_)
-import MaterialUI.InputLabel (inputLabel_)
 import MaterialUI.MenuItem (menuItem)
-import MaterialUI.Select (select)
 import MaterialUI.Styles (withStyles)
+import MaterialUI.TextField (textField)
 import OEQ.Environment (prepLangStrings)
 import OEQ.UI.Common (valueChange)
 import OEQ.UI.SearchFilters (filterSection)
@@ -75,13 +73,12 @@ withinLastControl =
           name:string.filterLast.name, 
           icon: icon_ [text "calendar_today"]
         } [ 
-          formControl_ [
-            inputLabel_ [text string.filterLast.label],
-            select { className: classes.selectFilter, 
-              value: fromMaybe 0.0 $ agoMs query,
-              onChange: mkEffectFn2 \e _ -> runEffectFn1 (valueChange (updateMs updateQuery)) e
-             } $ (agoItem <$> agoEntries)
-          ]
+          textField {select:true, 
+            label: string.filterLast.label, 
+            className: classes.selectFilter, 
+            value: fromMaybe 0.0 $ agoMs query,
+            onChange: valueChange $ updateMs updateQuery
+            } $ (agoItem <$> agoEntries)
         ]
 
     withinClass = withStyles styles $ statelessComponent render

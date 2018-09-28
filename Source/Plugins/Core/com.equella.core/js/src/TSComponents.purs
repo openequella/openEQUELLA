@@ -8,8 +8,9 @@ import Data.Nullable (Nullable, toNullable)
 import Data.TSCompat (OptionRecord)
 import Data.TSCompat.Class (class IsTSEq)
 import Effect.Uncurried (EffectFn1)
-import React (ReactClass, ReactElement, unsafeCreateLeafElement)
 import MaterialUI.TextField (TextFieldPropsO, TextFieldPropsM)
+import OEQ.Data.Course (CourseEntity)
+import React (ReactClass, ReactElement, unsafeCreateLeafElement)
  
 foreign import data Store :: Type
 foreign import store :: Store
@@ -18,14 +19,6 @@ foreign import editCourse :: forall a. ReactClass a
 foreign import appBarQueryClass ::  ReactClass {query :: String, onChange :: EffectFn1 String Unit}
 
 foreign import courseSelectClass :: forall a. ReactClass a
-
-type CourseEntity = {
-    name :: String,
-    uuid :: String, 
-    from :: Nullable String, 
-    until :: Nullable String, 
-    citation :: Nullable String
-}
 
 coursesPage :: ReactElement
 coursesPage = unsafeCreateLeafElement searchCourses {store:store, bridge: tsBridge}

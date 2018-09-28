@@ -63,7 +63,7 @@ import OEQ.Utils.Interop (nullAny)
 import Partial.Unsafe (unsafePartial)
 import React (Children, ReactClass, ReactElement, ReactThis, childrenToArray, createElement)
 import React as R
-import React.DOM (footer, text)
+import React.DOM (div', footer, span', text)
 import React.DOM as D
 import React.DOM.Props as DP
 import Web.DOM.DOMTokenList as DOMTokens
@@ -292,8 +292,10 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
         (
           (guard $ props.enableNotifications && (not $ fromMaybe true $ userMaybe _guest)) *>
           [
-            badgedLink "assignment" _tasks "access/tasklist.do" topBarString.tasks , 
-            badgedLink "notifications" _notifications "access/notifications.do" topBarString.notifications,
+            hidden {mdDown:true} [
+              badgedLink "assignment" _tasks "access/tasklist.do" topBarString.tasks , 
+              badgedLink "notifications" _notifications "access/notifications.do" topBarString.notifications
+            ],
             tooltip {title: strings.menu.title} $ 
               iconButton {"aria-label": strings.menu.title, 
                           color: inherit, 

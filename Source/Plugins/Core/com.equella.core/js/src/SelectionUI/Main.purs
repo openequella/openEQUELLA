@@ -3,9 +3,9 @@ module OEQ.SelectionUI.Main where
 import Prelude
 
 import Control.Monad.Trans.Class (lift)
-import Data.Argonaut (Json, decodeJson, jsonParser, (.??))
+import Data.Argonaut (jsonParser)
 import Data.Array as Array
-import Data.Either (Either, either)
+import Data.Either (either)
 import Data.Lens (over)
 import Data.Lens.At (at)
 import Data.Lens.Record (prop)
@@ -22,7 +22,6 @@ import Effect (Effect)
 import Effect.Class (liftEffect)
 import Effect.Exception (throw)
 import Effect.Uncurried (mkEffectFn1)
-import Foreign.Object (Object)
 import MaterialUI.AppBar (appBar)
 import MaterialUI.Button (button)
 import MaterialUI.Enums (headline, inherit, sticky)
@@ -31,11 +30,12 @@ import MaterialUI.Styles (withStyles)
 import MaterialUI.Toolbar (toolbar_)
 import MaterialUI.Typography (typography)
 import OEQ.Data.Error (ErrorResponse)
+import OEQ.Data.Selection (SelectionData, decodeSelection, findDefaultFolder)
 import OEQ.Environment (basePath, startHearbeat)
 import OEQ.MainUI.Routes (globalNav)
 import OEQ.MainUI.SearchPage (searchStrings)
-import OEQ.SelectionUI.CourseStructure (CourseStructure, courseStructure, decodeStructure, findDefaultFolder)
-import OEQ.SelectionUI.ReturnResult (ReturnData, addSelection, callReturn, decodeReturnData, removeSelection)
+import OEQ.SelectionUI.CourseStructure (courseStructure)
+import OEQ.SelectionUI.ReturnResult (addSelection, callReturn, removeSelection)
 import OEQ.SelectionUI.Routes (SelectionPage(..), SelectionRoute(..), SessionParams, matchSelection, selectionClicker, withPage)
 import OEQ.UI.Common (renderMain, rootTag)
 import OEQ.UI.ItemSummary.ViewItem (viewItem)
@@ -60,33 +60,8 @@ import Search.WithinLastControl (withinLastControl)
 import Web.HTML (window)
 import Web.HTML.Location (pathname)
 import Web.HTML.Window (location)
+
 foreign import selectionJson :: {selection::String, integration::Nullable String}
-
-type CourseData = {
-  structure :: Maybe CourseStructure
-}
-
-type IntegrationData = {
-
-}
-
-type SelectionData = {
-  courseData :: CourseData,
-  returnData :: Maybe ReturnData
-}
-
-decodeCourseData :: Object Json -> Either String CourseData
-decodeCourseData o = do 
-  structure <- o .?? "structure" >>= traverse decodeStructure
-  pure {structure}
-
-decodeSelection :: Json -> Maybe Json -> Either String SelectionData 
-decodeSelection s i = do 
-  os <- decodeJson s 
-  courseData <- decodeCourseData os
-  oi <- traverse decodeJson i
-  returnData <- traverse (decodeReturnData os) oi
-  pure {courseData,returnData}
 
 data Command = Init 
   | ChangeRoute SelectionRoute 
@@ -166,7 +141,8 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
           dualPane {
             left: [viewItem {uuid,version, 
                 onError: mkEffectFn1 $ d <<< Errored,
-                onSelect: Just $ d <<< SelectionMade }],  
+                onSelect: Just $ d <<< SelectionMade,
+                courseCode: selection.integration >>= _.courseInfoCode}],  
             right:[
               renderStructure selection {selectedFolder, selections}
             ]
@@ -210,15 +186,18 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
         {courseData:{structure: Just s}} | Just defaultFolder <- findDefaultFolder s -> eval $ SelectFolder defaultFolder 
         _ -> pure unit 
 
-  pure {render: renderer render this, 
-        state: { 
-          selectedFolder:"", 
-          selections:empty, 
-          route: Nothing, 
-          title: Nothing, 
-          error: Nothing, 
-          errorOpen: false
-        } :: State,  componentDidMount: d Init}
+  pure {
+    render: renderer render this, 
+    state: { 
+      selectedFolder:"", 
+      selections:empty, 
+      route: Nothing, 
+      title: Nothing, 
+      error: Nothing, 
+      errorOpen: false
+    } :: State,  
+    componentDidMount: d Init
+  }
 
   where 
   styles theme = {

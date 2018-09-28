@@ -360,7 +360,7 @@ public abstract class AbstractBaseEntityResource<BE extends BaseEntity, SB exten
 		return new NotFoundException(getString("error.entity.notfound", uuid));
 	}
 
-	private String getString(String keyPart, Object... params)
+	protected String getString(String keyPart, Object... params)
 	{
 		return CoreStrings.lookup().getString(keyPart, params);
 	}

@@ -29,7 +29,7 @@ viewItemPage = unsafeCreateLeafElement $ withStyles styles $  component "ViewIte
     render {state:{error}, props:{classes, uuid,version}} = 
       template' (templateDefaults "Resource summary") { fixedViewPort = notNull true, errorResponse = toNullable error} [ 
         div [className classes.main ] [
-          viewItem {uuid,version, onError: mkEffectFn1 $ d <<< Errored, onSelect: Nothing} 
+          viewItem {uuid,version, onError: mkEffectFn1 $ d <<< Errored, onSelect: Nothing, courseCode: Nothing} 
         ]
       ]
     eval = case _ of 

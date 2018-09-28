@@ -41,7 +41,8 @@ type ViewItemP = (
   uuid :: String, 
   version :: Int,
   onError :: EffectFn1 ErrorResponse Unit, 
-  onSelect :: Maybe (ItemSelection -> Effect Unit)
+  onSelect :: Maybe (ItemSelection -> Effect Unit), 
+  courseCode :: Maybe String
 )
 
 type ViewItemProps = {
@@ -51,7 +52,7 @@ type ViewItemProps = {
 data Command = LoadItemSummary
 
 type ViewItemSummaryProps = {
-  content :: ItemSummary
+  content :: ItemSummary 
   | ViewItemP
 }
 
@@ -59,8 +60,8 @@ viewItem :: ViewItemProps -> ReactElement
 viewItem = unsafeCreateLeafElement $ component "ViewItem" \this -> do 
   let 
     d = eval >>> affAction this
-    render {state:{content: Just content}, props:{uuid,version,onError,onSelect}} = 
-      viewItemSummary {uuid,version,content, onError, onSelect}
+    render {state:{content: Just content}, props:{uuid,version,onError,onSelect,courseCode}} = 
+      viewItemSummary {uuid,version,content, onError, onSelect, courseCode}
     render _ = div' []
     eval = case _ of 
       LoadItemSummary -> do 
@@ -72,13 +73,13 @@ viewItem = unsafeCreateLeafElement $ component "ViewItem" \this -> do
 viewItemSummary :: ViewItemSummaryProps -> ReactElement
 viewItemSummary = unsafeCreateLeafElement $ withStyles styles $ statelessComponent render
   where
-  render p@{classes, onError, onSelect, content:{title:itemName,copyright,sections}} = 
+  render p@{classes, courseCode, onError, onSelect, content:{title:itemName,copyright,sections}} = 
     div' $ (renderSection <$> sections)
       <> (Array.fromFoldable $ renderCopyright <$> copyright)
     where
     renderCopyright c = div [DP.className classes.section ] [ 
       titleText "Copyright",
-      copyrightSummary {onError, copyright:c}
+      copyrightSummary {onError, copyright:c, courseCode}
     ]
     titleText t = typography { 
       className: classes.sectionTitle, 

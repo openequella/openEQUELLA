@@ -36,6 +36,9 @@ ourTheme = createMuiTheme {
   palette: {
     primary: blue, 
     secondary: orange
+  }, 
+  typography: {
+    fontSize: 14
   }
 }
 

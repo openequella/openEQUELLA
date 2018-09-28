@@ -49,7 +49,7 @@ searchPage = flip unsafeCreateLeafElement {} $ withStyles styles $ R.component "
       itemResultOptions (routeHref $ viewItemRoute uuid version) r]
     coreString = prepLangStrings coreStrings
 
-    renderTemplate {queryBar,content} = template' (templateDefaults coreString.title) 
+    renderTemplate {queryBar,content} = template' (templateDefaults "") 
              {titleExtra = toNullable $ Just $ queryBar } [ content ]
     render {facets} = searchLayout {searchControls: searchControls <> facets, strings:searchStrings, renderTemplate }
     eval = case _ of 

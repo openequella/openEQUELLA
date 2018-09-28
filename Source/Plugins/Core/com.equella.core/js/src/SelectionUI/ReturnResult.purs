@@ -2,7 +2,7 @@ module OEQ.SelectionUI.ReturnResult where
 
 import Prelude
 
-import Data.Argonaut (Json, jsonEmptyObject, (.?), (.??), (:=), (~>))
+import Data.Argonaut (Json, jsonEmptyObject, (:=), (~>))
 import Data.Argonaut.Encode ((~>?))
 import Data.Either (Either)
 import Data.Maybe (Maybe(..), fromJust)
@@ -13,7 +13,6 @@ import OEQ.Data.Error (ErrorResponse)
 import OEQ.Environment (baseUrl)
 import Effect (Effect)
 import Effect.Aff (Aff)
-import Foreign.Object (Object)
 import Global.Unsafe (unsafeEncodeURI, unsafeEncodeURIComponent)
 import Partial.Unsafe (unsafePartial)
 import OEQ.Utils.QueryString (queryString)
@@ -28,24 +27,6 @@ import Web.HTML.HTMLElement as Elem
 import Web.HTML.HTMLFormElement (setAction, setMethod, submit)
 import Web.HTML.HTMLFormElement as Form
 import Web.HTML.Window (document)
-
-
-type ReturnData = {
-  returnurl :: Maybe String,
-  returnprefix:: Maybe String, 
-  cancelurl:: Maybe String,
-  forcePost:: Boolean, 
-  cancelDisabled:: Boolean
-}
-
-decodeReturnData :: Object Json -> Object Json -> Either String ReturnData
-decodeReturnData s o = do 
-  returnurl <- o .?? "callbackURL"
-  cancelurl <- o .?? "cancelURL"
-  cancelDisabled <- s .? "cancelDisabled"
-  forcePost <- s .? "forcePost"
-  returnprefix <- o .?? "prefix"
-  pure {returnurl, cancelurl, cancelDisabled, forcePost, returnprefix}
 
 urlForSelection:: ItemSelection -> String 
 urlForSelection {item:i, selected} = 

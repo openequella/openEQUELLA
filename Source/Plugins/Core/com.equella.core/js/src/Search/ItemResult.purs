@@ -9,20 +9,20 @@ import Dispatcher.React (propsRenderer)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
 import ExtUI.TimeAgo (timeAgo)
+import MaterialUI.Button (button)
+import MaterialUI.Enums as TS
+import MaterialUI.List (list)
+import MaterialUI.ListItem (listItem)
+import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
+import MaterialUI.ListItemText (listItemText, listItemText')
 import MaterialUI.Styles (withStyles)
+import MaterialUI.Typography (typography)
 import OEQ.Environment (prepLangStrings)
 import OEQ.UI.Common (ClickableHref)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (a, div, div', img, text)
 import React.DOM.Props as DP
 import React.SyntheticEvent (SyntheticEvent, SyntheticEvent_)
-import MaterialUI.Button (button)
-import MaterialUI.Enums as TS
-import MaterialUI.List (list)
-import MaterialUI.ListItem (listItem)
-import MaterialUI.ListItemSecondaryAction (listItemSecondaryAction_)
-import MaterialUI.ListItemText (listItemText)
-import MaterialUI.Typography (typography)
 
 newtype Attachment = Attachment {thumbnailHref::String}
 newtype DisplayField = DisplayField {name :: String, html::String}
@@ -121,7 +121,7 @@ itemResult = unsafeCreateLeafElement $ withStyles styles $ component "ItemResult
                     div' $ fromFoldable (descMarkup <$> description) <> [ list {disablePadding: true} extraFields ] 
                 ]
         in listItem {button: true, divider: showDivider, onClick: p.clickable.onClick} $ catMaybes [
-            Just $ listItemText {disableTypography: true, primary: titleLink, secondary: itemContent } [], 
+            Just $ listItemText' {disableTypography: true, primary: titleLink, secondary: itemContent }, 
             (\ons -> listItemSecondaryAction_  [ button {
                     onClick: ons {item: {uuid, version, description, name}, 
                     thumbnail, 

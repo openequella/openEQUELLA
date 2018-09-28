@@ -62,6 +62,11 @@ public interface CourseResource extends BaseEntityResource<CourseBean, BaseEntit
 	@ApiOperation("Get a course")
 	public CourseBean get(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
+	@GET
+	@Path("/bycode/{code}")
+	@ApiOperation("Get a course")
+	public CourseBean getByCode(@Context UriInfo uriInfo, @PathParam("code") String code);
+
 	@DELETE
 	@Path("/{uuid}")
 	@ApiOperation("Delete a course")
