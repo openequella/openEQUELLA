@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tle.webtests.framework.PageContext;
+import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.searching.ItemListPage;
 import com.tle.webtests.pageobject.selection.SelectionSession;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
@@ -82,10 +83,11 @@ public class CALWizardPage
 
 	private void selectHolding(UniversalControl control, String title)
 	{
+		WaitingPageObject<WizardPageTab> updateWaiter = wizardPage.getUpdateWaiter(control.getCtrlNum());
 		ResourceUniversalControlType resource = control.addDefaultResource(new ResourceUniversalControlType(control));
 		SelectionSession session = resource.getSelectionSession();
 		ItemListPage results = session.homeSearch('"' + title + '"');
-		results.viewFromTitle(title).selectItem(wizardPage);
+		results.viewFromTitle(title).selectItem(updateWaiter);
 	}
 
 	public SummaryPage publish()

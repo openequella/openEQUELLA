@@ -19,8 +19,6 @@ public class CALActivatePage<T extends AbstractPage<T>> extends AbstractPage<CAL
 	private WebElement activateButton;
 	@FindBy(id = "cala_cancelButton")
 	private WebElement cancelButton;
-	@FindBy(id = "cala_selectCourse")
-	private WebElement selectCourseButton;
 	@FindBy(id = "cala_c")
 	private WebElement citationElem;
 
@@ -105,8 +103,7 @@ public class CALActivatePage<T extends AbstractPage<T>> extends AbstractPage<CAL
 
 	public void setCourse(String courseName)
 	{
-		selectCourseButton.click();
-		SelectCourseDialog scd = new SelectCourseDialog(context, "cala_selectCourseDialog").get();
+		SelectCourseDialog scd = new SelectCourseDialog(context, "cala_course").get();
 		scd.searchSelectAndFinish(courseName, this);
 		// Wait for element text??
 	}
