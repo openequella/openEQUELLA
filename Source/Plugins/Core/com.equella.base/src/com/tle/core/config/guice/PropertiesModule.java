@@ -142,12 +142,19 @@ public abstract class PropertiesModule extends AbstractModule
 		}
 	}
 
-	protected void bindBoolean(String property)
+    protected void bindBoolean(String property)
+    {
+	    bindBoolean(property, null);
+    }
+
+    protected void bindBoolean(String property, Boolean defaultValue)
 	{
 		String value = Strings.nullToEmpty(getPropString(property)).trim();
-		if( !Check.isEmpty(value) )
-		{
-			bind(Boolean.class).annotatedWith(Names.named(property)).toInstance(Boolean.parseBoolean(value));
+	    Boolean bindVal = !Check.isEmpty(value) ? Boolean.valueOf(value) : defaultValue;
+	    if (bindVal != null)
+	    {
+	        // actually important that new Boolean() is used (on this version of guice anyway)
+		    bind(Boolean.class).annotatedWith(Names.named(property)).toInstance(new Boolean(bindVal));
 		}
 	}
 

@@ -29,6 +29,7 @@ public class ConnectorsModule extends SectionsModule
 	protected void configure()
 	{
 		bind(Object.class).annotatedWith(Names.named("connectorsTree")).toProvider(connectorsTree());
+		install(new com.tle.core.connectors.guice.ConnectorsModule());
 	}
 
 	private NodeProvider connectorsTree()
