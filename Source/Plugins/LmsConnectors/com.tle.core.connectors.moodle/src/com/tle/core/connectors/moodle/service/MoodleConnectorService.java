@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import com.tle.beans.item.attachments.AttachmentType;
@@ -109,6 +110,9 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
 	private ViewableItemResolver viewableItemResolver;
 	@Inject
 	private SectionsController sectionsController;
+	@Inject
+	@Named("moodle.disablemimeparam")
+	private boolean disableMimeParam;
 
 	private static String KEY_PFX = AbstractPluginService.getMyPluginId(MoodleConnectorService.class)+".";
 
@@ -146,7 +150,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
 		param(data, "description", lmsLink.getDescription());
 		final IAttachment attachment = lmsLinkInfo.getResourceAttachment();
 		param(data, "attachmentUuid", attachment == null ? "" : attachment.getUuid());
-		if (attachment != null)
+		if (!disableMimeParam && attachment != null)
 		{
 			final SelectedResourceKey key = selectedResource.getKey();
 			// FIXME: shouldn't NEED an info. this is just DODGE-O-RAMA
