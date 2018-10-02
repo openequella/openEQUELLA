@@ -19,7 +19,7 @@ import Foreign.Object as Object
 import OEQ.Data.Item (ItemRef(..))
 import OEQ.UI.Common (ClickableHref)
 import OEQ.Utils.QueryString (queryStringObj)
-import React.SyntheticEvent (SyntheticEvent, SyntheticEvent_, preventDefault)
+import React.SyntheticEvent (SyntheticEvent, SyntheticEvent_, preventDefault, stopPropagation)
 import Routing (match)
 import Routing.Match (Match, int, lit, str)
 import Routing.PushState (PushStateInterface, makeInterface)
@@ -71,7 +71,7 @@ legacyRoute = foldMap toLegURI <$> remainingParts
 
 routeMatch :: Match Route
 routeMatch = 
-    ViewItemPage <$> (ItemRef <$> (lit "items" *> str) <*> int) <|>
+    ViewItemPage <$> (ItemRef <$> (lit "integ" *> lit "gen" *> str) <*> int) <|>
     SettingsPage <$ (lit "access" *> lit "settings.do")
     <|> lit "page" *>
         (SearchPage <$ (lit "search") <|>
@@ -107,7 +107,10 @@ routeHref :: Route -> ClickableHref
 routeHref r = 
     let href = routeURI r
         onClick :: forall e. EffectFn1 (SyntheticEvent_ e) Unit
-        onClick = mkEffectFn1 $ \e -> preventDefault e *> pushRoute r
+        onClick = mkEffectFn1 $ \e -> do 
+            preventDefault e
+            stopPropagation e 
+            pushRoute r
     in { href, onClick }
 
 routeURI :: Route -> String
@@ -117,7 +120,7 @@ routeURI r = (case r of
     CoursesPage -> "page/course"
     NewCourse -> "page/course/new"
     CourseEdit cid -> "page/course/" <> cid <> "/edit"
-    ViewItemPage (ItemRef uuid version) -> "items/" <> uuid <> "/" <> show version
+    ViewItemPage (ItemRef uuid version) -> "integ/gen/" <> uuid <> "/" <> show version
     LegacyPage (LegacyURI path params) -> 
         if isEmpty params then path 
         else path <> "?" <> queryStringObj params
@@ -129,5 +132,5 @@ logoutRoute = LegacyPage (LegacyURI "logon.do" $ Object.singleton "logout" ["tru
 userPrefsRoute :: Route
 userPrefsRoute = LegacyPage (LegacyURI "access/user.do" Object.empty)
 
-viewItemRoute :: String -> Int -> Route 
-viewItemRoute uuid version = LegacyPage (LegacyURI ("items/" <> uuid <> "/" <> show version <> "/" ) Object.empty)
+oldViewItemRoute :: String -> Int -> Route 
+oldViewItemRoute uuid version = LegacyPage (LegacyURI ("items/" <> uuid <> "/" <> show version <> "/" ) Object.empty)

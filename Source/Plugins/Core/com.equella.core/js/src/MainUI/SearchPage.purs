@@ -17,7 +17,7 @@ import Network.HTTP.Affjax (get)
 import Network.HTTP.Affjax.Response (json)
 import OEQ.Data.Settings (NewUISettings(..), UISettings(..))
 import OEQ.Environment (baseUrl, prepLangStrings)
-import OEQ.MainUI.Routes (routeHref, viewItemRoute)
+import OEQ.MainUI.Routes (routeHref, oldViewItemRoute)
 import OEQ.MainUI.Template (template', templateDefaults)
 import React (ReactElement, unsafeCreateLeafElement)
 import React as R
@@ -46,7 +46,7 @@ searchPage = flip unsafeCreateLeafElement {} $ withStyles styles $ R.component "
   let
     d = eval >>> affAction this
     searchControls = [orderControl, oc, withinLastControl, renderResults $ pure \r@Result {uuid,version} -> 
-      itemResultOptions (routeHref $ viewItemRoute uuid version) r]
+      itemResultOptions (routeHref $ oldViewItemRoute uuid version) r]
     coreString = prepLangStrings coreStrings
 
     renderTemplate {queryBar,content} = template' (templateDefaults "") 
