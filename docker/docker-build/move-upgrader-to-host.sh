@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-cd /home/equella/repo/Equella/Installer/target/
+cd /home/equella/repo/Equella/Source/Server/equellaserver/target/
 numOfZips=$(find . -maxdepth 1 -name '*.zip' | wc -l)
 if [ $numOfZips -gt 0 ]
 then
-    newdir = /artifacts/installer-build-$(date)
+    newdir = /artifacts/upgrader-build-$(date)
     mv *.zip /artifacts/$newdir
     echo Moved $numOfZips to $newDir
 else
-    echo No installer zips to move!
+    echo No upgrade zips to move!
 fi

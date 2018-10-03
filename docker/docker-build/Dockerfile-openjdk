@@ -1,4 +1,6 @@
 FROM openjdk:8-jdk as baseequella
+# Currently fails to build openEQUELLA since the build requires the JavaWS deps to 
+# build the WebStart / Applets.
 
 # Expects a host volume:  
 # -v /host/directory/for/artifacts:/artifacts 
@@ -12,12 +14,16 @@ ENV VERSION_SBT 1.1.1
 ENV VERSION_NODEJS 8.x
 LABEL supported.openequella.versions="6.6,6.7"
 
+# Install basic tools.
 RUN \
   apt-get update \
   && apt-get install -y \
+    software-properties-common \
     apt-transport-https \
     curl \
-    apt-utils 
+    apt-utils \
+# Clean up the cache
+  && rm -rf /var/lib/apt/lists/*
 
 RUN \
 # Prep for SBT
@@ -65,4 +71,6 @@ RUN curl --create-dirs -Lo /home/equella/tools/pscPackage/bundle/linux64.tar.gz 
 ENV PATH "$PATH:/home/equella/tools/psc-package"
 
 COPY move-installer-to-host.sh ./
+COPY move-upgrader-to-host.sh ./
 COPY build-installer.sh ./
+COPY build-upgrader.sh ./

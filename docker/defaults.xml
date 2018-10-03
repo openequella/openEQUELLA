@@ -9,7 +9,7 @@
     </version>
     <company>Apereo</company>
   </product>
-  <local>/equella-installer-6.7</local>
+  <local>/equella-installer</local>
   <platform>linux64</platform>
 </installer>
 <install.path>/home/equella/equella</install.path>
@@ -18,18 +18,18 @@
 </java>
 <datasource>
   <dbtype>postgresql</dbtype>
-  <host>db</host>
-  <port>5432</port>
-  <database>equella</database>
-  <username>equellauser</username>
-  <password>password</password>
+  <host>OEQ_DB_HOST</host>
+  <port>OEQ_DB_PORT</port>
+  <database>OEQ_DB_NAME</database>
+  <username>OEQ_DB_USERNAME</username>
+  <password>OEQ_DB_PASSWORD</password>
   <idtype>:</idtype>
 </datasource>
 <webserver>
-  <url>http://localhost:8080/</url>
+  <url>http://OEQ_ADMIN_DOMAIN:OEQ_ADMIN_PORT/OEQ_ADMIN_SUFFIX</url>
   <binding>all</binding>
-  <host>localhost</host>
-  <port>8080</port>
+  <host>OEQ_ADMIN_DOMAIN</host>
+  <port>OEQ_ADMIN_PORT</port>
   <context>/</context>
   <javaopts>-Xss2m</javaopts>
 </webserver>

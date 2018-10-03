@@ -1,5 +1,5 @@
 FROM ubuntu:16.04 as baseequella
-#  Only run this image if you accept the Oracle JDK license
+#  Only run this image if you accept the Oracle JDK 8 license
 
 # Expects a host volume:  
 # -v /host/directory/for/artifacts:/artifacts 
@@ -79,4 +79,6 @@ RUN curl --create-dirs -Lo /home/equella/tools/pscPackage/bundle/linux64.tar.gz 
 ENV PATH "$PATH:/home/equella/tools/psc-package"
 
 COPY move-installer-to-host.sh ./
+COPY move-upgrader-to-host.sh ./
 COPY build-installer.sh ./
+COPY build-upgrader.sh ./
