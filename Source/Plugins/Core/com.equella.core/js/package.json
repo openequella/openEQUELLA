@@ -40,7 +40,6 @@
     "react-beautiful-dnd": "^7.1.2",
     "react-dom": "^16.3.2",
     "react-redux": "^5.0.7",
-    "react-scripts-ts": "^2.13.0",
     "react-swipeable-views": "^0.12.13",
     "react-visibility-sensor": "^3.11.0",
     "redux": "^3.7.2",
