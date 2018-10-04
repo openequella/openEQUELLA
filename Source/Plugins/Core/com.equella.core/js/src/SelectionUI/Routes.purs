@@ -10,7 +10,7 @@ import Effect (Effect)
 import Effect.Uncurried (EffectFn1, mkEffectFn1)
 import OEQ.MainUI.Routes (pushRoute')
 import OEQ.UI.Common (ClickableHref)
-import React.SyntheticEvent (SyntheticEvent_, preventDefault)
+import React.SyntheticEvent (SyntheticEvent_, preventDefault, stopPropagation)
 import Routing (match)
 import Routing.Match (Match, end, int, lit, str)
 
@@ -48,7 +48,10 @@ selectionClicker :: SelectionRoute -> ClickableHref
 selectionClicker r = 
     let href = selectionURI r
         onClick :: forall e. EffectFn1 (SyntheticEvent_ e) Unit
-        onClick = mkEffectFn1 $ \e -> preventDefault e *> pushSelectionRoute r
+        onClick = mkEffectFn1 $ \e -> do 
+          preventDefault e 
+          stopPropagation e
+          pushSelectionRoute r
     in { href, onClick }
 
 
