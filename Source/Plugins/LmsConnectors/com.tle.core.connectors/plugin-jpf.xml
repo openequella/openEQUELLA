@@ -56,6 +56,7 @@
 
 	<extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
 		<parameter id="class" value="com.tle.core.services.guice.ServicesModule" />
+		<parameter id="class" value="com.tle.core.connectors.guice.ConnectorsModule" />
 	</extension>
 
 	<extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="connectorObjects">
