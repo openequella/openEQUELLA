@@ -19,13 +19,12 @@ FROM baseequella as installer
 
 # Install openEQUELLA
 
-# Leave off the .zip at the end.
 ARG OEQ_INSTALL_FILE
 ARG OEQ_INSTALL_ZIP_ROOT_DIR
 
-COPY ["$OEQ_INSTALL_FILE.zip","defaults.xml", "./"]
+COPY ["$OEQ_INSTALL_FILE","defaults.xml", "./"]
 
-RUN unzip $OEQ_INSTALL_FILE.zip \
+RUN unzip $OEQ_INSTALL_FILE \
     && mv $OEQ_INSTALL_ZIP_ROOT_DIR /equella-installer \
     && java -jar /equella-installer/enterprise-install.jar --unsupported defaults.xml
 
