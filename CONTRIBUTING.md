@@ -10,9 +10,7 @@ what most developers are using.
 
 ### IntelliJ - latest
 
-Due to the enourmous number of projects, when importing into IntelliJ the required memory usage will be higher than the default, so you'll probably need to increase the memory (`Help -> Edit custom VM Options...`). 2048MB is the current recommendation.
-
-You will also need to increase the default maximum memory allocation for SBT when doing the import: (`Build Tools -> SBT -> Maximum Heap size`). Currently 4096MB is recommended.
+Import as an SBT project and use the default settings.
 
 If you get compile errors in the IDE, but standalone `sbt compile` works, do an sbt refresh from the IntelliJ `SBT tool window`.
 
