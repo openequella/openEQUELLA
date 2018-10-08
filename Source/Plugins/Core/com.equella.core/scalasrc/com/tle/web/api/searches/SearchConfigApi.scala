@@ -18,14 +18,14 @@ class SearchConfigApi {
 
   @GET
   @Path("config/{uuid}")
-  @ApiOperation(value = "Get search config", response = classOf[SearchConfig])
+  @ApiOperation(value = "Get search configuration", response = classOf[SearchConfig])
   def getConfig(@PathParam("uuid") configId: UUID): Response = ApiHelper.runAndBuild {
     ApiHelper.entityOrNotFoundDB(SearchConfigDB.readConfig(configId))
   }
 
   @PUT
   @Path("config/{uuid}")
-  @ApiOperation(value = "Edit search config")
+  @ApiOperation(value = "Edit search configuration")
   def editConfig(@PathParam("uuid") configId: UUID, config: SearchConfig): Response = {
     ApiHelper.runAndBuild {
       SearchConfigDB.writeConfig(configId, config).map(_ => Response.ok())
@@ -34,17 +34,17 @@ class SearchConfigApi {
 
   @POST
   @Path("config")
-  @ApiOperation(value = "Create new search config")
+  @ApiOperation(value = "Create new search configuration")
   def newConfig(config: SearchConfig): Response = {
     val newID = UUID.randomUUID()
     ApiHelper.runAndBuild {
-      SearchConfigDB.writeConfig(newID, config).map(_ => Response.ok())
+      SearchConfigDB.writeConfig(newID, config).map(_ => Response.ok().header("X-UUID", newID))
     }
   }
 
   @GET
   @Path("page/{pagename}/resolve")
-  @ApiOperation("Resolve config for a page")
+  @ApiOperation("Resolve configuration for a page")
   def resolveConfig(@PathParam("pagename") pagename: String): Response = ApiHelper.runAndBuild {
     for {
       config <- SearchConfigDB.readPageConfig(pagename).flatMap { sc =>
@@ -56,5 +56,12 @@ class SearchConfigApi {
         case (a, b) => ApiHelper.entityOrNotFound(a.orElse(b))
       }
     }
+  }
+
+  @PUT
+  @Path("page/{pagename}")
+  @ApiOperation("Edit page configuration association")
+  def editPageConfig(@QueryParam("pagename") pagename: String, config: SearchPageConfig): Response = ApiHelper.runAndBuild {
+    SearchConfigDB.writePageConfig(pagename, config).map(_ => Response.ok())
   }
 }

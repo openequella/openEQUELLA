@@ -35,7 +35,7 @@ import React.DOM (a, div, div', img, text)
 import React.DOM.Props (dangerouslySetInnerHTML, src)
 import React.DOM.Props as D
 import React.DOM.Props as DP
-import Search.ItemResult (ItemSelection, SelectionType(..))
+import OEQ.Search.ItemResult (ItemSelection, SelectionType(..))
 
 type ViewItemP = (
   uuid :: String, 

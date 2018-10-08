@@ -1,4 +1,4 @@
-module Search.FacetControl where
+module OEQ.Search.FacetControl where
 
 import Prelude
 
@@ -31,8 +31,8 @@ import OEQ.Utils.QueryString (queryString)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (text)
 import React.DOM as D
-import Search.SearchControl (Chip(..), ControlParams, Placement(..), SearchControl)
-import Search.SearchQuery (Query, QueryParam(..), _params, searchQueryParams)
+import OEQ.Search.SearchControl (Chip(..), ControlParams, Placement(..), SearchControl)
+import OEQ.Search.SearchQuery (Query, QueryParam(..), _params, searchQueryParams)
 
 newtype FacetResult = FacetResult {term::String, count::Int}
 newtype FacetResults = FacetResults (Array FacetResult)
@@ -129,12 +129,13 @@ facetDisplay = unsafeCreateLeafElement $ component "FacetDisplay" $ \this -> do
 
 facetControl :: FacetSetting -> Effect SearchControl
 facetControl setting@(FacetSetting {name,path}) = do 
-  pure $ \{query,updateQuery,results} -> do 
-    let mkChip value = Chip {
-          label: name <> ": " <> value, 
-          onDelete: updateQuery $ updateValue false path value
+  let renderer {query,updateQuery,results} = do 
+        let mkChip value = Chip {
+              label: name <> ": " <> value, 
+              onDelete: updateQuery $ updateValue false path value
+            }
+        pure {
+          render: [Tuple Filters $ facetDisplay {facet:setting, query,updateQuery,results}], 
+          chips: mkChip <$> (Object.keys $ selections path query)
         }
-    pure {
-      render: [Tuple Filters $ facetDisplay {facet:setting, query,updateQuery,results}], 
-      chips: mkChip <$> (Object.keys $ selections path query)
-    }
+  pure { renderer, initQuery: identity}

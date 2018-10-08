@@ -1,4 +1,4 @@
-module Search.ResultDisplay where 
+module OEQ.Search.ResultDisplay where 
 
 
 import Prelude
@@ -9,12 +9,12 @@ import Data.Tuple (Tuple(..))
 import Effect (Effect)
 import MaterialUI.List (list)
 import OEQ.Data.SearchResults (SearchResults(..))
-import Search.ItemResult (ItemResultOptions, Result, itemResult)
-import Search.SearchControl (Placement(..), SearchControl)
+import OEQ.Search.ItemResult (ItemResultOptions, Result, itemResult)
+import OEQ.Search.SearchControl (Placement(..), SearchControlRender)
 
-renderResults :: Effect (Result -> ItemResultOptions) -> SearchControl
-renderResults ef = case _ of 
-  {results:Just (SearchResults {results})} -> do 
+renderResults :: Effect (Result -> ItemResultOptions) -> SearchControlRender
+renderResults ef = let 
+  renderer {results:Just (SearchResults {results})} = do 
       f <- ef
       let render = [ Tuple Results $ 
             let resultLen = length results
@@ -22,4 +22,5 @@ renderResults ef = case _ of
             in list {component: "section"} $ mapWithIndex oneResult results
           ]
       pure {render, chips:[] }
-  _ -> pure $ {render:[], chips:[]}
+  renderer _ = pure $ {render:[], chips:[]}
+  in renderer

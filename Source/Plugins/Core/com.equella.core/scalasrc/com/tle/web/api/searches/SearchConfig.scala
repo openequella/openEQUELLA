@@ -11,9 +11,15 @@ import io.circe.{Decoder, Encoder}
   include = JsonTypeInfo.As.PROPERTY,
   property = "type")
 @JsonSubTypes(Array(
-  new Type(value = classOf[SortControl], name = "sort")
+  new Type(value = classOf[SortControl], name = "sort"),
+  new Type(value = classOf[OwnerControl], name = "owner"),
+  new Type(value = classOf[ModifiedWithinControl], name = "modifiedWithin")
 ))
 sealed trait SearchControl
+
+case class SortControl(default: String, editable: Boolean) extends SearchControl
+case class OwnerControl(default: Option[String], editable: Boolean) extends SearchControl
+case class ModifiedWithinControl(default: Double, editable: Boolean) extends SearchControl
 
 object SearchControl {
 
@@ -23,6 +29,8 @@ object SearchControl {
   implicit val customConfig: Configuration = Configuration.default.withDiscriminator("type")
     .copy(transformConstructorNames = {
       case "SortControl" => "sort"
+      case "OwnerControl" => "owner"
+      case "ModifiedWithinControl" => "modifiedWithin"
     })
   implicit val sctrlEncoder: Encoder[SearchControl] = deriveEncoder
   implicit val sctrlDecoder: Decoder[SearchControl] = deriveDecoder
@@ -36,7 +44,6 @@ object SearchConfig {
   implicit val scDecoder: Decoder[SearchConfig] = deriveDecoder
 }
 
-case class SortControl(default: String, editable: Boolean) extends SearchControl
 
 case class SearchConfig(id: Option[UUID], index: String, sections: Map[String, Iterable[SearchControl]])
 

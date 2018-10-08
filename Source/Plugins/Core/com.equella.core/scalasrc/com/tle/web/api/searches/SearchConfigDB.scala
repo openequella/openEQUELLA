@@ -20,4 +20,7 @@ object SearchConfigDB {
 
   def readPageConfig(page: String): OptionT[DB, SearchPageConfig] =
     SettingsDB.jsonProperty(pageConfigName(page))
+
+  def writePageConfig(page: String, config: SearchPageConfig): DB[Unit] =
+    SettingsDB.setJsonProperty(pageConfigName(page), config)
 }

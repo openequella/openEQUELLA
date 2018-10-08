@@ -1,4 +1,4 @@
-module Search.WithinLastControl where 
+module OEQ.Search.WithinLastControl where 
 
 import Prelude
 
@@ -15,7 +15,6 @@ import Data.Newtype (unwrap)
 import Data.Time.Duration (class Duration, Days(..), Milliseconds(..), fromDuration)
 import Data.Tuple (Tuple(..))
 import Effect.Now (now)
-import Effect.Uncurried (mkEffectFn1, runEffectFn1)
 import Effect.Unsafe (unsafePerformEffect)
 import MaterialUI.Icon (icon_)
 import MaterialUI.MenuItem (menuItem)
@@ -27,8 +26,8 @@ import OEQ.UI.SearchFilters (filterSection)
 import Partial.Unsafe (unsafePartial)
 import React (statelessComponent, unsafeCreateLeafElement)
 import React.DOM (em', text)
-import Search.SearchControl (Chip(..), Placement(..), SearchControl)
-import Search.SearchQuery (QueryParam, _data, _params, emptyQueryParam, singleParam)
+import OEQ.Search.SearchControl (Chip(..), Placement(..), SearchControl)
+import OEQ.Search.SearchQuery (QueryParam, _data, _params, emptyQueryParam, singleParam)
 
 type AgoEntry = {name::String, emmed::Boolean, duration::Milliseconds}
 
@@ -60,8 +59,8 @@ agoEntries = let s = string.filterLast in [
   ago s.fiveyear (Days $ 365.0 * 5.0)
 ]
 
-withinLastControl :: SearchControl
-withinLastControl =
+withinLastControl :: Number -> SearchControl
+withinLastControl dftMillis =
   let 
     agoItem {name,emmed,duration:(Milliseconds ms)} = menuItem {value:ms} $ 
         (if emmed then pure <<< em' else identity) [text name]
@@ -76,19 +75,20 @@ withinLastControl =
           textField {select:true, 
             label: string.filterLast.label, 
             className: classes.selectFilter, 
-            value: fromMaybe 0.0 $ agoMs query,
+            value: fromMaybe dftMillis $ agoMs query,
             onChange: valueChange $ updateMs updateQuery
             } $ (agoItem <$> agoEntries)
         ]
 
     withinClass = withStyles styles $ statelessComponent render
-  in \{query,updateQuery} -> pure {
-    render: [Tuple Filters $ unsafeCreateLeafElement withinClass {query,updateQuery}],
-    chips: Array.fromFoldable $ agoMs query >>= case _ of 
-      0.0 -> Nothing 
-      ms -> Just $ Chip { label: string.filterLast.chip <> milliToAgo (Milliseconds ms), 
-                          onDelete: updateMs updateQuery 0.0}
-  }
+    renderer {query,updateQuery} = pure {
+      render: [Tuple Filters $ unsafeCreateLeafElement withinClass {query,updateQuery}],
+      chips: Array.fromFoldable $ agoMs query >>= case _ of 
+        0.0 -> Nothing 
+        ms -> Just $ Chip { label: string.filterLast.chip <> milliToAgo (Milliseconds ms), 
+                            onDelete: updateMs updateQuery 0.0}
+    }
+    in {renderer, initQuery:identity}
   where 
   styles theme = {
     selectFilter: {

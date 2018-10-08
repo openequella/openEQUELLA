@@ -1,14 +1,14 @@
-module Search.SearchControl where 
+module OEQ.Search.SearchControl where 
 
 import Prelude
 
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple, fst, snd)
 import Effect (Effect)
-import React (ReactElement)
-import Search.ItemResult (Result)
-import Search.SearchQuery (Query)
 import OEQ.Data.SearchResults (SearchResults)
+import React (ReactElement)
+import OEQ.Search.ItemResult (Result)
+import OEQ.Search.SearchQuery (Query)
 
 data Placement = Filters | ResultHeader | Results | Selections
 derive instance eqP :: Eq Placement 
@@ -26,7 +26,12 @@ type ControlParams = (
     query :: Query
 )
 
-type SearchControl = {|ControlParams} -> ControlRender
+type SearchControlRender = {|ControlParams} -> ControlRender
+
+type SearchControl = {
+    initQuery :: Query -> Query,
+    renderer :: SearchControlRender
+}
 
 placementMatch :: Placement -> Tuple Placement ReactElement -> Maybe ReactElement 
 placementMatch p t | fst t == p = Just $ snd t

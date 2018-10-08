@@ -28,7 +28,7 @@ import OEQ.Data.Selection (CourseNode(..), CourseStructure)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (div, text)
 import React.DOM.Props (key)
-import Search.ItemResult (ItemSelection)
+import OEQ.Search.ItemResult (ItemSelection)
 
 type CourseStructureProps = {
   structure :: CourseStructure, 

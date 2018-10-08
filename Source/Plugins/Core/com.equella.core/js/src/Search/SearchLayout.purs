@@ -1,4 +1,4 @@
-module Search.SearchLayout where 
+module OEQ.Search.SearchLayout where 
 
 import Prelude hiding (div)
 
@@ -32,6 +32,9 @@ import Network.HTTP.Affjax (get)
 import Network.HTTP.Affjax.Response (json)
 import OEQ.Data.SearchResults (SearchResults(..))
 import OEQ.Environment (baseUrl)
+import OEQ.Search.ItemResult (Result)
+import OEQ.Search.SearchControl (Chip(..), Placement(..), SearchControl, SearchControlRender, placementMatch)
+import OEQ.Search.SearchQuery (Query, blankQuery, searchQueryParams)
 import OEQ.UI.Layout (dualPane)
 import OEQ.Utils.QueryString (queryString)
 import Partial.Unsafe (unsafePartial)
@@ -39,9 +42,6 @@ import React (ReactElement, unsafeCreateLeafElement)
 import React as R
 import React.DOM (div, text)
 import React.DOM.Props as DP
-import Search.ItemResult (Result)
-import Search.SearchControl (Chip(..), Placement(..), SearchControl, placementMatch)
-import Search.SearchQuery (Query, blankQuery, searchQueryParams)
 import TSComponents (appBarQuery)
 import Unsafe.Coerce (unsafeCoerce)
 import Web.Event.Event (EventType(..))
@@ -64,18 +64,19 @@ type State = {
 data Command = InitSearch EventListener | Search | QueryUpdate String
   | Scrolled Event | UpdateQuery (Query -> Query)
 
-initialState :: State
-initialState = {
+initialState :: Query -> State
+initialState query = {
     searching:false
-  , query: blankQuery
+  , query
   , searchResults:Nothing
   , loadingNew: false
 }
 type SearchStrings = { resultsAvailable :: String, refineTitle :: String }
 
 searchLayout :: { 
-    searchControls::Array SearchControl, 
+    searchControls::Array SearchControlRender, 
     strings :: SearchStrings, 
+    initialQuery :: Query,
     renderTemplate :: {queryBar :: ReactElement, content :: ReactElement } -> ReactElement 
     } -> ReactElement
 searchLayout = unsafeCreateLeafElement $ withStyles styles $ R.component "SearchLayout" $ \this -> do
@@ -163,7 +164,8 @@ searchLayout = unsafeCreateLeafElement $ withStyles styles $ R.component "Search
       QueryUpdate q -> searchWith \s -> s {query = s.query {query = q} }
       UpdateQuery f -> searchWith \s -> s {query = f s.query}
   scrollListener <- eventListener $ d <<< Scrolled  
-  pure {render, state:initialState, 
+  {initialQuery} <- R.getProps this 
+  pure {render, state:initialState initialQuery, 
     componentDidMount: d $ InitSearch scrollListener, 
     componentWillUnmount: Window.toEventTarget <$> window >>= removeEventListener (EventType "scroll") scrollListener false}
   where 

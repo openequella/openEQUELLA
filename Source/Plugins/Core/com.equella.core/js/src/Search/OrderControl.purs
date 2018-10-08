@@ -1,4 +1,4 @@
-module Search.OrderControl where 
+module OEQ.Search.OrderControl where 
 
 import Prelude
 
@@ -15,8 +15,8 @@ import OEQ.Environment (prepLangStrings)
 import OEQ.UI.Common (valueChange)
 import React (statelessComponent, unsafeCreateLeafElement)
 import React.DOM (text)
-import Search.SearchControl (Placement(..), SearchControl)
-import Search.SearchQuery (_data, _params, singleParam)
+import OEQ.Search.SearchControl (Placement(..), SearchControl)
+import OEQ.Search.SearchQuery (_data, _params, singleParam)
 
 data Order = Relevance | DateModified | Name | Rating | DateCreated
 
@@ -44,7 +44,7 @@ orderControl :: SearchControl
 orderControl = let 
   _order = at "order"
   orderItem o = menuItem {value: orderValue o} [ text $ orderName o ]
-  in \{updateQuery, query} -> do 
+  renderer {updateQuery, query} = do 
     let 
       order = preview (_order <<< _Just <<< _data <<< _String) query.params
       updateOrder v = updateQuery $ set (_params <<< _order) $ Just $ singleParam v "order" v
@@ -57,6 +57,7 @@ orderControl = let
     pure $ { 
       render:[Tuple ResultHeader $ orderSelect {}], chips:[]
     }
+  in {renderer, initQuery: identity}
   where 
   styles theme = {
     ordering: {

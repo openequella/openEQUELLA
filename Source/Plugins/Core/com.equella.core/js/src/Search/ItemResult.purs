@@ -1,4 +1,4 @@
-module Search.ItemResult where 
+module OEQ.Search.ItemResult where 
 
 import Prelude hiding (div)
 

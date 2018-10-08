@@ -1,4 +1,4 @@
-module Search.OwnerControl where 
+module OEQ.Search.OwnerControl where 
 
 import Prelude
 
@@ -13,6 +13,7 @@ import Data.Symbol (SProxy(..))
 import Data.Tuple (Tuple(..))
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, modifyState, renderer, saveRef)
+import Dispatcher.React as DR
 import Effect (Effect)
 import Effect.Class (liftEffect)
 import Effect.Ref as Ref
@@ -26,6 +27,8 @@ import MaterialUI.Icon (icon)
 import MaterialUI.Styles (withStyles)
 import OEQ.Data.User (UserDetails(..), UserGroupRoles(..))
 import OEQ.Environment (prepLangStrings)
+import OEQ.Search.SearchControl (Chip(..), Placement(..), SearchControl)
+import OEQ.Search.SearchQuery (_params, singleParam)
 import OEQ.UI.Common (unsafeWithRef)
 import OEQ.UI.Icons (userIcon, userIconName)
 import OEQ.UI.SearchFilters (filterSection)
@@ -33,8 +36,6 @@ import OEQ.UI.SearchUser (UGREnabled(..), userSearch)
 import React (component, unsafeCreateLeafElement)
 import React as R
 import React.DOM (text)
-import Search.SearchControl (Chip(..), Placement(..), SearchControl)
-import Search.SearchQuery (_params, singleParam)
 
 data Command = SelectOwner | OwnerSelected (Maybe UserDetails) | CloseOwner
 type State = {selectOwner::Boolean, userDetails:: Maybe UserDetails}
@@ -78,21 +79,22 @@ ownerControl = do
           ]
           where 
           ownerSelected (UserGroupRoles {users}) = OwnerSelected $ head users
-      pure {render: renderer render this, state:{selectOwner:false, userDetails: Nothing}}
+      pure {render: DR.renderer render this, state:{selectOwner:false, userDetails: Nothing}}
 
-  pure $ \{query,updateQuery,results} -> do 
-    chipsM <- unsafeWithRef ocRef \cthis -> do
-      let mkChip (UserDetails {username}) = Chip {
-            label: string.filterOwner.chip <> username, 
-            onDelete: affAction cthis $ eval $ OwnerSelected Nothing
-          }
-      (Array.fromFoldable <<< map mkChip <<< _.userDetails) <$> R.getState cthis
-    pure {
-      render:[
-          Tuple Filters $ ownerComponent {query,updateQuery,results, innerRef: saveRef ocRef}
-      ], 
-      chips: fromMaybe [] chipsM
-    }
+    renderer {query,updateQuery,results} = do 
+      chipsM <- unsafeWithRef ocRef \cthis -> do
+        let mkChip (UserDetails {username}) = Chip {
+              label: string.filterOwner.chip <> username, 
+              onDelete: affAction cthis $ eval $ OwnerSelected Nothing
+            }
+        (Array.fromFoldable <<< map mkChip <<< _.userDetails) <$> R.getState cthis
+      pure {
+        render:[
+            Tuple Filters $ ownerComponent {query,updateQuery,results, innerRef: saveRef ocRef}
+        ], 
+        chips: fromMaybe [] chipsM
+      }
+  pure {renderer, initQuery:identity}
   where 
   styles theme = {
     ownerIcon: {

@@ -1,4 +1,4 @@
-module Search.SearchQuery where 
+module OEQ.Search.SearchQuery where 
 
 import Prelude
 
