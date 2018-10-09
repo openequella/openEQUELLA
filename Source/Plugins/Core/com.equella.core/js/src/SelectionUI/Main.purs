@@ -38,7 +38,7 @@ import OEQ.Search.ItemResult (ItemSelection, Result(..), itemResultOptions)
 import OEQ.Search.OrderControl (orderControl)
 import OEQ.Search.OwnerControl (ownerControl)
 import OEQ.Search.ResultDisplay (renderResults)
-import OEQ.Search.SearchControl (Placement(..), SearchControl, SearchControlRender)
+import OEQ.Search.SearchControl (Placement(..), SearchControl)
 import OEQ.Search.SearchLayout (searchLayout)
 import OEQ.Search.SearchQuery (blankQuery)
 import OEQ.Search.WithinLastControl (withinLastControl)
@@ -85,7 +85,7 @@ type State = {
 
 selectSearch :: {sessionParams :: SessionParams, selection::SelectionData} -> ReactElement
 selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSearch" $ \this -> do 
-  oc <- ownerControl
+  oc <- ownerControl Filters
   -- fc <- facetControl $ FacetSetting {name:"Name", path:"/item/name"}
   let 
     d = eval >>> affAction this
@@ -103,13 +103,13 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
       button {onClick: d ReturnSelections} [ text "Return" ]
     ]
 
-    courseControl :: SearchControlRender
+    courseControl :: SearchControl
     courseControl {} = do 
       {selection} <- R.getProps this
       {selectedFolder,selections} <- R.getState this
       pure { chips:[], render: [Tuple Selections $ renderStructure selection {selectedFolder,selections}] }
 
-    searchControls = [orderControl.renderer, oc.renderer, (withinLastControl 0.0).renderer, 
+    searchControls = [orderControl Filters, oc, withinLastControl Filters, 
       renderResults $ do 
         {route} <- R.getState this
         pure $ \r@Result {uuid,version} -> 

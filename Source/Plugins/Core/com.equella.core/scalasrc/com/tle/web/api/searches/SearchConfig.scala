@@ -13,13 +13,17 @@ import io.circe.{Decoder, Encoder}
 @JsonSubTypes(Array(
   new Type(value = classOf[SortControl], name = "sort"),
   new Type(value = classOf[OwnerControl], name = "owner"),
-  new Type(value = classOf[ModifiedWithinControl], name = "modifiedWithin")
+  new Type(value = classOf[ModifiedWithinControl], name = "modifiedWithin"),
+  new Type(value = classOf[FacetControl], name = "facet"),
+  new Type(value = classOf[CollectionsControl], name = "collections")
 ))
 sealed trait SearchControl
 
 case class SortControl(default: String, editable: Boolean) extends SearchControl
 case class OwnerControl(default: Option[String], editable: Boolean) extends SearchControl
 case class ModifiedWithinControl(default: Double, editable: Boolean) extends SearchControl
+case class FacetControl(title: String, node: String) extends SearchControl
+case class CollectionsControl(collections: Option[Iterable[UUID]], editable: Boolean) extends SearchControl
 
 object SearchControl {
 
@@ -31,6 +35,8 @@ object SearchControl {
       case "SortControl" => "sort"
       case "OwnerControl" => "owner"
       case "ModifiedWithinControl" => "modifiedWithin"
+      case "FacetControl" => "facet"
+      case "CollectionsControl" => "collections"
     })
   implicit val sctrlEncoder: Encoder[SearchControl] = deriveEncoder
   implicit val sctrlDecoder: Decoder[SearchControl] = deriveDecoder

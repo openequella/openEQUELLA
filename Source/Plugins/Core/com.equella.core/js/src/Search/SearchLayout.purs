@@ -33,8 +33,8 @@ import Network.HTTP.Affjax.Response (json)
 import OEQ.Data.SearchResults (SearchResults(..))
 import OEQ.Environment (baseUrl)
 import OEQ.Search.ItemResult (Result)
-import OEQ.Search.SearchControl (Chip(..), Placement(..), SearchControl, SearchControlRender, placementMatch)
-import OEQ.Search.SearchQuery (Query, blankQuery, searchQueryParams)
+import OEQ.Search.SearchControl (Chip(..), Placement(..), SearchControl, placementMatch)
+import OEQ.Search.SearchQuery (Query, searchQueryParams)
 import OEQ.UI.Layout (dualPane)
 import OEQ.Utils.QueryString (queryString)
 import Partial.Unsafe (unsafePartial)
@@ -74,7 +74,7 @@ initialState query = {
 type SearchStrings = { resultsAvailable :: String, refineTitle :: String }
 
 searchLayout :: { 
-    searchControls::Array SearchControlRender, 
+    searchControls::Array SearchControl, 
     strings :: SearchStrings, 
     initialQuery :: Query,
     renderTemplate :: {queryBar :: ReactElement, content :: ReactElement } -> ReactElement 

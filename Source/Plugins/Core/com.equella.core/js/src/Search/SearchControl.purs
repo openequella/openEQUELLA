@@ -26,13 +26,14 @@ type ControlParams = (
     query :: Query
 )
 
-type SearchControlRender = {|ControlParams} -> ControlRender
-
-type SearchControl = {
-    initQuery :: Query -> Query,
-    renderer :: SearchControlRender
-}
+type SearchControl = {|ControlParams} -> ControlRender
 
 placementMatch :: Placement -> Tuple Placement ReactElement -> Maybe ReactElement 
 placementMatch p t | fst t == p = Just $ snd t
 placementMatch _ _ = Nothing
+
+placementFromString :: String -> Placement 
+placementFromString = case _ of 
+  "results" -> Results 
+  "resultsheader" -> ResultHeader
+  _ -> Filters 

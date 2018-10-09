@@ -58,10 +58,17 @@ class SearchConfigApi {
     }
   }
 
+  @GET
+  @Path("page/{pagename}")
+  @ApiOperation("Read configuration association for a page")
+  def readPageConfig(@PathParam("pagename") pagename: String): Response = ApiHelper.runAndBuild {
+    ApiHelper.entityOrNotFoundDB(SearchConfigDB.readPageConfig(pagename))
+  }
+
   @PUT
   @Path("page/{pagename}")
   @ApiOperation("Edit page configuration association")
-  def editPageConfig(@QueryParam("pagename") pagename: String, config: SearchPageConfig): Response = ApiHelper.runAndBuild {
+  def editPageConfig(@PathParam("pagename") pagename: String, config: SearchPageConfig): Response = ApiHelper.runAndBuild {
     SearchConfigDB.writePageConfig(pagename, config).map(_ => Response.ok())
   }
 }

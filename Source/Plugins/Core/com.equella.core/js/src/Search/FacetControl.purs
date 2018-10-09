@@ -23,16 +23,16 @@ import MaterialUI.Icon (icon_)
 import MaterialUI.ListItemText (listItemText')
 import Network.HTTP.Affjax (get)
 import Network.HTTP.Affjax.Response (json)
-import OEQ.Data.Settings (FacetSetting(..))
+import OEQ.Data.Facet (FacetSetting)
 import OEQ.Environment (baseUrl)
+import OEQ.Search.SearchControl (Chip(..), ControlParams, Placement(..), SearchControl)
+import OEQ.Search.SearchQuery (Query, QueryParam(..), _params, searchQueryParams)
 import OEQ.UI.CheckList (checkList)
 import OEQ.UI.SearchFilters (filterSection)
 import OEQ.Utils.QueryString (queryString)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (text)
 import React.DOM as D
-import OEQ.Search.SearchControl (Chip(..), ControlParams, Placement(..), SearchControl)
-import OEQ.Search.SearchQuery (Query, QueryParam(..), _params, searchQueryParams)
 
 newtype FacetResult = FacetResult {term::String, count::Int}
 newtype FacetResults = FacetResults (Array FacetResult)
@@ -89,27 +89,27 @@ facetDisplay = unsafeCreateLeafElement $ component "FacetDisplay" $ \this -> do
     componentDidUpdate {query} _ _ = d $ UpdatedProps query
     componentDidMount = d Search
 
-    render {state: {searchResults}, props:{facet:(FacetSetting {name,path}), updateQuery, query}} =
+    render {state: {searchResults}, props:{facet:{title,node}, updateQuery, query}} =
       let 
-        selectedTerms = selections path query
+        selectedTerms = selections node query
         renderResults (Just (FacetResults results)) = checkList {entries: result <$> results}
             where
             result (FacetResult {term,count}) = {
               checkbox: \{classes} -> checkbox' {classes, checked: Object.member term selectedTerms, 
-                onChange: mkEffectFn2 \e c -> updateQuery $ updateValue c path term},
+                onChange: mkEffectFn2 \e c -> updateQuery $ updateValue c node term},
               text: \{className} -> listItemText' {className, primary: term, secondary: show count}
             }
         renderResults _ = D.div' []
-      in filterSection {name, icon: icon_ [text "view_list"] } [
+      in filterSection {name:title, icon: icon_ [text "view_list"] } [
           renderResults searchResults
       ]
 
     searchWith query = do
       modifyState _ {searching=true}
-      {facet:(FacetSetting {path})} <- getProps
-      let withoutOurs = set (_params <<< at path) Nothing query
+      {facet:{node}} <- getProps
+      let withoutOurs = set (_params <<< at node) Nothing query
       result <- lift $ get json $ baseUrl <> "api/search/facet?" <> 
-        (queryString $ [Tuple "nodes" path] <> 
+        (queryString $ [Tuple "nodes" node] <> 
         searchQueryParams withoutOurs)
       either log (\r -> modifyState _ {searchResults=Just r}) $ decodeJson result.response
 
@@ -127,15 +127,15 @@ facetDisplay = unsafeCreateLeafElement $ component "FacetDisplay" $ \this -> do
     render: renderer render this
   }
 
-facetControl :: FacetSetting -> Effect SearchControl
-facetControl setting@(FacetSetting {name,path}) = do 
+facetControl :: FacetSetting -> Placement  -> SearchControl
+facetControl setting@{title,node} placement = 
   let renderer {query,updateQuery,results} = do 
         let mkChip value = Chip {
-              label: name <> ": " <> value, 
-              onDelete: updateQuery $ updateValue false path value
+              label: title <> ": " <> value, 
+              onDelete: updateQuery $ updateValue false node value
             }
         pure {
-          render: [Tuple Filters $ facetDisplay {facet:setting, query,updateQuery,results}], 
-          chips: mkChip <$> (Object.keys $ selections path query)
+          render: [Tuple placement $ facetDisplay {facet:setting, query,updateQuery,results}], 
+          chips: mkChip <$> (Object.keys $ selections node query)
         }
-  pure { renderer, initQuery: identity}
+  in renderer

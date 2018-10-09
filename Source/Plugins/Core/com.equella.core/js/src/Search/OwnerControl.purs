@@ -40,8 +40,8 @@ import React.DOM (text)
 data Command = SelectOwner | OwnerSelected (Maybe UserDetails) | CloseOwner
 type State = {selectOwner::Boolean, userDetails:: Maybe UserDetails}
 
-ownerControl :: Effect SearchControl
-ownerControl = do 
+ownerControl :: Placement -> Effect SearchControl
+ownerControl placement = do 
   ocRef <- Ref.new Nothing
   let 
     _userDetails = prop (SProxy :: SProxy "userDetails")
@@ -90,11 +90,11 @@ ownerControl = do
         (Array.fromFoldable <<< map mkChip <<< _.userDetails) <$> R.getState cthis
       pure {
         render:[
-            Tuple Filters $ ownerComponent {query,updateQuery,results, innerRef: saveRef ocRef}
+            Tuple placement $ ownerComponent {query,updateQuery,results, innerRef: saveRef ocRef}
         ], 
         chips: fromMaybe [] chipsM
       }
-  pure {renderer, initQuery:identity}
+  pure renderer
   where 
   styles theme = {
     ownerIcon: {

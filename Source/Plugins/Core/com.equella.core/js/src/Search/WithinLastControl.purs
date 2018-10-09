@@ -8,8 +8,9 @@ import Data.DateTime.Instant (instant, toDateTime, unInstant)
 import Data.Either (fromRight)
 import Data.Foldable (find)
 import Data.Formatter.DateTime (Formatter, format, parseFormatString)
-import Data.Lens (_Just, preview, set)
+import Data.Lens (Lens', _Just, preview, set)
 import Data.Lens.At (at)
+import Data.Map (Map)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Newtype (unwrap)
 import Data.Time.Duration (class Duration, Days(..), Milliseconds(..), fromDuration)
@@ -21,13 +22,13 @@ import MaterialUI.MenuItem (menuItem)
 import MaterialUI.Styles (withStyles)
 import MaterialUI.TextField (textField)
 import OEQ.Environment (prepLangStrings)
+import OEQ.Search.SearchControl (Chip(..), Placement(..), SearchControl)
+import OEQ.Search.SearchQuery (Query, QueryParam, ParamData, _data, _params, emptyQueryParam, singleParam)
 import OEQ.UI.Common (valueChange)
 import OEQ.UI.SearchFilters (filterSection)
 import Partial.Unsafe (unsafePartial)
 import React (statelessComponent, unsafeCreateLeafElement)
 import React.DOM (em', text)
-import OEQ.Search.SearchControl (Chip(..), Placement(..), SearchControl)
-import OEQ.Search.SearchQuery (QueryParam, _data, _params, emptyQueryParam, singleParam)
 
 type AgoEntry = {name::String, emmed::Boolean, duration::Milliseconds}
 
@@ -59,14 +60,19 @@ agoEntries = let s = string.filterLast in [
   ago s.fiveyear (Days $ 365.0 * 5.0)
 ]
 
-withinLastControl :: Number -> SearchControl
-withinLastControl dftMillis =
+setModifiedWithin :: Number -> Query -> Query 
+setModifiedWithin = set (_params <<< _modifiedLast) <<< Just <<< beforeLast
+
+_modifiedLast :: Lens' (Map String ParamData) (Maybe ParamData)
+_modifiedLast = at "modifiedLast"
+
+withinLastControl :: Placement -> SearchControl
+withinLastControl placement =
   let 
     agoItem {name,emmed,duration:(Milliseconds ms)} = menuItem {value:ms} $ 
         (if emmed then pure <<< em' else identity) [text name]
-    _modifiedLast = at "modifiedLast"
     agoMs query = preview (_modifiedLast <<< _Just <<< _data <<< _Number) query.params
-    updateMs updateQuery ms = updateQuery $ set (_params <<< _modifiedLast) $ Just $ beforeLast ms
+    updateMs updateQuery ms = updateQuery $ setModifiedWithin ms
     render {classes,query,updateQuery} = 
         filterSection {
           name:string.filterLast.name, 
@@ -75,20 +81,20 @@ withinLastControl dftMillis =
           textField {select:true, 
             label: string.filterLast.label, 
             className: classes.selectFilter, 
-            value: fromMaybe dftMillis $ agoMs query,
+            value: fromMaybe 0.0 $ agoMs query,
             onChange: valueChange $ updateMs updateQuery
             } $ (agoItem <$> agoEntries)
         ]
 
     withinClass = withStyles styles $ statelessComponent render
     renderer {query,updateQuery} = pure {
-      render: [Tuple Filters $ unsafeCreateLeafElement withinClass {query,updateQuery}],
+      render: [Tuple placement $ unsafeCreateLeafElement withinClass {query,updateQuery}],
       chips: Array.fromFoldable $ agoMs query >>= case _ of 
         0.0 -> Nothing 
         ms -> Just $ Chip { label: string.filterLast.chip <> milliToAgo (Milliseconds ms), 
                             onDelete: updateMs updateQuery 0.0}
     }
-    in {renderer, initQuery:identity}
+    in renderer
   where 
   styles theme = {
     selectFilter: {

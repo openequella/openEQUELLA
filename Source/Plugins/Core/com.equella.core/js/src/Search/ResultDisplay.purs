@@ -10,9 +10,9 @@ import Effect (Effect)
 import MaterialUI.List (list)
 import OEQ.Data.SearchResults (SearchResults(..))
 import OEQ.Search.ItemResult (ItemResultOptions, Result, itemResult)
-import OEQ.Search.SearchControl (Placement(..), SearchControlRender)
+import OEQ.Search.SearchControl (Placement(..), SearchControl)
 
-renderResults :: Effect (Result -> ItemResultOptions) -> SearchControlRender
+renderResults :: Effect (Result -> ItemResultOptions) -> SearchControl
 renderResults ef = let 
   renderer {results:Just (SearchResults {results})} = do 
       f <- ef

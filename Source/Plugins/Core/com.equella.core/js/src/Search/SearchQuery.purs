@@ -10,6 +10,7 @@ import Data.Lens (Lens')
 import Data.Lens.Record (prop)
 import Data.Map (Map)
 import Data.Map as Map
+import Data.Maybe (Maybe)
 import Data.String (joinWith)
 import Data.Symbol (SProxy(..))
 import Data.Tuple (Tuple(..))
@@ -22,6 +23,8 @@ type Query = {
     query :: String,
     params :: Map String ParamData
 }
+
+type ParamDataLens = Lens' (Map String ParamData) (Maybe ParamData)
 
 blankQuery :: Query
 blankQuery = {
