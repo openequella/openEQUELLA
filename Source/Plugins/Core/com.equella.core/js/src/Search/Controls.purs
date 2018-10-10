@@ -6,7 +6,7 @@ import Control.MonadZero (guard)
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import OEQ.Data.Searches (SearchControlConfig(..))
-import OEQ.Search.CollectionControl (filterByCollections)
+import OEQ.Search.CollectionControl (collectionControl, filterByCollections)
 import OEQ.Search.FacetControl (facetControl)
 import OEQ.Search.OrderControl (orderControl, setSort)
 import OEQ.Search.OwnerControl (ownerControl)
@@ -20,7 +20,7 @@ controlFromConfig p = case _ of
   Owner {editable} -> guard editable $> ownerControl p
   ModifiedWithin {editable} -> guard editable $> (pure $ withinLastControl p)
   Facet fs -> Just $ pure $ facetControl fs p 
-  Collections _ -> Nothing
+  Collections {editable} -> guard editable $> (pure $ collectionControl p)
 
 queryFromConfig :: SearchControlConfig -> Query -> Query 
 queryFromConfig = case _ of 
