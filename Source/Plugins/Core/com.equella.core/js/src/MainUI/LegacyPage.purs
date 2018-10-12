@@ -179,7 +179,9 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
       setupLegacyHooks (d <<< Submit) (d <<< UpdateForm)
       d $ LoadPage,
     componentDidUpdate: \{page} _ _ -> d $ Updated page,
-    componentWillUnmount: runAff_ (const $ pure unit) $ updateStylesheets true []
+    componentWillUnmount: runAff_ (const $ pure unit) $ do 
+      deleteSheets <- updateStylesheets true []
+      liftEffect deleteSheets
   }
 
   where
