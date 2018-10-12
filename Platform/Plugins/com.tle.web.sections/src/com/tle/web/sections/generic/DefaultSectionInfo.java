@@ -877,4 +877,15 @@ public class DefaultSectionInfo implements MutableSectionInfo
 	{
 		errored = true;
 	}
+
+  @Override
+  public Map<String, String[]> getParameterMap()
+  {
+    Map<String, String[]> paramMap = new HashMap<>();
+	for( ParametersEvent paramEvent : parametersEvents )
+	{
+	   paramMap.putAll(paramEvent.getParameterMap());
+	}
+	return paramMap;
+  }
 }

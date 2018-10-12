@@ -400,4 +400,6 @@ public interface SectionInfo extends InfoCreator
 	boolean isErrored();
 
 	void setErrored();
+
+	Map<String, String[]> getParameterMap();
 }

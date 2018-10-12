@@ -293,7 +293,7 @@ public class AdvancedScriptWebControl extends AbstractSimpleWebControl
 		if( request )
 		{
 			Map<Object, Object> paramMap = new HashMap<>();
-			paramMap.putAll(info.getRequest().getParameterMap());
+			paramMap.putAll(info.getParameterMap());
 			String submitter = info.getAttribute(SUBMITTER_NAME_KEY);
 			if( !Check.isEmpty(submitter) )
 			{

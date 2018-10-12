@@ -491,4 +491,10 @@ public class StandardRenderEventContext implements RenderEventContext
 	{
 		renderContext.setErrored();
 	}
+
+	@Override
+	public Map<String, String[]> getParameterMap()
+	{
+		return renderContext.getParameterMap();
+	}
 }

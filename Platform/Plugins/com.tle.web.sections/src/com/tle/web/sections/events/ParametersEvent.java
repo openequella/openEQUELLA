@@ -57,7 +57,12 @@ public class ParametersEvent extends AbstractSectionEvent<ParametersEventListene
 		return false;
 	}
 
-	public String getParameter(String param, boolean mandatory) throws BadRequestException
+    public Map<String, String[]> getParameterMap()
+    {
+	    return parameters;
+    }
+
+    public String getParameter(String param, boolean mandatory) throws BadRequestException
 	{
 		String[] params = parameters.get(param);
 		if( params != null && params.length > 0 )

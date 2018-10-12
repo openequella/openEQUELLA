@@ -640,4 +640,10 @@ public class SectionWriter extends PrintWriter implements PreRenderContext
 	{
 		renderContext.setErrored();
 	}
+
+    @Override
+    public Map<String, String[]> getParameterMap()
+    {
+	    return renderContext.getParameterMap();
+    }
 }

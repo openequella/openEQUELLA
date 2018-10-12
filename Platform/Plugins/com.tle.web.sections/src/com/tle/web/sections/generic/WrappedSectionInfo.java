@@ -334,4 +334,10 @@ public abstract class WrappedSectionInfo implements SectionInfo
 	{
 		info.setErrored();
 	}
+
+	@Override
+	public Map<String, String[]> getParameterMap()
+	{
+		return info.getParameterMap();
+	}
 }
