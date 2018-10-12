@@ -12,17 +12,18 @@ import Data.Set (Set)
 import Data.Set as Set
 import Data.Traversable (sequence_, traverse, traverse_)
 import Data.Tuple (Tuple(..))
+import Debug.Trace (traceM)
 import Dispatcher.React (propsRenderer, saveRef, withRef)
-import OEQ.Environment (baseUrl)
-import OEQ.Data.LegacyContent (SubmitOptions)
 import Effect (Effect)
 import Effect.Aff (Aff, makeAff, nonCanceler, runAff_)
 import Effect.Class (liftEffect)
 import Effect.Ref as Ref
 import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn1, mkEffectFn2, runEffectFn1)
 import Foreign.Object (Object)
-import Partial.Unsafe (unsafePartial)
+import OEQ.Data.LegacyContent (SubmitOptions)
+import OEQ.Environment (baseUrl)
 import OEQ.Utils.QueryString (toTuples)
+import Partial.Unsafe (unsafePartial)
 import React (ReactElement, ReactRef, component, unsafeCreateLeafElement)
 import React as R
 import React.DOM as D
@@ -43,7 +44,7 @@ import Web.HTML.HTMLLinkElement as Link
 import Web.HTML.HTMLScriptElement as Script
 import Web.HTML.Window (document)
 
-foreign import setInnerHtml :: {node :: ReactRef, html:: String, script::Nullable String } -> Effect Unit
+foreign import setInnerHtml :: {node :: ReactRef, html:: String, script::Nullable String, afterHtml :: Nullable (Effect Unit) } -> Effect Unit
 foreign import clearInnerHtml :: ReactRef -> Effect Unit
 foreign import globalEval :: String -> Effect Unit
 
@@ -55,14 +56,14 @@ foreign import setupLegacyHooks_ :: {
     updateForm :: EffectFn1 {state :: Object (Array String), partial :: Boolean} Unit
   } -> Effect Unit 
 
-divWithHtml :: {divProps :: Array Props, html :: String, script :: Maybe String} -> ReactElement
+divWithHtml :: {divProps :: Array Props, html :: String, script :: Maybe String, afterHtml :: Maybe (Effect Unit)} -> ReactElement
 divWithHtml = unsafeCreateLeafElement $ component "JQueryDiv" $ \this -> do
   domNode <- Ref.new Nothing
   let
     render {divProps,html} = D.div (divProps <> [ DP.ref $ runEffectFn1 $ saveRef domNode ]) []
     updateHtml = do 
-      {html, script} <- R.getProps this
-      withRef domNode $ \node -> setInnerHtml {node,html,script: toNullable script}
+      {html, script, afterHtml} <- R.getProps this
+      withRef domNode $ \node -> setInnerHtml {node,html,script: toNullable script, afterHtml: toNullable afterHtml}
   pure {
     render: propsRenderer render this,
     componentDidMount: updateHtml,
@@ -108,7 +109,7 @@ loadMissingScripts _scripts =  unsafePartial $ makeAff $ \cb -> do
   pure nonCanceler
 
 
-updateStylesheets :: Boolean -> Array String -> Aff Unit
+updateStylesheets :: Boolean -> Array String -> Aff (Effect Unit)
 updateStylesheets replace _sheets = unsafePartial $ makeAff $ \cb -> do 
   let sheets = resolveUrl <$> _sheets
   w <- window
@@ -126,6 +127,8 @@ updateStylesheets replace _sheets = unsafePartial $ makeAff $ \cb -> do
     previous <- lift $ Map.fromFoldable <$> findPreviousLinks insertPoint
     pure $ {head, insertPoint, previous}
   let newSheets = (filterUrls (Map.keys previous) sheets)
+      toDelete = Map.filterKeys (not <<< flip Set.member $ Set.fromFoldable sheets) previous
+      deleteEff = if replace then traverse_ deleteSheet (Map.values toDelete) else pure unit
       sheetCount = length newSheets
       createLink ind href = do 
         l <- fromJust <<< Link.fromElement <$> createElement "link" doc
@@ -133,28 +136,27 @@ updateStylesheets replace _sheets = unsafePartial $ makeAff $ \cb -> do
         Link.setHref href l
         if sheetCount == ind + 1
           then do 
-            el <- eventListener (\_ -> cb $ Right unit)
+            el <- eventListener (\_ -> cb $ Right deleteEff)
             addEventListener (EventType "load") el false (Link.toEventTarget l)
           else pure unit
         insertBefore (Link.toNode l) (Elem.toNode insertPoint) head
       deleteSheet c = removeChild (Link.toNode c) head
-      toDelete = Map.filterKeys (not <<< flip Set.member $ Set.fromFoldable sheets) previous
   sequence_ $ mapWithIndex createLink newSheets
-  if replace then traverse_ deleteSheet (Map.values toDelete) else pure unit
-  if sheetCount == 0 then (cb $ Right unit) else pure unit
+  if sheetCount == 0 then (cb $ Right deleteEff) else pure unit
   pure nonCanceler
 
-updateIncludes :: Boolean -> Array String -> Array String -> Aff Unit
+updateIncludes :: Boolean -> Array String -> Array String -> Aff (Effect Unit)
 updateIncludes replace css js = do 
-    updateStylesheets replace css
+    deleter <- updateStylesheets replace css
     loadMissingScripts $ js
+    pure deleter
 
 setupLegacyHooks :: (SubmitOptions -> Effect Unit) -> (FormUpdate -> Effect Unit) -> Effect Unit
 setupLegacyHooks submit formUpdate = setupLegacyHooks_ { 
     submit: mkEffectFn1 $ submit, 
     updateIncludes: mkEffectFn2
           \{css,js,script} cb -> runAff_ (\_ -> cb) $ do 
-            updateIncludes false css js
+            _ <- updateIncludes false css js
             liftEffect $ globalEval script, 
     updateForm: mkEffectFn1 $ formUpdate
 }

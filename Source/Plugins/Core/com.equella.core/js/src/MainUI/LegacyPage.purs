@@ -10,6 +10,7 @@ import Data.Nullable (toNullable)
 import Data.String (joinWith)
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer, saveRef, withRef)
+import Effect (Effect)
 import Effect.Aff (runAff_)
 import Effect.Class (liftEffect)
 import Effect.Ref (new)
@@ -47,7 +48,8 @@ type PageContent = {
   title :: String, 
   fullscreenMode :: String, 
   menuMode :: String,
-  hideAppBar :: Boolean
+  hideAppBar :: Boolean, 
+  afterHtml :: Effect Unit
 }
 
 data Command = OptionsAnchor (Maybe HTMLElement) 
@@ -72,18 +74,19 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
     d = eval >>> affAction this
   
     render {state:s@{content,errored}, props:{classes}} = case content of 
-        Just (c@{html,title,script}) -> 
+        Just (c@{html,title,script, afterHtml}) -> 
           let extraClass = case c.fullscreenMode of 
                 "YES" -> []
                 "YES_WITH_TOOLBAR" -> []
                 _ -> case c.menuMode of
                   "HIDDEN" -> [] 
                   _ -> [classes.withPadding]
-              
+              jqueryDiv f h = divWithHtml $ f {divProps:[], script:Nothing, afterHtml: Nothing, html:h}
+              jqueryDiv_ = jqueryDiv identity
               actualContent = D.div [DP.className $ joinWith " " $ ["content"] <> extraClass] $ catMaybes [ 
-                  (divWithHtml <<< {divProps:[_id "breadcrumbs"], script:Nothing, html: _} <$> lookup "crumbs" html),
-                  (divWithHtml <<< {divProps:[], script:Nothing, html: _} <$> lookup "upperbody" html),
-                  (divWithHtml <<< {divProps:[], script:Just script, html: _} <$> lookup "body" html) ]
+                  (jqueryDiv (_ {divProps = [_id "breadcrumbs"]}) <$> lookup "crumbs" html),
+                  jqueryDiv_  <$> lookup "upperbody" html,
+                  (jqueryDiv _ {script = Just script, afterHtml = Just afterHtml}) <$> lookup "body" html ]
               mainContent = if s.noForm 
                 then actualContent
                 else writeForm s.state actualContent
@@ -115,7 +118,7 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
               , onClose: d $ OptionsAnchor Nothing
               , anchorEl: toNullable s.optionsAnchor }
           [ 
-              divWithHtml {divProps:[DP.className $ classes.screenOptions], html, script:Nothing}
+              divWithHtml {divProps:[DP.className $ classes.screenOptions], html, script:Nothing, afterHtml: Nothing}
           ]
       ]
 
@@ -158,9 +161,9 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
       liftEffect $ maybe (pure unit) pushRoute $ matchRoute redir
     updateContent (LegacyContent lc@{css, js, state, html,script, title, fullscreenMode, menuMode, hideAppBar} userUpdated) = do 
       doRefresh userUpdated
-      lift $ updateIncludes true css js
+      deleteSheets <- lift $ updateIncludes true css js
       modifyState \s -> s {noForm = lc.noForm,
-        content = Just {html, script, title, fullscreenMode, menuMode, hideAppBar}, state = state}
+        content = Just {html, script, title, fullscreenMode, menuMode, hideAppBar, afterHtml: deleteSheets}, state = state}
 
   pure {
     state:{ 
