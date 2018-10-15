@@ -188,4 +188,6 @@ public interface FileScriptObject extends ScriptObject
 	 * @return A file handle
 	 */
 	FileHandleScriptType getFileHandle(ItemScriptType item, String filename);
+
+	String getStagingId();
 }

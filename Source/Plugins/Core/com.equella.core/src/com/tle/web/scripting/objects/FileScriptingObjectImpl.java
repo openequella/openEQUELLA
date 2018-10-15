@@ -22,6 +22,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
 import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.scripting.objects.FileScriptObject;
 import com.tle.common.scripting.types.BinaryDataScriptType;
 import com.tle.common.scripting.types.FileHandleScriptType;
@@ -185,6 +186,12 @@ public class FileScriptingObjectImpl extends AbstractScriptWrapper implements Fi
 		}
 		final ItemId itemId = new ItemId(item.getUuid(), item.getVersion());
 		return new FileHandleScriptTypeImpl(filename, itemFileService.getItemFile(itemId, null), true);
+	}
+
+	@Override
+	public String getStagingId()
+	{
+		return ((StagingFile) handle).getUuid();
 	}
 
 	public static class FileHandleScriptTypeImpl implements FileHandleScriptType
