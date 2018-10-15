@@ -34,15 +34,15 @@ Inside that it contains the following layout:
 Currently there are two JS bundles created by the NPM tasks, one for the "Single page app" 
 and the other is for the file upload control.
 
-## Single page app
+## Main application bundle
 
-The single page app is a bundle which is served from a [servlet](../../Source/Plugins/Core/com.equella.core/scalasrc/com/tle/web/template/SinglePageApp.scala) in openEQUELLA registered at `"/page/*"`. 
+All the standard The standard page app is a bundle which is served from a [servlet](../../Source/Plugins/Core/com.equella.core/scalasrc/com/tle/web/template/SinglePageApp.scala) in openEQUELLA registered at `"/page/*"`. 
 
 Based on the given path, a [purescript-routing](https://github.com/slamdata/purescript-routing) 
 based router selects a root React component.
 
-* Single page app entry point - [IndexPage.purs](../../Source/Plugins/Core/com.equella.core/js/src/IndexPage.purs)
-* Router - [Routes.purs](../../Source/Plugins/Core/com.equella.core/js/src/Routes.purs)
+* Single page app entry point - [Main.purs](../../Source/Plugins/Core/com.equella.core/js/src/MainUI/Main.purs)
+* Router - [Routes.purs](../../Source/Plugins/Core/com.equella.core/js/src/MainUI/Routes.purs)
 
 ### Development cycle
 
@@ -85,11 +85,11 @@ rendering the layout:
 * Optional extra markup in title (search bar)
 * Additional area for tabs
 
-See `TemplateProps` in [Template.purs](../../Source/Plugins/Core/com.equella.core/js/src/Template.purs) or [Template.ts](../../Source/Plugins/Core/com.equella.core/js/tsrc/api/Template.ts)
+See `TemplateProps` in [Template.purs](../../Source/Plugins/Core/com.equella.core/js/src/MainUI/Template.purs) or [Template.ts](../../Source/Plugins/Core/com.equella.core/js/tsrc/api/Template.ts)
 
 ## Typescript notes
 
-* Typescript 2.8.3
+* Typescript 3.0.3
 * [Axios](https://github.com/axios/axios) is currently the library of choice for a `Promise` based approach to AJAX calls.
 * [Redux](https://redux.js.org/introduction) is currently being used to dispatch AJAX calls and do state manipulation.
 * [Material UI](https://material-ui.com/) contains Typescript bindings.
@@ -168,7 +168,7 @@ routeURI r = "/" <> ( case r of
     HelloWorldPage -> "hello"
 ```
 
-Make the entry point render the component when it's Route is selected (in `IndexPage.purs`):
+Make the entry point render the component when it's Route is selected (in `Main.purs`):
 
 ```purescript
 import TSComponents (helloWorldClass)
