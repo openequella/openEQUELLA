@@ -1,20 +1,36 @@
-# Setting up a development environment
+# Contributing
+
+:+1::tada: First off, thanks for taking the time to contribute! :tada::+1:
+
+We welcome contributions via both the raising of issues and submitting pull requests. But before you
+do, please take a moment to consult the below.
+
+## Chatting
+
+If before any of the below you'd like to discuss an issue or some code, then come and chat with
+us on one of the following platforms:
+
+* [Users mailing list]() - Most active, best for more usage centric questions
+* [Developer mailing list]() - For discussing work on the code
+* \#Equella channel in [Apereo's slack](https://apereo.slack.com/)
+
+## Setting up a development environment
 
 Note: There are a couple of changes to the build process, and some discussion on Scala / Java and the frontend that should be understood when working on Equella code - please take a look at this [Google Group thread](https://groups.google.com/a/apereo.org/forum/#!topic/equella-users/bLV_XXQFOTI) and this [issue ticket](https://github.com/equella/Equella/issues/437). This page will be updated once the React UI code is a bit more solidified.
 
-## IDE
+### IDE
 
 The source isn't tied to a particular IDE, so it should be buildable
 with any IDE which has an SBT integration. Having said that IntelliJ is
 what most developers are using.
 
-### IntelliJ - latest
+#### IntelliJ - latest
 
 Import as an SBT project and use the default settings.
 
 If you get compile errors in the IDE, but standalone `sbt compile` works, do an sbt refresh from the IntelliJ `SBT tool window`.
 
-### Eclipse - Scala IDE 4.6
+#### Eclipse - Scala IDE 4.6
 
 You must use the [sbteclipse](https://github.com/typesafehub/sbteclipse) plugin to write projects out Eclipse projects
 and you must configure it with the following settings:
@@ -27,7 +43,7 @@ EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.ManagedClas
 EclipseKeys.eclipseOutput := Some("target/scala-2.11/classes/")
 ```
 
-### Create dev configuration settings
+#### Create dev configuration settings
 
 EQUELLA requires a configuration folder (`learningedge-config`) in order to start and there
 is an sbt task which will generate configuration files suitable for running with your dev environment:
@@ -42,7 +58,7 @@ the database that you have created for EQUELLA.
 
 The default admin url will be: `http://localhost:8080/`
 
-### Updating plugin library jars for dev mode
+#### Updating plugin library jars for dev mode
 
 When running the server in dev mode, the server runner doesn't have access to the SBT build information, so it
 can't find the jar libraries which some of the plugins require, so an extra SBT task is required to copy the jars
@@ -52,7 +68,7 @@ into a known location for the runner. This task is run by the `prepareDevConfig`
 ~$ sbt jpfWriteDevJars
 ```
 
-### Running SBT task to generate non-java resources
+#### Running SBT task to generate non-java resources
 
 When you build EQUELLA from within IntelliJ, it will only compile Scala/Java sources and copy resources
 from the resource folders, it won't run any of the scripts that generate resoureces
@@ -62,7 +78,7 @@ from the resource folders, it won't run any of the scripts that generate resoure
 ~$ sbt resources
 ```
 
-### Running a dev server
+#### Running a dev server
 
 Ensure you have your `Dev/learningedge-config` setup.
 
@@ -80,7 +96,7 @@ Ensure that your runner settings compiles the whole project before running:
 
 * IntelliJ - `Before Launch -> Build Project`
 
-### Running the admin tool
+#### Running the admin tool
 
 Ensure you have your server running and know it's
 
@@ -90,7 +106,7 @@ Ensure you have your server running and know it's
 
 or run `com.tle.client.harness.ClientLauncher` in the `Source/Server/adminTool` project.
 
-### Developing the JS code
+#### Developing the JS code
 
 In the `Source/Plugins/Core/com.equella.core/js` directory you will find a yarn/npm
 project which compiles Purescript/Typescript/Sass into JS and CSS. Currently there are number
@@ -104,7 +120,7 @@ of separate JS bundles which are generated and you could develop them easier by 
 This will build the javascript bundle to the correct location for running a dev EQUELLA and will
 watch for source changes and re-build if required.
 
-## SBT Notes
+### SBT Notes
 
 The new build uses SBT (very flexible and has a large set of useful plugins available). You can customize pretty much any aspect of your build process using Scala scripts.
 
@@ -133,7 +149,7 @@ The root plugin manually defines the sub-project location and their inter-projec
 * `allPlugins` - an aggregate project which can be used for building all the JPF plugins
 * `adminTool` - contains the admin console client launcher
 
-### Misc
+#### Misc
 
 if you get a deduplicate dependencies on commons logging, SLF4J has a moonlighting jar that
 says it's commons logging. Use the build.sbt directive of exclude dependencies like the
