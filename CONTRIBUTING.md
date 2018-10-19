@@ -14,6 +14,51 @@ us on one of the following platforms:
 * [Developer mailing list]() - For discussing work on the code
 * \#Equella channel in [Apereo's slack](https://apereo.slack.com/)
 
+## Submitting Issues
+
+When you submit an issue, please take the time to provide as much info as you can. Key bits are:
+
+1. What operating system
+2. What Java version
+3. What browser version
+4. A concise description of your issue
+5. More details of the issue, including any error logs etc.
+
+## Contributing Code / Pull Requests
+
+As per standard Apereo projects:  If you wish to contribute to Open EQUELLA itself, you should first
+subscribe to the Open EQUELLA Google Group as outlined above and discuss your contributions with
+the other developers. You will also need to sign a
+[Contributor License Agreement](https://www.apereo.org/node/676).
+
+But after that, as per usual GitHub, please first fork the project and then branch off `master` or a
+stable branch (see below) to use a 'feature' branch.
+
+Please ensure you provide [quality commit messages](https://chris.beams.io/posts/git-commit/),
+and in the PR please detail what testing you have undertaken. Also, ideally provide some tests as
+part of your PR and/or details of any manual tests you performed.
+
+### Git Workflow and Layout
+
+The project is utilising a basic feature branching git workflow. Each new piece of work has a
+new branch created. Code reviews/PRs then take place on this branch, which on completion
+is then merged back to `master`.
+
+The next version is worked towards on `master`, and then once complete a branch is created for
+the version with the name `stable-<version>` - e.g. `stable-6.6`.
+
+Historically some branches did not follow that format, so if you're looking for an older
+version:
+
+| Version | Branch       |
+|---------|--------------|
+| 6.6     | `stable-6.6` |
+| 6.5     | `stable`     |
+| 6.4     | `6.4`        |
+
+Subsequent revision releases are done from the matching stable branches. And if suitable,
+fixes are merged to other versions - and especially to `master`.
+
 ## Setting up a development environment
 
 Note: There are a couple of changes to the build process, and some discussion on Scala / Java and the frontend that should be understood when working on Equella code - please take a look at this [Google Group thread](https://groups.google.com/a/apereo.org/forum/#!topic/equella-users/bLV_XXQFOTI) and this [issue ticket](https://github.com/equella/Equella/issues/437). This page will be updated once the React UI code is a bit more solidified.
