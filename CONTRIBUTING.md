@@ -10,8 +10,10 @@ do, please take a moment to consult the below.
 If before any of the below you'd like to discuss an issue or some code, then come and chat with
 us on one of the following platforms:
 
-* [Users mailing list]() - Most active, best for more usage centric questions
-* [Developer mailing list]() - For discussing work on the code
+* [Users mailing list](https://groups.google.com/a/apereo.org/forum/#!forum/equella-users) - Most
+  active, best for more usage centric questions
+* [Developer mailing list](https://groups.google.com/a/apereo.org/forum/#!forum/equella-dev) - For
+  discussing work on the code
 * \#Equella channel in [Apereo's slack](https://apereo.slack.com/)
 
 ## Submitting Issues
