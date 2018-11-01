@@ -93,7 +93,7 @@ import Users.UserLookup (UserDetails(..), UserGroupRoles(..))
 newtype Attachment = Attachment {thumbnailHref::String}
 newtype DisplayField = DisplayField {name :: String, html::String}
 newtype Result = Result {name::String, description:: Maybe String, modifiedDate::String,
-    displayFields :: Array DisplayField, thumbnail::String, uuid::String, version::Int, attachments::Array Attachment}
+    displayFields :: Array DisplayField, thumbnail::String, uuid::String, version::Int, attachments::Maybe (Array Attachment)}
 
 data Order = Relevance | DateModified | Name | Rating | DateCreated
 
@@ -335,7 +335,7 @@ searchPage = createFactory (withStyles styles $ createLifecycleComponent (didMou
           titleLink = typography [variant TS.subheading, style {textDecoration:"none", color:"blue"},
                         component "a", mkProp "href" $ baseUrl <> "items/" <> uuid <> "/" <> show version <> "/"] [ text name ]
           attachThumb (Attachment {thumbnailHref}) = Just $ img [DP.aria {hidden:true}, DP.className classes.itemThumb, DP.src thumbnailHref] []
-          firstThumb = fromFoldable $ findMap attachThumb attachments
+          firstThumb = fromFoldable $ findMap attachThumb =<< attachments
           extraDeets = [
             listItem [classes_ {default: classes.displayNode}, disableGutters true] [
               metaTitle string.modifiedDate,
