@@ -53,7 +53,7 @@ class SettingsResource {
 
   @GET
   @Path("ui")
-  def getUISettings: UISettings = RunWithDB.execute(ensureEditSystem(UISettings.getUISettings)).getOrElse(UISettings.defaultSettings)
+  def getUISettings: UISettings = RunWithDB.execute(UISettings.getUISettings).getOrElse(UISettings.defaultSettings)
 
   @PUT
   @Path("ui")
