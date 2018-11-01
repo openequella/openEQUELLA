@@ -51,7 +51,7 @@ newtype Result = Result {
     thumbnail::String, 
     uuid::String, 
     version::Int, 
-    attachments::Array Attachment
+    attachments:: Maybe (Array Attachment)
 }
 
 instance attachDecode :: DecodeJson Attachment where
@@ -79,7 +79,7 @@ instance rDecode :: DecodeJson Result where
     thumbnail <- o .? "thumbnail"
     df <- o .?? "displayFields"
     version <- o .? "version"
-    attachments <- o .? "attachments"
+    attachments <- o .?? "attachments"
     pure $ Result {uuid,version,name:fromMaybe uuid nameO, description, thumbnail, modifiedDate, displayFields:fromMaybe [] df, attachments}
 
 type ItemResultOptions = { 
@@ -107,7 +107,7 @@ itemResult = unsafeCreateLeafElement $ withStyles styles $ component "ItemResult
                     DP.className classes.itemThumb, 
                     DP.src thumbnailHref
                 ]
-            firstThumb = fromFoldable $ findMap attachThumb attachments
+            firstThumb = fromFoldable $ findMap attachThumb =<< attachments
             extraDeets = [
                 listItem {classes: {default: classes.displayNode}, disableGutters: true} [
                     metaTitle string.modifiedDate,
