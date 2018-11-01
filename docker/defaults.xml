@@ -18,18 +18,18 @@
 </java>
 <datasource>
   <dbtype>postgresql</dbtype>
-  <host>OEQ_DB_HOST</host>
-  <port>OEQ_DB_PORT</port>
-  <database>OEQ_DB_NAME</database>
-  <username>OEQ_DB_USERNAME</username>
-  <password>OEQ_DB_PASSWORD</password>
+  <host>localhost</host>
+  <port>5432</port>
+  <database>equella</database>
+  <username>equellauser</username>
+  <password>password</password>
   <idtype>:</idtype>
 </datasource>
 <webserver>
-  <url>http://OEQ_ADMIN_DOMAIN:OEQ_ADMIN_PORT/OEQ_ADMIN_SUFFIX</url>
+  <url>http://localhost:8080/admin/</url>
   <binding>all</binding>
-  <host>OEQ_ADMIN_DOMAIN</host>
-  <port>OEQ_ADMIN_PORT</port>
+  <host>localhost</host>
+  <port>8080</port>
   <context>/</context>
   <javaopts>-Xss2m</javaopts>
 </webserver>

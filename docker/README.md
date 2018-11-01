@@ -23,8 +23,15 @@ Note - the zip and the root directory in the zip are not always the same, hence 
 ```sh
 $ cd docker
 $ docker build -t apereo/oeq-install-VER . --build-arg OEQ_INSTALL_FILE=equella-installer-VER.zip --build-arg OEQ_INSTALL_ZIP_ROOT_DIR=equella-installer-VER
-$ docker run -t --name oeq -e OEQ_DB_HOST=your-db-host-here -e OEQ_DB_PORT=5432 -e OEQ_DB_NAME=eqdocker -e OEQ_DB_USERNAME=your-db-user-here -e OEQ_DB_PASSWORD="your-db-pw-here" -e OEQ_ADMIN_DOMAIN=172.17.0.2 -e OEQ_ADMIN_PORT=8080 -e OEQ_ADMIN_SUFFIX="admin/" oeq-install-VER
+$ docker run -t --name oeq -e EQ_HTTP_PORT=8080 -e EQ_ADMIN_URL=http://172.17.0.2:8080/admin/ -e EQ_HIBERNATE_CONNECTION_URL=jdbc:postgresql://your-db-host-here:5432/eqdocker -e EQ_HIBERNATE_CONNECTION_USERNAME=equellauser -e EQ_HIBERNATE_CONNECTION_PASSWORD="your-db-pw-here" oeq-install-VER
 ```
+
+To access the terminal of the container:
+
+```sh
+docker exec -it oeq /bin/bash
+```
+
 
 ## docker-build
 Pulls the latest Equella repo, and sets up the environment and helper scripts to build and save the openEQUELLA installer and upgrader.

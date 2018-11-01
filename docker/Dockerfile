@@ -41,7 +41,7 @@ USER equella
 VOLUME ["/home/equella/equella/filestore/", "/home/equella/equella/freetext/"]
 
 COPY learningedge-log4j.properties learningedge-config/
-COPY reconfigure.sh ./
+COPY envvars.sh ./
 
 # At this point openEQUELLA is installed.
 
@@ -51,13 +51,24 @@ ARG MEM=512
 ARG JVM_ARGS
 ENV MEM $MEM
 ENV JVM_ARGS $JVM_ARGS
-ENV OEQ_ADMIN_DOMAIN localhost
-ENV OEQ_ADMIN_PORT 8080
-ENV OEQ_ADMIN_SUFFIX admin/
-ENV OEQ_DB_HOST db
-ENV OEQ_DB_PORT 5432
-ENV OEQ_DB_NAME equella
-ENV OEQ_DB_USERNAME equellauser
-ENV OEQ_DB_PASSWORD password
 
-CMD sh reconfigure.sh; java -Xmx${MEM}m $JVM_ARGS -cp learningedge-config:server/equella-server.jar com.tle.core.equella.runner.EQUELLAServer
+# Properties in the optional-config, mandatory-config, and hibernate files can be 
+# overridden by oEQ logic via environment variables by changing '.' to '_', 
+# uppercasing, and prepending "EQ_" to the name.
+
+ARG EQ_HTTP_PORT=8080
+ENV EQ_HTTP_PORT $EQ_HTTP_PORT
+
+ARG EQ_ADMIN_URL=http://localhost:8080/admin/
+ENV EQ_ADMIN_URL $EQ_ADMIN_URL
+
+ARG EQ_HIBERNATE_CONNECTION_URL=jdbc:postgresql://localhost:5432/equella
+ENV EQ_HIBERNATE_CONNECTION_URL $EQ_HIBERNATE_CONNECTION_URL
+
+ARG EQ_HIBERNATE_CONNECTION_USERNAME=equellauser
+ENV EQ_HIBERNATE_CONNECTION_USERNAME $EQ_HIBERNATE_CONNECTION_USERNAME
+
+ARG EQ_HIBERNATE_CONNECTION_PASSWORD=password
+ENV EQ_HIBERNATE_CONNECTION_PASSWORD $EQ_HIBERNATE_CONNECTION_PASSWORD
+
+CMD java -Xmx${MEM}m $JVM_ARGS -cp learningedge-config:server/equella-server.jar com.tle.core.equella.runner.EQUELLAServer
