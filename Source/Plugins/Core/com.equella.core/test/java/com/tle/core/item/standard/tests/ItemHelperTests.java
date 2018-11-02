@@ -96,7 +96,7 @@ public class ItemHelperTests
 		@Override
 		public boolean checkRestrictedAttachment(Item bean, Attachment attachment)
 		{
-			return true;
+			return false;
 		}
 	};
 
