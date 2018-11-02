@@ -68,7 +68,7 @@ public class AttachmentHelper extends AbstractHelper
 		for( Attachment attachment : bean.getAttachmentsUnmodifiable() )
 		{
 			//itemResolver will only be null for unit tests
-			if( security.checkRestrictedAttachment(bean, attachment) )
+			if( !security.checkRestrictedAttachment(bean, attachment) )
 			{
 				if( attachment.getAttachmentType() != AttachmentType.IMS )
 				{
