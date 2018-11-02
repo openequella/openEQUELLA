@@ -24,9 +24,7 @@ import com.tle.core.settings.SettingsDB
 import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.auto._
 
-case class FacetSetting(name: String, path: String)
-
-case class NewUISettings(enabled: Boolean, newSearch: Boolean = false, facets: Iterable[FacetSetting] = Iterable.empty)
+case class NewUISettings(enabled: Boolean, newSearch: Boolean = false)
 
 case class UISettings(newUI: NewUISettings)
 

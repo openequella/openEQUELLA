@@ -20,6 +20,7 @@ import cats.data.{Kleisli, OptionT}
 import cats.syntax.applicative._
 import com.tle.core.db.tables.Setting
 import com.tle.core.db.{DB, DBSchema}
+import com.tle.core.security.AclChecks
 import io.circe.parser._
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder}
@@ -29,6 +30,8 @@ import io.doolse.simpledba.syntax._
 
 
 object SettingsDB {
+
+  def ensureEditSystem[A](db: DB[A]): DB[A] = AclChecks.ensureOnePriv("EDIT_SYSTEM_SETTINGS")(db)
 
   def q = DBSchema.queries.settingsQueries
 

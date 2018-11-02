@@ -44,7 +44,9 @@ class SearchConfigApi {
   @ApiOperation(value = "Edit search configuration")
   def editConfig(@PathParam("uuid") configId: UUID, config: SearchConfig): Response = {
     ApiHelper.runAndBuild {
-      SearchConfigDB.writeConfig(configId, config).map(_ => Response.ok())
+      SettingsDB.ensureEditSystem {
+        SearchConfigDB.writeConfig(configId, config).map(_ => Response.ok())
+      }
     }
   }
 
@@ -54,7 +56,9 @@ class SearchConfigApi {
   def newConfig(config: SearchConfig): Response = {
     val newID = UUID.randomUUID()
     ApiHelper.runAndBuild {
-      SearchConfigDB.writeConfig(newID, config).map(_ => Response.ok().header("X-UUID", newID))
+      SettingsDB.ensureEditSystem {
+        SearchConfigDB.writeConfig(newID, config).map(_ => Response.ok().header("X-UUID", newID))
+      }
     }
   }
 
@@ -84,7 +88,10 @@ class SearchConfigApi {
   @PUT
   @Path("page/{pagename}")
   @ApiOperation("Edit page configuration association")
-  def editPageConfig(@PathParam("pagename") pagename: String, config: SearchPageConfig): Response = ApiHelper.runAndBuild {
-    SearchConfigDB.writePageConfig(pagename, config).map(_ => Response.ok())
-  }
+  def editPageConfig(@PathParam("pagename") pagename: String, config: SearchPageConfig): Response =
+    ApiHelper.runAndBuild {
+      SettingsDB.ensureEditSystem {
+        SearchConfigDB.writePageConfig(pagename, config).map(_ => Response.ok())
+      }
+    }
 }
