@@ -40,7 +40,7 @@ main = do
   l <- location w
   path <- pathname l
   let 
-    baseStripped p = fromMaybe p $ stripPrefix (Pattern bp) p
+    baseStripped p = fromMaybe "" $ stripPrefix (Pattern bp) p
     pagePath = baseStripped path
     parseIt = matchRoute <<< baseStripped
     
