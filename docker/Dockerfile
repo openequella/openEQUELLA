@@ -1,18 +1,32 @@
 FROM openjdk:8-jdk as baseequella
 
+# Install needed tools to install and run openEQUELLA
+# Clean up the apt cache afterwards.
+
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 
 RUN \
   apt-get update \
-  && apt-get install -y libav-tools imagemagick curl unzip
+  && apt-get install -y \
+    curl \
+    imagemagick \
+    libav-tools \
+    unzip \
+  && rm -rf /var/lib/apt/lists/*
 
 FROM baseequella as installer
 
-COPY ["equella-installer-6.7.zip","defaults.xml", "./"]
+# Install openEQUELLA
 
-RUN unzip equella-installer-6.7.zip \
-    && java -jar equella-installer-6.7/enterprise-install.jar --unsupported defaults.xml
+ARG OEQ_INSTALL_FILE
+ARG OEQ_INSTALL_ZIP_ROOT_DIR
+
+COPY ["$OEQ_INSTALL_FILE","defaults.xml", "./"]
+
+RUN unzip $OEQ_INSTALL_FILE \
+    && mv $OEQ_INSTALL_ZIP_ROOT_DIR /equella-installer \
+    && java -jar /equella-installer/enterprise-install.jar --unsupported defaults.xml
 
 FROM baseequella as equella
 
@@ -27,6 +41,9 @@ USER equella
 VOLUME ["/home/equella/equella/filestore/", "/home/equella/equella/freetext/"]
 
 COPY learningedge-log4j.properties learningedge-config/
+COPY envvars.sh ./
+
+# At this point openEQUELLA is installed.
 
 EXPOSE 8080
 
@@ -34,5 +51,24 @@ ARG MEM=512
 ARG JVM_ARGS
 ENV MEM $MEM
 ENV JVM_ARGS $JVM_ARGS
+
+# Properties in the optional-config, mandatory-config, and hibernate files can be 
+# overridden by oEQ logic via environment variables by changing '.' to '_', 
+# uppercasing, and prepending "EQ_" to the name.
+
+ARG EQ_HTTP_PORT=8080
+ENV EQ_HTTP_PORT $EQ_HTTP_PORT
+
+ARG EQ_ADMIN_URL=http://localhost:8080/admin/
+ENV EQ_ADMIN_URL $EQ_ADMIN_URL
+
+ARG EQ_HIBERNATE_CONNECTION_URL=jdbc:postgresql://localhost:5432/equella
+ENV EQ_HIBERNATE_CONNECTION_URL $EQ_HIBERNATE_CONNECTION_URL
+
+ARG EQ_HIBERNATE_CONNECTION_USERNAME=equellauser
+ENV EQ_HIBERNATE_CONNECTION_USERNAME $EQ_HIBERNATE_CONNECTION_USERNAME
+
+ARG EQ_HIBERNATE_CONNECTION_PASSWORD=password
+ENV EQ_HIBERNATE_CONNECTION_PASSWORD $EQ_HIBERNATE_CONNECTION_PASSWORD
 
 CMD java -Xmx${MEM}m $JVM_ARGS -cp learningedge-config:server/equella-server.jar com.tle.core.equella.runner.EQUELLAServer
