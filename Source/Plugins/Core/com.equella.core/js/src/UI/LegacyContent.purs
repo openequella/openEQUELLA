@@ -56,7 +56,7 @@ foreign import setupLegacyHooks_ :: {
     updateForm :: EffectFn1 {state :: Object (Array String), partial :: Boolean} Unit
   } -> Effect Unit 
 
-divWithHtml :: {divProps :: Array Props, html :: String, script :: Maybe String, afterHtml :: Maybe (Effect Unit)} -> ReactElement
+divWithHtml :: {divProps :: Array Props, html :: String, script :: Maybe String, afterHtml :: Maybe (Effect Unit), contentId::String} -> ReactElement
 divWithHtml = unsafeCreateLeafElement $ component "JQueryDiv" $ \this -> do
   domNode <- Ref.new Nothing
   let
@@ -69,9 +69,9 @@ divWithHtml = unsafeCreateLeafElement $ component "JQueryDiv" $ \this -> do
     componentDidMount: updateHtml,
     componentWillUnmount: withRef domNode clearInnerHtml,
     componentDidUpdate: \_ _  _ -> updateHtml,
-    shouldComponentUpdate: \{html} _ -> do 
-      {html:newhtml} <- R.getProps this
-      pure $ html /= newhtml
+    shouldComponentUpdate: \{contentId} _ -> do 
+      {contentId:newcontentId} <- R.getProps this
+      pure $ contentId /= newcontentId
   }
 
 resolveUrl :: String -> String 

@@ -33,6 +33,7 @@ import OEQ.MainUI.Routes (LegacyURI(..), matchRoute, pushRoute)
 import OEQ.MainUI.Template (refreshUser, template', templateDefaults)
 import OEQ.UI.Common (scrollWindowToTop, withCurrentTarget)
 import OEQ.UI.LegacyContent (FormUpdate, divWithHtml, setupLegacyHooks, updateIncludes, updateStylesheets, writeForm)
+import OEQ.Utils.UUID (newUUID)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (div, text)
 import React.DOM as D
@@ -46,6 +47,7 @@ type PageContent = {
   html:: Object String,
   script :: String,
   title :: String, 
+  contentId :: String,
   fullscreenMode :: String, 
   menuMode :: String,
   hideAppBar :: Boolean, 
@@ -74,14 +76,25 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
     d = eval >>> affAction this
   
     render {state:s@{content,errored}, props:{classes}} = case content of 
-        Just (c@{html,title,script, afterHtml}) -> 
+        Just (c@{contentId, html,title,script, afterHtml}) -> 
           let extraClass = case c.fullscreenMode of 
                 "YES" -> []
                 "YES_WITH_TOOLBAR" -> []
                 _ -> case c.menuMode of
                   "HIDDEN" -> [] 
                   _ -> [classes.withPadding]
-              jqueryDiv f h = divWithHtml $ f {divProps:[], script:Nothing, afterHtml: Nothing, html:h}
+              options html = [ 
+                  iconButton {color: inherit, onClick: withCurrentTarget $ d <<< OptionsAnchor <<< Just} [ icon_ [text "more_vert"] ],
+                  popover { open: isJust s.optionsAnchor
+                      , marginThreshold: 64
+                      , anchorOrigin: {vertical:"bottom",horizontal:"left"}
+                      , onClose: d $ OptionsAnchor Nothing
+                      , anchorEl: toNullable s.optionsAnchor }
+                  [ 
+                      divWithHtml {contentId, divProps:[DP.className $ classes.screenOptions], html, script:Nothing, afterHtml: Nothing}
+                  ]
+              ]
+              jqueryDiv f h = divWithHtml $ f {contentId, divProps:[], script:Nothing, afterHtml: Nothing, html:h}
               jqueryDiv_ = jqueryDiv identity
               actualContent = D.div [DP.className $ joinWith " " $ ["content"] <> extraClass] $ catMaybes [ 
                   (jqueryDiv (_ {divProps = [_id "breadcrumbs"]}) <$> lookup "crumbs" html),
@@ -109,19 +122,6 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
           ]
         ]
         Nothing -> D.div [ DP.className classes.progress ] [ circularProgress_ [] ]
-      where
-      options html = [ 
-          iconButton {color: inherit, onClick: withCurrentTarget $ d <<< OptionsAnchor <<< Just} [ icon_ [text "more_vert"] ],
-          popover { open: isJust s.optionsAnchor
-              , marginThreshold: 64
-              , anchorOrigin: {vertical:"bottom",horizontal:"left"}
-              , onClose: d $ OptionsAnchor Nothing
-              , anchorEl: toNullable s.optionsAnchor }
-          [ 
-              divWithHtml {divProps:[DP.className $ classes.screenOptions], html, script:Nothing, afterHtml: Nothing}
-          ]
-      ]
-
 
     submitWithPath fullError path opts = do 
         (lift $ submitRequest path opts) >>= case _ of 
@@ -162,8 +162,9 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
     updateContent (LegacyContent lc@{css, js, state, html,script, title, fullscreenMode, menuMode, hideAppBar} userUpdated) = do 
       doRefresh userUpdated
       deleteSheets <- lift $ updateIncludes true css js
+      contentId <- liftEffect newUUID
       modifyState \s -> s {noForm = lc.noForm,
-        content = Just {html, script, title, fullscreenMode, menuMode, hideAppBar, afterHtml: deleteSheets}, state = state}
+        content = Just {contentId,  html, script, title, fullscreenMode, menuMode, hideAppBar, afterHtml: deleteSheets}, state = state}
 
   pure {
     state:{ 

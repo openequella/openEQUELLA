@@ -55,7 +55,7 @@ function setupToolbar($available, $currents, $container,initialDirty, ajaxCallba
 			{
 				var buttonId = $button.attr('id');
 				
-				ajaxCallbacks.movedCallback(null, toRow, toIndex, fromRow, fromIndex, buttonId);
+				ajaxCallbacks.movedCallback(function(){}, toRow, toIndex, fromRow, fromIndex, buttonId);
 			}
 			$button.data('fromRow', null);
 			$button.data('fromIndex', null);
