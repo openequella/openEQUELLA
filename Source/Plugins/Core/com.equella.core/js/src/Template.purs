@@ -200,7 +200,8 @@ templateClass = withStyles ourStyles (createLifecycleComponent lifecycle initial
         position: "fixed"
       },
       allQuery { 
-        width: drawerWidth 
+        width: drawerWidth, 
+        zIndex: 1100
       }
     ],
     tabs: {
