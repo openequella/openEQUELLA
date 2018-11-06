@@ -39,6 +39,7 @@ import com.tle.web.api.institution.AclResource;
 import com.tle.web.api.institution.GdprResource;
 import com.tle.web.api.item.SelectionApi;
 import com.tle.web.api.language.LanguageResource;
+import com.tle.web.api.searches.SearchConfigApi;
 import com.tle.web.api.users.UserQueryResource;
 import com.tle.web.remoting.rest.resource.InstitutionSecurityFilter;
 import com.tle.web.api.settings.SettingsResource;
@@ -130,6 +131,8 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 		classes.add(LegacyContentApi.class);
 		registry.addSingletonResource(new SelectionApi());
 		classes.add(SelectionApi.class);
+		registry.addSingletonResource(new SearchConfigApi());
+		classes.add(SearchConfigApi.class);
 
 		ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
 		providerFactory.registerProvider(SwaggerSerializers.class);

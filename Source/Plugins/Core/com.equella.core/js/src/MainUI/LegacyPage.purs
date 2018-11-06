@@ -10,6 +10,7 @@ import Data.Nullable (toNullable)
 import Data.String (joinWith)
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer, saveRef, withRef)
+import Effect (Effect)
 import Effect.Aff (runAff_)
 import Effect.Class (liftEffect)
 import Effect.Ref (new)
@@ -32,6 +33,7 @@ import OEQ.MainUI.Routes (LegacyURI(..), matchRoute, pushRoute)
 import OEQ.MainUI.Template (refreshUser, template', templateDefaults)
 import OEQ.UI.Common (scrollWindowToTop, withCurrentTarget)
 import OEQ.UI.LegacyContent (FormUpdate, divWithHtml, setupLegacyHooks, updateIncludes, updateStylesheets, writeForm)
+import OEQ.Utils.UUID (newUUID)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (div, text)
 import React.DOM as D
@@ -45,9 +47,11 @@ type PageContent = {
   html:: Object String,
   script :: String,
   title :: String, 
+  contentId :: String,
   fullscreenMode :: String, 
   menuMode :: String,
-  hideAppBar :: Boolean
+  hideAppBar :: Boolean, 
+  afterHtml :: Effect Unit
 }
 
 data Command = OptionsAnchor (Maybe HTMLElement) 
@@ -72,18 +76,30 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
     d = eval >>> affAction this
   
     render {state:s@{content,errored}, props:{classes}} = case content of 
-        Just (c@{html,title,script}) -> 
+        Just (c@{contentId, html,title,script, afterHtml}) -> 
           let extraClass = case c.fullscreenMode of 
                 "YES" -> []
                 "YES_WITH_TOOLBAR" -> []
                 _ -> case c.menuMode of
                   "HIDDEN" -> [] 
                   _ -> [classes.withPadding]
-              
+              options html = [ 
+                  iconButton {color: inherit, onClick: withCurrentTarget $ d <<< OptionsAnchor <<< Just} [ icon_ [text "more_vert"] ],
+                  popover { open: isJust s.optionsAnchor
+                      , marginThreshold: 64
+                      , anchorOrigin: {vertical:"bottom",horizontal:"left"}
+                      , onClose: d $ OptionsAnchor Nothing
+                      , anchorEl: toNullable s.optionsAnchor }
+                  [ 
+                      divWithHtml {contentId, divProps:[DP.className $ classes.screenOptions], html, script:Nothing, afterHtml: Nothing}
+                  ]
+              ]
+              jqueryDiv f h = divWithHtml $ f {contentId, divProps:[], script:Nothing, afterHtml: Nothing, html:h}
+              jqueryDiv_ = jqueryDiv identity
               actualContent = D.div [DP.className $ joinWith " " $ ["content"] <> extraClass] $ catMaybes [ 
-                  (divWithHtml <<< {divProps:[_id "breadcrumbs"], script:Nothing, html: _} <$> lookup "crumbs" html),
-                  (divWithHtml <<< {divProps:[], script:Nothing, html: _} <$> lookup "upperbody" html),
-                  (divWithHtml <<< {divProps:[], script:Just script, html: _} <$> lookup "body" html) ]
+                  (jqueryDiv (_ {divProps = [_id "breadcrumbs"]}) <$> lookup "crumbs" html),
+                  jqueryDiv_  <$> lookup "upperbody" html,
+                  (jqueryDiv _ {script = Just script, afterHtml = Just afterHtml}) <$> lookup "body" html ]
               mainContent = if s.noForm 
                 then actualContent
                 else writeForm s.state actualContent
@@ -106,19 +122,6 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
           ]
         ]
         Nothing -> D.div [ DP.className classes.progress ] [ circularProgress_ [] ]
-      where
-      options html = [ 
-          iconButton {color: inherit, onClick: withCurrentTarget $ d <<< OptionsAnchor <<< Just} [ icon_ [text "more_vert"] ],
-          popover { open: isJust s.optionsAnchor
-              , marginThreshold: 64
-              , anchorOrigin: {vertical:"bottom",horizontal:"left"}
-              , onClose: d $ OptionsAnchor Nothing
-              , anchorEl: toNullable s.optionsAnchor }
-          [ 
-              divWithHtml {divProps:[DP.className $ classes.screenOptions], html, script:Nothing}
-          ]
-      ]
-
 
     submitWithPath fullError path opts = do 
         (lift $ submitRequest path opts) >>= case _ of 
@@ -158,9 +161,10 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
       liftEffect $ maybe (pure unit) pushRoute $ matchRoute redir
     updateContent (LegacyContent lc@{css, js, state, html,script, title, fullscreenMode, menuMode, hideAppBar} userUpdated) = do 
       doRefresh userUpdated
-      lift $ updateIncludes true css js
+      deleteSheets <- lift $ updateIncludes true css js
+      contentId <- liftEffect newUUID
       modifyState \s -> s {noForm = lc.noForm,
-        content = Just {html, script, title, fullscreenMode, menuMode, hideAppBar}, state = state}
+        content = Just {contentId,  html, script, title, fullscreenMode, menuMode, hideAppBar, afterHtml: deleteSheets}, state = state}
 
   pure {
     state:{ 
@@ -176,7 +180,9 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
       setupLegacyHooks (d <<< Submit) (d <<< UpdateForm)
       d $ LoadPage,
     componentDidUpdate: \{page} _ _ -> d $ Updated page,
-    componentWillUnmount: runAff_ (const $ pure unit) $ updateStylesheets true []
+    componentWillUnmount: runAff_ (const $ pure unit) $ do 
+      deleteSheets <- updateStylesheets true []
+      liftEffect deleteSheets
   }
 
   where

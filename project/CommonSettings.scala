@@ -43,7 +43,7 @@ object CommonSettings extends AutoPlugin {
     scalacOptions += "-Ypartial-unification",
     addCompilerPlugin("io.tryp" % "splain" % "0.3.1" cross CrossVersion.patch),
     scalacOptions ++= Seq("-P:splain:implicits:true", "-P:splain:color:false"),
-    javacOptions ++= Seq("-source", "1.8"),
+    javacOptions ++= Seq("-source", "1.8", "-target", "8"),
     compileOrder := CompileOrder.Mixed,
     headerLicense := Some(HeaderLicense.ALv2("2017", "Apereo")),
     resolvers ++= Seq(

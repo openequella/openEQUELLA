@@ -3,7 +3,7 @@
     "browserify": "yarn install && browserify index.js -o target/bundle.js"
   },
   "dependencies": {
-    "swagger-ui": "^3.10.0"
+    "swagger-ui": "^3.19.3"
   },
   "license": "Apache-2.0",
   "devDependencies": {

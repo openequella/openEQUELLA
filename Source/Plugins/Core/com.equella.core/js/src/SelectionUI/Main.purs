@@ -34,6 +34,14 @@ import OEQ.Data.Selection (SelectionData, decodeSelection, findDefaultFolder)
 import OEQ.Environment (basePath, startHearbeat)
 import OEQ.MainUI.Routes (globalNav)
 import OEQ.MainUI.SearchPage (searchStrings)
+import OEQ.Search.ItemResult (ItemSelection, Result(..), itemResultOptions)
+import OEQ.Search.OrderControl (orderControl)
+import OEQ.Search.OwnerControl (ownerControl)
+import OEQ.Search.ResultDisplay (renderResults)
+import OEQ.Search.SearchControl (Placement(..), SearchControl)
+import OEQ.Search.SearchLayout (searchLayout)
+import OEQ.Search.SearchQuery (blankQuery)
+import OEQ.Search.WithinLastControl (withinLastControl)
 import OEQ.SelectionUI.CourseStructure (courseStructure)
 import OEQ.SelectionUI.ReturnResult (addSelection, callReturn, removeSelection)
 import OEQ.SelectionUI.Routes (SelectionPage(..), SelectionRoute(..), SessionParams, matchSelection, selectionClicker, withPage)
@@ -50,13 +58,6 @@ import React.DOM as RD
 import React.DOM.Dynamic (div')
 import React.DOM.Props (key)
 import Routing.PushState (matchesWith)
-import Search.ItemResult (ItemSelection, Result(..), itemResultOptions)
-import Search.OrderControl (orderControl)
-import Search.OwnerControl (ownerControl)
-import Search.ResultDisplay (renderResults)
-import Search.SearchControl (Placement(..), SearchControl)
-import Search.SearchLayout (searchLayout)
-import Search.WithinLastControl (withinLastControl)
 import Web.HTML (window)
 import Web.HTML.Location (pathname)
 import Web.HTML.Window (location)
@@ -84,7 +85,7 @@ type State = {
 
 selectSearch :: {sessionParams :: SessionParams, selection::SelectionData} -> ReactElement
 selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSearch" $ \this -> do 
-  oc <- ownerControl
+  oc <- ownerControl Filters
   -- fc <- facetControl $ FacetSetting {name:"Name", path:"/item/name"}
   let 
     d = eval >>> affAction this
@@ -108,7 +109,7 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
       {selectedFolder,selections} <- R.getState this
       pure { chips:[], render: [Tuple Selections $ renderStructure selection {selectedFolder,selections}] }
 
-    searchControls = [orderControl, oc, withinLastControl, 
+    searchControls = [orderControl Filters, oc, withinLastControl Filters, 
       renderResults $ do 
         {route} <- R.getState this
         pure $ \r@Result {uuid,version} -> 
@@ -131,7 +132,7 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
           ],
           content 
         ] <> renderError s
-        in searchLayout {searchControls, strings: searchStrings, renderTemplate}
+        in searchLayout {searchControls, initialQuery:blankQuery, strings: searchStrings, renderTemplate}
       ViewItem uuid version -> rootTag classes.root $ [
           appBar {position: sticky} [
             toolbar_ [

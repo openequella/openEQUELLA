@@ -6,6 +6,10 @@ exports.setInnerHtml = function (props) {
         {
           window.eval(props.script);
         }
+        if (props.afterHtml)
+        {
+          props.afterHtml();
+        }
     }
 }
 

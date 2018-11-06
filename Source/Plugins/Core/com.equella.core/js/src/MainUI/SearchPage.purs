@@ -3,61 +3,64 @@ module OEQ.MainUI.SearchPage where
 import Prelude hiding (div)
 
 import Control.Monad.Trans.Class (lift)
-import Data.Argonaut (decodeJson)
+import Data.Array (mapMaybe)
 import Data.Either (either)
+import Data.Foldable (fold)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (toNullable)
-import Data.Traversable (traverse)
+import Data.Traversable (foldr, sequence, traverse)
+import Data.Tuple (Tuple(..))
+import Debug.Trace (traceM)
 import Dispatcher (affAction)
 import Dispatcher.React (modifyState, stateRenderer)
 import Effect.Class (liftEffect)
-import Effect.Class.Console (log)
+import Foreign.Object (toArrayWithKey)
+import Foreign.Object as Object
 import MaterialUI.Styles (withStyles)
-import Network.HTTP.Affjax (get)
-import Network.HTTP.Affjax.Response (json)
-import OEQ.Data.Settings (NewUISettings(..), UISettings(..))
-import OEQ.Environment (baseUrl, prepLangStrings)
+import OEQ.API.Searches (getPageConfig)
+import OEQ.Environment (prepLangStrings)
 import OEQ.MainUI.Routes (routeHref, oldViewItemRoute)
 import OEQ.MainUI.Template (template', templateDefaults)
+import OEQ.Search.Controls (controlFromConfig, queryFromConfig)
+import OEQ.Search.ItemResult (Result(..), itemResultOptions)
+import OEQ.Search.ResultDisplay (renderResults)
+import OEQ.Search.SearchControl (SearchControl, placementFromString)
+import OEQ.Search.SearchLayout (searchLayout)
+import OEQ.Search.SearchQuery (Query, blankQuery)
 import React (ReactElement, unsafeCreateLeafElement)
 import React as R
-import Search.FacetControl (facetControl)
-import Search.ItemResult (Result(..), itemResultOptions)
-import Search.OrderControl (orderControl)
-import Search.OwnerControl (ownerControl)
-import Search.ResultDisplay (renderResults)
-import Search.SearchControl (SearchControl)
-import Search.SearchLayout (searchLayout)
-import Search.WithinLastControl (withinLastControl)
 
 type State = {
-  facets :: Array SearchControl
+  config :: Maybe (Tuple Query (Array SearchControl))
 }
+
 data Command = InitSearch 
 
 initialState :: State
 initialState = {
-    facets: []
+    config: Nothing
 }
 
 searchPage :: ReactElement
 searchPage = flip unsafeCreateLeafElement {} $ withStyles styles $ R.component "SearchPage" $ \this -> do
-  oc <- ownerControl
   let
-    d = eval >>> affAction this
-    searchControls = [orderControl, oc, withinLastControl, renderResults $ pure \r@Result {uuid,version} -> 
-      itemResultOptions (routeHref $ oldViewItemRoute uuid version) r]
     coreString = prepLangStrings coreStrings
+    d = eval >>> affAction this
 
     renderTemplate {queryBar,content} = template' (templateDefaults "") 
              {titleExtra = toNullable $ Just $ queryBar } [ content ]
-    render {facets} = searchLayout {searchControls: searchControls <> facets, strings:searchStrings, renderTemplate }
+    render {config: Just (Tuple query searchControls)} = searchLayout {searchControls, initialQuery: query, strings:searchStrings, renderTemplate }
+    render _ = template' (templateDefaults "") [ ]
     eval = case _ of 
       InitSearch -> do
-        result <- lift $ get json $ baseUrl <> "api/settings/ui"
-        either (lift <<< log) (\(UISettings {newUI:(NewUISettings {facets})}) -> do 
-          controls <- liftEffect $ traverse facetControl facets
-          modifyState _ {facets = controls}) $ decodeJson result.response
+        sc <- lift $ getPageConfig "search"
+        sc # either traceM \{sections} -> do 
+            let query = foldr queryFromConfig blankQuery $ join $ Object.values sections
+                controlsForSection p configs = sequence $ mapMaybe (controlFromConfig $ placementFromString p) configs
+            configedControls <- liftEffect $ fold $ toArrayWithKey controlsForSection sections
+            modifyState _ {config = Just $ Tuple query $ configedControls <> [
+              renderResults $ pure \r@Result {uuid,version} -> itemResultOptions (routeHref $ oldViewItemRoute uuid version) r
+            ]}
   
   pure {render: stateRenderer render this, state:initialState, componentDidMount: d InitSearch}
   where 
