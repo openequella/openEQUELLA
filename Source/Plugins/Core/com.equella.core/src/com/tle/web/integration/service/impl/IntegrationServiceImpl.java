@@ -393,13 +393,11 @@ public class IntegrationServiceImpl extends AbstractSectionFilter implements Int
 			forwardInfo = selectionService.getSelectionSessionForward(info, session, selectableObj);
 		}
 		String id = setupSessionData(forwardInfo, data);
-		if (RenderNewTemplate.isNewLayout(info))
-		{
-
-			info.forwardToUrl(NewSelectionPage.selectionUrl(forwardInfo, id));
-			return;
-		}
-
+//		if (RenderNewTemplate.isNewLayout(info))
+//		{
+//			info.forwardToUrl(NewSelectionPage.selectionUrl(forwardInfo, id));
+//			return;
+//		}
 		integration.forward(info, data, forwardInfo);
 		//What is this?? Not required
 		//info.forwardAsBookmark(forwardInfo);

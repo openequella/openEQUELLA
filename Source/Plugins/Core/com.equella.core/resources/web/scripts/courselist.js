@@ -158,7 +158,7 @@ var CourseList = {
 						$t.addClass('selected');
 						if (clickFolderCallback)
 						{
-							clickFolderCallback();
+							clickFolderCallback(function(){});
 						}
 					}		
 			);

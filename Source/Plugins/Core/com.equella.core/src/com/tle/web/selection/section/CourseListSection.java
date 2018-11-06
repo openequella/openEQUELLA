@@ -273,7 +273,6 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
 		cancelButton.addClickStatements(events.getNamedHandler("cancel"));
 
 		versionDialog.setOkCallback(new ReloadFunction(false));
-		versionDialog.setCancelCallback(new ReloadFunction(false));
 	}
 
 	public SectionInfo createSearchForward(SectionInfo info)
