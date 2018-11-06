@@ -19,8 +19,8 @@ FROM baseequella as installer
 
 # Install openEQUELLA
 
-ARG OEQ_INSTALL_FILE
-ARG OEQ_INSTALL_ZIP_ROOT_DIR
+ARG OEQ_INSTALL_FILE=equella-installer-6.7.zip
+ARG OEQ_INSTALL_ZIP_ROOT_DIR=equella-installer-6.7
 
 COPY ["$OEQ_INSTALL_FILE","defaults.xml", "./"]
 
