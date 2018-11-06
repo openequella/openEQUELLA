@@ -20,6 +20,8 @@ foreign import appBarQueryClass ::  ReactClass {query :: String, onChange :: Eff
 
 foreign import courseSelectClass :: forall a. ReactClass a
 
+foreign import themePageClass :: forall a. ReactClass a
+
 coursesPage :: ReactElement
 coursesPage = unsafeCreateLeafElement searchCourses {store:store, bridge: tsBridge}
 

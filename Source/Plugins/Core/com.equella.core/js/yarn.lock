@@ -120,6 +120,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-color@^2.13.6":
+  version "2.13.6"
+  resolved "https://registry.yarnpkg.com/@types/react-color/-/react-color-2.13.6.tgz#8ba9c600fbc4c6c43037d3a5eeeff77c0db995d7"
+  integrity sha512-c9DgSaSsSm4xR3FLoYAicaS1m93Jg4utkz04B02/9gq4hm6pcbeoCDv26jQAL5KKpAnaEI0LqY5CdRgA2RCAbQ==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-dom@^16.0.7":
   version "16.0.7"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.0.7.tgz#54d0f867a76b90597e8432030d297982f25c20ba"

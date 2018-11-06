@@ -10,7 +10,6 @@ import Effect.Ref (Ref)
 import Effect.Ref as Ref
 import Effect.Uncurried (EffectFn1, EffectFn2, mkEffectFn1, mkEffectFn2)
 import ExtUI.MaterialUIPicker.MuiPickersUtilsProvider (luxonUtils, muiPickersUtilsProvider)
-import MaterialUI.Colors (blue, orange)
 import MaterialUI.CssBaseline (cssBaseline', cssBaseline_)
 import MaterialUI.Styles (createMuiTheme, muiThemeProvider)
 import MaterialUI.Theme (Theme)
@@ -29,19 +28,41 @@ import Web.HTML.HTMLDocument (toNonElementParentNode)
 import Web.HTML.HTMLDocument as HTMLDoc
 import Web.HTML.Window (document)
 
+foreign import themeSettings :: {primaryColor :: String, secondaryColor :: String,
+                                backgroundColor :: String,
+                                menuItemColor :: String, menuItemTextColor :: String, fontSize :: Int}
+
+
 type ClickableHref = {href::String, onClick :: EffectFn1 SyntheticMouseEvent Unit}
 
 ourTheme :: Theme
-ourTheme = createMuiTheme {
-  palette: {
-    primary: blue, 
-    secondary: orange
-  }, 
-  typography: {
-    fontSize: 14
-  }
-}
-
+ourTheme =
+  createMuiTheme  {
+                    palette:
+                    {
+                      primary:
+                      {
+                        main: themeSettings.primaryColor
+                      },
+                      secondary:
+                      {
+                        main: themeSettings.secondaryColor
+                      },
+                      background:
+                      {
+                        default: themeSettings.backgroundColor,
+                        paper: themeSettings.menuItemColor
+                      }
+                    },
+                    typography:
+                    {
+                      fontSize: themeSettings.fontSize,
+                      subheading:
+                      {
+                        color: themeSettings.menuItemTextColor
+                      }
+                    }
+                  }
 rootTag :: String -> Array ReactElement -> ReactElement
 rootTag rootClass content = 
   muiPickersUtilsProvider luxonUtils [
@@ -49,7 +70,6 @@ rootTag rootClass content =
         cssBaseline' {}
       ] <> content
   ]
-
 renderReact :: String -> ReactElement -> Effect Unit
 renderReact divId main = do
   void (elm' >>= render (muiThemeProvider {theme:ourTheme} [ main ]))

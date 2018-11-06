@@ -16,7 +16,8 @@
     "build:uploadlist": "node build-bundle.js --lib Uploads.UploadList uploadlist.js",
     "dev:uploadlist": "node build-bundle.js --dev --lib Uploads.UploadList uploadlist.js",
     "build:langbundle": "cross-env-shell NODE_PATH=target/ts \"pulp build -O --to output/genlang.js -m Tools.GenLangStrings && node output/genlang.js > ${npm_package_config_buildlang}/jsbundle.json\"",
-    "dev:langbundle": "cross-env-shell NODE_PATH=target/ts \"pulp build -O --to output/genlang.js -m Tools.GenLangStrings && node output/genlang.js > ${npm_package_config_devlang}/jsbundle.json\""
+    "dev:langbundle": "cross-env-shell NODE_PATH=target/ts \"pulp build -O --to output/genlang.js -m Tools.GenLangStrings && node output/genlang.js > ${npm_package_config_devlang}/jsbundle.json\"",
+    "watchts": "tsc -w"
   },
   "dependencies": {
     "@material-ui/core": "^3.1.0",
@@ -24,6 +25,7 @@
     "@material-ui/lab": "^3.0.0-alpha.15",
     "@types/luxon": "^1.2.2",
     "@types/react-autosuggest": "^9.3.5",
+    "@types/react-color": "^2.13.6",
     "@types/react-redux": "^5.0.7",
     "@types/react-swipeable-views": "^0.12.1",
     "@types/redux-logger": "^3.0.5",
