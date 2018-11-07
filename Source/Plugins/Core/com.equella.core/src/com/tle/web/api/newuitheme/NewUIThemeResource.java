@@ -3,9 +3,7 @@ package com.tle.web.api.newuitheme;
 import com.tle.web.api.newuitheme.impl.NewUITheme;
 import io.swagger.annotations.Api;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 @Path("themeresource/")
@@ -18,4 +16,8 @@ public interface NewUIThemeResource {
 	@Path("theme.js")
 	@Produces("application/javascript")
 	Response retrieveThemeInfo();
+	@PUT
+	@Path("/update")
+//	@Consumes("application/json")
+	Response updateThemeInfo(String themeString);
 }

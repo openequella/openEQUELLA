@@ -8,9 +8,7 @@ import com.tle.web.api.newuitheme.NewUIThemeResource;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import com.tle.core.settings.service.ConfigurationService;
@@ -54,14 +52,6 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 			setTheme(new NewUITheme());
 			System.out.println("No theme information found in database. Setting default theme...");
 		}
-//		configurationService.setProperty("Theme",
-//			"{\"primaryColor\":\"#000000\"," +
-//				"\"secondaryColor\":\"#FF0000\", " +
-//				"\"backgroundColor\":\"#1f1fAA\", " +
-//				"\"menuItemColor\":\"#AAAABB\", " +
-//				"\"menuItemTextColor\": \"#BF0000\", " +
-//				"\"fontSize\": 14}");
-
 		try {
 			theme = objectMapper.readValue(configurationService.getProperty("Theme"), NewUITheme.class);
 		} catch (IOException e) {
@@ -69,5 +59,13 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 		}
 		return Response.ok("var themeSettings = " + themeToString(theme)).build();
 	}
+	@PUT
+	@Path("/update")
+//	@Consumes("application/json")
+	public Response updateThemeInfo(String themeString){
+		setTheme(themeString);
+		return Response.ok().build();
+	}
+
 
 }
