@@ -1,7 +1,6 @@
 import Path.rebase
 import Path.flat
 
-import scala.io.Source
 import _root_.io.circe.parser._
 
 langStrings := {

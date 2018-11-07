@@ -20,6 +20,7 @@ object CommonSettings extends AutoPlugin {
     lazy val writeSourceZip = taskKey[File]("Write out a zip containing all sources")
     lazy val langStrings = taskKey[Seq[LangStrings]]("Fully qualified language strings")
     lazy val writeLanguagePack = taskKey[File]("Write the default language pack")
+    lazy val writeScriptingJavadoc = taskKey[File]("Write the scripting javadoc")
     lazy val mergeJPF = inputKey[Unit]("Merge all")
     lazy val buildJS = taskKey[Seq[File]]("Build JS resources")
 

@@ -1,10 +1,10 @@
+
 import java.util.Properties
 
-import complete.DefaultParsers._
 import com.typesafe.sbt.license.LicenseReport
-
-import scala.collection.JavaConverters._
 import sbt.io.Using
+import Path.rebase
+import scala.collection.JavaConverters._
 
 lazy val learningedge_config = project in file("Dev/learningedge-config")
 
@@ -130,6 +130,9 @@ val pluginAndLibs = Def.task {
 }
 
 mergeJPF := {
+
+  import complete.DefaultParsers._
+
   val adminConsole = false
   val args = spaceDelimited("<arg>").parsed
   val _allPluginDirs = pluginAndLibs.all(ScopeFilter(inAggregates(allPlugins, includeRoot = false))).value
@@ -145,3 +148,32 @@ mergeJPF := {
     PluginRefactor.mergePlugins(allPluginDirs, basePlugin, newPlugin, args.tail, adminConsole = adminConsole)
   }
 }
+
+writeScriptingJavadoc := {
+  val javadocDir = (doc in Compile).value 
+  val ver = version.value
+  val outZip = target.value / s"scriptingapi-javadoc-$ver.zip"
+  IO.zip((javadocDir ** "*").pair(rebase(javadocDir, "")), outZip)
+  sLog.value.info(s"Writing ${outZip.absolutePath}")
+  outZip
+}
+
+
+val userBeans : FileFilter = ("GroupBean.java" || "UserBean.java" || "RoleBean.java") && 
+  new SimpleFileFilter(_.getParentFile.getName == "valuebean")
+
+// Globs came from the original ant scripts
+
+def javadocSources(base: File): PathFinder = {
+  (base / "src") ** ("package-info.java" || "*ScriptType.java"
+    || "*ScriptObject.java" || userBeans)
+}
+
+aggregate in (Compile, doc) := false
+sources in (Compile, doc) := {
+  (javadocSources((baseDirectory in LocalProject("com_equella_base")).value)
+    +++ javadocSources((baseDirectory in LocalProject("com_equella_core")).value))
+      .get
+}
+javacOptions in (Compile, doc) := Seq()
+

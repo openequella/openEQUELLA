@@ -11,7 +11,7 @@ phases:
       - setupBuild
   build:
     commands:
-      - sbt -no-colors -Dconfig.file=${HOME}/build.conf test installerZip writeLanguagePack
+      - sbt -no-colors -Dconfig.file=${HOME}/build.conf test installerZip writeLanguagePack writeScriptingJavadoc
   post_build:
     commands:
       - publishBuild
