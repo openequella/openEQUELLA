@@ -1,11 +1,11 @@
-package com.tle.web.api.newUItheme.impl;
+package com.tle.web.api.newuitheme.impl;
 
 public class NewUITheme {
-	private String primaryColor = "2196f3";
-	private String secondaryColor = "ff9800";
-	private String backgroundColor = "fafafa";
-	private String menuItemColor = "ffffff";
-	private String menuItemTextColor = "000000";
+	private String primaryColor = "#2196f3";
+	private String secondaryColor = "#ff9800";
+	private String backgroundColor = "#fafafa";
+	private String menuItemColor = "#ffffff";
+	private String menuItemTextColor = "#000000";
 	private int fontSize = 14;
 
 	public String getPrimaryColor() {

@@ -1,16 +1,18 @@
 import * as React from 'react';
-// import { Bridge } from "../api/bridge";
-// import Radio from '@material-ui/core/Radio';
+import {Bridge} from "../api/bridge";
+import Radio from '@material-ui/core/Radio';
 // import FormLabel from "@material-ui/core/FormLabel/FormLabel";
-// import FormControl from "@material-ui/core/FormControl/FormControl";
-// import RadioGroup from "@material-ui/core/RadioGroup/RadioGroup";
-// import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
+import FormControl from "@material-ui/core/FormControl/FormControl";
+import RadioGroup from "@material-ui/core/RadioGroup/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
 // import CheckBox from "@material-ui/core/Checkbox/Checkbox";
-// import Button from "@material-ui/core/Button/Button";
+import Button from "@material-ui/core/Button/Button";
 // import {createStyles, Theme} from "@material-ui/core";
 // import {WithStyles} from "@material-ui/core/styles";
 // import withStyles from "@material-ui/core/styles/withStyles";
-// import ColorPickerComponent from "./ColorPickerComponent";
+import ColorPickerComponent from "./ColorPickerComponent";
+import Typography from "@material-ui/core/Typography/Typography";
+
 // const styles = (theme : Theme) => createStyles({
 //   container: {
 //     position: 'relative',
@@ -33,53 +35,76 @@ import * as React from 'react';
 //     height: theme.spacing.unit * 2,
 //   },
 // });
-// interface ThemePageProps
-// {
-//   bridge: Bridge;
-// }
+interface ThemePageProps {
+  bridge: Bridge;
+}
 
 // class ThemePage extends React.Component<ThemePageProps&WithStyles<typeof styles>>
-class ThemePage extends React.Component
-{
-  // state = {
-  //   selectedThemeOption: 'standard',
-  //   selectedLogoOption: 'standard',
-  //   customThemeEnabled: false,
-  //   customLogoEnabled: false,
-  //   grabbedTheme:'notGrabbed'
-  // };
+class ThemePage extends React.Component<ThemePageProps> {
+  state = {
+    selectedThemeOption: 'standard',
+    primary: '#2196f3',
+    secondary: '#ff9800',
+    background: '#fafafa',
+    menu: '#ffffff',
+    menuText: '#000000'
+  };
   //
-  // handleThemeChange = (event:any) => {
-  //   this.setState({ selectedThemeOption: event.target.value });
-  // };
-  //
-  // handleLogoChange = (event:any) => {
-  //   this.setState({selectedLogoOption: event.target.value });
-  // };
-  //
-  // handleThemeCheckBox = (event:any) => {
-  //   this.setState({customThemeEnabled:  event.target.checked});
-  //   this.setState({selectedThemeOption: 'standard'});
-  // };
-  //
-  // handleLogoCheckBox = (event:any) => {
-  //   this.setState({customLogoEnabled:  event.target.checked});
-  //   this.setState({selectedLogoOption: 'standard'});
-  // };
-  //
-  // componentDidMount() {
-  //   //TODO: Grab current theme info and autofill form with it
-  //   // axios
-  //   //   .get(`${Config.baseUrl}api/themeresource/theme/`)
-  //   //   .then((response:any) => {
-  //   //     this.setState({grabbedTheme: response.data})
-  //   //   })
-  //   //   .catch((error:Error) => console.log(error));
-  // }
+  handleThemeChange = (event:any) => {
+    this.setState({ selectedThemeOption: event.target.value });
+  };
+  handlePrimaryChange=(color:string)=> {
+    this.setState({primary:color});
+  };
+  handleSecondaryChange=(color:string)=> {
+    this.setState({secondary:color});
+  };
+  handleBackgroundChange=(color:string)=> {
+    this.setState({background:color});
+  };
+  handleMenuChange=(color:string)=> {
+    this.setState({menu:color});
+  };
+  handleMenuTextChange=(color:string)=> {
+    this.setState({menuText:color});
+  };
   render() {
-    // const {Template} = this.props.bridge;
-    return (<div>empty</div>);
+    const {Template} = this.props.bridge;
+    return (
+      <Template title={"Institution Theme Settings"}>
+        <FormControl>
+          <RadioGroup
+            aria-label="ThemeSelect"
+            name="themeSelect"
+            row={true}
+            value = {this.state.selectedThemeOption}
+            onChange={this.handleThemeChange}
+          >
+            <FormControlLabel value="standard" control={<Radio />} label="Default" />
+            <FormControlLabel value="night" control={<Radio />} label="Dark" />
+            <FormControlLabel value="colorblind" control={<Radio />} label="Colorblind mode" />
+          </RadioGroup>
+          <Typography>Primary Colour {this.state.primary}</Typography>
+          <ColorPickerComponent changeColor={this.handlePrimaryChange} color={this.state.primary}/>
+          <Typography>Secondary Colour</Typography>
+          <ColorPickerComponent changeColor={this.handleSecondaryChange} color={this.state.secondary}/>
+          <Typography>Background Colour</Typography>
+          <ColorPickerComponent changeColor={this.handleBackgroundChange} color={this.state.background}/>
+          <Typography>Menu Item Colour</Typography>
+          <ColorPickerComponent changeColor={this.handleMenuChange} color={this.state.menu}/>
+          <Typography>Menu Item Text Colour</Typography>
+          <ColorPickerComponent changeColor={this.handleMenuTextChange} color={this.state.menuText}/>
+          <Button variant="raised">
+            Apply Theming
+          </Button>
+          <Button variant="contained">
+            Go Back
+          </Button>
+        </FormControl>
+      </Template>
+    );
   }
 
 }
+
 export default ThemePage;

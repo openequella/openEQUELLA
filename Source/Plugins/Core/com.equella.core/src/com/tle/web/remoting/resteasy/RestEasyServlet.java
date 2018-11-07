@@ -39,7 +39,6 @@ import com.tle.web.api.institution.GdprResource;
 import com.tle.web.api.item.SelectionApi;
 import com.tle.web.api.language.LanguageResource;
 import com.tle.web.api.searches.SearchConfigApi;
-
 import com.tle.web.api.users.UserQueryResource;
 import com.tle.web.remoting.rest.resource.InstitutionSecurityFilter;
 import com.tle.web.api.settings.SettingsResource;
@@ -51,7 +50,7 @@ import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.jboss.resteasy.spi.*;
 import org.jboss.resteasy.util.GetRestful;
 import scala.collection.GenTraversableOnce;
-import com.tle.web.api.newUItheme.NewUIThemeResource;
+import com.tle.web.api.newuitheme.NewUIThemeResource;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -60,7 +59,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
