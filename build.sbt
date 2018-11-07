@@ -153,8 +153,8 @@ writeScriptingJavadoc := {
   val javadocDir = (doc in Compile).value 
   val ver = version.value
   val outZip = target.value / s"scriptingapi-javadoc-$ver.zip"
-  IO.zip((javadocDir ** "*").pair(rebase(javadocDir, "")), outZip)
   sLog.value.info(s"Writing ${outZip.absolutePath}")
+  IO.zip((javadocDir ** "*").pair(rebase(javadocDir, "")), outZip)
   outZip
 }
 
