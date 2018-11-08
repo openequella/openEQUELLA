@@ -3,7 +3,6 @@ import {SketchPicker} from 'react-color';
 import createStyles from "@material-ui/core/styles/createStyles";
 import withStyles,{WithStyles} from "@material-ui/core/styles/withStyles";
 
-
 const styles = createStyles({
     color: {
       width: '36px',
@@ -39,10 +38,14 @@ class ColorPickerComponent extends React.Component<ColorProps & WithStyles<typeo
   constructor(props: ColorProps & WithStyles<'color' | 'swatch' | 'popover' | 'cover'>) {
     super(props);
   };
-
+  componentWillReceiveProps(nextProps:any){
+    if(nextProps.color !== this.props.color){
+      this.setState({colorState:nextProps.color});
+    }
+  }
   state = {
     displayColorPicker: false,
-    color: this.props.color,
+    colorState: this.props.color,
   };
 
   handleClick = () => {
@@ -54,23 +57,24 @@ class ColorPickerComponent extends React.Component<ColorProps & WithStyles<typeo
   };
 
   handleChange = (color: any) => {
-    this.setState({color: color.hex});
+    this.setState({colorState: color.hex});
      //this.props.changeColor(color.hex);
   };
   handleComplete = (color:any) => {
     this.props.changeColor(color.hex);
-  }
+  };
+
   render() {
     const {classes} = this.props;
 
     return (
       <div>
         <div className={classes.swatch} onClick={this.handleClick}>
-          <div style={{background:this.state.color}} className={classes.color}/>
+          <div style={{background:this.state.colorState}} className={classes.color}/>
         </div>
         {this.state.displayColorPicker ? <div className={classes.popover}>
           <div className={classes.cover} onClick={this.handleClose}/>
-          <SketchPicker disableAlpha={true} color={this.state.color} onChange={this.handleChange} onChangeComplete={this.handleComplete}/>
+          <SketchPicker disableAlpha={true} color={this.state.colorState} onChange={this.handleChange} onChangeComplete={this.handleComplete}/>
         </div>:null}
 
       </div>

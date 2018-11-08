@@ -18,6 +18,5 @@ public interface NewUIThemeResource {
 	Response retrieveThemeInfo();
 	@PUT
 	@Path("/update")
-//	@Consumes("application/json")
 	Response updateThemeInfo(String themeString);
 }

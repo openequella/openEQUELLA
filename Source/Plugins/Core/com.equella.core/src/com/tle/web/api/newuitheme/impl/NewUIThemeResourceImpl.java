@@ -61,10 +61,9 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	}
 	@PUT
 	@Path("/update")
-//	@Consumes("application/json")
 	public Response updateThemeInfo(String themeString){
 		setTheme(themeString);
-		return Response.ok().build();
+		return Response.ok("{}").build();
 	}
 
 

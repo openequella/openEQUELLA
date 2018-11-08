@@ -30,7 +30,7 @@ import Web.HTML.Window (document)
 
 foreign import themeSettings :: {primaryColor :: String, secondaryColor :: String,
                                 backgroundColor :: String,
-                                menuItemColor :: String, menuItemTextColor :: String, fontSize :: Int}
+                                menuItemColor :: String, menuItemTextColor :: String, menuItemIconColor :: String, menuTextColor :: String, fontSize :: Int}
 
 
 type ClickableHref = {href::String, onClick :: EffectFn1 SyntheticMouseEvent Unit}
@@ -52,6 +52,14 @@ ourTheme =
                       {
                         default: themeSettings.backgroundColor,
                         paper: themeSettings.menuItemColor
+                      },
+                      action:
+                      {
+                        active: themeSettings.menuItemIconColor
+                      },
+                      text:
+                      {
+                        secondary: themeSettings.menuTextColor
                       }
                     },
                     typography:
