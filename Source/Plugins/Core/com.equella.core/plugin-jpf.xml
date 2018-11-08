@@ -345,7 +345,7 @@
   </extension>
   <extension plugin-id="com.tle.core.scripting" point-id="userScriptObjects" id="customScriptObjects">
     <parameter id="id" value="customScriptObjects" />
-    <parameter id="class" value="bean:com.tle.core.userscript.scriptobject.UserScriptObject" />
+    <parameter id="class" value="bean:com.tle.core.userscript.scriptobject.UserScriptObjectImpl" />
   </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="removedMigration1">
     <parameter id="id" value="com.tle.core.payment.migration.CreateDefaultPaymentObjects" />

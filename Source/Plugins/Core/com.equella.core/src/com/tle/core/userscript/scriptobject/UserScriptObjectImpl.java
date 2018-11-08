@@ -31,7 +31,7 @@ import com.tle.core.userscripts.dao.UserScriptsDao;
 
 @Bind
 @Singleton
-public class UserScriptObject implements UserScriptObjectContributor
+public class UserScriptObjectImpl implements UserScriptObjectContributor
 {
 	@Inject
 	private UserScriptsDao userScriptDao;
