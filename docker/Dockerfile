@@ -41,7 +41,6 @@ USER equella
 VOLUME ["/home/equella/equella/filestore/", "/home/equella/equella/freetext/"]
 
 COPY learningedge-log4j.properties learningedge-config/
-COPY envvars.sh ./
 
 # At this point openEQUELLA is installed.
 
