@@ -12,7 +12,7 @@ import {Config} from "../config";
 import {Theme, WithStyles} from "@material-ui/core";
 import createStyles from "@material-ui/core/styles/createStyles";
 import withStyles from "@material-ui/core/styles/withStyles";
-
+declare var themeSettings: any;
 const styles = (theme: Theme) => createStyles({
   container: {
     position: 'relative',
@@ -51,13 +51,10 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     menuIcon: '#000000',
     text: '#000000'
   };
-  //
   handleThemeChange = (event: any) => {
-   // this.setState({selectedThemeOption: event.target.value});
     switch (event.target.value) {
       case 'standard':
         this.setState({
-          selectedThemeOption: 'standard',
           primary: '#2196f3',
           secondary: '#ff9800',
           background: '#fafafa',
@@ -69,7 +66,6 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
         break;
       case 'dark':
         this.setState({
-          selectedThemeOption: 'standard',
           primary: '#4e4e51',
           secondary: '#ffffff',
           background: '#dfdbdb',
@@ -81,14 +77,13 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
         break;
       case 'custom':
         this.setState({
-          selectedThemeOption: 'standard',
-          primary: '#000000',
-          secondary: '#000000',
-          background: '#fafafa',
-          menu: '#000000',
-          menuText: '#000000',
-          menuIcon: '#000000',
-          text: '#000000'
+          primary: themeSettings['primaryColor'],
+          secondary: themeSettings['secondaryColor'],
+          background: themeSettings['backgroundColor'],
+          menu: themeSettings['menuItemColor'],
+          menuText: themeSettings['menuItemTextColor'],
+          menuIcon: themeSettings['menuItemIconColor'],
+          text: themeSettings['menuTextColor']
         });
         break;
     }
@@ -126,17 +121,13 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       "\"menuItemIconColor\": \"" + this.state.menuIcon + "\", " +
       "\"menuTextColor\": \"" + this.state.text + "\", " +
       "\"fontSize\": 14}").then(function () {
-      window.location.reload()
+      window.location.reload();
     });
   };
 
-  componentDidMount() {
-    axios.get(`${Config.baseUrl}api/themeresource/theme.js`)
-      .then(function (response: any) {
-        console.log(response.data);
-      });
-
-  }
+  handleBackButton = () => {
+    window.history.back();
+  };
 
   render() {
     const {Template} = this.props.bridge;
@@ -156,7 +147,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
               <FormControlLabel value="custom" control={<Radio/>} label="Custom..."/>
             </RadioGroup>
 
-            <Typography>Primary Colour {this.state.selectedThemeOption}</Typography>
+            <Typography>Primary Colour</Typography>
             <ColorPickerComponent changeColor={this.handlePrimaryChange} color={this.state.primary}/>
 
             <Typography>Secondary Colour - Elements</Typography>
@@ -177,11 +168,10 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
             <Typography>Menu Item Icon Colour</Typography>
             <ColorPickerComponent changeColor={this.handleMenuIconChange} color={this.state.menuIcon}/>
 
-
             <Button variant="contained" type={"submit"} onClick={this.submitTheme}>
               Apply Theming
             </Button>
-            <Button variant="contained">
+            <Button variant="contained" onClick={this.handleBackButton}>
               Go Back
             </Button>
           </FormControl>
@@ -189,7 +179,6 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       </Template>
     );
   }
-
 }
 
 export default withStyles(styles)(ThemePage);
