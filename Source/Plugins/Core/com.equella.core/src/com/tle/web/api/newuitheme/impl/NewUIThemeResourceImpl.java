@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response;
 import com.tle.core.settings.service.ConfigurationService;
 
 import java.io.IOException;
+import java.util.Collections;
 
 
 @Bind(NewUIThemeResource.class)
@@ -21,6 +22,8 @@ import java.io.IOException;
 public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	@Inject
 	private ConfigurationService configurationService;
+	@Inject
+	private TLEAclManager tleAclManager;
 	private NewUITheme theme;
 	private final String themeKey = "Theme";
 	private ObjectMapper objectMapper = new ObjectMapper();
@@ -62,8 +65,12 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	@PUT
 	@Path("/update")
 	public Response updateThemeInfo(String themeString){
+		if(!tleAclManager.filterNonGrantedPrivileges(Collections.singleton("EDIT_SYSTEM_SETTINGS"),false).isEmpty()){
 		setTheme(themeString);
 		return Response.ok("{}").build();
+		}else{
+			return Response.status(403, "Current user not authorized to modify theme settings").build();
+		}
 	}
 
 

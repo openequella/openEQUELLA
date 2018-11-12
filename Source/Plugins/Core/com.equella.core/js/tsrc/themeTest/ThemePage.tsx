@@ -1,9 +1,6 @@
 import * as React from 'react';
 import {Bridge} from "../api/bridge";
-import Radio from '@material-ui/core/Radio';
 import FormControl from "@material-ui/core/FormControl/FormControl";
-import RadioGroup from "@material-ui/core/RadioGroup/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
 import Button from "@material-ui/core/Button/Button";
 import ColorPickerComponent from "./ColorPickerComponent";
 import Typography from "@material-ui/core/Typography/Typography";
@@ -12,6 +9,7 @@ import {Config} from "../config";
 import {Theme, WithStyles} from "@material-ui/core";
 import createStyles from "@material-ui/core/styles/createStyles";
 import withStyles from "@material-ui/core/styles/withStyles";
+
 declare var themeSettings: any;
 const styles = (theme: Theme) => createStyles({
   container: {
@@ -42,54 +40,76 @@ interface ThemePageProps {
 
 class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof styles>> {
   state = {
-    selectedThemeOption: 'standard',
-    primary: '#2196f3',
-    secondary: '#ff9800',
-    background: '#fafafa',
-    menu: '#ffffff',
-    menuText: '#000000',
-    menuIcon: '#000000',
-    text: '#000000'
+   // selectedThemeOption: 'standard',
+    primary: themeSettings['primaryColor'],
+    secondary: themeSettings['secondaryColor'],
+    background: themeSettings['backgroundColor'],
+    menu: themeSettings['menuItemColor'],
+    menuText: themeSettings['menuItemTextColor'],
+    menuIcon: themeSettings['menuItemIconColor'],
+    text: themeSettings['menuTextColor']
   };
-  handleThemeChange = (event: any) => {
-    switch (event.target.value) {
-      case 'standard':
-        this.setState({
-          primary: '#2196f3',
-          secondary: '#ff9800',
-          background: '#fafafa',
-          menu: '#ffffff',
-          menuText: '#000000',
-          menuIcon: '#000000',
-          text: '#000000'
-        });
-        break;
-      case 'dark':
-        this.setState({
-          primary: '#4e4e51',
-          secondary: '#ffffff',
-          background: '#dfdbdb',
-          menu: '#919191',
-          menuText: '#ffffff',
-          menuIcon: '#ffffff',
-          text: '#ffffff'
-        });
-        break;
-      case 'custom':
-        this.setState({
-          primary: themeSettings['primaryColor'],
-          secondary: themeSettings['secondaryColor'],
-          background: themeSettings['backgroundColor'],
-          menu: themeSettings['menuItemColor'],
-          menuText: themeSettings['menuItemTextColor'],
-          menuIcon: themeSettings['menuItemIconColor'],
-          text: themeSettings['menuTextColor']
-        });
-        break;
-    }
-    this.setState({selectedThemeOption: event.target.value});
-
+  handleDefaultButton = () => {
+    this.setState({
+      primary: '#2196f3',
+      secondary: '#ff9800',
+      background: '#fafafa',
+      menu: '#ffffff',
+      menuText: '#000000',
+      menuIcon: '#000000',
+      text: '#000000'
+    });
   };
+  handleUndoButton = () => {
+    this.setState({
+      primary: themeSettings['primaryColor'],
+      secondary: themeSettings['secondaryColor'],
+      background: themeSettings['backgroundColor'],
+      menu: themeSettings['menuItemColor'],
+      menuText: themeSettings['menuItemTextColor'],
+      menuIcon: themeSettings['menuItemIconColor'],
+      text: themeSettings['menuTextColor']
+    });
+  };
+  // handleThemeChange = (event: any) => {
+  //   switch (event.target.value) {
+  //     case 'standard':
+  //       this.setState({
+  //         primary: '#2196f3',
+  //         secondary: '#ff9800',
+  //         background: '#fafafa',
+  //         menu: '#ffffff',
+  //         menuText: '#000000',
+  //         menuIcon: '#000000',
+  //         text: '#000000'
+  //       });
+  //       break;
+  //     case 'dark':
+  //       this.setState({
+  //         primary: '#4e4e51',
+  //         secondary: '#ffffff',
+  //         background: '#dfdbdb',
+  //         menu: '#919191',
+  //         menuText: '#ffffff',
+  //         menuIcon: '#ffffff',
+  //         text: '#ffffff'
+  //       });
+  //       break;
+  //     case 'custom':
+  //       this.setState({
+  //         primary: themeSettings['primaryColor'],
+  //         secondary: themeSettings['secondaryColor'],
+  //         background: themeSettings['backgroundColor'],
+  //         menu: themeSettings['menuItemColor'],
+  //         menuText: themeSettings['menuItemTextColor'],
+  //         menuIcon: themeSettings['menuItemIconColor'],
+  //         text: themeSettings['menuTextColor']
+  //       });
+  //       break;
+  //   }
+  //   this.setState({selectedThemeOption: event.target.value});
+  //
+  // };
   handlePrimaryChange = (color: string) => {
     this.setState({primary: color});
   };
@@ -135,18 +155,6 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       <Template title={"Institution Theme Settings"}>
         <div>
           <FormControl>
-            <RadioGroup
-              aria-label="ThemeSelect"
-              name="themeSelect"
-              row={true}
-              value={this.state.selectedThemeOption}
-              onChange={this.handleThemeChange}
-            >
-              <FormControlLabel value="standard" control={<Radio/>} label="Default"/>
-              <FormControlLabel value="dark" control={<Radio/>} label="Dark"/>
-              <FormControlLabel value="custom" control={<Radio/>} label="Custom..."/>
-            </RadioGroup>
-
             <Typography>Primary Colour</Typography>
             <ColorPickerComponent changeColor={this.handlePrimaryChange} color={this.state.primary}/>
 
@@ -167,6 +175,13 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
 
             <Typography>Menu Item Icon Colour</Typography>
             <ColorPickerComponent changeColor={this.handleMenuIconChange} color={this.state.menuIcon}/>
+
+            <Button variant="contained" onClick={this.handleDefaultButton}>
+              Revert to Default Equella Theme
+            </Button>
+            <Button variant="contained" onClick={this.handleUndoButton}>
+              Undo Changes
+            </Button>
 
             <Button variant="contained" type={"submit"} onClick={this.submitTheme}>
               Apply Theming

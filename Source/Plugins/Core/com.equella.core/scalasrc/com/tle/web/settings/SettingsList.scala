@@ -62,6 +62,9 @@ object SettingsList {
   val uiSettings = CoreSettingsRest("ui", "ui", "uisettings.name", "uisettings.desc", "api/settings/ui",
     AclChecks.filterNonGrantedPrivileges(Iterable("EDIT_SYSTEM_SETTINGS"), false))
 
+  val materialUISettings = CoreSettingsPage("materialui", General,"materialui.settings.title", "materialui.settings.description",
+    "page/themetest", () => !aclManager.filterNonGrantedPrivileges("EDIT_SYSTEM_SETTINGS").isEmpty)
+
   val echoSettings = CoreSettingsPage("echo", Integration, "echo.settings.title", "echo.settings.description",
     "access/echoservers.do", () => !aclManager.filterNonGrantedPrivileges(EchoConstants.PRIV_CREATE_ECHO, EchoConstants.PRIV_EDIT_ECHO).isEmpty)
 
@@ -83,13 +86,12 @@ object SettingsList {
   val htmlEditorSettings = CoreSettingsPage("htmleditor", General, "htmledit.settings.title", "htmledit.settings.description",
     "access/editoradmin.do", htmlEditorPrivProvider.isAuthorised)
 
-
   val externalToolsSettings = CoreSettingsPage("externaltools", Integration, "tools.settings.title", "tools.settings.description",
     "access/externaltools.do", () => !aclManager.filterNonGrantedPrivileges(ExternalToolConstants.PRIV_CREATE_TOOL, ExternalToolConstants.PRIV_EDIT_TOOL).isEmpty)
 
   val allSettings : mutable.Buffer[EditableSettings] = mutable.Buffer(
     connectorSettings, echoSettings, ltiConsumersSettings, userScriptSettings,
-    oauthSettings, htmlEditorSettings, externalToolsSettings, uiSettings,
+    oauthSettings, htmlEditorSettings, externalToolsSettings, uiSettings, materialUISettings,
 
     CoreSettingsPage("shortcuts", General, "shortcuts.settings.title", "shortcuts.settings.description",
       "access/shortcuturlssettings.do", shortcutPrivProvider.isAuthorised),

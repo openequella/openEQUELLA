@@ -58,7 +58,6 @@ class ColorPickerComponent extends React.Component<ColorProps & WithStyles<typeo
 
   handleChange = (color: any) => {
     this.setState({colorState: color.hex});
-     //this.props.changeColor(color.hex);
   };
   handleComplete = (color:any) => {
     this.props.changeColor(color.hex);
