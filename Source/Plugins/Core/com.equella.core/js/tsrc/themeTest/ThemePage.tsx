@@ -9,29 +9,38 @@ import {Config} from "../config";
 import {Theme, WithStyles} from "@material-ui/core";
 import createStyles from "@material-ui/core/styles/createStyles";
 import withStyles from "@material-ui/core/styles/withStyles";
+import Grid from "@material-ui/core/Grid/Grid";
+import CardContent from "@material-ui/core/CardContent/CardContent";
+import CardActions from "@material-ui/core/CardActions/CardActions";
 
 declare var themeSettings: any;
 const styles = (theme: Theme) => createStyles({
   container: {
     position: 'relative',
+    marginLeft: '4px',
+    marginTop: '4px',
+    marginBottom: '2px',
   },
-  paper: {
-    position: 'absolute',
-    zIndex: 1,
-    marginTop: theme.spacing.unit * 2,
-    left: 0,
-    right: 0,
-    marginBottom: theme.spacing.unit,
+  card: {
+    display: 'flex',
+    marginTop: '16px',
+    marginLeft:'230px'
   },
-  chip: {
-    margin: `${theme.spacing.unit / 2}px ${theme.spacing.unit / 4}px`,
+  labels: {
+    marginTop: '4px',
+    marginBottom: '4px',
   },
-  inputRoot: {
-    flexWrap: 'wrap',
+  buttons: {
+    align: 'right',
+    marginLeft: '4px',
+    marginTop: '4px',
+    marginBottom: '4px',
+
   },
-  divider: {
-    height: theme.spacing.unit * 2,
-  },
+  buttonContainer: {
+    width: "250px",
+    alignSelf: 'centre'
+  }
 });
 
 interface ThemePageProps {
@@ -40,7 +49,6 @@ interface ThemePageProps {
 
 class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof styles>> {
   state = {
-   // selectedThemeOption: 'standard',
     primary: themeSettings['primaryColor'],
     secondary: themeSettings['secondaryColor'],
     background: themeSettings['backgroundColor'],
@@ -71,45 +79,6 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       text: themeSettings['menuTextColor']
     });
   };
-  // handleThemeChange = (event: any) => {
-  //   switch (event.target.value) {
-  //     case 'standard':
-  //       this.setState({
-  //         primary: '#2196f3',
-  //         secondary: '#ff9800',
-  //         background: '#fafafa',
-  //         menu: '#ffffff',
-  //         menuText: '#000000',
-  //         menuIcon: '#000000',
-  //         text: '#000000'
-  //       });
-  //       break;
-  //     case 'dark':
-  //       this.setState({
-  //         primary: '#4e4e51',
-  //         secondary: '#ffffff',
-  //         background: '#dfdbdb',
-  //         menu: '#919191',
-  //         menuText: '#ffffff',
-  //         menuIcon: '#ffffff',
-  //         text: '#ffffff'
-  //       });
-  //       break;
-  //     case 'custom':
-  //       this.setState({
-  //         primary: themeSettings['primaryColor'],
-  //         secondary: themeSettings['secondaryColor'],
-  //         background: themeSettings['backgroundColor'],
-  //         menu: themeSettings['menuItemColor'],
-  //         menuText: themeSettings['menuItemTextColor'],
-  //         menuIcon: themeSettings['menuItemIconColor'],
-  //         text: themeSettings['menuTextColor']
-  //       });
-  //       break;
-  //   }
-  //   this.setState({selectedThemeOption: event.target.value});
-  //
-  // };
   handlePrimaryChange = (color: string) => {
     this.setState({primary: color});
   };
@@ -145,52 +114,75 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     });
   };
 
-  handleBackButton = () => {
-    window.history.back();
-  };
-
   render() {
     const {Template} = this.props.bridge;
     return (
-      <Template title={"Institution Theme Settings"}>
-        <div>
+      <Template title={"New UI Settings"}>
+        {/*<Card raised={true} className={this.props.classes.card}>*/}
+
+        <CardContent>
           <FormControl>
-            <Typography>Primary Colour</Typography>
-            <ColorPickerComponent changeColor={this.handlePrimaryChange} color={this.state.primary}/>
+            <Grid container spacing={16}>
+              <Grid item>
+                <Typography className={this.props.classes.labels} color={"textSecondary"}>
+                  Primary Colour
+                </Typography>
+                <ColorPickerComponent changeColor={this.handlePrimaryChange} color={this.state.primary}/>
 
-            <Typography>Secondary Colour - Elements</Typography>
-            <ColorPickerComponent changeColor={this.handleSecondaryChange} color={this.state.secondary}/>
+                <Typography className={this.props.classes.labels} color={"textSecondary"}>
+                  Menu Item Colour
+                </Typography>
+                <ColorPickerComponent changeColor={this.handleMenuChange} color={this.state.menu}/>
 
-            <Typography>Secondary Colour - Text</Typography>
-            <ColorPickerComponent changeColor={this.handleTextChange} color={this.state.text}/>
+                <Typography className={this.props.classes.labels} color={"textSecondary"}>
+                  Background Colour
+                </Typography>
+                <ColorPickerComponent changeColor={this.handleBackgroundChange} color={this.state.background}/>
 
-            <Typography>Background Colour</Typography>
-            <ColorPickerComponent changeColor={this.handleBackgroundChange} color={this.state.background}/>
+              </Grid>
+              <Grid item>
+                <Typography className={this.props.classes.labels} color={"textSecondary"}>
+                  Secondary Colour - Elements
+                </Typography>
+                <ColorPickerComponent changeColor={this.handleSecondaryChange} color={this.state.secondary}/>
 
-            <Typography>Menu Item Colour</Typography>
-            <ColorPickerComponent changeColor={this.handleMenuChange} color={this.state.menu}/>
+                <Typography className={this.props.classes.labels} color={"textSecondary"}>
+                  Menu Item Text Colour
+                </Typography>
+                <ColorPickerComponent changeColor={this.handleMenuTextChange} color={this.state.menuText}/>
+                <div></div>
 
-            <Typography>Menu Item Text Colour</Typography>
-            <ColorPickerComponent changeColor={this.handleMenuTextChange} color={this.state.menuText}/>
+              </Grid>
 
-            <Typography>Menu Item Icon Colour</Typography>
-            <ColorPickerComponent changeColor={this.handleMenuIconChange} color={this.state.menuIcon}/>
+              <Grid item>
+                <Typography className={this.props.classes.labels} color={"textSecondary"}>
+                  Secondary Colour - Text
+                </Typography>
+                <ColorPickerComponent changeColor={this.handleTextChange} color={this.state.text}/>
 
-            <Button variant="contained" onClick={this.handleDefaultButton}>
-              Revert to Default Equella Theme
-            </Button>
-            <Button variant="contained" onClick={this.handleUndoButton}>
-              Undo Changes
-            </Button>
+                <Typography className={this.props.classes.labels} color={"textSecondary"}>
+                  Menu Item Icon Colour
+                </Typography>
+                <ColorPickerComponent changeColor={this.handleMenuIconChange} color={this.state.menuIcon}/>
+                <div></div>
 
-            <Button variant="contained" type={"submit"} onClick={this.submitTheme}>
-              Apply Theming
-            </Button>
-            <Button variant="contained" onClick={this.handleBackButton}>
-              Go Back
-            </Button>
+              </Grid>
+            </Grid>
           </FormControl>
-        </div>
+        </CardContent>
+        <CardActions className={this.props.classes.card}>
+          <Button variant="text" onClick={this.handleDefaultButton}>
+            Default
+          </Button>
+
+          <Button variant="outlined" onClick={this.handleUndoButton}>
+            Undo
+          </Button>
+          <Button variant="contained" type={"submit"}
+                  onClick={this.submitTheme}>
+            Apply
+          </Button>
+        </CardActions>
       </Template>
     );
   }
