@@ -14,6 +14,7 @@ import CardContent from "@material-ui/core/CardContent/CardContent";
 import CardActions from "@material-ui/core/CardActions/CardActions";
 import Card from "@material-ui/core/Card/Card";
 import Divider from "@material-ui/core/Divider/Divider";
+import Input from "@material-ui/core/Input/Input";
 
 declare var themeSettings: any;
 
@@ -25,7 +26,8 @@ const styles = createStyles({
   labels: {
     marginTop: '4px',
     marginBottom: '4px',
-  }
+  },
+  input: {}
 });
 
 interface ThemePageProps {
@@ -159,12 +161,33 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
               </Grid>
             </FormControl>
           </CardContent>
-          <Divider light={true}/>
           <CardActions>
             <Button variant="text" onClick={this.handleDefaultButton}>
-              Default
+              Reset to Default
             </Button>
-
+          </CardActions>
+          <Divider light={true}/>
+          <CardContent>
+            <Typography variant={'display1'}>Logo Settings</Typography>
+            <Typography className={this.props.classes.labels} color={"textSecondary"}>
+              Upload a custom Logo...
+            </Typography>
+            <div>
+              <Button variant={"outlined"}>
+                Browse...
+              </Button>
+                <Input
+                  disableUnderline
+                  placeholder={'(Under construction!)'}/>
+            </div>
+          </CardContent>
+          <CardActions>
+            <Button variant="text">
+              Reset to Default
+            </Button>
+          </CardActions>
+          <Divider light={false}/>
+          <CardActions>
             <Button variant="outlined" onClick={this.handleUndoButton}>
               Undo
             </Button>
