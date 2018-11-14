@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {SketchPicker} from 'react-color';
 import createStyles from "@material-ui/core/styles/createStyles";
-import withStyles,{WithStyles} from "@material-ui/core/styles/withStyles";
+import withStyles, {WithStyles} from "@material-ui/core/styles/withStyles";
 
 const styles = createStyles({
     color: {
@@ -30,36 +30,41 @@ const styles = createStyles({
     },
   },
 );
-interface ColorProps{
+
+interface ColorProps {
   color?: string;
-  changeColor(color:string): void;
+
+  changeColor(color: string): void;
 }
-class ColorPickerComponent extends React.Component<ColorProps & WithStyles<typeof styles>>{
+
+class ColorPickerComponent extends React.Component<ColorProps & WithStyles<typeof styles>> {
   constructor(props: ColorProps & WithStyles<'color' | 'swatch' | 'popover' | 'cover'>) {
     super(props);
   };
-  componentWillReceiveProps(nextProps:any){
-    if(nextProps.color !== this.props.color){
-      this.setState({colorState:nextProps.color});
+
+  componentWillReceiveProps(nextProps: any) {
+    if (nextProps.color !== this.props.color) {
+      this.setState({colorState: nextProps.color});
     }
   }
+
   state = {
     displayColorPicker: false,
     colorState: this.props.color,
   };
 
   handleClick = () => {
-    this.setState({displayColorPicker: !this.state.displayColorPicker})
+    this.setState({displayColorPicker: true});
   };
 
   handleClose = () => {
-    this.setState({displayColorPicker: false})
+    this.setState({displayColorPicker: false});
   };
 
   handleChange = (color: any) => {
     this.setState({colorState: color.hex});
   };
-  handleComplete = (color:any) => {
+  handleComplete = (color: any) => {
     this.props.changeColor(color.hex);
   };
 
@@ -69,12 +74,13 @@ class ColorPickerComponent extends React.Component<ColorProps & WithStyles<typeo
     return (
       <div>
         <div className={classes.swatch} onClick={this.handleClick}>
-          <div style={{background:this.state.colorState}} className={classes.color}/>
+          <div style={{background: this.state.colorState}} className={classes.color}/>
         </div>
         {this.state.displayColorPicker ? <div className={classes.popover}>
           <div className={classes.cover} onClick={this.handleClose}/>
-          <SketchPicker disableAlpha={true} color={this.state.colorState} onChange={this.handleChange} onChangeComplete={this.handleComplete}/>
-        </div>:null}
+          <SketchPicker disableAlpha={true} color={this.state.colorState} onChange={this.handleChange}
+                        onChangeComplete={this.handleComplete}/>
+        </div> : null}
 
       </div>
     )
