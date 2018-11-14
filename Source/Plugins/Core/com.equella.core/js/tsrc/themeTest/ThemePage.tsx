@@ -51,7 +51,6 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       menuText: '#000000',
       menuIcon: '#000000',
       text: '#000000',
-
     });
   };
   handleUndoButton = () => {
@@ -114,6 +113,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       <Template title={"New UI Settings"}>
         <Card raised={true} className={this.props.classes.card}>
           <CardContent>
+            <Typography variant={"display1"}>Colour Scheme</Typography>
             <FormControl>
               <Grid container spacing={16}>
                 <Grid item>
@@ -123,7 +123,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
                   <ColorPickerComponent changeColor={this.handlePrimaryChange} color={this.state.primary}/>
 
                   <Typography className={this.props.classes.labels} color={"textSecondary"}>
-                    Menu Item Colour
+                    Menu Background Colour
                   </Typography>
                   <ColorPickerComponent changeColor={this.handleMenuChange} color={this.state.menu}/>
 
@@ -135,24 +135,24 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
                 </Grid>
                 <Grid item>
                   <Typography className={this.props.classes.labels} color={"textSecondary"}>
-                    Secondary Colour - Elements
+                    Secondary Colour
                   </Typography>
                   <ColorPickerComponent changeColor={this.handleSecondaryChange} color={this.state.secondary}/>
 
                   <Typography className={this.props.classes.labels} color={"textSecondary"}>
-                    Menu Item Text Colour
+                    Sidebar Text Colour
                   </Typography>
                   <ColorPickerComponent changeColor={this.handleMenuTextChange} color={this.state.menuText}/>
                 </Grid>
 
                 <Grid item>
                   <Typography className={this.props.classes.labels} color={"textSecondary"}>
-                    Secondary Colour - Text
+                    Text Colour
                   </Typography>
                   <ColorPickerComponent changeColor={this.handleTextChange} color={this.state.text}/>
 
                   <Typography className={this.props.classes.labels} color={"textSecondary"}>
-                    Menu Item Icon Colour
+                    Sidebar Icon Colour
                   </Typography>
                   <ColorPickerComponent changeColor={this.handleMenuIconChange} color={this.state.menuIcon}/>
                 </Grid>
