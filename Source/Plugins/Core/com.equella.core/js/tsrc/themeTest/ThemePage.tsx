@@ -27,7 +27,9 @@ const styles = createStyles({
     marginTop: '4px',
     marginBottom: '4px',
   },
-  input: {}
+  input: {
+    display: 'none'
+  }
 });
 
 interface ThemePageProps {
@@ -173,12 +175,23 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
               Upload a custom Logo...
             </Typography>
             <div>
-              <Button variant={"outlined"}>
-                Browse...
-              </Button>
+              <input
+                accept="image/*"
+                className={this.props.classes.input}
+                id="contained-button-file"
+                multiple
+                type="file"
+              />
+              <label htmlFor="contained-button-file">
+                <Button variant="contained" component="span">
+                  Upload
+                </Button>
                 <Input
                   disableUnderline
+                  disabled={true}
                   placeholder={'(Under construction!)'}/>
+                <Typography></Typography>
+              </label>
             </div>
           </CardContent>
           <CardActions>
