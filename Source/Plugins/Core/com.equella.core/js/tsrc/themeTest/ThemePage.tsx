@@ -190,8 +190,11 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
                   disableUnderline
                   disabled={true}
                   placeholder={'(Under construction!)'}/>
-                <Typography></Typography>
               </label>
+              <div>
+              <Typography className={this.props.classes.labels} color={"textSecondary"}>Current Logo: </Typography>
+              <img src={`${Config.baseUrl}p/r/6.7.r88/com.equella.core/images/new-equella-logo.png`}/>
+              </div>
             </div>
           </CardContent>
           <CardActions>
