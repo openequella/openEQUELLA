@@ -51,6 +51,7 @@ type PageContent = {
   fullscreenMode :: String, 
   menuMode :: String,
   hideAppBar :: Boolean, 
+  preventUnload :: Boolean,
   afterHtml :: Effect Unit
 }
 
@@ -108,7 +109,8 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
                                 innerRef = toNullable $ Just $ saveRef tempRef, 
                                 hideAppBar = c.hideAppBar, 
                                 menuMode = c.menuMode, 
-                                fullscreenMode = c.fullscreenMode, 
+                                fullscreenMode = c.fullscreenMode,
+                                preventNavigation = toNullable $ Just c.preventUnload, 
                                 errorResponse = toNullable errored
                           } [ mainContent ] 
         Nothing | Just {code,error,description} <- errored -> template' (templateDefaults error) [ 
@@ -159,12 +161,13 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
     updateContent (ChangeRoute redir userUpdated) = do 
       doRefresh userUpdated
       liftEffect $ maybe (pure unit) pushRoute $ matchRoute redir
-    updateContent (LegacyContent lc@{css, js, state, html,script, title, fullscreenMode, menuMode, hideAppBar} userUpdated) = do 
+    updateContent (LegacyContent lc@{css, js, state, html,script, title, 
+                      fullscreenMode, menuMode, hideAppBar, preventUnload} userUpdated) = do 
       doRefresh userUpdated
       deleteSheets <- lift $ updateIncludes true css js
       contentId <- liftEffect newUUID
       modifyState \s -> s {noForm = lc.noForm,
-        content = Just {contentId,  html, script, title, fullscreenMode, menuMode, hideAppBar, afterHtml: deleteSheets}, state = state}
+        content = Just {contentId,  html, script, title, fullscreenMode, menuMode, hideAppBar, preventUnload, afterHtml: deleteSheets}, state = state}
 
   pure {
     state:{ 
