@@ -10,7 +10,7 @@
 			options.disablers = options.disablers || [];
 
 			var checkInsertButton = function(){
-				$('.repeater-addtop').toggle($t.find('.repeater-groups').children().length !== 0);
+				$('#' + id + "_addTopButton").toggle($t.find('.repeater-groups').children().length !== 0);
 			};
 			checkInsertButton();
 
