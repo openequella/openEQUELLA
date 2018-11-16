@@ -29,7 +29,7 @@ import MaterialUI.Typography (typography)
 import OEQ.API.LegacyContent (submitRequest)
 import OEQ.Data.Error (ErrorResponse)
 import OEQ.Data.LegacyContent (ContentResponse(..), SubmitOptions)
-import OEQ.MainUI.Routes (LegacyURI(..), matchRoute, pushRoute)
+import OEQ.MainUI.Routes (LegacyURI(..), forcePushRoute, matchRoute)
 import OEQ.MainUI.Template (refreshUser, template', templateDefaults)
 import OEQ.UI.Common (scrollWindowToTop, withCurrentTarget)
 import OEQ.UI.LegacyContent (FormUpdate, divWithHtml, setupLegacyHooks, updateIncludes, updateStylesheets, writeForm)
@@ -160,7 +160,7 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
       liftEffect $ window >>= location >>= assign href
     updateContent (ChangeRoute redir userUpdated) = do 
       doRefresh userUpdated
-      liftEffect $ maybe (pure unit) pushRoute $ matchRoute redir
+      liftEffect $ maybe (pure unit) forcePushRoute $ matchRoute redir
     updateContent (LegacyContent lc@{css, js, state, html,script, title, 
                       fullscreenMode, menuMode, hideAppBar, preventUnload} userUpdated) = do 
       doRefresh userUpdated

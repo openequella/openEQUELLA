@@ -391,11 +391,10 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       p@{preventNavigation, title, fullscreenMode} <- R.getProps this
       let isTrue = fromMaybe false <<< toMaybe
           newPN = isTrue preventNavigation
-      maybeEff (isTrue (spy "OldPN" oldProps.preventNavigation) /= (spy "newPN" newPN)) $ setPreventUnload newPN
+      maybeEff (isTrue oldProps.preventNavigation /= newPN) $ setPreventUnload newPN
       maybeEff (oldProps.title /= title) $ setWindowTitle title
       maybeEff (oldfsm /= fullscreenMode) $ setHtmlClasses oldfsm fullscreenMode
       maybeEff (oldProps.errorResponse /= p.errorResponse) $ do 
-        log "Error changed!"
         R.setState this {errorOpen: true}
     , componentWillUnmount: setUnloadListener false
   }
