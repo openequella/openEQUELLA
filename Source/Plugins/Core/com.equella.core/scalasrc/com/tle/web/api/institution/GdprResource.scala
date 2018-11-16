@@ -28,11 +28,12 @@ import com.tle.core.db.{DBSchema, RunWithDB}
 import com.tle.exceptions.AccessDeniedException
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.users.UserDetails
+import io.circe.{Json, JsonObject}
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.doolse.simpledba.jdbc._
 import io.doolse.simpledba.syntax._
-import io.swagger.annotations.Api
+import io.swagger.annotations.{Api, ApiParam}
 import javax.ws.rs._
 import javax.ws.rs.core.{Response, StreamingOutput}
 
@@ -44,15 +45,18 @@ class GdprResource {
   val tleUserDao = LegacyGuice.tleUserDao
   val queries = DBSchema.queries.auditLogQueries
 
-  case class AuditEntry(category: String, `type`: String, timestamp: String, sessionId: String, data: Map[String, String])
+  case class AuditEntry(category: String, `type`: String, timestamp: String, sessionId: String, data: Map[String, Json])
 
   object AuditEntry {
     def apply(ale: AuditLogEntry): AuditEntry = {
-      val data = Map("1" -> ale.data1.map(_.value),
-        "2" -> ale.data2.map(_.value),
-        "3" -> ale.data3.map(_.value),
-        "4" -> ale.data4).collect {
+      val data = Map("1" -> ale.data1.map(_.value.asJson),
+        "2" -> ale.data2.map(_.value.asJson),
+        "3" -> ale.data3.map(_.value.asJson),
+        "4" -> ale.data4.map(_.asJson)
+      ).collect {
         case (k, Some(v)) => (k, v)
+      } ++ ale.meta.asJson.asObject.map(_.toMap).getOrElse(Map.empty).collect {
+        case (k, j) if !j.isNull => (k, j)
       }
       AuditEntry(ale.event_category.value, ale.event_type.value, StdDateFormat.instance.clone().format(ale.timestamp.toEpochMilli),
         ale.session_id.value, data)
@@ -65,7 +69,7 @@ class GdprResource {
 
   @DELETE
   @Path("{user}")
-  def delete(@PathParam("user") user: String): Response = {
+  def delete(@PathParam("user") @ApiParam(value = "An ID (not a username) of a user", required = true) user: String): Response = {
     checkPriv()
     RunWithDB.execute(Kleisli { uc =>
       queries.deleteForUser((UserId(user), uc.inst)).flush.compile.drain
@@ -76,7 +80,7 @@ class GdprResource {
   @GET
   @Path("{user}")
   @Produces(Array("application/zip"))
-  def retrieve(@PathParam("user") user: String): Response = {
+  def retrieve(@PathParam("user") @ApiParam(value = "An ID (not a username) of a user", required = true) user: String): Response = {
     checkPriv()
     Response.ok(
       new StreamingOutput {
