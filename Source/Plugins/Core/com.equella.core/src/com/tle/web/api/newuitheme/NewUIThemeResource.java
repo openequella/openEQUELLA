@@ -5,6 +5,8 @@ import io.swagger.annotations.Api;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.awt.*;
+import java.io.File;
 
 @Path("themeresource/")
 @Api("New UI Theme Resource")
@@ -19,4 +21,7 @@ public interface NewUIThemeResource {
 	@PUT
 	@Path("/update")
 	Response updateThemeInfo(String themeString);
+	@PUT
+	@Path("/updatelogo")
+	Response updateLogo(File logo);
 }

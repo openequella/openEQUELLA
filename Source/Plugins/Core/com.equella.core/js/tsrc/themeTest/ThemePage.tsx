@@ -45,6 +45,8 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     menuText: themeSettings['menuItemTextColor'],
     menuIcon: themeSettings['menuItemIconColor'],
     text: themeSettings['menuTextColor'],
+    logoToUpload: '',
+    imagePreviewUrl: ''
   };
   handleDefaultButton = () => {
     this.setState({
@@ -96,7 +98,20 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     this.setState({text: color});
     //  this.setState({expanded: !this.state.expanded});
   };
+  _handleImageChange(e:any) {
+    e.preventDefault();
+    console.log(this.state.logoToUpload);
+    let reader = new FileReader();
 
+    let file = e.target.files[0];
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      this.setState({
+        logoToUpload: file
+      });
+      console.log(this.state.logoToUpload);
+    };
+  };
   submitTheme = () => {
     axios.put(`${Config.baseUrl}api/themeresource/update/`,
       "{\"primaryColor\":\"" + this.state.primary + "\"," +
@@ -107,12 +122,25 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       "\"menuItemIconColor\": \"" + this.state.menuIcon + "\", " +
       "\"menuTextColor\": \"" + this.state.text + "\", " +
       "\"fontSize\": 14}").then(function () {
+        window.location.reload();
+      }
+    );
+  };
+  submitLogo = () => {
+    axios.put(`${Config.baseUrl}api/themeresource/updatelogo/`, this.state.logoToUpload).then(function () {
       window.location.reload();
     });
   };
 
   render() {
     const {Template} = this.props.bridge;
+    let imagePreviewUrl = this.state.imagePreviewUrl;
+    let $imagePreview = null;
+    if (imagePreviewUrl) {
+      $imagePreview = (<img src={imagePreviewUrl} />);
+    } else {
+      $imagePreview = (<div className="previewText">Please select an Image for Preview</div>);
+    }
     return (
       <Template title={"New UI Settings"}>
         <Card raised={true} className={this.props.classes.card}>
@@ -179,7 +207,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
                 accept="image/*"
                 className={this.props.classes.input}
                 id="contained-button-file"
-                multiple
+                onChange={(e)=>this._handleImageChange(e)}
                 type="file"
               />
               <label htmlFor="contained-button-file">
@@ -191,15 +219,22 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
                   disabled={true}
                   placeholder={'(Under construction!)'}/>
               </label>
+              <div className="imgPreview">
+                {$imagePreview}
+              </div>
               <div>
-              <Typography className={this.props.classes.labels} color={"textSecondary"}>Current Logo: </Typography>
-              <img src={`${Config.baseUrl}p/r/6.7.r88/com.equella.core/images/new-equella-logo.png`}/>
+                <Typography className={this.props.classes.labels} color={"textSecondary"}>Current Logo: </Typography>
+                <img src={`${Config.baseUrl}p/r/6.7.r88/com.equella.core/images/new-equella-logo.png`}/>
               </div>
             </div>
           </CardContent>
           <CardActions>
             <Button variant="text">
               Reset to Default
+            </Button>
+            <Button variant="contained" type={"submit"}
+                    onClick={this.submitLogo}>
+              Apply
             </Button>
           </CardActions>
           <Divider light={false}/>
