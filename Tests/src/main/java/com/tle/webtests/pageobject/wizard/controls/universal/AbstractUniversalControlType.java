@@ -26,7 +26,7 @@ public abstract class AbstractUniversalControlType<T extends AbstractUniversalCo
 
 	public PickAttachmentTypeDialog backToStart()
 	{
-		backToStartButton.click();
+		getBackToStartButton().click();
 		return new PickAttachmentTypeDialog(control).get();
 	}
 

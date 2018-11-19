@@ -23,27 +23,44 @@ public class FlickrUniversalControlType extends AbstractUniversalControlType<Fli
 {
 	public static final String CREATIVE_COMMONS_FILTER = "creative-commons-filter";
 
-	@FindBy(xpath = "id('{wizid}_dialog')//input[@id='searchform-query']")
-	private WebElement searchField;
-	@FindBy(xpath = "id('{wizid}_dialog')//input[@id='searchform-flickrid']")
-	private WebElement userField;
+	private WebElement getSearchField()
+	{
+		return byDialogXPath("//input[@id='searchform-query']");
+	}
+	private WebElement getUserField()
+	{
+		return byDialogXPath("//input[@id='searchform-flickrid']");
+	}
+
+	private WebElement getSearchButton()
+	{
+		return byDialogXPath("//button[@id='searchform-search']");
+	}
+
+	private WebElement getFilterOpener()
+	{
+		return byWizId("_dialog_fhflsra_filter");
+	}
 
 
-	@FindBy(xpath = "id('{wizid}_dialog')//button[@id='searchform-search']")
-	private WebElement searchButton;
+	public WebElement getNameField()
+	{
+		return byWizId("_dialog_fh_displayName");
+	}
 
-	@FindBy(id = "{wizid}_dialog_fhflsra_filter")
-	private WebElement filterOpener;
+	private WebElement getMainDiv()
+	{
+		return byDialogXPath("//div[contains(@class,'flickrHandler')]");
+	}
 
-	@FindBy(id = "{wizid}_dialog_fh_displayName")
-	protected WebElement nameField;
-	@FindBy(xpath = "id('{wizid}_dialog')//div[contains(@class,'flickrHandler')]")
-	private WebElement mainDiv;
 	@FindBy(id = "searchresults")
 	private WebElement resultsDiv;
 
-	@FindBy(id = "{wizid}_dialog_fhflrf_resetButton")
-	private WebElement resetFilterLink;
+	private WebElement getResetFilterLink()
+	{
+		return byWizId("_dialog_fhflrf_resetButton");
+	}
+
 
 	public static enum SearchType
 	{
@@ -58,7 +75,7 @@ public class FlickrUniversalControlType extends AbstractUniversalControlType<Fli
 	@Override
 	public WebElement getFindElement()
 	{
-		return mainDiv;
+		return getMainDiv();
 	}
 
 	@Override
@@ -73,17 +90,17 @@ public class FlickrUniversalControlType extends AbstractUniversalControlType<Fli
 
 		resultPage.click();
 
-		nextButton.click();
-		waitForElement(nameField);
+		getNextButton().click();
+		waitForElement(getNameField());
 
 		if( !Check.isEmpty(displayName) )
 		{
-			nameField.clear();
-			nameField.sendKeys(displayName);
+			getNameField().clear();
+			getNameField().sendKeys(displayName);
 		}
 
-		final String filename = nameField.getAttribute("value");
-		nextButton.click();
+		final String filename = getNameField().getAttribute("value");
+		getNextButton().click();
 		return filename;
 	}
 
@@ -104,22 +121,22 @@ public class FlickrUniversalControlType extends AbstractUniversalControlType<Fli
 		{
 			case GENERAL:
 				useTortSelection("text and tags");
-				field = searchField;
+				field = getSearchField();
 				break;
 			case GENERAL_ANY_TAGS:
 				useTortSelection("any tags");
-				field = searchField;
+				field = getSearchField();
 				break;
 			case GENERAL_ALL_TAGS:
 				useTortSelection("all tags");
-				field = searchField;
+				field = getSearchField();
 				break;
 			case AUTHOR:
-				field = userField;
+				field = getUserField();
 				clickSearch = false;
 				break;
 			default:
-				field = searchField;
+				field = getSearchField();
 		}
 		field.clear();
 		field.sendKeys(search);
@@ -127,7 +144,7 @@ public class FlickrUniversalControlType extends AbstractUniversalControlType<Fli
 		WaitingPageObject<ItemListPage> updateWaiter = resultsUpdateWaiter();
 		if( clickSearch )
 		{
-			searchButton.click();
+			getSearchButton().click();
 		}
 		else
 		{
@@ -152,7 +169,7 @@ public class FlickrUniversalControlType extends AbstractUniversalControlType<Fli
 	public ItemListPage resetFilters()
 	{
 		WaitingPageObject<ItemListPage> updateWaiter = resultsUpdateWaiter();
-		resetFilterLink.click();
+		getResetFilterLink().click();
 		return updateWaiter.get();
 	}
 
@@ -234,18 +251,12 @@ public class FlickrUniversalControlType extends AbstractUniversalControlType<Fli
 		return resultsPage;
 	}
 
-	@Override
-	public WebElement getNameField()
-	{
-		return nameField;
-	}
-
 	private void openFilters()
 	{
 		By filterContent = By.xpath("id('actioncontent')/div[contains(@class, 'filter')]");
 		if( !isPresent(filterContent) )
 		{
-			filterOpener.click();
+			getFilterOpener().click();
 			waiter.until(ExpectedConditions.visibilityOfElementLocated(filterContent));
 		}
 	}

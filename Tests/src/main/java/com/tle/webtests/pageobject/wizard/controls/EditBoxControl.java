@@ -1,5 +1,6 @@
 package com.tle.webtests.pageobject.wizard.controls;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -8,10 +9,15 @@ import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
 
 public class EditBoxControl extends AbstractWizardControl<EditBoxControl>
 {
-	@FindBy(xpath = "id('{wizid}')//div[@class=\"input text\"]/input")
-	private WebElement input;
-	@FindBy(xpath = "id('{wizid}')//h3")
-	private WebElement title;
+	private WebElement getInput()
+	{
+		return byWizIdXPath("//div[@class='input text']/input");
+	}
+
+	private WebElement getTitleWE()
+	{
+		return byWizIdXPath("//h3");
+	}
 
 	public EditBoxControl(PageContext context, int ctrlnum, AbstractWizardControlPage<?> page)
 	{
@@ -21,26 +27,26 @@ public class EditBoxControl extends AbstractWizardControl<EditBoxControl>
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return input;
+		return getInput();
 	}
 
 	public boolean isEnabled()
 	{
-		return input.isEnabled();
+		return getInput().isEnabled();
 	}
 
 	public void setText(String text)
 	{
-		input.sendKeys(text);
+		getInput().sendKeys(text);
 	}
 
 	public String getText()
 	{
-		return input.getAttribute("value");
+		return getInput().getAttribute("value");
 	}
 
 	public String getTitle()
 	{
-		return title.getText().trim();
+		return getTitleWE().getText().trim();
 	}
 }

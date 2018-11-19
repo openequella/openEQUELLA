@@ -12,17 +12,31 @@ import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 
 public class YouTubeUniversalControlType extends AbstractUniversalControlType<YouTubeUniversalControlType>
 {
-	@FindBy(id = "{wizid}_dialog_yh_query")
-	private WebElement searchField;
-	@FindBy(id = "{wizid}_dialog_yh_search")
-	private WebElement searchButton;
-	@FindBy(xpath = "id('{wizid}_dialog')//div[contains(@class,'youTubeHandler')]")
-	private WebElement mainDiv;
-	@FindBy(id = "{wizid}_dialog_yh_displayName")
-	protected WebElement nameField;
+	private WebElement getSearchField()
+	{
+		return byWizId("_dialog_yh_query");
+	}
 
-	@FindBy(id = "{wizid}_dialog_yh_channelList")
-	private WebElement channelList;
+	private WebElement getSearchButton()
+	{
+		return byWizId("_dialog_yh_search");
+	}
+
+	private WebElement getMainDiv()
+	{
+		return byDialogXPath("//div[contains(@class,'youTubeHandler')]");
+	}
+
+	public WebElement getNameField()
+	{
+		return byWizId("_dialog_yh_displayName");
+	}
+
+	private WebElement getChannelList()
+	{
+		return byWizId("_dialog_yh_channelList");
+	}
+
 
 	public YouTubeUniversalControlType(UniversalControl control)
 	{
@@ -31,19 +45,19 @@ public class YouTubeUniversalControlType extends AbstractUniversalControlType<Yo
 
 	public YouTubeUniversalControlType search(String searchTerm, String channelName)
 	{
-		searchField.clear();
-		searchField.sendKeys(searchTerm);
+		getSearchField().clear();
+		getSearchField().sendKeys(searchTerm);
 
 		if( channelName != null )
 		{
 			WaitingPageObject<YouTubeUniversalControlType> submitWaiter = submitWaiter();
-			EquellaSelect select = new EquellaSelect(context, channelList);
+			EquellaSelect select = new EquellaSelect(context, getChannelList());
 			select.selectByVisibleText(channelName);
 			submitWaiter.get();
 		}
 
 		WaitingPageObject<YouTubeUniversalControlType> submitWaiter = submitWaiter();
-		searchButton.click();
+		getSearchButton().click();
 		return submitWaiter.get();
 	}
 
@@ -60,8 +74,8 @@ public class YouTubeUniversalControlType extends AbstractUniversalControlType<Yo
 			driver.findElement(By.id(page.subComponentId(ctrlnum, "dialog_yh_results_" + (indexes[i] - 1)))).click();
 			submitWaiter.get();
 		}
-		WaitingPageObject<T> disappearWaiter = ExpectWaiter.waiter(removalCondition(addButton), returnTo);
-		addButton.click();
+		WaitingPageObject<T> disappearWaiter = ExpectWaiter.waiter(removalCondition(getAddButton()), returnTo);
+		getAddButton().click();
 		return disappearWaiter.get();
 	}
 
@@ -79,12 +93,7 @@ public class YouTubeUniversalControlType extends AbstractUniversalControlType<Yo
 	@Override
 	public WebElement getFindElement()
 	{
-		return mainDiv;
+		return getMainDiv();
 	}
 
-	@Override
-	public WebElement getNameField()
-	{
-		return nameField;
-	}
 }

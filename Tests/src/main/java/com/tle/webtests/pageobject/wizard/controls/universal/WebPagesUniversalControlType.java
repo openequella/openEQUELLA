@@ -15,15 +15,25 @@ import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 
 public class WebPagesUniversalControlType extends AbstractUniversalControlType<WebPagesUniversalControlType>
 {
-	@FindBy(xpath = "id('{wizid}_dialog')//div[contains(@class,'mypagesHandler')]")
-	private WebElement mainDiv;
-	@FindBy(xpath = "id('{wizid}_dialog')//a[text()='Import pages from scrapbook']")
-	private WebElement addScrap;
+	private WebElement getMainDiv()
+	{
+		return byDialogXPath("//div[contains(@class,'mypagesHandler')]");
+	}
+	private WebElement getAddScrap()
+	{
+		return byDialogXPath("//a[text()='Import pages from scrapbook']");
+	}
 
-	@FindBy(id = "{wizid}_dialog_mphmmpe_pageNameField")
-	private WebElement nameField;
-	@FindBy(id = "{wizid}_dialog_mphmmpp_previewCheckBox")
-	private WebElement previewCheckBox;
+	public WebElement getNameField()
+	{
+		return byWizId("_dialog_mphmmpe_pageNameField");
+	}
+
+	protected WebElement getPreviewCheckBox()
+	{
+		return byWizId("_dialog_mphmmpp_previewCheckBox");
+	}
+
 
 	public WebPagesUniversalControlType(UniversalControl universalControl)
 	{
@@ -31,15 +41,9 @@ public class WebPagesUniversalControlType extends AbstractUniversalControlType<W
 	}
 
 	@Override
-	protected WebElement getPreviewCheckbox()
-	{
-		return previewCheckBox;
-	}
-
-	@Override
 	public WebElement getFindElement()
 	{
-		return mainDiv;
+		return getMainDiv();
 	}
 
 	@Override
@@ -62,7 +66,7 @@ public class WebPagesUniversalControlType extends AbstractUniversalControlType<W
 
 	public UniversalControl importPageFromScrapbook(String description, String pageAttachment)
 	{
-		addScrap.click();
+		getAddScrap().click();
 
 		SelectionSession selectionSession = ExpectWaiter.waiter(
 			ExpectedConditions.frameToBeAvailableAndSwitchToIt("scrapiframe"), new SelectionSession(context)).get();
@@ -71,23 +75,18 @@ public class WebPagesUniversalControlType extends AbstractUniversalControlType<W
 		return add(pageAttachment);
 	}
 
-	@Override
-	public WebElement getNameField()
-	{
-		return nameField;
-	}
 
 	public UniversalControl add(String newPage)
 	{
-		addButton.click();
+		getAddButton().click();
 		return control.attachNameWaiter(newPage, false).get();
 	}
 
 	public WebPagesUniversalControlType setPreview(boolean b)
 	{
-		if( previewCheckBox.isSelected() != b )
+		if( getPreviewCheckBox().isSelected() != b )
 		{
-			previewCheckBox.click();
+			getPreviewCheckBox().click();
 		}
 		return this;
 	}

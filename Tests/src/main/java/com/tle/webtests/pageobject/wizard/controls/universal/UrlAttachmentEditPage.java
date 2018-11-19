@@ -7,10 +7,15 @@ import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 
 public class UrlAttachmentEditPage extends AbstractAttachmentEditPage<UrlAttachmentEditPage>
 {
-	@FindBy(id = "{wizid}_dialog_uh_displayName")
-	protected WebElement nameField;
-	@FindBy(id = "{wizid}_dialog_uh_previewCheckBox")
-	protected WebElement previewCheckBox;
+	protected WebElement getNameField()
+	{
+		return byWizId("_dialog_uh_displayName");
+	}
+
+	protected WebElement getPreviewCheckBox()
+	{
+		return byWizId("_dialog_uh_previewCheckBox");
+	}
 
 	public UrlAttachmentEditPage(UniversalControl universalControl)
 	{
@@ -20,26 +25,21 @@ public class UrlAttachmentEditPage extends AbstractAttachmentEditPage<UrlAttachm
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return nameField;
+		return getNameField();
 	}
 
-	@Override
-	protected WebElement getNameField()
-	{
-		return nameField;
-	}
 
 	public UrlAttachmentEditPage setPreview(boolean preview)
 	{
-		if( previewCheckBox.isSelected() != preview )
+		if( getPreviewCheckBox().isSelected() != preview )
 		{
-			previewCheckBox.click();
+			getPreviewCheckBox().click();
 		}
 		return this;
 	}
 
 	public boolean canPreview()
 	{
-		return isPresent(previewCheckBox);
+		return isPresent(getPreviewCheckBox());
 	}
 }

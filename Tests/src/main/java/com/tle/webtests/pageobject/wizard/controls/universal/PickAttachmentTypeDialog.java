@@ -8,8 +8,10 @@ import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 
 public class PickAttachmentTypeDialog extends AbstractAttachmentDialogPage<PickAttachmentTypeDialog>
 {
-	@FindBy(id = "{wizid}_dialog_pr")
-	private WebElement attachmentTypes;
+	private WebElement getAttachmentTypes()
+	{
+		return byWizId("_dialog_pr");
+	}
 
 	public PickAttachmentTypeDialog(UniversalControl universalControl)
 	{
@@ -19,13 +21,13 @@ public class PickAttachmentTypeDialog extends AbstractAttachmentDialogPage<PickA
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return attachmentTypes;
+		return getAttachmentTypes();
 	}
 
 	public <T extends AttachmentType<T, ?>> T clickType(T type)
 	{
-		attachmentTypes.findElement(By.xpath(".//h4[text()=" + quoteXPath(type.getType()) + "]")).click();
-		nextButton.click();
+		getAttachmentTypes().findElement(By.xpath(".//h4[text()=" + quoteXPath(type.getType()) + "]")).click();
+		getNextButton().click();
 		return type.get();
 	}
 }

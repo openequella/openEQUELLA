@@ -12,14 +12,25 @@ import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 public class GoogleBooksUniversalControlType extends AbstractUniversalControlType<GoogleBooksUniversalControlType>
 {
 
-	@FindBy(id = "{wizid}_dialog_gbh_query")
-	private WebElement searchField;
-	@FindBy(id = "{wizid}_dialog_gbh_search")
-	private WebElement searchButton;
-	@FindBy(xpath = "id('{wizid}_dialog')//div[contains(@class,'googleBookHandler')]")
-	private WebElement mainDiv;
-	@FindBy(id = "{wizid}_dialog_gbh_displayName")
-	protected WebElement nameField;
+	private WebElement getSearchField()
+	{
+		return byWizId("_dialog_gbh_query");
+	}
+
+	private WebElement getSearchButton()
+	{
+		return byWizId("_dialog_gbh_search");
+	}
+
+	private WebElement getMainDiv()
+	{
+		return byDialogXPath("//div[contains(@class,'googleBookHandler')]");
+	}
+
+	public WebElement getNameField()
+	{
+		return byWizId("_dialog_gbh_displayName");
+	}
 
 	public GoogleBooksUniversalControlType(UniversalControl control)
 	{
@@ -29,7 +40,7 @@ public class GoogleBooksUniversalControlType extends AbstractUniversalControlTyp
 	@Override
 	public WebElement getFindElement()
 	{
-		return mainDiv;
+		return getMainDiv();
 	}
 
 	@Override
@@ -40,10 +51,10 @@ public class GoogleBooksUniversalControlType extends AbstractUniversalControlTyp
 
 	public GoogleBooksUniversalControlType search(String searchTerm)
 	{
-		searchField.clear();
-		searchField.sendKeys(searchTerm);
+		getSearchField().clear();
+		getSearchField().sendKeys(searchTerm);
 		WaitingPageObject<GoogleBooksUniversalControlType> submitWaiter = submitWaiter();
-		searchButton.click();
+		getSearchButton().click();
 		return submitWaiter.get();
 	}
 
@@ -61,8 +72,8 @@ public class GoogleBooksUniversalControlType extends AbstractUniversalControlTyp
 			submitWaiter.get();
 		}
 
-		WaitingPageObject<T> disappearWaiter = ExpectWaiter.waiter(removalCondition(addButton), returnTo);
-		addButton.click();
+		WaitingPageObject<T> disappearWaiter = ExpectWaiter.waiter(removalCondition(getAddButton()), returnTo);
+		getAddButton().click();
 		return disappearWaiter.get();
 	}
 
@@ -71,9 +82,4 @@ public class GoogleBooksUniversalControlType extends AbstractUniversalControlTyp
 		return selectBooks(control.attachmentCountExpectation(indexes.length), indexes);
 	}
 
-	@Override
-	public WebElement getNameField()
-	{
-		return nameField;
-	}
 }

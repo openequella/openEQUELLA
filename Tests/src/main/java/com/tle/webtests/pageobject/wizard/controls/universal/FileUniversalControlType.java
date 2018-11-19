@@ -225,7 +225,7 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 		new MyResourcesPage(context, "scrapbook").results().getResultForTitle(description, 1)
 			.clickAction("Select", selectionSession);
 		selectionSession.finishedSelecting(this);
-		nextButton.click();
+		getNextButton().click();
 		return edit();
 	}
 

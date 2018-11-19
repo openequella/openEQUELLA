@@ -13,10 +13,16 @@ import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
 
 public class SelectUserControl extends AbstractWizardControl<SelectUserControl>
 {
-	@FindBy(id = "{wizid}_addLink")
-	private WebElement selectUserButton;
-	@FindBy(id = "{wizid}userselector")
-	private WebElement rootElem;
+	private WebElement getSelectUserButton()
+	{
+		return byWizId("_addLink");
+	}
+
+	private WebElement getRootElem()
+	{
+		return byWizId("userselector");
+	}
+
 
 	public SelectUserControl(PageContext context, int ctrlnum, AbstractWizardControlPage<?> page)
 	{
@@ -26,7 +32,7 @@ public class SelectUserControl extends AbstractWizardControl<SelectUserControl>
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return selectUserButton;
+		return getSelectUserButton();
 	}
 
 	private String xpathForUsername(String username)
@@ -36,7 +42,7 @@ public class SelectUserControl extends AbstractWizardControl<SelectUserControl>
 
 	public SelectUserDialog openDialog()
 	{
-		selectUserButton.click();
+		getSelectUserButton().click();
 		return new SelectUserDialog(context, page.subComponentId(ctrlnum, "s")).get();
 	}
 
@@ -49,7 +55,7 @@ public class SelectUserControl extends AbstractWizardControl<SelectUserControl>
 	public void removeUser(String username)
 	{
 		WaitingPageObject<SelectUserControl> waiter = removedWaiter(username);
-		rootElem.findElement(By.xpath(xpathForUsername(username) + "/../../td[@class='actions']/a[@class='unselect']"))
+		getRootElem().findElement(By.xpath(xpathForUsername(username) + "/../../td[@class='actions']/a[@class='unselect']"))
 			.click();
 		acceptConfirmation();
 		waiter.get();
@@ -58,12 +64,12 @@ public class SelectUserControl extends AbstractWizardControl<SelectUserControl>
 	public WaitingPageObject<SelectUserControl> selectedWaiter(String newlySelected)
 	{
 		return ExpectWaiter.waiter(
-			ExpectedConditions2.visibilityOfElementLocated(rootElem, By.xpath(xpathForUsername(newlySelected))), this);
+			ExpectedConditions2.visibilityOfElementLocated(getRootElem(), By.xpath(xpathForUsername(newlySelected))), this);
 	}
 
 	public WaitingPageObject<SelectUserControl> removedWaiter(String removed)
 	{
 		return ExpectWaiter.waiter(
-			ExpectedConditions2.invisibilityOfElementLocated(rootElem, By.xpath(xpathForUsername(removed))), this);
+			ExpectedConditions2.invisibilityOfElementLocated(getRootElem(), By.xpath(xpathForUsername(removed))), this);
 	}
 }

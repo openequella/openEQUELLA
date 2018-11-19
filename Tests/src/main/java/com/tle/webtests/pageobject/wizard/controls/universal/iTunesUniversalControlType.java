@@ -12,12 +12,21 @@ import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 
 public class iTunesUniversalControlType extends AbstractUniversalControlType<iTunesUniversalControlType>
 {
-	@FindBy(xpath = "id('{wizid}_dialog')//div[contains(@class,'iTunesUHandler')]")
-	private WebElement mainDiv;
-	@FindBy(id = "{wizid}_dialog_ituh_displayName")
-	protected WebElement nameField;
-	@FindBy(id = "{wizid}_dialog_ituh_treeView")
-	private WebElement tree;
+	private WebElement getMainDiv()
+	{
+		return byDialogXPath("//div[contains(@class,'iTunesUHandler')]");
+	}
+
+	public WebElement getNameField()
+	{
+		return byWizId("_dialog_ituh_displayName");
+	}
+
+	private WebElement getTree()
+	{
+		return byWizId("_dialog_ituh_treeView");
+	}
+
 
 	public iTunesUniversalControlType(UniversalControl control)
 	{
@@ -28,7 +37,7 @@ public class iTunesUniversalControlType extends AbstractUniversalControlType<iTu
 	@Override
 	public WebElement getFindElement()
 	{
-		return mainDiv;
+		return getMainDiv();
 	}
 
 	@Override
@@ -44,7 +53,7 @@ public class iTunesUniversalControlType extends AbstractUniversalControlType<iTu
 		{
 			if( node == null )
 			{
-				node = new TreeElement(tree, title).get();
+				node = new TreeElement(getTree(), title).get();
 			}
 			else
 			{
@@ -57,12 +66,6 @@ public class iTunesUniversalControlType extends AbstractUniversalControlType<iTu
 		node.add();
 		removalWaiter.get();
 		return edit();
-	}
-
-	@Override
-	public WebElement getNameField()
-	{
-		return nameField;
 	}
 
 	public class TreeElement extends AbstractPage<TreeElement>

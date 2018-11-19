@@ -13,10 +13,16 @@ import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
 
 public class SelectRoleControl extends AbstractWizardControl<SelectRoleControl>
 {
-	@FindBy(id = "{wizid}_addLink")
-	private WebElement selectRoleButton;
-	@FindBy(id = "{wizid}roleselector")
-	private WebElement rootElem;
+	private WebElement getSelectRoleButton()
+	{
+		return byWizId("_addLink");
+	}
+
+	private WebElement getRootElem()
+	{
+		return byWizId("roleselector");
+	}
+
 
 	public SelectRoleControl(PageContext context, int ctrlnum, AbstractWizardControlPage<?> page)
 	{
@@ -26,7 +32,7 @@ public class SelectRoleControl extends AbstractWizardControl<SelectRoleControl>
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return selectRoleButton;
+		return getSelectRoleButton();
 	}
 
 	private String xpathForRolename(String rolename)
@@ -36,7 +42,7 @@ public class SelectRoleControl extends AbstractWizardControl<SelectRoleControl>
 
 	public SelectRoleDialog openDialog()
 	{
-		selectRoleButton.click();
+		getSelectRoleButton().click();
 		return new SelectRoleDialog(context, page.subComponentId(ctrlnum, "s")).get();
 	}
 
@@ -49,7 +55,7 @@ public class SelectRoleControl extends AbstractWizardControl<SelectRoleControl>
 	public void removeRole(String rolename)
 	{
 		WaitingPageObject<SelectRoleControl> waiter = removedWaiter(rolename);
-		rootElem.findElement(By.xpath(xpathForRolename(rolename) + "/../td[@class='actions']/a[@class='unselect']"))
+		getRootElem().findElement(By.xpath(xpathForRolename(rolename) + "/../td[@class='actions']/a[@class='unselect']"))
 			.click();
 		acceptConfirmation();
 		waiter.get();
@@ -58,12 +64,12 @@ public class SelectRoleControl extends AbstractWizardControl<SelectRoleControl>
 	public WaitingPageObject<SelectRoleControl> selectedWaiter(String newlySelected)
 	{
 		return ExpectWaiter.waiter(
-			ExpectedConditions2.visibilityOfElementLocated(rootElem, By.xpath(xpathForRolename(newlySelected))), this);
+			ExpectedConditions2.visibilityOfElementLocated(getRootElem(), By.xpath(xpathForRolename(newlySelected))), this);
 	}
 
 	public WaitingPageObject<SelectRoleControl> removedWaiter(String removed)
 	{
 		return ExpectWaiter.waiter(
-			ExpectedConditions2.invisibilityOfElementLocated(rootElem, By.xpath(xpathForRolename(removed))), this);
+			ExpectedConditions2.invisibilityOfElementLocated(getRootElem(), By.xpath(xpathForRolename(removed))), this);
 	}
 }

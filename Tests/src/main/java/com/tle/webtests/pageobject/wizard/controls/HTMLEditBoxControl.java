@@ -15,18 +15,36 @@ import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
 
 public class HTMLEditBoxControl extends AbstractWizardControl<HTMLEditBoxControl>
 {
-	@FindBy(id = "{wizid}_mct_html_parent")
-	private WebElement editor;
-	@FindBy(xpath = "id('{wizid}')//div[@class='lockedHtml']")
-	private WebElement lockededitor;
-	@FindBy(id = "{wizid}_editLink")
-	private WebElement editlink;
-	@FindBy(id = "{wizid}_mct_html_ifr")
-	private WebElement iframe;
-	@FindBy(id = "{wizid}_mct_html_code")
-	private WebElement code;
-	@FindBy(id = "{wizid}_mct_html_spellchecker_action")
-	private WebElement spellcheckbutton;
+	private WebElement getEditor()
+	{
+		return byWizId("_mct_html_parent");
+	}
+
+	private WebElement getLockededitor()
+	{
+		return byWizIdXPath("//div[@class='lockedHtml']");
+	}
+
+	private WebElement getEditlink()
+	{
+		return byWizId("_editLink");
+	}
+
+	private WebElement getIframe()
+	{
+		return byWizId("_mct_html_ifr");
+	}
+
+	private WebElement getCode()
+	{
+		return byWizId("_mct_html_code");
+	}
+
+	private WebElement getSpellcheckbutton()
+	{
+		return byWizId("_mct_html_spellchecker_action");
+	}
+
 
 	private final boolean isOnDemand;
 	private boolean isLocked;
@@ -46,7 +64,7 @@ public class HTMLEditBoxControl extends AbstractWizardControl<HTMLEditBoxControl
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return isLocked ? lockededitor : editor;
+		return isLocked ? getLockededitor() : getEditor();
 	}
 
 	public boolean isLocked()
@@ -67,7 +85,7 @@ public class HTMLEditBoxControl extends AbstractWizardControl<HTMLEditBoxControl
 	{
 		if( isOnDemand )
 		{
-			editlink.click();
+			getEditlink().click();
 			isLocked = !isLocked;
 		}
 		return get();
@@ -75,12 +93,12 @@ public class HTMLEditBoxControl extends AbstractWizardControl<HTMLEditBoxControl
 
 	public boolean isEditable()
 	{
-		return !isVisible(lockededitor) && isVisible(editor);
+		return !isVisible(getLockededitor()) && isVisible(getEditor());
 	}
 
 	public void setBodyContent(String content)
 	{
-		driver.switchTo().frame(iframe);
+		driver.switchTo().frame(getIframe());
 		driver.switchTo().activeElement();
 		((JavascriptExecutor) driver).executeScript("document.body.innerHTML = " + quoteXPath(content));
 		driver.switchTo().defaultContent();
@@ -88,7 +106,7 @@ public class HTMLEditBoxControl extends AbstractWizardControl<HTMLEditBoxControl
 
 	public void setHtmlContent(String html)
 	{
-		code.click();
+		getCode().click();
 		driver.switchTo().frame(driver.findElement(By.xpath("//iframe[contains(@src, 'source_editor.htm')]")));
 		waitForElement(By.id("htmlSource"));
 		WebElement htmlTextArea = driver.findElement(By.id("htmlSource"));
@@ -102,17 +120,17 @@ public class HTMLEditBoxControl extends AbstractWizardControl<HTMLEditBoxControl
 	{
 		if( !isLocked() )
 		{
-			WebElement body = driver.switchTo().frame(iframe).findElement(By.xpath("//body[@id='tinymce']"));
+			WebElement body = driver.switchTo().frame(getIframe()).findElement(By.xpath("//body[@id='tinymce']"));
 			String content = body.getText();
 			driver.switchTo().defaultContent();
 			return content;
 		}
-		return lockededitor.getText();
+		return getLockededitor().getText();
 	}
 
 	public String getHtmlContent()
 	{
-		code.click();
+		getCode().click();
 		driver.switchTo().frame(driver.findElement(By.xpath("//iframe[contains(@src, 'source_editor.htm')]")));
 		waitForElement(By.id("htmlSource"));
 		WebElement htmlTextArea = driver.findElement(By.id("htmlSource"));
@@ -124,13 +142,13 @@ public class HTMLEditBoxControl extends AbstractWizardControl<HTMLEditBoxControl
 
 	public void invokeSpellChecker()
 	{
-		spellcheckbutton.click();
+		getSpellcheckbutton().click();
 		getWaiter().until(new ExpectedCondition<Boolean>()
 		{
 			@Override
 			public Boolean apply(WebDriver driver)
 			{
-				driver.switchTo().frame(iframe);
+				driver.switchTo().frame(getIframe());
 
 				try
 				{
@@ -155,7 +173,7 @@ public class HTMLEditBoxControl extends AbstractWizardControl<HTMLEditBoxControl
 
 	public boolean hasMispeltWords()
 	{
-		WebElement body = driver.switchTo().frame(iframe).findElement(By.xpath("//body[@id='tinymce']"));
+		WebElement body = driver.switchTo().frame(getIframe()).findElement(By.xpath("//body[@id='tinymce']"));
 		List<WebElement> redUnderlinedWords = body.findElements(By.className("mceItemHiddenSpellWord"));
 		return redUnderlinedWords.size() > 0;
 	}

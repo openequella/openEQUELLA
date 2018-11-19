@@ -12,12 +12,21 @@ import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
 
 public class CalendarControl extends AbstractWizardControl<CalendarControl>
 {
-	@FindBy(id = "{wizid}_clearLink")
-	private WebElement clearLink;
-	@FindBy(id = "{wizid}_calendar-control")
-	private WebElement mainDiv;
-	@FindBy(id = "{wizid}_clear")
-	private WebElement clearDiv;
+	private WebElement getClearLink()
+	{
+		return byWizId("_clearLink");
+	}
+
+	private WebElement getMainDiv()
+	{
+		return byWizId("_calendar-control");
+	}
+
+	private WebElement getClearDiv()
+	{
+		return byWizId("_clear");
+	}
+
 	private Calendar cal1;
 	private Calendar cal2;
 
@@ -29,7 +38,7 @@ public class CalendarControl extends AbstractWizardControl<CalendarControl>
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return mainDiv;
+		return getMainDiv();
 	}
 
 	@Override
@@ -42,8 +51,8 @@ public class CalendarControl extends AbstractWizardControl<CalendarControl>
 
 	public void clearDate()
 	{
-		WaitingPageObject<CalendarControl> ajaxUpdate = ajaxUpdate(mainDiv);
-		clearLink.click();
+		WaitingPageObject<CalendarControl> ajaxUpdate = ajaxUpdate(getMainDiv());
+		getClearLink().click();
 		ajaxUpdate.get();
 	}
 
@@ -60,13 +69,13 @@ public class CalendarControl extends AbstractWizardControl<CalendarControl>
 
 	public void setDate(java.util.Calendar cal)
 	{
-		cal1.get().setDate(cal, ajaxUpdate(clearDiv));
+		cal1.get().setDate(cal, ajaxUpdate(getClearDiv()));
 	}
 
 	public void setDateRange(java.util.Calendar start, java.util.Calendar end)
 	{
-		cal1.get().setDate(start, ajaxUpdate(clearDiv));
-		cal2.get().setDate(end, ajaxUpdate(clearDiv));
+		cal1.get().setDate(start, ajaxUpdate(getClearDiv()));
+		cal2.get().setDate(end, ajaxUpdate(getClearDiv()));
 	}
 
 	public void setDateRange(Date start, Date end)
@@ -85,7 +94,7 @@ public class CalendarControl extends AbstractWizardControl<CalendarControl>
 
 	public void setEndDate(Date endDate)
 	{
-		cal2.get().setDate(endDate, ajaxUpdate(clearDiv));
+		cal2.get().setDate(endDate, ajaxUpdate(getClearDiv()));
 	}
 
 }

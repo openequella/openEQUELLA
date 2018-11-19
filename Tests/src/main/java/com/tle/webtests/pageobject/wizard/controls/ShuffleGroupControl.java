@@ -10,14 +10,26 @@ import com.tle.webtests.pageobject.wizard.SubWizardPage;
 
 public class ShuffleGroupControl extends AbstractWizardControl<ShuffleGroupControl>
 {
-	@FindBy(id = "{wizid}_div")
-	private WebElement div;
-	@FindBy(id = "{wizid}_addLink")
-	private WebElement addLink;
-	@FindBy(id = "{wizid}_controlDialog")
-	private WebElement dialogDiv;
-	@FindBy(id = "{wizid}_controlDialog_ok")
-	private WebElement okButton;
+	private WebElement getDiv()
+	{
+		return byWizId("_div");
+	}
+
+	private WebElement getAddLink()
+	{
+		return byWizId("_addLink");
+	}
+
+	private WebElement getDialogDiv()
+	{
+		return byWizId("_controlDialog");
+	}
+
+	private WebElement getOkButton()
+	{
+		return byWizId("_controlDialog_ok");
+	}
+
 	private final int treenum;
 
 	public ShuffleGroupControl(PageContext context, int ctrlnum, AbstractWizardControlPage<?> page, int treenum)
@@ -29,39 +41,39 @@ public class ShuffleGroupControl extends AbstractWizardControl<ShuffleGroupContr
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return div;
+		return getDiv();
 	}
 
 	public SubWizardPage add()
 	{
-		addLink.click();
-		waitForElement(dialogDiv, By.xpath("."));
+		getAddLink().click();
+		waitForElement(getDialogDiv(), By.xpath("."));
 		return new SubWizardPage(context, page, treenum, ctrlnum);
 	}
 
 	public void ok()
 	{
-		okButton.click();
-		waitForElementInvisibility(dialogDiv);
+		getOkButton().click();
+		waitForElementInvisibility(getDialogDiv());
 	}
 
 	public void remove(String value)
 	{
-		div.findElement(
+		getDiv().findElement(
 			By.xpath("//tr/td[@class='shuffle-text' and text()=" + quoteXPath(value)
 				+ "]/../td[@class='actions']/a[@class='shuffle-remove']")).click();
 	}
 
 	public void edit(String value)
 	{
-		div.findElement(
+		getDiv().findElement(
 			By.xpath("//tr/td[@class='shuffle-text' and text()=" + quoteXPath(value)
 				+ "]/../td[@class='actions']/a[@class='shuffle-edit']")).click();
 	}
 
 	public boolean isDisabled()
 	{
-		return (" " + addLink.getAttribute("class").trim()).contains(" disabled");
+		return (" " + getAddLink().getAttribute("class").trim()).contains(" disabled");
 	}
 
 	public boolean hasValue(String value)

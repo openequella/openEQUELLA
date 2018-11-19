@@ -19,14 +19,26 @@ import com.tle.webtests.pageobject.wizard.WizardPageTab;
 
 public class AutoCompleteTermControl extends NewAbstractWizardControl<AutoCompleteTermControl>
 {
-	@FindBy(id = "{wizid}dautocompleteControl")
-	private WebElement controlElem;
-	@FindBy(id = "{wizid}d_s")
-	private WebElement selectButton;
-	@FindBy(id = "{wizid}d_e")
-	private WebElement termField;
-	@FindBy(id = "{wizid}d_t")
-	private WebElement selectionsTable;
+	private WebElement getControlElem()
+	{
+		return byWizId("dautocompleteControl");
+	}
+
+	private WebElement getSelectButton()
+	{
+		return byWizId("d_s");
+	}
+
+	private WebElement getTermField()
+	{
+		return byWizId("d_e");
+	}
+
+	private WebElement getSelectionsTable()
+	{
+		return byWizId("d_t");
+	}
+
 	private WebDriverWait acWaiter;
 
 	public AutoCompleteTermControl(PageContext context, int ctrlnum, AbstractWizardControlPage<?> page)
@@ -38,14 +50,14 @@ public class AutoCompleteTermControl extends NewAbstractWizardControl<AutoComple
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return controlElem;
+		return getControlElem();
 	}
 
 	public void addNewTerm(String term)
 	{
-		termField.sendKeys(term);
+		getTermField().sendKeys(term);
 		WaitingPageObject<StringSelectedStuff> waiter = getSelections().selectionWaiter(term);
-		selectButton.click();
+		getSelectButton().click();
 		waiter.get();
 	}
 
@@ -56,12 +68,12 @@ public class AutoCompleteTermControl extends NewAbstractWizardControl<AutoComple
 
 	public WizardPageTab selectExistingTerm(String prefix, WizardPageTab wizardPage, int number)
 	{
-		waiter.until(ExpectedConditions2.elementAttributeToContain(termField, "class", "ui-autocomplete-input"));
-		termField.clear();
-		termField.sendKeys(prefix);
+		waiter.until(ExpectedConditions2.elementAttributeToContain(getTermField(), "class", "ui-autocomplete-input"));
+		getTermField().clear();
+		getTermField().sendKeys(prefix);
 
 		AutoCompleteTermResults results = listWait();
-		WaitingPageObject<AutoCompleteTermControl> control = ajaxUpdateExpect(controlElem, selectionsTable);
+		WaitingPageObject<AutoCompleteTermControl> control = ajaxUpdateExpect(getControlElem(), getSelectionsTable());
 		results.selectByIndex(number);
 		control.get();
 		return wizardPage.get();
@@ -69,19 +81,19 @@ public class AutoCompleteTermControl extends NewAbstractWizardControl<AutoComple
 
 	public String getAddedTermByIndex(int index)
 	{
-		return selectionsTable.findElement(By.xpath("//tbody/tr[" + index + "]/td[1]")).getText();
+		return getSelectionsTable().findElement(By.xpath("//tbody/tr[" + index + "]/td[1]")).getText();
 	}
 
 	public AutoCompleteTermControl selectNothing()
 	{
-		WaitingPageObject<AutoCompleteTermControl> waiter = updateWaiter(selectionsTable);
-		selectButton.click();
+		WaitingPageObject<AutoCompleteTermControl> waiter = updateWaiter(getSelectionsTable());
+		getSelectButton().click();
 		return waiter.get();
 	}
 
 	public StringSelectedStuff getSelections()
 	{
-		return new StringSelectedStuff(context, controlElem);
+		return new StringSelectedStuff(context, getControlElem());
 	}
 
 	public void removeTerm(String term)
@@ -108,14 +120,14 @@ public class AutoCompleteTermControl extends NewAbstractWizardControl<AutoComple
 
 				if( Check.isEmpty(lastQuery) )
 				{
-					lastQuery = termField.getAttribute("value");
-					termField.sendKeys(Keys.ESCAPE);
-					termField.clear();
-					((JavascriptExecutor) driver).executeScript("$(arguments[0]).keydown();", termField);
+					lastQuery = getTermField().getAttribute("value");
+					getTermField().sendKeys(Keys.ESCAPE);
+					getTermField().clear();
+					((JavascriptExecutor) driver).executeScript("$(arguments[0]).keydown();", getTermField());
 				}
 				else
 				{
-					termField.sendKeys(lastQuery);
+					getTermField().sendKeys(lastQuery);
 					lastQuery = null;
 				}
 

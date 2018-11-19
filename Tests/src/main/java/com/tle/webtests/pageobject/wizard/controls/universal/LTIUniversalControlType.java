@@ -72,7 +72,7 @@ public class LTIUniversalControlType extends AbstractUniversalControlType<LTIUni
 
 	protected LTIUniversalControlType onwardToEditPage()
 	{
-		addButton.click();
+		getAddButton().click();
 		waitForElement(ccc.getNameField());
 		return get();
 	}
@@ -84,7 +84,7 @@ public class LTIUniversalControlType extends AbstractUniversalControlType<LTIUni
 
 	public UniversalControl add(String newPage)
 	{
-		addButton.click();
+		getAddButton().click();
 		return control.get();
 	}
 

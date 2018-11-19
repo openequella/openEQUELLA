@@ -11,10 +11,16 @@ import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
 
 public class PopupTermControl extends AbstractWizardControl<PopupTermControl>
 {
-	@FindBy(id = "{wizid}d_addTermLink")
-	private WebElement addTermButton;
-	@FindBy(id = "{wizid}dpopupbrowserControl")
-	private WebElement selectionsElem;
+	private WebElement getAddTermButton()
+	{
+		return byWizId("d_addTermLink");
+	}
+
+	private WebElement getSelectionsElem()
+	{
+		return byWizId("dpopupbrowserControl");
+	}
+
 
 	public PopupTermControl(PageContext context, int ctrlnum, AbstractWizardControlPage<?> page)
 	{
@@ -24,17 +30,17 @@ public class PopupTermControl extends AbstractWizardControl<PopupTermControl>
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return addTermButton;
+		return getAddTermButton();
 	}
 
 	protected WebElement getControlElement()
 	{
-		return selectionsElem;
+		return getSelectionsElem();
 	}
 
 	public PopupTermDialog openDialog()
 	{
-		addTermButton.click();
+		getAddTermButton().click();
 		return new PopupTermDialog(context, page.getControlId(ctrlnum) + "d_popupBrowserDialog", page, ctrlnum).get();
 	}
 

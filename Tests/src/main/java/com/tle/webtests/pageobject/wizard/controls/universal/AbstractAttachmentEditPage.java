@@ -61,7 +61,7 @@ public abstract class AbstractAttachmentEditPage<T extends AbstractAttachmentDia
 		{
 			waiter = control.attachNameWaiter(newName, disabled);
 		}
-		saveButton.click();
+		getSaveButton().click();
 		return waiter.get();
 	}
 
@@ -76,7 +76,7 @@ public abstract class AbstractAttachmentEditPage<T extends AbstractAttachmentDia
 
 	public PickAttachmentTypeDialog backToStart()
 	{
-		backToStartButton.click();
+		getBackToStartButton().click();
 		return new PickAttachmentTypeDialog(control).get();
 	}
 

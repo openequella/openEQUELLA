@@ -8,14 +8,26 @@ import org.openqa.selenium.support.FindBy;
 
 public class FileAttachmentEditPage extends AbstractFileAttachmentEditPage<FileAttachmentEditPage>
 {
-	@FindBy(id = "{wizid}_dialog_fuh_fd_selectAll")
-	private WebElement selectAll;
-	@FindBy(id = "{wizid}_dialog_fuh_fd_fileListDiv")
-	private WebElement zipList;
-	@FindBy(id = "{wizid}_dialog_fuh_fd_executeUnzip")
-	private WebElement executeUnzip;
-	@FindBy(id = "{wizid}_dialog_fuh_fd_attachZip")
-	private WebElement attachZipFile;
+	private WebElement getSelectAll()
+	{
+		return byWizId("_dialog_fuh_fd_selectAll");
+	}
+
+	private WebElement getZipList()
+	{
+		return byWizId("_dialog_fuh_fd_fileListDiv");
+	}
+
+	private WebElement getExecuteUnzip()
+	{
+		return byWizId("_dialog_fuh_fd_executeUnzip");
+	}
+
+	private WebElement getAttachZipFile()
+	{
+		return byWizId("_dialog_fuh_fd_attachZip");
+	}
+
 
 	public FileAttachmentEditPage(UniversalControl universalControl)
 	{
@@ -30,7 +42,7 @@ public class FileAttachmentEditPage extends AbstractFileAttachmentEditPage<FileA
 
 	public FileAttachmentEditPage selectAll()
 	{
-		selectAll.click();
+		getSelectAll().click();
 		return this;
 	}
 
@@ -42,16 +54,16 @@ public class FileAttachmentEditPage extends AbstractFileAttachmentEditPage<FileA
 
 	public FileAttachmentEditPage unzip()
 	{
-		executeUnzip.click();
-		waitForElement(zipList);
+		getExecuteUnzip().click();
+		waitForElement(getZipList());
 		return this;
 	}
 
 	public FileAttachmentEditPage setAttachZip(boolean attachZip)
 	{
-		if (attachZipFile.isSelected() != attachZip)
+		if (getAttachZipFile().isSelected() != attachZip)
 		{
-			attachZipFile.click();
+			getAttachZipFile().click();
 		}
 		return this;
 	}

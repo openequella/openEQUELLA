@@ -13,18 +13,36 @@ import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 
 public class NavNodeEditor extends NewAbstractWizardControl<NavNodeEditor>
 {
-	@FindBy(id = "{wizid}optsingle")
-	private WebElement singleResource;
-	@FindBy(id = "{wizid}optmultiple")
-	private WebElement multipleResource;
-	@FindBy(id = "{wizid}_al")
-	private WebElement resource;
-	@FindBy(id = "{wizid}_vl")
-	private WebElement viewer;
-	@FindBy(id = "{wizid}_nd")
-	private WebElement nameField;
-	@FindBy(id = "{wizid}_ta")
-	private WebElement addResourceButton;
+	private WebElement getSingleResource()
+	{
+		return byWizId("optsingle");
+	}
+
+	private WebElement getMultipleResource()
+	{
+		return byWizId("optmultiple");
+	}
+
+	private WebElement getResource()
+	{
+		return byWizId("_al");
+	}
+
+	private WebElement getViewer()
+	{
+		return byWizId("_vl");
+	}
+
+	private WebElement getNameField()
+	{
+		return byWizId("_nd");
+	}
+
+	private WebElement getAddResourceButton()
+	{
+		return byWizId("_ta");
+	}
+
 	@FindBy(id = "tabs")
 	private WebElement tabsElem;
 
@@ -39,7 +57,7 @@ public class NavNodeEditor extends NewAbstractWizardControl<NavNodeEditor>
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return nameField;
+		return getNameField();
 	}
 
 	@Override
@@ -56,34 +74,34 @@ public class NavNodeEditor extends NewAbstractWizardControl<NavNodeEditor>
 	{
 		if( !Check.isEmpty(newTitle) )
 		{
-			nameField.clear();
-			nameField.sendKeys(newTitle);
+			getNameField().clear();
+			getNameField().sendKeys(newTitle);
 			navNode.setDisplayName(newTitle);
 		}
 		if( !Check.isEmpty(resourceName) )
 		{
-			new EquellaSelect(context, resource).selectByVisibleText(resourceName);
+			new EquellaSelect(context, getResource()).selectByVisibleText(resourceName);
 		}
 		if( !Check.isEmpty(viewerName) )
 		{
-			new EquellaSelect(context, viewer).selectByVisibleText(viewerName);
+			new EquellaSelect(context, getViewer()).selectByVisibleText(viewerName);
 		}
 	}
 
 	public void setMultiple(boolean multiple)
 	{
-		if( multipleResource.isSelected() != multiple )
+		if( getMultipleResource().isSelected() != multiple )
 		{
 			ExpectWaiter<NavNodeEditor> waiter;
 			if( multiple )
 			{
 				waiter = ExpectWaiter.waiter(ExpectedConditions.visibilityOf(tabsElem), this);
-				multipleResource.click();
+				getMultipleResource().click();
 			}
 			else
 			{
 				waiter = ExpectWaiter.waiter(ExpectedConditions2.invisibilityOf(tabsElem), this);
-				singleResource.click();
+				getSingleResource().click();
 			}
 			waiter.get();
 		}
@@ -91,20 +109,32 @@ public class NavNodeEditor extends NewAbstractWizardControl<NavNodeEditor>
 
 	public AddTabDialog addTab()
 	{
-		addResourceButton.click();
+		getAddResourceButton().click();
 		return new AddTabDialog(this).get();
 	}
 
 	public static class AddTabDialog extends NewAbstractWizardControl<AddTabDialog>
 	{
-		@FindBy(id = "{wizid}_tabDialog_tal")
-		private WebElement tabResource;
-		@FindBy(id = "{wizid}_tabDialog_tvl")
-		private WebElement tabViewer;
-		@FindBy(id = "{wizid}_tabDialog_ptn")
-		private WebElement tabNameField;
-		@FindBy(id = "{wizid}_tabDialog_ok")
-		private WebElement tabSave;
+		private WebElement getTabResource()
+	{
+		return byWizId("_tabDialog_tal");
+	}
+
+		private WebElement getTabViewer()
+	{
+		return byWizId("_tabDialog_tvl");
+	}
+
+		private WebElement getTabNameField()
+	{
+		return byWizId("_tabDialog_ptn");
+	}
+
+		private WebElement getTabSave()
+	{
+		return byWizId("_tabDialog_ok");
+	}
+
 		private final NavNodeEditor navEditor;
 
 		public AddTabDialog(NavNodeEditor navEditor)
@@ -116,24 +146,24 @@ public class NavNodeEditor extends NewAbstractWizardControl<NavNodeEditor>
 		@Override
 		protected WebElement findLoadedElement()
 		{
-			return tabNameField;
+			return getTabNameField();
 		}
 
 		public void setResource(String resource)
 		{
-			new EquellaSelect(context, tabResource).selectByVisibleText(resource);
+			new EquellaSelect(context, getTabResource()).selectByVisibleText(resource);
 		}
 
 		public void setTabName(String tabName)
 		{
-			tabNameField.clear();
-			tabNameField.sendKeys(tabName);
+			getTabNameField().clear();
+			getTabNameField().sendKeys(tabName);
 		}
 
 		public NavNodeEditor save()
 		{
-			WaitingPageObject<NavNodeEditor> waiter = navEditor.getTabWaiter(tabNameField.getAttribute("value"));
-			tabSave.click();
+			WaitingPageObject<NavNodeEditor> waiter = navEditor.getTabWaiter(getTabNameField().getAttribute("value"));
+			getTabSave().click();
 			return waiter.get();
 		}
 	}

@@ -17,38 +17,89 @@ import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
  */
 public class LTICommonControlContainerImpl extends AbstractWizardControlPage<LTICommonControlContainerImpl>
 {
-	@FindBy(xpath = "id('{wizid}_dialog')//div[contains(@class, 'ltiHandler')]")
-	private WebElement mainDiv;
+	protected WebElement byWizIdXPath(String xpath)
+	{
+		return byWizIdIdXPath("", xpath);
+	}
 
-	@FindBy(id = "{wizid}_dialog_lh_displayName")
-	private WebElement nameField;
+	protected WebElement byWizIdIdXPath(String postId, String xpath)
+	{
+		return driver.findElement(By.xpath("id("+quoteXPath(getWizid()+postId)+")"+xpath));
+	}
 
-	@FindBy(xpath = "id('{wizid}_dialog')//select[@id='{wizid}_dialog_lh_ltisel']")
-	private WebElement selectProvider;
+	protected WebElement byWizId(String postfix)
+	{
+		return driver.findElement(By.id(getWizid()+postfix));
+	}
 
-	@FindBy(id = "{wizid}_dialog_lh_launchUrl")
-	private WebElement launchUrlEditBox;
+	public WebElement byDialogXPath(String xpath)
+	{
+		return byWizIdIdXPath("_dialog", xpath);
+	}
 
-	@FindBy(id = "{wizid}_dialog_lh_consumerKey")
-	private WebElement consumerKeyEditBox;
+	protected WebElement getMainDiv()
+	{
+		return byDialogXPath("//div[contains(@class, 'ltiHandler')]");
+	}
 
-	@FindBy(id = "{wizid}_dialog_lh_sharedSecret")
-	private WebElement sharedSecretEditBox;
+	protected WebElement getNameField()
+	{
+		return byWizId("_dialog_lh_displayName");
+	}
 
-	@FindBy(id = "{wizid}_dialog_lh_customParams")
-	private WebElement customParamsEditBox;
 
-	@FindBy(id = "{wizid}_dialog_lh_iconUrl")
-	private WebElement iconUrlEditBox;
+	protected WebElement getSelectProvider()
+	{
+		return byDialogXPath("//select[@id="+ quoteXPath(getWizid()+"_dialog_lh_ltisel")+"]");
+	}
 
-	@FindBy(id = "{wizid}_dialog_lh_useDefaultPrivacy")
-	private WebElement useDefaultPrivacyCheckBox;
+	protected WebElement getLaunchUrlEditBox()
+	{
+		return byWizId("_dialog_lh_launchUrl");
+	}
 
-	@FindBy(id = "{wizid}_dialog_lh_shareName")
-	private WebElement shareNameCheckBox;
 
-	@FindBy(id = "{wizid}_dialog_lh_shareEmail")
-	private WebElement shareEmailCheckBox;
+	protected WebElement getConsumerKeyEditBox()
+	{
+		return byWizId("_dialog_lh_consumerKey");
+	}
+
+
+	protected WebElement getSharedSecretEditBox()
+	{
+		return byWizId("_dialog_lh_sharedSecret");
+	}
+
+
+	protected WebElement getCustomParamsEditBox()
+	{
+		return byWizId("_dialog_lh_customParams");
+	}
+
+
+	protected WebElement getIconUrlEditBox()
+	{
+		return byWizId("_dialog_lh_iconUrl");
+	}
+
+
+	protected WebElement getUseDefaultPrivacyCheckBox()
+	{
+		return byWizId("_dialog_lh_useDefaultPrivacy");
+	}
+
+
+	protected WebElement getShareNameCheckBox()
+	{
+		return byWizId("_dialog_lh_shareName");
+	}
+
+
+	protected WebElement getShareEmailCheckBox()
+	{
+		return byWizId("_dialog_lh_shareEmail");
+	}
+
 
 	private final String wizid;
 
@@ -166,60 +217,5 @@ public class LTICommonControlContainerImpl extends AbstractWizardControlPage<LTI
 	public String getControlId(int ctrlNum)
 	{
 		return "p" + pageNum + "c" + ctrlNum;
-	}
-
-	protected WebElement getMainDiv()
-	{
-		return mainDiv;
-	}
-
-	protected WebElement getNameField()
-	{
-		return nameField;
-	}
-
-	protected WebElement getSelectProvider()
-	{
-		return selectProvider;
-	}
-
-	protected WebElement getLaunchUrlEditBox()
-	{
-		return launchUrlEditBox;
-	}
-
-	protected WebElement getCustomParamsEditBox()
-	{
-		return customParamsEditBox;
-	}
-
-	protected WebElement getConsumerKeyEditBox()
-	{
-		return consumerKeyEditBox;
-	}
-
-	protected WebElement getSharedSecretEditBox()
-	{
-		return sharedSecretEditBox;
-	}
-
-	protected WebElement getIconUrlEditBox()
-	{
-		return iconUrlEditBox;
-	}
-
-	protected WebElement getUseDefaultPrivacyCheckBox()
-	{
-		return useDefaultPrivacyCheckBox;
-	}
-
-	protected WebElement getShareNameCheckBox()
-	{
-		return shareNameCheckBox;
-	}
-
-	protected WebElement getShareEmailCheckBox()
-	{
-		return shareEmailCheckBox;
 	}
 }

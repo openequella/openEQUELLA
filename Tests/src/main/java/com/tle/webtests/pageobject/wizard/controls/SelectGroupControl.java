@@ -13,10 +13,16 @@ import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
 
 public class SelectGroupControl extends AbstractWizardControl<SelectGroupControl>
 {
-	@FindBy(id = "{wizid}_addLink")
-	private WebElement selectGroupButton;
-	@FindBy(id = "{wizid}groupselector")
-	private WebElement rootElem;
+	private WebElement getSelectGroupButton()
+	{
+		return byWizId("_addLink");
+	}
+
+	private WebElement getRootElem()
+	{
+		return byWizId("groupselector");
+	}
+
 
 	public SelectGroupControl(PageContext context, int ctrlnum, AbstractWizardControlPage<?> page)
 	{
@@ -26,7 +32,7 @@ public class SelectGroupControl extends AbstractWizardControl<SelectGroupControl
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return selectGroupButton;
+		return getSelectGroupButton();
 	}
 
 	private String xpathForGroupname(String groupname)
@@ -36,7 +42,7 @@ public class SelectGroupControl extends AbstractWizardControl<SelectGroupControl
 
 	public SelectGroupDialog openDialog()
 	{
-		selectGroupButton.click();
+		getSelectGroupButton().click();
 		return new SelectGroupDialog(context, page.subComponentId(ctrlnum, "s")).get();
 	}
 
@@ -49,7 +55,7 @@ public class SelectGroupControl extends AbstractWizardControl<SelectGroupControl
 	public void removeGroup(String groupname)
 	{
 		WaitingPageObject<SelectGroupControl> waiter = removedWaiter(groupname);
-		rootElem.findElement(By.xpath(xpathForGroupname(groupname) + "/../td[@class='actions']/a[@class='unselect']"))
+		getRootElem().findElement(By.xpath(xpathForGroupname(groupname) + "/../td[@class='actions']/a[@class='unselect']"))
 			.click();
 		acceptConfirmation();
 		waiter.get();
@@ -58,12 +64,12 @@ public class SelectGroupControl extends AbstractWizardControl<SelectGroupControl
 	public WaitingPageObject<SelectGroupControl> selectedWaiter(String newlySelected)
 	{
 		return ExpectWaiter.waiter(
-			ExpectedConditions2.visibilityOfElementLocated(rootElem, By.xpath(xpathForGroupname(newlySelected))), this);
+			ExpectedConditions2.visibilityOfElementLocated(getRootElem(), By.xpath(xpathForGroupname(newlySelected))), this);
 	}
 
 	public WaitingPageObject<SelectGroupControl> removedWaiter(String removed)
 	{
 		return ExpectWaiter.waiter(
-			ExpectedConditions2.invisibilityOfElementLocated(rootElem, By.xpath(xpathForGroupname(removed))), this);
+			ExpectedConditions2.invisibilityOfElementLocated(getRootElem(), By.xpath(xpathForGroupname(removed))), this);
 	}
 }

@@ -9,8 +9,10 @@ import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
 
 public abstract class AbstractWizardControl<T extends AbstractWizardControl<T>> extends NewAbstractWizardControl<T>
 {
-	@FindBy(xpath = "id('{wizid}')//div/p[@class=\"ctrlinvalidmessage\"]")
-	private WebElement invalidMessage;
+	private WebElement getInvalidMessageWE()
+	{
+		return byWizIdXPath("//div/p[@class='ctrlinvalidmessage']");
+	}
 
 	public AbstractWizardControl(PageContext context, int ctrlnum, AbstractWizardControlPage<?> page)
 	{
@@ -22,11 +24,11 @@ public abstract class AbstractWizardControl<T extends AbstractWizardControl<T>> 
 
 	public boolean isShowingAnyError()
 	{
-		return invalidMessage.isDisplayed();
+		return getInvalidMessageWE().isDisplayed();
 	}
 
 	public String getInvalidMessage()
 	{
-		return (isShowingAnyError() ? invalidMessage.getText() : "");
+		return (isShowingAnyError() ? getInvalidMessageWE().getText() : "");
 	}
 }

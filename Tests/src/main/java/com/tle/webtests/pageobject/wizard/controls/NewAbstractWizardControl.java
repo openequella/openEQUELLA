@@ -31,6 +31,16 @@ public class NewAbstractWizardControl<T extends PageObject> extends AbstractPage
 		return driver.findElement(By.id(getWizid()+postfix));
 	}
 
+	protected WebElement byWizIdXPath(String xpath)
+	{
+		return byWizIdIdXPath("", xpath);
+	}
+
+	protected WebElement byWizIdIdXPath(String postId, String xpath)
+	{
+		return driver.findElement(By.xpath("id("+quoteXPath(getWizid()+postId)+")"+xpath));
+	}
+
 	public String getWizid()
 	{
 		return page.getControlId(ctrlnum);

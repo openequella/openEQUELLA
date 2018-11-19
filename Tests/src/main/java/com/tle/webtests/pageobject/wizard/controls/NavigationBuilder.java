@@ -10,22 +10,45 @@ import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
 
 public class NavigationBuilder extends AbstractWizardControl<NavigationBuilder>
 {
-	@FindBy(id = "{wizid}_pp")
-	private WebElement initButton;
-	@FindBy(id = "{wizid}_ac")
-	private WebElement addChildButton;
-	@FindBy(id = "{wizid}_as")
-	private WebElement addSiblingButton;
-	@FindBy(id = "{wizid}_r")
-	private WebElement removeButton;
-	@FindBy(id = "{wizid}_mu")
-	private WebElement moveUpButton;
-	@FindBy(id = "{wizid}_md")
-	private WebElement moveDownButton;
-	@FindBy(id = "{wizid}_mn")
-	private WebElement showOthersCheck;
-	@FindBy(id = "{wizid}_ss")
-	private WebElement showSplitCheck;
+	private WebElement getInitButton()
+	{
+		return byWizId("_pp");
+	}
+
+	private WebElement getAddChildButton()
+	{
+		return byWizId("_ac");
+	}
+
+	private WebElement getAddSiblingButton()
+	{
+		return byWizId("_as");
+	}
+
+	private WebElement getRemoveButton()
+	{
+		return byWizId("_r");
+	}
+
+	private WebElement getMoveUpButton()
+	{
+		return byWizId("_mu");
+	}
+
+	private WebElement getMoveDownButton()
+	{
+		return byWizId("_md");
+	}
+
+	private WebElement getShowOthersCheck()
+	{
+		return byWizId("_mn");
+	}
+
+	private WebElement getShowSplitCheck()
+	{
+		return byWizId("_ss");
+	}
 
 	@FindBy(id = "root")
 	private WebElement rootDiv;
@@ -38,13 +61,13 @@ public class NavigationBuilder extends AbstractWizardControl<NavigationBuilder>
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return initButton;
+		return getInitButton();
 	}
 
 	public NavigationBuilder initialiseNavigation(boolean wasBlank)
 	{
 		WaitingPageObject<NavigationBuilder> waiter = updateWaiter();
-		initButton.click();
+		getInitButton().click();
 		if( !wasBlank )
 		{
 			acceptConfirmation();
@@ -75,7 +98,7 @@ public class NavigationBuilder extends AbstractWizardControl<NavigationBuilder>
 	{
 		NavNodePageObject node = selectNode(title);
 		WaitingPageObject<NavigationBuilder> removalWaiter = node.removalWaiter();
-		removeButton.click();
+		getRemoveButton().click();
 		removalWaiter.get();
 	}
 
@@ -88,7 +111,7 @@ public class NavigationBuilder extends AbstractWizardControl<NavigationBuilder>
 	{
 		NavNodePageObject parentNode = selectNode(target);
 		NavNodePageObject newChild = parentNode.newChild();
-		addChildButton.click();
+		getAddChildButton().click();
 		newChild.get().select().setFields(newTitle, resourceName, viewerName);
 		return newChild;
 	}
@@ -102,7 +125,7 @@ public class NavigationBuilder extends AbstractWizardControl<NavigationBuilder>
 	{
 		NavNodePageObject sibling = selectNode(target);
 		NavNodePageObject newSibling = sibling.newSibling();
-		addSiblingButton.click();
+		getAddSiblingButton().click();
 		newSibling.get().select().setFields(newTitle, resourceName, viewerName);
 		return newSibling;
 	}
@@ -110,7 +133,7 @@ public class NavigationBuilder extends AbstractWizardControl<NavigationBuilder>
 	public NavNodePageObject addTopLevelNode(String displayName, String resourceName)
 	{
 		NavNodePageObject newSibling = new NavNodePageObject(this, rootDiv, "New Node");
-		addSiblingButton.click();
+		getAddSiblingButton().click();
 		newSibling.get().select().setFields(displayName, resourceName, "");
 		return newSibling;
 	}
@@ -119,7 +142,7 @@ public class NavigationBuilder extends AbstractWizardControl<NavigationBuilder>
 	{
 		NavNodePageObject navNode = selectNode(target);
 		WaitingPageObject<NavNodePageObject> waiter = navNode.moveWaiter();
-		moveUpButton.click();
+		getMoveUpButton().click();
 		waiter.get();
 	}
 
@@ -127,7 +150,7 @@ public class NavigationBuilder extends AbstractWizardControl<NavigationBuilder>
 	{
 		NavNodePageObject navNode = selectNode(target);
 		WaitingPageObject<NavNodePageObject> waiter = navNode.moveWaiter();
-		moveDownButton.click();
+		getMoveDownButton().click();
 		waiter.get();
 	}
 
@@ -153,17 +176,17 @@ public class NavigationBuilder extends AbstractWizardControl<NavigationBuilder>
 
 	public void setShowOtherAttachments(boolean check)
 	{
-		if( showOthersCheck.isSelected() != check )
+		if( getShowOthersCheck().isSelected() != check )
 		{
-			showOthersCheck.click();
+			getShowOthersCheck().click();
 		}
 	}
 
 	public void setSplitView(boolean check)
 	{
-		if( showSplitCheck.isSelected() != check )
+		if( getShowSplitCheck().isSelected() != check )
 		{
-			showSplitCheck.click();
+			getShowSplitCheck().click();
 		}
 	}
 }

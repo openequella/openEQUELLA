@@ -13,20 +13,41 @@ import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 
 public class KalturaUniversalControlType extends AbstractUniversalControlType<KalturaUniversalControlType>
 {
-	@FindBy(id = "{wizid}_dialog_kh_choice_0")
-	private WebElement addExisting;
-	@FindBy(id = "{wizid}_dialog_kh_choice_1")
-	private WebElement addNew;
-	@FindBy(id = "{wizid}_dialog_kh_query")
-	private WebElement searchField;
-	@FindBy(id = "{wizid}_dialog_kh_search")
-	private WebElement searchButton;
-	@FindBy(xpath = "id('{wizid}_dialog')//div[contains(@class,'kalturaHandler')]")
-	private WebElement mainDiv;
-	@FindBy(id = "{wizid}_dialog_kh_displayName")
-	private WebElement nameField;
-	@FindBy(id = "{wizid}_dialog_kh_divKcw")
-	private WebElement kcwFlashWidget;
+	private WebElement getAddExisting()
+	{
+		return byWizId("_dialog_kh_choice_0");
+	}
+
+	private WebElement getAddNew()
+	{
+		return byWizId("_dialog_kh_choice_1");
+	}
+
+	private WebElement getSearchField()
+	{
+		return byWizId("_dialog_kh_query");
+	}
+
+	private WebElement getSearchButton()
+	{
+		return byWizId("_dialog_kh_search");
+	}
+
+	private WebElement getMainDiv()
+	{
+		return byDialogXPath("//div[contains(@class,'kalturaHandler')]");
+	}
+
+	public WebElement getNameField()
+	{
+		return byWizId("_dialog_kh_displayName");
+	}
+
+	private WebElement getKcwFlashWidget()
+	{
+		return byWizId("_dialog_kh_divKcw");
+	}
+
 
 	public enum KalturaOption
 	{
@@ -42,11 +63,11 @@ public class KalturaUniversalControlType extends AbstractUniversalControlType<Ka
 	public KalturaUniversalControlType search(String query)
 	{
 		clickChoice("Add existing Kaltura media");
-		waitForElement(searchField);
-		searchField.clear();
-		searchField.sendKeys(query);
+		waitForElement(getSearchField());
+		getSearchField().clear();
+		getSearchField().sendKeys(query);
 		WaitingPageObject<KalturaUniversalControlType> submitWaiter = submitWaiter();
-		searchButton.click();
+		getSearchButton().click();
 		return submitWaiter.get();
 	}
 
@@ -69,22 +90,22 @@ public class KalturaUniversalControlType extends AbstractUniversalControlType<Ka
 			submitWaiter.get();
 		}
 
-		WaitingPageObject<T> disappearWaiter = ExpectWaiter.waiter(removalCondition(addButton), returnTo);
-		addButton.click();
+		WaitingPageObject<T> disappearWaiter = ExpectWaiter.waiter(removalCondition(getAddButton()), returnTo);
+		getAddButton().click();
 		return disappearWaiter.get();
 	}
 
 	public void clickChoice(String choice)
 	{
 		driver.findElement(By.xpath("//h4/label[text()=" + quoteXPath(choice) + "]")).click();
-		nextButton.click();
+		getNextButton().click();
 	}
 
 	public String addNewVideo(String displayName, String... tags)
 	{
-		addNew.click();
-		nextButton.click();
-		waitForElement(kcwFlashWidget);
+		getAddNew().click();
+		getNextButton().click();
+		waitForElement(getKcwFlashWidget());
 
 		kcwNext();
 
@@ -100,13 +121,7 @@ public class KalturaUniversalControlType extends AbstractUniversalControlType<Ka
 	@Override
 	public WebElement getFindElement()
 	{
-		return mainDiv;
-	}
-
-	@Override
-	public WebElement getNameField()
-	{
-		return nameField;
+		return getMainDiv();
 	}
 
 	public boolean isDisabled()
@@ -117,12 +132,12 @@ public class KalturaUniversalControlType extends AbstractUniversalControlType<Ka
 	public void kcwNext()
 	{
 		((JavascriptExecutor) driver).executeScript("nextStep = function(){document.getElementById("
-			+ kcwFlashWidget.getAttribute("id") + ").goNextStep();};");
+			+ getKcwFlashWidget().getAttribute("id") + ").goNextStep();};");
 	}
 
 	public void kcwPrev()
 	{
 		((JavascriptExecutor) driver).executeScript("prevStep = function(){document.getElementById("
-			+ kcwFlashWidget.getAttribute("id") + ").goPrevStep();};");
+			+ getKcwFlashWidget().getAttribute("id") + ").goPrevStep();};");
 	}
 }

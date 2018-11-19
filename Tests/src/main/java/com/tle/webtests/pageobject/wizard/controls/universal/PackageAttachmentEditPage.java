@@ -7,8 +7,11 @@ import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 
 public class PackageAttachmentEditPage extends AbstractFileAttachmentEditPage<PackageAttachmentEditPage>
 {
-	@FindBy(id = "{wizid}_dialog_fuh_pd_expandButtons_1")
-	private WebElement showStructure;
+	private WebElement getShowStructure()
+	{
+		return byWizId("_dialog_fuh_pd_expandButtons_1");
+	}
+
 
 	public PackageAttachmentEditPage(UniversalControl universalControl)
 	{
@@ -23,7 +26,7 @@ public class PackageAttachmentEditPage extends AbstractFileAttachmentEditPage<Pa
 
 	public PackageAttachmentEditPage showStructure()
 	{
-		showStructure.click();
+		getShowStructure().click();
 		return this;
 	}
 

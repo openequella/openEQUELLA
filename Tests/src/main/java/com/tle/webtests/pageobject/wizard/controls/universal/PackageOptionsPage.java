@@ -30,21 +30,21 @@ public class PackageOptionsPage extends AbstractAttachmentDialogPage<PackageOpti
 	public PackageAttachmentEditPage treatAsPackage()
 	{
 		treatAsPackage.click();
-		nextButton.click();
+		getNextButton().click();
 		return fileType.pkgEditor().get();
 	}
 
 	public PackageAttachmentEditPage treatAsQTIQuiz()
 	{
 		treatAsQTIQuiz.click();
-		nextButton.click();
+		getNextButton().click();
 		return fileType.pkgEditor().get();
 	}
 
 	public PackageAttachmentEditPage treatAsMETS()
 	{
 		treatAsMETS.click();
-		nextButton.click();
+		getNextButton().click();
 		return fileType.pkgEditor().get();
 	}
 }

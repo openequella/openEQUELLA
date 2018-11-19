@@ -13,18 +13,34 @@ public abstract class AbstractAttachmentDialogPage<T extends AbstractAttachmentD
 	extends
 		NewAbstractWizardControl<T>
 {
-	@FindBy(xpath = "{buttonbar}button[normalize-space(text())='Save']")
-	protected WebElement saveButton;
-	@FindBy(xpath = "{buttonbar}button[normalize-space(text())='Next']")
-	protected WebElement nextButton;
-	@FindBy(xpath = "{buttonbar}button[normalize-space(text())='Add' or normalize-space(text())='Replace']")
-	protected WebElement addButton;
-	@FindBy(xpath = "{buttonbar}button[normalize-space(text())='Back to start']")
-	protected WebElement backToStartButton;
+	private WebElement buttonByText(String name)
+	{
+		return driver.findElement(By.xpath(getButtonbar()+"button[normalize-space(text())="+quoteXPath(name)+"]"));
+	}
+
+	protected WebElement getSaveButton()
+	{
+		return buttonByText("Save");
+	}
+
+
+	protected WebElement getNextButton()
+	{
+		return buttonByText("Next");
+	}
+
+	protected WebElement getBackToStartButton()
+	{
+		return buttonByText("Back to start");
+	}
+
 	@FindBy(xpath = "//img[@class='modal_close']")
 	private WebElement closeButton;
-	@FindBy(id = "{wizid}_dialogfooter")
-	private WebElement footerAjax;
+
+	private WebElement getFooterAjax()
+	{
+		return byWizId("_dialogfooter");
+	}
 
 	protected UniversalControl control;
 
@@ -39,8 +55,13 @@ public abstract class AbstractAttachmentDialogPage<T extends AbstractAttachmentD
 
 	public WaitingPageObject<T> submitWaiter()
 	{
-		return ajaxUpdate(footerAjax);
+		return ajaxUpdate(getFooterAjax());
 	}
+
+	public WebElement byDialogXPath(String xpath)
+    {
+        return byWizIdIdXPath("_dialog", xpath);
+    }
 
 	public String getButtonbar()
 	{

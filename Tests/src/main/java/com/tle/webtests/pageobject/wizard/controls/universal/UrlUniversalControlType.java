@@ -10,8 +10,11 @@ public class UrlUniversalControlType extends AbstractAttachmentDialogPage<UrlUni
 	implements
 		AttachmentType<UrlUniversalControlType, UrlAttachmentEditPage>
 {
-	@FindBy(id = "{wizid}_dialog_uh_url")
-	private WebElement urlField;
+	private WebElement getUrlField()
+	{
+		return byWizId("_dialog_uh_url");
+	}
+
 
 	public UrlUniversalControlType(UniversalControl universalControl)
 	{
@@ -21,7 +24,7 @@ public class UrlUniversalControlType extends AbstractAttachmentDialogPage<UrlUni
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return urlField;
+		return getUrlField();
 	}
 
 	@Override
@@ -37,9 +40,9 @@ public class UrlUniversalControlType extends AbstractAttachmentDialogPage<UrlUni
 
 	public UniversalControl addUrl(String url, String name, Boolean preview)
 	{
-		urlField.clear();
-		urlField.sendKeys(url);
-		addButton.click();
+		getUrlField().clear();
+		getUrlField().sendKeys(url);
+		getAddButton().click();
 		UrlAttachmentEditPage edit = edit();
 		if( !Check.isEmpty(name) )
 		{

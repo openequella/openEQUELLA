@@ -10,10 +10,16 @@ public abstract class AbstractFileAttachmentEditPage<T extends AbstractFileAttac
 	extends
 		AbstractAttachmentEditPage<T>
 {
-	@FindBy(id = "{wizid}_dialog_fuh_{typeId}_previewCheckBox")
-	private WebElement previewCheckBox;
-	@FindBy(id = "{wizid}_dialog_fuh_{typeId}_st")
-	private WebElement thumbnailCheckbox;
+	private WebElement getPreviewCheckBox()
+	{
+		return byWizId("_dialog_fuh_{typeId}_previewCheckBox");
+	}
+
+	private WebElement getThumbnailCheckbox()
+	{
+		return byWizId("_dialog_fuh_{typeId}_st");
+	}
+
 
 	public AbstractFileAttachmentEditPage(UniversalControl universalControl)
 	{
@@ -36,30 +42,30 @@ public abstract class AbstractFileAttachmentEditPage<T extends AbstractFileAttac
 
 	public T setPreview(boolean preview)
 	{
-		if( previewCheckBox.isSelected() != preview )
+		if( getPreviewCheckBox().isSelected() != preview )
 		{
-			previewCheckBox.click();
+		    getPreviewCheckBox().click();
 		}
 		return (T) this;
 	}
 
 	public boolean canPreview()
 	{
-		return isPresent(previewCheckBox);
+		return isPresent(getPreviewCheckBox());
 	}
 
 	public T setThubmnailSuppress(boolean suppressThumbnail)
 	{
-		if( thumbnailCheckbox.isSelected() != suppressThumbnail )
+		if( getThumbnailCheckbox().isSelected() != suppressThumbnail )
 		{
-			thumbnailCheckbox.click();
+            getThumbnailCheckbox().click();
 		}
 		return (T) this;
 	}
 
 	public boolean canSuppressThumbnails()
 	{
-		return isPresent(thumbnailCheckbox);
+		return isPresent(getThumbnailCheckbox());
 	}
 
 }
