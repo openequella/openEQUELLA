@@ -6,9 +6,8 @@ package com.tle.webtests.test.users;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
+import java.util.Base64;
 import java.util.concurrent.TimeUnit;
-
-import sun.misc.BASE64Encoder;
 
 /**
  * @author jmaginnis
@@ -53,7 +52,7 @@ public class TokenSecurity
 		b.append(':');
 		b.append(time);
 		b.append(':');
-		b.append(new BASE64Encoder().encode(getMd5Bytes(toMd5)));
+		b.append(Base64.getEncoder().encodeToString(getMd5Bytes(toMd5)));
 		if( data != null && data.length() > 0 )
 		{
 			b.append(':');

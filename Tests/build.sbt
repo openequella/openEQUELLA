@@ -11,6 +11,7 @@ libraryDependencies ++= Seq(
 ).map(_ % circeVersion)
 
 libraryDependencies ++= Seq(
+  "javax.jws" % "javax.jws-api" % "1.1",
   "org.apache.commons" % "commons-lang3" % "3.7",
   "org.seleniumhq.selenium" % "selenium-java" % "3.13.0",
   "org.easytesting" % "fest-util" % "1.2.5",
