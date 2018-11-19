@@ -353,7 +353,7 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel> impleme
 	public void leavingTab(SectionInfo info, SectionTab tab)
 	{
 		unfinishedTab(info, tab);
-		getPage(info, Integer.parseInt(tab.getData()), false, false).removeTrees(info);
+		info.forceRedirect();
 	}
 
 	@Override
