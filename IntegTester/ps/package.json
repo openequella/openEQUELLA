@@ -1,6 +1,7 @@
 {
   "name": "EQUELLA-Integration-Tester",
   "scripts": {
+    "install": "psc-package install",
     "build": "pulp browserify --to dist/www/app.js",
     "watch": "pulp -w browserify --to dist/www/app.js"
   },

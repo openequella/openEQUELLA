@@ -14,6 +14,7 @@ webdriver {
 
 tests {
 //  suitenames = ["testng.xml"]
+//  parallel = false
 }
 
 //install {
