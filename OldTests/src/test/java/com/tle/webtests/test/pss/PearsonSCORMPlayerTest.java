@@ -2,6 +2,7 @@ package com.tle.webtests.test.pss;
 
 import static org.testng.Assert.assertTrue;
 
+import com.tle.webtests.pageobject.WaitingPageObject;
 import org.testng.annotations.Test;
 
 import com.tle.webtests.framework.TestInstitution;
@@ -29,6 +30,10 @@ public class PearsonSCORMPlayerTest extends AbstractCleanupTest
 	private static final String CONSUMER_SECRET = "550c6f7063ef4b92bbaf5d8971027b34"; // 18f5b065bea94878ab0881630d21b87b
 	private static final String NAMESPACE = "equella";
 
+	private WaitingPageObject<UniversalControl> fixme(UniversalControl control)
+	{
+		return control.attachNameWaiter("FROG", false);
+	}
 	@Test
 	public void testLoadScormZip()
 	{
@@ -53,7 +58,7 @@ public class PearsonSCORMPlayerTest extends AbstractCleanupTest
 		UniversalControl control = wizard.universalControl(3);
 		FileUniversalControlType file = control.addDefaultResource(new FileUniversalControlType(control));
 		// SCORM package
-		file.uploadPackage(Attachments.get(SCORM_ZIP)).save();
+		file.uploadPackage(Attachments.get(SCORM_ZIP), fixme(control));
 
 		SummaryPage item = wizard.save().publish();
 

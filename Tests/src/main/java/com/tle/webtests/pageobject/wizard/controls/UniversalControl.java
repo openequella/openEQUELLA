@@ -26,9 +26,15 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
 	{
 		return byWizId("_addLink");
 	}
+
+	private By getFullBy(By other)
+	{
+		return new ByChained(By.id(getWizid()+"universalresources"), other);
+	}
+
 	private WebElement getRootElem()
 	{
-		return byWizId("universalresources");
+		return findWithId(getWizid(), "universalresources");
 	}
 
 	public UniversalControl(PageContext context, int ctrlnum, AbstractWizardControlPage<?> page)
@@ -77,7 +83,7 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
 
 	public ExpectedCondition<WebElement> getResourceExpectation(String title, boolean disabled)
 	{
-		return ExpectedConditions2.visibilityOfElementLocated(getRootElem(), getRowByTitle(title, disabled));
+		return ExpectedConditions.visibilityOfElementLocated(getFullBy(getRowByTitle(title, disabled)));
 	}
 
 	public ExpectedCondition<Boolean> getResourceGoneExpectation(String title)
@@ -87,8 +93,7 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
 
 	public ExpectedCondition<Boolean> getResourceGoneExpectation(String title, boolean wasDisabled)
 	{
-		return ExpectedConditions.stalenessOf(((WrapsElement) getRootElem().findElement(getRowByTitle(title, wasDisabled)))
-			.getWrappedElement());
+		return ExpectedConditions.stalenessOf(driver.findElement(getFullBy(getRowByTitle(title, wasDisabled))));
 	}
 
 	private By getRowByTitle(String title)
@@ -108,7 +113,7 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
 
 	private void clickAction(By rowBy, String action)
 	{
-		getRootElem().findElement(new ByChained(rowBy, getActionLink(action))).click();
+		driver.findElement(getFullBy(new ByChained(rowBy, getActionLink(action)))).click();
 	}
 
 	public <P extends AttachmentEditPage, T extends AttachmentType<T, P>> P editResource(T type, String title)
@@ -157,7 +162,7 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
 
 	public String getAttachmentUuid(String title)
 	{
-		String url = getRootElem().findElement(By.xpath(".//a[text()=" + quoteXPath(title) + "]")).getAttribute("href");
+		String url = driver.findElement(getFullBy(By.xpath(".//a[text()=" + quoteXPath(title) + "]"))).getAttribute("href");
 
 		return url.substring(url.length() - 36);
 	}
@@ -184,8 +189,8 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
 
 	public WaitingPageObject<UniversalControl> attachmentCountExpectation(int newAttachments)
 	{
-		ExpectedCondition<List<WebElement>> expectedCondition = ExpectedConditions2.numberOfElementLocated(getRootElem(),
-			BY_ALLRESOURCES, resourceCount() + newAttachments);
+		ExpectedCondition<List<WebElement>> expectedCondition = ExpectedConditions.numberOfElementsToBe(getFullBy(
+			BY_ALLRESOURCES), resourceCount() + newAttachments);
 		return ExpectWaiter.waiter(expectedCondition, this);
 	}
 }

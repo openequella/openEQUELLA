@@ -15,16 +15,31 @@ import com.tle.webtests.pageobject.generic.component.MultiLingualEditbox;
 
 public abstract class AbstractPortalEditPage<T extends AbstractPortalEditPage<T>> extends AbstractPage<T>
 {
-	@FindBy(id = "{id}_d")
-	private WebElement disableCheck;
-	@FindBy(id = "{id}_sv")
-	private WebElement save;
-	@FindBy(id = "{id}_i")
-	private WebElement othersCheck;
-	@FindBy(id = "{id}_m")
-	private WebElement minCheck;
-	@FindBy(id = "{id}_c")
-	private WebElement closeCheck;
+	private WebElement getDisableCheck()
+	{
+		return findById("_d");
+	}
+	private WebElement getSave()
+	{
+		return findById("_sv");
+	}
+	private WebElement getOthersCheck()
+	{
+		return findById("_i");
+	}
+	private WebElement getMinCheck()
+	{
+		return findById("_m");
+	}
+	private WebElement getCloseCheck()
+	{
+		return findById("_c");
+	}
+
+	private WebElement findById(String postfix)
+	{
+		return driver.findElement(By.id(getId()+postfix));
+	}
 
 	@FindBy(name = "{id}_selector_es.e")
 	private WebElement viewExpressionInput;
@@ -41,7 +56,7 @@ public abstract class AbstractPortalEditPage<T extends AbstractPortalEditPage<T>
 
 	public <P extends AbstractPage<P>> P save(P page)
 	{
-		save.click();
+		getSave().click();
 		return page.get();
 	}
 
@@ -72,25 +87,25 @@ public abstract class AbstractPortalEditPage<T extends AbstractPortalEditPage<T>
 
 	public T setDisabled(boolean checked)
 	{
-		check(disableCheck, checked);
+		check(getDisableCheck(), checked);
 		return get();
 	}
 
 	public T setShowForOthers(boolean checked)
 	{
-		if( othersCheck.isSelected() != checked )
+		if( getOthersCheck().isSelected() != checked )
 		{
 			WaitingPageObject<T> aWaiter;
 			if( checked )
 			{
-				aWaiter = visibilityWaiter(closeCheck);
+				aWaiter = visibilityWaiter(getCloseCheck());
 			}
 			else
 			{
-				aWaiter = removalWaiter(closeCheck);
+				aWaiter = removalWaiter(getCloseCheck());
 			}
 
-			othersCheck.click();
+			getOthersCheck().click();
 			return aWaiter.get();
 		}
 		return get();
@@ -99,14 +114,14 @@ public abstract class AbstractPortalEditPage<T extends AbstractPortalEditPage<T>
 	public T setUsersCanClose(boolean checked)
 	{
 		setShowForOthers(true);
-		check(closeCheck, checked);
+		check(getCloseCheck(), checked);
 		return get();
 	}
 
 	public T setUsersCanMin(boolean checked)
 	{
 		setShowForOthers(true);
-		check(minCheck, checked);
+		check(getMinCheck(), checked);
 		return get();
 	}
 

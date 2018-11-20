@@ -2,6 +2,8 @@ package com.tle.webtests.pageobject.generic.component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
@@ -13,6 +15,8 @@ import com.tle.webtests.pageobject.ExpectWaiter;
 import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.PageObject;
 import com.tle.webtests.pageobject.WaitingPageObject;
+import org.openqa.selenium.support.pagefactory.ByChained;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractSelectedStuff<T, P extends AbstractSelectedStuff<T, P>> extends AbstractPage<P>
 {
@@ -24,9 +28,9 @@ public abstract class AbstractSelectedStuff<T, P extends AbstractSelectedStuff<T
 	// anchor tag. local-name() returns tag name of first match only.
 	private static final By ADD_ACTION_XPATH = By.xpath(TABLE_XPATH + "/following-sibling::*[local-name()='a']");
 
-	private final WebElement parent;
+	private final By parent;
 
-	public AbstractSelectedStuff(PageContext context, WebElement parentElement)
+	public AbstractSelectedStuff(PageContext context, By parentElement)
 	{
 		super(context);
 		this.parent = parentElement;
@@ -47,7 +51,7 @@ public abstract class AbstractSelectedStuff<T, P extends AbstractSelectedStuff<T
 	 */
 	protected WebElement getTableBody()
 	{
-		return parent.findElement(By.xpath(TBODY_XPATH));
+		return driver.findElement(new ByChained(parent, By.xpath(TBODY_XPATH)));
 	}
 
 	public int getSelectionCount()
@@ -94,7 +98,7 @@ public abstract class AbstractSelectedStuff<T, P extends AbstractSelectedStuff<T
 
 	public void clickAddAction()
 	{
-		parent.findElement(ADD_ACTION_XPATH).click();
+		driver.findElement(new ByChained(parent, ADD_ACTION_XPATH)).click();
 	}
 
 	public <PO extends PageObject> PO clickAction(String selection, String action, WaitingPageObject<PO> returnTo)
@@ -128,13 +132,13 @@ public abstract class AbstractSelectedStuff<T, P extends AbstractSelectedStuff<T
 	public WaitingPageObject<P> selectionWaiter(String selection)
 	{
 		return ExpectWaiter.waiter(
-			ExpectedConditions2.visibilityOfElementLocated(parent, getByForSelection(selection)), this);
+			ExpectedConditions.visibilityOfElementLocated(new ByChained(parent, getByForSelection(selection))), this);
 	}
 
 	public WaitingPageObject<P> removalWaiter(String selection)
 	{
 		return ExpectWaiter.waiter(
-			ExpectedConditions2.invisibilityOfElementLocated(parent, getByForSelection(selection)), this);
+			ExpectedConditions.invisibilityOfElementLocated(new ByChained(parent, getByForSelection(selection))), this);
 	}
 
 	private By getByForSelection(String selection)

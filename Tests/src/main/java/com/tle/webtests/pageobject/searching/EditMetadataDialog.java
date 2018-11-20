@@ -103,9 +103,14 @@ public class EditMetadataDialog extends AbstractPage<EditMetadataDialog>
 
 	private void selectAction(String action)
 	{
-		WaitingPageObject<EditMetadataDialog> ajaxUpdate = ajaxUpdateExpect(actionAjaxDiv, firstActionSetting);
-		new EquellaSelect(context, actionSelect).selectByValue(action);
-		ajaxUpdate.get();
+
+		EquellaSelect actionSel = new EquellaSelect(context, actionSelect);
+		if (!actionSel.getSelectedValue().equals(action))
+		{
+			WaitingPageObject<EditMetadataDialog> ajaxUpdate = ajaxUpdateExpect(actionAjaxDiv, firstActionSetting);
+			actionSel.selectByValue(action);
+			ajaxUpdate.get();
+		}
 	}
 
 	private void saveAction()

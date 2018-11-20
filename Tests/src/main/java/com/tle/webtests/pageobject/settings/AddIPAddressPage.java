@@ -13,12 +13,24 @@ import com.tle.webtests.pageobject.WaitingPageObject;
 
 public class AddIPAddressPage extends AbstractPage<AddIPAddressPage>
 {
-	@FindBy(id = "{sectionId}_ipat")
-	private WebElement ipAddressTextBox;
-	@FindBy(id = "{sectionId}_ok")
-	private WebElement ok;
-	@FindBy(id = "{sectionId}_close")
-	private WebElement cancel;
+	private WebElement getIpAddressTextBox()
+	{
+		return findBySectionId("_ipat");
+	}
+
+	private WebElement findBySectionId(String postfix)
+	{
+		return findWithId(getSectionId(), postfix);
+	}
+
+	private WebElement getOk()
+	{
+		return findBySectionId("_ok");
+	}
+	private WebElement getCancel()
+	{
+		return findBySectionId("_close");
+	}
 
 	public AddIPAddressPage(PageContext context)
 	{
@@ -32,8 +44,8 @@ public class AddIPAddressPage extends AbstractPage<AddIPAddressPage>
 
 	public AddIPAddressPage setIpAddress(String ipAddress)
 	{
-		ipAddressTextBox.clear();
-		ipAddressTextBox.sendKeys(ipAddress);
+		getIpAddressTextBox().clear();
+		getIpAddressTextBox().sendKeys(ipAddress);
 		return get();
 	}
 
@@ -49,7 +61,7 @@ public class AddIPAddressPage extends AbstractPage<AddIPAddressPage>
 
 	public String okWithError()
 	{
-		ok.click();
+		getOk().click();
 		String alertText = getInvalidAlertText();
 		dismissInvalidAlert();
 		return alertText;
@@ -57,14 +69,14 @@ public class AddIPAddressPage extends AbstractPage<AddIPAddressPage>
 
 	public LoginSettingsPage ok(WaitingPageObject<LoginSettingsPage> returnTo)
 	{
-		ok.click();
+		getOk().click();
 		return returnTo.get();
 	}
 
 	public LoginSettingsPage cancel()
 	{
 		ExpectedCondition<Boolean> removalContition = ExpectedConditions2.stalenessOrNonPresenceOf(loadedElement);
-		cancel.click();
+		getCancel().click();
 		return ExpectWaiter.waiter(removalContition, new LoginSettingsPage(context)).get();
 	}
 }

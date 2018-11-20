@@ -62,7 +62,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest
 	public void testChangeResultOrder()
 	{
 		SettingsPage sp = new SettingsPage(context).load();
-		assertTrue(sp.isSearchSettingsVisible());
 
 		// Load SearchSettings Page by clicking settings link
 		SearchSettingsPage searchSettingsPage = sp.searchSettings();
@@ -415,7 +414,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest
 	{
 		logon("AutoTest", "automated");
 		SettingsPage sp = new SettingsPage(context).load();
-		assertTrue(sp.isSearchSettingsVisible());
 
 		// Load SearchSettings Page by clicking settings link
 		SearchSettingsPage searchSettingsPage = sp.searchSettings();

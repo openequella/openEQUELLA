@@ -10,6 +10,8 @@ import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.generic.component.SelectUserDialog;
 import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
+import org.openqa.selenium.support.pagefactory.ByChained;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class SelectUserControl extends AbstractWizardControl<SelectUserControl>
 {
@@ -18,9 +20,9 @@ public class SelectUserControl extends AbstractWizardControl<SelectUserControl>
 		return byWizId("_addLink");
 	}
 
-	private WebElement getRootElem()
+	private By getRootBy()
 	{
-		return byWizId("userselector");
+		return By.id(getWizid() + "userselector");
 	}
 
 
@@ -55,7 +57,7 @@ public class SelectUserControl extends AbstractWizardControl<SelectUserControl>
 	public void removeUser(String username)
 	{
 		WaitingPageObject<SelectUserControl> waiter = removedWaiter(username);
-		getRootElem().findElement(By.xpath(xpathForUsername(username) + "/../../td[@class='actions']/a[@class='unselect']"))
+		driver.findElement(new ByChained(getRootBy(), By.xpath(xpathForUsername(username) + "/../../td[@class='actions']/a[@class='unselect']")))
 			.click();
 		acceptConfirmation();
 		waiter.get();
@@ -64,12 +66,12 @@ public class SelectUserControl extends AbstractWizardControl<SelectUserControl>
 	public WaitingPageObject<SelectUserControl> selectedWaiter(String newlySelected)
 	{
 		return ExpectWaiter.waiter(
-			ExpectedConditions2.visibilityOfElementLocated(getRootElem(), By.xpath(xpathForUsername(newlySelected))), this);
+			ExpectedConditions.visibilityOfElementLocated(new ByChained(getRootBy(), By.xpath(xpathForUsername(newlySelected)))), this);
 	}
 
 	public WaitingPageObject<SelectUserControl> removedWaiter(String removed)
 	{
 		return ExpectWaiter.waiter(
-			ExpectedConditions2.invisibilityOfElementLocated(getRootElem(), By.xpath(xpathForUsername(removed))), this);
+			ExpectedConditions.invisibilityOfElementLocated(new ByChained(getRootBy(), By.xpath(xpathForUsername(removed)))), this);
 	}
 }

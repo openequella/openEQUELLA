@@ -14,14 +14,22 @@ import com.tle.webtests.pageobject.WaitingPageObject;
 public class SelectGroupDialog extends AbstractPage<SelectGroupDialog>
 {
 	private final String baseId;
-	@FindBy(id = "{baseid}_sg_q")
-	private WebElement queryField;
-	@FindBy(id = "{baseid}_sg_s")
-	private WebElement searchButton;
-	@FindBy(id = "{baseid}_ok")
-	private WebElement okButton;
-	@FindBy(id = "{baseid}_cancel")
-	private WebElement cancelButton;
+	private WebElement getQueryField()
+	{
+		return byBaseId("_sg_q");
+	}
+	private WebElement getSearchButton()
+	{
+		return byBaseId("_sg_s");
+	}
+	private WebElement getOkButton()
+	{
+		return byBaseId("_ok");
+	}
+	private WebElement getCancelButton()
+	{
+		return byBaseId("_cancel");
+	}
 	@FindBy(id = "results")
 	private WebElement resultsDiv;
 	@FindBy(className = "resultlist")
@@ -33,23 +41,23 @@ public class SelectGroupDialog extends AbstractPage<SelectGroupDialog>
 		this.baseId = baseId;
 	}
 
-	public String getBaseid()
+	public WebElement byBaseId(String postfix)
 	{
-		return baseId;
+		return driver.findElement(By.id(baseId+postfix));
 	}
 
 	@Override
 	protected void checkLoadedElement()
 	{
-		ensureVisible(queryField, searchButton, okButton);
+		ensureVisible(getQueryField(), getSearchButton(), getOkButton());
 	}
 
 	public SelectGroupDialog search(String query)
 	{
-		queryField.clear();
-		queryField.sendKeys(query);
+		getQueryField().clear();
+		getQueryField().sendKeys(query);
 		WaitingPageObject<SelectGroupDialog> ajaxUpdateExpect = ajaxUpdateExpect(resultsDiv, resultsList);
-		searchButton.click();
+		getSearchButton().click();
 		ajaxUpdateExpect.get();
 		waitForElement(By.xpath("id('" + baseId + "')//div[@id='results']//ul/li"));
 		return get();
@@ -57,10 +65,10 @@ public class SelectGroupDialog extends AbstractPage<SelectGroupDialog>
 
 	public boolean searchWithoutMatch(String query)
 	{
-		queryField.clear();
-		queryField.sendKeys(query);
+		getQueryField().clear();
+		getQueryField().sendKeys(query);
 		WaitingPageObject<SelectGroupDialog> ajaxUpdateExpect = ajaxUpdateExpect(resultsDiv, resultsList);
-		searchButton.click();
+		getSearchButton().click();
 		ajaxUpdateExpect.get();
 		waitForElement(By.xpath("id('" + baseId + "')//div[@id='results']//h4[text()]"));
 		String text = driver.findElement(By.xpath("id('" + baseId + "')//div[@id='results']//h4[text()]")).getText();
@@ -96,14 +104,14 @@ public class SelectGroupDialog extends AbstractPage<SelectGroupDialog>
 
 	public <T extends AbstractPage<T>> T finish(WaitingPageObject<T> page)
 	{
-		okButton.click();
+		getOkButton().click();
 		return page.get();
 	}
 
 	public <T extends AbstractPage<T>> T cancel(WaitingPageObject<T> page)
 	{
-		ExpectedCondition<Boolean> removalCondition = removalCondition(cancelButton);
-		cancelButton.click();
+		ExpectedCondition<Boolean> removalCondition = removalCondition(getCancelButton());
+		getCancelButton().click();
 		waiter.until(removalCondition);
 		return page.get();
 	}

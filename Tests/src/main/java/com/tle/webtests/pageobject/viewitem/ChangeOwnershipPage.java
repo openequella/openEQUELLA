@@ -68,7 +68,7 @@ public class ChangeOwnershipPage extends ItemPage<ChangeOwnershipPage>
 
 	protected UserSelectedStuff getCollabSelectedStuff()
 	{
-		return new UserSelectedStuff(context, driver.findElement(By.id("collaborators")));
+		return new UserSelectedStuff(context, By.id("collaborators"));
 	}
 
 	public boolean isOwnershipChanged(String owner)

@@ -20,17 +20,27 @@ public class PopupTermDialog extends AbstractPage<PopupTermDialog>
 	private final int ctrlNum;
 	private final AbstractWizardControlPage<?> ctrlPage;
 
-	@FindBy(id = "{baseid}")
-	private WebElement dialog;
-	@FindBy(id = "{baseid}_searchQuery")
-	private WebElement queryField;
-	@FindBy(id = "{baseid}_searchButton")
-	private WebElement searchButton;
-	@FindBy(id = "{baseid}_ok")
-	private WebElement okButton;
+	private WebElement getDialog()
+	{
+		return byBaseId("");
+	}
+	private WebElement getQueryField()
+	{
+		return byBaseId("_searchQuery");
+	}
+	private WebElement getSearchButton()
+	{
+		return byBaseId("_searchButton");
+	}
+	private WebElement getOkButton()
+	{
+		return byBaseId("_ok");
+	}
 
-	@FindBy(id = "{baseid}_treeView")
-	private WebElement treeTag;
+	private WebElement getTreeTag()
+	{
+		return byBaseId("_treeView");
+	}
 
 	public PopupTermDialog(PageContext context, String baseId, AbstractWizardControlPage<?> ctrlPage, int ctrlNum)
 	{
@@ -43,32 +53,32 @@ public class PopupTermDialog extends AbstractPage<PopupTermDialog>
 	@Override
 	protected void checkLoadedElement()
 	{
-		ensureVisible(okButton);
+		ensureVisible(getOkButton());
 	}
 
-	public String getBaseid()
+	public WebElement byBaseId(String postfix)
 	{
-		return baseId;
+		return driver.findElement(By.id(baseId+postfix));
 	}
 
 	public PopupTermDialog search(String query, int result)
 	{
-		WaitingPageObject<PopupTermDialog> visibilityWaiter = visibilityWaiter(queryField);
+		WaitingPageObject<PopupTermDialog> visibilityWaiter = visibilityWaiter(getQueryField());
 		switchTab("Search Terms");
 		visibilityWaiter.get();
-		queryField.clear();
-		queryField.sendKeys(query);
+		getQueryField().clear();
+		getQueryField().sendKeys(query);
 
-		visibilityWaiter = visibilityWaiter(dialog, By.xpath(".//div[@class='resultcount']"));
-		searchButton.click();
+		visibilityWaiter = visibilityWaiter(getDialog(), By.xpath(".//div[@class='resultcount']"));
+		getSearchButton().click();
 		visibilityWaiter.get();
 
-		String term = dialog.findElement(By.xpath("id('searchResults')/ul/li[" + result + "]")).getText()
+		String term = getDialog().findElement(By.xpath("id('searchResults')/ul/li[" + result + "]")).getText()
 			.replaceAll("Select   View", "").trim();
 
-		visibilityWaiter = visibilityWaiter(dialog,
+		visibilityWaiter = visibilityWaiter(getDialog(),
 			By.xpath(".//td[@class='name' and text()=" + quoteXPath(term) + "]"));
-		dialog.findElement(By.xpath("id('searchResults')/ul/li[" + result + "]/a")).click();
+		getDialog().findElement(By.xpath("id('searchResults')/ul/li[" + result + "]/a")).click();
 		return visibilityWaiter.get();
 	}
 
@@ -79,9 +89,9 @@ public class PopupTermDialog extends AbstractPage<PopupTermDialog>
 		TermEntry lastEntry = ensureTermsVisible(term);
 		lastEntry.view();
 
-		WaitingPageObject<PopupTermDialog> visibilityWaiter = visibilityWaiter(dialog,
+		WaitingPageObject<PopupTermDialog> visibilityWaiter = visibilityWaiter(getDialog(),
 			By.xpath(".//td[@class='name' and text()=" + quoteXPath(lastEntry.getName()) + "]"));
-		dialog.findElement(EBy.buttonText("Select this term")).click();
+		getDialog().findElement(EBy.buttonText("Select this term")).click();
 
 		return visibilityWaiter.get();
 	}
@@ -92,8 +102,9 @@ public class PopupTermDialog extends AbstractPage<PopupTermDialog>
 		String[] values = fullPath.split("\\\\");
 		if( values.length == 1 )
 		{
-			return new TermEntry(treeTag, values[0]);
+			return new TermEntry(getTreeTag(), values[0]);
 		}
+		WebElement treeTag = getTreeTag();
 		for( int i = 0; i < values.length - 1; i++ )
 		{
 			TermEntry entry = new TermEntry(treeTag, values[i]);
@@ -107,8 +118,8 @@ public class PopupTermDialog extends AbstractPage<PopupTermDialog>
 
 	public void switchTab(String tab)
 	{
-		dialog.findElement(By.xpath(".//span[text()=" + quoteXPath(tab) + "]")).click();
-		visibilityWaiter(dialog,
+		getDialog().findElement(By.xpath(".//span[text()=" + quoteXPath(tab) + "]")).click();
+		visibilityWaiter(getDialog(),
 			By.xpath(".//span[text()=" + quoteXPath(tab) + "]/ancestor::li[contains(@class,'ui-tabs-active')]"))
 			.get();
 	}
@@ -116,7 +127,7 @@ public class PopupTermDialog extends AbstractPage<PopupTermDialog>
 	public <T extends PageObject> T finish(WaitingPageObject<T> page)
 	{
 		WaitingPageObject<?> updateWaiter = ctrlPage.getUpdateWaiter(ctrlNum);
-		okButton.click();
+		getOkButton().click();
 		updateWaiter.get();
 		return page.get();
 	}
@@ -148,7 +159,7 @@ public class PopupTermDialog extends AbstractPage<PopupTermDialog>
 		{
 			By xpath = By.xpath(".//h3[contains(@class, 'termViewerTerm') and normalize-space(text())="
 				+ quoteXPath(name) + "]");
-			WaitingPageObject<PopupTermDialog> visibilityWaiter = visibilityWaiter(dialog, xpath);
+			WaitingPageObject<PopupTermDialog> visibilityWaiter = visibilityWaiter(getDialog(), xpath);
 			getElement().findElement(By.xpath("span/a[text()='View']")).click();
 			visibilityWaiter.get();
 		}

@@ -16,15 +16,24 @@ public abstract class AbstractEditEntityPage<THIS extends AbstractEditEntityPage
 	extends
 		AbstractPage<THIS>
 {
-	@FindBy(id = "{editorSectionId}_t")
-	protected WebElement nameField;
-	@FindBy(id = "{editorSectionId}_d")
-	private WebElement descriptionField;
+	protected WebElement getNameField()
+	{
+		return findWithId(getEditorSectionId(), "_t");
+	}
 
-	@FindBy(id = "{contributeSectionId}_sv")
-	protected WebElement saveButton;
-	@FindBy(id = "{contributeSectionId}_cl")
-	protected WebElement cancelButton;
+	private WebElement getDescriptionField()
+	{
+		return findWithId(getEditorSectionId(), "_d");
+	}
+
+	protected WebElement getSaveButton()
+	{
+		return findWithId(getContributeSectionId(), "_sv");
+	}
+	protected WebElement getCancelButton()
+	{
+		return findWithId(getContributeSectionId(), "_cl");
+	}
 
 	private SHOWLISTPAGE listPage;
 	private boolean creating;
@@ -97,19 +106,19 @@ public abstract class AbstractEditEntityPage<THIS extends AbstractEditEntityPage
 
 	public SHOWLISTPAGE save()
 	{
-		saveButton.click();
+		getSaveButton().click();
 		return listPage.get();
 	}
 
 	public THIS saveWithErrors()
 	{
-		saveButton.click();
+		getSaveButton().click();
 		return visibilityWaiter(driver, By.className("ctrlinvalidmessage")).get();
 	}
 
 	public SHOWLISTPAGE cancel()
 	{
-		cancelButton.click();
+		getCancelButton().click();
 		return listPage.get();
 	}
 
@@ -127,7 +136,7 @@ public abstract class AbstractEditEntityPage<THIS extends AbstractEditEntityPage
 	@SuppressWarnings("unchecked")
 	protected THIS setName(String name)
 	{
-		MultiLingualEditbox nameBox = new MultiLingualEditbox(context, nameField);
+		MultiLingualEditbox nameBox = new MultiLingualEditbox(context, getNameField());
 		if( name == null )
 		{
 			nameBox.setCurrentString("");
@@ -141,7 +150,7 @@ public abstract class AbstractEditEntityPage<THIS extends AbstractEditEntityPage
 
 	public String getName()
 	{
-		return new MultiLingualEditbox(context, nameField).getCurrentString();
+		return new MultiLingualEditbox(context, getNameField()).getCurrentString();
 	}
 
 	public THIS setDescription(PrefixedName description)
@@ -153,7 +162,7 @@ public abstract class AbstractEditEntityPage<THIS extends AbstractEditEntityPage
 	public THIS setDescription(String description)
 	{
 
-		MultiLingualEditbox descBox = new MultiLingualEditbox(context, descriptionField, true);
+		MultiLingualEditbox descBox = new MultiLingualEditbox(context, getDescriptionField(), true);
 		descBox.setCurrentString(description);
 		return (THIS) this;
 	}
@@ -161,7 +170,7 @@ public abstract class AbstractEditEntityPage<THIS extends AbstractEditEntityPage
 	public String getDescription()
 	{
 
-		return new MultiLingualEditbox(context, descriptionField, true).getCurrentString();
+		return new MultiLingualEditbox(context, getDescriptionField(), true).getCurrentString();
 	}
 
 	protected SHOWLISTPAGE getShowListPage()

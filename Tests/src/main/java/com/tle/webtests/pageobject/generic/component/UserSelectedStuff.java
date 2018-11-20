@@ -7,7 +7,7 @@ import com.tle.webtests.framework.PageContext;
 
 public class UserSelectedStuff extends AbstractSelectedStuff<String, UserSelectedStuff>
 {
-	public UserSelectedStuff(PageContext context, WebElement parentElement)
+	public UserSelectedStuff(PageContext context, By parentElement)
 	{
 		super(context, parentElement);
 	}

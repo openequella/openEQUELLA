@@ -24,6 +24,10 @@ public class AutoCompleteTermControl extends NewAbstractWizardControl<AutoComple
 		return byWizId("dautocompleteControl");
 	}
 
+	private By getControlBy() {
+		return By.id(getWizid()+"dautocompleteControl");
+	}
+
 	private WebElement getSelectButton()
 	{
 		return byWizId("d_s");
@@ -93,7 +97,7 @@ public class AutoCompleteTermControl extends NewAbstractWizardControl<AutoComple
 
 	public StringSelectedStuff getSelections()
 	{
-		return new StringSelectedStuff(context, getControlElem());
+		return new StringSelectedStuff(context, getControlBy());
 	}
 
 	public void removeTerm(String term)

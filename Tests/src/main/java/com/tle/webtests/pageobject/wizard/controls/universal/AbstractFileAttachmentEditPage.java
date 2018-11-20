@@ -12,12 +12,12 @@ public abstract class AbstractFileAttachmentEditPage<T extends AbstractFileAttac
 {
 	private WebElement getPreviewCheckBox()
 	{
-		return byWizId("_dialog_fuh_{typeId}_previewCheckBox");
+		return byWizId("_dialog_fuh_"+getTypeId()+"_previewCheckBox");
 	}
 
 	private WebElement getThumbnailCheckbox()
 	{
-		return byWizId("_dialog_fuh_{typeId}_st");
+		return byWizId("_dialog_fuh_"+getTypeId()+"_st");
 	}
 
 

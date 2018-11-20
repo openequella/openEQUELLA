@@ -1,5 +1,6 @@
 package com.tle.webtests.pageobject.wizard.controls;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -16,11 +17,6 @@ public class PopupTermControl extends AbstractWizardControl<PopupTermControl>
 		return byWizId("d_addTermLink");
 	}
 
-	private WebElement getSelectionsElem()
-	{
-		return byWizId("dpopupbrowserControl");
-	}
-
 
 	public PopupTermControl(PageContext context, int ctrlnum, AbstractWizardControlPage<?> page)
 	{
@@ -33,9 +29,8 @@ public class PopupTermControl extends AbstractWizardControl<PopupTermControl>
 		return getAddTermButton();
 	}
 
-	protected WebElement getControlElement()
-	{
-		return getSelectionsElem();
+	private By getControlBy() {
+		return By.id(getWizid()+"dpopupbrowserControl");
 	}
 
 	public PopupTermDialog openDialog()
@@ -51,6 +46,6 @@ public class PopupTermControl extends AbstractWizardControl<PopupTermControl>
 
 	public StringSelectedStuff getSelections()
 	{
-		return new StringSelectedStuff(context, getControlElement());
+		return new StringSelectedStuff(context, getControlBy());
 	}
 }

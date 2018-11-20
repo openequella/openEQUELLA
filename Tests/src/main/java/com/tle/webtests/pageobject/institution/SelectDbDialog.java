@@ -12,10 +12,20 @@ import com.tle.webtests.pageobject.WaitingPageObject;
 
 public class SelectDbDialog<T extends DbSelectable<T>> extends AbstractPage<SelectDbDialog<T>>
 {
-	@FindBy(id = "{sectionId}_selectDatabaseDialog_ok")
-	private WebElement okButton;
-	@FindBy(id = "{sectionId}_selectDatabaseDialog_list")
-	private WebElement dbList;
+	private WebElement getOkButton()
+	{
+		return findBySectionId("_selectDatabaseDialog_ok");
+	}
+
+	private WebElement findBySectionId(String postfix)
+	{
+		return findWithId(getSectionId(), postfix);
+	}
+
+	private WebElement getDbList()
+	{
+		return findBySectionId("_selectDatabaseDialog_list");
+	}
 
 	private final String prefix;
 	private final Random random = new Random();
@@ -36,14 +46,14 @@ public class SelectDbDialog<T extends DbSelectable<T>> extends AbstractPage<Sele
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return okButton;
+		return getOkButton();
 	}
 
 	public T selectByIndex(int index)
 	{
-		dbList.findElement(By.xpath("./li[" + index + "]/input")).click();
+		getDbList().findElement(By.xpath("./li[" + index + "]/input")).click();
 		WaitingPageObject<T> updateWaiter = parent.getUpdateWaiter();
-		okButton.click();
+		getOkButton().click();
 		return updateWaiter.get();
 	}
 
@@ -54,7 +64,7 @@ public class SelectDbDialog<T extends DbSelectable<T>> extends AbstractPage<Sele
 
 	public T selectRandom()
 	{
-		List<WebElement> checks = dbList.findElements(By.tagName("li"));
+		List<WebElement> checks = getDbList().findElements(By.tagName("li"));
 		return selectByIndex(random.nextInt(checks.size()) + 1);
 	}
 }

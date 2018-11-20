@@ -12,9 +12,8 @@ public class MultiLingualEditbox extends AbstractPage<MultiLingualEditbox>
 {
 	private final String baseId;
 	private final boolean multiline;
-
-	@FindBy(id = "{baseId}")
 	private WebElement div;
+
 	@FindBy(xpath = "id('{baseId}')//div[contains(@class, 'universaltranslation')]")
 	private WebElement universalTranslation;
 	@FindBy(xpath = "id('{baseId}')//div[contains(@class, 'alltranslations')]")
@@ -27,6 +26,7 @@ public class MultiLingualEditbox extends AbstractPage<MultiLingualEditbox>
 		super(context, By.id(baseId));
 		this.baseId = baseId;
 		this.multiline = false;
+		this.div = byBaseId("");
 	}
 
 	public MultiLingualEditbox(PageContext context, WebElement div)
@@ -118,9 +118,9 @@ public class MultiLingualEditbox extends AbstractPage<MultiLingualEditbox>
 		return driver.findElement(By.id(baseId + "_loc"));
 	}
 
-	public String getBaseId()
+	public WebElement byBaseId(String postfix)
 	{
-		return baseId;
+		return driver.findElement(By.id(baseId+postfix));
 	}
 
 	public EquellaSelect getDropDown()

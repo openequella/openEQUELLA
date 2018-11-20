@@ -16,8 +16,11 @@ import com.tle.webtests.pageobject.searching.SearchPage;
 
 public class TopicPage extends AbstractQueryableSearchPage<TopicPage, TopicListPage, TopicSearchResult>
 {
-	@FindBy(xpath = "//div[contains(@class,'browse-topics')]/h2[text() = {titleXpath}]")
-	private WebElement mainElem;
+	private WebElement getMainElem()
+	{
+		return driver.findElement(By.xpath("//div[contains(@class,'browse-topics')]/h2[text() = "+quoteXPath(title)+"]"));
+	}
+
 	private String title;
 
 	public TopicPage(PageContext context)
@@ -45,7 +48,7 @@ public class TopicPage extends AbstractQueryableSearchPage<TopicPage, TopicListP
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return mainElem;
+		return getMainElem();
 	}
 
 	@Override

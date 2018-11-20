@@ -15,14 +15,28 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public abstract class ModerationMessagePage<M extends AbstractWizardTab<M>> extends AbstractWizardTab<M>
 {
-	@FindBy(id = "{pfx}_commentField")
-	private WebElement messageField;
-	@FindBy(id = "{pfx}_rejectSteps")
-	private WebElement stepList;
-	@FindBy(id = "{pfx}_ok")
-	private WebElement okButton;
-	@FindBy(id = "{pfx}_c")
-	private WebElement cancelButton;
+	private WebElement getMessageField()
+	{
+		return findByPfx("_commentField");
+	}
+
+	private WebElement findByPfx(String postfix)
+	{
+		return findWithId(getPfx(), postfix);
+	}
+
+	private WebElement getStepList()
+	{
+		return findByPfx("_rejectSteps");
+	}
+	private WebElement getOkButton()
+	{
+		return findByPfx("_ok");
+	}
+	private WebElement getCancelButton()
+	{
+		return findByPfx("_c");
+	}
 
 	public ModerationMessagePage(PageContext context)
 	{
@@ -32,40 +46,40 @@ public abstract class ModerationMessagePage<M extends AbstractWizardTab<M>> exte
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return messageField;
+		return getMessageField();
 	}
 
 	public abstract String getPfx();
 
 	public TaskListPage rejectWithMessage(String message, String toStep)
 	{
-		messageField.clear();
-		messageField.sendKeys(message);
+		getMessageField().clear();
+		getMessageField().sendKeys(message);
 		if( toStep != null )
 		{
-			new EquellaSelect(context, stepList).selectByVisibleText(toStep);
+			new EquellaSelect(context, getStepList()).selectByVisibleText(toStep);
 		}
-		okButton.click();
+		getOkButton().click();
 		return ReceiptPage.waiter("Successfully rejected previous task", new TaskListPage(context)).get();
 	}
 
 	public TaskListPage acceptWithMessage(String message)
 	{
-		messageField.clear();
-		messageField.sendKeys(message);
-		okButton.click();
+		getMessageField().clear();
+		getMessageField().sendKeys(message);
+		getOkButton().click();
 		return ReceiptPage.waiter("Successfully approved previous task", new TaskListPage(context)).get();
 	}
 
 	public ModerationView addModerationComment(String message)
 	{
-		messageField.clear();
-		messageField.sendKeys(message);
+		getMessageField().clear();
+		getMessageField().sendKeys(message);
 
 		ModerationView moderationView = new ModerationView(context);
 		moderationView.checkLoaded();
 		WaitingPageObject<ModerationView> modViewWaiter = moderationView.updateWaiter();
-		okButton.click();
+		getOkButton().click();
 		return modViewWaiter.get();
 	}
 
@@ -73,7 +87,7 @@ public abstract class ModerationMessagePage<M extends AbstractWizardTab<M>> exte
 	{
 		By dialogById = By.id(getPfx());
 		WebElement dialogElem = driver.findElement(dialogById);
-		cancelButton.click();
+		getCancelButton().click();
 		WebDriverWait waiter = getWaiter();
 		waiter.until(ExpectedConditions.stalenessOf(dialogElem));
 		waiter.until(ExpectedConditions.invisibilityOfElementLocated(dialogById));

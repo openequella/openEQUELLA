@@ -732,6 +732,11 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest
 		wizard.save().publish();
 	}
 
+	private WaitingPageObject<UniversalControl> fixme(UniversalControl control)
+	{
+		return control.attachNameWaiter("FROG", false);
+	}
+
 	@Test
 	public void testNavScriptingObject()
 	{
@@ -743,7 +748,7 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest
 		// package upload
 		UniversalControl universal = wizard.universalControl(3);
 		FileUniversalControlType packageUpload = universal.addDefaultResource(new FileUniversalControlType(universal));
-		packageUpload.uploadPackage(Attachments.get("package.zip")).showStructure().save();
+		packageUpload.uploadPackage(Attachments.get("package.zip"), fixme(universal)); // .showStructure().save();
 		assertTrue(getDivMessageForId("structure").contains("Zou ba! Visiting China: Is this your first visit?"));
 		// Delete Children + Root node
 		clickAscButton("deleteChildren", wizard);

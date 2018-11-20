@@ -1,5 +1,6 @@
 package com.tle.webtests.pageobject.searching;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -7,8 +8,8 @@ import com.tle.webtests.framework.PageContext;
 
 public class FilterByKeywordPage extends AbstractQuerySection<FilterByKeywordPage>
 {
-	@FindBy(id = "{buttonId}")
-	private WebElement searchButton;
+
+
 	private final String buttonId;
 
 	public FilterByKeywordPage(PageContext context)
@@ -22,10 +23,9 @@ public class FilterByKeywordPage extends AbstractQuerySection<FilterByKeywordPag
 		this.buttonId = buttonId;
 	}
 
-	@Override
 	protected WebElement getSearchButton()
 	{
-		return searchButton;
+		return driver.findElement(By.id(buttonId));
 	}
 
 	public String getButtonId()

@@ -14,18 +14,31 @@ import com.tle.webtests.pageobject.WaitingPageObject;
 public class SelectUserDialog extends AbstractPage<SelectUserDialog>
 {
 	private final String baseId;
-	@FindBy(id = "{baseid}_su_q")
-	private WebElement queryField;
-	@FindBy(id = "{baseid}_su_s")
-	private WebElement searchButton;
-	@FindBy(id = "{baseid}_ok")
-	private WebElement okButton;
-	@FindBy(id = "{baseid}_close")
-	private WebElement closeButton;
+	private WebElement getQueryField()
+	{
+		return byBaseId("_su_q");
+	}
+	private WebElement getSearchButton()
+	{
+		return byBaseId("_su_s");
+	}
+	private WebElement getOkButton()
+	{
+		return byBaseId("_ok");
+	}
+	private WebElement getCloseButton()
+	{
+		return byBaseId("_close");
+	}
 	@FindBy(id = "results")
 	private WebElement resultsDiv;
 	@FindBy(className = "resultlist")
 	private WebElement resultsList;
+
+	public WebElement byBaseId(String postfix)
+	{
+		return driver.findElement(By.id(baseId+postfix));
+	}
 
 	public SelectUserDialog(PageContext context, String baseId)
 	{
@@ -33,23 +46,18 @@ public class SelectUserDialog extends AbstractPage<SelectUserDialog>
 		this.baseId = baseId;
 	}
 
-	public String getBaseid()
-	{
-		return baseId;
-	}
-
 	@Override
 	protected void checkLoadedElement()
 	{
-		ensureVisible(queryField, searchButton, okButton);
+		ensureVisible(getQueryField(), getSearchButton(), getOkButton());
 	}
 
 	public SelectUserDialog search(String query)
 	{
-		queryField.clear();
-		queryField.sendKeys(query);
+		getQueryField().clear();
+		getQueryField().sendKeys(query);
 		WaitingPageObject<SelectUserDialog> ajaxUpdateExpect = ajaxUpdateExpect(resultsDiv, resultsList);
-		searchButton.click();
+		getSearchButton().click();
 		ajaxUpdateExpect.get();
 		waitForElement(By.xpath("id('" + baseId + "')//div[@id='results']//ul/li"));
 		return get();
@@ -57,10 +65,10 @@ public class SelectUserDialog extends AbstractPage<SelectUserDialog>
 
 	public boolean searchWithoutMatch(String query)
 	{
-		queryField.clear();
-		queryField.sendKeys(query);
+		getQueryField().clear();
+		getQueryField().sendKeys(query);
 		WaitingPageObject<SelectUserDialog> ajaxUpdateExpect = ajaxUpdateExpect(resultsDiv, resultsList);
-		searchButton.click();
+		getSearchButton().click();
 		ajaxUpdateExpect.get();
 		waitForElement(By.xpath("id('" + baseId + "')//div[@id='results']//h4[text()]"));
 		String text = driver.findElement(By.xpath("id('" + baseId + "')//div[@id='results']//h4[text()]")).getText();
@@ -99,14 +107,14 @@ public class SelectUserDialog extends AbstractPage<SelectUserDialog>
 
 	public <T extends AbstractPage<T>> T finish(WaitingPageObject<T> page)
 	{
-		okButton.click();
+		getOkButton().click();
 		return page.get();
 	}
 
 	public <T extends AbstractPage<T>> T cancel(WaitingPageObject<T> page)
 	{
-		ExpectedCondition<Boolean> removalCondition = removalCondition(closeButton);
-		closeButton.click();
+		ExpectedCondition<Boolean> removalCondition = removalCondition(getCloseButton());
+		getCloseButton().click();
 		waiter.until(removalCondition);
 		return page.get();
 	}

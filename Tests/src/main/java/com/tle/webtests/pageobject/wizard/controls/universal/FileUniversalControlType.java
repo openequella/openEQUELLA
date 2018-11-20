@@ -177,9 +177,9 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 		return upload(filename, fileEditor());
 	}
 
-	public PackageAttachmentEditPage uploadPackage(URL url)
+	public <T extends PageObject> T uploadPackage(URL url, WaitingPageObject<T> backTo)
 	{
-		return upload(url, pkgEditor());
+		return upload(url, backTo);
 	}
 
 	public PackageAttachmentEditPage uploadPackageOption(URL url)

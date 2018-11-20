@@ -18,20 +18,34 @@ import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 
 public class LMSExportPage extends AbstractPage<LMSExportPage>
 {
-	@FindBy(id = "{baseid}_cl")
-	private WebElement connector;
-	@FindBy(id = "{baseid}_publishButton")
-	private WebElement publishButton;
-	@FindBy(id = "{baseid}_ss")
-	private WebElement selectSummary;
-	@FindBy(id = "{baseid}_sp")
-	private WebElement selectPackage;
-	@FindBy(id = "{baseid}_sa")
-	private WebElement showArchived;
-	@FindBy(id = "{baseid}_fb")
-	private WebElement filterBox;
-	@FindBy(id = "{baseid}_folderTree")
-	private WebElement courseTree;
+	private WebElement getConnector()
+	{
+		return byBaseId("_cl");
+	}
+	private WebElement getPublishButton()
+	{
+		return byBaseId("_publishButton");
+	}
+	private WebElement getSelectSummary()
+	{
+		return byBaseId("_ss");
+	}
+	private WebElement getSelectPackage()
+	{
+		return byBaseId("_sp");
+	}
+	private WebElement getShowArchived()
+	{
+		return byBaseId("_sa");
+	}
+	private WebElement getFilterBox()
+	{
+		return byBaseId("_fb");
+	}
+	private WebElement getCourseTree()
+	{
+		return byBaseId("_folderTree");
+	}
 	@FindBy(id = "lms-tree-ajax")
 	private WebElement treeAjax;
 	@FindBy(id = "lms-tree-container")
@@ -51,70 +65,70 @@ public class LMSExportPage extends AbstractPage<LMSExportPage>
 		this.baseid = baseid;
 	}
 
-	public String getBaseid()
+	public WebElement byBaseId(String postfix)
 	{
-		return baseid;
+		return driver.findElement(By.id(baseid+postfix));
 	}
 
 	public LMSExportPage selectConnector(PrefixedName name)
 	{
-		WaitingPageObject<LMSExportPage> waiter = ajaxUpdateExpect(treeAjax, courseTree);
-		new EquellaSelect(context, connector).selectByVisibleText(name.toString());
+		WaitingPageObject<LMSExportPage> waiter = ajaxUpdateExpect(treeAjax, getCourseTree());
+		new EquellaSelect(context, getConnector()).selectByVisibleText(name.toString());
 		return waiter.get();
 	}
 
 	public LMSExportPage selectConnectorError(PrefixedName name)
 	{
 		WaitingPageObject<LMSExportPage> waiter = ajaxUpdateExpect(treeAjax, connectorError);
-		new EquellaSelect(context, connector).selectByVisibleText(name.toString());
+		new EquellaSelect(context, getConnector()).selectByVisibleText(name.toString());
 		return waiter.get();
 	}
 
 	public LMSCourseNode clickCourse(String course)
 	{
-		LMSCourseNode courseNode = new LMSCourseNode(course, courseTree).get();
+		LMSCourseNode courseNode = new LMSCourseNode(course, getCourseTree()).get();
 		return courseNode.open();
 	}
 
 	public LMSExportPage selectSummary()
 	{
-		selectSummary.click();
+		getSelectSummary().click();
 		return get();
 	}
 
 	public LMSExportPage selectPackage()
 	{
-		selectPackage.click();
+		getSelectPackage().click();
 		return get();
 	}
 
 	public LMSExportPage selectAttachment(String attachmentName, boolean courseUpdate)
 	{
-		WaitingPageObject<LMSExportPage> waiter = ajaxUpdateExpect(treeAjax, courseTree);
+		WaitingPageObject<LMSExportPage> waiter = ajaxUpdateExpect(treeAjax, getCourseTree());
 		driver.findElement(By.xpath("//li/div/a[text()=" + quoteXPath(attachmentName) + "]/../../input")).click();
 		return courseUpdate ? waiter.get() : this.get();
 	}
 
 	public boolean hasCourse(String course)
 	{
-		return new LMSCourseNode(course, courseTree).isLoaded();
+		return new LMSCourseNode(course, getCourseTree()).isLoaded();
 	}
 
 	public LMSExportPage publish()
 	{
-		publishButton.click();
+		getPublishButton().click();
 		return ReceiptPage.waiterContains("ublished", new LMSExportPage(context)).get();
 	}
 
 	public ErrorPage publishWithError()
 	{
-		publishButton.click();
+		getPublishButton().click();
 		return errorPage();
 	}
 
 	public boolean singleConnector()
 	{
-		return !isPresent(connector);
+		return !isPresent(getConnector());
 	}
 
 	public SummaryPage summary()
@@ -136,10 +150,10 @@ public class LMSExportPage extends AbstractPage<LMSExportPage>
 
 	public LMSExportPage showArchived(boolean on)
 	{
-		if( on != showArchived.isSelected() )
+		if( on != getShowArchived().isSelected() )
 		{
-			WaitingPageObject<LMSExportPage> ajaxUpdate = ajaxUpdateExpect(treeContainerAjax, courseTree);
-			showArchived.click();
+			WaitingPageObject<LMSExportPage> ajaxUpdate = ajaxUpdateExpect(treeContainerAjax, getCourseTree());
+			getShowArchived().click();
 			return ajaxUpdate.get();
 		}
 		return this;
@@ -147,7 +161,7 @@ public class LMSExportPage extends AbstractPage<LMSExportPage>
 
 	public LMSExportPage filterCourses(String query, String change, boolean appear)
 	{
-		LMSCourseNode course = new LMSCourseNode(change, courseTree);
+		LMSCourseNode course = new LMSCourseNode(change, getCourseTree());
 		WaitingPageObject<?> waiter;
 		if( appear )
 		{
@@ -157,16 +171,16 @@ public class LMSExportPage extends AbstractPage<LMSExportPage>
 		{
 			waiter = ExpectWaiter.waiter(ExpectedConditions2.invisibilityOf(course.get().getLoadedElement()), this);
 		}
-		filterBox.clear();
-		filterBox.sendKeys(query);
-		filterBox.sendKeys(Keys.ENTER);
+		getFilterBox().clear();
+		getFilterBox().sendKeys(query);
+		getFilterBox().sendKeys(Keys.ENTER);
 		waiter.get();
 		return this;
 	}
 
 	public boolean hasSummaryCheckbox()
 	{
-		return isVisible(selectSummary);
+		return isVisible(getSelectSummary());
 	}
 
 	public String getError()

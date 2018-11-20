@@ -7,6 +7,7 @@ import static org.testng.Assert.assertTrue;
 import java.net.URL;
 import java.text.MessageFormat;
 
+import com.tle.webtests.pageobject.WaitingPageObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -32,10 +33,16 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest
 	private static final String QTI_ZIP = "realqti.zip";
 	private static final String IMS_ZIP = "package.zip";
 	private static final String SCORM_ZIP = "scorm.zip";
+	private static final String NAME_QTI = "BBQs test package";
 	private static final String NAME_PKG = "Zou ba! Visiting China: Is this your first visit?";
 	private static final String NAME_PKG2 = "Arrays: word problems with products from 10 to 30";
 	private static final String ERROR_NONCONTENT = "This file is not a recognised content package: ";
 	private static final String ERROR_NONALLOWED = "This file is not one of the allowed content packages: ";
+
+	private WaitingPageObject<UniversalControl> newPkg(UniversalControl control, String name)
+	{
+		return control.attachNameWaiter(name, false);
+	}
 
 	@Test
 	public void packageOnly()
@@ -48,7 +55,8 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest
 
 		String googleZip = "google.zip";
 		testBadPackageUpload(file, googleZip, ERROR_NONCONTENT);
-		file.uploadPackage(Attachments.get("package2.zip")).save();
+		file.uploadPackage(Attachments.get("package2.zip"),
+				newPkg(control, NAME_PKG2));
 
 		String displayName = "EDITED display name";
 		control.editResource(file.pkgEditor(), NAME_PKG2);
@@ -62,7 +70,8 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest
 
 		item.edit();
 		control.replaceSingleResource(file, displayName);
-		file.uploadPackage(Attachments.get(IMS_ZIP)).showStructure().save();
+		file.uploadPackage(Attachments.get(IMS_ZIP), newPkg(control, NAME_PKG));
+		control.editResource(file.pkgEditor(), NAME_PKG).showStructure().save();
 		item = wizard.saveNoConfirm();
 
 		attachments = item.attachments();
@@ -96,7 +105,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest
 		testBadPackageUpload(file, SCORM_ZIP, ERROR_NONALLOWED);
 
 		// QTI package
-		file.uploadPackage(Attachments.get(QTI_ZIP)).save();
+		file.uploadPackage(Attachments.get(QTI_ZIP), newPkg(control, "FIXME"));
 
 		wizard.save().publish();
 	}
@@ -120,7 +129,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest
 		testBadPackageUpload(file, QTI_ZIP, ERROR_NONALLOWED);
 
 		// SCORM package
-		file.uploadPackage(Attachments.get(SCORM_ZIP)).save();
+		file.uploadPackage(Attachments.get(SCORM_ZIP), newPkg(control, "FIXME"));
 
 		wizard.save().publish();
 	}
@@ -141,12 +150,12 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest
 		testBadPackageUpload(file, IMS_ZIP, ERROR_NONALLOWED);
 
 		// SCORM package
-		file.uploadPackage(Attachments.get(SCORM_ZIP)).save();
-		Assert.assertTrue(control.hasResource(SCORM_ZIP));
+		file.uploadPackage(Attachments.get(SCORM_ZIP), newPkg(control, SCORM_ZIP));
 		control.replaceSingleResource(file, SCORM_ZIP);
 
 		// QTI package
-		file.uploadPackage(Attachments.get(QTI_ZIP)).setDisplayName(QTI_ZIP).save();
+		file.uploadPackage(Attachments.get(QTI_ZIP), newPkg(control, NAME_QTI));
+		control.editResource(file.pkgEditor(), NAME_QTI).setDisplayName(QTI_ZIP).save();
 		Assert.assertTrue(control.hasResource(QTI_ZIP));
 		control.deleteResource(QTI_ZIP);
 

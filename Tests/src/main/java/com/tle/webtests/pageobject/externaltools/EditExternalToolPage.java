@@ -7,18 +7,36 @@ import com.tle.webtests.pageobject.generic.entities.AbstractEditEntityPage;
 
 public class EditExternalToolPage extends AbstractEditEntityPage<EditExternalToolPage, ShowExternalToolsPage>
 {
-	@FindBy(id = "{editorSectionId}_baseUrl")
-	private WebElement baseUrlField;
-	@FindBy(id = "{editorSectionId}_consumerKey")
-	private WebElement consumerKeyField;
-	@FindBy(id = "{editorSectionId}_sharedSecret")
-	private WebElement sharedSecretField;
-	@FindBy(id = "{editorSectionId}_customParams")
-	private WebElement customParamsField;
-	@FindBy(id = "{editorSectionId}_shareName")
-	private WebElement shareNameCheckbox;
-	@FindBy(id = "{editorSectionId}_shareEmail")
-	private WebElement shareEmailCheckbox;
+	private WebElement getBaseUrlField()
+	{
+		return findByEditorSectionId("_baseUrl");
+	}
+
+	private WebElement findByEditorSectionId(String postfix)
+	{
+		return findWithId(getEditorSectionId(), postfix);
+	}
+
+	private WebElement getConsumerKeyField()
+	{
+		return findByEditorSectionId("_consumerKey");
+	}
+	private WebElement getSharedSecretField()
+	{
+		return findByEditorSectionId("_sharedSecret");
+	}
+	private WebElement getCustomParamsField()
+	{
+		return findByEditorSectionId("_customParams");
+	}
+	private WebElement getShareNameCheckbox()
+	{
+		return findByEditorSectionId("_shareName");
+	}
+	private WebElement getShareEmailCheckbox()
+	{
+		return findByEditorSectionId("_shareEmail");
+	}
 
 	protected EditExternalToolPage(ShowExternalToolsPage showToolsPage)
 	{
@@ -27,16 +45,16 @@ public class EditExternalToolPage extends AbstractEditEntityPage<EditExternalToo
 
 	public void setBaseUrl(String url)
 	{
-		baseUrlField.clear();
-		baseUrlField.sendKeys(url);
+		getBaseUrlField().clear();
+		getBaseUrlField().sendKeys(url);
 	}
 
 	public void setKeySecret(String key, String secret)
 	{
-		consumerKeyField.clear();
-		consumerKeyField.sendKeys(key);
-		sharedSecretField.clear();
-		sharedSecretField.sendKeys(secret);
+		getConsumerKeyField().clear();
+		getConsumerKeyField().sendKeys(key);
+		getSharedSecretField().clear();
+		getSharedSecretField().sendKeys(secret);
 	}
 
 	@Override
@@ -48,19 +66,19 @@ public class EditExternalToolPage extends AbstractEditEntityPage<EditExternalToo
 	// TODO could change input to a list of key/value
 	public void setCustomParams(String params)
 	{
-		customParamsField.clear();
-		customParamsField.sendKeys(params);
+		getCustomParamsField().clear();
+		getCustomParamsField().sendKeys(params);
 	}
 
 	public void setShareOptions(boolean shareName, boolean shareEmail)
 	{
-		if( shareName ^ shareNameCheckbox.isSelected() )
+		if( shareName ^ getShareNameCheckbox().isSelected() )
 		{
-			shareNameCheckbox.click();
+			getShareNameCheckbox().click();
 		}
-		if( shareEmail ^ shareEmailCheckbox.isSelected() )
+		if( shareEmail ^ getShareEmailCheckbox().isSelected() )
 		{
-			shareEmailCheckbox.click();
+			getShareEmailCheckbox().click();
 		}
 	}
 

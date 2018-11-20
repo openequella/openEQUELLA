@@ -15,8 +15,10 @@ public abstract class AbstractConnectorEditPage<THIS extends AbstractConnectorEd
 	extends
 		AbstractEditEntityPage<THIS, ShowConnectorsPage>
 {
-	@FindBy(id = "{contributeSectionId}_ct")
-	private WebElement lmsType;
+	private WebElement getLmsType()
+	{
+		return findWithId(getContributeSectionId(), "_ct");
+	}
 	@FindBy(id = "testdiv")
 	private WebElement testAjaxDiv;
 	@FindBy(xpath = "id('testdiv')//span[contains(@class, 'status')]")
@@ -39,8 +41,8 @@ public abstract class AbstractConnectorEditPage<THIS extends AbstractConnectorEd
 
 	public THIS setType(String type)
 	{
-		new EquellaSelect(context, lmsType).selectByVisibleText(type);
-		waitForElement(saveButton);
+		new EquellaSelect(context, getLmsType()).selectByVisibleText(type);
+		waitForElement(getSaveButton());
 		return get();
 	}
 

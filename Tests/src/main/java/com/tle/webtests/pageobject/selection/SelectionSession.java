@@ -38,10 +38,15 @@ public class SelectionSession extends AbstractPage<SelectionSession>
 		return driver.findElement(By.id(getQuickUploadSectionId("_fileUploader")));
 	}
 
-	@FindBy(id = "{quickUploadSectionId}_uploadButton")
-	private WebElement quickButton;
-	@FindBy(id = "{quickUploadContributeSectionId}_contributeButton")
-	private WebElement contributeButton;
+	private WebElement getQuickButton()
+	{
+		return findWithId("qu", "_uploadButton");
+	}
+
+	private WebElement getContributeButton()
+	{
+		return findWithId(getQuickUploadContributeSectionId(), "_contributeButton");
+	}
 
 	@FindBy(id = "selection-header")
 	private WebElement selectionHeader;
@@ -164,19 +169,19 @@ public class SelectionSession extends AbstractPage<SelectionSession>
 	public <T extends PageObject> T quickContribute(URL file, WaitingPageObject<T> returnTo)
 	{
 		getQuickFile().sendKeys(getPathFromUrl(file));
-		quickButton.click();
+		getQuickButton().click();
 		return returnTo.get();
 	}
 
 	public ContributePage contribute()
 	{
-		contributeButton.click();
+		getContributeButton().click();
 		return new ContributePage(context).get();
 	}
 
 	public WizardPageTab contributeSingle()
 	{
-		contributeButton.click();
+		getContributeButton().click();
 		return new WizardPageTab(context, 0).get();
 	}
 
