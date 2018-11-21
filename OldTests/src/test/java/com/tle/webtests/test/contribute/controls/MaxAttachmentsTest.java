@@ -18,6 +18,7 @@ public class MaxAttachmentsTest extends AbstractCleanupAutoTest
 {
 	private static final String COLLECTION = "Max attachments restriction";
 	private final URL[] ATTACHMENTS = {Attachments.get("page.html"), Attachments.get("pageB.html")};
+	private final String ORIGINAL_TITLE = "Peter Andre - Mysterious Girl (Official Music Video)";
 	private final String YOUTUBE_TITLE = "good song";
 
 	@Test
@@ -29,7 +30,10 @@ public class MaxAttachmentsTest extends AbstractCleanupAutoTest
 		UniversalControl control = wizard.universalControl(2);
 
 		YouTubeUniversalControlType youTubeControl = control.addResource(new YouTubeUniversalControlType(control));
-		youTubeControl.search("mysterious girl peter andre", null).selectVideo(1).setDisplayName(YOUTUBE_TITLE).save();
+		youTubeControl.search("mysterious girl peter andre", null)
+				.selectVideo(1, ORIGINAL_TITLE);
+		control.editResource(youTubeControl.editPage(), ORIGINAL_TITLE)
+				.setDisplayName(YOUTUBE_TITLE).save();
 		wizard.addFiles(2, false, ATTACHMENTS);
 		wizard.save().finishInvalid(wizard);
 		Assert.assertEquals(wizard.getErrorMessage(2),

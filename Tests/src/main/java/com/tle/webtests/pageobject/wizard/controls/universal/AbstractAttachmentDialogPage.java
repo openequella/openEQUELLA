@@ -1,5 +1,7 @@
 package com.tle.webtests.pageobject.wizard.controls.universal;
 
+import com.tle.webtests.pageobject.ExpectWaiter;
+import com.tle.webtests.pageobject.ExpectedConditions2;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -8,39 +10,51 @@ import org.openqa.selenium.support.FindBy;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.wizard.controls.NewAbstractWizardControl;
 import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
+import org.openqa.selenium.support.pagefactory.ByChained;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractAttachmentDialogPage<T extends AbstractAttachmentDialogPage<T>>
 	extends
 		NewAbstractWizardControl<T>
 {
+	static final String BUTTON_ADD = "Add";
+	public static final String BUTTON_SAVE = "Save";
+	public static final String BUTTON_NEXT = "Next";
+	public static final String BUTTON_BACK = "Back to start";
+	public static final String BUTTON_REPLACE = "Replace";
+
+	protected By buttonBy(String name)
+	{
+		return By.xpath(getButtonbar()+"button[normalize-space(text())="+quoteXPath(name)+"]");
+	}
+
 	private WebElement buttonByText(String name)
 	{
-		return driver.findElement(By.xpath(getButtonbar()+"button[normalize-space(text())="+quoteXPath(name)+"]"));
+		return driver.findElement(buttonBy(name));
 	}
 
 	protected WebElement getSaveButton()
 	{
-		return buttonByText("Save");
-	}
-
-
-	protected WebElement getNextButton()
-	{
-		return buttonByText("Next");
+		return buttonByText(BUTTON_SAVE);
 	}
 
 	protected WebElement getBackToStartButton()
 	{
-		return buttonByText("Back to start");
+		return buttonByText(BUTTON_BACK);
+	}
+
+	protected WebElement getNextButton()
+	{
+		return buttonByText(BUTTON_NEXT);
+	}
+
+	protected WebElement getAddButton()
+	{
+		return buttonByText(BUTTON_ADD);
 	}
 
 	@FindBy(xpath = "//img[@class='modal_close']")
 	private WebElement closeButton;
-
-	private WebElement getFooterAjax()
-	{
-		return byWizId("_dialogfooter");
-	}
 
 	protected UniversalControl control;
 
@@ -55,7 +69,7 @@ public abstract class AbstractAttachmentDialogPage<T extends AbstractAttachmentD
 
 	public WaitingPageObject<T> submitWaiter()
 	{
-		return ajaxUpdate(getFooterAjax());
+		return ajaxUpdate(wizIdBy("_dialogfooter"));
 	}
 
 	public WebElement byDialogXPath(String xpath)
@@ -77,23 +91,6 @@ public abstract class AbstractAttachmentDialogPage<T extends AbstractAttachmentD
 
 	public boolean canAdd()
 	{
-		try
-		{
-			return getAddButton().isDisplayed();
-		}
-		catch( NoSuchElementException nse )
-		{
-			return false;
-		}
-	}
-
-	protected By getAddButtonBy()
-	{
-		return By.xpath(getButtonbar()+"button[normalize-space(text())='Add' or normalize-space(text())='Replace']");
-	}
-
-	protected WebElement getAddButton()
-	{
-		return driver.findElement(getAddButtonBy());
+		return isVisible(buttonByText(BUTTON_ADD));
 	}
 }

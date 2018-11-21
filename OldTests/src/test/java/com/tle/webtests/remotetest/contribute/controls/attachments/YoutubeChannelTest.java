@@ -32,7 +32,8 @@ public class YoutubeChannelTest extends AbstractCleanupTest
 		// add a video
 		UniversalControl control = wizard.universalControl(2);
 		YouTubeUniversalControlType youtube = control.addDefaultResource(new YouTubeUniversalControlType(control));
-		youtube.search("maths", "The Khan Academy").selectVideo(1).setDisplayName(MATHS_VIDEO).save();
+		youtube.search("maths", "The Khan Academy").selectVideo(1, "FIXME");
+		control.editResource(youtube.editPage(), "FIXME").setDisplayName(MATHS_VIDEO).save();
 		// add another 3 videos
 		control.addDefaultResource(youtube).search("test", "ABC News").addVideos(1, 2, 3);
 
@@ -52,7 +53,8 @@ public class YoutubeChannelTest extends AbstractCleanupTest
 		control = wizard.universalControl(2);
 		YouTubeUniversalControlType addingResorce = control
 			.addDefaultResource(new YouTubeUniversalControlType(control));
-		addingResorce.search("cat", "All Youtube").selectVideo(2).setDisplayName("Cat Video").save();
+		addingResorce.search("cat", "All Youtube").selectVideo(2, "FIXME");
+		control.editResource(youtube.editPage(), "FIXME").setDisplayName("Cat Video").save();
 		item = wizard.saveNoConfirm();
 		assertTrue(item.attachments().attachmentExists("Cat Video"));
 
@@ -60,7 +62,8 @@ public class YoutubeChannelTest extends AbstractCleanupTest
 		item.adminTab().edit();
 		control = wizard.universalControl(2);
 		control.replaceSingleResource(new YouTubeUniversalControlType(control), "Cat Video")
-			.search("Equella", "All Youtube").selectVideo(2).setDisplayName("EQUELLA Video").save();
+			.search("Equella", "All Youtube").selectVideo(2, "FIXME");
+		control.editResource(youtube.editPage(), "FIXME").setDisplayName("EQUELLA Video").save();
 		item = wizard.saveNoConfirm();
 		assertTrue(item.attachments().attachmentExists("EQUELLA Video"));
 
@@ -82,7 +85,8 @@ public class YoutubeChannelTest extends AbstractCleanupTest
 
 		UniversalControl control = wizard.universalControl(2);
 		YouTubeUniversalControlType youtube = control.addResource(new YouTubeUniversalControlType(control));
-		youtube.search("EQUELLA Intro", null).selectVideo(1).setDisplayName("EQUELLA Video").save();
+		youtube.search("EQUELLA Intro", null).selectVideo(1, "FIXME");
+		control.editResource(youtube.editPage(), "FIXME").setDisplayName("EQUELLA Video").save();
 		control.addResource(youtube).search("Test", null).addVideos(1, 2, 3);
 
 		SummaryPage item = wizard.save().publish();
@@ -103,7 +107,8 @@ public class YoutubeChannelTest extends AbstractCleanupTest
 
 		control = wizard.universalControl(2);
 		youtube = control.addResource(new YouTubeUniversalControlType(control));
-		youtube.search("EQUELLA Intro", null).selectVideo(1).setDisplayName("EQUELLA Video").save();
+		youtube.search("EQUELLA Intro", null).selectVideo(1, "FIXME");
+		control.editResource(youtube.editPage(), "FIXME").setDisplayName("EQUELLA Video").save();
 
 		control = wizard.universalControl(2);
 		String uuid = control.getAttachmentUuid("EQUELLA Video");

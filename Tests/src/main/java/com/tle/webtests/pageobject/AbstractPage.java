@@ -16,6 +16,7 @@ import java.util.regex.Matcher;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.pagefactory.ByChained;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -462,6 +463,12 @@ public abstract class AbstractPage<T extends PageObject> implements PageObject, 
 	public WaitingPageObject<T> visibilityWaiter(SearchContext searchContext, By by)
 	{
 		return ExpectWaiter.waiter(ExpectedConditions2.visibilityOfElementLocated(searchContext, by), this);
+	}
+
+	public WaitingPageObject<T> ajaxUpdate(By ajaxElem)
+	{
+		return ExpectWaiter.waiter(ExpectedConditions2.ajaxUpdateExpectBy(driver.findElement(ajaxElem),
+				new ByChained(ajaxElem, ExpectedConditions2.XPATH_FIRSTELEM)), this);
 	}
 
 	public WaitingPageObject<T> ajaxUpdate(WebElement ajaxElem)

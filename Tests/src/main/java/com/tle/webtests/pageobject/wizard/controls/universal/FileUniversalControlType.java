@@ -71,9 +71,10 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 		return "Upload a file";
 	}
 
-	public AbstractWizardControlPage<?> uploadFile(URL url)
+	public UniversalControl uploadFile(URL url)
 	{
-		return upload(getPathFromUrl(url), getPage());
+		String filePath = getPathFromUrl(url);
+		return upload(filePath, BUTTON_ADD, control.attachNameWaiter(PathUtils.getFilenameFromFilepath(filePath), false));
 	}
 
 	public String uploadMultiple(URL[] urls)
@@ -132,7 +133,7 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 
 	public FileAttachmentEditPage uploadFile(File file)
 	{
-		return upload(file.getAbsolutePath(), fileEditor());
+		return upload(file.getAbsolutePath(), BUTTON_ADD, fileEditor());
 	}
 
 	private void uploadMultiple(String filename, String expectedFilename)
@@ -168,50 +169,48 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 
 	private FileAttachmentEditPage uploadZip(String filename)
 	{
-		FileAttachmentEditPage upload = upload(filename, fileEditor());
+		FileAttachmentEditPage upload = upload(filename, BUTTON_NEXT, fileEditor());
 		return upload.unzip().selectAll();
 	}
 
 	private FileAttachmentEditPage uploadZipAsFile(String filename)
 	{
-		return upload(filename, fileEditor());
+		return upload(filename, BUTTON_ADD, fileEditor());
 	}
 
 	public <T extends PageObject> T uploadPackage(URL url, WaitingPageObject<T> backTo)
 	{
-		return upload(url, backTo);
+		return upload(url, BUTTON_ADD, backTo);
 	}
 
 	public PackageAttachmentEditPage uploadPackageOption(URL url)
 	{
-		PackageOptionsPage options = upload(url, new PackageOptionsPage(this));
+		PackageOptionsPage options = upload(url, BUTTON_NEXT, new PackageOptionsPage(this));
 		return options.treatAsPackage();
 	}
 
 	public PackageAttachmentEditPage uploadQTITestOption(URL url)
 	{
-		PackageOptionsPage options = upload(url, new PackageOptionsPage(this));
+		PackageOptionsPage options = upload(url, BUTTON_NEXT, new PackageOptionsPage(this));
 		return options.treatAsQTIQuiz();
 	}
 
 	public PackageAttachmentEditPage uploadMETSOption(URL url)
 	{
-		PackageOptionsPage options = upload(url, new PackageOptionsPage(this));
+		PackageOptionsPage options = upload(url, BUTTON_NEXT, new PackageOptionsPage(this));
 		return options.treatAsMETS();
 	}
 
-	public <T extends PageObject> T upload(URL fileUrl, WaitingPageObject<T> nextPage)
+	public <T extends PageObject> T upload(URL fileUrl, String nextButton, WaitingPageObject<T> nextPage)
 	{
-		return upload(getPathFromUrl(fileUrl), nextPage);
+		return upload(getPathFromUrl(fileUrl), nextButton, nextPage);
 	}
 
-	public <T extends PageObject> T upload(String filename, WaitingPageObject<T> nextPage)
+	public <T extends PageObject> T upload(String filename, String nextButton, WaitingPageObject<T> nextPage)
 	{
 		waitForHiddenElement(getFileUpload());
 		getFileUpload().sendKeys(filename);
-
-		waiter.until(ExpectedConditions.presenceOfElementLocated(getAddButtonBy()));
-		getAddButton().click();
+		waiter.until(ExpectedConditions.presenceOfElementLocated(buttonBy(nextButton))).click();
 		return nextPage.get();
 	}
 

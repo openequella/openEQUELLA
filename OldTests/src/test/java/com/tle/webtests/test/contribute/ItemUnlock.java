@@ -18,6 +18,7 @@ import com.tle.webtests.test.AbstractCleanupTest;
 public class ItemUnlock extends AbstractCleanupTest
 {
 	private static final String RENAMED_NAME = "A Video";
+	private static final String ORIGINAL_NAME = "What is a function? | Functions and their graphs | Algebra II | Khan Academy";
 	private static final String DISPLAY_NAME = "Original Displayname";
 
 	@Test
@@ -31,7 +32,8 @@ public class ItemUnlock extends AbstractCleanupTest
 		wizard.editbox(1, itemName);
 		UniversalControl control = wizard.universalControl(2);
 		YouTubeUniversalControlType youtube = control.addDefaultResource(new YouTubeUniversalControlType(control));
-		youtube.search("maths", "The Khan Academy").selectVideo(1).setDisplayName(DISPLAY_NAME).save();
+		youtube.search("maths", "The Khan Academy").selectVideo(1, ORIGINAL_NAME);
+		control.editResource(youtube.editPage(), "FIXME").setDisplayName(DISPLAY_NAME).save();
 		SummaryPage item = wizard.save().publish();
 		assertTrue(item.attachments().attachmentExists(DISPLAY_NAME));
 

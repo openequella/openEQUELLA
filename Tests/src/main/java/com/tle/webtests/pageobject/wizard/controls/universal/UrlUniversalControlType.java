@@ -1,5 +1,6 @@
 package com.tle.webtests.pageobject.wizard.controls.universal;
 
+import com.tle.webtests.pageobject.WaitingPageObject;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -42,8 +43,10 @@ public class UrlUniversalControlType extends AbstractAttachmentDialogPage<UrlUni
 	{
 		getUrlField().clear();
 		getUrlField().sendKeys(url);
+		WaitingPageObject<UniversalControl> waiter = control.attachNameWaiter(url, false);
 		getAddButton().click();
-		UrlAttachmentEditPage edit = edit();
+		waiter.get();
+		UrlAttachmentEditPage edit = control.editResource(new UrlAttachmentEditPage(control), url);
 		if( !Check.isEmpty(name) )
 		{
 			edit.setDisplayName(name);

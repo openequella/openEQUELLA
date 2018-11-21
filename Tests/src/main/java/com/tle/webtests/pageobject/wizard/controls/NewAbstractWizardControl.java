@@ -26,9 +26,14 @@ public class NewAbstractWizardControl<T extends PageObject> extends AbstractPage
 		this.page = page;
 	}
 
+	protected By wizIdBy(String postfix)
+	{
+		return By.id(getWizid()+postfix);
+	}
+
 	protected WebElement byWizId(String postfix)
 	{
-		return driver.findElement(By.id(getWizid()+postfix));
+		return driver.findElement(wizIdBy(postfix));
 	}
 
 	protected WebElement byWizIdXPath(String xpath)
@@ -36,9 +41,14 @@ public class NewAbstractWizardControl<T extends PageObject> extends AbstractPage
 		return byWizIdIdXPath("", xpath);
 	}
 
+	protected By wizIdIdXPath(String postId, String xpath)
+	{
+		return By.xpath("id("+quoteXPath(getWizid()+postId)+")"+xpath);
+	}
+
 	protected WebElement byWizIdIdXPath(String postId, String xpath)
 	{
-		return driver.findElement(By.xpath("id("+quoteXPath(getWizid()+postId)+")"+xpath));
+		return driver.findElement(wizIdIdXPath(postId, xpath));
 	}
 
 	public String getWizid()

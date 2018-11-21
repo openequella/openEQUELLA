@@ -79,9 +79,9 @@ public class YouTubeUniversalControlType extends AbstractUniversalControlType<Yo
 		return disappearWaiter.get();
 	}
 
-	public GenericAttachmentEditPage selectVideo(int index)
+	public UniversalControl selectVideo(int index, String name)
 	{
-		return selectVideos(editPage(), index);
+		return selectVideos(control.attachNameWaiter(name, false), index);
 	}
 
 	@Override

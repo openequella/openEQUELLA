@@ -21,7 +21,7 @@ import com.tle.webtests.framework.factory.RefreshableElement;
 
 public class ExpectedConditions2
 {
-    private static final By XPATH_FIRSTELEM = By.xpath("*[1]");
+    public static final By XPATH_FIRSTELEM = By.xpath("*[1]");
 
     public static WebElement unwrappedElement(WebElement element)
     {

@@ -2,12 +2,14 @@ package com.tle.webtests.pageobject.wizard.controls;
 
 import java.util.List;
 
+import com.tle.webtests.pageobject.WaitingPageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.pagefactory.ByChained;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import com.tle.webtests.framework.PageContext;
@@ -18,6 +20,16 @@ public class HTMLEditBoxControl extends AbstractWizardControl<HTMLEditBoxControl
 	private WebElement getEditor()
 	{
 		return byWizId("_mct_html_parent");
+	}
+
+	private By getEditorBy()
+	{
+		return By.id(getWizid()+"_mct_html_parent");
+	}
+
+	private By getLockededitorBy()
+	{
+		return new ByChained(By.id(getWizid()), By.xpath("//div[@class='lockedHtml']"));
 	}
 
 	private WebElement getLockededitor()
@@ -78,22 +90,24 @@ public class HTMLEditBoxControl extends AbstractWizardControl<HTMLEditBoxControl
 		{
 			this.isLocked = isLocked;
 		}
-		return get();
+		return this;
 	}
 
 	public HTMLEditBoxControl toggleEdit()
 	{
 		if( isOnDemand )
 		{
+			WaitingPageObject<HTMLEditBoxControl> waiter = updateWaiter();
 			getEditlink().click();
 			isLocked = !isLocked;
+			return waiter.get();
 		}
 		return get();
 	}
 
 	public boolean isEditable()
 	{
-		return !isVisible(getLockededitor()) && isVisible(getEditor());
+		return !isVisible(getLockededitorBy()) && isVisible(getEditorBy());
 	}
 
 	public void setBodyContent(String content)
