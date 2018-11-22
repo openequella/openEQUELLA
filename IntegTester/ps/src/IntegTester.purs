@@ -3,21 +3,17 @@ module IntegTester where
 import Prelude hiding (div)
 
 import Control.Monad.Reader (runReaderT)
-import Control.MonadZero (guard)
-import Data.Array (catMaybes, head, length, mapMaybe)
-import Data.ArrayBuffer.Base64 (encodeBase64)
-import Data.Bifunctor (bimap)
+import Control.MonadZero (guard, (<|>))
+import Data.Array (catMaybes, length, mapMaybe)
 import Data.DateTime.Instant (Instant, unInstant)
-import Data.Functor.Contravariant (cmap)
 import Data.Lens (lens, set, view)
 import Data.Lens.Types (Lens')
-import Data.List (fromFoldable)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Newtype (unwrap)
 import Data.Number.Format (fixed, toStringWith)
-import Data.TextEncoder (Encoding(..), encode)
-import Data.Tuple (Tuple(..), fst, snd)
-import Dispatcher.React (modifyState)
+import Data.Tuple (Tuple(..))
+import Debug.Trace (spy, traceM)
+import Dispatcher.React (modifyState, stateRenderer)
 import Effect (Effect)
 import Effect.Now (now)
 import Effect.Unsafe (unsafePerformEffect)
@@ -25,13 +21,17 @@ import Global.Unsafe (unsafeEncodeURIComponent)
 import React (ReactElement, component, unsafeCreateLeafElement)
 import React.DOM (a, div, div', form, input, label', option, select, text, textarea)
 import React.DOM.Props (Props, _type, action, checked, className, href, method, name, onChange, onClick, value)
-import URI.Extra.QueryPairs (QueryPairs(..), keyFromString, valueFromString)
+import Text.Parsing.Parser.String (oneOf)
+import URI.Common (printEncoded, unreserved)
+import URI.Extra.QueryPairs (QueryPairs(..), Value(..), keyFromString, unsafeValueFromString, valueFromString)
 import URI.Extra.QueryPairs as QueryPairs
-import URI.Query (Query)
 import URI.Query as Query
 import Unsafe.Coerce (unsafeCoerce)
+import Web.HTML (window)
+import Web.HTML.Location (href) as L
+import Web.HTML.Window (location)
 
-foreign import md5 :: String -> String
+foreign import md5AndBase64 :: String -> String
 
 methods :: Array String
 methods = [ "lms", "vista" ]
@@ -86,11 +86,15 @@ checkBox :: String -> Lens' State Boolean -> FormContext -> ReactElement
 checkBox n l {state,change} = input [ name n, _type "checkbox",
     checked (view l state), changeChecked change l]
 
-controls :: Array
+controls :: Effect (Array
   { label :: String
   , control :: FormContext -> ReactElement
-  }
-controls = [
+  })
+controls = do
+
+ l <- window >>= location >>= L.href
+ _ <- traceM l
+ pure [
   {label:"Method:", control:selectList "method" methods (lens _.method _{method = _})}
 , {label:"Action:", control:selectList "action" actions (lens _.action _{action = _})}
 , {label:"Options:", control:textBox "options" (lens _.options _{options = _})}
@@ -110,7 +114,7 @@ controls = [
 , {label: "Generate Return URL:", control:checkBox "makeReturn" (lens _.makeReturn _{makeReturn = _})}
 , {label: "Initial item XML:", control:textArea "itemXml" (lens _.itemXml _{itemXml = _})}
 , {label: "Initial powersearch XML:", control:textArea "powerXml" (lens _.powerXml _{powerXml = _})}
-, {label: "", control: (\{change:d} -> input [ _type "submit", onClick \_ -> d $ \s -> s{clickUrl=Just $ createUrl s}  ]) }
+, {label: "", control: (\{change:d} -> input [ _type "submit", onClick \_ -> d $ \s -> s{clickUrl=Just $ createUrl l s}  ]) }
 ]
 
 -- 		<div class="formrow">
@@ -135,14 +139,18 @@ data Actions = Update (State -> State)
 
 createToken :: {username::String, id::String, sharedSecret :: String, data :: Maybe String, curTime :: Instant} -> String
 createToken s = let timeStr = toStringWith (fixed 0) (unwrap $ unInstant s.curTime)
-    in unsafeEncodeURIComponent s.username
-    <> ":" <> unsafeEncodeURIComponent s.id
+    in s.username
+    <> ":" <> s.id
     <> ":" <> timeStr
-    <> ":" <> (encodeBase64 $ encode Utf8 (md5 $ s.username <> s.id <> timeStr <> s.sharedSecret))
+    <> ":" <> spy "BASE64" (md5AndBase64 $ s.username <> s.id <> timeStr <> s.sharedSecret)
     <> (fromMaybe "" $ (append ":") <$> s.data)
 
-createUrl :: State -> String
-createUrl s@{username, sharedSecret, url} = url <> (Query.print $ QueryPairs.print keyFromString valueFromString 
+strToValue :: String -> Value
+strToValue = unsafeValueFromString <<< printEncoded (unreserved
+  <|> oneOf ['!', '$', '\'', '(', ')', '*', '=', ',', ':', '@', '/', '?'])
+
+createUrl :: String -> State -> String
+createUrl returnurl s@{username, sharedSecret, url} = url <> (Query.print $ QueryPairs.print keyFromString strToValue 
   (QueryPairs $
     [
       p "token" $ createToken {
@@ -154,7 +162,7 @@ createUrl s@{username, sharedSecret, url} = url <> (Query.print $ QueryPairs.pri
     , p "method" s.method
     , p "action" s.action
     , p "returnprefix" ""
-    , p "returnurl" "http://boorah:8083/index.html?method=showReturn"
+    , p "returnurl" returnurl 
     ] <> mapMaybe boolParam [
         Tuple "selectMultiple" s.selectMultiple
       , Tuple "itemonly" s.itemonly
@@ -175,12 +183,13 @@ createUrl s@{username, sharedSecret, url} = url <> (Query.print $ QueryPairs.pri
 
 integ :: Array (Tuple String String) -> ReactElement
 integ postVals = flip unsafeCreateLeafElement {} $ component "IntegTester" $ \this -> do
+  allControls <- controls
   let
     d :: Actions -> Effect Unit
     d = eval >>> flip runReaderT this
     eval (Update f) = modifyState f
     render s@{clickUrl} = div' $ catMaybes [
-                                    Just (div' $ writeControl <$> controls)
+                                    Just (div' $ writeControl <$> allControls)
                                     , haveUrl <$> clickUrl
                                     , (div' (writeParam <$> postVals)) <$ guard (length postVals > 0)
                                 ]
@@ -196,7 +205,7 @@ integ postVals = flip unsafeCreateLeafElement {} $ component "IntegTester" $ \th
         , control {state:s, change: d <<< Update}
         ]
         writeParam (Tuple n v) = writeControl {label:n <> ":", control: \_ -> textarea [ className "itemXml" ] [ text v ]}
-  pure {}
+  pure {render: stateRenderer render this, state:initialState}
 -- MainForm form = (MainForm) formData;
 -- 		String secretId = form.getSharedSecretId();
 -- 		if( Check.isEmpty(secretId) )

@@ -13,8 +13,11 @@ import io.circe.generic.auto._
 import fs2._
 import org.http4s.server.staticcontent.FileService.Config
 import org.http4s.{HttpService, MediaType, Request, UrlForm}
+import org.slf4j.LoggerFactory
 
 object IntegTester extends StreamApp {
+
+  val Logger = LoggerFactory.getLogger("IntegTester")
 
   def appHtml(request: Request, dir: String = "") = request.decode[UrlForm] {
     form =>
@@ -35,7 +38,8 @@ object IntegTester extends StreamApp {
 
   def echoServer(request: Request) = {
     val echo = request.uri.query.params.get("echo")
-    Ok(s"""<html>
+    Ok(
+      s"""<html>
       <head>
         <link rel="stylesheet" href="styles.css" type="text/css">
           <title>Echo Server</title>
@@ -72,7 +76,10 @@ object IntegTester extends StreamApp {
     BlazeBuilder
       .bindHttp(8083, "0.0.0.0")
       .mountService(appService)
-      .mountService(filePath.fold(resourceService(ResourceService.Config("/www")))(p => fileService(Config(p))))
+      .mountService(filePath.fold(resourceService(ResourceService.Config("/www"))) { p =>
+        Logger.info(s"Serving from $p")
+        fileService(Config(p))
+      })
       .serve
 
 }

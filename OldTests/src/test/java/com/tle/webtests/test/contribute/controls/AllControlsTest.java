@@ -84,12 +84,12 @@ public class AllControlsTest extends AbstractWizardControlsTest
 		assertFalse(wizardPage.hasControl(7));
 		CalendarControl reload = wizardPage.calendar(6);
 		WaitingPageObject<WizardPageTab> waiterAppear = wizardPage.getAppearWaiter(7);
-		reload.setDate(Calendar.getInstance());
+		reload.setDateWithReload(Calendar.getInstance());
 		waiterAppear.get();
 		assertTrue(isTextPresentInId("rawhtml", "The date has been set and the controls reloaded"));
 
 		waiterAppear = wizardPage.getDisappearWaiter(7);
-		reload.clearDate();
+		reload.clearDateRemove();
 		wizardPage = waiterAppear.get();
 		assertFalse(wizardPage.hasControl(7));
 

@@ -179,7 +179,9 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
 
 	public WaitingPageObject<UniversalControl> attachNameWaiter(String newName, boolean disabled)
 	{
-		return ExpectWaiter.waiter(getResourceExpectation(newName, disabled), this);
+		return ExpectWaiter.waiter(
+				ExpectedConditions.and(updatedCondition(),
+				getResourceExpectation(newName, disabled)), this);
 	}
 
 	public WaitingPageObject<UniversalControl> attachGoneWaiter(String oldName)

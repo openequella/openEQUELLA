@@ -1,5 +1,5 @@
-const md5 = require("blueimp-md5");
+const md5 = require("js-md5");
 
-exports.md5 = function(s) {
-    return md5(s, null, true);
+exports.md5AndBase64 = function(s) {
+    return md5.base64(s);
 }

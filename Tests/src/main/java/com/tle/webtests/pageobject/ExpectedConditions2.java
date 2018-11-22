@@ -600,12 +600,15 @@ public class ExpectedConditions2
         return ExpectedConditions.visibilityOf(expectedElement);
     }
 
-    public static ExpectedCondition<Boolean> ajaxUpdateExpectBy(WebElement ajaxElem, By expectedElement)
+    public static ExpectedCondition<?> ajaxUpdateExpectBy(WebElement ajaxElem, By expectedElement)
     {
-        return ExpectedConditions.and(
-                ExpectedConditions.stalenessOf(unwrappedElement(ajaxElem.findElement(XPATH_FIRSTELEM))),
-                ExpectedConditions.visibilityOfElementLocated(expectedElement)
-        );
+        WebElement firstChild = AbstractPage.elementIfPresent(ajaxElem, XPATH_FIRSTELEM);
+        ExpectedCondition<WebElement> newElem = ExpectedConditions.visibilityOfElementLocated(expectedElement);
+        if (firstChild != null)
+        {
+            return ExpectedConditions.and(ExpectedConditions.stalenessOf(firstChild), newElem);
+        }
+        return newElem;
     }
 
     public static ExpectedCondition<?> ajaxUpdateEmpty(WebElement ajaxElem)

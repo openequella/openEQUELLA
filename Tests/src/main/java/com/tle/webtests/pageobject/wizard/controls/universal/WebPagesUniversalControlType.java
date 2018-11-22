@@ -1,5 +1,6 @@
 package com.tle.webtests.pageobject.wizard.controls.universal;
 
+import com.tle.webtests.pageobject.WaitingPageObject;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -78,8 +79,9 @@ public class WebPagesUniversalControlType extends AbstractUniversalControlType<W
 
 	public UniversalControl add(String newPage)
 	{
+		WaitingPageObject<UniversalControl> waiter = control.attachNameWaiter(newPage, false);
 		getAddButton().click();
-		return control.attachNameWaiter(newPage, false).get();
+		return waiter.get();
 	}
 
 	public WebPagesUniversalControlType setPreview(boolean b)
@@ -102,7 +104,7 @@ public class WebPagesUniversalControlType extends AbstractUniversalControlType<W
 		@Override
 		protected ExpectedCondition<?> getAddCondition()
 		{
-			return ExpectedConditions2.updateOfElement(addButton);
+			return ExpectedConditions2.updateOfElement(getAddButton());
 		}
 
 	}

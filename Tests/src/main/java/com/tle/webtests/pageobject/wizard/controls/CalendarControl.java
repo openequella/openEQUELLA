@@ -3,6 +3,8 @@ package com.tle.webtests.pageobject.wizard.controls;
 import java.util.Date;
 import java.util.TimeZone;
 
+import com.tle.webtests.pageobject.ExpectWaiter;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -22,9 +24,9 @@ public class CalendarControl extends AbstractWizardControl<CalendarControl>
 		return byWizId("_calendar-control");
 	}
 
-	private WebElement getClearDiv()
+	private By getClearDiv()
 	{
-		return byWizId("_clear");
+		return wizIdBy("_clear");
 	}
 
 	private Calendar cal1;
@@ -56,6 +58,11 @@ public class CalendarControl extends AbstractWizardControl<CalendarControl>
 		ajaxUpdate.get();
 	}
 
+	public void clearDateRemove()
+	{
+		getClearLink().click();
+	}
+
 	// As far as I can tell, this is only used with 'conceptual' dates, which is
 	// good.
 	public void setDate(Date date)
@@ -72,6 +79,10 @@ public class CalendarControl extends AbstractWizardControl<CalendarControl>
 		cal1.get().setDate(cal, ajaxUpdate(getClearDiv()));
 	}
 
+	public void setDateWithReload(java.util.Calendar cal)
+	{
+		cal1.get().setDate(cal, ExpectWaiter.waiter(updatedCondition(), this));
+	}
 	public void setDateRange(java.util.Calendar start, java.util.Calendar end)
 	{
 		cal1.get().setDate(start, ajaxUpdate(getClearDiv()));

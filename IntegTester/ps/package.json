@@ -6,10 +6,8 @@
     "watch": "pulp -w browserify --to dist/www/app.js"
   },
   "dependencies": {
-    "blueimp-md5": "^2.7.0",
+    "js-md5": "^0.7.3",
     "react": "^16.4.2",
-    "react-dom": "^16.4.2",
-    "text-encoding": "^0.6.4",
-    "tweetnacl-util": "^0.15.0"
+    "react-dom": "^16.4.2"
   }
 }

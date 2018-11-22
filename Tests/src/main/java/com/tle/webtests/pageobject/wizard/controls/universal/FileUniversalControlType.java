@@ -1,10 +1,13 @@
 package com.tle.webtests.pageobject.wizard.controls.universal;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import com.google.common.io.Files;
+import com.google.common.io.Resources;
 import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import org.openqa.selenium.By;
@@ -71,10 +74,13 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 		return "Upload a file";
 	}
 
-	public UniversalControl uploadFile(URL url)
+
+	public String uploadFile(URL url)
 	{
 		String filePath = getPathFromUrl(url);
-		return upload(filePath, BUTTON_ADD, control.attachNameWaiter(PathUtils.getFilenameFromFilepath(filePath), false));
+		String nameOnly = PathUtils.getFilenameFromFilepath(filePath);
+		upload(filePath, BUTTON_ADD, control.attachNameWaiter(nameOnly, false));
+		return nameOnly;
 	}
 
 	public String uploadMultiple(URL[] urls)
@@ -131,9 +137,18 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 		waiter.until(disappears);
 	}
 
-	public FileAttachmentEditPage uploadFile(File file)
+	public static URL fileToURL(File file)
 	{
-		return upload(file.getAbsolutePath(), BUTTON_ADD, fileEditor());
+		try {
+			return file.toURI().toURL();
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public String uploadFile(File file)
+	{
+		return uploadFile(fileToURL(file));
 	}
 
 	private void uploadMultiple(String filename, String expectedFilename)
@@ -159,18 +174,14 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 
 	public FileAttachmentEditPage uploadZip(URL fileUrl)
 	{
-		return uploadZip(getPathFromUrl(fileUrl));
+		String zipFile = uploadFile(fileUrl);
+		FileAttachmentEditPage fed = control.editResource(fileEditor(), zipFile);
+		return fed.unzip().selectAll();
 	}
 
 	public FileAttachmentEditPage uploadZipAsFile(URL fileUrl)
 	{
 		return uploadZipAsFile(getPathFromUrl(fileUrl));
-	}
-
-	private FileAttachmentEditPage uploadZip(String filename)
-	{
-		FileAttachmentEditPage upload = upload(filename, BUTTON_NEXT, fileEditor());
-		return upload.unzip().selectAll();
 	}
 
 	private FileAttachmentEditPage uploadZipAsFile(String filename)
@@ -181,6 +192,11 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 	public <T extends PageObject> T uploadPackage(URL url, WaitingPageObject<T> backTo)
 	{
 		return upload(url, BUTTON_ADD, backTo);
+	}
+
+	public <T extends PageObject> T uploadPackageReplace(URL url, WaitingPageObject<T> backTo)
+	{
+		return upload(url, BUTTON_REPLACE, backTo);
 	}
 
 	public PackageAttachmentEditPage uploadPackageOption(URL url)
@@ -251,7 +267,7 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 
 	public FileAttachmentEditPage uploadZip(File file)
 	{
-		return uploadZip(file.getAbsolutePath());
+		return uploadZip(fileToURL(file));
 	}
 
 }

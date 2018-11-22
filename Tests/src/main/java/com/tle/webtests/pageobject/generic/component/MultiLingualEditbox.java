@@ -3,6 +3,7 @@ package com.tle.webtests.pageobject.generic.component;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.pagefactory.ByChained;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.tle.webtests.framework.PageContext;
@@ -14,12 +15,25 @@ public class MultiLingualEditbox extends AbstractPage<MultiLingualEditbox>
 	private final boolean multiline;
 	private WebElement div;
 
-	@FindBy(xpath = "id('{baseId}')//div[contains(@class, 'universaltranslation')]")
-	private WebElement universalTranslation;
-	@FindBy(xpath = "id('{baseId}')//div[contains(@class, 'alltranslations')]")
-	private WebElement allTranslations;
-	@FindBy(xpath = "id('{baseId}')//a[contains(@class,'collapse')]")
-	private WebElement collapseLink;
+	private By getUniversalTranslation()
+	{
+		return byXPath("//div[contains(@class, 'universaltranslation')]");
+	}
+
+	private By byXPath(String xpath)
+	{
+		return new ByChained(By.id(baseId), By.xpath(xpath));
+	}
+
+	private By getAllTranslations()
+	{
+		return byXPath("//div[contains(@class, 'alltranslations')]");
+	}
+
+	private WebElement getCollapseLink()
+	{
+		return driver.findElement(byXPath("//a[contains(@class,'collapse')]"));
+	}
 
 	public MultiLingualEditbox(PageContext context, String baseId)
 	{
@@ -87,18 +101,19 @@ public class MultiLingualEditbox extends AbstractPage<MultiLingualEditbox>
 	public void allMode()
 	{
 		getDropDown().selectByValue("all");
-		getWaiter().until(ExpectedConditions.visibilityOf(allTranslations));
+		getWaiter().until(ExpectedConditions.visibilityOfElementLocated(getAllTranslations()));
 	}
 
 	public void singleMode()
 	{
-		collapseLink.click();
-		getWaiter().until(ExpectedConditions.visibilityOf(universalTranslation));
+		getCollapseLink().click();
+		getWaiter().until(ExpectedConditions.visibilityOfElementLocated(getUniversalTranslation()));
 	}
 
 	public void editLangString(String language, String value)
 	{
 		WebElement field;
+		WebElement allTranslations = driver.findElement(getAllTranslations());
 		if( multiline )
 		{
 			field = allTranslations.findElement(By.xpath(".//label[text()=" + quoteXPath(language)

@@ -58,20 +58,23 @@ public class SelectUserControl extends AbstractWizardControl<SelectUserControl>
 	{
 		WaitingPageObject<SelectUserControl> waiter = removedWaiter(username);
 		driver.findElement(new ByChained(getRootBy(), By.xpath(xpathForUsername(username) + "/../../td[@class='actions']/a[@class='unselect']")))
-			.click();
+				.click();
 		acceptConfirmation();
 		waiter.get();
 	}
 
 	public WaitingPageObject<SelectUserControl> selectedWaiter(String newlySelected)
 	{
-		return ExpectWaiter.waiter(
-			ExpectedConditions.visibilityOfElementLocated(new ByChained(getRootBy(), By.xpath(xpathForUsername(newlySelected)))), this);
+		return ExpectWaiter.waiter(ExpectedConditions.and(
+				updatedCondition(),
+				ExpectedConditions.visibilityOfElementLocated(
+						new ByChained(getRootBy(), By.xpath(xpathForUsername(newlySelected)))
+				)), this);
 	}
 
 	public WaitingPageObject<SelectUserControl> removedWaiter(String removed)
 	{
-		return ExpectWaiter.waiter(
-			ExpectedConditions.invisibilityOfElementLocated(new ByChained(getRootBy(), By.xpath(xpathForUsername(removed)))), this);
+		return ExpectWaiter.waiter(ExpectedConditions.invisibilityOfElementLocated(
+						new ByChained(getRootBy(), By.xpath(xpathForUsername(removed)))), this);
 	}
 }

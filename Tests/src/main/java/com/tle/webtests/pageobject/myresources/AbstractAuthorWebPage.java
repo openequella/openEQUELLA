@@ -24,14 +24,26 @@ public abstract class AbstractAuthorWebPage<T extends AbstractAuthorWebPage<T>> 
 	protected WebElement titleElem;
 	@FindBy(xpath = "//legend[text()='Edit page']")
 	protected WebElement editPageElem;
-	@FindBy(id = "{baseId}mypttl_titleField")
-	protected WebElement descriptionField;
-	@FindBy(id = "{baseId}mpe_pageNameField")
-	protected WebElement titleField;
-	@FindBy(id = "{baseId}mpa_a")
-	protected WebElement addButton;
-	@FindBy(id = "{baseId}mpa_p")
-	protected WebElement table;
+
+	protected WebElement getDescriptionField()
+	{
+		return findByBaseId("mypttl_titleField");
+	}
+
+	protected WebElement getTitleField()
+	{
+		return findByBaseId("mpe_pageNameField");
+	}
+
+	protected WebElement getAddButton()
+	{
+		return findByBaseId("mpa_a");
+	}
+
+	protected WebElement getTable()
+	{
+		return findByBaseId("mpa_p");
+	}
 	@FindBy(xpath = "//body[@id='tinymce']")
 	protected WebElement editorBody;
 
@@ -64,6 +76,11 @@ public abstract class AbstractAuthorWebPage<T extends AbstractAuthorWebPage<T>> 
 		this.edit = edit;
 	}
 
+	private WebElement findByBaseId(String postfix)
+	{
+		return driver.findElement(By.id(getBaseId()+postfix));
+	}
+
 	@Override
 	protected WebElement findLoadedElement()
 	{
@@ -77,8 +94,8 @@ public abstract class AbstractAuthorWebPage<T extends AbstractAuthorWebPage<T>> 
 
 	public void setDescription(String description)
 	{
-		descriptionField.clear();
-		descriptionField.sendKeys(description);
+		getDescriptionField().clear();
+		getDescriptionField().sendKeys(description);
 	}
 
 	private By getPageRowByName(String name)
@@ -88,7 +105,7 @@ public abstract class AbstractAuthorWebPage<T extends AbstractAuthorWebPage<T>> 
 
 	public int getPageCount()
 	{
-		return table.findElements(XPATH_ALLROWS).size();
+		return getTable().findElements(XPATH_ALLROWS).size();
 	}
 
 	public T deletePage(String name)
@@ -98,8 +115,8 @@ public abstract class AbstractAuthorWebPage<T extends AbstractAuthorWebPage<T>> 
 
 	public void setTitle(String pageTitle)
 	{
-		titleField.clear();
-		titleField.sendKeys(pageTitle);
+		getTitleField().clear();
+		getTitleField().sendKeys(pageTitle);
 	}
 
 	public void addPage(String pageTitle, String pageBody)
@@ -107,7 +124,7 @@ public abstract class AbstractAuthorWebPage<T extends AbstractAuthorWebPage<T>> 
 		if( !edit )
 		{
 			ExpectedCondition<?> addCondition = getAddCondition();
-			addButton.click();
+			getAddButton().click();
 			waiter.until(addCondition);
 		}
 		setTitle(pageTitle);
@@ -179,7 +196,8 @@ public abstract class AbstractAuthorWebPage<T extends AbstractAuthorWebPage<T>> 
 
 		public PageRow(By by)
 		{
-			super(AbstractAuthorWebPage.this.context, table, by);
+			super(AbstractAuthorWebPage.this.context,
+					AbstractAuthorWebPage.this.getTable(), by);
 		}
 
 		public T edit()
@@ -198,7 +216,7 @@ public abstract class AbstractAuthorWebPage<T extends AbstractAuthorWebPage<T>> 
 		public T delete()
 		{
 			ExpectWaiter<T> waiter = ExpectWaiter.waiter(
-				ExpectedConditions2.numberOfElementLocated(table, XPATH_ALLROWS, getPageCount() - 1),
+				ExpectedConditions2.numberOfElementLocated(getTable(), XPATH_ALLROWS, getPageCount() - 1),
 				AbstractAuthorWebPage.this);
 			deleteButton.click();
 			acceptConfirmation();

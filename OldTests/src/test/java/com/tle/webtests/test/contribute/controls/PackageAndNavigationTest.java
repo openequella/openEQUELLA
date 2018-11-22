@@ -1,5 +1,6 @@
 package com.tle.webtests.test.contribute.controls;
 
+import static com.tle.webtests.pageobject.wizard.controls.universal.AbstractAttachmentDialogPage.BUTTON_REPLACE;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -70,7 +71,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest
 
 		item.edit();
 		control.replaceSingleResource(file, displayName);
-		file.uploadPackage(Attachments.get(IMS_ZIP), newPkg(control, NAME_PKG));
+		file.uploadPackageReplace(Attachments.get(IMS_ZIP), newPkg(control, NAME_PKG));
 		control.editResource(file.pkgEditor(), NAME_PKG).showStructure().save();
 		item = wizard.saveNoConfirm();
 
@@ -105,7 +106,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest
 		testBadPackageUpload(file, SCORM_ZIP, ERROR_NONALLOWED);
 
 		// QTI package
-		file.uploadPackage(Attachments.get(QTI_ZIP), newPkg(control, "FIXME"));
+		file.uploadPackage(Attachments.get(QTI_ZIP), newPkg(control, NAME_QTI));
 
 		wizard.save().publish();
 	}
@@ -129,7 +130,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest
 		testBadPackageUpload(file, QTI_ZIP, ERROR_NONALLOWED);
 
 		// SCORM package
-		file.uploadPackage(Attachments.get(SCORM_ZIP), newPkg(control, "FIXME"));
+		file.uploadPackage(Attachments.get(SCORM_ZIP), newPkg(control, SCORM_ZIP));
 
 		wizard.save().publish();
 	}
@@ -154,7 +155,7 @@ public class PackageAndNavigationTest extends AbstractCleanupAutoTest
 		control.replaceSingleResource(file, SCORM_ZIP);
 
 		// QTI package
-		file.uploadPackage(Attachments.get(QTI_ZIP), newPkg(control, NAME_QTI));
+		file.uploadPackageReplace(Attachments.get(QTI_ZIP), newPkg(control, NAME_QTI));
 		control.editResource(file.pkgEditor(), NAME_QTI).setDisplayName(QTI_ZIP).save();
 		Assert.assertTrue(control.hasResource(QTI_ZIP));
 		control.deleteResource(QTI_ZIP);

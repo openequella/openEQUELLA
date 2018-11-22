@@ -11,12 +11,14 @@ import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.generic.component.SelectUserDialog;
 import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
+import org.openqa.selenium.support.pagefactory.ByChained;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class EmailSelectorControl extends AbstractWizardControl<EmailSelectorControl>
 {
-	private WebElement getRootElem()
+	private By getRootBy()
 	{
-		return byWizId("emailControl");
+		return wizIdBy("emailControl");
 	}
 
 	private WebElement getEmailField()
@@ -34,9 +36,9 @@ public class EmailSelectorControl extends AbstractWizardControl<EmailSelectorCon
 		return byWizId("_a");
 	}
 
-	private WebElement getEmailError()
+	private By getEmailError()
 	{
-		return byWizIdIdXPath("emailControl", "/div[@class='noemailwarning' and text() = 'Invalid email address']");
+		return wizIdIdXPath("emailControl", "/div[@class='noemailwarning' and text() = 'Invalid email address']");
 	}
 
 	public EmailSelectorControl(PageContext context, int ctrlnum, AbstractWizardControlPage<?> page)
@@ -47,7 +49,7 @@ public class EmailSelectorControl extends AbstractWizardControl<EmailSelectorCon
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return getRootElem();
+		return driver.findElement(getRootBy());
 	}
 
 	public void addEmail(String email)
@@ -64,7 +66,8 @@ public class EmailSelectorControl extends AbstractWizardControl<EmailSelectorCon
 		}
 		else
 		{
-			waiter = ExpectWaiter.waiter(ExpectedConditions2.presenceOfElement(getEmailError()), this);
+			waiter = ExpectWaiter.waiter(
+					ExpectedConditions.presenceOfElementLocated(getEmailError()), this);
 		}
 		getEmailField().clear();
 		getEmailField().sendKeys(email);
@@ -105,7 +108,7 @@ public class EmailSelectorControl extends AbstractWizardControl<EmailSelectorCon
 	{
 		WaitingPageObject<EmailSelectorControl> waiter = removedWaiter(email);
 		String xpathExpression = xpathForEmail(email) + "/td/a";
-		getRootElem().findElement(By.xpath(xpathExpression)).click();
+		driver.findElement(new ByChained(getRootBy(), By.xpath(xpathExpression))).click();
 		acceptConfirmation();
 		return waiter.get();
 	}
@@ -117,14 +120,17 @@ public class EmailSelectorControl extends AbstractWizardControl<EmailSelectorCon
 
 	public WaitingPageObject<EmailSelectorControl> selectedWaiter(String newlySelected)
 	{
-		return ExpectWaiter.waiter(
-			ExpectedConditions2.visibilityOfElementLocated(getRootElem(), By.xpath(xpathForEmail(newlySelected))), this);
+		return ExpectWaiter.waiter(ExpectedConditions.and(
+				updatedCondition(),
+			ExpectedConditions.visibilityOfElementLocated(new ByChained(getRootBy(),
+					By.xpath(xpathForEmail(newlySelected))))), this);
 	}
 
 	public WaitingPageObject<EmailSelectorControl> removedWaiter(String removed)
 	{
 		return ExpectWaiter.waiter(
-			ExpectedConditions2.invisibilityOfElementLocated(getRootElem(), By.xpath(xpathForEmail(removed))), this);
+			ExpectedConditions.invisibilityOfElementLocated(
+					new ByChained(getRootBy(), By.xpath(xpathForEmail(removed)))), this);
 	}
 
 }

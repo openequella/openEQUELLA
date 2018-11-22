@@ -7,6 +7,8 @@ import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.PageObject;
 import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class NewAbstractWizardControl<T extends PageObject> extends AbstractPage<T>
 {
@@ -64,5 +66,10 @@ public class NewAbstractWizardControl<T extends PageObject> extends AbstractPage
 	public AbstractWizardControlPage<?> getPage()
 	{
 		return page;
+	}
+
+	public ExpectedCondition<?> updatedCondition()
+	{
+		return ajaxUpdateCondition(wizIdBy(""));
 	}
 }

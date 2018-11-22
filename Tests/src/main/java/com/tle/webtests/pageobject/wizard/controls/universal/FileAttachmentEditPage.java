@@ -5,17 +5,13 @@ import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class FileAttachmentEditPage extends AbstractFileAttachmentEditPage<FileAttachmentEditPage>
 {
 	private WebElement getSelectAll()
 	{
 		return byWizId("_dialog_fuh_fd_selectAll");
-	}
-
-	private WebElement getZipList()
-	{
-		return byWizId("_dialog_fuh_fd_fileListDiv");
 	}
 
 	private WebElement getExecuteUnzip()
@@ -55,7 +51,8 @@ public class FileAttachmentEditPage extends AbstractFileAttachmentEditPage<FileA
 	public FileAttachmentEditPage unzip()
 	{
 		getExecuteUnzip().click();
-		waitForElement(getZipList());
+		waiter.until(ExpectedConditions.visibilityOfElementLocated(
+				wizIdBy("_dialog_fuh_fd_fileListDiv")));
 		return this;
 	}
 

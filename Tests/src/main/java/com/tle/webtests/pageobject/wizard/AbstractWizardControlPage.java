@@ -168,7 +168,7 @@ public abstract class AbstractWizardControlPage<T extends AbstractWizardControlP
 		UniversalControl universalControl = universalControl(ctrlNum);
 		FileUniversalControlType fileControl = universalControl.addResource(new FileUniversalControlType(
 			universalControl));
-		fileControl.uploadFile(file).save();
+		fileControl.uploadFile(file);
 	}
 
 	public void addFiles(int ctrlNum, boolean singleType, String... files)

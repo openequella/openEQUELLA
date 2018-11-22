@@ -465,10 +465,15 @@ public abstract class AbstractPage<T extends PageObject> implements PageObject, 
 		return ExpectWaiter.waiter(ExpectedConditions2.visibilityOfElementLocated(searchContext, by), this);
 	}
 
+	public ExpectedCondition<?> ajaxUpdateCondition(By ajaxElem)
+	{
+		return ExpectedConditions2.ajaxUpdateExpectBy(driver.findElement(ajaxElem),
+				new ByChained(ajaxElem, ExpectedConditions2.XPATH_FIRSTELEM));
+	}
+
 	public WaitingPageObject<T> ajaxUpdate(By ajaxElem)
 	{
-		return ExpectWaiter.waiter(ExpectedConditions2.ajaxUpdateExpectBy(driver.findElement(ajaxElem),
-				new ByChained(ajaxElem, ExpectedConditions2.XPATH_FIRSTELEM)), this);
+		return ExpectWaiter.waiter(ajaxUpdateCondition(ajaxElem), this);
 	}
 
 	public WaitingPageObject<T> ajaxUpdate(WebElement ajaxElem)
