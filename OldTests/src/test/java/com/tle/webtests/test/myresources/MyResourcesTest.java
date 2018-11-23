@@ -50,7 +50,7 @@ public class MyResourcesTest extends AbstractCleanupTest
 		wizard.editbox(1, itemName);
 
 		UniversalControl control = wizard.universalControl(4);
-		control.addDefaultResource(new FileUniversalControlType(control)).importFromScrapbook(scrapbookItem).save();
+		control.addDefaultResource(new FileUniversalControlType(control)).importFromScrapbook(scrapbookItem, "A Description");
 		wizard.save().publish();
 
 		ItemListPage itemList = new ItemAdminPage(context).load().exactQuery(itemName);

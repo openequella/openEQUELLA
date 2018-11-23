@@ -47,11 +47,6 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 	@FindBy(xpath = "id('uploads')/div[contains(@class, 'uploadsprogress')]")
 	private WebElement uploadsDiv;
 
-	private WebElement getDialog()
-	{
-		return byWizId("_dialog");
-	}
-
 	private WebElement getAddScrap()
 	{
 		return driver.findElement(By.id(getWizid()+"_dialog_fuh_filesFromScrapbookLink"));
@@ -81,6 +76,12 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 		String nameOnly = PathUtils.getFilenameFromFilepath(filePath);
 		upload(filePath, BUTTON_ADD, control.attachNameWaiter(nameOnly, false));
 		return nameOnly;
+	}
+
+	public void uploadFile(URL url, String name)
+	{
+		String filePath = getPathFromUrl(url);
+		upload(filePath, BUTTON_ADD, control.attachNameWaiter(name, false));
 	}
 
 	public String uploadMultiple(URL[] urls)
@@ -179,16 +180,6 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 		return fed.unzip().selectAll();
 	}
 
-	public FileAttachmentEditPage uploadZipAsFile(URL fileUrl)
-	{
-		return uploadZipAsFile(getPathFromUrl(fileUrl));
-	}
-
-	private FileAttachmentEditPage uploadZipAsFile(String filename)
-	{
-		return upload(filename, BUTTON_ADD, fileEditor());
-	}
-
 	public <T extends PageObject> T uploadPackage(URL url, WaitingPageObject<T> backTo)
 	{
 		return upload(url, BUTTON_ADD, backTo);
@@ -224,24 +215,27 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 
 	public <T extends PageObject> T upload(String filename, String nextButton, WaitingPageObject<T> nextPage)
 	{
+		ExpectedCondition<?> updateButtons = ajaxUpdateCondition(By.xpath(getButtonbar()));
 		waitForHiddenElement(getFileUpload());
 		getFileUpload().sendKeys(filename);
-		waiter.until(ExpectedConditions.presenceOfElementLocated(buttonBy(nextButton))).click();
+		waiter.until(updateButtons);
+		driver.findElement(buttonBy(nextButton)).click();
 		return nextPage.get();
 	}
 
-	public FileAttachmentEditPage importFromScrapbook(String description)
+	public void importFromScrapbook(String description, String name)
 	{
+		WaitingPageObject<UniversalControl> waiter = control.attachNameWaiter(name, false);
 		getAddScrap().click();
 
 		SelectionSession selectionSession = ExpectWaiter.waiter(
-			ExpectedConditions2.frameToBeAvailableAndSwitchToIt(getDialog(), By.xpath("./div/iframe")),
+			ExpectedConditions.frameToBeAvailableAndSwitchToIt(wizIdIdXPath("_dialog", "/div/iframe")),
 			new SelectionSession(context)).get();
 		new MyResourcesPage(context, "scrapbook").results().getResultForTitle(description, 1)
 			.clickAction("Select", selectionSession);
 		selectionSession.finishedSelecting(this);
-		getNextButton().click();
-		return edit();
+		getAddButton().click();
+		waiter.get();
 	}
 
 	@Override
@@ -270,4 +264,8 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 		return uploadZip(fileToURL(file));
 	}
 
+	public PickAttachmentTypeDialog uploadAndGoBack(URL fileUrl)
+	{
+		return upload(fileUrl, BUTTON_BACK, new PickAttachmentTypeDialog(control));
+	}
 }

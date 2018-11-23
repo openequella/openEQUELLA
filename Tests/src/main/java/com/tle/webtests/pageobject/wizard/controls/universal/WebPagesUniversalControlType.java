@@ -84,6 +84,13 @@ public class WebPagesUniversalControlType extends AbstractUniversalControlType<W
 		return waiter.get();
 	}
 
+	public UniversalControl replace(String newPage)
+	{
+		WaitingPageObject<UniversalControl> waiter = control.attachNameWaiter(newPage, false);
+		driver.findElement(buttonBy(BUTTON_REPLACE)).click();
+		return waiter.get();
+	}
+
 	public WebPagesUniversalControlType setPreview(boolean b)
 	{
 		if( getPreviewCheckBox().isSelected() != b )

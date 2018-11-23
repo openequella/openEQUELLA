@@ -28,6 +28,7 @@ import URI.Extra.QueryPairs as QueryPairs
 import URI.Query as Query
 import Unsafe.Coerce (unsafeCoerce)
 import Web.HTML (window)
+import Web.HTML.Location (host, pathname)
 import Web.HTML.Location (href) as L
 import Web.HTML.Window (location)
 
@@ -92,8 +93,10 @@ controls :: Effect (Array
   })
 controls = do
 
- l <- window >>= location >>= L.href
- _ <- traceM l
+ l <- window >>= location
+ h <- host l 
+ pn <- pathname l
+ let returnUrl = "http://" <> h <> pn <> "?method=showReturn"
  pure [
   {label:"Method:", control:selectList "method" methods (lens _.method _{method = _})}
 , {label:"Action:", control:selectList "action" actions (lens _.action _{action = _})}
@@ -114,7 +117,7 @@ controls = do
 , {label: "Generate Return URL:", control:checkBox "makeReturn" (lens _.makeReturn _{makeReturn = _})}
 , {label: "Initial item XML:", control:textArea "itemXml" (lens _.itemXml _{itemXml = _})}
 , {label: "Initial powersearch XML:", control:textArea "powerXml" (lens _.powerXml _{powerXml = _})}
-, {label: "", control: (\{change:d} -> input [ _type "submit", onClick \_ -> d $ \s -> s{clickUrl=Just $ createUrl l s}  ]) }
+, {label: "", control: (\{change:d} -> input [ _type "submit", onClick \_ -> d $ \s -> s{clickUrl=Just $ createUrl returnUrl s}  ]) }
 ]
 
 -- 		<div class="formrow">

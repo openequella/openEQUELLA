@@ -25,7 +25,7 @@ public abstract class AbstractAttachmentDialogPage<T extends AbstractAttachmentD
 
 	protected By buttonBy(String name)
 	{
-		return By.xpath(getButtonbar()+"button[normalize-space(text())="+quoteXPath(name)+"]");
+		return By.xpath(getButtonbar()+"/button[normalize-space(text())="+quoteXPath(name)+"]");
 	}
 
 	private WebElement buttonByText(String name)
@@ -79,7 +79,7 @@ public abstract class AbstractAttachmentDialogPage<T extends AbstractAttachmentD
 
 	public String getButtonbar()
 	{
-		return "id('" + getWizid() + "_dialog')//div[@class='modal-footer-inner']/";
+		return "id('" + getWizid() + "_dialog')//div[@class='modal-footer-inner']";
 	}
 
 	public UniversalControl close()

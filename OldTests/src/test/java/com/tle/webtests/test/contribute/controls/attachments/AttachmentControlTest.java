@@ -125,7 +125,7 @@ public class AttachmentControlTest extends AbstractCleanupTest
 		SelectionSession innerSearch = resourceDialog.getSelectionSession();
 		innerSearch.homeExactSearch(selectItem).viewFromTitle(selectItem).attachments()
 			.selectSingleAttachment(attachment)
-			.returnSelection(resourceDialog.getFrameName(), resourceDialog.editPage()).save();
+			.returnSelection(resourceDialog.getFrameName(), universalControl.attachNameWaiter(attachment, false));
 
 		innerWizard.save().publish().attachments().selectSingleAttachment(attachment)
 			.returnSelection(resourceDialog.editPage()).save();

@@ -94,9 +94,8 @@ public class SelectionSessionTest extends AbstractCleanupTest
 		itp.getSignonUrl(ACTION_SELECT_OR_ADD, USERNAME, "", "", false);
 		session = itp.clickPostToUrlButton(new SelectionSession(context));
 
-		SelectionCheckoutPage checkout = session.quickContribute(Attachments.get(ATTACHMENT),
-			new SelectionCheckoutPage(context));
-		returnPage = checkout.returnSelection(new IntegrationTesterReturnPage(context));
+		returnPage = session.quickContribute(Attachments.get(ATTACHMENT),
+				new IntegrationTesterReturnPage(context));
 		assertTrue(returnPage.returnedRow("name").contains(ATTACHMENT));
 		assertTrue(returnPage.returnedRow("method").contains("showReturn"));
 
@@ -104,8 +103,8 @@ public class SelectionSessionTest extends AbstractCleanupTest
 		itp.getSignonUrl(ACTION_SELECT_OR_ADD, USERNAME, "", "", false);
 		session = itp.clickPostToUrlButton(new SelectionSession(context));
 
-		checkout = session.quickContribute(Attachments.get(ATTACHMENT2), new SelectionCheckoutPage(context));
-		returnPage = checkout.returnSelection(new IntegrationTesterReturnPage(context));
+		returnPage = session.quickContribute(Attachments.get(ATTACHMENT2),
+				new IntegrationTesterReturnPage(context));
 		assertFalse(returnPage.returnedRow("name").contains(ATTACHMENT2));
 		assertTrue(returnPage.returnedRow("name").contains(ATTACHMENT));
 		assertTrue(returnPage.returnedRow("method").contains("showReturn"));

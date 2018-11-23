@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import com.tle.webtests.pageobject.wizard.controls.universal.PackageAttachmentEditPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -44,6 +45,9 @@ import com.tle.webtests.test.files.Attachments;
 @TestInstitution("asc")
 public class AdvancedScriptControlTests extends AbstractCleanupTest
 {
+
+	public static final String NAME_PACKAGE = "Zou ba! Visiting China: Is this your first visit?";
+
 	@Override
 	protected void prepareBrowserSession()
 	{
@@ -748,24 +752,25 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest
 		// package upload
 		UniversalControl universal = wizard.universalControl(3);
 		FileUniversalControlType packageUpload = universal.addDefaultResource(new FileUniversalControlType(universal));
-		packageUpload.uploadPackage(Attachments.get("package.zip"), fixme(universal)); // .showStructure().save();
-		assertTrue(getDivMessageForId("structure").contains("Zou ba! Visiting China: Is this your first visit?"));
+		packageUpload.uploadFile(Attachments.get("package.zip"), NAME_PACKAGE);
+		universal.editResource(new PackageAttachmentEditPage(universal), NAME_PACKAGE).showStructure().save();
+		assertTrue(getDivMessageForId("structure").contains(NAME_PACKAGE));
 		// Delete Children + Root node
 		clickAscButton("deleteChildren", wizard);
 		// add child to node to be deleted
 		ascEditbox(4, "nodeName", "child");
-		ascSelectDropdown("addList", "Zou ba! Visiting China: Is this your first visit?");
+		ascSelectDropdown("addList", NAME_PACKAGE);
 		clickAscButton("addNode", wizard);
 		clickAscButton("deleteNode", wizard);
-		assertFalse(getDivMessageForId("structure").contains("Zou ba! Visiting China: Is this your first visit?"));
+		assertFalse(getDivMessageForId("structure").contains(NAME_PACKAGE));
 		assertFalse(getDivMessageForId("structure").contains("child"));
 		// Initialise Structure
 		clickAscButton("initialise", wizard);
-		assertTrue(getDivMessageForId("structure").contains("Zou ba! Visiting China: Is this your first visit?"));
+		assertTrue(getDivMessageForId("structure").contains(NAME_PACKAGE));
 		assertTrue(getDivMessageForId("structure").contains("index.html"));
 		// Delete all
 		clickAscButton("deleteAll", wizard);
-		assertFalse(getDivMessageForId("structure").contains("Zou ba! Visiting China: Is this your first visit?"));
+		assertFalse(getDivMessageForId("structure").contains(NAME_PACKAGE));
 		assertFalse(getDivMessageForId("structure").contains("index.html"));
 		// Add root + child
 		ascEditbox(4, "nodeName", "base");
@@ -783,7 +788,7 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest
 		assertTrue(getDivMessageForId("structure").contains("child 2"));
 		// Add 2 tabs to child
 		ascSelectDropdown("allNodes", "child 1");
-		ascSelectDropdown("attachments", "Zou ba! Visiting China: Is this your first visit?");
+		ascSelectDropdown("attachments", NAME_PACKAGE);
 		ascEditbox(4, "tabName", "data");
 		clickAscButton("createTab", wizard);
 		ascSelectDropdown("allNodes", "child 1");
@@ -890,8 +895,7 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest
 		UniversalControl control = wizard.universalControl(3);
 		FileUniversalControlType fc = control.addDefaultResource(new FileUniversalControlType(control));
 		fc.uploadFile(Attachments.get("fireworks.dng"));
-		if (true) throw new Error("Needs to be re-written");
-				// .setDisplayName(attName).save();
+		control.editResource(fc.fileEditor(), "fireworks.dng").setDisplayName(attName).save();
 
 		clickAscButton("Get metadata for attachment", wizard);
 		assertEquals(getAscMessage().getText(), "Successfully retrieved Metadata for attachment");

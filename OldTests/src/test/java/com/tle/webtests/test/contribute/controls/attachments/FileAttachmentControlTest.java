@@ -1,5 +1,6 @@
 package com.tle.webtests.test.contribute.controls.attachments;
 
+import static com.tle.webtests.pageobject.wizard.controls.universal.AbstractAttachmentDialogPage.BUTTON_BACK;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -9,6 +10,9 @@ import java.io.IOException;
 import java.net.URL;
 
 import com.dytech.common.legacyio.FileUtils;
+import com.tle.webtests.pageobject.ExpectWaiter;
+import com.tle.webtests.pageobject.wizard.controls.universal.PickAttachmentTypeDialog;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.annotations.Test;
 
 import com.tle.webtests.framework.TestInstitution;
@@ -74,7 +78,7 @@ public class FileAttachmentControlTest extends AbstractCleanupAutoTest
 		WebPagesUniversalControlType pages = control.replaceResource(new WebPagesUniversalControlType(control),
 			"Test page 2");
 
-		pages.openPage("New page", "some content", true).add("New page");
+		pages.openPage("New page", "some content", true).replace("New page");
 
 		assertEquals(control.getAttachmentUuid("New page"), uuid);
 		item = wizard.save().publish();
@@ -225,12 +229,12 @@ public class FileAttachmentControlTest extends AbstractCleanupAutoTest
 		file.setDisplayName("page(1).html").save();
 
 		FileUniversalControlType fileType = control.addResource(new FileUniversalControlType(control));
-		fileType.importFromScrapbook(scrapbookItem).save();
+		fileType.importFromScrapbook(scrapbookItem, "page.html");
 
 		control.editResource(fileType, "page.html").setDisplayName("page(5).html").save();
 
 		fileType = control.addResource(fileType);
-		fileType.importFromScrapbook(scrapbookItem).save();
+		fileType.importFromScrapbook(scrapbookItem, "page.html");
 
 		control.editResource(fileType, "page.html").setDisplayName("page(6).html").save();
 
@@ -270,11 +274,11 @@ public class FileAttachmentControlTest extends AbstractCleanupAutoTest
 		wizard = initialItem(itemName);
 
 		FileUniversalControlType unzip = control.addResource(fileType);
-		unzip.uploadZipAsFile(Attachments.get("google.zip")).save();
+		unzip.uploadFile(Attachments.get("google.zip"));
 
 		control = wizard.universalControl(3);
 		FileUniversalControlType noZip = control.addDefaultResource(new FileUniversalControlType(control));
-		noZip.uploadFile(Attachments.get("google.zip"));
+		noZip.uploadFile(Attachments.get("google.zip"), "google(2).zip");
 	}
 
 	@Test
@@ -286,7 +290,7 @@ public class FileAttachmentControlTest extends AbstractCleanupAutoTest
 		UniversalControl control = wizard.universalControl(2);
 		FileUniversalControlType unzip = control.addResource(new FileUniversalControlType(control));
 
-		unzip.uploadZip(Attachments.get("google2.zip")).backToStart().close();
+		unzip.uploadAndGoBack(Attachments.get("google2.zip")).close();
 		SummaryPage view = wizard.save().publish();
 		assertFalse(view.hasAttachmentsSection());
 

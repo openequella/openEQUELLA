@@ -12,7 +12,7 @@ public class MyResourcesUploadFilesPage extends AbstractPage<MyResourcesUploadFi
 	private static final String REPLACE_FILE_INPUT_ID = "myr_f";
 	private static final String UPLOAD_FILE_INPUT_ID = "myr_s";
 	private static final String DESCRIPTION_INPUT_ID = "myr_d";
-	private static final String SEARCH_TAGS_INPUT_ID = "myr_t";
+	private static final String SEARCH_TAGS_INPUT_ID = "myr_dndt";
 
 	@FindBy(id = REPLACE_FILE_INPUT_ID)
 	private WebElement fileInput;
@@ -24,6 +24,9 @@ public class MyResourcesUploadFilesPage extends AbstractPage<MyResourcesUploadFi
 	private WebElement tagField;
 	@FindBy(id = "myr_c")
 	private WebElement cancelButton;
+	@FindBy(id = "myr_fm_file")
+	private WebElement uploadElem;
+
 	private MyResourcesPage myResourcesPage;
 
 	@FindBy(id = "myr_dndt")
@@ -42,15 +45,15 @@ public class MyResourcesUploadFilesPage extends AbstractPage<MyResourcesUploadFi
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return descriptionField;
+		return tagField;
 	}
 
 	public MyResourcesPage uploadFile(String path, String description, String tags)
 	{
-		fileInput.sendKeys(path);
-		setDescription(description);
 		setSearchTags(tags);
-		saveButton.click();
+		uploadElem.sendKeys(path);
+//		setDescription(description);
+		cancelButton.click();
 		return new MyResourcesPage(context, "scrapbook").get();
 	}
 
