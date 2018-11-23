@@ -211,7 +211,7 @@ public class SelectionSummarySection extends AbstractPrototypeSection<SelectionS
 		{
 			Attachment attachment = UnmodifiableAttachments.convertToMapUuid(item.getAttachmentsUnmodifiable()).get(
 				attachUuid);
-			selectAttachmentHandler.handleAttachmentSelection(info, itemId, attachment, null);
+			selectAttachmentHandler.handleAttachmentSelection(info, itemId, attachment, null, true);
 		}
 	}
 
@@ -242,10 +242,10 @@ public class SelectionSummarySection extends AbstractPrototypeSection<SelectionS
 	}
 
 	@Override
-	public void handleAttachmentSelection(SectionInfo info, ItemId itemId, IAttachment attachment, String extensionType)
+	public void handleAttachmentSelection(SectionInfo info, ItemId itemId, IAttachment attachment, String extensionType, boolean canForward)
 	{
 		selectionService.addSelectedResource(info,
-			selectionService.createAttachmentSelection(info, itemId, attachment, null, extensionType), true);
+			selectionService.createAttachmentSelection(info, itemId, attachment, null, extensionType), canForward);
 	}
 
 	public boolean isFinishedInBox()

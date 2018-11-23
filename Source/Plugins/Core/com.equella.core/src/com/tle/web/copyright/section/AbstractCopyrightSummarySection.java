@@ -546,7 +546,7 @@ public abstract class AbstractCopyrightSummarySection<H extends Holding, P exten
 	}
 
 	@Override
-	public void handleAttachmentSelection(SectionInfo info, ItemId itemId, IAttachment attachment, String extensionType)
+	public void handleAttachmentSelection(SectionInfo info, ItemId itemId, IAttachment attachment, String extensionType, boolean canForward)
 	{
 		selectionService.addSelectedResource(info,
 			selectionService.createAttachmentSelection(info, itemId, attachment, null, extensionType), false);
