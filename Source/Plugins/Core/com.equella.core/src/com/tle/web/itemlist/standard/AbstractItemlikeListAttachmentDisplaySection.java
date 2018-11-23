@@ -391,7 +391,7 @@ public abstract class AbstractItemlikeListAttachmentDisplaySection<I extends IIt
 					info, viewableItem, attachmentUuid);
 				if( selectAttachmentHandler != null )
 				{
-					selectAttachmentHandler.handleAttachmentSelection(info, itemId, attachment, extensionType);
+					selectAttachmentHandler.handleAttachmentSelection(info, itemId, attachment, extensionType, true);
 				}
 			}
 		}
@@ -423,10 +423,10 @@ public abstract class AbstractItemlikeListAttachmentDisplaySection<I extends IIt
 	}
 
 	@Override
-	public void handleAttachmentSelection(SectionInfo info, ItemId itemId, IAttachment attachment, String extensionType)
+	public void handleAttachmentSelection(SectionInfo info, ItemId itemId, IAttachment attachment, String extensionType, boolean canForward)
 	{
 		selectionService.addSelectedResource(info,
-			selectionService.createAttachmentSelection(info, itemId, attachment, null, extensionType), true);
+			selectionService.createAttachmentSelection(info, itemId, attachment, null, extensionType), canForward);
 	}
 
 	@Override
