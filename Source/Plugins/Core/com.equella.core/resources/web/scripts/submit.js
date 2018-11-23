@@ -3,7 +3,7 @@ function _dosub(validate)
 {
 	if (g_bSubmitting)
 	{
-		alert(i18n_com_tle_web_sections_equella_alreadysubmitting);
+		alert(i18n_com_equella_core_alreadysubmitting);
 		return false;
 	}
 	g_bSubmitting = true;
