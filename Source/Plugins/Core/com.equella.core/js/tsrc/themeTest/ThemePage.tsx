@@ -14,10 +14,9 @@ import CardContent from "@material-ui/core/CardContent/CardContent";
 import CardActions from "@material-ui/core/CardActions/CardActions";
 import Card from "@material-ui/core/Card/Card";
 import Divider from "@material-ui/core/Divider/Divider";
-import Input from "@material-ui/core/Input/Input";
 
 declare var themeSettings: any;
-
+declare var isCustomLogo: boolean;
 const styles = createStyles({
   card: {
     marginTop: '16px',
@@ -37,6 +36,7 @@ interface ThemePageProps {
 }
 
 class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof styles>> {
+
   state = {
     primary: themeSettings['primaryColor'],
     secondary: themeSettings['secondaryColor'],
@@ -46,7 +46,9 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     menuIcon: themeSettings['menuItemIconColor'],
     text: themeSettings['menuTextColor'],
     logoToUpload: '',
-    imagePreviewUrl: ''
+    imagePreviewUrl: '',
+    customLogo: isCustomLogo,
+    fileName: ""
   };
   handleDefaultButton = () => {
     this.setState({
@@ -98,7 +100,8 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     this.setState({text: color});
     //  this.setState({expanded: !this.state.expanded});
   };
-  _handleImageChange(e:any) {
+
+  _handleImageChange(e: any) {
     e.preventDefault();
     console.log(this.state.logoToUpload);
     let reader = new FileReader();
@@ -107,11 +110,13 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     reader.readAsDataURL(file);
     reader.onloadend = () => {
       this.setState({
-        logoToUpload: file
+        logoToUpload: file,
+        fileName: file.name
       });
       console.log(this.state.logoToUpload);
     };
   };
+
   submitTheme = () => {
     axios.put(`${Config.baseUrl}api/themeresource/update/`,
       "{\"primaryColor\":\"" + this.state.primary + "\"," +
@@ -126,6 +131,11 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       }
     );
   };
+  resetLogo = () => {
+    axios.delete(`${Config.baseUrl}api/themeresource/resetlogo/`).then(function () {
+      window.location.reload();
+    });
+  };
   submitLogo = () => {
     axios.put(`${Config.baseUrl}api/themeresource/updatelogo/`, this.state.logoToUpload).then(function () {
       window.location.reload();
@@ -134,13 +144,6 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
 
   render() {
     const {Template} = this.props.bridge;
-    let imagePreviewUrl = this.state.imagePreviewUrl;
-    let $imagePreview = null;
-    if (imagePreviewUrl) {
-      $imagePreview = (<img src={imagePreviewUrl} />);
-    } else {
-      $imagePreview = (<div className="previewText">Please select an Image for Preview</div>);
-    }
     return (
       <Template title={"New UI Settings"}>
         <Card raised={true} className={this.props.classes.card}>
@@ -191,59 +194,59 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
               </Grid>
             </FormControl>
           </CardContent>
+          {/*<Divider light={false}/>*/}
           <CardActions>
             <Button variant="text" onClick={this.handleDefaultButton}>
               Reset to Default
+            </Button>
+            <Button variant="outlined" onClick={this.handleUndoButton}>
+              Undo
+            </Button>
+            <Button variant="contained" type={"submit"}
+                    onClick={this.submitTheme}>
+              Apply
             </Button>
           </CardActions>
           <Divider light={true}/>
           <CardContent>
             <Typography variant={'display1'}>Logo Settings</Typography>
             <Typography className={this.props.classes.labels} color={"textSecondary"}>
-              Upload a custom Logo...
+              Use a PNG file of 230x36 pixels for best results.
             </Typography>
             <div>
-              <input
-                accept="image/*"
-                className={this.props.classes.input}
-                id="contained-button-file"
-                onChange={(e)=>this._handleImageChange(e)}
-                type="file"
-              />
-              <label htmlFor="contained-button-file">
-                <Button variant="contained" component="span">
-                  Upload
-                </Button>
-                <Input
-                  disableUnderline
-                  disabled={true}
-                  placeholder={'(Under construction!)'}/>
+              <label>
+
+                <input
+                  accept="image/*"
+                  className={this.props.classes.input}
+                  color={"textSecondary"}
+                  id="contained-button-file"
+                  onChange={(e) => this._handleImageChange(e)}
+                  type="file"
+                />
+                <label htmlFor="contained-button-file">
+                  <Button variant="outlined" component="span">
+                    Browse...
+                  </Button>
+                </label>
+                  <Typography className={this.props.classes.labels}
+                              color={"textSecondary"}>{this.state.fileName ? this.state.fileName : "No file selected."}</Typography>
+
               </label>
-              <div className="imgPreview">
-                {$imagePreview}
-              </div>
               <div>
                 <Typography className={this.props.classes.labels} color={"textSecondary"}>Current Logo: </Typography>
-                <img src={`${Config.baseUrl}p/r/6.7.r88/com.equella.core/images/new-equella-logo.png`}/>
+                <img
+                  src={this.state.customLogo ? `${Config.baseUrl}api/themeresource/newLogo.png` : `${Config.baseUrl}p/r/6.7.r88/com.equella.core/images/new-equella-logo.png`}/>
               </div>
             </div>
           </CardContent>
           <CardActions>
-            <Button variant="text">
+            <Button variant="text"
+                    onClick={this.resetLogo}>
               Reset to Default
             </Button>
             <Button variant="contained" type={"submit"}
                     onClick={this.submitLogo}>
-              Apply
-            </Button>
-          </CardActions>
-          <Divider light={false}/>
-          <CardActions>
-            <Button variant="outlined" onClick={this.handleUndoButton}>
-              Undo
-            </Button>
-            <Button variant="contained" type={"submit"}
-                    onClick={this.submitTheme}>
               Apply
             </Button>
           </CardActions>

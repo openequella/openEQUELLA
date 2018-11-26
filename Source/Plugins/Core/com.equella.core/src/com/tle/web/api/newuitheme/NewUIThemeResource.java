@@ -18,10 +18,21 @@ public interface NewUIThemeResource {
 	@Path("theme.js")
 	@Produces("application/javascript")
 	Response retrieveThemeInfo();
+	@GET
+	@Path("newLogo.png")
+	@Produces("image/png")
+	Response retrieveLogo();
+	@GET
+	@Path("customlogo.js")
+	@Produces("application/javascript")
+	Response customLogoExists();
 	@PUT
 	@Path("/update")
 	Response updateThemeInfo(String themeString);
 	@PUT
 	@Path("/updatelogo")
 	Response updateLogo(File logo);
+	@DELETE
+	@Path("/resetlogo")
+	Response resetLogo();
 }

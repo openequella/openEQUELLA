@@ -50,6 +50,7 @@ object RenderNewTemplate {
     {
       new IncludeFile(s"api/language/bundle/${LocaleLookup.selectLocale.getLocale.toLanguageTag}/bundle.js").preRender(info)
       new IncludeFile(s"api/themeresource/theme.js").preRender(info)
+      new IncludeFile(s"api/themeresource/customlogo.js").preRender(info)
     }
 
   }
