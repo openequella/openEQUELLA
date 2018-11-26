@@ -60,7 +60,7 @@ main = do
           SettingsPage -> settingsPage {legacyMode:false}
           CoursesPage -> coursesPage
           NewCourse -> courseEdit Nothing
-          ThemeTestPage -> unsafeCreateLeafElement themePageClass {bridge:tsBridge}
+          ThemePage -> unsafeCreateLeafElement themePageClass {bridge:tsBridge}
           CourseEdit cid -> courseEdit $ Just cid
           ViewItemPage (ItemRef uuid version) -> viewItemPage {uuid,version}
           LegacyPage page -> legacy {page} 

@@ -17,6 +17,7 @@ import Divider from "@material-ui/core/Divider/Divider";
 
 declare var themeSettings: any;
 declare var isCustomLogo: boolean;
+
 const styles = createStyles({
   card: {
     marginTop: '16px',
@@ -46,10 +47,10 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     menuIcon: themeSettings['menuItemIconColor'],
     text: themeSettings['menuTextColor'],
     logoToUpload: '',
-    imagePreviewUrl: '',
     customLogo: isCustomLogo,
     fileName: ""
   };
+
   handleDefaultButton = () => {
     this.setState({
       primary: '#2196f3',
@@ -61,6 +62,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       text: '#000000',
     });
   };
+
   handleUndoButton = () => {
     this.setState({
       primary: themeSettings['primaryColor'],
@@ -72,38 +74,37 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       text: themeSettings['menuTextColor']
     });
   };
+
   handlePrimaryChange = (color: string) => {
     this.setState({primary: color});
-    //  this.setState({expanded: !this.state.expanded});
-  };
-  handleSecondaryChange = (color: string) => {
-    this.setState({secondary: color});
-    //  this.setState({expanded: !this.state.expanded});
-  };
-  handleBackgroundChange = (color: string) => {
-    this.setState({background: color});
-    //  this.setState({expanded: !this.state.expanded});
-  };
-  handleMenuChange = (color: string) => {
-    this.setState({menu: color});
-    //  this.setState({expanded: !this.state.expanded});
-  };
-  handleMenuTextChange = (color: string) => {
-    this.setState({menuText: color});
-    //  this.setState({expanded: !this.state.expanded});
-  };
-  handleMenuIconChange = (color: string) => {
-    this.setState({menuIcon: color});
-    // this.setState({expanded: !this.state.expanded});
-  };
-  handleTextChange = (color: string) => {
-    this.setState({text: color});
-    //  this.setState({expanded: !this.state.expanded});
   };
 
-  _handleImageChange(e: any) {
+  handleSecondaryChange = (color: string) => {
+    this.setState({secondary: color});
+  };
+
+  handleBackgroundChange = (color: string) => {
+    this.setState({background: color});
+  };
+
+  handleMenuChange = (color: string) => {
+    this.setState({menu: color});
+  };
+
+  handleMenuTextChange = (color: string) => {
+    this.setState({menuText: color});
+  };
+
+  handleMenuIconChange = (color: string) => {
+    this.setState({menuIcon: color});
+  };
+
+  handleTextChange = (color: string) => {
+    this.setState({text: color});
+  };
+
+  handleImageChange = (e: any) => {
     e.preventDefault();
-    console.log(this.state.logoToUpload);
     let reader = new FileReader();
 
     let file = e.target.files[0];
@@ -113,11 +114,11 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
         logoToUpload: file,
         fileName: file.name
       });
-      console.log(this.state.logoToUpload);
     };
   };
 
   submitTheme = () => {
+    //TODO: map this in a more elegant way
     axios.put(`${Config.baseUrl}api/themeresource/update/`,
       "{\"primaryColor\":\"" + this.state.primary + "\"," +
       "\"secondaryColor\":\"" + this.state.secondary + "\", " +
@@ -131,11 +132,13 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       }
     );
   };
+
   resetLogo = () => {
     axios.delete(`${Config.baseUrl}api/themeresource/resetlogo/`).then(function () {
       window.location.reload();
     });
   };
+
   submitLogo = () => {
     axios.put(`${Config.baseUrl}api/themeresource/updatelogo/`, this.state.logoToUpload).then(function () {
       window.location.reload();
@@ -144,11 +147,15 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
 
   render() {
     const {Template} = this.props.bridge;
+
     return (
       <Template title={"New UI Settings"}>
         <Card raised={true} className={this.props.classes.card}>
           <CardContent>
-            <Typography variant={"display1"}>Colour Scheme</Typography>
+            <Typography variant={"display1"}>
+              Colour Scheme
+            </Typography>
+
             <FormControl>
               <Grid container spacing={16}>
                 <Grid item>
@@ -166,8 +173,8 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
                     Background Colour
                   </Typography>
                   <ColorPickerComponent changeColor={this.handleBackgroundChange} color={this.state.background}/>
-
                 </Grid>
+
                 <Grid item>
                   <Typography className={this.props.classes.labels} color={"textSecondary"}>
                     Secondary Colour
@@ -194,7 +201,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
               </Grid>
             </FormControl>
           </CardContent>
-          {/*<Divider light={false}/>*/}
+
           <CardActions>
             <Button variant="text" onClick={this.handleDefaultButton}>
               Reset to Default
@@ -207,39 +214,44 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
               Apply
             </Button>
           </CardActions>
+
           <Divider light={true}/>
+
           <CardContent>
-            <Typography variant={'display1'}>Logo Settings</Typography>
+            <Typography variant={'display1'}>
+              Logo Settings
+            </Typography>
             <Typography className={this.props.classes.labels} color={"textSecondary"}>
               Use a PNG file of 230x36 pixels for best results.
             </Typography>
-            <div>
-              <label>
 
-                <input
-                  accept="image/*"
-                  className={this.props.classes.input}
-                  color={"textSecondary"}
-                  id="contained-button-file"
-                  onChange={(e) => this._handleImageChange(e)}
-                  type="file"
-                />
-                <label htmlFor="contained-button-file">
-                  <Button variant="outlined" component="span">
-                    Browse...
-                  </Button>
-                </label>
-                  <Typography className={this.props.classes.labels}
-                              color={"textSecondary"}>{this.state.fileName ? this.state.fileName : "No file selected."}</Typography>
+            <label>
+              <input
+                accept="image/*"
+                className={this.props.classes.input}
+                color={"textSecondary"}
+                id="contained-button-file"
+                onChange={(e) => this.handleImageChange(e)}
+                type="file"
+              />
 
+              <label htmlFor="contained-button-file">
+                <Button variant="outlined" component="span">
+                  Browse...
+                </Button>
               </label>
-              <div>
-                <Typography className={this.props.classes.labels} color={"textSecondary"}>Current Logo: </Typography>
-                <img
-                  src={this.state.customLogo ? `${Config.baseUrl}api/themeresource/newLogo.png` : `${Config.baseUrl}p/r/6.7.r88/com.equella.core/images/new-equella-logo.png`}/>
-              </div>
-            </div>
+
+              <Typography className={this.props.classes.labels} color={"textSecondary"}>
+                {this.state.fileName ? this.state.fileName : "No file selected."}
+              </Typography>
+
+            </label>
+
+            <Typography className={this.props.classes.labels} color={"textSecondary"}>Current Logo: </Typography>
+            <img
+              src={this.state.customLogo ? `${Config.baseUrl}api/themeresource/newLogo.png` : `${Config.baseUrl}p/r/6.7.r88/com.equella.core/images/new-equella-logo.png`}/>
           </CardContent>
+
           <CardActions>
             <Button variant="text"
                     onClick={this.resetLogo}>

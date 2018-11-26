@@ -43,7 +43,7 @@ data Route =
     CoursesPage | 
     CourseEdit String |
     ViewItemPage ItemRef |
-    ThemeTestPage |
+    ThemePage |
     NewCourse 
 
 navGlobals :: forall route. {nav::PushStateInterface, preventNav :: Ref (EffectFn1 route Boolean)}
@@ -80,7 +80,7 @@ routeMatch =
         NewCourse <$ (lit "course" *> lit "new") <|>
         CourseEdit <$> (lit "course" *> str <* lit "edit") <|>
         CoursesPage <$ (lit "course") <|>
-        ThemeTestPage <$ (lit "themeconfiguration.do"))
+        ThemePage <$ (lit "themeconfiguration.do"))
         <|> (LegacyPage <$> legacyRoute) 
 
 
@@ -122,7 +122,7 @@ routeURI r = (case r of
     SettingsPage -> "page/settings"
     CoursesPage -> "page/course"
     NewCourse -> "page/course/new"
-    ThemeTestPage -> "themes/themeconfiguration"
+    ThemePage -> "themes/themeconfiguration"
     CourseEdit cid -> "page/course/" <> cid <> "/edit"
     ViewItemPage (ItemRef uuid version) -> "integ/gen/" <> uuid <> "/" <> show version
     LegacyPage (LegacyURI path params) -> 
