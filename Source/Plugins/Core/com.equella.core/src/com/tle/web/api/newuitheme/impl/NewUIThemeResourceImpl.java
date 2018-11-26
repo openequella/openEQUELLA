@@ -95,7 +95,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	public Response updateLogo(File logo) {
 		System.out.println("FROM REST: " + CurrentInstitution.get());
 		if (!tleAclManager.filterNonGrantedPrivileges(Collections.singleton("EDIT_SYSTEM_SETTINGS"), false).isEmpty()) {
-			customisationFile.setInstitution(CurrentInstitution.get());
+			customisationFile = new CustomisationFile();
 			BufferedImage bImage = null;
 			try {
 				bImage = ImageIO.read(logo);
@@ -130,6 +130,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	@DELETE
 	@Path("/resetlogo")
 	public Response resetLogo() {
+		customisationFile = new CustomisationFile();
 			fsService.removeFile(customisationFile, "newLogo.png");
 			return Response.ok("{}").build();
 	}
@@ -138,6 +139,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	@Path("newLogo.png")
 	@Produces("image/png")
 	public Response retrieveLogo() {
+		customisationFile = new CustomisationFile();
 		try {
 			if(fsService.fileExists(customisationFile,"newLogo.png"))
 			{
@@ -152,6 +154,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	@Path("customlogo.js")
 	@Produces("application/javascript")
 	public Response customLogoExists() {
+		customisationFile = new CustomisationFile();
 		if(fsService.fileExists(customisationFile,"newLogo.png"))
 		{
 			return Response.ok().entity("var isCustomLogo = true").build();
