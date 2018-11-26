@@ -99,15 +99,17 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
 			//resize image to logo size (230px x 36px)
 			BufferedImage resizedImage = new BufferedImage(230, 36, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g2d = (Graphics2D) resizedImage.getGraphics();
-			g2d.drawImage(bImage, 0, 0, resizedImage.getWidth() - 1, resizedImage.getHeight() - 1, 0, 0,
-				bImage.getWidth() - 1, bImage.getHeight() - 1, null);
-			g2d.dispose();
+			if (bImage == null) {
+				return Response.notModified().entity("Invalid logo image").build();
+			} else {
+				g2d.drawImage(bImage, 0, 0, resizedImage.getWidth() - 1, resizedImage.getHeight() - 1, 0, 0,
+					bImage.getWidth() - 1, bImage.getHeight() - 1, null);
+				g2d.dispose();
+			}
 			RenderedImage rImage = resizedImage;
-
 			//write resized image to image file in the institution's filestore
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
 			try {
@@ -137,7 +139,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 		customisationFile = new CustomisationFile();
 		if (fsService.removeFile(customisationFile, "newLogo.png")) {
 			return Response.ok("{}").build();
-		}else{
+		} else {
 			return Response.notModified().build();
 		}
 	}
