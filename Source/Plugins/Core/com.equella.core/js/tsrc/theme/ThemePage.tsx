@@ -1,35 +1,61 @@
 import * as React from "react";
 import {Bridge} from "../api/bridge";
-import FormControl from "@material-ui/core/FormControl/FormControl";
-import Button from "@material-ui/core/Button/Button";
+import {
+  Button, CardContent, CardActions,
+  Card, Dialog, DialogTitle,
+  DialogContent, DialogContentText,
+  Divider, FormControl, Typography,
+  WithStyles, withStyles, createStyles,
+  Grid, Snackbar, IconButton, DialogActions,
+  Slide
+} from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
 import ColorPickerComponent from "./ColorPickerComponent";
-import Typography from "@material-ui/core/Typography/Typography";
 import axios from "axios";
 import {Config} from "../config";
-import {WithStyles} from "@material-ui/core";
-import createStyles from "@material-ui/core/styles/createStyles";
-import withStyles from "@material-ui/core/styles/withStyles";
-import Grid from "@material-ui/core/Grid/Grid";
-import CardContent from "@material-ui/core/CardContent/CardContent";
-import CardActions from "@material-ui/core/CardActions/CardActions";
-import Card from "@material-ui/core/Card/Card";
-import Divider from "@material-ui/core/Divider/Divider";
-import SnackBar from "@material-ui/core/Snackbar";
-import IconButton from "@material-ui/core/IconButton/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import Dialog from "@material-ui/core/Dialog/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
-import DialogActions from "@material-ui/core/DialogActions/DialogActions";
-import Slide from "@material-ui/core/Slide/Slide";
+import {prepLangStrings} from "../util/langstrings";
+import {commonString} from '../util/commonstrings';
 
-declare var themeSettings: any;
-declare var isCustomLogo: boolean;
+interface IThemeSettings{
+  primaryColor: string,
+  secondaryColor: string,
+  backgroundColor: string,
+  menuItemColor: string,
+  menuItemTextColor: string,
+  menuItemIconColor: string,
+  menuTextColor: string,
+  fontSize: number}
+declare const themeSettings: IThemeSettings;
+declare const isCustomLogo: boolean;
 
 /**
  * @author Samantha Fisher
  */
+export const strings = prepLangStrings("newuisettings",
+  {
+    title: "New UI Settings",
+    colourschemesettings: {
+      title: "Colour Scheme",
+      primarycolour: "Primary Colour",
+      menubackgroundcolour: "Menu Background Colour",
+      backgroundcolour: "Background Colour",
+      secondarycolour: "Secondary Colour",
+      sidebartextcolour: "Sidebar Text Colour",
+      textcolour: "Text Colour",
+      sidebariconcolour: "Sidebar Icon Colour"
+    },
+    logosettings: {
+      title: "Logo Settings",
+      imagespeclabel: "Use a PNG file of 230x36 pixels for best results.",
+      current: "Current Logo: "
+    },
+    errors: {
+      invalidimagetitle: "Image Processing Error",
+      invalidimagedescription: "Invalid image file. Please check the integrity of your file and try again.",
+      nofiledescription: "Please select an image file to upload."
+    }
+  }
+);
 
 const styles = createStyles({
   card: {
@@ -64,20 +90,20 @@ interface ThemePageProps {
   bridge: Bridge;
 }
 
-function transition(props: any) {
+function transition (props: any){
   return <Slide direction="up" {...props} />;
 }
 
 class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof styles>> {
 
   state = {
-    primary: themeSettings["primaryColor"],
-    secondary: themeSettings["secondaryColor"],
-    background: themeSettings["backgroundColor"],
-    menu: themeSettings["menuItemColor"],
-    menuText: themeSettings["menuItemTextColor"],
-    menuIcon: themeSettings["menuItemIconColor"],
-    text: themeSettings["menuTextColor"],
+    primary: themeSettings.primaryColor,
+    secondary: themeSettings.secondaryColor,
+    background: themeSettings.backgroundColor,
+    menu: themeSettings.menuItemColor,
+    menuText: themeSettings.menuItemTextColor,
+    menuIcon: themeSettings.menuItemIconColor,
+    text: themeSettings.menuTextColor,
     logoToUpload: "",
     customLogo: isCustomLogo,
     fileName: "",
@@ -99,13 +125,13 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
 
   handleUndoButton = () => {
     this.setState({
-      primary: themeSettings["primaryColor"],
-      secondary: themeSettings["secondaryColor"],
-      background: themeSettings["backgroundColor"],
-      menu: themeSettings["menuItemColor"],
-      menuText: themeSettings["menuItemTextColor"],
-      menuIcon: themeSettings["menuItemIconColor"],
-      text: themeSettings["menuTextColor"]
+      primary: themeSettings.primaryColor,
+      secondary: themeSettings.secondaryColor,
+      background: themeSettings.backgroundColor,
+      menu: themeSettings.menuItemColor,
+      menuText: themeSettings.menuItemTextColor,
+      menuIcon: themeSettings.menuItemIconColor,
+      text: themeSettings.menuTextColor
     });
   };
 
@@ -137,11 +163,10 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     this.setState({text: color});
   };
 
-  handleImageChange = (e: any) => {
-    e.preventDefault();
+  handleImageChange = (e:HTMLInputElement) => {
     let reader = new FileReader();
-
-    let file = e.target.files[0];
+  if(e.files!=null){
+    let file = e.files[0];
     reader.readAsDataURL(file);
     reader.onloadend = () => {
       this.setState({
@@ -149,26 +174,29 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
         fileName: file.name
       });
     };
+  }
   };
 
   submitTheme = () => {
-    //TODO: map this in a more elegant way
     axios.put(`${Config.baseUrl}api/themeresource/update/`,
-      "{\"primaryColor\":\"" + this.state.primary + "\"," +
-      "\"secondaryColor\":\"" + this.state.secondary + "\", " +
-      "\"backgroundColor\":\"" + this.state.background + "\", " +
-      "\"menuItemColor\":\"" + this.state.menu + "\", " +
-      "\"menuItemTextColor\": \"" + this.state.menuText + "\", " +
-      "\"menuItemIconColor\": \"" + this.state.menuIcon + "\", " +
-      "\"menuTextColor\": \"" + this.state.text + "\", " +
-      "\"fontSize\": 14}").then(() => {
-        window.location.reload();
-      }
-    );
+      {
+        primaryColor: this.state.primary,
+        secondaryColor: this.state.secondary,
+        backgroundColor: this.state.background,
+        menuItemColor: this.state.menu,
+        menuItemTextColor: this.state.menuText,
+        menuItemIconColor: this.state.menuIcon,
+        menuTextColor: this.state.text,
+        fontSize: 14
+      })
+      .then(() => {
+          window.location.reload();
+        }
+      );
   };
 
   resetLogo = () => {
-    axios.delete(`${Config.baseUrl}api/themeresource/resetlogo/`).then( () => {
+    axios.delete(`${Config.baseUrl}api/themeresource/resetlogo/`).then(() => {
       window.location.reload();
     });
   };
@@ -195,56 +223,56 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
 
   render() {
     const {Template} = this.props.bridge;
-
+    const {classes} = this.props;
     return (
-      <Template title={"New UI Settings"}>
-        <Card raised className={this.props.classes.card}>
-          <CardContent className={this.props.classes.cardContent}>
+      <Template title={strings.title}>
+        <Card raised className={classes.card}>
+          <CardContent className={classes.cardContent}>
 
             {/*COLOUR SCHEME SETTINGS*/}
 
             <Typography variant={"display1"}>
-              Colour Scheme
+              {strings.colourschemesettings.title}
             </Typography>
             <FormControl>
               <Grid container spacing={16}>
                 <Grid item>
-                  <Typography className={this.props.classes.labels} color={"textSecondary"}>
-                    Primary Colour
+                  <Typography className={classes.labels} color={"textSecondary"}>
+                    {strings.colourschemesettings.primarycolour}
                   </Typography>
                   <ColorPickerComponent changeColor={this.handlePrimaryChange} color={this.state.primary}/>
 
-                  <Typography className={this.props.classes.labels} color={"textSecondary"}>
-                    Menu Background Colour
+                  <Typography className={classes.labels} color={"textSecondary"}>
+                    {strings.colourschemesettings.menubackgroundcolour}
                   </Typography>
                   <ColorPickerComponent changeColor={this.handleMenuChange} color={this.state.menu}/>
 
-                  <Typography className={this.props.classes.labels} color={"textSecondary"}>
-                    Background Colour
+                  <Typography className={classes.labels} color={"textSecondary"}>
+                    {strings.colourschemesettings.backgroundcolour}
                   </Typography>
                   <ColorPickerComponent changeColor={this.handleBackgroundChange} color={this.state.background}/>
                 </Grid>
 
                 <Grid item>
-                  <Typography className={this.props.classes.labels} color={"textSecondary"}>
-                    Secondary Colour
+                  <Typography className={classes.labels} color={"textSecondary"}>
+                    {strings.colourschemesettings.secondarycolour}
                   </Typography>
                   <ColorPickerComponent changeColor={this.handleSecondaryChange} color={this.state.secondary}/>
 
-                  <Typography className={this.props.classes.labels} color={"textSecondary"}>
-                    Sidebar Text Colour
+                  <Typography className={classes.labels} color={"textSecondary"}>
+                    {strings.colourschemesettings.sidebartextcolour}
                   </Typography>
                   <ColorPickerComponent changeColor={this.handleMenuTextChange} color={this.state.menuText}/>
                 </Grid>
 
                 <Grid item>
-                  <Typography className={this.props.classes.labels} color={"textSecondary"}>
-                    Text Colour
+                  <Typography className={classes.labels} color={"textSecondary"}>
+                    {strings.colourschemesettings.textcolour}
                   </Typography>
                   <ColorPickerComponent changeColor={this.handleTextChange} color={this.state.text}/>
 
-                  <Typography className={this.props.classes.labels} color={"textSecondary"}>
-                    Sidebar Icon Colour
+                  <Typography className={classes.labels} color={"textSecondary"}>
+                    {strings.colourschemesettings.sidebariconcolour}
                   </Typography>
                   <ColorPickerComponent changeColor={this.handleMenuIconChange} color={this.state.menuIcon}/>
                 </Grid>
@@ -254,17 +282,17 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
 
           <CardActions>
             <Button variant="text" onClick={this.handleDefaultButton}>
-              Reset to Default
+              {commonString.action.resettodefault}
             </Button>
             <Button variant="outlined" onClick={this.handleUndoButton}>
-              Undo
+              {commonString.action.revertchanges}
             </Button>
             <Button
-              className={this.props.classes.button}
+              className={classes.button}
               variant="contained"
               type={"submit"}
               onClick={this.submitTheme}>
-              Apply
+              {commonString.action.apply}
             </Button>
           </CardActions>
 
@@ -272,35 +300,35 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
 
           {/*LOGO SETTINGS*/}
 
-          <CardContent className={this.props.classes.cardContent}>
+          <CardContent className={classes.cardContent}>
             <Typography variant={"display1"}>
-              Logo Settings
+              {strings.logosettings.title}
             </Typography>
-            <Typography className={this.props.classes.labels} color={"textSecondary"}>
-              Use a PNG file of 230x36 pixels for best results.
+            <Typography className={classes.labels} color={"textSecondary"}>
+              {strings.logosettings.imagespeclabel}
             </Typography>
 
             <label>
               <input
                 accept="image/*"
-                className={this.props.classes.input}
+                className={classes.input}
                 color={"textSecondary"}
                 id="contained-button-file"
-                onChange={(e) => this.handleImageChange(e)}
+                onChange={e=>this.handleImageChange(e.target)}
                 type="file"
               />
               <label htmlFor="contained-button-file">
                 <Grid container spacing={8} direction={"row"}>
                   <Grid item>
                     <Button
-                      className={this.props.classes.button}
+                      className={classes.button}
                       variant="outlined"
                       component="span">
-                      Browse...
+                      {commonString.action.browse}
                     </Button>
                   </Grid>
                   <Grid item>
-                    <Typography className={this.props.classes.fileName} color={"textSecondary"}>
+                    <Typography className={classes.fileName} color={"textSecondary"}>
                       {this.state.fileName ? this.state.fileName : "No file selected."}
                     </Typography>
                   </Grid>
@@ -310,7 +338,8 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
 
             <Grid container spacing={8} direction={"row"}>
               <Grid item>
-                <Typography className={this.props.classes.button} color={"textSecondary"}>Current Logo: </Typography>
+                <Typography className={classes.button}
+                            color={"textSecondary"}>{strings.logosettings.current}</Typography>
               </Grid>
               <Grid item>
                 <img
@@ -319,18 +348,18 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
             </Grid>
           </CardContent>
 
-          <CardActions className={this.props.classes.cardBottom}>
+          <CardActions className={classes.cardBottom}>
             <Button
               variant="text"
               onClick={this.resetLogo}>
-              Reset to Default
+              {commonString.action.resettodefault}
             </Button>
             <Button
-              className={this.props.classes.button}
+              className={classes.button}
               variant="contained"
               type={"submit"}
               onClick={this.submitLogo}>
-              Apply
+              {commonString.action.apply}
             </Button>
           </CardActions>
         </Card>
@@ -343,26 +372,26 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
           keepMounted
           onClose={this.handleInvalidFileErrorClose}
         >
-          <DialogTitle id="alert-dialog-slide-title" color="primary">
+          <DialogTitle disableTypography id="alert-dialog-slide-title" color="primary">
             <Typography variant={"display1"} color={"textSecondary"}>
-              Image Processing Error
+              {strings.errors.invalidimagetitle}
             </Typography>
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-slide-description">
-              Invalid image file. Please check the integrity of your file and try again.
+              {strings.errors.invalidimagedescription}
             </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={this.handleInvalidFileErrorClose} color="primary">
-              Dismiss
+              {commonString.action.dismiss}
             </Button>
           </DialogActions>
         </Dialog>
 
-        <SnackBar anchorOrigin={{vertical: "bottom", horizontal: "right"}}
+        <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}}
                   autoHideDuration={5000}
-                  message={<span id="message-id">Please select an image file to upload.</span>}
+                  message={<span id="message-id">{strings.errors.nofiledescription}</span>}
                   open={this.state.noFileError}
                   onClose={this.handleNoFileErrorClose}
                   action={[

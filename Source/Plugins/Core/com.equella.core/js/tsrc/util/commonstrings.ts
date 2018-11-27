@@ -12,7 +12,12 @@ export const commonString = prepLangStrings("common", {
       delete: "Delete", 
       search: "Search",
       clear: "Clear", 
-      close: "Close"
+      close: "Close",
+      dismiss: "Dismiss",
+      browse: "Browse...",
+      apply: "Apply",
+      resettodefault:"Reset to Default",
+      revertchanges: "Revert Changes"
     }, 
     users : "Users", 
     groups: "Groups", 

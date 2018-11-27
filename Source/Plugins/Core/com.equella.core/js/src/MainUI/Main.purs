@@ -40,7 +40,6 @@ main = do
   w <- window
   l <- location w
   path <- pathname l
-  log "found"
   let 
     baseStripped p = fromMaybe "" $ stripPrefix (Pattern bp) p
     pagePath = baseStripped path

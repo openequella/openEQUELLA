@@ -80,7 +80,7 @@ routeMatch =
         NewCourse <$ (lit "course" *> lit "new") <|>
         CourseEdit <$> (lit "course" *> str <* lit "edit") <|>
         CoursesPage <$ (lit "course") <|>
-        ThemePage <$ (lit "themeconfiguration.do"))
+        ThemePage <$ (lit "themeconfiguration"))
         <|> (LegacyPage <$> legacyRoute) 
 
 
@@ -122,7 +122,7 @@ routeURI r = (case r of
     SettingsPage -> "page/settings"
     CoursesPage -> "page/course"
     NewCourse -> "page/course/new"
-    ThemePage -> "themes/themeconfiguration"
+    ThemePage -> "page/themeconfiguration"
     CourseEdit cid -> "page/course/" <> cid <> "/edit"
     ViewItemPage (ItemRef uuid version) -> "integ/gen/" <> uuid <> "/" <> show version
     LegacyPage (LegacyURI path params) -> 

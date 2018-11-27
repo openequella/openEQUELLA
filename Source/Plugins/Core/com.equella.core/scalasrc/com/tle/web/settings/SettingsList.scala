@@ -63,7 +63,7 @@ object SettingsList {
     AclChecks.filterNonGrantedPrivileges(Iterable("EDIT_SYSTEM_SETTINGS"), false))
 
   val materialUISettings = CoreSettingsPage("materialui", General,"materialui.settings.title", "materialui.settings.description",
-    "page/themeconfiguration.do", () => !aclManager.filterNonGrantedPrivileges("EDIT_SYSTEM_SETTINGS").isEmpty)
+    "page/themeconfiguration", () => !aclManager.filterNonGrantedPrivileges("EDIT_SYSTEM_SETTINGS").isEmpty)
 
   val echoSettings = CoreSettingsPage("echo", Integration, "echo.settings.title", "echo.settings.description",
     "access/echoservers.do", () => !aclManager.filterNonGrantedPrivileges(EchoConstants.PRIV_CREATE_ECHO, EchoConstants.PRIV_EDIT_ECHO).isEmpty)

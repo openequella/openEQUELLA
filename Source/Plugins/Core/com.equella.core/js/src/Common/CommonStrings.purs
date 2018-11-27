@@ -9,7 +9,14 @@ foreign import commonString :: {
             , discard :: String
             , select :: String
             , delete :: String
+            , search :: String
             , clear :: String
+            , close :: String
+            , dismiss :: String
+            , browse :: String
+            , apply :: String
+            , resettodefault :: String
+            , revertchanges :: String
             }
   , users :: String
   , groups :: String
