@@ -18,14 +18,14 @@ public class FavPortalSection extends AbstractPortalSection<FavPortalSection>
 	public boolean favouriteExists(String itemTitle)
 	{
 		return isPresent(
-			boxContent,
+			getBoxContent(),
 			By.xpath(".//div[normalize-space(@class)='alt-links']/a[normalize-space(text())=" + quoteXPath(itemTitle)
 				+ "]"));
 	}
 
 	public SummaryPage clickFavourite(String itemTitle)
 	{
-		boxContent.findElement(
+		getBoxContent().findElement(
 			By.xpath(".//div[normalize-space(@class)='alt-links']/a[normalize-space(text())=" + quoteXPath(itemTitle)
 				+ "]")).click();
 		return new SummaryPage(context).get();
@@ -34,14 +34,14 @@ public class FavPortalSection extends AbstractPortalSection<FavPortalSection>
 	public boolean favouriteSearchExists(String searchTitle)
 	{
 		return isPresent(
-			boxContent,
+				getBoxContent(),
 			By.xpath(".//div[normalize-space(@class)='alt-links']/a[normalize-space(text())="
 				+ quoteXPath(MessageFormat.format("Search results for \"{0}\"", searchTitle)) + "]"));
 	}
 
 	public SearchPage clickFavouriteSearch(String searchTitle)
 	{
-		boxContent.findElement(
+		getBoxContent().findElement(
 			By.xpath(".//div[normalize-space(@class)='alt-links']/a[normalize-space(text())="
 				+ quoteXPath(MessageFormat.format("Search results for \"{0}\"", searchTitle)) + "]")).click();
 		return new SearchPage(context).get();

@@ -32,8 +32,8 @@ public class ItemUnlock extends AbstractCleanupTest
 		wizard.editbox(1, itemName);
 		UniversalControl control = wizard.universalControl(2);
 		YouTubeUniversalControlType youtube = control.addDefaultResource(new YouTubeUniversalControlType(control));
-		youtube.search("maths", "The Khan Academy").selectVideo(1, ORIGINAL_NAME);
-		control.editResource(youtube.editPage(), "FIXME").setDisplayName(DISPLAY_NAME).save();
+		youtube.search("Functions and their graphs", "The Khan Academy").selectVideo(1, ORIGINAL_NAME);
+		control.editResource(youtube.editPage(), ORIGINAL_NAME).setDisplayName(DISPLAY_NAME).save();
 		SummaryPage item = wizard.save().publish();
 		assertTrue(item.attachments().attachmentExists(DISPLAY_NAME));
 

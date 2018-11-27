@@ -15,27 +15,32 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>> 
 {
 	protected String title;
 
-	@FindBy(xpath = "//h3[normalize-space(text())='{title}']/ancestor::div[contains(@class, 'box_head')][1]")
-	protected WebElement boxHead;
-	@FindBy(xpath = "//h3[normalize-space(text())='{title}']/ancestor::div[contains(@class, 'box_head')][1]/following-sibling::div[contains(@class, 'box_content')]/div")
-	protected WebElement boxContent;
-
 	public AbstractPortalSection(PageContext context, String title)
 	{
 		super(context);
 		this.title = title;
 	}
 
+	protected WebElement getBoxHead()
+	{
+		return find(driver, By.xpath("//h3[normalize-space(text())="+quoteXPath(getTitle())+"]/ancestor::div[contains(@class, 'box_head')][1]"));
+	}
+
+	protected WebElement getBoxContent()
+	{
+		return find(driver, By.xpath("//h3[normalize-space(text())="+quoteXPath(getTitle())+"]/ancestor::div[contains(@class, 'box_head')][1]/following-sibling::div[contains(@class, 'box_content')]/div"));
+	}
+
 	protected WebElement findLoadedElement()
 	{
-		return boxHead;
+		return getBoxHead();
 	}
 
 	public HomePage delete()
 	{
-		ExpectedCondition<Boolean> removalCondition = removalCondition(boxHead);
+		ExpectedCondition<Boolean> removalCondition = removalCondition(getBoxHead());
 		showButtons();
-		boxHead.findElement(By.className("box_close")).click();
+		getBoxHead().findElement(By.className("box_close")).click();
 		acceptConfirmation();
 		waiter.until(removalCondition);
 		return new HomePage(context).get();
@@ -43,35 +48,35 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>> 
 
 	public T minMax()
 	{
-		boolean present = isPresent(boxContent);
+		boolean present = isPresent(getBoxContent());
 		WaitingPageObject<T> aWaiter;
 		if( present )
 		{
-			aWaiter = removalWaiter(boxContent);
+			aWaiter = removalWaiter(getBoxContent());
 		}
 		else
 		{
-			aWaiter = visibilityWaiter(boxContent);
+			aWaiter = visibilityWaiter(getBoxContent());
 		}
 
-		boxHead.findElement(By.className("box_minimise")).click();
+		getBoxHead().findElement(By.className("box_minimise")).click();
 		return aWaiter.get();
 	}
 
 	public boolean isMinimisable()
 	{
-		return isPresent(boxHead, By.className("box_minimise"));
+		return isPresent(getBoxHead(), By.className("box_minimise"));
 	}
 
 	public boolean isCloseable()
 	{
-		return isPresent(boxHead, By.className("box_close"));
+		return isPresent(getBoxHead(), By.className("box_close"));
 	}
 
 	public <P extends AbstractPortalEditPage<P>> P edit(P portal)
 	{
 		showButtons();
-		boxHead.findElement(By.className("box_edit")).click();
+		getBoxHead().findElement(By.className("box_edit")).click();
 		return portal.get();
 	}
 

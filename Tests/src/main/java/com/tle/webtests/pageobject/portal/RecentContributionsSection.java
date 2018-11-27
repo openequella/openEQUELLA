@@ -15,7 +15,7 @@ public class RecentContributionsSection extends AbstractPortalSection<RecentCont
 	public boolean recentContributionExists(String itemName)
 	{
 		return isPresent(
-			boxContent,
+				getBoxContent(),
 			By.xpath(".//div[normalize-space(@class)='recent-items']//a[normalize-space(text())="
 				+ quoteXPath(itemName) + "]"));
 	}
@@ -23,7 +23,7 @@ public class RecentContributionsSection extends AbstractPortalSection<RecentCont
 	public boolean descriptionExists(String description)
 	{
 		return isPresent(
-			boxContent,
+				getBoxContent(),
 			By.xpath(".//div[normalize-space(@class)='recent-items']//p[normalize-space(text())="
 				+ quoteXPath(description) + "]"));
 	}

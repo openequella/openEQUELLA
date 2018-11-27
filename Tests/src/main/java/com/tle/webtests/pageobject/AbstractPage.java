@@ -634,8 +634,13 @@ public abstract class AbstractPage<T extends PageObject> implements PageObject, 
 	    }
 	}
 
+	protected By byPrefixId(String prefix, String postfix)
+	{
+		return By.id(prefix+postfix);
+	}
+
 	protected WebElement findWithId(String prefix, String postfix)
 	{
-		return driver.findElement(By.id(prefix+postfix));
+		return driver.findElement(byPrefixId(prefix, postfix));
 	}
 }

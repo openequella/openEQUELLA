@@ -16,7 +16,7 @@ public class TasksPortalSection extends AbstractPortalSection<TasksPortalSection
 
 	public int getNumberNotifications()
 	{
-		WebElement notifications = boxContent.findElement(By.xpath("div[@class='alt-links']/a[@class='odd folder']"));
+		WebElement notifications = getBoxContent().findElement(By.xpath("div[@class='alt-links']/a[@class='odd folder']"));
 
 		String notificationsText = notifications.getText();
 		int firstIndex = notificationsText.indexOf("(");
@@ -27,31 +27,31 @@ public class TasksPortalSection extends AbstractPortalSection<TasksPortalSection
 
 	public NotificationsPage ownerNotified()
 	{
-		boxContent.findElement(By.xpath("div[@class='alt-links']/a[@class='even level2 document'][3]")).click();
+		getBoxContent().findElement(By.xpath("div[@class='alt-links']/a[@class='even level2 document'][3]")).click();
 		return new NotificationsPage(context).get();
 	}
 
 	public NotificationsPage rejected()
 	{
-		boxContent.findElement(By.xpath("div[@class='alt-links']/a[@class='odd level2 document'][3]")).click();
+		getBoxContent().findElement(By.xpath("div[@class='alt-links']/a[@class='odd level2 document'][3]")).click();
 		return new NotificationsPage(context).get();
 	}
 
 	public NotificationsPage badURLs()
 	{
-		boxContent.findElement(By.xpath("div[@class='alt-links']/a[@class='even level2 document'][4]")).click();
+		getBoxContent().findElement(By.xpath("div[@class='alt-links']/a[@class='even level2 document'][4]")).click();
 		return new NotificationsPage(context).get();
 	}
 
 	public NotificationsPage watchedLive()
 	{
-		boxContent.findElement(By.xpath("div[@class='alt-links']/a[@class='odd level2 document'][4]")).click();
+		getBoxContent().findElement(By.xpath("div[@class='alt-links']/a[@class='odd level2 document'][4]")).click();
 		return new NotificationsPage(context).get();
 	}
 
 	public NotificationsPage overdue()
 	{
-		boxContent.findElement(By.xpath("div[@class='alt-links']/a[@class='even level2 document'][5]")).click();
+		getBoxContent().findElement(By.xpath("div[@class='alt-links']/a[@class='even level2 document'][5]")).click();
 		return new NotificationsPage(context).get();
 	}
 }

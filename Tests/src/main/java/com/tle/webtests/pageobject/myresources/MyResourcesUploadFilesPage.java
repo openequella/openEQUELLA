@@ -1,5 +1,7 @@
 package com.tle.webtests.pageobject.myresources;
 
+import com.dytech.common.legacyio.FileUtils;
+import com.tle.common.PathUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebElement;
@@ -45,16 +47,20 @@ public class MyResourcesUploadFilesPage extends AbstractPage<MyResourcesUploadFi
 	@Override
 	protected WebElement findLoadedElement()
 	{
-		return tagField;
+		return cancelButton;
 	}
 
 	public MyResourcesPage uploadFile(String path, String description, String tags)
 	{
 		setSearchTags(tags);
 		uploadElem.sendKeys(path);
-//		setDescription(description);
 		cancelButton.click();
-		return new MyResourcesPage(context, "scrapbook").get();
+		MyResourcesPage searchPage = new MyResourcesPage(context, "scrapbook").get();
+		String fileOnly = PathUtils.getFilenameFromFilepath(path);
+		MyResourcesUploadFilesPage edit = searchPage.exactQuery(fileOnly).getResultForTitle(fileOnly).get()
+				.clickAction("Edit", new MyResourcesUploadFilesPage(searchPage));
+		edit.setDescription(description);
+		return edit.save();
 	}
 
 	public boolean hasArchiveOption(String option)

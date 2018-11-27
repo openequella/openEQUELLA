@@ -13,6 +13,6 @@ public class BrowsePortalSection extends AbstractPortalSection<BrowsePortalSecti
 
 	public boolean topicExists(String topic)
 	{
-		return isPresent(boxContent, By.xpath(".//ul[@class='topics']/li/a[starts-with(., " + quoteXPath(topic) + ")]"));
+		return isPresent(getBoxContent(), By.xpath(".//ul[@class='topics']/li/a[starts-with(., " + quoteXPath(topic) + ")]"));
 	}
 }

@@ -146,12 +146,12 @@ public class EquellaConnectorTest extends AbstractCleanupTest
 		external.setSortRevese(false);
 
 		ItemSearchResult result = external.results().getResults().get(0);
-		assertEquals(result.getDetailText("EQUELLA resource"), linkToMe);
+		assertEquals(result.getDetailText("openEQUELLA resource"), linkToMe);
 		assertEquals(result.getDetailText("Linking resource"), fullname);
 
 		external.setSortRevese(true);
 		result = external.results().getResults().get(0);
-		assertEquals(result.getDetailText("EQUELLA resource"), linkToMeDraft);
+		assertEquals(result.getDetailText("openEQUELLA resource"), linkToMeDraft);
 		assertEquals(result.getDetailText("Linking resource"), fullname);
 
 		external.showArchived(true);
@@ -162,11 +162,11 @@ public class EquellaConnectorTest extends AbstractCleanupTest
 		assertEquals(external.results().getResults().size(), 2);
 
 		result = external.results().getResults().get(0);
-		assertEquals(result.getDetailText("EQUELLA resource"), linkToMeDraft);
+		assertEquals(result.getDetailText("openEQUELLA resource"), linkToMeDraft);
 		assertEquals(result.getDetailText("Linking resource"), fullnameDraft);
 
 		result = external.results().getResults().get(1);
-		assertEquals(result.getDetailText("EQUELLA resource"), linkToMeDraft);
+		assertEquals(result.getDetailText("openEQUELLA resource"), linkToMeDraft);
 		assertEquals(result.getDetailText("Linking resource"), fullname);
 
 	}

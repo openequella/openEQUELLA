@@ -1,5 +1,6 @@
 package com.tle.webtests.pageobject.connectors;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -23,10 +24,15 @@ public abstract class AbstractConnectorEditPage<THIS extends AbstractConnectorEd
 	private WebElement testAjaxDiv;
 	@FindBy(xpath = "id('testdiv')//span[contains(@class, 'status')]")
 	private WebElement testStatus;
-	@FindBy(name = "{id}_viewableSelector_es.e")
-	private WebElement viewExpressionInput;
-	@FindBy(name = "{id}_exportableSelector_es.e")
-	private WebElement exportExpressionInput;
+
+	private WebElement getViewExpressionInput()
+	{
+		return driver.findElement(By.name(getId()+"_viewableSelector_es.e"));
+	}
+	private WebElement getExportExpressionInput()
+	{
+		return driver.findElement(By.name(getId()+"_exportableSelector_es.e"));
+	}
 
 	protected AbstractConnectorEditPage(ShowConnectorsPage connectorsPage)
 	{
@@ -42,7 +48,7 @@ public abstract class AbstractConnectorEditPage<THIS extends AbstractConnectorEd
 	public THIS setType(String type)
 	{
 		new EquellaSelect(context, getLmsType()).selectByVisibleText(type);
-		waitForElement(getSaveButton());
+		waitForElement(getSaveButtonBy());
 		return get();
 	}
 
@@ -88,7 +94,7 @@ public abstract class AbstractConnectorEditPage<THIS extends AbstractConnectorEd
 		((JavascriptExecutor) driver).executeScript("_subev('" + getId() + ".expression', '" + getId()
 			+ "_viewableSelector', '" + expression + "');");
 
-		return ExpectWaiter.waiter(ExpectedConditions2.elementAttributeToBe(viewExpressionInput, "value", expression),
+		return ExpectWaiter.waiter(ExpectedConditions2.elementAttributeToBe(getViewExpressionInput(), "value", expression),
 			this).get();
 	}
 
@@ -103,7 +109,7 @@ public abstract class AbstractConnectorEditPage<THIS extends AbstractConnectorEd
 			+ "_exportableSelector', '" + expression + "');");
 
 		return ExpectWaiter.waiter(
-			ExpectedConditions2.elementAttributeToBe(exportExpressionInput, "value", expression), this).get();
+			ExpectedConditions2.elementAttributeToBe(getExportExpressionInput(), "value", expression), this).get();
 	}
 
 	@Override

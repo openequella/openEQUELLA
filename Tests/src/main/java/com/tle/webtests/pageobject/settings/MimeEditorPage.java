@@ -2,6 +2,7 @@ package com.tle.webtests.pageobject.settings;
 
 import java.net.URL;
 
+import com.tle.webtests.pageobject.ExpectedConditions2;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
@@ -11,6 +12,8 @@ import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.WaitingPageObject;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class MimeEditorPage extends AbstractPage<MimeEditorPage>
 {
@@ -31,9 +34,6 @@ public class MimeEditorPage extends AbstractPage<MimeEditorPage>
 
 	@FindBy(id = "mei_iu")
 	private WebElement fileUpload;
-
-	@FindBy(id = "mei_ub")
-	private WebElement uploadButton;
 
 	@FindBy(id = "mei_ri")
 	private WebElement restoreIcon;
@@ -103,20 +103,25 @@ public class MimeEditorPage extends AbstractPage<MimeEditorPage>
 		return get();
 	}
 
+	private WebElement getIcon()
+	{
+		return driver.findElement(By.xpath("//div[@class='control']/img"));
+	}
+
 	public MimeEditorPage uploadIcon(URL icon)
 	{
-
+		ExpectedCondition<Boolean> iconUpdated = ExpectedConditions2.updateOfElement(getIcon());
 		waitForHiddenElement(fileUpload);
 		fileUpload.sendKeys(getPathFromUrl(icon));
-		uploadButton.click();
-		waitForElement(By.xpath("//div[@class='control']/img"));
+		waiter.until(iconUpdated);
 		return get();
 	}
 
 	public MimeEditorPage restoreIcon()
 	{
+		ExpectedCondition<Boolean> iconUpdated = ExpectedConditions2.updateOfElement(getIcon());
 		restoreIcon.click();
-		waitForElement(By.xpath("//div[@class='control']/img"));
+		waiter.until(iconUpdated);
 		return get();
 	}
 }

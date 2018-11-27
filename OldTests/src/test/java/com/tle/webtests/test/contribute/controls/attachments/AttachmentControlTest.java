@@ -4,6 +4,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import com.tle.webtests.pageobject.WaitingPageObject;
 import org.testng.annotations.Test;
 
 import com.tle.webtests.framework.TestInstitution;
@@ -69,13 +70,12 @@ public class AttachmentControlTest extends AbstractCleanupTest
 		wizard = initialItem(itemName2);
 
 		UniversalControl universalControl = wizard.universalControl(8);
+		WaitingPageObject<UniversalControl> newAttachWaiter = universalControl.attachNameWaiter(itemName, false);
 		ResourceUniversalControlType resourceDialog = universalControl
 			.addDefaultResource(new ResourceUniversalControlType(universalControl));
 		SelectionSession selectionSession = resourceDialog.getSelectionSession();
 		SummaryPage viewFromTitle = selectionSession.homeExactSearch(itemName).viewFromTitle(itemName, 1);
-		GenericAttachmentEditPage selectItem = viewFromTitle.selectItem(resourceDialog.editPage());
-		selectItem.save();
-		wizard.waitForSelectedItem(itemName);
+		viewFromTitle.selectItem(newAttachWaiter);
 
 		SummaryPage item = wizard.save().publish();
 		assertTrue(item.attachments().attachmentExists(itemName));
@@ -83,11 +83,12 @@ public class AttachmentControlTest extends AbstractCleanupTest
 		wizard.universalControl(8).deleteResource(itemName);
 
 		resourceDialog = wizard.universalControl(8).addDefaultResource(resourceDialog);
+		WaitingPageObject<UniversalControl> selectedPageWaiter = universalControl.attachNameWaiter("page.html", false);
 		selectionSession = resourceDialog.getSelectionSession();
 
 		SelectionCheckoutPage checkout = selectionSession.homeExactSearch(itemName).viewFromTitle(itemName, 1)
 			.attachments().selectSingleAttachment("page.html");
-		checkout.returnSelection(resourceDialog.editPage()).save();
+		checkout.returnSelection(selectedPageWaiter);
 
 		GenericAttachmentEditPage editResource = wizard.universalControl(8).editResource(
 			new ResourceUniversalControlType(universalControl), "page.html");
@@ -114,6 +115,7 @@ public class AttachmentControlTest extends AbstractCleanupTest
 		wizard = initialItem(creator);
 
 		UniversalControl universalControl = wizard.universalControl(8);
+		WaitingPageObject<UniversalControl> outerContribAttach = universalControl.attachNameWaiter(attachment, false);
 		ResourceUniversalControlType resourceDialog = universalControl
 			.addDefaultResource(new ResourceUniversalControlType(universalControl));
 		SelectionSession searchResources = resourceDialog.getSelectionSession();
@@ -121,14 +123,15 @@ public class AttachmentControlTest extends AbstractCleanupTest
 		String created = context.getFullName("created");
 		innerWizard.editbox(1, created);
 
+		WaitingPageObject<UniversalControl> innerContribAttach = universalControl.attachNameWaiter(attachment, false);
 		resourceDialog = universalControl.addDefaultResource(resourceDialog);
 		SelectionSession innerSearch = resourceDialog.getSelectionSession();
 		innerSearch.homeExactSearch(selectItem).viewFromTitle(selectItem).attachments()
 			.selectSingleAttachment(attachment)
-			.returnSelection(resourceDialog.getFrameName(), universalControl.attachNameWaiter(attachment, false));
+			.returnSelection(resourceDialog.getFrameName(), innerContribAttach);
 
 		innerWizard.save().publish().attachments().selectSingleAttachment(attachment)
-			.returnSelection(resourceDialog.editPage()).save();
+			.returnSelection(outerContribAttach);
 
 		SummaryPage summary = wizard.save().publish();
 
@@ -139,10 +142,10 @@ public class AttachmentControlTest extends AbstractCleanupTest
 		assertTrue(context.getDriver().getCurrentUrl().contains(selectUuid));
 	}
 
-	@Test
-	public void clickingBack()
-	{
-		throw new Error("Needs to be re-written because single files aren't edited");
+//	@Test
+//	public void clickingBack()
+//	{
+//		throw new Error("Needs to be re-written because single files aren't edited");
 //		String itemName = context.getFullName("a file");
 //		WizardPageTab wizard = initialItem(itemName);
 //
@@ -156,7 +159,7 @@ public class AttachmentControlTest extends AbstractCleanupTest
 //		SummaryPage item = wizard.save().publish();
 //		assertFalse(item.attachments().attachmentExists("page.html"));
 //		assertTrue(item.attachments().attachmentExists("page2.html"));
-	}
+//	}
 
 	private WizardPageTab initialItem(String itemName)
 	{

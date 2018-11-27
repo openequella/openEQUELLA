@@ -26,10 +26,16 @@ public abstract class AbstractEditEntityPage<THIS extends AbstractEditEntityPage
 		return findWithId(getEditorSectionId(), "_d");
 	}
 
+	protected By getSaveButtonBy()
+	{
+		return byPrefixId(getContributeSectionId(), "_sv");
+	}
+
 	protected WebElement getSaveButton()
 	{
-		return findWithId(getContributeSectionId(), "_sv");
+		return driver.findElement(getSaveButtonBy());
 	}
+
 	protected WebElement getCancelButton()
 	{
 		return findWithId(getContributeSectionId(), "_cl");

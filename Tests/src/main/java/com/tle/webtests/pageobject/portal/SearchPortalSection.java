@@ -21,13 +21,13 @@ public class SearchPortalSection extends AbstractPortalSection<SearchPortalSecti
 
 	public SearchPage search()
 	{
-		boxContent.findElement(By.xpath("div/div/button")).click();
+		getBoxContent().findElement(By.xpath("div/div/button")).click();
 		return new SearchPage(context).get();
 	}
 
 	public void setQuery(String query)
 	{
-		WebElement queryField = boxContent.findElement(By.xpath("div/div/div/input"));
+		WebElement queryField = getBoxContent().findElement(By.xpath("div/div/div/input"));
 		queryField.clear();
 		queryField.sendKeys(query);
 	}

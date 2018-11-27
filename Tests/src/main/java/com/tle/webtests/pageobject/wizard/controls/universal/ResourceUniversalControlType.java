@@ -32,7 +32,7 @@ public class ResourceUniversalControlType extends NewAbstractWizardControl<Resou
 	@Override
 	public String getType()
 	{
-		return "EQUELLA Resource";
+		return "openEQUELLA Resource";
 	}
 
 	public SelectionSession getSelectionSession()

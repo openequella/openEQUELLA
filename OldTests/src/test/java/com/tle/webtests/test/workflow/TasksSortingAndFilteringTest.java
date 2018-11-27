@@ -100,7 +100,6 @@ public class TasksSortingAndFilteringTest extends AbstractCleanupTest
 		filterListPage.filterByWorkflow("3 Step Workflow");
 
 		filterListPage.setWithinAll();
-		filterListPage.filterByWorkflow("3 Step Workflow");
 		expected = new boolean[]{true, false, true, false, false, false};
 		assertTrue(checkForItems(titles, expected, filterResults, filterListPage), "Expected different filter results");
 

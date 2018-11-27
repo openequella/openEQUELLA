@@ -34,9 +34,14 @@ public class BulkActionDialog extends AbstractPage<BulkActionDialog>
 
 	public BulkActionDialog selectOp(String op)
 	{
-		WaitingPageObject<BulkActionDialog> updater = ajaxUpdate(footer);
-		new EquellaSelect(context, operationList).selectByValue(op);
-		return updater.get();
+		EquellaSelect opSelect = new EquellaSelect(context, operationList);
+		if (!opSelect.getSelectedValue().equals(op))
+		{
+			WaitingPageObject<BulkActionDialog> updater = ajaxUpdate(footer);
+			opSelect.selectByValue(op);
+			return updater.get();
+		}
+		return this;
 	}
 
 	public BulkResultsPage execute()

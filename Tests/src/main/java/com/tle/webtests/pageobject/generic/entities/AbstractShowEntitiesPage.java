@@ -20,8 +20,10 @@ import com.tle.webtests.pageobject.WaitingPageObject;
  */
 public abstract class AbstractShowEntitiesPage<THIS extends AbstractShowEntitiesPage<THIS>> extends AbstractPage<THIS>
 {
-	@FindBy(id = "{sectionId}_add")
-	protected WebElement addLink;
+	protected WebElement getAddLink()
+	{
+		return findWithId(getSectionId(), "_add");
+	}
 	@FindBy(id = "entities")
 	private WebElement tableElem;
 
@@ -122,7 +124,7 @@ public abstract class AbstractShowEntitiesPage<THIS extends AbstractShowEntities
 
 	protected <S extends AbstractShowEntitiesPage<S>, T extends AbstractEditEntityPage<T, S>> T createEntity(T editor)
 	{
-		addLink.click();
+		getAddLink().click();
 		editor.setCreating(true);
 		return editor.get();
 	}
@@ -223,8 +225,4 @@ public abstract class AbstractShowEntitiesPage<THIS extends AbstractShowEntities
 		}
 	}
 
-	public WebElement getAddLink()
-	{
-		return addLink;
-	}
 }

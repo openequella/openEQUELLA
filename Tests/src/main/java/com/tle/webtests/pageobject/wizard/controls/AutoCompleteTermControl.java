@@ -7,6 +7,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.tle.common.Check;
@@ -77,9 +78,10 @@ public class AutoCompleteTermControl extends NewAbstractWizardControl<AutoComple
 		getTermField().sendKeys(prefix);
 
 		AutoCompleteTermResults results = listWait();
-		WaitingPageObject<AutoCompleteTermControl> control = ajaxUpdateExpect(getControlElem(), getSelectionsTable());
+
+		ExpectedCondition<?> refreshed = ExpectedConditions2.ajaxUpdate(getControlElem());
 		results.selectByIndex(number);
-		control.get();
+		waiter.until(refreshed);
 		return wizardPage.get();
 	}
 

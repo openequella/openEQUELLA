@@ -10,7 +10,7 @@ public class HomePage extends AbstractPage<HomePage>
 {
 	public HomePage(PageContext context)
 	{
-		super(context, By.xpath("//div[contains(@class, 'dashboard-page')]"));
+		super(context, By.xpath("//div[contains(@class, 'dashboard')]"));
 	}
 
 	public boolean portalExists(String title)

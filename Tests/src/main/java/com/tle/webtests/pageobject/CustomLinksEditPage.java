@@ -8,6 +8,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import com.tle.webtests.pageobject.generic.component.MultiLingualEditbox;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class CustomLinksEditPage extends AbstractPage<CustomLinksEditPage>
 {
@@ -80,10 +81,22 @@ public class CustomLinksEditPage extends AbstractPage<CustomLinksEditPage>
 		urlField.sendKeys(url);
 	}
 
+	private By getCurrentIconBy()
+	{
+		return By.xpath("id('currentIcon')/div");
+	}
+
+
+	public WebElement getCurrentIcon()
+	{
+		return find(driver, getCurrentIconBy());
+	}
+
+
 	public void downloadIcon()
 	{
 		downloadButton.click();
-		waitForElement(By.xpath("id('currentIcon')/div"));
+		waiter.until(ExpectedConditions.visibilityOfElementLocated(getCurrentIconBy()));
 	}
 
 	public void cancel()
@@ -93,12 +106,10 @@ public class CustomLinksEditPage extends AbstractPage<CustomLinksEditPage>
 
 	public void uploadIcon(URL icon)
 	{
-
+		ExpectedCondition<?> iconUpdate = ExpectedConditions2.ajaxUpdate(getCurrentIcon());
 		waitForHiddenElement(fileUpload);
 		fileUpload.sendKeys(getPathFromUrl(icon));
-		uploadButton.click();
-		waitForElement(By.xpath("id('currentIcon')/div"));
-		get();
+		waiter.until(iconUpdate);
 	}
 
 	public void deleteIcon()

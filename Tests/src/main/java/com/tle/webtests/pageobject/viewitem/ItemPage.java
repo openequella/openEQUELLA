@@ -171,7 +171,7 @@ public abstract class ItemPage<T extends ItemPage<T>> extends AbstractPage<T>
 
 	public HomePage purge()
 	{
-		return clickActionAccept("Purge from EQUELLA", new HomePage(context));
+		return clickActionAccept("Purge from openEQUELLA", new HomePage(context));
 	}
 
 	public T review()

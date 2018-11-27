@@ -35,12 +35,10 @@ public class SelectAndDisplayThumbnailTest extends AbstractCleanupTest
 		UniversalControl universalControl = wizard.universalControl(2);
 		FileUniversalControlType file = universalControl.addResource(new FileUniversalControlType(universalControl));
 		file.uploadFile(Attachments.get("SelectionSessionTest - google.png"));
-		wizard.save();
 
 		universalControl = wizard.universalControl(2);
 		file = universalControl.addResource(new FileUniversalControlType(universalControl));
 		file.uploadFile(Attachments.get("SelectionSessionTest - google2.png"));
-		wizard.save();
 
 		SelectThumbnailDialog dialog = wizard.openSelectThumbnailDialog();
 		dialog.selectDefault();

@@ -13,7 +13,7 @@ public class HtmlPortalSection extends AbstractPortalSection<HtmlPortalSection>
 
 	public String portalText()
 	{
-		return boxContent.findElement(By.xpath("div/p")).getText();
+		return getBoxContent().findElement(By.xpath("div/p")).getText();
 	}
 
 }

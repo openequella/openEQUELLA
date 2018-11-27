@@ -13,6 +13,6 @@ public class MyResourcesPortalSection extends AbstractPortalSection<MyResourcesP
 
 	public void clickLink(String title)
 	{
-		boxContent.findElement(By.xpath("div/a[text()=" + quoteXPath(title) + "]")).click();
+		getBoxContent().findElement(By.xpath("div/a[text()=" + quoteXPath(title) + "]")).click();
 	}
 }
