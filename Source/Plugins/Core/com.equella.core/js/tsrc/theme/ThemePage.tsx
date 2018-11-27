@@ -27,6 +27,10 @@ import Slide from "@material-ui/core/Slide/Slide";
 declare var themeSettings: any;
 declare var isCustomLogo: boolean;
 
+/**
+ * @author Samantha Fisher
+ */
+
 const styles = createStyles({
   card: {
     marginTop: "16px",
@@ -89,7 +93,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       menu: "#ffffff",
       menuText: "#000000",
       menuIcon: "#000000",
-      text: "#000000",
+      text: "#000000"
     });
   };
 
@@ -164,7 +168,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
   };
 
   resetLogo = () => {
-    axios.delete(`${Config.baseUrl}api/themeresource/resetlogo/`).then(function () {
+    axios.delete(`${Config.baseUrl}api/themeresource/resetlogo/`).then( () => {
       window.location.reload();
     });
   };
@@ -179,7 +183,6 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     } else {
       this.setState({noFileError: true});
     }
-
   };
 
   handleInvalidFileErrorClose = () => {
@@ -268,6 +271,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
           <Divider light={true}/>
 
           {/*LOGO SETTINGS*/}
+
           <CardContent className={this.props.classes.cardContent}>
             <Typography variant={"display1"}>
               Logo Settings

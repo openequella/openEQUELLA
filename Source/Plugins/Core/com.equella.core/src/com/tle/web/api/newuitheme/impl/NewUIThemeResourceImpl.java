@@ -22,6 +22,9 @@ import com.tle.core.services.FileSystemService;
 import com.tle.web.api.newuitheme.NewUIThemeResource;
 import com.tle.core.settings.service.ConfigurationService;
 
+/**
+ * @author Samantha Fisher
+ */
 
 @Bind(NewUIThemeResource.class)
 @Singleton
@@ -36,8 +39,10 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 
 	private CustomisationFile customisationFile;
 	private NewUITheme theme;
-	private static final String THEME_KEY = "Theme";
 	private ObjectMapper objectMapper = new ObjectMapper();
+
+	private static final String THEME_KEY = "Theme";
+	private static final String LOGO_FILENAME = "newLogo.png";
 
 	private void setTheme(String themeString) {
 		configurationService.setProperty(THEME_KEY, themeString);
@@ -91,7 +96,6 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	public Response updateLogo(File logoFile) {
 		if (!tleAclManager.filterNonGrantedPrivileges(Collections.singleton("EDIT_SYSTEM_SETTINGS"), false).isEmpty()) {
 			customisationFile = new CustomisationFile();
-
 			//read in image file
 			BufferedImage bImage = null;
 			try {
@@ -103,7 +107,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 			BufferedImage resizedImage = new BufferedImage(230, 36, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g2d = (Graphics2D) resizedImage.getGraphics();
 			if (bImage == null) {
-				return Response.notModified().entity("Invalid logo image").build();
+				return Response.notModified().build();
 			} else {
 				g2d.drawImage(bImage, 0, 0, resizedImage.getWidth() - 1, resizedImage.getHeight() - 1, 0, 0,
 					bImage.getWidth() - 1, bImage.getHeight() - 1, null);
@@ -121,7 +125,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 			InputStream fis = new ByteArrayInputStream(os.toByteArray());
 
 			try {
-				fsService.write(customisationFile, "newLogo.png", fis, false);
+				fsService.write(customisationFile, LOGO_FILENAME, fis, false);
 
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -137,7 +141,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	@Path("/resetlogo")
 	public Response resetLogo() {
 		customisationFile = new CustomisationFile();
-		if (fsService.removeFile(customisationFile, "newLogo.png")) {
+		if (fsService.removeFile(customisationFile, LOGO_FILENAME)) {
 			return Response.ok("{}").build();
 		} else {
 			return Response.notModified().build();
@@ -150,8 +154,8 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	public Response retrieveLogo() {
 		customisationFile = new CustomisationFile();
 		try {
-			if (fsService.fileExists(customisationFile, "newLogo.png")) {
-				return Response.ok(fsService.read(customisationFile, "newLogo.png"), "image/png").build();
+			if (fsService.fileExists(customisationFile, LOGO_FILENAME)) {
+				return Response.ok(fsService.read(customisationFile, LOGO_FILENAME), "image/png").build();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -164,7 +168,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	@Produces("application/javascript")
 	public Response customLogoExists() {
 		customisationFile = new CustomisationFile();
-		if (fsService.fileExists(customisationFile, "newLogo.png")) {
+		if (fsService.fileExists(customisationFile, LOGO_FILENAME)) {
 			return Response.ok().entity("var isCustomLogo = true").build();
 		} else {
 			return Response.ok().entity("var isCustomLogo = false").build();
