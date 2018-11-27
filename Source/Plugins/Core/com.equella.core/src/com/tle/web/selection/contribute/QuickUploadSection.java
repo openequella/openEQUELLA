@@ -170,7 +170,7 @@ public class QuickUploadSection extends AbstractPrototypeSection<QuickUploadMode
 				if( selectAttachmentHandler != null )
 				{
 					selectAttachmentHandler.handleAttachmentSelection(info, attInfo.getFirst(), attInfo.getSecond(),
-						null);
+						null, false);
 					val.setReturnFromSession(true);
 				}
 			}
@@ -218,11 +218,10 @@ public class QuickUploadSection extends AbstractPrototypeSection<QuickUploadMode
 	}
 
 	@Override
-	public void handleAttachmentSelection(SectionInfo info, ItemId itemId, IAttachment attachment, String extensionType)
+	public void handleAttachmentSelection(SectionInfo info, ItemId itemId, IAttachment attachment, String extensionType, boolean canForward)
 	{
 		selectionService.addSelectedResource(info,
-			selectionService.createAttachmentSelection(info, itemId, attachment, null, null), false);
-		selectionService.returnFromSession(info);
+			selectionService.createAttachmentSelection(info, itemId, attachment, null, null), canForward);
 	}
 
 	@Override

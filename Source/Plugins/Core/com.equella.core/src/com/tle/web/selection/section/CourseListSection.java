@@ -387,7 +387,7 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
 	}
 
 	@Override
-	public void handleAttachmentSelection(SectionInfo info, ItemId itemId, IAttachment attachment, String extensionType)
+	public void handleAttachmentSelection(SectionInfo info, ItemId itemId, IAttachment attachment, String extensionType, boolean canForward)
 	{
 		selectAttachment(info, attachment.getUuid(), itemId, extensionType);
 	}

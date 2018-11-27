@@ -22,7 +22,10 @@ function _bind(event, forId, handler)
 {
 	if (event == 'beforeunload')
 	{
-		window.onbeforeunload = handler;
+	  if (!window.EQ)
+	  {
+		  window.onbeforeunload = handler;
+		}
 		return;
 
 	}

@@ -53,7 +53,7 @@ object CommentsDisplay {
       else {
         (true, true, false, NameDisplayType.BOTH)
       }
-      CommentSummarySection(sectionTitle, canView, canCreate, canDelete, whichName.toString,
+      CommentSummarySection(sectionTitle, canView, canCreate, canDelete, whichName.toString.toLowerCase(),
         !displayIdentity, hideUsername, allowAnonymous)
     }
 

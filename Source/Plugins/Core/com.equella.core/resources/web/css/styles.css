@@ -60,7 +60,7 @@ ul {
 }
 
 
-ul.checklist li 
+ul.checklist li
 {
     margin: 0 7px 5px 7px;
 }
@@ -1144,19 +1144,19 @@ html.fullscreen-toolbar .navbar.navbar-fixed-top .navbar-inner {
 	opacity: 1;
 }
 
-#selection-header .navbar-equella-selection .navbar.navbar-fixed-top.navbar-inverse .centered-pills { 
-	text-align:center; 
+#selection-header .navbar-equella-selection .navbar.navbar-fixed-top.navbar-inverse .centered-pills {
+	text-align:center;
 	width:100%;
 	float: left;
 }
 
-#selection-header .navbar-equella-selection .navbar.navbar-fixed-top.navbar-inverse .centered-pills ul.nav.nav-pills { 
+#selection-header .navbar-equella-selection .navbar.navbar-fixed-top.navbar-inverse .centered-pills ul.nav.nav-pills {
 	display:inline-block;
-	float:none; 
+	float:none;
 }
 
 #selection-header .navbar-equella-selection .navbar.navbar-fixed-top.navbar-inverse .centered-pills ul.nav.nav-pills li {
-	display:inline; 
+	display:inline;
 }
 
 #selection-header .navbar-equella-selection .navbar.navbar-fixed-top.navbar-inverse .centered-pills ul.nav.nav-pills li a {
@@ -1365,7 +1365,7 @@ Expandable button
 	}
 }
 
-.button-expandable:hover 
+.button-expandable:hover
 {
 	width: auto;
 	/* Transition */
@@ -1480,6 +1480,10 @@ Expandable button
 .autocomplete-result-description {
     margin-top: 8px;
     font-style: italic;
+}
+
+select {
+  width: 100%;
 }
 
 .equella-dropdown {

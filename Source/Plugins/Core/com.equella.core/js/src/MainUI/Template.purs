@@ -19,6 +19,7 @@ import Data.Symbol (SProxy(..))
 import Data.TSCompat (OneOf, StringConst)
 import Data.TSCompat.Class (class IsTSEq, asTS)
 import Data.Traversable (traverse)
+import Debug.Trace (spy)
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer)
 import Effect (Effect)
@@ -396,7 +397,6 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       maybeEff (oldProps.title /= title) $ setWindowTitle title
       maybeEff (oldfsm /= fullscreenMode) $ setHtmlClasses oldfsm fullscreenMode
       maybeEff (oldProps.errorResponse /= p.errorResponse) $ do 
-        log "Error changed!"
         R.setState this {errorOpen: true}
     , componentWillUnmount: setUnloadListener false
   }
