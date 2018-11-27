@@ -35,7 +35,7 @@ import com.tle.web.sections._
 import com.tle.web.sections.ajax.{AjaxGenerator, AjaxRenderContext}
 import com.tle.web.sections.equella.js.StandardExpressions
 import com.tle.web.sections.events._
-import com.tle.web.sections.events.js.BookmarkAndModify
+import com.tle.web.sections.events.js.{BookmarkAndModify, JSHandler}
 import com.tle.web.sections.generic.InfoBookmark
 import com.tle.web.sections.header.{InfoFormAction, MutableHeaderHelper}
 import com.tle.web.sections.jquery.libraries.JQueryCore
@@ -79,6 +79,7 @@ case class LegacyContent
  fullscreenMode: String,
  hideAppBar: Boolean,
  userUpdated: Boolean,
+ preventUnload: Boolean,
  noForm: Boolean)
 
 case class ItemCounts(tasks: Int, notifications: Int)
@@ -375,10 +376,11 @@ class LegacyContentApi {
       val menuMode = decs.getMenuMode.toString
       val fullscreenMode = decs.isFullscreen.toString
       val hideAppBar = !(decs.isBanner || !decs.isMenuHidden || decs.isContent)
+      val preventUnload = context.getBody.getHandler(JSHandler.EVENT_BEFOREUNLOAD) != null
       info.getRequest.setAttribute(LegacyContentKey,
         LegacyContent(html, cssFiles, jsFiles, scripts.mkString("\n"),
           getBookmarkState(info, new BookmarkEvent(null, true, info)), title,
-          menuMode, fullscreenMode, hideAppBar, userChanged(info.getRequest), decs.isExcludeForm
+          menuMode, fullscreenMode, hideAppBar, userChanged(info.getRequest), preventUnload, decs.isExcludeForm
         )
       )
     }

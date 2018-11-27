@@ -25,5 +25,5 @@ import com.tle.web.sections.SectionInfo;
  */
 public interface SelectAttachmentHandler
 {
-	void handleAttachmentSelection(SectionInfo info, ItemId itemId, IAttachment attachment, String extensionType);
+	void handleAttachmentSelection(SectionInfo info, ItemId itemId, IAttachment attachment, String extensionType, boolean canForward);
 }

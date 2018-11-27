@@ -309,7 +309,7 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 				vitem, null);
 			if( selectAttachmentHandler != null )
 			{
-				selectAttachmentHandler.handleAttachmentSelection(info, itemId, attachment, extensionType);
+				selectAttachmentHandler.handleAttachmentSelection(info, itemId, attachment, extensionType, true);
 			}
 		}
 	}
@@ -328,7 +328,7 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 					.getSelectAttachmentHandler(info, vitem, null);
 				if( selectAttachmentHandler != null )
 				{
-					selectAttachmentHandler.handleAttachmentSelection(info, itemId, attachment, extensionType);
+					selectAttachmentHandler.handleAttachmentSelection(info, itemId, attachment, extensionType, true);
 				}
 			}
 		}
@@ -363,10 +363,10 @@ public abstract class AbstractAttachmentsSection<I extends IItem<?>, M extends A
 	}
 
 	@Override
-	public void handleAttachmentSelection(SectionInfo info, ItemId itemId, IAttachment attachment, String extensionType)
+	public void handleAttachmentSelection(SectionInfo info, ItemId itemId, IAttachment attachment, String extensionType, boolean canForward)
 	{
 		selectionService.addSelectedResource(info,
-			selectionService.createAttachmentSelection(info, itemId, attachment, null, extensionType), true);
+			selectionService.createAttachmentSelection(info, itemId, attachment, null, extensionType), canForward);
 	}
 
 	@Override

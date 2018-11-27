@@ -19,7 +19,8 @@ type LegacyContentR = {
   fullscreenMode :: String, 
   menuMode :: String, 
   hideAppBar :: Boolean, 
-  noForm :: Boolean
+  noForm :: Boolean,
+  preventUnload :: Boolean
 } 
 
 data ContentResponse = Redirect String | ChangeRoute String Boolean | LegacyContent LegacyContentR Boolean | Callback (Effect Unit)
@@ -48,6 +49,8 @@ instance decodeLC :: DecodeJson ContentResponse where
           hideAppBar <- o .? "hideAppBar"
           userUpdated <- o .? "userUpdated"
           noForm <- o .? "noForm"
-          pure $ LegacyContent {html, state, css, js, script, title, fullscreenMode, menuMode, hideAppBar, noForm} userUpdated
+          preventUnload <- o .? "preventUnload"
+          pure $ LegacyContent {html, state, css, js, script, title, fullscreenMode, menuMode, 
+            hideAppBar, preventUnload, noForm} userUpdated
     decodeChange <|> decodeRedirect <|> decodeContent
 

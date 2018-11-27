@@ -43,6 +43,7 @@ import com.tle.common.Utils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.activation.service.CourseInfoService;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.integration.IntegrationLoggingService;
 import com.tle.core.integration.IntegrationSelection;
@@ -527,8 +528,7 @@ public class IntegrationServiceImpl extends AbstractSectionFilter implements Int
 	{
 		if( aclService.filterNonGrantedPrivileges("INTEGRATION_SELECTION_SESSION").isEmpty() )
 		{
-			throw new AccessDeniedException(
-				CurrentLocale.get("com.tle.web.integration.error.selectionsession.accessdenied"));
+			throw new AccessDeniedException(CoreStrings.text("error.selectionsession.accessdenied"));
 		}
 	}
 }
