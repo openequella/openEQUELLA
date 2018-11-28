@@ -17,7 +17,6 @@
 package com.tle.web.api.newuitheme.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -72,7 +71,6 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	private String themeToString(NewUITheme theme) throws JsonProcessingException {
 		String themeToString = "";
 		themeToString = objectMapperService.createObjectMapper().writeValueAsString(theme);
-
 		return themeToString;
 	}
 
@@ -80,12 +78,12 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	@Path("theme.js")
 	@Produces("application/javascript")
 	public Response retrieveThemeInfo() throws IOException {
+		String themeString = configurationService.getProperty(THEME_KEY);
 		//set default theme if none exists in database
-		if (configurationService.getProperty(THEME_KEY) == null) {
+		if (themeString == null) {
 			setTheme(new NewUITheme());
 		}
-		NewUITheme theme = objectMapperService.createObjectMapper().readValue(configurationService.getProperty(THEME_KEY), NewUITheme.class);
-		return Response.ok("var themeSettings = " + themeToString(theme)).build();
+		return Response.ok("var themeSettings = " + themeString).build();
 	}
 
 	@PUT
