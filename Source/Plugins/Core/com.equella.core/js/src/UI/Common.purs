@@ -36,41 +36,32 @@ foreign import themeSettings :: {primaryColor :: String, secondaryColor :: Strin
 type ClickableHref = {href::String, onClick :: EffectFn1 SyntheticMouseEvent Unit}
 
 ourTheme :: Theme
-ourTheme =
-  createMuiTheme  {
-                    palette:
-                    {
-                      primary:
-                      {
-                        main: themeSettings.primaryColor
-                      },
-                      secondary:
-                      {
-                        main: themeSettings.secondaryColor
-                      },
-                      background:
-                      {
-                        default: themeSettings.backgroundColor,
-                        paper: themeSettings.menuItemColor
-                      },
-                      action:
-                      {
-                        active: themeSettings.menuItemIconColor
-                      },
-                      text:
-                      {
-                        secondary: themeSettings.menuTextColor
-                      }
-                    },
-                    typography:
-                    {
-                      fontSize: themeSettings.fontSize,
-                      subheading:
-                      {
-                        color: themeSettings.menuItemTextColor
-                      }
-                    }
-                  }
+ourTheme = createMuiTheme {
+  palette: {
+    primary: {
+      main: themeSettings.primaryColor
+    },
+    secondary: {
+      main: themeSettings.secondaryColor
+    },
+    background: {
+      default: themeSettings.backgroundColor,
+      paper: themeSettings.menuItemColor
+    },
+    action: {
+      active: themeSettings.menuItemIconColor
+    },
+    text: {
+      secondary: themeSettings.menuTextColor
+    }
+  },
+  typography: {
+    fontSize: themeSettings.fontSize,
+    subheading: {
+      color: themeSettings.menuItemTextColor
+    }
+  }
+}
 rootTag :: String -> Array ReactElement -> ReactElement
 rootTag rootClass content = 
   muiPickersUtilsProvider luxonUtils [
