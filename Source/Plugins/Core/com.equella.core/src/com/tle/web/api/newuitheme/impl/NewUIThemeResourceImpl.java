@@ -33,6 +33,7 @@ import javax.ws.rs.core.Response;
 
 import com.tle.core.filesystem.CustomisationFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
 import com.tle.exceptions.PrivilegeRequiredException;
@@ -53,10 +54,8 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	private TLEAclManager tleAclManager;
 	@Inject
 	FileSystemService fsService;
-
-	private CustomisationFile customisationFile;
-	private NewUITheme theme;
-	private ObjectMapper objectMapper = new ObjectMapper();
+	@Inject
+	ObjectMapperService objectMapperService;
 
 	private static final String THEME_KEY = "Theme";
 	private static final String LOGO_FILENAME = "newLogo.png";
@@ -72,7 +71,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 
 	private String themeToString(NewUITheme theme) throws JsonProcessingException {
 		String themeToString = "";
-		themeToString = objectMapper.writeValueAsString(theme);
+		themeToString = objectMapperService.createObjectMapper().writeValueAsString(theme);
 
 		return themeToString;
 	}
@@ -83,10 +82,9 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	public Response retrieveThemeInfo() throws IOException {
 		//set default theme if none exists in database
 		if (configurationService.getProperty(THEME_KEY) == null) {
-			System.out.println("No theme information found in database. Setting default theme...");
 			setTheme(new NewUITheme());
 		}
-		theme = objectMapper.readValue(configurationService.getProperty(THEME_KEY), NewUITheme.class);
+		NewUITheme theme = objectMapperService.createObjectMapper().readValue(configurationService.getProperty(THEME_KEY), NewUITheme.class);
 		return Response.ok("var themeSettings = " + themeToString(theme)).build();
 	}
 
@@ -106,7 +104,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 		if (tleAclManager.filterNonGrantedPrivileges(Collections.singleton(PERMISSION_KEY), false).isEmpty()) {
 			throw new PrivilegeRequiredException(PERMISSION_KEY);
 		}
-		customisationFile = new CustomisationFile();
+		CustomisationFile customisationFile = new CustomisationFile();
 		//read in image file
 		BufferedImage bImage = null;
 		bImage = ImageIO.read(logoFile);
@@ -137,7 +135,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 		if (tleAclManager.filterNonGrantedPrivileges(Collections.singleton(PERMISSION_KEY), false).isEmpty()) {
 			throw new PrivilegeRequiredException(PERMISSION_KEY);
 		}
-		customisationFile = new CustomisationFile();
+		CustomisationFile customisationFile = new CustomisationFile();
 		if (fsService.removeFile(customisationFile, LOGO_FILENAME)) {
 			return Response.accepted().build();
 		} else {
@@ -149,7 +147,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	@Path("newLogo.png")
 	@Produces("image/png")
 	public Response retrieveLogo() throws IOException {
-		customisationFile = new CustomisationFile();
+		CustomisationFile customisationFile = new CustomisationFile();
 		if (fsService.fileExists(customisationFile, LOGO_FILENAME)) {
 			return Response.ok(fsService.read(customisationFile, LOGO_FILENAME), "image/png").build();
 		}
@@ -160,7 +158,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	@Path("customlogo.js")
 	@Produces("application/javascript")
 	public Response customLogoExists() {
-		customisationFile = new CustomisationFile();
+		CustomisationFile customisationFile = new CustomisationFile();
 		if (fsService.fileExists(customisationFile, LOGO_FILENAME)) {
 			return Response.ok().entity("var isCustomLogo = true").build();
 		} else {

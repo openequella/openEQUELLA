@@ -199,7 +199,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
         }
       )
       .catch((error) => {
-        this.setState({permissionError: error.response.status==403});
+        this.setState({permissionError: error.response.status == 403});
       });
   };
 
@@ -209,7 +209,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
         window.location.reload();
       })
       .catch((error) => {
-        this.setState({permissionError: error.response.status==403});
+        this.setState({permissionError: error.response.status == 403});
       });
   };
 
