@@ -16,7 +16,7 @@ import {Config} from "../config";
 import {prepLangStrings} from "../util/langstrings";
 import {commonString} from '../util/commonstrings';
 
-interface IThemeSettings{
+interface IThemeSettings {
   primaryColor: string,
   secondaryColor: string,
   backgroundColor: string,
@@ -24,7 +24,9 @@ interface IThemeSettings{
   menuItemTextColor: string,
   menuItemIconColor: string,
   menuTextColor: string,
-  fontSize: number}
+  fontSize: number
+}
+
 declare const themeSettings: IThemeSettings;
 declare const isCustomLogo: boolean;
 
@@ -52,7 +54,9 @@ export const strings = prepLangStrings("newuisettings",
     errors: {
       invalidimagetitle: "Image Processing Error",
       invalidimagedescription: "Invalid image file. Please check the integrity of your file and try again.",
-      nofiledescription: "Please select an image file to upload."
+      nofiledescription: "Please select an image file to upload.",
+      permissiontitle: "Permission Error",
+      permissiondescription: "You do not have permission to edit the settings."
     }
   }
 );
@@ -90,7 +94,7 @@ interface ThemePageProps {
   bridge: Bridge;
 }
 
-function transition (props: any){
+function transition(props: any) {
   return <Slide direction="up" {...props} />;
 }
 
@@ -108,7 +112,8 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     customLogo: isCustomLogo,
     fileName: "",
     noFileError: false,
-    invalidFileError: false
+    invalidFileError: false,
+    permissionError: false
   };
 
   handleDefaultButton = () => {
@@ -163,18 +168,18 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     this.setState({text: color});
   };
 
-  handleImageChange = (e:HTMLInputElement) => {
+  handleImageChange = (e: HTMLInputElement) => {
     let reader = new FileReader();
-  if(e.files!=null){
-    let file = e.files[0];
-    reader.readAsDataURL(file);
-    reader.onloadend = () => {
-      this.setState({
-        logoToUpload: file,
-        fileName: file.name
-      });
-    };
-  }
+    if (e.files != null) {
+      let file = e.files[0];
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        this.setState({
+          logoToUpload: file,
+          fileName: file.name
+        });
+      };
+    }
   };
 
   submitTheme = () => {
@@ -192,21 +197,37 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       .then(() => {
           window.location.reload();
         }
-      );
+      )
+      .catch((error) => {
+        this.setState({permissionError: error.response.status==403});
+      });
   };
 
   resetLogo = () => {
-    axios.delete(`${Config.baseUrl}api/themeresource/resetlogo/`).then(() => {
-      window.location.reload();
-    });
+    axios.delete(`${Config.baseUrl}api/themeresource/resetlogo/`)
+      .then(() => {
+        window.location.reload();
+      })
+      .catch((error) => {
+        this.setState({permissionError: error.response.status==403});
+      });
   };
 
   submitLogo = () => {
     if (this.state.logoToUpload != "") {
       axios.put(`${Config.baseUrl}api/themeresource/updatelogo/`, this.state.logoToUpload).then(() => {
         window.location.reload();
-      }).catch(() => {
-        this.setState({invalidFileError: true})
+      }).catch((error) => {
+        switch (error.response.status) {
+          case 400:
+            this.setState({invalidFileError: true});
+            break;
+          case 403:
+            this.setState({permissionError: true});
+            break;
+          default:
+            break;
+        }
       });
     } else {
       this.setState({noFileError: true});
@@ -219,6 +240,9 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
 
   handleNoFileErrorClose = () => {
     this.setState({noFileError: false});
+  };
+  handlePermissionErrorClose = () => {
+    this.setState({permissionError: false});
   };
 
   render() {
@@ -314,7 +338,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
                 className={classes.input}
                 color={"textSecondary"}
                 id="contained-button-file"
-                onChange={e=>this.handleImageChange(e.target)}
+                onChange={e => this.handleImageChange(e.target)}
                 type="file"
               />
               <label htmlFor="contained-button-file">
@@ -343,7 +367,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
               </Grid>
               <Grid item>
                 <img
-                  src={this.state.customLogo ? `${Config.baseUrl}api/themeresource/newLogo.png` : `${Config.baseUrl}p/r/6.7.r88/com.equella.core/images/new-equella-logo.png`}/>
+                  src={this.state.customLogo ? `${Config.baseUrl}api/themeresource/newLogo.png` : `${Config.baseUrl}p/r/logopreview/com.equella.core/images/new-equella-logo.png`}/>
               </Grid>
             </Grid>
           </CardContent>
@@ -384,6 +408,29 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
           </DialogContent>
           <DialogActions>
             <Button onClick={this.handleInvalidFileErrorClose} color="primary">
+              {commonString.action.dismiss}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={this.state.permissionError}
+          TransitionComponent={transition}
+          keepMounted
+          onClose={this.handlePermissionErrorClose}
+        >
+          <DialogTitle disableTypography id="alert-dialog-slide-title" color="primary">
+            <Typography variant={"display1"} color={"textSecondary"}>
+              {strings.errors.permissiontitle}
+            </Typography>
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-slide-description">
+              {strings.errors.permissiondescription}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handlePermissionErrorClose} color="primary">
               {commonString.action.dismiss}
             </Button>
           </DialogActions>

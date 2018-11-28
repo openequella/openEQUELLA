@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiParam;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * @author Samantha Fisher
@@ -35,13 +36,13 @@ public interface NewUIThemeResource {
 	@Path("theme.js")
 	@ApiParam("Grabs the current institution's theme settings from the database.")
 	@Produces("application/javascript")
-	Response retrieveThemeInfo();
+	Response retrieveThemeInfo() throws IOException;
 
 	@GET
 	@Path("newLogo.png")
 	@ApiParam("Grabs the current institution's logo from the filestore.")
 	@Produces("image/png")
-	Response retrieveLogo();
+	Response retrieveLogo() throws IOException;
 
 	@GET
 	@Path("customlogo.js")
@@ -57,7 +58,7 @@ public interface NewUIThemeResource {
 	@PUT
 	@Path("updatelogo")
 	@ApiParam("Takes an image file, resizes it to become a logo and saves it to the filestore.")
-	Response updateLogo(File logo);
+	Response updateLogo(File logo) throws IOException;
 
 	@DELETE
 	@Path("resetlogo")

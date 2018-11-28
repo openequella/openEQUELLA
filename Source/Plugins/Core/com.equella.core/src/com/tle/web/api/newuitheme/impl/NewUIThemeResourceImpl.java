@@ -35,6 +35,7 @@ import com.tle.core.filesystem.CustomisationFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
+import com.tle.exceptions.PrivilegeRequiredException;
 import com.tle.web.api.newuitheme.NewUIThemeResource;
 import com.tle.core.settings.service.ConfigurationService;
 
@@ -59,106 +60,86 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 
 	private static final String THEME_KEY = "Theme";
 	private static final String LOGO_FILENAME = "newLogo.png";
+	private static final String PERMISSION_KEY = "EDIT_SYSTEM_SETTINGS";
 
 	private void setTheme(String themeString) {
 		configurationService.setProperty(THEME_KEY, themeString);
 	}
 
-	private void setTheme(NewUITheme theme) {
+	private void setTheme(NewUITheme theme) throws JsonProcessingException {
 		setTheme(themeToString(theme));
 	}
 
-	private String themeToString(NewUITheme theme) {
+	private String themeToString(NewUITheme theme) throws JsonProcessingException {
 		String themeToString = "";
-		try {
-			themeToString = objectMapper.writeValueAsString(theme);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
+		themeToString = objectMapper.writeValueAsString(theme);
+
 		return themeToString;
 	}
 
 	@GET
 	@Path("theme.js")
 	@Produces("application/javascript")
-	public Response retrieveThemeInfo() {
+	public Response retrieveThemeInfo() throws IOException {
 		//set default theme if none exists in database
 		if (configurationService.getProperty(THEME_KEY) == null) {
 			System.out.println("No theme information found in database. Setting default theme...");
 			setTheme(new NewUITheme());
 		}
-
-		try {
-			theme = objectMapper.readValue(configurationService.getProperty(THEME_KEY), NewUITheme.class);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		theme = objectMapper.readValue(configurationService.getProperty(THEME_KEY), NewUITheme.class);
 		return Response.ok("var themeSettings = " + themeToString(theme)).build();
 	}
 
 	@PUT
 	@Path("/update")
 	public Response updateThemeInfo(String themeString) {
-		if (!tleAclManager.filterNonGrantedPrivileges(Collections.singleton("EDIT_SYSTEM_SETTINGS"), false).isEmpty()) {
-			setTheme(themeString);
-			return Response.ok("{}").build();
-		} else {
-			return Response.status(403).entity("{\"reason\":\"Current user not authorized to modify theme settings\"}").build();
+		if (tleAclManager.filterNonGrantedPrivileges(Collections.singleton(PERMISSION_KEY), false).isEmpty()) {
+			throw new PrivilegeRequiredException(PERMISSION_KEY);
 		}
+		setTheme(themeString);
+		return Response.accepted().build();
 	}
 
 	@PUT
 	@Path("/updatelogo")
-	public Response updateLogo(File logoFile) {
-		if (!tleAclManager.filterNonGrantedPrivileges(Collections.singleton("EDIT_SYSTEM_SETTINGS"), false).isEmpty()) {
-			customisationFile = new CustomisationFile();
-			//read in image file
-			BufferedImage bImage = null;
-			try {
-				bImage = ImageIO.read(logoFile);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			//resize image to logo size (230px x 36px)
-			BufferedImage resizedImage = new BufferedImage(230, 36, BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g2d = (Graphics2D) resizedImage.getGraphics();
-			if (bImage == null) {
-				return Response.notModified().build();
-			} else {
-				g2d.drawImage(bImage, 0, 0, resizedImage.getWidth() - 1, resizedImage.getHeight() - 1, 0, 0,
-					bImage.getWidth() - 1, bImage.getHeight() - 1, null);
-				g2d.dispose();
-			}
-			RenderedImage rImage = resizedImage;
-			//write resized image to image file in the institution's filestore
-			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			try {
-				ImageIO.write(rImage, "png", os);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			InputStream fis = new ByteArrayInputStream(os.toByteArray());
-
-			try {
-				fsService.write(customisationFile, LOGO_FILENAME, fis, false);
-
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			return Response.ok("{}").build();
-		} else {
-			return Response.status(403).entity("{\"reason\":\"Current user not authorized to modify logo settings\"}").build();
+	public Response updateLogo(File logoFile) throws IOException {
+		if (tleAclManager.filterNonGrantedPrivileges(Collections.singleton(PERMISSION_KEY), false).isEmpty()) {
+			throw new PrivilegeRequiredException(PERMISSION_KEY);
 		}
+		customisationFile = new CustomisationFile();
+		//read in image file
+		BufferedImage bImage = null;
+		bImage = ImageIO.read(logoFile);
+		if (bImage == null) {
+			throw new BadRequestException("Invalid image file");
+		}
+
+		//resize image to logo size (230px x 36px)
+		BufferedImage resizedImage = new BufferedImage(230, 36, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2d = (Graphics2D) resizedImage.getGraphics();
+		g2d.drawImage(bImage, 0, 0, resizedImage.getWidth() - 1, resizedImage.getHeight() - 1, 0, 0,
+			bImage.getWidth() - 1, bImage.getHeight() - 1, null);
+		g2d.dispose();
+		RenderedImage rImage = resizedImage;
+
+		//write resized image to image file in the institution's filestore
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		ImageIO.write(rImage, "png", os);
+		InputStream fis = new ByteArrayInputStream(os.toByteArray());
+		fsService.write(customisationFile, LOGO_FILENAME, fis, false);
+
+		return Response.accepted().build();
 	}
 
 	@DELETE
 	@Path("/resetlogo")
 	public Response resetLogo() {
+		if (tleAclManager.filterNonGrantedPrivileges(Collections.singleton(PERMISSION_KEY), false).isEmpty()) {
+			throw new PrivilegeRequiredException(PERMISSION_KEY);
+		}
 		customisationFile = new CustomisationFile();
 		if (fsService.removeFile(customisationFile, LOGO_FILENAME)) {
-			return Response.ok("{}").build();
+			return Response.accepted().build();
 		} else {
 			return Response.notModified().build();
 		}
@@ -167,14 +148,10 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	@GET
 	@Path("newLogo.png")
 	@Produces("image/png")
-	public Response retrieveLogo() {
+	public Response retrieveLogo() throws IOException {
 		customisationFile = new CustomisationFile();
-		try {
-			if (fsService.fileExists(customisationFile, LOGO_FILENAME)) {
-				return Response.ok(fsService.read(customisationFile, LOGO_FILENAME), "image/png").build();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (fsService.fileExists(customisationFile, LOGO_FILENAME)) {
+			return Response.ok(fsService.read(customisationFile, LOGO_FILENAME), "image/png").build();
 		}
 		return Response.status(404).build();
 	}
