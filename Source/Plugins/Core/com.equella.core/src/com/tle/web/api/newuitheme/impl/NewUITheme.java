@@ -16,6 +16,11 @@
 
 package com.tle.web.api.newuitheme.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tle.core.jackson.ObjectMapperService;
+
+import javax.inject.Inject;
+
 public class NewUITheme {
 	private String primaryColor = "#2196f3";
 	private String secondaryColor = "#ff9800";
@@ -25,6 +30,8 @@ public class NewUITheme {
 	private String menuItemIconColor = "#000000";
 	private String menuTextColor = "#000000";
 	private int fontSize = 14;
+	@Inject
+	ObjectMapperService objectMapperService;
 
 	public String getPrimaryColor() {
 		return primaryColor;
@@ -88,5 +95,11 @@ public class NewUITheme {
 
 	public void setMenuTextColor(String menuTextColor) {
 		this.menuTextColor = menuTextColor;
+	}
+
+	public String themeToString(NewUITheme theme) throws JsonProcessingException {
+		String themeToString = "";
+		themeToString = objectMapperService.createObjectMapper().writeValueAsString(theme);
+		return themeToString;
 	}
 }

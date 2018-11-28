@@ -53,8 +53,6 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	private TLEAclManager tleAclManager;
 	@Inject
 	FileSystemService fsService;
-	@Inject
-	ObjectMapperService objectMapperService;
 
 	private static final String THEME_KEY = "Theme";
 	private static final String LOGO_FILENAME = "newLogo.png";
@@ -65,13 +63,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	}
 
 	private void setTheme(NewUITheme theme) throws JsonProcessingException {
-		setTheme(themeToString(theme));
-	}
-
-	private String themeToString(NewUITheme theme) throws JsonProcessingException {
-		String themeToString = "";
-		themeToString = objectMapperService.createObjectMapper().writeValueAsString(theme);
-		return themeToString;
+		setTheme(theme.themeToString(theme));
 	}
 
 	@GET
