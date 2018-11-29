@@ -304,6 +304,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       </div>
     )
   };
+
   LogoSettings = () => {
     const {classes} = this.props;
     return (
@@ -373,6 +374,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       </div>
     )
   };
+
   ErrorMessages = () => {
     return (
       <div>
@@ -424,6 +426,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       </div>
     );
   };
+
   Notifications = () => {
     return (
       <div>
@@ -450,14 +453,15 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     const {classes} = this.props;
     return (
       <Template title={strings.title}>
+
         <Card raised className={classes.card}>
           <this.ColorSchemeSettings/>
           <Divider light={true}/>
           <this.LogoSettings/>
         </Card>
-
         <this.ErrorMessages/>
         <this.Notifications/>
+
       </Template>
     );
   }
