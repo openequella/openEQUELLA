@@ -49,7 +49,6 @@ interface MessageInfoProps
     open: boolean;
     onClose: () => void;
     title: string;
-    code?: number;
     variant: 'success'|'warning'|'error'|'info';
 }
 
