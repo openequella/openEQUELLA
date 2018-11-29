@@ -225,7 +225,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
         toMaybe props.errorResponse <#> \{code, error, description} -> messageInfo {
                               open: state.errorOpen, 
                               onClose: d CloseError, 
-                              title: fromMaybe error description, 
+                              title: fromMaybe error $ toMaybe description, 
                               code: toNullable $ Just code, 
                               variant: String.error 
                             }

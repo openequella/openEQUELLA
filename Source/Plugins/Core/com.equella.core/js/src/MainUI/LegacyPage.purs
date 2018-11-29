@@ -6,7 +6,7 @@ import Control.Monad.Trans.Class (lift)
 import Data.Array (catMaybes)
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..), isJust, maybe)
-import Data.Nullable (toNullable)
+import Data.Nullable (toMaybe, toNullable)
 import Data.String (joinWith)
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer, saveRef, withRef)
@@ -118,7 +118,7 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
             card_ [
               cardContent_ $ catMaybes [
                 Just $ typography {variant: display2, color: String.error} [ text $ show code <> " : " <> error], 
-                description <#> \desc -> typography {variant: headline} [ text desc ]
+                toMaybe description <#> \desc -> typography {variant: headline} [ text desc ]
               ]
             ]
           ]
