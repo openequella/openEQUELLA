@@ -140,6 +140,9 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     });
   };
 
+  reload = () => {
+    window.location.reload();
+  };
   handlePrimaryChange = (color: string) => {
     this.setState({primary: color});
   };
@@ -195,7 +198,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
         fontSize: 14
       })
       .then(() => {
-          window.location.reload();
+          this.reload();
         }
       )
       .catch((error) => {
@@ -206,7 +209,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
   resetLogo = () => {
     axios.delete(`${Config.baseUrl}api/themeresource/resetlogo/`)
       .then(() => {
-        window.location.reload();
+        this.reload();
       })
       .catch((error) => {
         this.setState({permissionError: error.response.status == 403});
@@ -216,7 +219,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
   submitLogo = () => {
     if (this.state.logoToUpload != "") {
       axios.put(`${Config.baseUrl}api/themeresource/updatelogo/`, this.state.logoToUpload).then(() => {
-        window.location.reload();
+        this.reload();
       }).catch((error) => {
         switch (error.response.status) {
           case 400:
