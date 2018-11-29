@@ -22,13 +22,14 @@ such as:
 }
 ```
 
-* TODO - mention function which can take an axios response and turn it into an `ErrorResponse`
+* TODO - create and document function which can take an axios response and turn it into an `ErrorResponse`
 
 # Notifications
 
-Material design has the concept of a [SnackBar](https://material.io/design/components/snackbars.html) component 
-which can display a small notification message which will automatically disappear after a set amount of time. So it 
-is ideal for "your action was successful" type messages.
+Some user actions require confirmation and/or acknowledgement. The [material design guidelines](https://material.io/design/communication/confirmation-acknowledgement.html#acknowledgement) 
+provides great docs for deciding which UI component is appropriate for each situation. 
 
-There is a small wrapper component called [MessageInfo](../../Source/Plugins/Core/com.equella.core/js/tsrc/components/MessageInfo.tsx) 
+One of the prescribed components is the [SnackBar](https://material.io/design/components/snackbars.html),
+which can display a small notification message which will automatically disappear after a set amount of time. 
+There is a small wrapper component in openEQUELLA called [MessageInfo](../../Source/Plugins/Core/com.equella.core/js/tsrc/components/MessageInfo.tsx) 
 which decorates the standard `SnackBar` with an Icon and colours based on the variant chosen: `success`, `warning`, `error`, `info`.
