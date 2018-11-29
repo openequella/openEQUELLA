@@ -245,151 +245,137 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     this.setState({permissionError: false});
   };
 
-  render() {
-    const {Template} = this.props.bridge;
+  colorPicker = (label: string, changeColor: (color: string) => void, color: string) => {
     const {classes} = this.props;
     return (
-      <Template title={strings.title}>
-        <Card raised className={classes.card}>
-          <CardContent className={classes.cardContent}>
+      <div>
+        <Typography className={classes.labels} color={"textSecondary"}>
+          {label}
+        </Typography>
+        <ColorPickerComponent changeColor={changeColor} color={color}/>
+      </div>
+    )
+  };
 
-            {/*COLOUR SCHEME SETTINGS*/}
-
+  ColorSchemeSettings = () => {
+    const {classes} = this.props;
+    return (
+      <div>
+        <CardContent className={classes.cardContent}>
+          <FormControl>
             <Typography variant={"display1"}>
               {strings.colourschemesettings.title}
             </Typography>
-            <FormControl>
-              <Grid container spacing={16}>
-                <Grid item>
-                  <Typography className={classes.labels} color={"textSecondary"}>
-                    {strings.colourschemesettings.primarycolour}
-                  </Typography>
-                  <ColorPickerComponent changeColor={this.handlePrimaryChange} color={this.state.primary}/>
-
-                  <Typography className={classes.labels} color={"textSecondary"}>
-                    {strings.colourschemesettings.menubackgroundcolour}
-                  </Typography>
-                  <ColorPickerComponent changeColor={this.handleMenuChange} color={this.state.menu}/>
-
-                  <Typography className={classes.labels} color={"textSecondary"}>
-                    {strings.colourschemesettings.backgroundcolour}
-                  </Typography>
-                  <ColorPickerComponent changeColor={this.handleBackgroundChange} color={this.state.background}/>
-                </Grid>
-
-                <Grid item>
-                  <Typography className={classes.labels} color={"textSecondary"}>
-                    {strings.colourschemesettings.secondarycolour}
-                  </Typography>
-                  <ColorPickerComponent changeColor={this.handleSecondaryChange} color={this.state.secondary}/>
-
-                  <Typography className={classes.labels} color={"textSecondary"}>
-                    {strings.colourschemesettings.sidebartextcolour}
-                  </Typography>
-                  <ColorPickerComponent changeColor={this.handleMenuTextChange} color={this.state.menuText}/>
-                </Grid>
-
-                <Grid item>
-                  <Typography className={classes.labels} color={"textSecondary"}>
-                    {strings.colourschemesettings.textcolour}
-                  </Typography>
-                  <ColorPickerComponent changeColor={this.handleTextChange} color={this.state.text}/>
-
-                  <Typography className={classes.labels} color={"textSecondary"}>
-                    {strings.colourschemesettings.sidebariconcolour}
-                  </Typography>
-                  <ColorPickerComponent changeColor={this.handleMenuIconChange} color={this.state.menuIcon}/>
-                </Grid>
-              </Grid>
-            </FormControl>
-          </CardContent>
-
-          <CardActions>
-            <Button variant="text" onClick={this.handleDefaultButton}>
-              {commonString.action.resettodefault}
-            </Button>
-            <Button variant="outlined" onClick={this.handleUndoButton}>
-              {commonString.action.revertchanges}
-            </Button>
-            <Button
-              className={classes.button}
-              variant="contained"
-              type={"submit"}
-              onClick={this.submitTheme}>
-              {commonString.action.apply}
-            </Button>
-          </CardActions>
-
-          <Divider light={true}/>
-
-          {/*LOGO SETTINGS*/}
-
-          <CardContent className={classes.cardContent}>
-            <Typography variant={"display1"}>
-              {strings.logosettings.title}
-            </Typography>
-            <Typography className={classes.labels} color={"textSecondary"}>
-              {strings.logosettings.imagespeclabel}
-            </Typography>
-
-            <label>
-              <input
-                accept="image/*"
-                className={classes.input}
-                color={"textSecondary"}
-                id="contained-button-file"
-                onChange={e => this.handleImageChange(e.target)}
-                type="file"
-              />
-              <label htmlFor="contained-button-file">
-                <Grid container spacing={8} direction={"row"}>
-                  <Grid item>
-                    <Button
-                      className={classes.button}
-                      variant="outlined"
-                      component="span">
-                      {commonString.action.browse}
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Typography className={classes.fileName} color={"textSecondary"}>
-                      {this.state.fileName ? this.state.fileName : "No file selected."}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </label>
-            </label>
-
-            <Grid container spacing={8} direction={"row"}>
+            <Grid container spacing={16}>
               <Grid item>
-                <Typography className={classes.button}
-                            color={"textSecondary"}>{strings.logosettings.current}</Typography>
+                {this.colorPicker(strings.colourschemesettings.primarycolour, this.handlePrimaryChange, this.state.primary)}
+                {this.colorPicker(strings.colourschemesettings.menubackgroundcolour, this.handleMenuChange, this.state.menu)}
+                {this.colorPicker(strings.colourschemesettings.backgroundcolour, this.handleBackgroundChange, this.state.background)}
               </Grid>
+
               <Grid item>
-                <img
-                  src={this.state.customLogo ? `${Config.baseUrl}api/themeresource/newLogo.png` : `${Config.baseUrl}p/r/logopreview/com.equella.core/images/new-equella-logo.png`}/>
+                {this.colorPicker(strings.colourschemesettings.secondarycolour, this.handleSecondaryChange, this.state.secondary)}
+                {this.colorPicker(strings.colourschemesettings.sidebartextcolour, this.handleMenuTextChange, this.state.menuText)}
+              </Grid>
+
+              <Grid item>
+                {this.colorPicker(strings.colourschemesettings.textcolour, this.handleTextChange, this.state.text)}
+                {this.colorPicker(strings.colourschemesettings.sidebariconcolour, this.handleMenuIconChange, this.state.menuIcon)}
               </Grid>
             </Grid>
-          </CardContent>
+          </FormControl>
+        </CardContent>
 
-          <CardActions className={classes.cardBottom}>
-            <Button
-              variant="text"
-              onClick={this.resetLogo}>
-              {commonString.action.resettodefault}
-            </Button>
-            <Button
-              className={classes.button}
-              variant="contained"
-              type={"submit"}
-              onClick={this.submitLogo}>
-              {commonString.action.apply}
-            </Button>
-          </CardActions>
-        </Card>
+        <CardActions>
+          <Button variant="text" onClick={this.handleDefaultButton}>
+            {commonString.action.resettodefault}
+          </Button>
+          <Button variant="outlined" onClick={this.handleUndoButton}>
+            {commonString.action.revertchanges}
+          </Button>
+          <Button
+            className={classes.button}
+            variant="contained"
+            type={"submit"}
+            onClick={this.submitTheme}>
+            {commonString.action.apply}
+          </Button>
+        </CardActions>
+      </div>
+    )
+  };
+  LogoSettings = () => {
+    const {classes} = this.props;
+    return (
+      <div>
+        <CardContent className={classes.cardContent}>
+          <Typography variant={"display1"}>
+            {strings.logosettings.title}
+          </Typography>
+          <Typography className={classes.labels} color={"textSecondary"}>
+            {strings.logosettings.imagespeclabel}
+          </Typography>
 
-        {/*ERROR MESSAGES*/}
+          <label>
+            <input
+              accept="image/*"
+              className={classes.input}
+              color={"textSecondary"}
+              id="contained-button-file"
+              onChange={e => this.handleImageChange(e.target)}
+              type="file"
+            />
+            <label htmlFor="contained-button-file">
+              <Grid container spacing={8} direction={"row"}>
+                <Grid item>
+                  <Button
+                    className={classes.button}
+                    variant="outlined"
+                    component="span">
+                    {commonString.action.browse}
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Typography className={classes.fileName} color={"textSecondary"}>
+                    {this.state.fileName ? this.state.fileName : "No file selected."}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </label>
+          </label>
 
+          <Grid container spacing={8} direction={"row"}>
+            <Grid item>
+              <Typography className={classes.button}
+                          color={"textSecondary"}>{strings.logosettings.current}</Typography>
+            </Grid>
+            <Grid item>
+              <img
+                src={this.state.customLogo ? `${Config.baseUrl}api/themeresource/newLogo.png` : `${Config.baseUrl}p/r/logopreview/com.equella.core/images/new-equella-logo.png`}/>
+            </Grid>
+          </Grid>
+        </CardContent>
+
+        <CardActions className={classes.cardBottom}>
+          <Button
+            variant="text"
+            onClick={this.resetLogo}>
+            {commonString.action.resettodefault}
+          </Button>
+          <Button
+            className={classes.button}
+            variant="contained"
+            type={"submit"}
+            onClick={this.submitLogo}>
+            {commonString.action.apply}
+          </Button>
+        </CardActions>
+      </div>
+    )
+  };
+  ErrorMessages = () => {
+    return (
+      <div>
         <Dialog
           open={this.state.invalidFileError}
           TransitionComponent={transition}
@@ -435,7 +421,12 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
             </Button>
           </DialogActions>
         </Dialog>
-
+      </div>
+    );
+  };
+  Notifications = () => {
+    return (
+      <div>
         <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}}
                   autoHideDuration={5000}
                   message={<span id="message-id">{strings.errors.nofiledescription}</span>}
@@ -451,6 +442,22 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
                     </IconButton>
                   ]}
         />
+      </div>);
+  };
+
+  render() {
+    const {Template} = this.props.bridge;
+    const {classes} = this.props;
+    return (
+      <Template title={strings.title}>
+        <Card raised className={classes.card}>
+          <this.ColorSchemeSettings/>
+          <Divider light={true}/>
+          <this.LogoSettings/>
+        </Card>
+
+        <this.ErrorMessages/>
+        <this.Notifications/>
       </Template>
     );
   }

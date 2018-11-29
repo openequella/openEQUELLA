@@ -32,7 +32,6 @@ import javax.ws.rs.core.Response;
 
 import com.tle.core.filesystem.CustomisationFile;
 import com.tle.core.guice.Bind;
-import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
 import com.tle.exceptions.PrivilegeRequiredException;
