@@ -15,7 +15,6 @@ import com.tle.web.resources.ResourcesService;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.ws.rs.BadRequestException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -90,7 +89,7 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
 		BufferedImage bImage = null;
 		bImage = ImageIO.read(logoFile);
 		if (bImage == null) {
-			throw new BadRequestException("Invalid image file");
+			throw new IllegalArgumentException("Invalid image file");
 		}
 		//resize image to logo size (230px x 36px)
 		BufferedImage resizedImage = new BufferedImage(230, 36, BufferedImage.TYPE_INT_ARGB);
@@ -113,7 +112,7 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
 		checkPermissions();
 		CustomisationFile customisationFile = new CustomisationFile();
 		return fileSystemService.removeFile(customisationFile, LOGO_FILENAME);
-	};
+	}
 
 	private void checkPermissions() {
 		if (tleAclManager.filterNonGrantedPrivileges(Collections.singleton(PERMISSION_KEY), false).isEmpty()) {

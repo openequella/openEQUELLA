@@ -222,7 +222,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
         this.reload();
       }).catch((error) => {
         switch (error.response.status) {
-          case 400:
+          case 500:
             this.setState({invalidFileError: true});
             break;
           case 403:
