@@ -16,6 +16,8 @@
 
 package com.tle.web.api.newuitheme;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tle.web.api.newuitheme.impl.NewUITheme;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 
@@ -52,8 +54,8 @@ public interface NewUIThemeResource {
 
 	@PUT
 	@Path("update")
-	@ApiParam("Changes the theme settings of the current institution with a JSON string.")
-	Response updateThemeInfo(String themeString);
+	@ApiParam("Changes the theme settings of the current institution.")
+	Response updateThemeInfo(NewUITheme theme) throws JsonProcessingException;
 
 	@PUT
 	@Path("updatelogo")

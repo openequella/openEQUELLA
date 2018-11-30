@@ -62,7 +62,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	}
 
 	private void setTheme(NewUITheme theme) throws JsonProcessingException {
-		setTheme(theme.themeToString(theme));
+		setTheme(theme.toJSONString());
 	}
 
 	@GET
@@ -79,11 +79,11 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 
 	@PUT
 	@Path("/update")
-	public Response updateThemeInfo(String themeString) {
+	public Response updateThemeInfo(NewUITheme theme) throws JsonProcessingException {
 		if (tleAclManager.filterNonGrantedPrivileges(Collections.singleton(PERMISSION_KEY), false).isEmpty()) {
 			throw new PrivilegeRequiredException(PERMISSION_KEY);
 		}
-		setTheme(themeString);
+		setTheme(theme);
 		return Response.accepted().build();
 	}
 
