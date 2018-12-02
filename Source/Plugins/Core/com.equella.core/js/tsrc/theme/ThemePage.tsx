@@ -101,13 +101,13 @@ function transition(props: any) {
 class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof styles>> {
 
   state = {
-    primary: themeSettings.primaryColor,
-    secondary: themeSettings.secondaryColor,
-    background: themeSettings.backgroundColor,
-    menu: themeSettings.menuItemColor,
-    menuText: themeSettings.menuItemTextColor,
-    menuIcon: themeSettings.menuItemIconColor,
-    text: themeSettings.menuTextColor,
+    primary: "",
+    secondary: "",
+    background: "",
+    menu: "",
+    menuText: "",
+    menuIcon: "",
+    text: "",
     logoToUpload: "",
     customLogo: isCustomLogo,
     fileName: "",
@@ -116,6 +116,9 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     permissionError: false
   };
 
+  componentDidMount = () =>{
+    this.setColorPickerDefaults();
+  };
   handleDefaultButton = () => {
     this.setState({
       primary: "#2196f3",
@@ -128,7 +131,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     });
   };
 
-  handleUndoButton = () => {
+  setColorPickerDefaults = () => {
     this.setState({
       primary: themeSettings.primaryColor,
       secondary: themeSettings.secondaryColor,
@@ -293,7 +296,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
           <Button variant="text" onClick={this.handleDefaultButton}>
             {commonString.action.resettodefault}
           </Button>
-          <Button variant="outlined" onClick={this.handleUndoButton}>
+          <Button variant="outlined" onClick={this.setColorPickerDefaults}>
             {commonString.action.revertchanges}
           </Button>
           <Button
