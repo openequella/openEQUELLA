@@ -49,7 +49,8 @@ export const strings = prepLangStrings("newuisettings",
     logosettings: {
       title: "Logo Settings",
       imagespeclabel: "Use a PNG file of 230x36 pixels for best results.",
-      current: "Current Logo: "
+      current: "Current Logo: ",
+      nofileselected: "No file selected."
     },
     errors: {
       invalidimagetitle: "Image Processing Error",
@@ -113,11 +114,15 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     fileName: "",
     noFileError: false,
     invalidFileError: false,
-    permissionError: false
+    permissionError: false,
+    logoURL: ""
   };
 
   componentDidMount = () =>{
     this.setColorPickerDefaults();
+    axios
+      .get(`${Config.baseUrl}api/themeresource/logopath/`)
+      .then((response) =>{this.setState({logoURL:response.data})});
   };
   handleDefaultButton = () => {
     this.setState({
@@ -344,7 +349,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
                 </Grid>
                 <Grid item>
                   <Typography className={classes.fileName} color={"textSecondary"}>
-                    {this.state.fileName ? this.state.fileName : "No file selected."}
+                    {this.state.fileName ? this.state.fileName : strings.logosettings.nofileselected}
                   </Typography>
                 </Grid>
               </Grid>
@@ -358,7 +363,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
             </Grid>
             <Grid item>
               <img
-                src={this.state.customLogo ? `${Config.baseUrl}api/themeresource/newLogo.png` : `${Config.baseUrl}p/r/logopreview/com.equella.core/images/new-equella-logo.png`}/>
+                src={this.state.logoURL}/>
             </Grid>
           </Grid>
         </CardContent>

@@ -36,10 +36,15 @@ public interface NewUIThemeResource {
 
 	@GET
 	@Path("theme.js")
-	@ApiParam("Grabs the current institution's theme settings from the database.")
+	@ApiParam("Gets the current institution's theme settings from the database.")
 	@Produces("application/javascript")
 	Response retrieveThemeInfo() throws IOException;
 
+	@GET
+	@Path("logopath")
+	@ApiParam("Retrieves the path to the logo used by this institution")
+	@Produces("text/plain")
+	Response retrieveLogoPath();
 	@GET
 	@Path("newLogo.png")
 	@ApiParam("Grabs the current institution's logo from the filestore.")

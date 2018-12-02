@@ -31,13 +31,13 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
 	ConfigurationService configurationService;
 	@Inject
 	FileSystemService fileSystemService;
-
+	@Inject
 	private static PluginResourceHelper helper = ResourcesService.getResourceHelper(ThemeSettingsServiceImpl.class);
 
 	private static final String PERMISSION_KEY = "EDIT_SYSTEM_SETTINGS";
 	private static final String LOGO_FILENAME = "newLogo.png";
 	private static final String THEME_KEY = "Theme";
-	private static final String CUSTOM_LOGO_URI = "/api/theme/" + LOGO_FILENAME;
+	private static final String CUSTOM_LOGO_URI = helper.instUrl("api/themeresource/" + LOGO_FILENAME);
 	private static final String EQUELLA_LOGO_URI = helper.url("images/new-equella-logo.png");
 
 	@Override

@@ -47,6 +47,13 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 		return Response.ok("var themeSettings = " + themeString).build();
 	}
 
+	@GET
+	@Path("logopath")
+	@Produces("text/plain")
+	public Response retrieveLogoPath() {
+		return Response.ok(themeSettingsService.getLogoURI()).build();
+	}
+
 	@PUT
 	@Path("/update")
 	public Response updateThemeInfo(NewUITheme theme) throws JsonProcessingException {
