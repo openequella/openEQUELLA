@@ -49,8 +49,8 @@ object RenderNewTemplate {
     override def preRender(info: PreRenderContext): Unit =
     {
       new IncludeFile(s"api/language/bundle/${LocaleLookup.selectLocale.getLocale.toLanguageTag}/bundle.js").preRender(info)
-      new IncludeFile(s"api/themeresource/theme.js").preRender(info)
-      new IncludeFile(s"api/themeresource/customlogo.js").preRender(info)
+      new IncludeFile(s"api/theme/settings").preRender(info)
+      new IncludeFile(s"api/theme/customlogo.js").preRender(info)
     }
 
   }

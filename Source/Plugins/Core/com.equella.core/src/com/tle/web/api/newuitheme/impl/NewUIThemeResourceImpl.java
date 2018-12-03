@@ -40,7 +40,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	ThemeSettingsService themeSettingsService;
 
 	@GET
-	@Path("theme.js")
+	@Path("settings")
 	@Produces("application/javascript")
 	public Response retrieveThemeInfo() throws IOException {
 		String themeString = themeSettingsService.getTheme();
@@ -48,28 +48,28 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	}
 
 	@GET
-	@Path("logopath")
+	@Path("logo")
 	@Produces("text/plain")
 	public Response retrieveLogoPath() {
 		return Response.ok(themeSettingsService.getLogoURI()).build();
 	}
 
 	@PUT
-	@Path("/update")
+	@Path("settings")
 	public Response updateThemeInfo(NewUITheme theme) throws JsonProcessingException {
 		themeSettingsService.setTheme(theme);
 		return Response.accepted().build();
 	}
 
 	@PUT
-	@Path("/updatelogo")
+	@Path("logo")
 	public Response updateLogo(File logoFile) throws IOException {
 		themeSettingsService.setLogo(logoFile);
 		return Response.accepted().build();
 	}
 
 	@DELETE
-	@Path("/resetlogo")
+	@Path("logo")
 	public Response resetLogo() {
 		themeSettingsService.deleteLogo();
 		return Response.accepted().build();

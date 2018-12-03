@@ -5,7 +5,7 @@ exports.renderData = function()
 }();
 
 exports.logoPath = function(){
-  return isCustomLogo ? "api/themeresource/newLogo.png" : renderData.baseResources+"images/new-equella-logo.png"
+  return isCustomLogo ? "api/theme/newLogo.png" : renderData.baseResources+"images/new-equella-logo.png"
 }();
 exports.preventUnload = function(e) {
     e.returnValue = "Are you sure?";

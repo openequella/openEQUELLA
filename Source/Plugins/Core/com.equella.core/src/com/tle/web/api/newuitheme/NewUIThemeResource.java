@@ -30,24 +30,25 @@ import java.io.IOException;
  * @author Samantha Fisher
  */
 
-@Path("themeresource/")
+@Path("theme/")
 @Api("New UI Theme Resource")
 public interface NewUIThemeResource {
 
 	@GET
-	@Path("theme.js")
-	@ApiParam("Gets the current institution's theme settings from the database.")
+	@Path("settings")
+	@ApiParam("Retrieves the current institution's theme settings from the database.")
 	@Produces("application/javascript")
 	Response retrieveThemeInfo() throws IOException;
 
 	@GET
-	@Path("logopath")
+	@Path("logo")
 	@ApiParam("Retrieves the path to the logo used by this institution")
 	@Produces("text/plain")
 	Response retrieveLogoPath();
+
 	@GET
 	@Path("newLogo.png")
-	@ApiParam("Grabs the current institution's logo from the filestore.")
+	@ApiParam("Retrieves the current institution's logo from the filestore.")
 	@Produces("image/png")
 	Response retrieveLogo() throws IOException;
 
@@ -58,17 +59,17 @@ public interface NewUIThemeResource {
 	Response customLogoExists();
 
 	@PUT
-	@Path("update")
+	@Path("settings")
 	@ApiParam("Changes the theme settings of the current institution.")
 	Response updateThemeInfo(NewUITheme theme) throws JsonProcessingException;
 
 	@PUT
-	@Path("updatelogo")
+	@Path("logo")
 	@ApiParam("Takes an image file, resizes it to become a logo and saves it to the filestore.")
 	Response updateLogo(File logo) throws IOException;
 
 	@DELETE
-	@Path("resetlogo")
+	@Path("logo")
 	@ApiParam("Resets the institution's logo to the default openEQUELLA logo.")
 	Response resetLogo();
 }

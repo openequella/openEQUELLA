@@ -121,9 +121,10 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
   componentDidMount = () =>{
     this.setColorPickerDefaults();
     axios
-      .get(`${Config.baseUrl}api/themeresource/logopath/`)
+      .get(`${Config.baseUrl}api/theme/logo/`)
       .then((response) =>{this.setState({logoURL:response.data})});
   };
+
   handleDefaultButton = () => {
     this.setState({
       primary: "#2196f3",
@@ -194,7 +195,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
   };
 
   submitTheme = () => {
-    axios.put(`${Config.baseUrl}api/themeresource/update/`,
+    axios.put(`${Config.baseUrl}api/theme/settings/`,
       {
         primaryColor: this.state.primary,
         secondaryColor: this.state.secondary,
@@ -215,7 +216,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
   };
 
   resetLogo = () => {
-    axios.delete(`${Config.baseUrl}api/themeresource/resetlogo/`)
+    axios.delete(`${Config.baseUrl}api/theme/logo/`)
       .then(() => {
         this.reload();
       })
@@ -226,7 +227,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
 
   submitLogo = () => {
     if (this.state.logoToUpload != "") {
-      axios.put(`${Config.baseUrl}api/themeresource/updatelogo/`, this.state.logoToUpload).then(() => {
+      axios.put(`${Config.baseUrl}api/theme/logo/`, this.state.logoToUpload).then(() => {
         this.reload();
       }).catch((error) => {
         switch (error.response.status) {
