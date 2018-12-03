@@ -28,7 +28,7 @@ interface IThemeSettings {
 }
 
 declare const themeSettings: IThemeSettings;
-declare const isCustomLogo: boolean;
+declare const logoURL: string;
 
 /**
  * @author Samantha Fisher
@@ -110,12 +110,11 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     menuIcon: "",
     text: "",
     logoToUpload: "",
-    customLogo: isCustomLogo,
     fileName: "",
     noFileError: false,
     invalidFileError: false,
     permissionError: false,
-    logoURL: ""
+    logoURL: logoURL
   };
 
   componentDidMount = () =>{

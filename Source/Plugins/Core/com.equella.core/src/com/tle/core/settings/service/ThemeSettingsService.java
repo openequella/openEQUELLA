@@ -11,7 +11,7 @@ public interface ThemeSettingsService {
 
 	//GETTERS//
 	String getTheme() throws JsonProcessingException;
-	String getLogoURI();
+	String getLogoURL();
 	InputStream getCustomLogo() throws IOException;
 	boolean getCustomLogoStatus();
 

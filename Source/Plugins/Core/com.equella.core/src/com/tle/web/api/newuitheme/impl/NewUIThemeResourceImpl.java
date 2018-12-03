@@ -51,7 +51,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	@Path("logo")
 	@Produces("text/plain")
 	public Response retrieveLogoPath() {
-		return Response.ok(themeSettingsService.getLogoURI()).build();
+		return Response.ok(themeSettingsService.getLogoURL()).build();
 	}
 
 	@PUT
@@ -85,7 +85,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	@GET
 	@Path("customlogo.js")
 	@Produces("application/javascript")
-	public Response customLogoExists() {
-		return Response.ok().entity("var isCustomLogo = " + themeSettingsService.getCustomLogoStatus()).build();
+	public Response retrieveCustomLogoURI() {
+		return Response.ok().entity("var logoURL = \"" + themeSettingsService.getLogoURL()+"\";").build();
 	}
 }
