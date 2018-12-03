@@ -85,7 +85,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	@GET
 	@Path("customlogo.js")
 	@Produces("application/javascript")
-	public Response retrieveCustomLogoURI() {
+	public Response retrieveCustomLogoURL() {
 		return Response.ok().entity("var logoURL = \"" + themeSettingsService.getLogoURL()+"\";").build();
 	}
 }

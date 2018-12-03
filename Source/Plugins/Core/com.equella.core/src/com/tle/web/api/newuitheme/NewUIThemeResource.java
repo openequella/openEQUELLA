@@ -54,9 +54,9 @@ public interface NewUIThemeResource {
 
 	@GET
 	@Path("customlogo.js")
-	@ApiParam("Checks whether or not this institution is using a custom logo and returns the URI.")
+	@ApiParam("Checks whether or not this institution is using a custom logo and returns the URL.")
 	@Produces("application/javascript")
-	Response retrieveCustomLogoURI();
+	Response retrieveCustomLogoURL();
 
 	@PUT
 	@Path("settings")

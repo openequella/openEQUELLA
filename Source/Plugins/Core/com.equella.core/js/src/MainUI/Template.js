@@ -4,6 +4,7 @@ exports.renderData = function()
 }();
 
 exports.logoPath = logoURL;
+
 exports.preventUnload = function(e) {
     e.returnValue = "Are you sure?";
     return "Are you sure?";
