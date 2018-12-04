@@ -84,6 +84,7 @@ rendering the layout:
 * App bar with title and user links menu
 * Optional extra markup in title (search bar)
 * Additional area for tabs
+* Error notifications
 
 See `TemplateProps` in [Template.purs](../../Source/Plugins/Core/com.equella.core/js/src/MainUI/Template.purs) or [Template.ts](../../Source/Plugins/Core/com.equella.core/js/tsrc/api/Template.ts)
 

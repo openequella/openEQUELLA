@@ -5,13 +5,19 @@ import Prelude
 import Data.Argonaut (Json, decodeJson, (.?), (.??))
 import Data.Either (Either)
 import Data.Maybe (Maybe)
+import Data.Nullable (Nullable, toNullable)
 import Effect.Unsafe (unsafePerformEffect)
 import OEQ.Utils.UUID (newUUID)
 
-type ErrorResponse = {code :: Int, error::String, description::Maybe String, id :: String}
+type ErrorResponse = {
+  code :: Int, 
+  error:: String, 
+  description :: Nullable String, 
+  id :: String
+}
 
 decodeError :: Json -> Either String ErrorResponse
-decodeError v = do 
+decodeError v = do
   o <- decodeJson v 
   code <- o .? "code"
   error <- o .? "error"
@@ -19,4 +25,4 @@ decodeError v = do
   pure $ mkUniqueError code error description
 
 mkUniqueError :: Int -> String -> Maybe String-> ErrorResponse
-mkUniqueError code error description = {code,error,description, id: unsafePerformEffect newUUID}
+mkUniqueError code error desc = {code, error, description: toNullable desc, id: unsafePerformEffect newUUID}
