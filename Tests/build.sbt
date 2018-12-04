@@ -13,7 +13,7 @@ libraryDependencies ++= Seq(
 libraryDependencies ++= Seq(
   "javax.jws" % "javax.jws-api" % "1.1",
   "org.apache.commons" % "commons-lang3" % "3.7",
-  "org.seleniumhq.selenium" % "selenium-java" % "3.13.0",
+  "org.seleniumhq.selenium" % "selenium-java" % "3.141.59",
   "org.easytesting" % "fest-util" % "1.2.5",
   "org.easytesting" % "fest-swing" % "1.2.1",
   "org.codehaus.jackson" % "jackson-core-asl" % "1.9.13",
@@ -22,6 +22,7 @@ libraryDependencies ++= Seq(
   "org.apache.cxf" % "cxf-rt-frontend-simple" % "3.1.12",
   "org.apache.cxf" % "cxf-rt-databinding-aegis" % "3.1.12",
   "org.apache.cxf" % "cxf-rt-transports-http" % "3.1.12",
+  "org.apache.httpcomponents" % "httpclient" % "4.5.5",
 //  "org.apache.cxf" % "cxf-bundle" % "2.7.6",
   "axis" % "axis" % "1.4",
   "com.jcraft" % "jsch" % "0.1.54",

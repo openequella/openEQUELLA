@@ -25,6 +25,15 @@ public class AbstractCALTest extends AbstractCleanupTest
 	public static final String ATTACH1_FILENAME = "page.html";
 	public static final String ATTACH2_FILENAME = "page(2).html";
 
+	private String getExpectedFilename(int offset)
+	{
+		if (offset == 0)
+		{
+			return ATTACH1_FILENAME;
+		}
+		return "page("+(offset+1)+").html";
+	}
+
 	public AbstractCALTest(String itemPrefix)
 	{
 		super(itemPrefix);
@@ -117,7 +126,7 @@ public class AbstractCALTest extends AbstractCleanupTest
 			}
 			int newLast = i == numsections - 1 ? lastPage : firstPage + perSection - 1;
 			calWizardPage.setRange(i, firstPage + "-" + newLast);
-			calWizardPage.uploadSectionFile(i, filename);
+			calWizardPage.uploadSectionFile(i, filename, getExpectedFilename(i));
 			firstPage += perSection;
 		}
 	}

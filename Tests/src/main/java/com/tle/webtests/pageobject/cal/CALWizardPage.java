@@ -100,9 +100,9 @@ public class CALWizardPage
 		return wizardPage.saveWith(new CALViolationPage(wizardPage.getContext()));
 	}
 
-	public void uploadSectionFile(int section, URL file)
+	public void uploadSectionFile(int section, URL file, String filename)
 	{
-		getSection(section).addSingleFile(1, file);
+		getSection(section).addSingleFile(1, file, filename);
 	}
 
 	public void addSection()

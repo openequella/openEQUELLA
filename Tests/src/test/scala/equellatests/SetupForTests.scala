@@ -2,7 +2,7 @@ package equellatests
 
 import java.io.File
 
-import com.tle.webtests.pageobject.UndeterminedPage
+import com.tle.webtests.pageobject.{LoginPage, SettingsPage, UndeterminedPage}
 import com.tle.webtests.pageobject.institution._
 import GlobalConfig._
 import com.tle.webtests.framework.{PageContext, ScreenshotTaker}
@@ -50,6 +50,12 @@ class ImportInsts(allowed: String => Boolean) {
 
         assert(importTab.importInstitution(instutionUrl, shortName,
           new File(instFolder, INSTITUTION_FILE).toPath).waitForFinish)
+        if (testConfig.isNewUI) {
+          val instCtx = new PageContext(context, instutionUrl)
+          new LoginPage(instCtx).load.login("TLE_ADMINISTRATOR", testConfig.getAdminPassword)
+          val sp = new SettingsPage(instCtx).load()
+          sp.enableNewUI()
+        }
       }
     }
   }

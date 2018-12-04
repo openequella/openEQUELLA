@@ -20,7 +20,7 @@ public class OAuthSettingsPage extends AbstractPage<OAuthSettingsPage>
 
 	public OAuthSettingsPage(PageContext context)
 	{
-		super(context, By.xpath("//h2[contains(text(), 'OAuth')]"));
+		super(context, By.id("clientsDiv"));
 	}
 
 	@Override

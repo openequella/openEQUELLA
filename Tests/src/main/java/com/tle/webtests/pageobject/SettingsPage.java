@@ -72,6 +72,12 @@ public class SettingsPage extends AbstractPage<SettingsPage>
 		return settingGroup;
 	}
 
+	protected WebElement openGroupContaining(String group, By untilVisible)
+	{
+		WebElement settingGroup = openGroup(group, untilVisible);
+		return settingGroup.findElement(untilVisible);
+	}
+
 	protected <T extends AbstractPage<T>> T clickSetting(String group, String title, T page)
 	{
 		WebElement groupElem = openGroup(group, By.linkText(title));
@@ -184,4 +190,17 @@ public class SettingsPage extends AbstractPage<SettingsPage>
 	{
 		return clickSetting("Manual data fixes", new ManualDataFixesPage(context));
 	}
+
+	public void enableNewUI()
+	{
+		WebElement newUI = openGroupContaining("UI", By.xpath(".//label[./span[text() = 'Enable new UI']]"));
+		newUI.click();
+		// Yeah this sucks, it auto saves in the background
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

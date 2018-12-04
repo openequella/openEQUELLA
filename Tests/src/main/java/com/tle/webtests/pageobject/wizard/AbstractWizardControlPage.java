@@ -3,6 +3,7 @@ package com.tle.webtests.pageobject.wizard;
 import java.io.File;
 import java.net.URL;
 
+import com.tle.common.PathUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -134,10 +135,17 @@ public abstract class AbstractWizardControlPage<T extends AbstractWizardControlP
 
 	public void addSingleFile(int ctrlNum, URL file)
 	{
+		String filePath = getPathFromUrl(file);
+		String nameOnly = PathUtils.getFilenameFromFilepath(filePath);
+		addSingleFile(ctrlNum, file, nameOnly);
+	}
+
+	public void addSingleFile(int ctrlNum, URL file, String filename)
+	{
 		UniversalControl universalControl = universalControl(ctrlNum);
 		FileUniversalControlType fileControl = universalControl.addDefaultResource(new FileUniversalControlType(
-			universalControl));
-		fileControl.uploadFile(file);
+				universalControl));
+		fileControl.uploadFile(file, filename);
 	}
 
 	public void addFile(int ctrlNum, String file)

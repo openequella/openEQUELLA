@@ -32,7 +32,7 @@ public class ReceiptPage
 
 	public static ExpectedCondition<?> containsCondition(String text)
 	{
-		return ExpectedConditions.textToBePresentInElement(BY_RECEIPT, text);
+		return ExpectedConditions.textToBePresentInElementLocated(BY_RECEIPT, text);
 	}
 
 	public static void dismiss(WebDriverWait waiter)

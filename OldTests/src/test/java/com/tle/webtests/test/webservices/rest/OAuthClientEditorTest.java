@@ -33,7 +33,7 @@ public class OAuthClientEditorTest extends AbstractCleanupTest
 	// Most of the REST tests do this indirectly, but let's give it a good
 	// thrash here
 	@Test
-	public void SetupClients()
+	public void setupClients()
 	{
 		logon("autotest", "automated");
 		OAuthSettingsPage oauthSP = new OAuthSettingsPage(context).load();

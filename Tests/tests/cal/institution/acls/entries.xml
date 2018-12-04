@@ -2781,4 +2781,17 @@
     <aclOrder>0</aclOrder>
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>63966</id>
+    <expression>
+      <id>337</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>LIST_COURSE_INFO</privilege>
+    <aggregateOrdering>0100 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>-1900</aclPriority>
+  </com.tle.beans.security.AccessEntry>
 </list>

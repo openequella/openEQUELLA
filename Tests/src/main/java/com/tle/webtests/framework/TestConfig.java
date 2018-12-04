@@ -232,6 +232,11 @@ public class TestConfig
 		return defaultValue;
 	}
 
+	public boolean isNewUI()
+	{
+		return getBooleanProperty("tests.newui", false);
+	}
+
 	public boolean getBooleanProperty(String property, boolean defaultValue)
 	{
 		String val = getProperty(property);
