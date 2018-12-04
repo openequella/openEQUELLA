@@ -97,6 +97,7 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
 		if (bImage == null) {
 			throw new IllegalArgumentException("Invalid image file");
 		}
+
 		//resize image to logo size (230px x 36px)
 		BufferedImage resizedImage = new BufferedImage(230, 36, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2d = (Graphics2D) resizedImage.getGraphics();
@@ -110,6 +111,8 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
 		ImageIO.write(rImage, "png", os);
 		InputStream fis = new ByteArrayInputStream(os.toByteArray());
 		fileSystemService.write(customisationFile, LOGO_FILENAME, fis, false);
+		os.close();
+		fis.close();
 	}
 
 	@Override
