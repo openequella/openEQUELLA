@@ -40,19 +40,13 @@ public interface NewUIThemeResource {
 	@Path("settings")
 	@ApiParam("Retrieves the current institution's theme settings from the database.")
 	@Produces("application/javascript")
-	Response retrieveThemeInfo() throws IOException;
+	Response retrieveThemeInfo(@Context UriInfo info) throws IOException;
 
 	@GET
 	@Path("newLogo.png")
 	@ApiParam("Retrieves the current institution's logo from the filestore.")
 	@Produces("image/png")
 	Response retrieveLogo() throws IOException;
-
-	@GET
-	@Path("customlogo.js")
-	@ApiParam("Checks whether or not this institution is using a custom logo and returns the URL.")
-	@Produces("application/javascript")
-	Response retrieveCustomLogoURL(@Context UriInfo info) throws IOException;
 
 	@PUT
 	@Path("settings")

@@ -53,9 +53,10 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	@GET
 	@Path("settings")
 	@Produces("application/javascript")
-	public Response retrieveThemeInfo() throws IOException {
+	public Response retrieveThemeInfo(@Context UriInfo info) throws IOException {
 		String themeString = objectMapperService.createObjectMapper().writeValueAsString(themeSettingsService.getTheme());
-		return Response.ok("var themeSettings = " + themeString).build();
+		String logoURL = info.getBaseUriBuilder().path(NewUIThemeResource.class).path(NewUIThemeResource.class, "retrieveLogo").build().toASCIIString();
+		return Response.ok("var themeSettings = " + themeString +";" + "\nvar logoURL = \"" + logoURL + "\";").build();
 	}
 
 	@PUT
@@ -90,11 +91,4 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 		}
 	}
 
-	@GET
-	@Path("customlogo.js")
-	@Produces("application/javascript")
-	public Response retrieveCustomLogoURL(@Context UriInfo info) {
-		String logoURL = info.getBaseUriBuilder().path(NewUIThemeResource.class).path(NewUIThemeResource.class, "retrieveLogo").build().toASCIIString();
-		return Response.ok().entity("var logoURL = \"" + logoURL + "\";").build();
-	}
 }
