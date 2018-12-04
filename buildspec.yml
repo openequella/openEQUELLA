@@ -16,7 +16,7 @@ phases:
       - (cd IntegTester/ps && yarn install && yarn run build)
       - sbt IntegTester/assembly
       - java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
-      - (cd $HOME && curl -OL https://s3.amazonaws.com/edalexdev/equella_artifacts/latest/equella-installer-6.7.zip)
+      - (cd $HOME && curl -OL https://s3.amazonaws.com/edalexdev/equella_artifacts/master/latest/equella-installer-6.7.zip)
       - sbt installEquella startEquella
       - sbt configureInstall setupForTests ${OTHER_TESTS} Tests/test
       - sbt coverageReport
