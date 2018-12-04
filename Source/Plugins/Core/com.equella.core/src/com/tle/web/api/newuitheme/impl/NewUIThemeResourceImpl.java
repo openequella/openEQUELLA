@@ -51,7 +51,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	ObjectMapperService objectMapperService;
 
 	@GET
-	@Path("settings")
+	@Path("theme.js")
 	@Produces("application/javascript")
 	public Response retrieveThemeInfo(@Context UriInfo info) throws IOException {
 		String themeString = objectMapperService.createObjectMapper().writeValueAsString(themeSettingsService.getTheme());
@@ -61,7 +61,7 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 
 	@PUT
 	@Path("settings")
-	public Response updateThemeInfo(NewUITheme theme) throws JsonProcessingException {
+	public Response updateTheme(NewUITheme theme) throws JsonProcessingException {
 		themeSettingsService.setTheme(theme);
 		return Response.accepted().build();
 	}

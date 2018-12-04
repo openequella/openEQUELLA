@@ -37,8 +37,8 @@ import java.io.IOException;
 public interface NewUIThemeResource {
 
 	@GET
-	@Path("settings")
-	@ApiParam("Retrieves the current institution's theme settings from the database.")
+	@Path("theme.js")
+	@ApiParam("Retrieves the current institution's theme and logo settings from the database.")
 	@Produces("application/javascript")
 	Response retrieveThemeInfo(@Context UriInfo info) throws IOException;
 
@@ -51,7 +51,7 @@ public interface NewUIThemeResource {
 	@PUT
 	@Path("settings")
 	@ApiParam("Changes the theme settings of the current institution.")
-	Response updateThemeInfo(NewUITheme theme) throws JsonProcessingException;
+	Response updateTheme(NewUITheme theme) throws JsonProcessingException;
 
 	@PUT
 	@Path("logo")

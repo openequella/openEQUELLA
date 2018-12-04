@@ -49,7 +49,7 @@ object RenderNewTemplate {
     override def preRender(info: PreRenderContext): Unit =
     {
       new IncludeFile(s"api/language/bundle/${LocaleLookup.selectLocale.getLocale.toLanguageTag}/bundle.js").preRender(info)
-      new IncludeFile(s"api/theme/settings").preRender(info)
+      new IncludeFile(s"api/theme/theme.js").preRender(info)
     }
 
   }
