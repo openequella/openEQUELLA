@@ -8,6 +8,7 @@
   "dependencies": {
     "js-md5": "^0.7.3",
     "react": "^16.4.2",
-    "react-dom": "^16.4.2"
+    "react-dom": "^16.4.2",
+    "psc-package": "^3.0.1"
   }
 }
