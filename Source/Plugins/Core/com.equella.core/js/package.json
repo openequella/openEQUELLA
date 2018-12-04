@@ -30,6 +30,7 @@
     "@types/react-swipeable-views": "^0.12.1",
     "@types/redux-logger": "^3.0.5",
     "@types/sprintf-js": "^1.1.0",
+    "@types/uuid": "^3.4.4",
     "axios": "^0.18.0",
     "create-react-class": "^15.6.2",
     "downshift": "^2.2.2",

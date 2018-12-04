@@ -2,19 +2,17 @@ import * as React from "react";
 import {Bridge} from "../api/bridge";
 import {
   Button, CardContent, CardActions,
-  Card, Dialog, DialogTitle,
-  DialogContent, DialogContentText,
-  Divider, FormControl, Typography,
+  Card, Divider, FormControl, Typography,
   WithStyles, withStyles, createStyles,
-  Grid, Snackbar, IconButton, DialogActions,
-  Slide
+  Grid, Snackbar, IconButton
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import ColorPickerComponent from "./ColorPickerComponent";
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 import {Config} from "../config";
 import {prepLangStrings} from "../util/langstrings";
 import {commonString} from '../util/commonstrings';
+import {generateFromAxiosError, generateNewErrorID} from "../api/errors";
 
 interface IThemeSettings {
   primaryColor: string,
@@ -95,10 +93,6 @@ interface ThemePageProps {
   bridge: Bridge;
 }
 
-function transition(props: any) {
-  return <Slide direction="up" {...props} />;
-}
-
 class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof styles>> {
 
   state = {
@@ -111,9 +105,8 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     text: "",
     logoToUpload: "",
     fileName: "",
-    noFileError: false,
-    invalidFileError: false,
-    permissionError: false,
+    noFileNotification: false,
+    error: null,
     logoURL: logoURL
   };
 
@@ -207,7 +200,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
         }
       )
       .catch((error) => {
-        this.setState({permissionError: error.response.status == 403});
+        this.handleError(error);
       });
   };
 
@@ -217,7 +210,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
         this.reload();
       })
       .catch((error) => {
-        this.setState({permissionError: error.response.status == 403});
+        this.handleError(error);
       });
   };
 
@@ -226,32 +219,33 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       axios.put(`${Config.baseUrl}api/theme/logo/`, this.state.logoToUpload).then(() => {
         this.reload();
       }).catch((error) => {
-        switch (error.response.status) {
-          case 500:
-            this.setState({invalidFileError: true});
-            break;
-          case 403:
-            this.setState({permissionError: true});
-            break;
-          default:
-            break;
-        }
+        this.handleError(error);
       });
     } else {
-      this.setState({noFileError: true});
+      this.setState({noFileNotification: true});
     }
   };
 
-  handleInvalidFileErrorClose = () => {
-    this.setState({invalidFileError: false});
+  handleError = (error:AxiosError) => {
+    if(error.response!=undefined){
+      switch (error.response.status) {
+        case 500:
+          this.setState({error: generateNewErrorID(strings.errors.invalidimagetitle,error.response.status,strings.errors.invalidimagedescription)});
+          break;
+        case 403:
+          this.setState({error: generateNewErrorID(strings.errors.permissiontitle,error.response.status,strings.errors.permissiondescription)});
+          break;
+        default:
+          this.setState({error: generateFromAxiosError(error)});
+          break;
+      }
+    }
   };
 
-  handleNoFileErrorClose = () => {
-    this.setState({noFileError: false});
+  handleNoFileNotificationClose = () => {
+    this.setState({noFileNotification: false});
   };
-  handlePermissionErrorClose = () => {
-    this.setState({permissionError: false});
-  };
+
 
   colorPicker = (label: string, changeColor: (color: string) => void, color: string) => {
     const {classes} = this.props;
@@ -383,71 +377,19 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     )
   };
 
-  ErrorMessages = () => {
-    return (
-      <div>
-        <Dialog
-          open={this.state.invalidFileError}
-          TransitionComponent={transition}
-          keepMounted
-          onClose={this.handleInvalidFileErrorClose}
-        >
-          <DialogTitle disableTypography id="alert-dialog-slide-title" color="primary">
-            <Typography variant={"display1"} color={"textSecondary"}>
-              {strings.errors.invalidimagetitle}
-            </Typography>
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-slide-description">
-              {strings.errors.invalidimagedescription}
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleInvalidFileErrorClose} color="primary">
-              {commonString.action.dismiss}
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        <Dialog
-          open={this.state.permissionError}
-          TransitionComponent={transition}
-          keepMounted
-          onClose={this.handlePermissionErrorClose}
-        >
-          <DialogTitle disableTypography id="alert-dialog-slide-title" color="primary">
-            <Typography variant={"display1"} color={"textSecondary"}>
-              {strings.errors.permissiontitle}
-            </Typography>
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-slide-description">
-              {strings.errors.permissiondescription}
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handlePermissionErrorClose} color="primary">
-              {commonString.action.dismiss}
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </div>
-    );
-  };
-
   Notifications = () => {
     return (
       <div>
         <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}}
                   autoHideDuration={5000}
                   message={<span id="message-id">{strings.errors.nofiledescription}</span>}
-                  open={this.state.noFileError}
-                  onClose={this.handleNoFileErrorClose}
+                  open={this.state.noFileNotification}
+                  onClose={this.handleNoFileNotificationClose}
                   action={[
                     <IconButton
                       key="close"
                       color="inherit"
-                      onClick={this.handleNoFileErrorClose}
+                      onClick={this.handleNoFileNotificationClose}
                     >
                       <CloseIcon/>
                     </IconButton>
@@ -460,14 +402,13 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
     const {Template} = this.props.bridge;
     const {classes} = this.props;
     return (
-      <Template title={strings.title}>
+      <Template title={strings.title} errorResponse={this.state.error||undefined}>
 
         <Card raised className={classes.card}>
           <this.ColorSchemeSettings/>
           <Divider light={true}/>
           <this.LogoSettings/>
         </Card>
-        <this.ErrorMessages/>
         <this.Notifications/>
 
       </Template>
