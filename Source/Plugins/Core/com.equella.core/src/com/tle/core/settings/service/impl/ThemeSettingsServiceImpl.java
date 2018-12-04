@@ -17,6 +17,7 @@
 package com.tle.core.settings.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tle.common.Check;
 import com.tle.core.filesystem.CustomisationFile;
 import com.tle.core.guice.Bind;
@@ -27,8 +28,6 @@ import com.tle.core.settings.service.ConfigurationService;
 import com.tle.core.settings.service.ThemeSettingsService;
 import com.tle.exceptions.PrivilegeRequiredException;
 import com.tle.web.api.newuitheme.impl.NewUITheme;
-import com.tle.web.resources.PluginResourceHelper;
-import com.tle.web.resources.ResourcesService;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
@@ -50,7 +49,10 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
 	@Inject
 	FileSystemService fileSystemService;
 	@Inject
-	ObjectMapperService objectMapperService;
+	protected void setObjectMapperService(ObjectMapperService objectMapperService){
+		objectMapper = objectMapperService.createObjectMapper();
+	}
+	private ObjectMapper objectMapper;
 
 	private static final String PERMISSION_KEY = "EDIT_SYSTEM_SETTINGS";
 	private static final String LOGO_FILENAME = "newLogo.png";
@@ -60,7 +62,7 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
 	public NewUITheme getTheme() throws IOException {
 		String themeString = configurationService.getProperty(THEME_KEY);
 		//use default theme if none exists in database
-		return Check.isEmpty(themeString) ? new NewUITheme() : objectMapperService.createObjectMapper().readValue(themeString,NewUITheme.class);
+		return Check.isEmpty(themeString) ? new NewUITheme() : objectMapper.readValue(themeString,NewUITheme.class);
 	}
 
 	@Override
@@ -81,7 +83,7 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
 	@Override
 	public void setTheme(NewUITheme theme) throws JsonProcessingException {
 		checkPermissions();
-		String themeString = theme.toJSONString();
+		String themeString = themeToJSONString(theme);
 		configurationService.setProperty(THEME_KEY, themeString);
 	}
 
@@ -121,5 +123,11 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
 		if (tleAclManager.filterNonGrantedPrivileges(Collections.singleton(PERMISSION_KEY), false).isEmpty()) {
 			throw new PrivilegeRequiredException(PERMISSION_KEY);
 		}
+	}
+
+	private String themeToJSONString(NewUITheme theme) throws JsonProcessingException {
+		String themeToString = "";
+		themeToString = objectMapper.writeValueAsString(theme);
+		return themeToString;
 	}
 }

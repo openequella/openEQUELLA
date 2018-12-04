@@ -25,6 +25,7 @@ import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tle.core.guice.Bind;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.settings.service.ThemeSettingsService;
@@ -39,13 +40,15 @@ import com.tle.web.resources.ResourcesService;
 @Bind(NewUIThemeResource.class)
 @Singleton
 public class NewUIThemeResourceImpl implements NewUIThemeResource {
-	private static final String LOGO_FILENAME = "newLogo.png";
 	@Inject
 	ThemeSettingsService themeSettingsService;
 	@Inject
 	private static PluginResourceHelper helper = ResourcesService.getResourceHelper(NewUIThemeResourceImpl.class);
 	@Inject
-	ObjectMapperService objectMapperService;
+	protected void setObjectMapperService(ObjectMapperService objectMapperService){
+		objectMapper = objectMapperService.createObjectMapper();
+	}
+	private ObjectMapper objectMapper;
 
 	@GET
 	@Path("newLogo.png")
@@ -64,11 +67,12 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	public Response retrieveTheme() throws IOException {
 		return Response.ok(themeSettingsService.getTheme(), MediaType.APPLICATION_JSON).build();
 	}
+
 	@GET
 	@Path("theme.js")
 	@Produces("application/javascript")
 	public Response retrieveThemeInfo(@Context UriInfo info) throws IOException {
-		String themeString = objectMapperService.createObjectMapper().writeValueAsString(themeSettingsService.getTheme());
+		String themeString = objectMapper.writeValueAsString(themeSettingsService.getTheme());
 		String logoURL = info.getBaseUriBuilder().path(NewUIThemeResource.class).path(NewUIThemeResource.class, "retrieveLogo").build().toASCIIString();
 		return Response.ok("var themeSettings = " + themeString +";" + "\nvar logoURL = \"" + logoURL + "\";").build();
 	}
@@ -93,5 +97,4 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 		themeSettingsService.deleteLogo();
 		return Response.accepted().build();
 	}
-
 }

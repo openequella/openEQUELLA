@@ -93,10 +93,4 @@ public class NewUITheme {
 		this.menuTextColor = menuTextColor;
 	}
 
-	public String toJSONString() throws JsonProcessingException {
-		String themeToString = "";
-		ObjectMapper objectMapper = new ObjectMapper();
-		themeToString = objectMapper.writeValueAsString(this);
-		return themeToString;
-	}
 }
