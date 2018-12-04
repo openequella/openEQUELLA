@@ -22,7 +22,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.io.File;
 import java.io.IOException;
 
@@ -41,12 +43,6 @@ public interface NewUIThemeResource {
 	Response retrieveThemeInfo() throws IOException;
 
 	@GET
-	@Path("logo")
-	@ApiParam("Retrieves the path to the logo used by this institution.")
-	@Produces("text/plain")
-	Response retrieveLogoPath();
-
-	@GET
 	@Path("newLogo.png")
 	@ApiParam("Retrieves the current institution's logo from the filestore.")
 	@Produces("image/png")
@@ -56,7 +52,7 @@ public interface NewUIThemeResource {
 	@Path("customlogo.js")
 	@ApiParam("Checks whether or not this institution is using a custom logo and returns the URL.")
 	@Produces("application/javascript")
-	Response retrieveCustomLogoURL();
+	Response retrieveCustomLogoURL(@Context UriInfo info) throws IOException;
 
 	@PUT
 	@Path("settings")

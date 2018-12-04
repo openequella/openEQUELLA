@@ -119,11 +119,6 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
 
   componentDidMount = () => {
     this.setColorPickerDefaults();
-    axios
-      .get(`${Config.baseUrl}api/theme/logo/`)
-      .then((response) => {
-        this.setState({logoURL: response.data})
-      });
   };
 
   handleDefaultButton = () => {

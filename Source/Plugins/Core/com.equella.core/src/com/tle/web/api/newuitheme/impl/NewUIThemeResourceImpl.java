@@ -19,14 +19,21 @@ package com.tle.web.api.newuitheme.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.*;
+import java.net.URI;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
 import com.tle.core.guice.Bind;
+import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.settings.service.ThemeSettingsService;
 import com.tle.web.api.newuitheme.NewUIThemeResource;
+import com.tle.web.resources.PluginResourceHelper;
+import com.tle.web.resources.ResourcesService;
 
 /**
  * @author Samantha Fisher
@@ -35,23 +42,20 @@ import com.tle.web.api.newuitheme.NewUIThemeResource;
 @Bind(NewUIThemeResource.class)
 @Singleton
 public class NewUIThemeResourceImpl implements NewUIThemeResource {
-
+	private static final String LOGO_FILENAME = "newLogo.png";
 	@Inject
 	ThemeSettingsService themeSettingsService;
+	@Inject
+	private static PluginResourceHelper helper = ResourcesService.getResourceHelper(NewUIThemeResourceImpl.class);
+	@Inject
+	ObjectMapperService objectMapperService;
 
 	@GET
 	@Path("settings")
 	@Produces("application/javascript")
 	public Response retrieveThemeInfo() throws IOException {
-		String themeString = themeSettingsService.getTheme();
+		String themeString = objectMapperService.createObjectMapper().writeValueAsString(themeSettingsService.getTheme());
 		return Response.ok("var themeSettings = " + themeString).build();
-	}
-
-	@GET
-	@Path("logo")
-	@Produces("text/plain")
-	public Response retrieveLogoPath() {
-		return Response.ok(themeSettingsService.getLogoURL()).build();
 	}
 
 	@PUT
@@ -79,13 +83,18 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	@Path("newLogo.png")
 	@Produces("image/png")
 	public Response retrieveLogo() throws IOException {
-		return Response.ok(themeSettingsService.getCustomLogo(), "image/png").build();
+		if(themeSettingsService.isCustomLogo()){
+			return Response.ok(themeSettingsService.getCustomLogo(), "image/png").build();
+		}else{
+			return Response.seeOther(URI.create(helper.instUrl(helper.url("images/new-equella-logo.png")))).build();
+		}
 	}
 
 	@GET
 	@Path("customlogo.js")
 	@Produces("application/javascript")
-	public Response retrieveCustomLogoURL() {
-		return Response.ok().entity("var logoURL = \"" + themeSettingsService.getLogoURL()+"\";").build();
+	public Response retrieveCustomLogoURL(@Context UriInfo info) {
+		String logoURL = info.getBaseUriBuilder().path(NewUIThemeResource.class).path(NewUIThemeResource.class, "retrieveLogo").build().toASCIIString();
+		return Response.ok().entity("var logoURL = \"" + logoURL + "\";").build();
 	}
 }

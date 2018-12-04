@@ -17,8 +17,10 @@
 package com.tle.core.settings.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tle.common.Check;
 import com.tle.core.filesystem.CustomisationFile;
 import com.tle.core.guice.Bind;
+import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.settings.service.ConfigurationService;
@@ -49,6 +51,8 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
 	FileSystemService fileSystemService;
 	@Inject
 	private static PluginResourceHelper helper = ResourcesService.getResourceHelper(ThemeSettingsServiceImpl.class);
+	@Inject
+	ObjectMapperService objectMapperService;
 
 	private static final String PERMISSION_KEY = "EDIT_SYSTEM_SETTINGS";
 	private static final String LOGO_FILENAME = "newLogo.png";
@@ -57,10 +61,10 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
 	private static final String EQUELLA_LOGO_URL = helper.instUrl(helper.url("images/new-equella-logo.png"));
 
 	@Override
-	public String getTheme() throws JsonProcessingException {
+	public NewUITheme getTheme() throws IOException {
 		String themeString = configurationService.getProperty(THEME_KEY);
 		//use default theme if none exists in database
-		return themeString.isEmpty() ? new NewUITheme().toJSONString() : themeString;
+		return Check.isEmpty(themeString) ? new NewUITheme() : objectMapperService.createObjectMapper().readValue(themeString,NewUITheme.class);
 	}
 
 	@Override
@@ -83,22 +87,20 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
 	}
 
 	@Override
-	public boolean getCustomLogoStatus() {
+	public boolean isCustomLogo() {
 		CustomisationFile customisationFile = new CustomisationFile();
 		return fileSystemService.fileExists(customisationFile, LOGO_FILENAME);
 	}
 
 	@Override
-	public boolean setTheme(NewUITheme theme) throws JsonProcessingException {
+	public void setTheme(NewUITheme theme) throws JsonProcessingException {
 		checkPermissions();
 		String themeString = theme.toJSONString();
 		configurationService.setProperty(THEME_KEY, themeString);
-		return true;
-
 	}
 
 	@Override
-	public boolean setLogo(File logoFile) throws IOException {
+	public void setLogo(File logoFile) throws IOException {
 		checkPermissions();
 		CustomisationFile customisationFile = new CustomisationFile();
 		//read in image file
@@ -120,14 +122,13 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
 		ImageIO.write(rImage, "png", os);
 		InputStream fis = new ByteArrayInputStream(os.toByteArray());
 		fileSystemService.write(customisationFile, LOGO_FILENAME, fis, false);
-		return true;
 	}
 
 	@Override
-	public boolean deleteLogo() {
+	public void deleteLogo() {
 		checkPermissions();
 		CustomisationFile customisationFile = new CustomisationFile();
-		return fileSystemService.removeFile(customisationFile, LOGO_FILENAME);
+		fileSystemService.removeFile(customisationFile, LOGO_FILENAME);
 	}
 
 	private void checkPermissions() {
