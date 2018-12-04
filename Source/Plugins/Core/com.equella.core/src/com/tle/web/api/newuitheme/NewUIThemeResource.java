@@ -48,6 +48,12 @@ public interface NewUIThemeResource {
 	@Produces("image/png")
 	Response retrieveLogo() throws IOException;
 
+	@GET
+	@Path("settings")
+	@ApiParam("Retrieves the current institution's theme settings from the database.")
+	@Produces("application/json")
+	Response retrieveTheme() throws IOException;
+
 	@PUT
 	@Path("settings")
 	@ApiParam("Changes the theme settings of the current institution.")

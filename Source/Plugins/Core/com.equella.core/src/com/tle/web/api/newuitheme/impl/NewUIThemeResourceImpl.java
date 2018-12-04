@@ -23,10 +23,7 @@ import java.net.URI;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 
 import com.tle.core.guice.Bind;
 import com.tle.core.jackson.ObjectMapperService;
@@ -50,6 +47,23 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	@Inject
 	ObjectMapperService objectMapperService;
 
+	@GET
+	@Path("newLogo.png")
+	@Produces("image/png")
+	public Response retrieveLogo() throws IOException {
+		if(themeSettingsService.isCustomLogo()){
+			return Response.ok(themeSettingsService.getCustomLogo(), "image/png").build();
+		}else{
+			return Response.seeOther(URI.create(helper.instUrl(helper.url("images/new-equella-logo.png")))).build();
+		}
+	}
+
+	@GET
+	@Path("settings")
+	@Produces("application/json")
+	public Response retrieveTheme() throws IOException {
+		return Response.ok(themeSettingsService.getTheme(), MediaType.APPLICATION_JSON).build();
+	}
 	@GET
 	@Path("theme.js")
 	@Produces("application/javascript")
@@ -78,17 +92,6 @@ public class NewUIThemeResourceImpl implements NewUIThemeResource {
 	public Response resetLogo() {
 		themeSettingsService.deleteLogo();
 		return Response.accepted().build();
-	}
-
-	@GET
-	@Path("newLogo.png")
-	@Produces("image/png")
-	public Response retrieveLogo() throws IOException {
-		if(themeSettingsService.isCustomLogo()){
-			return Response.ok(themeSettingsService.getCustomLogo(), "image/png").build();
-		}else{
-			return Response.seeOther(URI.create(helper.instUrl(helper.url("images/new-equella-logo.png")))).build();
-		}
 	}
 
 }
