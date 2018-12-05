@@ -198,6 +198,10 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                     .then(_ => thiss.setState({changed:false, justSaved: true}))
                     .catch(r => thiss.setState({errored: true}))
                 }
+                else 
+                {
+                    thiss.setState({activeTab: 0})
+                }
             });
         }
     }
@@ -418,7 +422,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                             <TextField id="students" 
                                 label={strings.students.label}
                                 //helperText=""
-                                value={students || ''}
+                                value={students}
                                 onInput={this.handleIntChange('students')}
                                 margin="normal"
                                 className={classes.formControl}

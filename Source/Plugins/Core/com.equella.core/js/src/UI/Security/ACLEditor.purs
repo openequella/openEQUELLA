@@ -246,7 +246,7 @@ aclEditorClass = withStyles styles $ R.component "AclEditor" $ \this -> do
         ]
 
       commonPanel = let 
-        dialChange = DialState
+        dialChange = d <<< DialState
         closeDial = dialChange $ const false
         openDial = dialChange $ const true
         in [ 
