@@ -33,7 +33,7 @@ declare const logoURL: string;
  */
 export const strings = prepLangStrings("newuisettings",
   {
-    title: "New UI Settings",
+    title: "Theme Settings",
     colourschemesettings: {
       title: "Colour Scheme",
       primarycolour: "Primary Colour",
