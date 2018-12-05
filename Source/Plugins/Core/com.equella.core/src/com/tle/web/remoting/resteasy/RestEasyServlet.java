@@ -17,7 +17,6 @@
 package com.tle.web.remoting.resteasy;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -51,6 +50,7 @@ import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.jboss.resteasy.spi.*;
 import org.jboss.resteasy.util.GetRestful;
 import scala.collection.GenTraversableOnce;
+import com.tle.web.api.newuitheme.NewUIThemeResource;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -67,8 +67,7 @@ import java.util.*;
 @Bind
 @Singleton
 @SuppressWarnings("nls")
-public class RestEasyServlet extends HttpServletDispatcher implements MapperExtension
-{
+public class RestEasyServlet extends HttpServletDispatcher implements MapperExtension {
 	private static final long serialVersionUID = 1L;
 
 	@Inject
@@ -84,18 +83,13 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 
 	@Override
 	protected void service(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
-		throws ServletException, IOException
-	{
+		throws ServletException, IOException {
 		userSessionService.preventSessionUse();
-		try
-		{
+		try {
 			super.service(httpServletRequest, httpServletResponse);
-		}
-		catch( Exception e )
-		{
-			if( e instanceof org.jboss.resteasy.spi.UnhandledException
-				&& e.getCause() instanceof org.apache.catalina.connector.ClientAbortException )
-			{
+		} catch (Exception e) {
+			if (e instanceof org.jboss.resteasy.spi.UnhandledException
+				&& e.getCause() instanceof org.apache.catalina.connector.ClientAbortException) {
 				// do nothing
 				return;
 			}
@@ -104,8 +98,7 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 	}
 
 	@Override
-	public void init(final ServletConfig servletConfig) throws ServletException
-	{
+	public void init(final ServletConfig servletConfig) throws ServletException {
 		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 		super.init(servletConfig);
 
@@ -125,6 +118,9 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 		classes.add(UserQueryResource.class);
 		registry.addSingletonResource(new AclResource());
 		classes.add(AclResource.class);
+		registry.addResourceFactory(new BeanLocatorResource(NewUIThemeResource.class, coreLocator));
+		classes.add(NewUIThemeResource.class);
+
 		registry.addSingletonResource(new GdprResource());
 		classes.add(GdprResource.class);
 		registry.addSingletonResource(new LegacyContentApi());
@@ -144,29 +140,24 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 		providerFactory.registerProvider(CharsetInterceptor.class);
 		providerFactory.registerProviderInstance(institutionSecurityFilter);
 		List<Extension> extensions = tracker.getExtensions();
-		for( Extension extension : extensions )
-		{
+		for (Extension extension : extensions) {
 			String pluginId = extension.getDeclaringPluginDescriptor().getId();
 			PluginBeanLocator beanLocator = pluginService.getBeanLocator(pluginId);
 			Collection<Parameter> clazzParams = extension.getParameters("class");
 
-			for( Parameter parameter : clazzParams )
-			{
+			for (Parameter parameter : clazzParams) {
 				Parameter subParameter = parameter.getSubParameter("doc-listing");
-				if( subParameter != null )
-				{
+				if (subParameter != null) {
 					Class<?> clazz = tracker.getClassForName(extension, subParameter.valueAsString());
 					registry.addResourceFactory(new BeanLocatorResource(clazz, beanLocator));
-					if( GetRestful.isRootResource(clazz) )
-					{
+					if (GetRestful.isRootResource(clazz)) {
 						classes.add(clazz);
 					}
 				}
 
 				Class<?> clazz = tracker.getClassForName(extension, parameter.valueAsString());
 				registry.addResourceFactory(new BeanLocatorResource(clazz, beanLocator));
-				if( GetRestful.isRootResource(clazz) )
-				{
+				if (GetRestful.isRootResource(clazz)) {
 					classes.add(clazz);
 				}
 			}
@@ -174,13 +165,11 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 	}
 
 	@Provider
-	public class JsonContextResolver implements ContextResolver<ObjectMapper>
-	{
+	public class JsonContextResolver implements ContextResolver<ObjectMapper> {
 		private final ObjectMapper objectMapper;
 		private final ObjectMapper scalaObjectMapper;
 
-		public JsonContextResolver()
-		{
+		public JsonContextResolver() {
 			objectMapper = objectMapperService.createObjectMapper("rest");
 			scalaObjectMapper = objectMapperService.createObjectMapper("rest");
 			scalaObjectMapper.registerModule(new DefaultScalaModule());
@@ -188,55 +177,46 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 		}
 
 		@Override
-		public ObjectMapper getContext(Class<?> beanClass)
-		{
-			if (scala.Product.class.isAssignableFrom(beanClass) || GenTraversableOnce.class.isAssignableFrom(beanClass))
-			{
+		public ObjectMapper getContext(Class<?> beanClass) {
+			if (scala.Product.class.isAssignableFrom(beanClass) || GenTraversableOnce.class.isAssignableFrom(beanClass)) {
 				return scalaObjectMapper;
 			}
 			return objectMapper;
 		}
 	}
 
-	public static class BeanLocatorResource implements ResourceFactory
-	{
+	public static class BeanLocatorResource implements ResourceFactory {
 		private final Class<?> clazz;
 		private final PluginBeanLocator locator;
 
 		// private Object cachedObject;
 
-		public BeanLocatorResource(Class<?> clazz, PluginBeanLocator locator)
-		{
+		public BeanLocatorResource(Class<?> clazz, PluginBeanLocator locator) {
 			this.clazz = clazz;
 			this.locator = locator;
 		}
 
 		@Override
-		public void unregistered()
-		{
+		public void unregistered() {
 			// nothing
 		}
 
 		@Override
-		public void requestFinished(HttpRequest request, HttpResponse response, Object resource)
-		{
+		public void requestFinished(HttpRequest request, HttpResponse response, Object resource) {
 			// nothing
 		}
 
 		@Override
-		public void registered(ResteasyProviderFactory factory)
-		{
+		public void registered(ResteasyProviderFactory factory) {
 			// nothing
 		}
 
 		@Override
-		public Class<?> getScannableClass()
-		{
+		public Class<?> getScannableClass() {
 			return clazz;
 		}
 
-		private synchronized Object getCachedObject()
-		{
+		private synchronized Object getCachedObject() {
 			// if( cachedObject == null )
 			// {
 			// cachedObject = locator.getBeanForType(clazz);
@@ -246,15 +226,13 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 		}
 
 		@Override
-		public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
-		{
+		public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory) {
 			return getCachedObject();
 		}
 	}
 
 	@Override
-	public void extendMapper(ObjectMapper mapper)
-	{
+	public void extendMapper(ObjectMapper mapper) {
 		SimpleModule restModule = new SimpleModule("RestModule");
 		restModule.addSerializer(new I18NSerializer());
 		mapper.registerModule(restModule);
@@ -264,18 +242,15 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
 		mapper.setSerializationInclusion(Include.NON_ABSENT);
 
 		// dev mode!
-		if( DebugSettings.isDebuggingMode() )
-		{
+		if (DebugSettings.isDebuggingMode()) {
 			mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 		}
 		mapper.setDateFormat(new ISO8061DateFormatWithTZ());
 
 	}
 
-	public static class JavaTypesModule extends SimpleModule
-	{
-		public JavaTypesModule()
-		{
+	public static class JavaTypesModule extends SimpleModule {
+		public JavaTypesModule() {
 			super("JavaTypesModule");
 			addAbstractTypeMapping(Map.class, HashMap.class);
 			addAbstractTypeMapping(Set.class, HashSet.class);

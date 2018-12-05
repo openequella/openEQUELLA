@@ -4,6 +4,7 @@ import Prelude
 
 import Control.Monad.Reader (runReaderT)
 import Control.Monad.Trans.Class (lift)
+import Control.MonadZero (guard)
 import Data.Argonaut (decodeJson, encodeJson)
 import Data.Either (either)
 import Data.Lens.Iso.Newtype (_Newtype)
@@ -16,18 +17,24 @@ import Dispatcher.React (getState, modifyState, renderer)
 import Effect.Aff (Fiber, Milliseconds(..), delay, error, forkAff, killFiber)
 import Effect.Class.Console (log)
 import Effect.Uncurried (mkEffectFn2)
+import MaterialUI.Button (button)
+import MaterialUI.Enums (body1, contained, onClick)
 import MaterialUI.ExpansionPanelDetails (expansionPanelDetails_)
 import MaterialUI.FormControl (formControl_)
 import MaterialUI.FormControlLabel (formControlLabel')
 import MaterialUI.Styles (withStyles)
 import MaterialUI.Switch (switch')
+import MaterialUI.Typography (typography)
 import Network.HTTP.Affjax (get, put_)
 import Network.HTTP.Affjax.Request (json)
 import Network.HTTP.Affjax.Response (json) as Resp
 import OEQ.Data.Settings (NewUISettings(..), UISettings(..))
 import OEQ.Environment (baseUrl, prepLangStrings)
+import OEQ.MainUI.Routes (Route(..), routeHref)
 import React (ReactElement, component, unsafeCreateLeafElement)
+import React.DOM (a, text)
 import React.DOM as D
+import React.DOM.Props (href)
 import React.DOM.Props as DP
 
 
@@ -57,22 +64,31 @@ uiSettingsEditor = flip unsafeCreateLeafElement {} $ withStyles styles $ compone
     render {state: s@{settings:UISettings uis@{newUI: (NewUISettings newUI)}}, props: {classes}} =
       let
         disabled = not newUI.enabled
+        themePageLink = routeHref ThemePage
       in
       expansionPanelDetails_ [
-        D.div [DP.className classes.enableColumn] [
-          formControl_ [
-            formControlLabel' { label: string.enableNew, control: switch' { checked: newUI.enabled,
-                            disabled: s.disabled, onChange: mkEffectFn2 $ \e -> d <<< SetNewUI} }
+        D.div' [
+          D.div [DP.className classes.enableColumn] $[
+            formControl_ [
+              formControlLabel' { label: string.enableNew, control: switch' { checked: newUI.enabled,
+                              disabled: s.disabled, onChange: mkEffectFn2 $ \e -> d <<< SetNewUI} }
+            ]
+          ] <> (guard newUI.enabled $> 
+          D.div'[
+
+            D.div [DP.className classes.facetColumn] $ [
+              formControl_ [
+                formControlLabel' {label: string.enableSearch, control: switch' {checked: newUI.newSearch,
+                               disabled, onChange: mkEffectFn2 \e -> d <<< SetNewSearch }}
+              ]
+            ],          
+              button
+              {onClick: themePageLink.onClick, variant: contained, disabled}
+              [text string.themeSettingsButton]
           ]
-        ],
-        D.div [DP.className classes.facetColumn] $ [
-          formControl_ [
-            formControlLabel' {label: string.enableSearch, control: switch' {checked: newUI.newSearch,
-                            disabled, onChange: mkEffectFn2 \e -> d <<< SetNewSearch }}
-          ]
+          )
         ]
       ]
-
     save = do
       {saving} <- getState
       newFiber <- lift $ forkAff $ do
@@ -124,6 +140,7 @@ rawStrings :: { prefix :: String
                         }
              , enableNew :: String
              , enableSearch :: String
+             , themeSettingsButton :: String
              }
 }
 rawStrings = {
@@ -135,6 +152,7 @@ rawStrings = {
       title: "Search facets"
     },
     enableNew: "Enable new UI",
-    enableSearch: "Enable new search page"
+    enableSearch: "Enable new search page",
+    themeSettingsButton: "Edit Theme Settings"
   }
 }

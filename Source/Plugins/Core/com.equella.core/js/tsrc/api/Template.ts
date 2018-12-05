@@ -1,5 +1,6 @@
 import { ReactNode, ReactChild } from "react";
 import { Route } from "./routes";
+import { ErrorResponse } from "./errors";
 
 export interface TemplateProps {
     title: String;
@@ -19,4 +20,6 @@ export interface TemplateProps {
     backRoute?: Route;
     /* Markup to show at the bottom of the main area. E.g. save/cancel options */
     footer?: ReactNode;
+    /* Unexpected errors can be displayed by setting this property */
+    errorResponse?: ErrorResponse;
 }

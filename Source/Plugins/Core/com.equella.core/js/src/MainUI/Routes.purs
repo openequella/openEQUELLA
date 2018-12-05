@@ -43,7 +43,8 @@ data Route =
     CoursesPage | 
     CourseEdit String |
     ViewItemPage ItemRef |
-    NewCourse
+    ThemePage |
+    NewCourse 
 
 navGlobals :: forall route. {nav::PushStateInterface, preventNav :: Ref (EffectFn1 route Boolean)}
 navGlobals = unsafePerformEffect do 
@@ -78,8 +79,10 @@ routeMatch =
         SettingsPage <$ (lit "settings") <|>
         NewCourse <$ (lit "course" *> lit "new") <|>
         CourseEdit <$> (lit "course" *> str <* lit "edit") <|>
-        CoursesPage <$ (lit "course")) 
-    <|> (LegacyPage <$> legacyRoute)
+        CoursesPage <$ (lit "course") <|>
+        ThemePage <$ (lit "themeconfiguration"))
+        <|> (LegacyPage <$> legacyRoute) 
+
 
 matchRoute :: String -> Maybe Route 
 matchRoute = match routeMatch >>> (either (const Nothing) Just)
@@ -119,6 +122,7 @@ routeURI r = (case r of
     SettingsPage -> "page/settings"
     CoursesPage -> "page/course"
     NewCourse -> "page/course/new"
+    ThemePage -> "page/themeconfiguration"
     CourseEdit cid -> "page/course/" <> cid <> "/edit"
     ViewItemPage (ItemRef uuid version) -> "integ/gen/" <> uuid <> "/" <> show version
     LegacyPage (LegacyURI path params) -> 

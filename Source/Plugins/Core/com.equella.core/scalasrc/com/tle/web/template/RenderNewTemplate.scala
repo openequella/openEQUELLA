@@ -47,7 +47,11 @@ object RenderNewTemplate {
 
   val bundleJs = new PreRenderable {
     override def preRender(info: PreRenderContext): Unit =
+    {
       new IncludeFile(s"api/language/bundle/${LocaleLookup.selectLocale.getLocale.toLanguageTag}/bundle.js").preRender(info)
+      new IncludeFile(s"api/theme/theme.js").preRender(info)
+    }
+
   }
 
 
@@ -57,7 +61,8 @@ object RenderNewTemplate {
     Option(info.getAttribute(NewLayoutKey)).getOrElse {
       val paramOverride = Option(info.getRequest.getParameter("old")).map(!_.toBoolean)
       val sessionOverride = paramOverride.fold(Option(LegacyGuice.userSessionService.getAttribute[Boolean](NewLayoutKey))) {
-        newUI => LegacyGuice.userSessionService.setAttribute(NewLayoutKey, newUI)
+        newUI =>
+          LegacyGuice.userSessionService.setAttribute(NewLayoutKey, newUI)
           Some(newUI)
       }
       val newLayout = sessionOverride.getOrElse {
@@ -73,19 +78,20 @@ object RenderNewTemplate {
       writer.getInfo() match {
         case src: StandardRenderContext =>
           src.getJsFiles.asScala.foreach {
-            s => writer.writeTag("script", "src", s)
+            s =>
+              writer.writeTag("script", "src", s)
               writer.endTag("script")
           }
           src.getCssFiles.asScala.foreach {
-            s : CssInclude => writer.writeTag("link", "rel", "stylesheet", "type", "text/css",
-              "href", s.getHref(src))
+            s: CssInclude =>
+              writer.writeTag("link", "rel", "stylesheet", "type", "text/css",
+                "href", s.getHref(src))
               writer.endTag("link")
           }
       }
   })
 
-  def renderNewHtml(context: RenderEventContext, viewFactory: FreemarkerFactory): SectionResult =
-  {
+  def renderNewHtml(context: RenderEventContext, viewFactory: FreemarkerFactory): SectionResult = {
     val req = context.getRequest
     val _renderData = new ObjectExpression("baseResources", r.url(""),
       "newUI", java.lang.Boolean.TRUE)
@@ -96,15 +102,13 @@ object RenderNewTemplate {
   }
 
   def renderReact(context: RenderEventContext, viewFactory: FreemarkerFactory, renderData: ObjectExpression,
-                  scriptUrl: String): SectionResult =
-  {
+                  scriptUrl: String): SectionResult = {
     context.preRender(JQueryCore.PRERENDER)
     if (DebugSettings.isAutoTestMode) {
       context.preRender(RenderTemplate.AUTOTEST_JS)
     }
 
-    if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident")))
-    {
+    if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident"))) {
       context.getPreRenderContext.addJs("https://cdn.polyfill.io/v2/polyfill.min.js?features=es6")
     }
     context.preRender(bundleJs)
@@ -114,10 +118,12 @@ object RenderNewTemplate {
       TemplateScript(scriptUrl, renderData, tempResult, ""))
   }
 
-  case class TemplateScript(getScriptUrl : String,  getRenderJs: ObjectExpression, getTemplate: TemplateResult, htmlAttributes: String)
-  {
+  case class TemplateScript(getScriptUrl: String, getRenderJs: ObjectExpression, getTemplate: TemplateResult, htmlAttributes: String) {
     def getLang = LocaleUtils.toHtmlLang(CurrentLocale.getLocale)
+
     def isRightToLeft = CurrentLocale.isRightToLeft
+
     def getHtmlAttrs = htmlAttributes
   }
+
 }

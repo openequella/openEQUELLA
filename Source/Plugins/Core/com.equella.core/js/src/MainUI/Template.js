@@ -1,8 +1,9 @@
-
 exports.renderData = function()
 {
     return typeof renderData != "undefined" ? renderData : {newUI:false};
 }();
+
+exports.logoPath = logoURL;
 
 exports.preventUnload = function(e) {
     e.returnValue = "Are you sure?";

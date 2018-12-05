@@ -114,6 +114,8 @@ foreign import renderData :: RenderData
 
 foreign import setDocumentTitle :: String -> Effect Unit 
 
+foreign import logoPath :: String
+
 newtype TemplateRef = TemplateRef (ReactThis {|TemplateProps} State)
 
 type TemplateProps = (
@@ -225,7 +227,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
         toMaybe props.errorResponse <#> \{code, error, description} -> messageInfo {
                               open: state.errorOpen, 
                               onClose: d CloseError, 
-                              title: fromMaybe error description, 
+                              title: fromMaybe error $ toMaybe description, 
                               code: toNullable $ Just code, 
                               variant: String.error 
                             }
@@ -326,7 +328,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       menuContent = [D.div [DP.className classes.logo] [ D.img [ DP.role "presentation", DP.src logoSrc] ]] <>
                     intercalate [divider_ []] (map group $ fromMaybe [] $ userMaybe _menuGroups)
         where 
-          logoSrc = renderData.baseResources <> "images/new-equella-logo.png"
+          logoSrc = logoPath
           group items = [list {component: "nav"} (navItem <$> items)]
           navItem (MenuItem {title,systemIcon,route}) = linkProps
             [

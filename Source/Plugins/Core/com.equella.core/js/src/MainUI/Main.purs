@@ -23,11 +23,12 @@ import OEQ.Utils.Polyfills (polyfill)
 import React (component, unsafeCreateLeafElement)
 import React.DOM (div')
 import Routing.PushState (matchesWith)
-import TSComponents (courseEdit, coursesPage)
+import TSComponents (courseEdit, coursesPage, themePageClass)
 import Web.HTML (window)
 import Web.HTML.Location (pathname)
 import Web.HTML.Window (location)
-
+import Bridge (tsBridge)
+import Effect.Console (log)
 data RouterCommand = Init | ChangeRoute Route
 type State = {route::Maybe Route}
 
@@ -58,6 +59,7 @@ main = do
           SettingsPage -> settingsPage {legacyMode:false}
           CoursesPage -> coursesPage
           NewCourse -> courseEdit Nothing
+          ThemePage -> unsafeCreateLeafElement themePageClass {bridge:tsBridge}
           CourseEdit cid -> courseEdit $ Just cid
           ViewItemPage (ItemRef uuid version) -> viewItemPage {uuid,version}
           LegacyPage page -> legacy {page} 

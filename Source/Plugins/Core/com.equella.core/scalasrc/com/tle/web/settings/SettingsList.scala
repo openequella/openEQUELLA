@@ -83,7 +83,6 @@ object SettingsList {
   val htmlEditorSettings = CoreSettingsPage("htmleditor", General, "htmledit.settings.title", "htmledit.settings.description",
     "access/editoradmin.do", htmlEditorPrivProvider.isAuthorised)
 
-
   val externalToolsSettings = CoreSettingsPage("externaltools", Integration, "tools.settings.title", "tools.settings.description",
     "access/externaltools.do", () => !aclManager.filterNonGrantedPrivileges(ExternalToolConstants.PRIV_CREATE_TOOL, ExternalToolConstants.PRIV_EDIT_TOOL).isEmpty)
 
