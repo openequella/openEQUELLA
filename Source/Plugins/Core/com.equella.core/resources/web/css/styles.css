@@ -1467,22 +1467,8 @@ Expandable button
     display: flex;
 }
 
-
-
 /* Autocomplete dropdown */
-.autocomplete-result {
-}
-.autocomplete-result-title {
-}
-.autocomplete-result-description {
-}
 
-select {
-}
-
-.equella-dropdown {
-    /*z-index: 999999 !important;*/
-}
 .equella-dropdown-list {
     z-index: 999999 !important;
 }
