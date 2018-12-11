@@ -2,9 +2,9 @@ module OEQ.Data.Settings where
 
 import Prelude
 
-import Data.Argonaut (class DecodeJson, class EncodeJson, decodeJson, jsonEmptyObject, (.?), (.??), (:=), (~>))
+import Data.Argonaut (class DecodeJson, Json, decodeJson, jsonEmptyObject, (.?), (.??), (:=), (~>))
+import Data.Either (Either)
 import Data.Maybe (Maybe)
-import Data.Newtype (class Newtype)
 
 newtype Setting = Setting {
   id :: String,
@@ -25,31 +25,28 @@ instance decodeSetting :: DecodeJson Setting where
     pageUrl <- links .?? "web"
     pure $ Setting {id,group,name,description,pageUrl}
 
-newtype NewUISettings = NewUISettings { enabled :: Boolean, newSearch :: Boolean }
-newtype UISettings = UISettings { newUI :: NewUISettings }
-
-derive instance newtypeUISettings :: Newtype UISettings _
-derive instance newtypeNewUISettings :: Newtype NewUISettings _
+type NewUISettings = { enabled :: Boolean, newSearch :: Boolean }
+type UISettings = { newUI :: NewUISettings }
 
 
-instance decNewUISettings :: DecodeJson NewUISettings where
-  decodeJson v = do
-    o <- decodeJson v
-    enabled <- o .? "enabled"
-    newSearch <- o .? "newSearch"
-    pure $ NewUISettings {enabled,newSearch}
+decodeNewUISettings :: Json -> Either String NewUISettings
+decodeNewUISettings v = do
+  o <- decodeJson v
+  enabled <- o .? "enabled"
+  newSearch <- o .? "newSearch"
+  pure $ {enabled,newSearch}
 
-instance decUISettings :: DecodeJson UISettings where
-  decodeJson v = do
-    o <- decodeJson v
-    newUI <- o .? "newUI"
-    pure $ UISettings {newUI}
+decodeUISettings :: Json -> Either String UISettings
+decodeUISettings v = do
+  o <- decodeJson v
+  newUI <- o .? "newUI" >>= decodeNewUISettings
+  pure $ {newUI}
 
-instance encNewUISettings :: EncodeJson NewUISettings where
-  encodeJson (NewUISettings {enabled,newSearch}) =
-     "enabled" := enabled ~>
-     "newSearch" := newSearch ~>
-     jsonEmptyObject
+encodeNewUISettings :: NewUISettings -> Json
+encodeNewUISettings {enabled,newSearch} =
+    "enabled" := enabled ~>
+    "newSearch" := newSearch ~>
+    jsonEmptyObject
 
-instance encUISettings :: EncodeJson UISettings where
-  encodeJson (UISettings {newUI}) = "newUI" := newUI ~> jsonEmptyObject
+encodeUISettings :: UISettings -> Json
+encodeUISettings {newUI} = "newUI" := encodeNewUISettings newUI ~> jsonEmptyObject
