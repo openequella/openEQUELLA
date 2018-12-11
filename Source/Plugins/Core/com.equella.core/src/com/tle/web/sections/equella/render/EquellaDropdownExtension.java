@@ -28,8 +28,8 @@ import com.tle.web.sections.standard.RendererFactory;
 import com.tle.web.sections.standard.RendererFactoryExtension;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlListState;
-import com.tle.web.sections.standard.renderers.list.DropDownRenderer;
-import com.tle.web.template.RenderNewTemplate;
+
+import static com.tle.web.sections.standard.RendererConstants.DROPDOWN;
 
 /**
  * plugin defines the stateClassName as HtmlListState
@@ -38,6 +38,9 @@ import com.tle.web.template.RenderNewTemplate;
 @Singleton
 public class EquellaDropdownExtension implements RendererFactoryExtension
 {
+	public static String AUTOCOMPLETE_RENDERER = "autocomplete";
+	private static String AUTOCOMPLETE_FULL = AUTOCOMPLETE_RENDERER + "_" + DROPDOWN;
+
 	@Inject
 	private AccessibilityModeService acMode;
 
@@ -63,7 +66,10 @@ public class EquellaDropdownExtension implements RendererFactoryExtension
 		{
 			return new BootstrapSplitDropDownRenderer((HtmlListState) state, ButtonType.NAV);
 		}
-
-		return new AutocompleteDropdownRenderer(htmlListState);
+		else if (renderer.equals(AUTOCOMPLETE_FULL))
+		{
+			return new AutocompleteDropdownRenderer(htmlListState);
+		}
+		return new StylishDropDownRenderer(htmlListState);
 	}
 }

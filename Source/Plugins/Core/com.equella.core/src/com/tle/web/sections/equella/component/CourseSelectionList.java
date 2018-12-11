@@ -43,6 +43,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.tle.web.sections.equella.render.EquellaDropdownExtension.AUTOCOMPLETE_RENDERER;
+
 @Bind
 @NonNullByDefault
 public class CourseSelectionList extends SingleSelectionList<CourseInfo>
@@ -96,6 +98,7 @@ public class CourseSelectionList extends SingleSelectionList<CourseInfo>
 		super.extraHtmlRender(info);
 
 		final HtmlListState listState = getModel(info);
+		listState.setRendererType(AUTOCOMPLETE_RENDERER);
 		listState.setAttribute(AutocompleteDropdownRenderer.AutocompleteDropdownRenderOptions.class,
 				new AutocompleteDropdownRenderer.AutocompleteDropdownRenderOptions(){
 			@Override
