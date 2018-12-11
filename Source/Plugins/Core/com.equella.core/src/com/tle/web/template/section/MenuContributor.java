@@ -35,6 +35,7 @@ public interface MenuContributor
 		private final int linkPriority;
 		private final String systemIcon;
 		private final String route;
+		private boolean customImage;
 
 		public MenuContribution(HtmlLinkState link, String backgroundImage, int groupPriority, int linkPriority, String systemIcon,
 								String route)
@@ -70,6 +71,16 @@ public interface MenuContributor
 		public String getBackgroundImagePath()
 		{
 			return backgroundImagePath;
+		}
+
+		public boolean isCustomImage()
+		{
+			return customImage;
+		}
+
+		public void setCustomImage(boolean customImage)
+		{
+			this.customImage = customImage;
 		}
 
 		public int getGroupPriority()

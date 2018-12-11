@@ -66,7 +66,8 @@ case class InternalRedirect(route: String, userUpdated: Boolean)
 
 case class ExternalRedirect(href: String)
 
-case class MenuItem(title: String, href: Option[String], systemIcon: Option[String], route: Option[String])
+case class MenuItem(title: String, href: Option[String], systemIcon: Option[String], route: Option[String],
+                    iconUrl: Option[String], newWindow: Boolean)
 
 case class LegacyContent
 (html: Map[String, String],
@@ -94,15 +95,15 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
 
   import LegacyGuice.urlService
 
-  def relativeURI(uri: String): Option[String] = {
+  def relativeURI(uri: String): Option[RelativeUrl] = {
     val baseUrl = AbsoluteUrl.parse(urlService.getBaseInstitutionURI.toString)
     val Host = baseUrl.host
     val Port = baseUrl.port
     val basePaths = baseUrl.path.parts.filter(_.length > 0)
     Url.parse(uri) match {
-      case RelativeUrl(RootlessPath(_), _, _) => Some(uri)
+      case r: RelativeUrl => Some(r)
       case AbsoluteUrl(_, Authority(_, Host, Port), path, q, f) if path.parts.startsWith(basePaths) =>
-        Some(RelativeUrl(RootlessPath(path.parts.drop(basePaths.length)), q, f).toString())
+        Some(RelativeUrl(RootlessPath(path.parts.drop(basePaths.length)), q, f))
       case _ => None
     }
   }
@@ -260,12 +261,16 @@ class LegacyContentApi {
             val menuLink = mc.getLink
             val href = Option(menuLink.getBookmark).getOrElse(
               new BookmarkAndModify(context, menuLink.getHandlerMap.getHandler("click").getModifier)).getHref
-            val relativized = LegacyContentController.relativeURI(href)
-
+            val relativized = LegacyContentController.relativeURI(href).filter(_.path.parts.last.endsWith(".do"))
+            val route = Option(mc.getRoute)
+            val iconUrl = if (mc.isCustomImage) Some(mc.getBackgroundImagePath) else None
             MenuItem(menuLink.getLabelText,
-              None,
+              if (relativized.isEmpty && route.isEmpty) Some(href) else None,
               Option(mc.getSystemIcon),
-              Option(mc.getRoute).orElse(relativized))
+              route.orElse(relativized.map(_.toString)),
+              iconUrl,
+              "_blank" == menuLink.getTarget
+            )
           }
       }
     }

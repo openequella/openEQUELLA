@@ -110,7 +110,9 @@ public class CustomLinksMenuContributor implements MenuContributor
 		link.setLabel(new TextLabel(name));
 		link.setTarget(target);
 
-		return new MenuContribution(link, iconUrl, 20, order);
+		MenuContribution mc = new MenuContribution(link, iconUrl, 20, order);
+		mc.setCustomImage(true);
+		return mc;
 	}
 
 	@Override
