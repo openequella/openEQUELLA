@@ -28,8 +28,6 @@ import com.tle.web.sections.standard.RendererFactory;
 import com.tle.web.sections.standard.RendererFactoryExtension;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlListState;
-import com.tle.web.sections.standard.renderers.list.DropDownRenderer;
-import com.tle.web.template.RenderNewTemplate;
 
 import static com.tle.web.sections.standard.RendererConstants.DROPDOWN;
 
@@ -70,7 +68,7 @@ public class EquellaDropdownExtension implements RendererFactoryExtension
 		}
 		else if (renderer.equals(AUTOCOMPLETE_FULL))
 		{
-				return new AutocompleteDropdownRenderer(htmlListState);
+			return new AutocompleteDropdownRenderer(htmlListState);
 		}
 		return new StylishDropDownRenderer(htmlListState);
 	}

@@ -44,7 +44,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.tle.web.sections.equella.render.EquellaDropdownExtension.AUTOCOMPLETE_RENDERER;
-import static com.tle.web.sections.standard.RendererConstants.DROPDOWN;
 
 @Bind
 @NonNullByDefault
