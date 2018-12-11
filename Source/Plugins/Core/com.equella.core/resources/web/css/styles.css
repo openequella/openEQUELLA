@@ -628,8 +628,8 @@ select,select option {
 	background-color: #FFFFFF;
 }
 
-.MuiSwitchBase-input-151{
-  opacity: 0 !important;
+#settingsPage input[disabled]{
+  opacity: 0;
 }
 
 input[disabled],input[disabled="disabled"],textarea[disabled],textarea[disabled="disabled"],select[disabled]+.newListSelected,select[disabled="disabled"]+.newListSelected
