@@ -1,0 +1,126 @@
+/* select box replacements */
+.newListSelected {
+	background: url(../../images/stylishSelect/select-down.png) right 5px
+		no-repeat #fff;
+	border: 1px solid #cfcbbe;
+	border-right: 1px solid #c3beae;
+	border-top: 1px solid #7e765e;
+	font-size: 12px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-left: 6px;
+	padding-right: 6px;
+	color: #4B4842;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+/*http://jira.pearsoncmg.com/jira/browse/EQ-1459*/
+.newListSelected.showUp {
+	background: url(../../images/stylishSelect/select-up.png) right 5px
+		no-repeat #fff;
+}
+
+html[dir="rtl"] .newListSelected {
+	background-position: 5px 5px;
+}
+
+.newListSelected.newListSelFocus {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	-moz-border-radius-bottomleft: 0;
+	-moz-border-radius-bottomright: 0;
+	-webkit-border-bottom-left-radius: 0;
+	-webkit-border-bottom-right-radius: 0;
+}
+
+.selectedTxt {
+	overflow: hidden;
+	white-space: nowrap;
+	padding-top: 1px;
+	padding-right: 20px;
+	padding-bottom: 1px;
+	padding-left: 0px;
+}
+
+html[dir="rtl"] .selectedTxt {
+	padding-right: 0;
+	padding-left: 20px;
+}
+
+.newList {
+	position: absolute;
+	list-style: none;
+	z-index: 2000;
+	top: 23px;
+	/*left: -1px !important;*/
+	overflow: auto;
+	/* undo .topblock styles - hack */
+	line-height: normal;
+	margin: 0;
+}
+
+.topblock .newList {
+	list-style: none;
+	z-index: 2000;
+	top: 23px;
+	/*left: -1px !important;*/
+	overflow: auto;
+	/* undo .topblock styles - hack */
+	line-height: normal;
+	margin: 0;
+}
+
+.newList li {
+	border-left: 1px solid #cfcbbe;
+	border-right: 1px solid #c3beae;
+	/* undo .topblock styles - hack */
+	margin: 0 !important;
+	cursor: pointer;
+	background: #fff !important;
+	padding: 0 !important;
+	/* Still let text wrap around, just don't show horizontal scrollbar if an unsplittable word is too wide  */
+	overflow-x: hidden;
+}
+
+.newList.onBottom li:last-child {
+	border-bottom: 1px solid #cfcbbe;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
+}
+
+.newList.onTop li:first-child {
+	border-top: 1px solid #cfcbbe;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 3px;
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px;
+}
+
+.newList li a,.newList li a:hover {
+	color: #333 !important;
+	text-decoration: none !important;
+	padding: 5px 6px;
+	display: block;
+	border-top: 1px solid #eee;
+}
+
+.newList li a:hover {
+	background-color: #C0C0C0;
+}
+
+.newList li a:hover.disabled-entry {
+	background-color: #FFFFFF;
+}
+
+.newList li a.disabled-entry,.newList li a.disabled-entry:hover {
+	color: #CCCCCC !important;
+	cursor: default;
+}

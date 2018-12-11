@@ -1482,10 +1482,6 @@ Expandable button
     font-style: italic;
 }
 
-select {
-  width: 100%;
-}
-
 .equella-dropdown {
     /*z-index: 999999 !important;*/
 }
