@@ -16,8 +16,41 @@
 
 package com.tle.web.customlinks.section;
 
+import java.awt.Dimension;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.ConnectException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+
+import com.tle.web.resources.PluginResourceHelper;
+import com.tle.web.resources.ResourceHelper;
+import com.tle.web.sections.equella.ajaxupload.AjaxCallbackResponse;
+import com.tle.web.sections.equella.ajaxupload.AjaxUpload;
+import com.tle.web.sections.js.JSAssignable;
+import com.tle.web.sections.js.generic.function.PartiallyApply;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethodBase;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
+import org.ccil.cowan.tagsoup.Parser;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+
 import com.dytech.common.GeneralConstants;
-import com.google.common.collect.Maps;
+import com.dytech.edge.wizard.WizardTimeoutException;
 import com.google.common.io.ByteStreams;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.Check;
@@ -44,45 +77,46 @@ import com.tle.core.services.user.UserService;
 import com.tle.web.customlinks.CustomLinkContentHandler;
 import com.tle.web.customlinks.CustomLinkListComponent;
 import com.tle.web.customlinks.menu.CustomLinksMenuContributor;
+import com.tle.web.customlinks.model.CustomLinksModel;
 import com.tle.web.recipientselector.ExpressionSelectorDialog;
-import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
+import com.tle.web.sections.SectionContext;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxGenerator;
 import com.tle.web.sections.ajax.AjaxGenerator.EffectType;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
 import com.tle.web.sections.ajax.handler.AjaxMethod;
-import com.tle.web.sections.annotations.Bookmarked;
+import com.tle.web.sections.annotations.DirectEvent;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
-import com.tle.web.sections.equella.ajaxupload.AjaxCallbackResponse;
-import com.tle.web.sections.equella.ajaxupload.AjaxUpload;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.component.MultiEditBox;
 import com.tle.web.sections.equella.layout.OneColumnLayout;
 import com.tle.web.sections.events.RenderEventContext;
-import com.tle.web.sections.events.RespondingListener;
+import com.tle.web.sections.events.SectionEvent;
 import com.tle.web.sections.events.js.BookmarkAndModify;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.events.js.SubmitValuesFunction;
 import com.tle.web.sections.events.js.SubmitValuesHandler;
 import com.tle.web.sections.jquery.JQueryStatement;
 import com.tle.web.sections.jquery.libraries.JQuerySortable;
-import com.tle.web.sections.js.JSAssignable;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.js.generic.expression.FunctionCallExpression;
 import com.tle.web.sections.js.generic.expression.ObjectExpression;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
-import com.tle.web.sections.js.generic.function.PartiallyApply;
 import com.tle.web.sections.js.validators.Confirm;
-import com.tle.web.sections.render.*;
+import com.tle.web.sections.render.GenericTemplateResult;
 import com.tle.web.sections.render.Label;
+import com.tle.web.sections.render.TagState;
+import com.tle.web.sections.render.TemplateResult;
+import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.Checkbox;
-import com.tle.web.sections.standard.*;
+import com.tle.web.sections.standard.ComponentFactory;
+import com.tle.web.sections.standard.FileUpload;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.HtmlLinkState;
@@ -92,30 +126,10 @@ import com.tle.web.sections.standard.renderers.ImageRenderer;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.section.HelpAndScreenOptionsSection;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HttpClientParams;
-import org.ccil.cowan.tagsoup.Parser;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-
-import javax.inject.Inject;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.*;
-import java.util.*;
-import java.util.List;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
-public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.CustomLinksModel>
-		implements RespondingListener
+public class CustomLinksSection extends OneColumnLayout<CustomLinksModel>
 {
 	private static final String FILE_NAME_KEY = "fileName";
 
@@ -243,16 +257,15 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 			eventFactory.getEventHandler("downloadFavicon"), "currentIcon", "downloadIcon")));
 		deleteUrlFunc = ajax.getAjaxUpdateDomFunction(tree, this, eventFactory.getEventHandler("deleteUrl"),
 			ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE), "linkListDiv");
-
 		validateFile = AjaxUpload.simpleUploadValidator("uploader",
-				PartiallyApply.partial(eventFactory.getSubmitValuesFunction("finishedUpload"), 2));
+			PartiallyApply.partial(eventFactory.getSubmitValuesFunction("finishedUpload"), 2));
 	}
 
 	@EventHandlerMethod
 	public void finishedUpload(SectionInfo info, String uploadId, UploadValidation others)
 	{
 		CustomLinksModel model = getModel(info);
-		CustomLinkEditingSession session = model.getSession();
+		CustomLinkEditingSession session = linkService.loadSession(model.getSessionId());
 		Map<String, Object> validationErrors = session.getValidationErrors();
 		String key = others.getKey();
 		String error = others.getError();
@@ -297,7 +310,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 		String sessionId = model.getSessionId();
 		if( !Check.isEmpty(sessionId) )
 		{
-			CustomLinkEditingSession session = model.getSession();
+			CustomLinkEditingSession session = linkService.loadSession(sessionId);
 			model.setErrors(session.getValidationErrors());
 
 			final CustomLinkEditingBean bean = session.getBean();
@@ -382,10 +395,9 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 	public void saveUrl(SectionInfo info)
 	{
 		CustomLinksModel model = getModel(info);
-		CustomLinkEditingSession session = model.getSession();
-		if( validate(info, session) )
+		CustomLinkEditingSession session = linkService.loadSession(model.getSessionId());
+		if( session.isValid() )
 		{
-			saveInternal(info, session);
 			linkService.commitSession(session);
 			clearCache();
 			model.setEditing(false);
@@ -420,7 +432,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 	@EventHandlerMethod
 	public void expression(SectionInfo info, String selectorId, String expression)
 	{
-		CustomLinkEditingSession session = getModel(info).getSession();
+		CustomLinkEditingSession session = linkService.loadSession(getModel(info).getSessionId());
 		session.getBean().setTargetExpression(expression);
 		loadInternal(info, session);
 	}
@@ -429,7 +441,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 	public void downloadFavicon(SectionInfo info) throws IOException
 	{
 		CustomLinksModel model = getModel(info);
-		CustomLinkEditingSession session = model.getSession();
+		CustomLinkEditingSession session = linkService.loadSession(model.getSessionId());
 		final CustomLinkEditingBean bean = session.getBean();
 
 		String url = urlField.getValue(info);
@@ -454,13 +466,13 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 		catch( IllegalArgumentException ex )
 		{
 			session.getValidationErrors().put("urlField",
-					R.getString("edit.download.error.invalid", ex.getLocalizedMessage()));
+				R.getString("edit.download.error.invalid", ex.getLocalizedMessage()));
 			return;
 		}
 		catch( ConnectException ex )
 		{
 			session.getValidationErrors().put("urlField",
-					R.getString("edit.download.error.connect", ex.getLocalizedMessage()));
+				R.getString("edit.download.error.connect", ex.getLocalizedMessage()));
 			return;
 		}
 		catch( Exception ex )
@@ -472,7 +484,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 		if( method.getStatusCode() != HttpStatus.SC_OK )
 		{
 			session.getValidationErrors().put("urlField",
-					R.getString("edit.download.error.notfound"));
+				R.getString("edit.download.error.notfound"));
 			return;
 		}
 
@@ -490,7 +502,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 			if( !imageMagickService.supported(mimeTypeService.getMimeTypeForFilename(filename)) )
 			{
 				session.getValidationErrors().put("urlField",
-						R.getString("edit.download.error.process"));
+					R.getString("edit.download.error.process"));
 				return;
 			}
 
@@ -508,6 +520,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 			fileSystemService.removeFile(stagingFile, tempFilename);
 
 			bean.setFileName(filename);
+			model.setFileName(filename);
 		}
 	}
 
@@ -521,7 +534,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 		if( fileSystemService.fileExists(stagingFile, filename) && !fileSystemService.fileIsDir(stagingFile, filename) )
 		{
 			try( InputStream in = fileSystemService.read(stagingFile, filename);
-				ServletOutputStream out = response.getOutputStream() )
+				 ServletOutputStream out = response.getOutputStream() )
 			{
 				ByteStreams.copy(in, out);
 			}
@@ -536,7 +549,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 	public void removeIcon(SectionInfo info)
 	{
 		CustomLinksModel model = getModel(info);
-		CustomLinkEditingSession session = model.getSession();
+		CustomLinkEditingSession session = linkService.loadSession(model.getSessionId());
 		final CustomLinkEditingBean bean = session.getBean();
 
 		bean.setAttribute(FILE_NAME_KEY, null);
@@ -569,7 +582,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 	{
 		UploadValidation val = new UploadValidation();
 		CustomLinksModel model = getModel(context);
-		CustomLinkEditingSession session = model.getSession();
+		CustomLinkEditingSession session = linkService.loadSession(model.getSessionId());
 		final CustomLinkEditingBean bean = session.getBean();
 
 		if( Check.isEmpty(file.getFilename(context)) || file.getFileSize(context) <= 0 )
@@ -608,7 +621,6 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 		bean.setFileName(filename);
 		return val;
 	}
-
 	@AjaxMethod
 	public String urlMoved(SectionInfo info, String uuid, int order)
 	{
@@ -622,14 +634,42 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 		return "{status:'ok'}";
 	}
 
-	@Override
-	public void responding(SectionInfo info)
+	@DirectEvent
+	public void loadFromSession(SectionInfo info)
 	{
 		CustomLinksModel model = getModel(info);
 		String sessionId = model.getSessionId();
+		model.setRendered(true);
 		if( !Check.isEmpty(sessionId) )
 		{
-			linkService.saveSession(model.getSession());
+			try
+			{
+				CustomLinkEditingSession session = linkService.loadSession(sessionId);
+				loadInternal(info, session);
+			}
+			catch( WizardTimeoutException e )
+			{
+				model.setSessionId(null);
+			}
+		}
+	}
+
+	@DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
+	public void saveToSession(SectionInfo info)
+	{
+		CustomLinksModel model = getModel(info);
+		String sessionId = model.getSessionId();
+		if( model.isRendered() && !Check.isEmpty(sessionId) )
+		{
+			try
+			{
+				CustomLinkEditingSession session = linkService.loadSession(sessionId);
+				saveInternal(info, session);
+			}
+			catch( WizardTimeoutException e )
+			{
+				model.setSessionId(null);
+			}
 		}
 	}
 
@@ -642,10 +682,6 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 		{
 			displayNameField.setLanguageBundle(info, name);
 		}
-		else
-		{
-			displayNameField.setLangMap(info, new HashMap<>());
-		}
 		urlField.setValue(info, link.getUrl());
 		newWindow.setChecked(info, link.getAttribute("newWindow", false));
 
@@ -653,6 +689,11 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 		if( expression != null )
 		{
 			selector.setExpression(info, expression);
+		}
+		String fileName = link.getFileName();
+		if( fileName != null )
+		{
+			getModel(info).setFileName(fileName);
 		}
 	}
 
@@ -682,36 +723,23 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 			pack.setTargetList(list);
 		}
 
+		session.setValid(validate(info, session.getValidationErrors()));
+		linkService.saveSession(session);
 		return session;
 	}
 
-	@Override
-	public Object instantiateModel(SectionInfo info)
+	private boolean validate(SectionInfo info, Map<String, Object> errors)
 	{
-		return new CustomLinksModel(info);
-	}
-
-	private boolean validate(SectionInfo info, CustomLinkEditingSession session)
-	{
+		errors.clear();
 		LanguageBundleBean bundle = displayNameField.getLanguageBundle(info);
-		Map<String, Object> errors = session.getValidationErrors();
 		if( LangUtils.isEmpty(bundle) )
 		{
 			errors.put("displayNameField", CurrentLocale.get(ERROR_NAME_KEY));
 		}
-		else
-		{
-			errors.remove("displayNameField");
-		}
 
-		if( Check.isEmpty(urlField.getValue(info)) ||
-				urlField.getValue(info).equalsIgnoreCase("http://") )
+		if( Check.isEmpty(urlField.getValue(info)) || urlField.getValue(info).equalsIgnoreCase("http://") )
 		{
 			errors.put("urlField", CurrentLocale.get(ERROR_URL_KEY));
-		}
-		else
-		{
-			errors.remove("urlField");
 		}
 
 		return errors.isEmpty();
@@ -719,7 +747,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 
 	public String getIconUrl(SectionInfo info, String uuid)
 	{
-		CustomLinkEditingSession session = getModel(info).getSession();
+		CustomLinkEditingSession session = linkService.loadSession(getModel(info).getSessionId());
 		CustomLinkEditingBean bean = session.getBean();
 
 		String fileName = bean.getFileName();
@@ -843,9 +871,9 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 	}
 
 	@Override
-	public Class<CustomLinksSection.CustomLinksModel> getModelClass()
+	public Class<CustomLinksModel> getModelClass()
 	{
-		return CustomLinksSection.CustomLinksModel.class;
+		return CustomLinksModel.class;
 	}
 
 	@Override
@@ -913,125 +941,4 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksSection.Custo
 	{
 		return linkDiv;
 	}
-
-	public class CustomLinksModel extends OneColumnLayout.OneColumnLayoutModel
-	{
-		private final SectionInfo info;
-		@Bookmarked
-		private boolean editing;
-		@Bookmarked(name = "sessionId")
-		private String sessionId;
-		@Bookmarked(stateful = false)
-		private boolean rendered;
-
-		private List<CustomLinkListComponent> links;
-		private Label heading;
-		private Map<String, Object> errors = Maps.newHashMap();
-		private String expressionPretty;
-		private String fileName;
-		private String entityUuid;
-		private CustomLinkEditingSession session;
-		
-		public CustomLinksModel(SectionInfo info)
-		{
-			this.info = info;
-		}
-
-		public CustomLinkEditingSession getSession()
-		{
-			if (session == null)
-			{
-				session = linkService.loadSession(getSessionId());
-			}
-			return session;
-		}
-
-		public void setEditing(boolean editing)
-		{
-			this.editing = editing;
-		}
-
-		public boolean isEditing()
-		{
-			return editing;
-		}
-
-		public String getExpressionPretty()
-		{
-			return expressionPretty;
-		}
-
-		public void setExpressionPretty(String expressionPretty)
-		{
-			this.expressionPretty = expressionPretty;
-		}
-
-		public void setSessionId(String sessionId)
-		{
-			this.sessionId = sessionId;
-		}
-
-		public String getSessionId()
-		{
-			return sessionId;
-		}
-
-		public void setErrors(Map<String, Object> errors)
-		{
-			this.errors = errors;
-		}
-
-		public Map<String, Object> getErrors()
-		{
-			return errors;
-		}
-
-		public void setRendered(boolean rendered)
-		{
-			this.rendered = rendered;
-		}
-
-		public boolean isRendered()
-		{
-			return rendered;
-		}
-
-		public void setHeading(Label heading)
-		{
-			this.heading = heading;
-		}
-
-		public Label getHeading()
-		{
-			return heading;
-		}
-
-		public void setLinks(List<CustomLinkListComponent> links)
-		{
-			this.links = links;
-		}
-
-		public List<CustomLinkListComponent> getLinks()
-		{
-			return links;
-		}
-
-		public String getFileName()
-		{
-			return getSession().getBean().getFileName();
-		}
-
-		public String getEntityUuid()
-		{
-			return entityUuid;
-		}
-
-		public void setEntityUuid(String entityUuid)
-		{
-			this.entityUuid = entityUuid;
-		}
-
-	}
-
-
 }
