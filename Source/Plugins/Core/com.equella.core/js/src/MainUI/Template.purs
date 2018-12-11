@@ -64,8 +64,9 @@ import OEQ.Utils.Interop (nullAny)
 import Partial.Unsafe (unsafePartial)
 import React (Children, ReactClass, ReactElement, ReactThis, childrenToArray, createElement)
 import React as R
-import React.DOM (div', footer, span', text)
+import React.DOM (div', footer, img, span', text)
 import React.DOM as D
+import React.DOM.Props (src)
 import React.DOM.Props as DP
 import Web.DOM.DOMTokenList as DOMTokens
 import Web.DOM.Document (documentElement)
@@ -78,7 +79,13 @@ import Web.HTML.HTMLElement as HTML
 import Web.HTML.Window (document, toEventTarget)
 
 newtype ExternalHref = ExternalHref String 
-newtype MenuItem = MenuItem {route::Either ExternalHref String, title::String, systemIcon::Maybe String}
+newtype MenuItem = MenuItem {
+  route::Either ExternalHref String, 
+  title::String, 
+  systemIcon::Maybe String, 
+  iconUrl :: Maybe String,
+  newWindow :: Boolean
+}
 
 data Command = Init | AttemptRoute Route | NavAway Boolean
   | ToggleMenu | UserMenuAnchor (Maybe HTMLElement) | MenuClick Route | GoBack | CloseError
@@ -330,15 +337,17 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
         where 
           logoSrc = logoPath
           group items = [list {component: "nav"} (navItem <$> items)]
-          navItem (MenuItem {title,systemIcon,route}) = linkProps
+          navItem (MenuItem {title,systemIcon,route,iconUrl,newWindow}) = linkProps
             [
-              listItemIcon_ $ icon {color: inherit} [ D.text $ fromMaybe "folder" $ systemIcon ],
+              listItemIcon_ $ case iconUrl of 
+                Just url -> img [src url]
+                Nothing -> icon {color: inherit} [ D.text $ fromMaybe "folder" $ systemIcon ],
               listItemText' {disableTypography: true, primary: typography {variant: subheading, component: "div"} [text title] }
             ]
             where 
               linkProps = case route of 
                 Right r | Just m <- routeHref <$> matchRoute r -> RMUI.listItem { component: "a", href: m.href, onClick: m.onClick }
-                Left (ExternalHref href) -> RMUI.listItem { component: "a", href }
+                Left (ExternalHref href) -> RMUI.listItem { component: "a", href, target: if newWindow then "_blank" else "" }
                 Right r -> RMUI.listItem {component: "a", href: show r}
 
     htmlElement :: Effect HTMLElement
@@ -561,7 +570,9 @@ instance decodeMI :: DecodeJson MenuItem where
       _ -> Right "home.do"
     title <- o .? "title"
     systemIcon <- o .?? "systemIcon"
-    pure $ MenuItem {title, route, systemIcon}
+    iconUrl <- o .?? "iconUrl"
+    newWindow <- o .? "newWindow"
+    pure $ MenuItem {title, route, systemIcon, iconUrl, newWindow}
 
 decodeCounts :: Json -> Either String Counts
 decodeCounts v = do 
