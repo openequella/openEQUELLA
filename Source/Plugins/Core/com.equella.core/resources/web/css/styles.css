@@ -628,6 +628,10 @@ select,select option {
 	background-color: #FFFFFF;
 }
 
+#settingsPage input[disabled]{
+  opacity: 0;
+}
+
 input[disabled],input[disabled="disabled"],textarea[disabled],textarea[disabled="disabled"],select[disabled]+.newListSelected,select[disabled="disabled"]+.newListSelected
 	{
 	opacity: 0.6;
