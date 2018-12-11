@@ -1471,19 +1471,13 @@ Expandable button
 
 /* Autocomplete dropdown */
 .autocomplete-result {
-    min-height: 32px;
 }
 .autocomplete-result-title {
-    font-size: 14px;
-    font-weight: bold;
 }
 .autocomplete-result-description {
-    margin-top: 8px;
-    font-style: italic;
 }
 
 select {
-  width: 100%;
 }
 
 .equella-dropdown {
