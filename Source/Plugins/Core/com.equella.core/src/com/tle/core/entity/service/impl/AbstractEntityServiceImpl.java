@@ -112,6 +112,7 @@ import com.tle.core.services.ApplicationVersion;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.core.util.archive.ArchiveType;
+import static com.tle.beans.entity.LanguageBundle.initBundle;
 
 /*
  * @author Nicholas Read
@@ -1131,14 +1132,6 @@ public abstract class AbstractEntityServiceImpl<B extends EntityEditingBean, T e
 				postUnlinkForClone(t);
 			}
 		});
-	}
-
-	protected void initBundle(@Nullable LanguageBundle bundle)
-	{
-		if( bundle != null )
-		{
-			Hibernate.initialize(bundle.getStrings());
-		}
 	}
 
 	@SecureOnCall(priv = SecurityConstants.CREATE_VIRTUAL_BASE)

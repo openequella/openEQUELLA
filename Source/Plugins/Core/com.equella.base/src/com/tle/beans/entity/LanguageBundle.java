@@ -35,6 +35,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Transient;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -310,6 +311,14 @@ public class LanguageBundle implements Serializable, IdCloneable
 			}
 		}
 		return orig;
+	}
+
+	public static void initBundle(LanguageBundle bundle)
+	{
+		if (bundle != null)
+		{
+			Hibernate.initialize(bundle.getStrings());
+		}
 	}
 
 	public interface DeleteHandler
