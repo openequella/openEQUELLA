@@ -3,7 +3,7 @@ var select2helper = {};
 (function() {
     this.setup = function($elem, params, extension) {
         var p = {};
-        var perpage = 6;
+        var perpage = 10;
 
         var ajax = undefined;
         if (params.ajaxurl) {
