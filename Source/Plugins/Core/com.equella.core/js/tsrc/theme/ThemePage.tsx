@@ -293,7 +293,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
             {commonString.action.resettodefault}
           </Button>
           <Button variant="outlined" onClick={this.setColorPickerDefaults}>
-            {commonString.action.revertchanges}
+            {commonString.action.undo}
           </Button>
           <Button
             className={classes.button}
