@@ -123,7 +123,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       menuText: "#000000",
       menuIcon: "#000000",
       text: "#000000"
-    });
+    },()=>this.submitTheme());
   };
 
   setColorPickerDefaults = () => {
