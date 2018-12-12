@@ -289,7 +289,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
         </CardContent>
 
         <CardActions>
-          <Button variant="text" onClick={this.handleDefaultButton}>
+          <Button variant="outlined" onClick={this.handleDefaultButton}>
             {commonString.action.resettodefault}
           </Button>
           <Button variant="outlined" onClick={this.setColorPickerDefaults}>
@@ -361,7 +361,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
 
         <CardActions className={classes.cardBottom}>
           <Button
-            variant="text"
+            variant="outlined"
             onClick={this.resetLogo}>
             {commonString.action.resettodefault}
           </Button>
