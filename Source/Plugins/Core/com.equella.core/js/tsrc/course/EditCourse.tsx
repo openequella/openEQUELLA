@@ -422,7 +422,7 @@ class EditCourse extends React.Component<Props, EditCourseState> {
                             <TextField id="students" 
                                 label={strings.students.label}
                                 //helperText=""
-                                value={students}
+                                value={students||' '}
                                 onInput={this.handleIntChange('students')}
                                 margin="normal"
                                 className={classes.formControl}
