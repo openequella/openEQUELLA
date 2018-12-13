@@ -21,15 +21,16 @@ phases:
       - sbt -no-colors installEquella startEquella
       - sbt -no-colors configureInstall setupForTests ${OTHER_TESTS} Tests/test
       - sbt -no-colors coverageReport
-      - VERSION_FILE=equella-install/server/version.properties
-      - . parseVersion.sh
+  post_build:
+    commands:
+      - publishTestResults
 artifacts:
   files:
     - 'OldTests/target/testng/**/*'
     - 'Tests/target/test-reports/**/*'
     - 'target/coverage-report/**/*'
     - 'equella-install/logs/**/*'
-  name: autotests-$(FULL_VERSION)
+  name: autotests-$(FULL_VERSION)-$(CODEBUILD_BUILD_ID)
 
 cache:
   paths:
