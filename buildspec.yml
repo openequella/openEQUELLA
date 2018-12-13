@@ -6,6 +6,7 @@ phases:
   install:
     commands:
       - . setupBuildCommands
+      - testFolder
       - npm install -g yarn
       - yarn global add psc-package-bin-simple@3.0.1
       - psc-package --version
@@ -30,7 +31,7 @@ artifacts:
     - 'Tests/target/test-reports/**/*'
     - 'target/coverage-report/**/*'
     - 'equella-install/logs/**/*'
-  name: autotests-$(FULL_VERSION)-$(CODEBUILD_BUILD_ID)
+  name: $(testFolder)
 
 cache:
   paths:
