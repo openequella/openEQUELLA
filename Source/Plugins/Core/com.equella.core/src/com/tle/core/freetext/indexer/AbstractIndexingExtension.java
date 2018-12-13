@@ -131,13 +131,4 @@ public abstract class AbstractIndexingExtension implements IndexingExtension
 		}
 		return builder;
 	}
-
-	protected void initBundle(LanguageBundle bundle)
-	{
-		if( bundle != null )
-		{
-			Hibernate.initialize(bundle.getStrings());
-		}
-	}
-
 }

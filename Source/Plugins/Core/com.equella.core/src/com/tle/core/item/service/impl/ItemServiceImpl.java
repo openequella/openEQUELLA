@@ -137,6 +137,7 @@ import com.tle.core.services.LoggingService;
 import com.tle.core.services.user.UserService;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.exceptions.AccessDeniedException;
+import static com.tle.beans.entity.LanguageBundle.initBundle;
 
 /*
  * @author Nicholas Read
@@ -840,14 +841,6 @@ public class ItemServiceImpl
 			dao.flush();
 		}
 		return params.getItemPack();
-	}
-
-	protected void initBundle(LanguageBundle bundle)
-	{
-		if( bundle != null )
-		{
-			Hibernate.initialize(bundle.getStrings());
-		}
 	}
 
 	protected void perItemPostProcess(final ItemOperationParams params)
