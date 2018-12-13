@@ -94,7 +94,7 @@ public class DynaCollectionServiceImpl
 		List<DynaCollection> unexpanded = Check.isEmpty(usage) ? dao.enumerateAll() : dao.enumerateForUsage(usage);
 		for (DynaCollection unex : unexpanded)
 		{
-			Hibernate.initialize(unex.getName());
+			LanguageBundle.initBundle(unex.getName());
 		}
 		return searchSetService.expandSearchSets(unexpanded, null, null, virtualisationHelper);
 	}

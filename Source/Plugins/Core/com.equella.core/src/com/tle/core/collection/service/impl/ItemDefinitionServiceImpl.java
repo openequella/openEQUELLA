@@ -76,6 +76,7 @@ import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.security.impl.SecureOnReturn;
 import com.tle.core.services.ValidationHelper;
 import com.tle.core.util.archive.ArchiveType;
+import static com.tle.beans.entity.LanguageBundle.initBundle;
 
 /**
  * @author Nicholas Read

@@ -58,6 +58,7 @@ import com.tle.freetext.FreetextIndex;
 import com.tle.freetext.IndexedItem;
 import com.tle.freetext.TextExtracter;
 import com.tle.freetext.XmlSchemaIndexer;
+import static com.tle.beans.entity.LanguageBundle.initBundle;
 
 @Bind
 @Singleton
