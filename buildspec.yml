@@ -6,7 +6,6 @@ phases:
   install:
     commands:
       - . setupBuildCommands
-      - testFolder
       - npm install -g yarn
       - yarn global add psc-package-bin-simple@3.0.1
       - psc-package --version
