@@ -12,7 +12,7 @@ phases:
       - mkdir -p ~/.sbt/0.13/
       - cp codebuild/global.sbt ~/.sbt/0.13/
       - service postgresql start
-      - (cd $HOME && curl -OL https://s3.amazonaws.com/edalexdev/equella_artifacts/master/latest/equella-installer-6.7.zip)
+      - (cd $HOME && curl -OL https://s3.amazonaws.com/edalexdev/equella_artifacts/master/latest/equella-installer-2018.2.zip)
   build:
     commands:
       - (cd IntegTester/ps && yarn install && yarn run build)

@@ -20,7 +20,7 @@ before_install:
 - node --version
 - npm install -g purescript pulp psc-package
 install:
-- curl -OL https://s3.amazonaws.com/edalexdev/equella_artifacts/master/latest/equella-installer-6.7.zip
+- curl -OL https://s3.amazonaws.com/edalexdev/equella_artifacts/master/latest/equella-installer-2018.2.zip
 - curl -OL curl -OL https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip
 - unzip chromedriver_linux64.zip
 - curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
