@@ -123,7 +123,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
       menuText: "#000000",
       menuIcon: "#000000",
       text: "#000000"
-    });
+    },()=>this.submitTheme());
   };
 
   setColorPickerDefaults = () => {
@@ -289,11 +289,11 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
         </CardContent>
 
         <CardActions>
-          <Button variant="text" onClick={this.handleDefaultButton}>
+          <Button variant="outlined" onClick={this.handleDefaultButton}>
             {commonString.action.resettodefault}
           </Button>
           <Button variant="outlined" onClick={this.setColorPickerDefaults}>
-            {commonString.action.revertchanges}
+            {commonString.action.undo}
           </Button>
           <Button
             className={classes.button}
@@ -361,7 +361,7 @@ class ThemePage extends React.Component<ThemePageProps & WithStyles<typeof style
 
         <CardActions className={classes.cardBottom}>
           <Button
-            variant="text"
+            variant="outlined"
             onClick={this.resetLogo}>
             {commonString.action.resettodefault}
           </Button>
