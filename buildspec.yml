@@ -7,7 +7,7 @@ phases:
   pre_build:
     commands:
       - env
-      - yarn global add psc-package
+      - yarn global add psc-package-bin-simple@3.0.1
       - setupBuild
   build:
     commands:
