@@ -56,7 +56,7 @@ oracleDriverJar in ThisBuild := {
 
 name := "Equella"
 
-equellaMajorMinor in ThisBuild := "6.7"
+equellaMajorMinor in ThisBuild := "2018.2"
 equellaStream in ThisBuild := "Beta"
 equellaBuild in ThisBuild := buildConfig.value.getString("build.buildname")
 

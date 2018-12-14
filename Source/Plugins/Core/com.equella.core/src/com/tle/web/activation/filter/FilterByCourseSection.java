@@ -26,14 +26,20 @@ import com.tle.web.search.filter.ResetFiltersListener;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
+import com.tle.web.sections.annotations.EventFactory;
+import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.sections.equella.component.CourseSelectionList;
 import com.tle.web.sections.equella.search.SearchResultsActionsSection;
 import com.tle.web.sections.equella.search.event.SearchEventListener;
 import com.tle.web.sections.events.RenderEventContext;
+import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.events.js.JSHandler;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
+import com.tle.web.sections.js.generic.OverrideHandler;
+import com.tle.web.sections.js.generic.StatementHandler;
 import com.tle.web.sections.render.HtmlRenderer;
+import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
 
@@ -42,7 +48,7 @@ import java.util.Collections;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
-public class FilterByCourseSection extends AbstractPrototypeSection<Object>
+public class FilterByCourseSection extends AbstractPrototypeSection<FilterByCourseSection.FilterByCourseModel>
 	implements
 		HtmlRenderer,
 		ResetFiltersListener,
@@ -50,6 +56,8 @@ public class FilterByCourseSection extends AbstractPrototypeSection<Object>
 {
 	@ViewFactory
 	private FreemarkerFactory viewFactory;
+	@EventFactory
+	private EventGenerator events;
 
 	@TreeLookup
 	private AbstractSearchResultsSection<?, ?, ?, ?> searchResults;
@@ -57,6 +65,8 @@ public class FilterByCourseSection extends AbstractPrototypeSection<Object>
 	@Inject
 	@Component(name = "c", parameter = "course", supported = true)
 	private CourseSelectionList selectCourse;
+	@Component(name = "r")
+	private Link clear;
 
 	@Override
 	public void registered(String id, SectionTree tree)
@@ -70,13 +80,16 @@ public class FilterByCourseSection extends AbstractPrototypeSection<Object>
 	public void treeFinished(String id, SectionTree tree)
 	{
 		super.treeFinished(id, tree);
-		JSHandler changeHandler = searchResults.getRestartSearchHandler(tree);
-		selectCourse.addChangeEventHandler(changeHandler);
+		selectCourse.addChangeEventHandler(new StatementHandler(searchResults.getResultsUpdater(tree, null, "courseFilter")));
+		clear.setClickHandler(new OverrideHandler(
+			searchResults.getResultsUpdater(tree, events.getEventHandler("courseCleared"), "courseFilter")));
 	}
 
 	@Override
 	public SectionResult renderHtml(RenderEventContext context)
 	{
+		final FilterByCourseModel model = getModel(context);
+		model.setClearable(selectCourse.getSelectedValueAsString(context) != null);
 		return viewFactory.createResult("filter/filterbycourse.ftl", context);
 	}
 
@@ -84,7 +97,7 @@ public class FilterByCourseSection extends AbstractPrototypeSection<Object>
 	public void prepareSearch(SectionInfo info, FreetextSearchEvent event) throws Exception
 	{
 		final CourseInfo selected = selectCourse.getSelectedValue(info);
-		if (selected != null)
+		if( selected != null )
 		{
 			event.getRawSearch().setCourses(Collections.singleton(selected));
 			event.setUserFiltered(true);
@@ -92,9 +105,15 @@ public class FilterByCourseSection extends AbstractPrototypeSection<Object>
 	}
 
 	@Override
-	public Class<Object> getModelClass()
+	public Class<FilterByCourseModel> getModelClass()
 	{
-		return Object.class;
+		return FilterByCourseModel.class;
+	}
+
+	@EventHandlerMethod
+	public void courseCleared(SectionInfo info)
+	{
+		reset(info);
 	}
 
 	public SingleSelectionList<CourseInfo> getSelectCourse()
@@ -102,9 +121,29 @@ public class FilterByCourseSection extends AbstractPrototypeSection<Object>
 		return selectCourse;
 	}
 
+	public Link getClear()
+	{
+		return clear;
+	}
+
 	@Override
 	public void reset(SectionInfo info)
 	{
 		selectCourse.setSelectedValue(info, null);
+	}
+
+	public static class FilterByCourseModel
+	{
+		private boolean clearable;
+
+		public boolean isClearable()
+		{
+			return clearable;
+		}
+
+		public void setClearable(boolean clearable)
+		{
+			this.clearable = clearable;
+		}
 	}
 }
