@@ -19,13 +19,12 @@ FROM baseequella as installer
 
 # Install openEQUELLA
 
-ARG OEQ_INSTALL_FILE=equella-installer-6.7.zip
-ARG OEQ_INSTALL_ZIP_ROOT_DIR=equella-installer-6.7
+ARG OEQ_INSTALL_FILE=equella-installer-2018.2.zip
 
 COPY ["$OEQ_INSTALL_FILE","defaults.xml", "./"]
 
-RUN unzip $OEQ_INSTALL_FILE \
-    && mv $OEQ_INSTALL_ZIP_ROOT_DIR /equella-installer \
+RUN unzip $OEQ_INSTALL_FILE -d /tmp \
+    && mv /tmp/equella-installer-* /equella-installer \
     && java -jar /equella-installer/enterprise-install.jar --unsupported defaults.xml
 
 FROM baseequella as equella
