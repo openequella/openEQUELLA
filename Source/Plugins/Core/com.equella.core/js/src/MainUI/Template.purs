@@ -137,7 +137,7 @@ type TemplateProps = (
   menuMode :: String,
   fullscreenMode :: String,
   hideAppBar :: Boolean, 
-  enableNotifications :: Boolean,
+  disableNotifications :: Boolean,
   innerRef :: Nullable (EffectFn1 (Nullable TemplateRef) Unit),
   errorResponse :: Nullable ErrorResponse
 )
@@ -172,7 +172,7 @@ templateDefaults title = {
     fixedViewPort:nullAny,
     preventNavigation:nullAny, 
     menuExtra:nullAny, 
-    enableNotifications: true,
+    disableNotifications: false,
     tabs:nullAny, 
     backRoute: nullAny, 
     footer: nullAny, 
@@ -300,7 +300,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       userMaybe l = user ^? (_Just <<< l)
       userMenu = D.div [DP.className classes.userMenu ] $ (fromMaybe [] $ toMaybe menuExtra) <>
         (
-          (guard $ props.enableNotifications && (not $ fromMaybe true $ userMaybe _guest)) *>
+          (guard $ not props.disableNotifications && (not $ fromMaybe true $ userMaybe _guest)) *>
           [
             hidden {mdDown:true} [
               badgedLink "assignment" _tasks "access/tasklist.do" topBarString.tasks , 
