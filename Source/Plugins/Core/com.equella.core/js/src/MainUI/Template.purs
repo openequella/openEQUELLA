@@ -307,8 +307,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
               badgedLink "notifications" _notifications "access/notifications.do" topBarString.notifications
             ],
             tooltip {title: strings.menu.title} $ 
-              iconButton {"aria-label": strings.menu.title, 
-                          color: inherit, 
+              iconButton {"aria-label": strings.menu.title,
                           onClick: withCurrentTarget $ d <<< UserMenuAnchor <<< Just} 
                 [ icon_ [ D.text "account_circle"] ],
             menu {
