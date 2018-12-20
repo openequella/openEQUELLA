@@ -412,12 +412,15 @@ class LegacyContentApi {
 
   def wrapBody(context: RenderContext, body: SectionRenderable): SectionRenderable = {
     val decs = Decorations.getDecorations(context)
-    val cbTag = context.getBody
-    cbTag.setId("content-body")
-    val citag = new TagState("content-inner").addClass[TagState](decs.getPageLayoutDisplayClass)
-    val cbtag = cbTag.addClasses[TagState](decs.getContentBodyClasses)
 
-    new DivRenderer(citag, new DivRenderer(cbtag, body))
+    if (decs.isBanner || !decs.isMenuHidden || decs.isContent) {
+      val cbTag = context.getBody
+      cbTag.setId("content-body")
+      val citag = new TagState("content-inner").addClass[TagState](decs.getPageLayoutDisplayClass)
+      val cbtag = cbTag.addClasses[TagState](decs.getContentBodyClasses)
+
+      new DivRenderer(citag, new DivRenderer(cbtag, body))
+    } else body
   }
 
 
