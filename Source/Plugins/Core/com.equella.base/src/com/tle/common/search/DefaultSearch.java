@@ -661,6 +661,10 @@ public class DefaultSearch extends VeryBasicSearch
 			// allowed values are relevance, modified, name, rating
 			if( order.equals("relevance") )
 			{
+				if (Check.isEmpty(q))
+				{
+					return SortType.DATEMODIFIED;
+				}
 				return SortType.RANK;
 			}
 			else if( order.equals("modified") )
