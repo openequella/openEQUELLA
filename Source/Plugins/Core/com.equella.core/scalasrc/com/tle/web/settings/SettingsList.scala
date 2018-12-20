@@ -108,7 +108,7 @@ object SettingsList {
     CoreSettingsPage("quickcontrib", General, "quickcontributeandversionsettings.title", "quickcontributeandversionsettings.description",
       "access/quickcontributeandversionsettings.do", quickContribPrivProvider.isAuthorised),
 
-    CoreSettingsPage("datafixes", "diagnostic", "fix.settings.title", "fix.settings.description",
+    CoreSettingsPage("datafixes", "diagnostics", "fix.settings.title", "fix.settings.description",
       "access/manualdatafixes.do", manualFixPrivProvider.isAuthorised),
 
     CoreSettingsPage("oai", Integration, "oai.title", "oaiidentifier.description",
