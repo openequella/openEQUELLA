@@ -22,6 +22,10 @@
       <blti:custom>
         <lticm:property name="course_id">$Canvas.course.sisSourceId</lticm:property>
         <lticm:property name="course_code">$com.instructure.contextLabel</lticm:property>
+        <lticm:property name="canvas_api_domain">$Canvas.api.domain</lticm:property>
+        <lticm:property name="canvas_course_id">$Canvas.course.id</lticm:property>
+        <lticm:property name="canvas_user_id">$Canvas.user.id</lticm:property>
+        <lticm:property name="canvas_user_login_id">$Canvas.user.loginId</lticm:property>
       </blti:custom>
       
       <lticm:options name="resource_selection">
@@ -55,4 +59,4 @@
     
     <cartridge_bundle identifierref="BLTI001_Bundle"/>
     <cartridge_icon identifierref="BLTI001_Icon"/>
-</cartridge_basiclti_link>  
+</cartridge_basiclti_link>
