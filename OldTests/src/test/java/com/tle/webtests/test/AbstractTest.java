@@ -110,8 +110,16 @@ public abstract class AbstractTest implements HasTestConfig
 			context.setIntegUrl(testConfig.getIntegrationUrl(rootFolder.getName()));
 		}
 		context.setNamePrefix(getNamePrefix());
-		customisePageContext();
-		prepareBrowserSession();
+		try
+		{
+			customisePageContext();
+			prepareBrowserSession();
+		}
+		catch (Throwable t)
+		{
+			System.err.println("setupContext failed");
+			t.printStackTrace();
+		}
 	}
 
 	@BeforeSuite
