@@ -24,8 +24,9 @@ object SearchDefaults {
         SortControl("relevance", true)
       ),
       "filters" -> Array(
+        CollectionsControl(None, true),
         OwnerControl(None, true),
-        ModifiedWithinControl(0.0, true),
+        ModifiedWithinControl(0.0, true)
       )
     ))
   )
