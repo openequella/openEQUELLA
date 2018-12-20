@@ -220,8 +220,19 @@ public abstract class AbstractTest implements HasTestConfig
 				cleanupAfterClass();
 			}
 		}
-		finally {
+		catch (Throwable t)
+		{
+			System.err.println("Error during cleanup: ");
+			t.printStackTrace();
+		}
+		try
+		{
 			context.getDriver().quit();
+		}
+		catch (Throwable t)
+		{
+			System.err.println("Error during cleanup: ");
+			t.printStackTrace();
 		}
 
 		// If we leave the browsers open on grid they will timeout if they are
