@@ -34,7 +34,23 @@ the other developers. You will also need to sign a
 [Contributor License Agreement](https://www.apereo.org/node/676).
 
 But after that, as per usual GitHub, please first fork the project and then branch off `master` or a
-stable branch (see below) to use a 'feature' branch.
+stable branch (see below) to use a 'feature' branch. Branches should follow the naming convention of:
+
+    feature/<issue#>-<short_desc>
+
+Or if for a bug, you can choose to:
+
+    bugfix/<issue#>-<short_desc>
+
+For example:
+
+    feature/123-make_coffee
+
+or:
+
+    bugfix/124-fix_burnt_coffee
+
+If you're unsure which to use, default to using `feature/<issue#>-<short_desc>`.
 
 Please ensure you provide [quality commit messages](https://chris.beams.io/posts/git-commit/),
 and in the PR please detail what testing you have undertaken. Also, ideally provide some tests as
