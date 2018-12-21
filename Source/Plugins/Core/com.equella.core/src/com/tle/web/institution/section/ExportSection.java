@@ -192,7 +192,7 @@ public class ExportSection extends AbstractEditSection<ExportSection.ExportModel
 
 		info.setRendered();
 		FileContentStream stream = fileSystemService.getContentStream(new ExportFile(stagingId + ".tgz"), null,
-			"application/x-gzip");
+			"application/gzip");
 
 		stream.setFilenameWithoutPath(exportedFilename.toString());
 		stream.setContentDisposition("attachment");

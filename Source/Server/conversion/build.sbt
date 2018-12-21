@@ -1,8 +1,8 @@
 libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-api" % "1.7.5",
   "org.slf4j" % "slf4j-simple" % "1.7.5",
-  "org.apache.tika" % "tika-core" % "1.14",
-  "org.apache.tika" % "tika-parsers" % "1.14"
+  "org.apache.tika" % "tika-core" % "1.19.1",
+  "org.apache.tika" % "tika-parsers" % "1.19.1"
 )
 
 excludeDependencies += "commons-logging" % "commons-logging"

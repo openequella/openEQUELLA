@@ -39,7 +39,7 @@ application/x-csh					csh
 application/x-director				dcr dir dxr
 application/x-dvi					dvi
 application/x-gtar					gtar
-application/x-gzip					gz
+application/gzip					gz
 application/x-hdf					hdf
 application/x-iwork-pages-sffpages	pages
 application/x-java-jnlp-file		jnlp
