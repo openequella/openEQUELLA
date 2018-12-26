@@ -133,10 +133,15 @@ public abstract class AbstractWizardControlPage<T extends AbstractWizardControlP
 		addSingleFile(ctrlNum, Attachments.get(file));
 	}
 
-	public void addSingleFile(int ctrlNum, URL file)
+	public static String filenameFromURL(URL file)
 	{
 		String filePath = getPathFromUrl(file);
-		String nameOnly = PathUtils.getFilenameFromFilepath(filePath);
+		return PathUtils.getFilenameFromFilepath(filePath);
+	}
+
+	public void addSingleFile(int ctrlNum, URL file)
+	{
+		String nameOnly = filenameFromURL(file);
 		addSingleFile(ctrlNum, file, nameOnly);
 	}
 

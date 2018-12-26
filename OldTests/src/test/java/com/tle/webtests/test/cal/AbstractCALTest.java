@@ -11,6 +11,7 @@ import com.tle.webtests.pageobject.cal.CALWizardPage;
 import com.tle.webtests.pageobject.searching.ItemAdminPage;
 import com.tle.webtests.pageobject.viewitem.AdminTabPage;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
+import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
 import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.test.AbstractCleanupTest;
@@ -25,13 +26,15 @@ public class AbstractCALTest extends AbstractCleanupTest
 	public static final String ATTACH1_FILENAME = "page.html";
 	public static final String ATTACH2_FILENAME = "page(2).html";
 
-	private String getExpectedFilename(int offset)
+	private String getExpectedFilename(URL file, int offset)
 	{
+		String filename = AbstractWizardControlPage.filenameFromURL(file);
 		if (offset == 0)
 		{
-			return ATTACH1_FILENAME;
+			return filename;
 		}
-		return "page("+(offset+1)+").html";
+		int dotind = filename.indexOf('.');
+		return filename.substring(0, dotind) + "("+(offset+1)+")"+filename.substring(dotind);
 	}
 
 	public AbstractCALTest(String itemPrefix)
@@ -126,7 +129,7 @@ public class AbstractCALTest extends AbstractCleanupTest
 			}
 			int newLast = i == numsections - 1 ? lastPage : firstPage + perSection - 1;
 			calWizardPage.setRange(i, firstPage + "-" + newLast);
-			calWizardPage.uploadSectionFile(i, filename, getExpectedFilename(i));
+			calWizardPage.uploadSectionFile(i, filename, getExpectedFilename(filename, i));
 			firstPage += perSection;
 		}
 	}
