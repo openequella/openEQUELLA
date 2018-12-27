@@ -70,7 +70,7 @@ class SearchDetailsSerializer extends ItemSerializerProvider {
     }
   }
 
-  override def writeXmlResult(xml: XMLStreamer, state: ItemSerializerState, itemId: Long): Unit = ???
+  override def writeXmlResult(xml: XMLStreamer, state: ItemSerializerState, itemId: Long): Unit = {}
 
   override def writeItemBeanResult(equellaItemBean: EquellaItemBean, state: ItemSerializerState, itemId: Long): Unit =
     if (state.hasCategory(CATEGORY_DISPLAY)) {
