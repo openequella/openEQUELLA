@@ -43,7 +43,7 @@ case class InstallOptions(installDir: File, jvmHome: File, url: String, hostname
         <host>{hostname}</host>
         <port>{port}</port>
         <context>/</context>
-        <javaopts>-Xss2m -Dequella.autotest=true {jacoco.map(_.opts).getOrElse("")}</javaopts>
+        <javaopts>-Xss2m -Dequella.autotest=true -Duser.timezone=Australia/Hobart {jacoco.map(_.opts).getOrElse("")}</javaopts>
       </webserver>
       <service>
         <port>3000</port>
