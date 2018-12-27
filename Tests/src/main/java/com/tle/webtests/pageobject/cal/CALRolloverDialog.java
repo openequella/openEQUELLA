@@ -1,5 +1,7 @@
 package com.tle.webtests.pageobject.cal;
 
+import com.tle.webtests.pageobject.generic.component.Select2Select;
+import com.tle.webtests.pageobject.generic.component.SelectCourseDialog;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -34,8 +36,8 @@ public class CALRolloverDialog extends AbstractPage<CALRolloverDialog>
 	public CALRolloverDialog selectCourse(String course)
 	{
 		WaitingPageObject<BulkActionDialog> updater = dialog.updateWaiter();
-		new EquellaSelect(context, courseDropDown).selectByVisibleText(course);
-		updater.get();
+		SelectCourseDialog selectCourseDialog = new SelectCourseDialog(context, "bro_c");
+		selectCourseDialog.searchSelectAndFinish(course, updater);
 		return get();
 	}
 

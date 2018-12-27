@@ -76,8 +76,7 @@ public class ManageActivationsPage
 	{
 		openFilters();
 		WaitingPageObject<ActivationListPage> waiter = resultsPageObject.getUpdateWaiter();
-		courseFilterOpener.click();
-		SelectCourseDialog scd = new SelectCourseDialog(context, "fbc_sc").get();
+		SelectCourseDialog scd = new SelectCourseDialog(context, "course").get();
 		scd.searchSelectAndFinish(course, this);
 		return waitForResultsReload(waiter);
 	}

@@ -32,7 +32,7 @@ public class ShareWithOthersPage extends AbstractPage<ShareWithOthersPage>
 	public ShareWithOthersPage selectUser(String query, String username, String displayName)
 	{
 		newUserToNotify.click();
-		SelectUserDialog dialog = new SelectUserDialog(context, "6").get();
+		SelectUserDialog dialog = new SelectUserDialog(context, "3").get();
 		dialog.search(query);
 		return dialog.selectAndFinish(username, userWaiter(displayName));
 	}

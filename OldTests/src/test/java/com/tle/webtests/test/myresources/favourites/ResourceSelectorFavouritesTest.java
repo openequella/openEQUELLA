@@ -4,6 +4,7 @@ import static org.testng.Assert.assertTrue;
 
 import java.util.List;
 
+import com.tle.webtests.pageobject.WaitingPageObject;
 import org.testng.annotations.Test;
 
 import com.tle.webtests.framework.TestInstitution;
@@ -27,6 +28,7 @@ import com.tle.webtests.test.AbstractCleanupAutoTest;
 public class ResourceSelectorFavouritesTest extends AbstractCleanupAutoTest
 {
 	private static String COLLECTIONS_NAME = "Generic Testing with EQUELLA resources";
+	private static String ITEM_TITLE = "Angle";
 
 	@Test
 	public void addSelectedMyResourcesToCollection()
@@ -39,42 +41,16 @@ public class ResourceSelectorFavouritesTest extends AbstractCleanupAutoTest
 		// on wizard page, hence 'p0c3_addLink'
 		UniversalControl control = wizard.universalControl(3);
 		ResourceUniversalControlType resource = control.addDefaultResource(new ResourceUniversalControlType(control));
+		WaitingPageObject<UniversalControl> newAttachWaiter = control.attachNameWaiter(ITEM_TITLE, false);
 		ItemListPage favourites = resource.getSelectionSession().getShowAllFavourites();
-		List<ItemSearchResult> fs = favourites.getResults();
-		int resultsSize = fs.size();
-		assertTrue(resultsSize > 0, "Test cannot procede unless there's at least one favourite to select");
-		// pick the second last (or the only if just one)
-		int whichResultIndex = resultsSize > 1 ? resultsSize - 2 : 0;
-		ItemSearchResult aFavourite = fs.get(whichResultIndex);
+
+		ItemSearchResult aFavourite = favourites.getResultForTitle(ITEM_TITLE);
 		aFavourite.clickTitle();
 		SummaryPage stp = new SummaryPage(context).get();
 		assertTrue(stp.selectItemPresent(), "Expected summary page to be selectable");
-		// if this selected item has attachments, select from the attachments,
-		// otherwise select the whole item
-		boolean expectingAttachmentsInFinalResult = false;
-		if( stp.hasAttachmentsSection() )
-		{
-			AttachmentsPage attachmentsSection = stp.attachments();
-			int howManyAttachments = attachmentsSection.attachmentCount();
-			List<String> attachmentTitles = attachmentsSection.attachmentOrder();
-			// If there are attachments, select the first
-			if( howManyAttachments >= 1 )
-			{
-				expectingAttachmentsInFinalResult = true;
-				attachmentsSection.selectAttachment(attachmentTitles.get(0));
-				// if there's 3 or more, also select the third
-				if( howManyAttachments >= 3 )
-					attachmentsSection.selectAttachment(attachmentTitles.get(2));
-			}
-			else
-				// no attachments in section? select the whole item
-				stp.selectItemNoCheckout();
-		}
-		else
-		{
-			stp.selectItemNoCheckout();
-		}
-		stp.finishSelecting(resource.editPage()).save();
+
+		stp.selectItemNoCheckout();
+		stp.finishSelecting(newAttachWaiter);
 
 		ConfirmationDialog publishAndBeDamned = wizard.save();
 		publishAndBeDamned.publish();
