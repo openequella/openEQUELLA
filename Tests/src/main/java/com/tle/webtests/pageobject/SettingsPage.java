@@ -65,7 +65,8 @@ public class SettingsPage extends AbstractPage<SettingsPage>
 	protected WebElement openGroup(String group, By untilVisible)
 	{
 		String titlePath = "//p[text() = "+quoteXPath(group)+"]";
-		WebElement settingGroup = getSettingsGroup().findElement(By.xpath("div["+titlePath+"]"));
+		WebElement settingGroup = getWaiter().until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(getSettingsGroup(),
+				By.xpath("div["+titlePath+"]"))).get(0);
 		ExpectedCondition<?> appears = ExpectedConditions.visibilityOfNestedElementsLocatedBy(settingGroup, untilVisible);
 		settingGroup.findElement(By.xpath(titlePath)).click();
 		waiter.until(appears);
