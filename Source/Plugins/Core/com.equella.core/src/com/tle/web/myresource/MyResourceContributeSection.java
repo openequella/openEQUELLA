@@ -557,7 +557,8 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 		{
 			title = filename;
 		}
-		boolean fileAttached = model.getStagingId() != null;
+		boolean fileAttached = filename != null;
+		String stagingId = fileAttached ? model.getStagingId() : null;
 		ops.add(workflowFactory.startEdit(fileAttached));
 
 		final MyContentFields fields = new MyContentFields();
@@ -565,7 +566,7 @@ public class MyResourceContributeSection extends AbstractPrototypeSection<MyReso
 		fields.setTags(tags);
 		fields.setTitle(title);
 
-		ops.add(myContentService.getEditOperation(fields, filename, model.getStagingId(), fileAttached, fileAttached));
+		ops.add(myContentService.getEditOperation(fields, filename, stagingId, fileAttached, fileAttached));
 		ops.add(workflowFactory.save());
 
 		itemService.operation(itemId, ops.toArray(new WorkflowOperation[ops.size()]));
