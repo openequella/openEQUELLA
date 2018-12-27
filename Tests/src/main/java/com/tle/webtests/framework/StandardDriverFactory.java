@@ -3,6 +3,7 @@ package com.tle.webtests.framework;
 import com.google.common.collect.Maps;
 import com.tle.common.Check;
 import com.tle.webtests.pageobject.AbstractPage;
+import com.tle.webtests.pageobject.DownloadFilePage;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
@@ -59,7 +60,7 @@ public class StandardDriverFactory {
 
     public WebDriver getDriver(Class<?> clazz) throws IOException {
         WebDriver driver;
-        String downDir = Files.createTempDirectory("eqdown").toAbsolutePath().toString();
+        String downDir = DownloadFilePage.getDownDir().getAbsolutePath();
         if (!Check.isEmpty(gridUrl) && !clazz.isAnnotationPresent(LocalWebDriver.class)) {
             DesiredCapabilities capability = DesiredCapabilities.firefox();
             FirefoxProfile profile = new FirefoxProfile();

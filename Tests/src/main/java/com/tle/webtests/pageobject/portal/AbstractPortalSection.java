@@ -26,9 +26,15 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>> 
 		return find(driver, By.xpath("//h3[normalize-space(text())="+quoteXPath(getTitle())+"]/ancestor::div[contains(@class, 'box_head')][1]"));
 	}
 
+	protected By getBoxContentBy()
+	{
+		return By.xpath("//h3[normalize-space(text())="+quoteXPath(getTitle())+
+				"]/ancestor::div[contains(@class, 'box_head')][1]/following-sibling::div[contains(@class, 'box_content')]/div");
+	}
+
 	protected WebElement getBoxContent()
 	{
-		return find(driver, By.xpath("//h3[normalize-space(text())="+quoteXPath(getTitle())+"]/ancestor::div[contains(@class, 'box_head')][1]/following-sibling::div[contains(@class, 'box_content')]/div"));
+		return find(driver, getBoxContentBy());
 	}
 
 	protected WebElement findLoadedElement()
@@ -48,7 +54,7 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>> 
 
 	public T minMax()
 	{
-		boolean present = isPresent(getBoxContent());
+		boolean present = isPresent(driver, getBoxContentBy());
 		WaitingPageObject<T> aWaiter;
 		if( present )
 		{
@@ -56,7 +62,7 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>> 
 		}
 		else
 		{
-			aWaiter = visibilityWaiter(getBoxContent());
+			aWaiter = visibilityWaiter(driver, getBoxContentBy());
 		}
 
 		getBoxHead().findElement(By.className("box_minimise")).click();

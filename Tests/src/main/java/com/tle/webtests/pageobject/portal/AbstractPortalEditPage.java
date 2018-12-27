@@ -31,9 +31,15 @@ public abstract class AbstractPortalEditPage<T extends AbstractPortalEditPage<T>
 	{
 		return findById("_m");
 	}
+
+	private By getCloseCheckBy()
+	{
+		return byPrefixId(getId(), "_c");
+	}
+
 	private WebElement getCloseCheck()
 	{
-		return findById("_c");
+		return find(driver, getCloseCheckBy());
 	}
 
 	private WebElement findById(String postfix)
@@ -41,8 +47,10 @@ public abstract class AbstractPortalEditPage<T extends AbstractPortalEditPage<T>
 		return driver.findElement(By.id(getId()+postfix));
 	}
 
-	@FindBy(name = "{id}_selector_es.e")
-	private WebElement viewExpressionInput;
+	private WebElement getViewExpressionInput()
+	{
+		return find(driver, By.name(getId()+"_selector_es.e"));
+	}
 
 	public AbstractPortalEditPage(PageContext context)
 	{
@@ -98,7 +106,7 @@ public abstract class AbstractPortalEditPage<T extends AbstractPortalEditPage<T>
 			WaitingPageObject<T> aWaiter;
 			if( checked )
 			{
-				aWaiter = visibilityWaiter(getCloseCheck());
+				aWaiter = visibilityWaiter(driver, getCloseCheckBy());
 			}
 			else
 			{
@@ -135,7 +143,7 @@ public abstract class AbstractPortalEditPage<T extends AbstractPortalEditPage<T>
 		setShowForOthers(true);
 		((JavascriptExecutor) driver).executeScript("_subev('" + getId() + ".expression', '', '" + expression + "');");
 
-		return ExpectWaiter.waiter(ExpectedConditions2.elementAttributeToBe(viewExpressionInput, "value", expression),
+		return ExpectWaiter.waiter(ExpectedConditions2.elementAttributeToBe(getViewExpressionInput(), "value", expression),
 			this).get();
 	}
 
