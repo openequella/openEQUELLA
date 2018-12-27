@@ -71,7 +71,10 @@ installOptions := {
 
 def optPath(bc: Config, p: String) = if (bc.hasPath(p)) Some(file(bc.getString(p))) else None
 
-installerZip := optPath(buildConfig.value, "install.zip")
+installerZip := {
+  val bc = buildConfig.value 
+  optPath(bc, "install.zip").orElse(optPath(bc, "install.dir").map(d => (d * "equella-installer-*.zip").get.head))
+}
 
 sourceZip := optPath(buildConfig.value, "install.sourcezip")
 
