@@ -22,11 +22,13 @@ import scala.collection.JavaConverters._
 object QueryParams {
 
 
-  def paramString(map: java.util.Map[String, Array[String]]): String =
-    QueryString(map.asScala.flatMap {
-      case (n, vals) => vals.map(v => n -> Some(v)
-)    }.toVector).toString() match {
+  def paramString(map: java.util.Map[String, Array[String]]): String = {
+    val paramVector = map.asScala.toVector.flatMap {
+      case (n, vals) => vals.map(v => n -> Some(v))
+    }
+    QueryString(paramVector).toString() match {
       case "" => ""
       case o => o.substring(1)
     }
+  }
 }
