@@ -18,6 +18,7 @@ libraryDependencies ++= Seq(
   "org.easytesting" % "fest-swing" % "1.2.1",
   "org.codehaus.jackson" % "jackson-core-asl" % "1.9.13",
   "org.codehaus.jackson" % "jackson-mapper-asl" % "1.9.13",
+  "xalan" % "xalan" % "2.7.2",
   "org.dspace.oclc" % "oclc-srw" % "1.0.20080328",
   "org.apache.cxf" % "cxf-rt-frontend-simple" % "3.1.12",
   "org.apache.cxf" % "cxf-rt-databinding-aegis" % "3.1.12",
