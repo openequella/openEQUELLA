@@ -34,7 +34,6 @@ import com.tle.common.PathUtils;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.core.services.FileSystemService;
 import com.tle.mypages.service.MyPagesService;
-import com.tle.web.customlinks.section.CustomLinksSection;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.htmleditor.service.HtmlEditorService;
@@ -49,7 +48,6 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxGenerator;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
 import com.tle.web.sections.ajax.handler.AjaxMethod;
-import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.ajaxupload.AjaxCallbackResponse;
@@ -63,7 +61,6 @@ import com.tle.web.sections.js.generic.function.PartiallyApply;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.TextLabel;
-import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.FileUpload;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
@@ -355,8 +352,6 @@ public class FileUploadSection extends AbstractPrototypeSection<FileUploadSectio
 	public static class FileUploadModel
 	{
 		private List<PageGroup> pages;
-		@Bookmarked
-		private boolean noFile;
 		private String error;
 
 		public List<PageGroup> getPages()
