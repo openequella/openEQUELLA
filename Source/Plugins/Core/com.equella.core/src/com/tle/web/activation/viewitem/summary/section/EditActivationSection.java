@@ -122,8 +122,11 @@ public class EditActivationSection extends AbstractContentSection<EditActivation
 		final ActivateRequest request = activationService.getRequest(model.getActivationId());
 		if( isValid(info, request) )
 		{
-			request.setCourse(course.getSelectedValue(info));
-			request.setFrom(fromDate.getDate(info).toDate());
+			if (request.getStatus() != ActivateRequest.TYPE_ACTIVE)
+			{
+				request.setCourse(course.getSelectedValue(info));
+				request.setFrom(fromDate.getDate(info).toDate());
+			}
 			request.setUntil(untilDate.getDate(info).toDate());
 			request.setUser(CurrentUser.getUserID());
 			activationService.updateActivation(request);
