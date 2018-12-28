@@ -30,7 +30,7 @@ public class ACLTest extends AbstractCleanupAutoTest
 		logon(DENY_PURGE_U, PW);
 		ItemAdminPage mrp = new ItemAdminPage(context).load();
 		SummaryPage item = mrp.viewItem(ITEM_NAME);
-		Assert.assertFalse(item.hasAction("Purge from EQUELLA"));
+		Assert.assertFalse(item.hasAction("Purge from openEQUELLA"));
 		mrp = new ItemAdminPage(context).load();
 		mrp.search(ITEM_NAME);
 		BulkResultsPage brp = mrp.bulk().selectAll().executeCommandFailure("purge");
@@ -39,7 +39,7 @@ public class ACLTest extends AbstractCleanupAutoTest
 		logon(ALLOW_PURGE_U, PW);
 		mrp = new ItemAdminPage(context).load();
 		item = mrp.viewItem(ITEM_NAME);
-		Assert.assertTrue(item.hasAction("Purge from EQUELLA"));
+		Assert.assertTrue(item.hasAction("Purge from openEQUELLA"));
 		mrp = new ItemAdminPage(context).load();
 		mrp.search(ITEM_NAME);
 		brp = mrp.bulk().selectAll().executeCommandFailure("purge");

@@ -83,7 +83,7 @@ public class TaxonomyControlsTest extends AbstractCleanupTest
 		assertFalse(isTextPresentInId(vid1, term1));
 		assertFalse(isTextPresentInId(vid2, term2));
 
-		wizardPage.autoTermControl(6).selectExistingTerm(term2, wizardPage);
+		wizardPage.autoTermControl(6).selectExistingTerm(term2, wizardPage.getUpdateWaiter(6), 1);
 
 		assertFalse(isTextPresentInId(vid1, term1));
 		assertTrue(isTextPresentInId(vid2, term2));

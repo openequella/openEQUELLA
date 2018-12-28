@@ -57,8 +57,9 @@ public class WizardConfigTest extends AbstractSessionTest
 		wizardPage.editbox(1, "Wizard Config Test");
 
 		// Check button links and navigate using them
-		assertTrue(wizardPage.hasPage("Name", false) && wizardPage.hasPage("Description", true)
-			&& wizardPage.hasPage("Attachments", true));
+		assertTrue(wizardPage.hasPage("Name *", false), "Name page is disabled");
+		assertTrue(wizardPage.hasPage("Description", true), "Description page is enabled");
+		assertTrue(wizardPage.hasPage("Attachments", true), "Attachment page is enabled");
 
 		// Click through pages check active page is text
 		assertPages(wizardPage, pages, true);

@@ -2,6 +2,7 @@ version: 0.2
 env:
   variables:
     AUTOTEST_CONFIG: "codebuild.conf"
+    EQ_EXIFTOOL_PATH: "/usr/bin/exiftool"
 phases:
   install:
     commands:

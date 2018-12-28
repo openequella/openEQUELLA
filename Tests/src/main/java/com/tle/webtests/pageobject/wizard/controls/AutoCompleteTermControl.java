@@ -1,5 +1,6 @@
 package com.tle.webtests.pageobject.wizard.controls;
 
+import com.tle.webtests.pageobject.ExpectWaiter;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -68,21 +69,18 @@ public class AutoCompleteTermControl extends NewAbstractWizardControl<AutoComple
 
 	public WizardPageTab selectExistingTerm(String prefix, WizardPageTab wizardPage)
 	{
-		return selectExistingTerm(prefix, wizardPage, 1);
+		return selectExistingTerm(prefix, ExpectWaiter.waiter(ExpectedConditions2.ajaxUpdate(getControlElem()), wizardPage), 1);
 	}
 
-	public WizardPageTab selectExistingTerm(String prefix, WizardPageTab wizardPage, int number)
+	public WizardPageTab selectExistingTerm(String prefix, WaitingPageObject<WizardPageTab> nextPage, int number)
 	{
 		waiter.until(ExpectedConditions2.elementAttributeToContain(getTermField(), "class", "ui-autocomplete-input"));
 		getTermField().clear();
 		getTermField().sendKeys(prefix);
 
 		AutoCompleteTermResults results = listWait();
-
-		ExpectedCondition<?> refreshed = ExpectedConditions2.ajaxUpdate(getControlElem());
 		results.selectByIndex(number);
-		waiter.until(refreshed);
-		return wizardPage.get();
+		return nextPage.get();
 	}
 
 	public String getAddedTermByIndex(int index)
