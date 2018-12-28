@@ -12,23 +12,36 @@ import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import com.tle.webtests.pageobject.generic.entities.AbstractEditEntityPage;
 
 public class EditUserScriptPage extends AbstractEditEntityPage<EditUserScriptPage, ShowUserScriptsPage> {
-    @FindBy(id = "{editorSectionId}_scriptTypeList")
-    private WebElement scriptTypeList;
-    @FindBy(id = "{editorSectionId}_moduleNameField")
-    private WebElement moduleNameField;
     @FindBy(id = "syntax-div")
     private WebElement syntaxCheckDiv;
-    @FindBy(id = "{editorSectionId}_checkSyntaxButton")
-    private WebElement checkSyntaxButton;
     @FindBy(xpath = "//div[@class='editor-container']")
     private WebElement editorContainer;
     @FindBy(xpath = "//*[@id='syntax-div']/pre/span")
     private WebElement syntaxCheckResult;
-    @FindBy(id = "{editorSectionId}_freemarkerlinkDiv")
-    private WebElement scriptHelp;
 
     protected EditUserScriptPage(ShowUserScriptsPage showUserScriptsPage) {
         super(showUserScriptsPage);
+    }
+
+
+    private WebElement elemWithPrefix(String postfix)
+    {
+        return findWithId(getEditorSectionId(), postfix);
+    }
+
+    private WebElement getScriptTypeList()
+    {
+        return elemWithPrefix("_scriptTypeList");
+    }
+
+    private WebElement getModuleNameField()
+    {
+        return elemWithPrefix("_moduleNameField");
+    }
+
+    private WebElement getCheckSyntaxButton()
+    {
+        return elemWithPrefix("_checkSyntaxButton");
     }
 
     @Override
@@ -50,7 +63,7 @@ public class EditUserScriptPage extends AbstractEditEntityPage<EditUserScriptPag
         WaitingPageObject<EditUserScriptPage> ajaxUpdate = ExpectWaiter.waiter(
                 ExpectedConditions2.ajaxUpdateExpectBy(driver.findElement(By.id("script-field")),
                         By.id(getEditorSectionId() + (type.equals("executable") ? "_moduleNameField" : "_freemarkerlinkDiv"))), this);
-        new EquellaSelect(getContext(), scriptTypeList).selectByValue(type);
+        new EquellaSelect(getContext(), getScriptTypeList()).selectByValue(type);
         ajaxUpdate.get();
     }
 
@@ -63,8 +76,8 @@ public class EditUserScriptPage extends AbstractEditEntityPage<EditUserScriptPag
     }
 
     public void setModuleName(String moduleName) {
-        moduleNameField.clear();
-        moduleNameField.sendKeys(moduleName);
+        getModuleNameField().clear();
+        getModuleNameField().sendKeys(moduleName);
     }
 
     /**
@@ -81,7 +94,7 @@ public class EditUserScriptPage extends AbstractEditEntityPage<EditUserScriptPag
 
     public boolean syntaxOk() {
         WaitingPageObject<EditUserScriptPage> ajaxUpdate = ajaxUpdateExpect(syntaxCheckDiv, syntaxCheckResult);
-        checkSyntaxButton.click();
+        getCheckSyntaxButton().click();
         ajaxUpdate.get();
         return isPresent(By.className("ok")) && !isPresent(By.className("fail"));
     }

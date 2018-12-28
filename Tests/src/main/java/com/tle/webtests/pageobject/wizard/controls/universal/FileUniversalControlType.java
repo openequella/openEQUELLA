@@ -223,9 +223,9 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 		return nextPage.get();
 	}
 
-	public void importFromScrapbook(String description, String name)
+	public void importFromScrapbook(String description)
 	{
-		WaitingPageObject<UniversalControl> waiter = control.attachNameWaiter(name, false);
+		WaitingPageObject<UniversalControl> waiter = control.attachNameWaiter(description, false);
 		getAddScrap().click();
 
 		SelectionSession selectionSession = ExpectWaiter.waiter(

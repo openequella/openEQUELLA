@@ -15,6 +15,7 @@ public class MyResourcesUploadFilesPage extends AbstractPage<MyResourcesUploadFi
 	private static final String UPLOAD_FILE_INPUT_ID = "myr_s";
 	private static final String DESCRIPTION_INPUT_ID = "myr_d";
 	private static final String SEARCH_TAGS_INPUT_ID = "myr_dndt";
+	private static final String EDIT_TAGS_INPUT_ID = "myr_t";
 
 	@FindBy(id = REPLACE_FILE_INPUT_ID)
 	private WebElement fileInput;
@@ -24,6 +25,8 @@ public class MyResourcesUploadFilesPage extends AbstractPage<MyResourcesUploadFi
 	private WebElement descriptionField;
 	@FindBy(id = SEARCH_TAGS_INPUT_ID)
 	private WebElement tagField;
+	@FindBy(id = EDIT_TAGS_INPUT_ID)
+	private WebElement editTagField;
 	@FindBy(id = "myr_c")
 	private WebElement cancelButton;
 	@FindBy(id = "myr_fm_file")
@@ -31,8 +34,6 @@ public class MyResourcesUploadFilesPage extends AbstractPage<MyResourcesUploadFi
 
 	private MyResourcesPage myResourcesPage;
 
-	@FindBy(id = "myr_dndt")
-	private WebElement dndTagsField;
 	@FindBy(id = "")
 	private WebElement dndArchiveOption;
 	@FindBy(id = "filedndarea")
@@ -116,12 +117,6 @@ public class MyResourcesUploadFilesPage extends AbstractPage<MyResourcesUploadFi
 		descriptionField.sendKeys(description);
 	}
 
-	public void setDndTags(String tags)
-	{
-		dndTagsField.clear();
-		dndTagsField.sendKeys(tags);
-	}
-
 	public MyResourcesPage cancel()
 	{
 		cancelButton.click();
@@ -134,4 +129,9 @@ public class MyResourcesUploadFilesPage extends AbstractPage<MyResourcesUploadFi
 		return myResourcesPage.get();
 	}
 
+	public void editSearchTags(String tags)
+	{
+		editTagField.clear();
+		editTagField.sendKeys(tags);
+	}
 }

@@ -229,12 +229,12 @@ public class FileAttachmentControlTest extends AbstractCleanupAutoTest
 		file.setDisplayName("page(1).html").save();
 
 		FileUniversalControlType fileType = control.addResource(new FileUniversalControlType(control));
-		fileType.importFromScrapbook(scrapbookItem, "page.html");
+		fileType.importFromScrapbook(scrapbookItem);
 
 		control.editResource(fileType, "page.html").setDisplayName("page(5).html").save();
 
 		fileType = control.addResource(fileType);
-		fileType.importFromScrapbook(scrapbookItem, "page.html");
+		fileType.importFromScrapbook(scrapbookItem);
 
 		control.editResource(fileType, "page.html").setDisplayName("page(6).html").save();
 

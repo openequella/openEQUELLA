@@ -179,7 +179,7 @@
                   <string>StoreJs</string>
                   <string>if (request.get(&apos;doit&apos;) == &apos;Create binary file&apos;)
 {
-	var connection = utils.getConnection(&quot;https://www.apereo.org/sites/default/files/styles/project_logo/public/projects/logos/largeequella_logo.gif&quot;);
+	var connection = utils.getConnection(&quot;https://github.com/equella/Equella/blob/cfd7f9027de68635d73b60958079196bab165ead/Installer/resources/images/logo.gif?raw=true&quot;);
 	var response = connection.getResponse(true);
 	staging.writeBinaryFile(&quot;equellaLogo.gif &quot;,response.getAsBinaryData());
 }

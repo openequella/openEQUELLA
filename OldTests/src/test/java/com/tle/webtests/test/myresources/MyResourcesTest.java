@@ -50,7 +50,7 @@ public class MyResourcesTest extends AbstractCleanupTest
 		wizard.editbox(1, itemName);
 
 		UniversalControl control = wizard.universalControl(4);
-		control.addDefaultResource(new FileUniversalControlType(control)).importFromScrapbook(scrapbookItem, "A Description");
+		control.addDefaultResource(new FileUniversalControlType(control)).importFromScrapbook(scrapbookItem);
 		wizard.save().publish();
 
 		ItemListPage itemList = new ItemAdminPage(context).load().exactQuery(itemName);
@@ -109,7 +109,7 @@ public class MyResourcesTest extends AbstractCleanupTest
 		editWizard.setDescription(abandonedDescStr);
 
 		String abandonedTagsStr = "Blake Mattress";
-		editWizard.setSearchTags(abandonedTagsStr);
+		editWizard.editSearchTags(abandonedTagsStr);
 
 		// abandon changes
 		results = editWizard.cancel().results();
@@ -124,7 +124,7 @@ public class MyResourcesTest extends AbstractCleanupTest
 		editWizard.setDescription(descStr);
 
 		String tagsStr = "Python Monty";
-		editWizard.setSearchTags(tagsStr);
+		editWizard.editSearchTags(tagsStr);
 
 		// Save and evaluate changes
 		editWizard.save();
@@ -137,7 +137,6 @@ public class MyResourcesTest extends AbstractCleanupTest
 	 * convenience local method to upload an item into scrapbook
 	 * 
 	 * @param scrapbookItem
-	 * @param presumedIndex the ordinal index of the item we add
 	 * @return results page
 	 */
 	private MyResourcesPage uploadAndVerify(String scrapbookItem)

@@ -553,9 +553,9 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest
 		// resize image
 		wizard = item.edit();
 		clickAscButton("Get Image Size", wizard);
-		assertEquals(getAscMessage().getText(), "Width: 163 | Height: 33", "ASC Message was wrong");
+		assertEquals(getAscMessage().getText(), "Width: 140 | Height: 350", "ASC Message was wrong");
 		clickAscButton("Resize Image", wizard);
-		assertEquals(getAscMessage().getText(), "Width: 79 | Height: 16", "ASC Message was wrong");
+		assertEquals(getAscMessage().getText(), "Width: 70 | Height: 175", "ASC Message was wrong");
 
 		// html creation + single attachment deletion
 		clickAscButton("Create html attachment", wizard);

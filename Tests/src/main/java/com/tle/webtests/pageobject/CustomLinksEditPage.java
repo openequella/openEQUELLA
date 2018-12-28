@@ -14,7 +14,6 @@ public class CustomLinksEditPage extends AbstractPage<CustomLinksEditPage>
 {
 	@FindBy(id = "cls_saveButton")
 	private WebElement saveButton;
-	private MultiLingualEditbox titleField;
 
 	@FindBy(id = "cls_uf")
 	private WebElement urlField;
@@ -24,9 +23,6 @@ public class CustomLinksEditPage extends AbstractPage<CustomLinksEditPage>
 
 	@FindBy(id = "cls_cancelButton")
 	private WebElement cancelButton;
-
-	@FindBy(id = "cls_uploadButton")
-	private WebElement uploadButton;
 
 	@FindBy(id = "cls_file")
 	private WebElement fileUpload;
@@ -51,7 +47,11 @@ public class CustomLinksEditPage extends AbstractPage<CustomLinksEditPage>
 	protected void checkLoadedElement()
 	{
 		super.checkLoadedElement();
-		titleField = new MultiLingualEditbox(context, "cls_dn").get();
+	}
+
+	private MultiLingualEditbox getTitleField()
+	{
+		return new MultiLingualEditbox(context, "cls_dn").get();
 	}
 
 	public CustomLinksPage save(String displayName)
@@ -61,7 +61,7 @@ public class CustomLinksEditPage extends AbstractPage<CustomLinksEditPage>
 
 	public CustomLinksPage save()
 	{
-		return save(customLinksPage.getNewExpectation(titleField.getCurrentString(), urlField.getAttribute("value")));
+		return save(customLinksPage.getNewExpectation(getTitleField().getCurrentString(), urlField.getAttribute("value")));
 	}
 
 	private CustomLinksPage save(WaitingPageObject<CustomLinksPage> returnTo)
@@ -72,7 +72,7 @@ public class CustomLinksEditPage extends AbstractPage<CustomLinksEditPage>
 
 	public void setName(String name)
 	{
-		titleField.setCurrentString(name);
+		getTitleField().setCurrentString(name);
 	}
 
 	public void setUrl(String url)
@@ -93,10 +93,15 @@ public class CustomLinksEditPage extends AbstractPage<CustomLinksEditPage>
 	}
 
 
+	private ExpectedCondition<WebElement> getIconVisible()
+	{
+		return ExpectedConditions.visibilityOfElementLocated(getCurrentIconBy());
+	}
+
 	public void downloadIcon()
 	{
 		downloadButton.click();
-		waiter.until(ExpectedConditions.visibilityOfElementLocated(getCurrentIconBy()));
+		waiter.until(getIconVisible());
 	}
 
 	public void cancel()
@@ -106,7 +111,7 @@ public class CustomLinksEditPage extends AbstractPage<CustomLinksEditPage>
 
 	public void uploadIcon(URL icon)
 	{
-		ExpectedCondition<?> iconUpdate = ExpectedConditions2.ajaxUpdate(getCurrentIcon());
+		ExpectedCondition<?> iconUpdate = ExpectedConditions.and(ExpectedConditions2.stalenessOrNonPresenceOf(getCurrentIcon()), getIconVisible());
 		waitForHiddenElement(fileUpload);
 		fileUpload.sendKeys(getPathFromUrl(icon));
 		waiter.until(iconUpdate);
@@ -121,7 +126,7 @@ public class CustomLinksEditPage extends AbstractPage<CustomLinksEditPage>
 
 	public MultiLingualEditbox getTitleSection()
 	{
-		return titleField;
+		return getTitleField();
 	}
 
 }

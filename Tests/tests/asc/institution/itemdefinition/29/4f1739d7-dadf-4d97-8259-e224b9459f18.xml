@@ -143,7 +143,7 @@ if(request.get(&apos;doit&apos;) == &apos;Edit text file&apos;)
 
 if (request.get(&apos;doit&apos;) == &apos;Create binary attachment&apos;)
 {
-	var response = utils.getConnection(&quot;https://www.apereo.org/sites/default/files/styles/project_logo/public/projects/logos/largeequella_logo.gif&quot;).getResponse(true);
+	var response = utils.getConnection(&quot;https://github.com/equella/Equella/blob/cfd7f9027de68635d73b60958079196bab165ead/Installer/resources/images/logo.gif?raw=true&quot;).getResponse(true);
 	attachments.createBinaryFileAttachment(&quot;equellaLogo.gif &quot;,&quot;EQUELLA Logo&quot;,response.getAsBinaryData());
 	attachments.addExistingFileAsAttachment(&quot;equellaLogo.gif &quot;,&quot;EQUELLA Logo&quot;);
 	

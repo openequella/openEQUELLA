@@ -59,7 +59,7 @@ public class SearchFiltersTest extends AbstractCleanupAutoTest
 	public void testFilterByDateModified(String range, String date1, String result) throws ParseException
 	{
 		DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		final TimeZone UTC = TimeZone.getDefault();
+		final TimeZone UTC = TimeZone.getTimeZone("Australia/Hobart");
 		dfm.setTimeZone(UTC);
 
 		// 'Conceptual' date!
