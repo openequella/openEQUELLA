@@ -69,7 +69,7 @@ public class CustomLinksTest extends AbstractSessionTest
 
 		CustomLinksEditPage clep = clp.editLink(name, url);
 		URL upIcon = Attachments.get("favicon.ico");
-		clep.uploadIcon(upIcon); //overwriting blank icon / downloaded icon with one on disk
+		clep.uploadIcon(upIcon, icon); //overwriting blank icon / downloaded icon with one on disk
 		clp = clep.save();
 		assertTrue(clp.linkExistsOnMenu(name, url, true)); //testing that a link exists with an icon
 		clep = clp.editLink(name, url);

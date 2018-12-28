@@ -109,9 +109,10 @@ public class CustomLinksEditPage extends AbstractPage<CustomLinksEditPage>
 		cancelButton.click();
 	}
 
-	public void uploadIcon(URL icon)
+	public void uploadIcon(URL icon, boolean replace)
 	{
-		ExpectedCondition<?> iconUpdate = ExpectedConditions.and(ExpectedConditions2.stalenessOrNonPresenceOf(getCurrentIcon()), getIconVisible());
+		ExpectedCondition<?> iconUpdate = replace ?
+			ExpectedConditions.and(ExpectedConditions2.stalenessOrNonPresenceOf(getCurrentIcon()), getIconVisible()) : getIconVisible();
 		waitForHiddenElement(fileUpload);
 		fileUpload.sendKeys(getPathFromUrl(icon));
 		waiter.until(iconUpdate);
