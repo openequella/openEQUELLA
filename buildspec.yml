@@ -23,7 +23,7 @@ phases:
       - sbt -no-colors configureInstall setupForTests ${OTHER_TESTS} Tests/test
   post_build:
     commands:
-      - sbt -no-colors coverageReport || publishTestResults
+      - sbt -no-colors coverageReport ; publishTestResults
 artifacts:
   files:
     - 'OldTests/target/testng/**/*'
