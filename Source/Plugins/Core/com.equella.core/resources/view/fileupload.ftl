@@ -19,13 +19,7 @@
 	</p>
 	
 	<h3><@bundlekey "upload.selectfile" /></h3>
-	<#if m.noFile>
-		<span class="mandatory"><@bundlekey "upload.error.mustselectfile" /></span><br>
-	</#if>
-	
-	<@file section=s.fileUpload size=60 /><@render section=s.upload><@bundlekey "upload.upload"/></@render>
-	
-	
+	<@file section=s.fileUpload size=60 />
 	
 	<#-- display list of current attachments -->
 	<br><br>
