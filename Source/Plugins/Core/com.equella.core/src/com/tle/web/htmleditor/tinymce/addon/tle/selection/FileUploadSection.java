@@ -34,6 +34,7 @@ import com.tle.common.PathUtils;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.core.services.FileSystemService;
 import com.tle.mypages.service.MyPagesService;
+import com.tle.web.customlinks.section.CustomLinksSection;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.htmleditor.service.HtmlEditorService;
@@ -45,13 +46,20 @@ import com.tle.web.sections.SectionContext;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
+import com.tle.web.sections.ajax.AjaxGenerator;
+import com.tle.web.sections.ajax.handler.AjaxFactory;
+import com.tle.web.sections.ajax.handler.AjaxMethod;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
+import com.tle.web.sections.equella.ajaxupload.AjaxCallbackResponse;
+import com.tle.web.sections.equella.ajaxupload.AjaxUpload;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
+import com.tle.web.sections.js.JSAssignable;
+import com.tle.web.sections.js.generic.function.PartiallyApply;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.TextLabel;
@@ -96,6 +104,8 @@ public class FileUploadSection extends AbstractPrototypeSection<FileUploadSectio
 
 	@EventFactory
 	protected EventGenerator events;
+	@AjaxFactory
+	private AjaxGenerator ajax;
 	@ViewFactory
 	private FreemarkerFactory viewFactory;
 
@@ -103,13 +113,14 @@ public class FileUploadSection extends AbstractPrototypeSection<FileUploadSectio
 	private FileUpload fileUpload;
 	@Component
 	private TextField fileName;
-	@Component
-	private Button upload;
+	private JSAssignable validateFile;
 
 	@SuppressWarnings("nls")
 	@Override
 	public SectionResult renderHtml(RenderEventContext info)
 	{
+		fileUpload.setAjaxUploadUrl(info, ajax.getAjaxUrl(info, "uploadFile"));
+		fileUpload.setValidateFile(info, validateFile);
 		SelectionSession session = selectionService.getCurrentSession(info);
 		String wizardSessionId = session.getAttribute(AbstractSelectionAddon.SESSION_ID);
 		String pageId = session.getAttribute(AbstractSelectionAddon.PAGE_ID);
@@ -236,7 +247,9 @@ public class FileUploadSection extends AbstractPrototypeSection<FileUploadSectio
 	public void registered(String id, SectionTree tree)
 	{
 		super.registered(id, tree);
-		upload.setClickHandler(events.getNamedHandler("uploadFile")); //$NON-NLS-1$
+		validateFile = AjaxUpload.simpleUploadValidator("uploader",
+			PartiallyApply.partial(events.getSubmitValuesFunction("finishedUpload"), 2));
+
 	}
 
 	@EventHandlerMethod
@@ -260,33 +273,61 @@ public class FileUploadSection extends AbstractPrototypeSection<FileUploadSectio
 	}
 
 	@EventHandlerMethod
-	public void uploadFile(SectionInfo info) throws IOException
+	public void finishedUpload(SectionInfo info, String uploadId, ValidatedUpload response)
 	{
-		final FileUploadModel model = getModel(info);
-
+		final SelectionSession session = selectionService.getCurrentSession(info);
+		final String wizardSessionId = session.getAttribute(AbstractSelectionAddon.SESSION_ID);
 		String description = fileName.getValue(info);
-		boolean hasFile = fileUpload.getFileSize(info) > 0;
-		if( hasFile )
+		if( Check.isEmpty(description) )
 		{
-			final String filename = fileUpload.getFilename(info);
-			if( Check.isEmpty(description) )
-			{
-				description = filename;
-			}
+			description = response.getFilename();
+		}
+		returnResource(info, wizardSessionId, response.getFilepath(), description);
+	}
 
-			final SelectionSession session = selectionService.getCurrentSession(info);
-			final String wizardSessionId = session.getAttribute(AbstractSelectionAddon.SESSION_ID);
-			final String pageId = session.getAttribute(AbstractSelectionAddon.PAGE_ID);
+	public static class ValidatedUpload extends AjaxCallbackResponse
+	{
+		private String filename;
+		private String filepath;
 
-			try (InputStream in = fileUpload.getInputStream(info))
-			{
-				final FileAttachment newb = myPagesService.uploadStream(info, wizardSessionId, pageId,
-					PathUtils.fileencode(filename), description, in);
-				returnResource(info, wizardSessionId, newb.getUrl(), description);
-			}
+		public String getFilepath()
+		{
+			return filepath;
 		}
 
-		model.setNoFile(!hasFile);
+		public void setFilepath(String filepath)
+		{
+			this.filepath = filepath;
+		}
+
+		public String getFilename()
+		{
+			return filename;
+		}
+
+		public void setFilename(String filename)
+		{
+			this.filename = filename;
+		}
+	}
+
+	@AjaxMethod
+	public ValidatedUpload uploadFile(SectionInfo info) throws IOException
+	{
+		ValidatedUpload val = new ValidatedUpload();
+		final String filename = fileUpload.getFilename(info);
+		final SelectionSession session = selectionService.getCurrentSession(info);
+		final String wizardSessionId = session.getAttribute(AbstractSelectionAddon.SESSION_ID);
+		final String pageId = session.getAttribute(AbstractSelectionAddon.PAGE_ID);
+
+		try (InputStream in = fileUpload.getInputStream(info))
+		{
+			final FileAttachment newb = myPagesService.uploadStream(info, wizardSessionId, pageId,
+				PathUtils.fileencode(filename), filename, in);
+			val.setFilepath(newb.getUrl());
+			val.setFilename(filename);
+		}
+		return val;
 	}
 
 	@Override
@@ -311,11 +352,6 @@ public class FileUploadSection extends AbstractPrototypeSection<FileUploadSectio
 		return fileName;
 	}
 
-	public Button getUpload()
-	{
-		return upload;
-	}
-
 	public static class FileUploadModel
 	{
 		private List<PageGroup> pages;
@@ -331,16 +367,6 @@ public class FileUploadSection extends AbstractPrototypeSection<FileUploadSectio
 		public void setPages(List<PageGroup> pages)
 		{
 			this.pages = pages;
-		}
-
-		public boolean isNoFile()
-		{
-			return noFile;
-		}
-
-		public void setNoFile(boolean noFile)
-		{
-			this.noFile = noFile;
 		}
 
 		public String getError()
