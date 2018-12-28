@@ -13,8 +13,6 @@ import com.tle.webtests.pageobject.generic.component.SelectCourseDialog;
 
 public class EditActivationPage extends AbstractPage<EditActivationPage>
 {
-	@FindBy(id = "ea_sc")
-	private WebElement selectCourseButton;
 	@FindBy(id = "ea_saveButton")
 	private WebElement saveButton;
 
@@ -33,7 +31,7 @@ public class EditActivationPage extends AbstractPage<EditActivationPage>
 
 	public boolean fromAndCourseSelectorDisabled()
 	{
-		return !selectCourseButton.isEnabled() && fromDate.isDisabled();
+		return /*!selectCourseButton.isEnabled() && */fromDate.isDisabled();
 	}
 
 	public ActivationsSummaryPage editActiveActivation(java.util.Calendar until)
@@ -45,8 +43,7 @@ public class EditActivationPage extends AbstractPage<EditActivationPage>
 
 	public ActivationsSummaryPage editPendingActivation(String course, java.util.Calendar[] range)
 	{
-		selectCourseButton.click();
-		SelectCourseDialog scd = new SelectCourseDialog(context, "ea_selectCourseDialog").get();
+		SelectCourseDialog scd = new SelectCourseDialog(context, "ea_cid").get();
 		scd.searchSelectAndFinish(course, this);
 		setFrom(range[1]); // [0] not a future date wtf
 		setUntil(range[1]);

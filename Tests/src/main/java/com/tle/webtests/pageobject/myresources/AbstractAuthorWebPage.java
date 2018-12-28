@@ -7,6 +7,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.pagefactory.ByChained;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -53,11 +54,11 @@ public abstract class AbstractAuthorWebPage<T extends AbstractAuthorWebPage<T>> 
 	private WebElement fileName;
 	@FindBy(id = "_fileUpload")
 	private WebElement fileUpload;
-	@FindBy(id = "_upload")
-	private WebElement uploadButton;
 
-	@FindBy(id = "{baseId}" + IFRAME_ID_PREFIX)
-	private WebElement htmliFrame;
+	private WebElement getHtmliFrame()
+	{
+		return findByBaseId(IFRAME_ID_PREFIX);
+	}
 
 	public static final String IFRAME_ID_PREFIX = "tinyedit_html_ifr";
 
@@ -89,7 +90,7 @@ public abstract class AbstractAuthorWebPage<T extends AbstractAuthorWebPage<T>> 
 
 	public T editPage(String name)
 	{
-		return new PageRow(getPageRowByName(name)).get().edit();
+		return new PageRow(getPageRowByName(name)).edit();
 	}
 
 	public void setDescription(String description)
@@ -110,7 +111,7 @@ public abstract class AbstractAuthorWebPage<T extends AbstractAuthorWebPage<T>> 
 
 	public T deletePage(String name)
 	{
-		return new PageRow(getPageRowByName(name)).get().delete();
+		return new PageRow(getPageRowByName(name)).delete();
 	}
 
 	public void setTitle(String pageTitle)
@@ -178,47 +179,52 @@ public abstract class AbstractAuthorWebPage<T extends AbstractAuthorWebPage<T>> 
 		fileName.sendKeys(description);
 		waitForHiddenElement(fileUpload);
 		fileUpload.sendKeys(getPathFromUrl(file));
-		uploadButton.click();
 		new SelectionCheckoutPage(context).get().returnSelection(
 			ExpectWaiter.waiter(ExpectedConditions.invisibilityOfElementLocated(By
 				.xpath("//iframe[contains(@id,'_ifr') and contains(@id,'mce_')]")), this));
-		driver.switchTo().frame(htmliFrame);
+		driver.switchTo().frame(getHtmliFrame());
 		waiter.until(ExpectedConditions2.textToBePresentInElement(editorBody, description));
 		driver.switchTo().defaultContent();
 	}
 
-	private class PageRow extends AbstractPage<PageRow>
+	private class PageRow
 	{
-		@FindBy(xpath = "td/a[@title='Delete']")
-		private WebElement deleteButton;
-		@FindBy(xpath = "td[@class='name']/a")
-		private WebElement editButton;
+		private By pageBy;
+
+		private WebElement getPageRow()
+		{
+			return getTable().findElement(pageBy);
+		}
+
+		private WebElement getRowElem(String xpath)
+		{
+			return getPageRow().findElement(By.xpath(xpath));
+		}
+		private WebElement getDeleteButton()
+		{
+			return getRowElem("td/a[@title='Delete']");
+		}
+		private WebElement getEditButton()
+		{
+			return getRowElem("td[@class='name']/a");
+		}
 
 		public PageRow(By by)
 		{
-			super(AbstractAuthorWebPage.this.context,
-					AbstractAuthorWebPage.this.getTable(), by);
+			this.pageBy = by;
 		}
 
 		public T edit()
 		{
 			WaitingPageObject<T> waiter = AbstractAuthorWebPage.this.updateWaiter();
-			editButton.click();
+			getEditButton().click();
 			return waiter.get();
-		}
-
-		@Override
-		public SearchContext getSearchContext()
-		{
-			return loadedElement;
 		}
 
 		public T delete()
 		{
-			ExpectWaiter<T> waiter = ExpectWaiter.waiter(
-				ExpectedConditions2.numberOfElementLocated(getTable(), XPATH_ALLROWS, getPageCount() - 1),
-				AbstractAuthorWebPage.this);
-			deleteButton.click();
+			WaitingPageObject<T> waiter = AbstractAuthorWebPage.this.updateWaiter();
+			getDeleteButton().click();
 			acceptConfirmation();
 			return waiter.get();
 		}

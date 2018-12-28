@@ -7,7 +7,7 @@ phases:
     commands:
       - . setupBuildCommands
       - npm install -g yarn
-      - yarn global add psc-package-bin-simple@3.0.1
+      - yarn global add psc-package@3.0.1
       - psc-package --version
       - mkdir -p ~/.sbt/0.13/
       - cp codebuild/global.sbt ~/.sbt/0.13/
@@ -20,10 +20,9 @@ phases:
       - java -jar IntegTester/target/scala-2.12/IntegTester-assembly-1.0.jar &
       - sbt -no-colors installEquella startEquella
       - sbt -no-colors configureInstall setupForTests ${OTHER_TESTS} Tests/test
-      - sbt -no-colors coverageReport
   post_build:
     commands:
-      - publishTestResults
+      - sbt -no-colors coverageReport || publishTestResults
 artifacts:
   files:
     - 'OldTests/target/testng/**/*'
