@@ -41,6 +41,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
+import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.exceptions.AccessDeniedException;
 import org.apache.log4j.Logger;
 import org.jboss.resteasy.util.DateUtil;
 
@@ -87,6 +89,7 @@ public class StagingResourceImpl implements StagingResource
 	@Override
 	public Response createStaging()
 	{
+		checkPermissions();
 		final StagingFile stagingFile = stagingService.createStagingArea();
 		// Need compatibility with EPS endpoint :(
 		return Response.created(stagingUri(stagingFile.getUuid())).header("x-eps-stagingid", stagingFile.getUuid())
@@ -96,6 +99,7 @@ public class StagingResourceImpl implements StagingResource
 	@Override
 	public StagingBean getStaging(UriInfo uriInfo, String stagingUuid)
 	{
+		checkPermissions();
 		StagingFile stagingFile = getStagingFile(stagingUuid);
 
 		try
@@ -171,6 +175,7 @@ public class StagingResourceImpl implements StagingResource
 	@Override
 	public Response headFile(String uuid, String filepath)
 	{
+		checkPermissions();
 		try
 		{
 			ensureFileExists(getStagingFile(uuid), filepath);
@@ -191,6 +196,7 @@ public class StagingResourceImpl implements StagingResource
 	@Override
 	public Response getFile(HttpHeaders headers, String uuid, String filepath)
 	{
+		checkPermissions();
 		final StagingFile stagingFile = getStagingFile(uuid);
 		ensureFileExists(stagingFile, filepath);
 
@@ -243,6 +249,7 @@ public class StagingResourceImpl implements StagingResource
 	@Override
 	public Response deleteFile(String stagingUuid, String filepath, String uploadId) throws IOException
 	{
+		checkPermissions();
 		final StagingFile stagingFile = getStagingFile(stagingUuid);
 		ensureFileExists(stagingFile, filepath);
 
@@ -258,6 +265,7 @@ public class StagingResourceImpl implements StagingResource
 	@Override
 	public Response deleteStaging(String uuid) throws IOException
 	{
+		checkPermissions();
 		StagingFile stagingFile = getStagingFile(uuid);
 		stagingService.removeStagingArea(stagingFile, true);
 		return Response.status(Status.NO_CONTENT).build();
@@ -267,6 +275,7 @@ public class StagingResourceImpl implements StagingResource
 	public Response completeMultipart(String uuid, String filepath, String uploadId, MultipartCompleteBean completion)
 		throws IOException
 	{
+		checkPermissions();
 		StagingFile stagingFile = getStagingFile(uuid);
 		List<PartBean> parts = completion.getParts();
 		int[] partNumbers = new int[parts.size()];
@@ -298,6 +307,7 @@ public class StagingResourceImpl implements StagingResource
 	@Override
 	public MultipartBean startMultipart(String uuid, String filepath, Boolean uploads)
 	{
+		checkPermissions();
 		if( uploads == null )
 		{
 			throw new BadRequestException("Must use PUT for uploading files");
@@ -336,6 +346,7 @@ public class StagingResourceImpl implements StagingResource
 	public Response putFile(String uuid, String filepath, InputStream data, String unzipTo, String copySource,
 		int partNumber, String uploadId, long size, String contentType) throws IOException
 	{
+		checkPermissions();
 		final StagingFile stagingFile = getStagingFile(uuid);
 		if( fileSystemService.fileExists(stagingFile, filepath) )
 		{
@@ -421,5 +432,11 @@ public class StagingResourceImpl implements StagingResource
 	private URI stagingUri(String stagingUuid, String filepath)
 	{
 		return urlLinkService.getMethodUriBuilder(StagingResource.class, "getFile").build(stagingUuid, filepath);
+	}
+
+	private void checkPermissions(){
+		if (CurrentUser.isGuest()){
+			throw new AccessDeniedException("You need to be logged in to use a staging area.");
+		}
 	}
 }
