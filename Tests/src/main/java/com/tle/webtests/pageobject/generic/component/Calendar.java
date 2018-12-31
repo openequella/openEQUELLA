@@ -73,8 +73,8 @@ public class Calendar extends AbstractPage<Calendar>
 		WebElement imgElem = getField().findElement(By.xpath("following-sibling::img"));
 		imgElem.click();
 		waitForElement(By.id("ui-datepicker-div"));
-		clickMonthYear("month", cal.get(java.util.Calendar.MONTH));
 		clickMonthYear("year", cal.get(java.util.Calendar.YEAR));
+		clickMonthYear("month", cal.get(java.util.Calendar.MONTH));
 
 		String dayXpath = "id(''ui-datepicker-div'')/table[@class=''ui-datepicker-calendar'']/tbody/tr/td/a[text()=''{0}'']";
 		String day = MessageFormat.format(dayXpath, Integer.toString(cal.get(java.util.Calendar.DAY_OF_MONTH)));
