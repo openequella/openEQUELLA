@@ -1,25 +1,10 @@
 package com.tle.webtests.test.contribute.controls.attachments;
 
-import static com.tle.webtests.pageobject.wizard.controls.universal.AbstractAttachmentDialogPage.BUTTON_BACK;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-
 import com.dytech.common.legacyio.FileUtils;
-import com.tle.webtests.pageobject.ExpectWaiter;
-import com.tle.webtests.pageobject.wizard.controls.universal.PickAttachmentTypeDialog;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.testng.annotations.Test;
-
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.generic.page.VerifyableAttachment;
 import com.tle.webtests.pageobject.myresources.MyResourcesPage;
-import com.tle.webtests.pageobject.searching.ItemAdminPage;
 import com.tle.webtests.pageobject.searching.ItemListPage;
 import com.tle.webtests.pageobject.searching.SearchPage;
 import com.tle.webtests.pageobject.viewitem.AttachmentsPage;
@@ -32,11 +17,17 @@ import com.tle.webtests.pageobject.wizard.controls.universal.FileUniversalContro
 import com.tle.webtests.pageobject.wizard.controls.universal.WebPagesUniversalControlType;
 import com.tle.webtests.test.AbstractCleanupAutoTest;
 import com.tle.webtests.test.files.Attachments;
+import org.testng.annotations.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
+import static org.testng.Assert.*;
 
 @TestInstitution("fiveo")
 public class FileAttachmentControlTest extends AbstractCleanupAutoTest
 {
-
 	@Test
 	public void webPages()
 	{
@@ -56,8 +47,11 @@ public class FileAttachmentControlTest extends AbstractCleanupAutoTest
 		assertTrue(item.attachments().viewAttachment("Test page", new VerifyableAttachment(context)).isVerified());
 
 		String scrapbookItem = context.getFullName("An authored page");
-		ItemListPage results = new MyResourcesPage(context, "scrapbook").load()
-			.authorWebPage(scrapbookItem, "A Page", "This is a verifiable attachment").results();
+		ItemListPage results = new MyResourcesPage(context, "scrapbook")
+			.load()
+			.authorWebPage(scrapbookItem, "A Page", "This is a verifiable attachment")
+			.resetFilters()
+			.results();
 		assertTrue(results.doesResultExist(scrapbookItem, 1));
 
 		itemName = context.getFullName("Web Page from scrapbook");
@@ -183,7 +177,7 @@ public class FileAttachmentControlTest extends AbstractCleanupAutoTest
 		}
 		catch( IOException e )
 		{
-
+			e.printStackTrace();
 		}
 		return newFile;
 	}
