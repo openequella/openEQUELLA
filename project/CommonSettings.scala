@@ -46,7 +46,7 @@ object CommonSettings extends AutoPlugin {
     scalacOptions ++= Seq("-P:splain:implicits:true", "-P:splain:color:false"),
     javacOptions ++= Seq("-source", "1.8", "-target", "8"),
     compileOrder := CompileOrder.Mixed,
-    headerLicense := Some(HeaderLicense.ALv2("2017", "Apereo")),
+    headerLicense := Some(HeaderLicense.ALv2("2019", "Apereo")),
     resolvers ++= Seq(
       "EBI Nexus" at "http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/",
       Resolver.bintrayRepo("omegat-org", "maven")
