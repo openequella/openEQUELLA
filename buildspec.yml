@@ -13,6 +13,8 @@ phases:
       - mkdir -p ~/.sbt/0.13/
       - cp codebuild/global.sbt ~/.sbt/0.13/
       - service postgresql start
+      - curl -OL https://chromedriver.storage.googleapis.com/2.45/chromedriver_linux64.zip
+      - unzip -o -d ${HOME} chromedriver_linux64.zip
       - (cd $HOME && curl -OL $INSTALLER_DOWNLOAD)
   build:
     commands:
