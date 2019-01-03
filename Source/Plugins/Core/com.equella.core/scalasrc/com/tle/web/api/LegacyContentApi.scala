@@ -420,7 +420,7 @@ class LegacyContentApi {
       val cbtag = cbTag.addClasses[TagState](decs.getContentBodyClasses)
 
       new DivRenderer(citag, new DivRenderer(cbtag, body))
-    } else body
+    } else new DivRenderer(context.getBody, body)
   }
 
 
