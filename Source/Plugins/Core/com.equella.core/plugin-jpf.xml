@@ -3059,10 +3059,6 @@
     <parameter id="mapper" value="rest" />
     <parameter id="bean" value="bean:com.tle.core.item.serializer.impl.AttachmentSerializerProvider" />
   </extension>
-  <extension plugin-id="com.tle.core.jackson" point-id="mapperExtension" id="fileMapperExtension">
-    <parameter id="mapper" value="rest" />
-    <parameter id="bean" value="bean:com.tle.core.item.serializer.impl.FileMapperExtension" />
-  </extension>
   <extension plugin-id="com.tle.web.api.item.equella.serializer" point-id="attachmentListener" id="standardAttachmentListender">
     <parameter id="bean" value="bean:com.tle.core.item.serializer.StandardAttachmentListener" />
   </extension>
