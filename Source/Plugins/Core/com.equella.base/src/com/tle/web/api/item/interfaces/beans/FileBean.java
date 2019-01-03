@@ -16,14 +16,11 @@
 
 package com.tle.web.api.item.interfaces.beans;
 
-import com.tle.web.api.item.interfaces.beans.GenericFileBean;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
-@SuppressWarnings("nls")
+@JsonTypeName("file")
 public class FileBean extends GenericFileBean
 {
-	@SuppressWarnings("hiding")
-	public static final String TYPE = "file";
-
 	private long size;
 
 	public long getSize()

@@ -18,14 +18,11 @@ package com.tle.web.api.item.interfaces.beans;
 
 import java.util.List;
 
-import com.tle.web.api.item.interfaces.beans.GenericFileBean;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
-@SuppressWarnings("nls")
+@JsonTypeName("folder")
 public class FolderBean extends GenericFileBean
 {
-	@SuppressWarnings("hiding")
-	public static final String TYPE = "folder";
-
 	private List<FileBean> files;
 	private List<FolderBean> folders;
 

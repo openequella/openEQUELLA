@@ -16,17 +16,16 @@
 
 package com.tle.web.api.item.interfaces.beans;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 /**
  * Equivalent of the staging folder, hence the UUID.
  * 
  * @author Aaron
  */
-@SuppressWarnings("nls")
+@JsonTypeName("root")
 public class RootFolderBean extends FolderBean
 {
-	@SuppressWarnings("hiding")
-	public static final String TYPE = "root";
-
 	private String uuid;
 
 	public String getUuid()
