@@ -23,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * 
  * @author Aaron
  */
-@SuppressWarnings("nls")
 @JsonTypeName("root")
 public class RootFolderBean extends FolderBean
 {
