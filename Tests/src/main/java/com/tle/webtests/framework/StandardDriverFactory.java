@@ -122,13 +122,12 @@ public class StandardDriverFactory {
                 if (proxy != null) {
                     capabilities.setCapability(CapabilityType.PROXY, proxy);
                 }
-                options.merge(capabilities);
-                ChromeDriverService chromeService = getChromeService();
-                ChromeDriver cdriver = new ChromeDriver(chromeService, options);
+                capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+                RemoteWebDriver rdriver = new RemoteWebDriver(getChromeService().getUrl(), capabilities);
+                driver = new Augmenter().augment(rdriver);
                 if (chromeHeadless) {
-//                    enableHeadlessDownloads(cdriver, downDir);
+                    enableHeadlessDownloads(rdriver, downDir);
                 }
-                driver = cdriver;
             } else {
                 FirefoxBinary binary;
                 if (firefoxBinary != null) {
@@ -158,7 +157,7 @@ public class StandardDriverFactory {
         return driver;
     }
 
-    private void enableHeadlessDownloads(ChromeDriver cdriver, String downDir) throws IOException
+    private void enableHeadlessDownloads(RemoteWebDriver cdriver, String downDir) throws IOException
     {
         Map<String, Object> commandParams = new HashMap<>();
         commandParams.put("cmd", "Page.setDownloadBehavior");
