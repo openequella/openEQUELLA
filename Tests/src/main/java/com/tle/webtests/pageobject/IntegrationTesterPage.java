@@ -129,6 +129,7 @@ public class IntegrationTesterPage extends AbstractPage<IntegrationTesterPage>
 
 	public <T extends PageObject> T clickPostToUrlButton(WaitingPageObject<T> targetPage)
 	{
+		scrollToElement(inputPostToUrl);
 		inputPostToUrl.click();
 		return targetPage.get();
 	}
