@@ -4,8 +4,14 @@ import com.google.common.collect.Maps;
 import com.tle.common.Check;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.DownloadFilePage;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxBinary;
@@ -19,6 +25,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -107,9 +114,13 @@ public class StandardDriverFactory {
                 if (proxy != null) {
                     capabilities.setCapability(CapabilityType.PROXY, proxy);
                 }
-                capabilities.setCapability(ChromeOptions.CAPABILITY, options);
-                driver = new RemoteWebDriver(getChromeService().getUrl(), capabilities);
-                driver = new Augmenter().augment(driver);
+                options.merge(capabilities);
+                ChromeDriverService chromeService = getChromeService();
+                ChromeDriver cdriver = new ChromeDriver(chromeService, options);
+                if (headless) {
+                    enableHeadlessDownloads(cdriver, downDir);
+                }
+                driver = cdriver;
             } else {
                 FirefoxBinary binary;
                 if (firefoxBinary != null) {
@@ -145,5 +156,27 @@ public class StandardDriverFactory {
 
         }
         return driver;
+    }
+
+    private void enableHeadlessDownloads(ChromeDriver cdriver, String downDir) throws IOException
+    {
+        Map<String, Object> commandParams = new HashMap<>();
+        commandParams.put("cmd", "Page.setDownloadBehavior");
+        Map<String, String> params = new HashMap<>();
+        params.put("behavior", "allow");
+        params.put("downloadPath", downDir);
+        commandParams.put("params", params);
+        ObjectMapper objectMapper = new ObjectMapper();
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        String command = objectMapper.writeValueAsString(commandParams);
+        String u = getChromeService().getUrl().toString() + "/session/" + cdriver.getSessionId() + "/chromium/send_command";
+        HttpPost request = new HttpPost(u);
+        request.addHeader("content-type", "application/json");
+        request.setEntity(new StringEntity(command));
+        try {
+            httpClient.execute(request);
+        } catch (IOException e2) {
+            e2.printStackTrace();
+        }
     }
 }
