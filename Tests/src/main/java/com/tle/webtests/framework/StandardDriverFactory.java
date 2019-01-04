@@ -126,7 +126,7 @@ public class StandardDriverFactory {
                 ChromeDriverService chromeService = getChromeService();
                 ChromeDriver cdriver = new ChromeDriver(chromeService, options);
                 if (chromeHeadless) {
-                    enableHeadlessDownloads(cdriver, downDir);
+//                    enableHeadlessDownloads(cdriver, downDir);
                 }
                 driver = cdriver;
             } else {
