@@ -46,7 +46,8 @@ public class LTIAttachmentControlTest extends AbstractCleanupAutoTest
 
 		UniversalControl control = wizard.universalControl(RSRC_LINK);
 		LTIUniversalControlType ltiType = control.addResource(new LTIUniversalControlType(control));
-		UniversalControl outOfControl = ltiType.addPage(1, null, rsrcTitle);
+		UniversalControl outOfControl = ltiType.addPage(1, null,
+				"Automatic, based on URL", rsrcTitle);
 		// Assert something?
 		assertTrue(outOfControl.hasResource(rsrcTitle), "\"" + rsrcTitle + "\" not seen in attachments");
 		WizardPageTab wpg = (WizardPageTab) outOfControl.getPage();
@@ -87,7 +88,7 @@ public class LTIAttachmentControlTest extends AbstractCleanupAutoTest
 
 		UniversalControl control = wizard.universalControl(RSRC_LINK);
 		LTIUniversalControlType ltiType = control.addResource(new LTIUniversalControlType(control));
-		UniversalControl outOfControl = ltiType.addPage(1, null, rsrcTitle);
+		UniversalControl outOfControl = ltiType.addPage(1, null, "Automatic, based on URL", rsrcTitle);
 		LTIAttachmentEditPage ltiEdit = outOfControl.editResource(new LTIAttachmentEditPage(outOfControl), rsrcTitle);
 		ltiEdit.enterValues("attachment URL to Larry's place", -1,
 			"http://purple-excess.dyndns.ws:8075/~larry/index.html");

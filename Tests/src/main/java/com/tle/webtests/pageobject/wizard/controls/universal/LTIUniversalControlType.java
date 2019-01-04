@@ -3,6 +3,7 @@
  */
 package com.tle.webtests.pageobject.wizard.controls.universal;
 
+import com.tle.webtests.pageobject.WaitingPageObject;
 import org.openqa.selenium.WebElement;
 
 import com.tle.common.Check;
@@ -24,12 +25,13 @@ public class LTIUniversalControlType extends AbstractUniversalControlType<LTIUni
 		ccc = new LTICommonControlContainerImpl(control, getWizid());
 	}
 
-	public UniversalControl addPage(int indexToolProvider, String launchUrl, String attachmentName)
+	public UniversalControl addPage(int indexToolProvider, String launchUrl, String initialName, String attachmentName)
 	{
+		WaitingPageObject<UniversalControl> waiter = control.attachNameWaiter(initialName, false);
 		openPage(indexToolProvider, launchUrl);
-		onwardToEditPage();
+		add(waiter);
+		GenericAttachmentEditPage editingPage = control.editResource(editPage(), initialName);
 		ccc.setName(attachmentName);
-		GenericAttachmentEditPage editingPage = edit();
 		return editingPage.save();
 	}
 
@@ -70,22 +72,15 @@ public class LTIUniversalControlType extends AbstractUniversalControlType<LTIUni
 		ccc.enterAdvancedValues(consumerKey, sharedSecret, customParams, defaultPrivacy, shareName, shareEmail);
 	}
 
-	protected LTIUniversalControlType onwardToEditPage()
-	{
-		getAddButton().click();
-		waitForElement(ccc.getNameField());
-		return get();
-	}
-
 	private EquellaSelect getConfiguredToolSelector()
 	{
 		return new EquellaSelect(context, ccc.getSelectProvider());
 	}
 
-	public UniversalControl add(String newPage)
+	public UniversalControl add(WaitingPageObject<UniversalControl> returnTo)
 	{
 		getAddButton().click();
-		return control.get();
+		return returnTo.get();
 	}
 
 	@Override
