@@ -4,10 +4,12 @@ import com.google.common.collect.Maps;
 import com.tle.common.Check;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.DownloadFilePage;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
@@ -172,7 +174,7 @@ public class StandardDriverFactory {
         request.addHeader("content-type", "application/json");
         request.setEntity(new StringEntity(command));
         try {
-            httpClient.execute(request);
+            httpClient.execute(request).getEntity().getContent().close();
         } catch (IOException e2) {
             e2.printStackTrace();
         }
