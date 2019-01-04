@@ -144,6 +144,7 @@ public class StandardDriverFactory {
                 if (firefoxHeadless) {
                     options.addArguments("-headless");
                 }
+                options.setCapability("moz:webdriverClick", false);
                 if (proxy != null) {
                     options.setCapability(CapabilityType.PROXY, proxy);
                 }

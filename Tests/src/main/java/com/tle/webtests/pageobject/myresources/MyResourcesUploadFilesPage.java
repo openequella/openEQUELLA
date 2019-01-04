@@ -8,6 +8,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 import com.tle.webtests.pageobject.AbstractPage;
+import org.openqa.selenium.support.pagefactory.ByChained;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class MyResourcesUploadFilesPage extends AbstractPage<MyResourcesUploadFilesPage>
 {
@@ -55,6 +57,7 @@ public class MyResourcesUploadFilesPage extends AbstractPage<MyResourcesUploadFi
 	{
 		setSearchTags(tags);
 		uploadElem.sendKeys(path);
+		getWaiter().until(ExpectedConditions.visibilityOfElementLocated(new ByChained(By.id("dndfiles"),By.className("complete"))));
 		cancelButton.click();
 		MyResourcesPage searchPage = new MyResourcesPage(context, "scrapbook").get();
 		String fileOnly = PathUtils.getFilenameFromFilepath(path);
