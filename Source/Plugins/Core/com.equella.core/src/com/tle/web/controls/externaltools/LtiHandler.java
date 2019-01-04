@@ -254,6 +254,7 @@ public class LtiHandler extends BasicAbstractAttachmentHandler<LtiHandlerModel>
 			String selectedUuid = selectedValue.getValue();
 			lti = externalToolService.getByUuid(selectedUuid);
 		}
+		ltiAttachment.setDescription(defaultTitle(info));
 		String enteredUrl = launchUrl.getValue(info);
 		populateAttachmentFromControls(info, ltiAttachment, enteredUrl, lti);
 		// keep the model in step with controls
@@ -320,11 +321,6 @@ public class LtiHandler extends BasicAbstractAttachmentHandler<LtiHandlerModel>
 		addAttachmentDetails(context, resource.getCommonAttachmentDetails());
 
 		// Attachment description defaults to the name of the LTI external tool.
-		String editTitle = checkEditTitle(context, model);
-		if( Check.isEmpty(attachment.getDescription()) )
-		{
-			attachment.setDescription(editTitle);
-		}
 		getDisplayName().setValue(context, attachment.getDescription());
 
 		// load up the attachment ...
@@ -621,9 +617,10 @@ public class LtiHandler extends BasicAbstractAttachmentHandler<LtiHandlerModel>
 	 * @param context
 	 * @param model
 	 */
-	private String checkEditTitle(RenderContext context, LtiHandlerModel model)
+	private String defaultTitle(SectionInfo context)
 	{
 		String editTitle = null;
+		LtiHandlerModel model = getModel(context);
 		if( Check.isEmpty(model.getEditTitle()) )
 		{
 			if( !Check.isEmpty(launchUrl.getValue(context)) )
