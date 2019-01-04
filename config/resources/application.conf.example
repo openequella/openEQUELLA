@@ -10,6 +10,9 @@ webdriver {
 //    driver = ${HOME}"/bin/chromedriver"
 //    headless = true
   }
+  firefox {
+//    headless = true
+  }
 }
 
 tests {

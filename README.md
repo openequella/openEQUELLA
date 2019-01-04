@@ -138,13 +138,16 @@ The sbt output gives you the results of the ScalaCheck tests and you can read th
 `OldTests/target/testng/index.html`
 
 You can expect the autotests to run for at least 30-45 minutes, depending on your hardware. It is recommended to not interact with the computer while this is running, as various browser windows will pop up and should not be touched.
-If  you don't wish to see the windows popping up, headless mode is available when using Chrome as your browser. To enable this uncomment the flag in `config/resources/application.conf`
+If  you don't wish to see the windows popping up, headless mode is available when using either Firefox or Chrome as your browser. To enable this uncomment the corresponding flag in `config/resources/application.conf`
 
 ```conf
 webdriver {
   chrome {
     driver = ${HOME}"/bin/chromedriver"
     headless = true
+  }
+  firefox {
+//    headless = true
   }
 }
 ```

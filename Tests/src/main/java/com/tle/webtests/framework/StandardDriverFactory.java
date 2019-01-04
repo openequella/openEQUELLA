@@ -22,9 +22,7 @@ import org.openqa.selenium.remote.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +35,8 @@ public class StandardDriverFactory {
     private final String chromeBinary;
     private final boolean chrome;
     private final String gridUrl;
-    private final boolean headless;
+    private final boolean firefoxHeadless;
+    private final boolean chromeHeadless;
     private Proxy proxy;
     private static ChromeDriverService _chromeService;
 
@@ -46,7 +45,8 @@ public class StandardDriverFactory {
         this.chromeBinary = config.getChromeBinary();
         this.firefoxBinary = config.getFirefoxBinary();
         this.gridUrl = config.getGridUrl();
-        this.headless = Boolean.parseBoolean(config.getProperty("webdriver.chrome.headless", "false"));
+        this.firefoxHeadless = config.getBooleanProperty("webdriver.firefox.headless", false);
+        this.chromeHeadless = config.getBooleanProperty("webdriver.chrome.headless", false);
         String proxyHost = config.getProperty("proxy.host");
         if (proxyHost != null) {
             int port = Integer.parseInt(config.getProperty("proxy.port"));
@@ -65,27 +65,33 @@ public class StandardDriverFactory {
         return _chromeService;
     }
 
+    private void setFirefoxPreferences(FirefoxProfile profile, String downDir) {
+        profile.setPreference("dom.max_script_run_time", 120);
+        profile.setPreference("dom.max_chrome_script_run_time", 120);
+        profile.setPreference("browser.download.useDownloadDir", true);
+        profile.setPreference("browser.download.folderList", 2);
+        profile.setPreference("browser.download.dir", downDir);
+        profile.setPreference("extensions.firebug.currentVersion", "999");
+        profile.setPreference("browser.helperApps.neverAsk.saveToDisk", "application/zip,image/png,text/xml");
+        profile.setPreference("security.mixed_content.block_active_content", false);
+        profile.setPreference("security.mixed_content.block_display_content", false);
+    }
+
     public WebDriver getDriver(Class<?> clazz) throws IOException {
         WebDriver driver;
         String downDir = DownloadFilePage.getDownDir().getAbsolutePath();
         if (!Check.isEmpty(gridUrl) && !clazz.isAnnotationPresent(LocalWebDriver.class)) {
-            DesiredCapabilities capability = DesiredCapabilities.firefox();
             FirefoxProfile profile = new FirefoxProfile();
-            profile.setPreference("dom.max_script_run_time", 120);
-            profile.setPreference("dom.max_chrome_script_run_time", 120);
-            profile.setPreference("browser.download.useDownloadDir", true);
-            profile.setPreference("browser.download.folderList", 2);
-            profile.setPreference("browser.download.dir", downDir);
-            profile.setPreference("extensions.firebug.currentVersion", "999");
-            profile.setPreference("browser.helperApps.neverAsk.saveToDisk", "application/zip,image/png,text/xml");
-            profile.setPreference("security.mixed_content.block_active_content", false);
-            profile.setPreference("security.mixed_content.block_display_content", false);
+            setFirefoxPreferences(profile, downDir);
             profile.addExtension(new File(AbstractPage.getPathFromUrl(StandardDriverPool.class
                     .getResource("firebug-1.10.2-fx.xpi"))));
             profile.addExtension(new File(AbstractPage.getPathFromUrl(StandardDriverPool.class
                     .getResource("firepath-0.9.7-fx.xpi"))));
-            capability.setCapability(FirefoxDriver.PROFILE, profile);
-            driver = new RemoteWebDriver(new URL(gridUrl), capability);
+            FirefoxOptions options = new FirefoxOptions().setProfile(profile);
+            if (firefoxHeadless) {
+                options.addArguments("-headless");
+            }
+            driver = new RemoteWebDriver(new URL(gridUrl), options);
             RemoteWebDriver rd = (RemoteWebDriver) driver;
             rd.setFileDetector(new LocalFileDetector());
             driver = new Augmenter().augment(driver);
@@ -99,7 +105,7 @@ public class StandardDriverFactory {
                 options.addArguments("test-type");
                 options.addArguments("disable-gpu");
                 options.addArguments("no-sandbox");
-                if (headless) {
+                if (chromeHeadless) {
                     options.addArguments("headless");
                 }
                 options.addArguments("window-size=1200,800");
@@ -117,7 +123,7 @@ public class StandardDriverFactory {
                 options.merge(capabilities);
                 ChromeDriverService chromeService = getChromeService();
                 ChromeDriver cdriver = new ChromeDriver(chromeService, options);
-                if (headless) {
+                if (chromeHeadless) {
                     enableHeadlessDownloads(cdriver, downDir);
                 }
                 driver = cdriver;
@@ -132,22 +138,14 @@ public class StandardDriverFactory {
                 FirefoxProfile profile = new FirefoxProfile();
                 profile.addExtension(getClass(), "firebug-1.10.2-fx.xpi");
                 profile.addExtension(getClass(), "firepath-0.9.7-fx.xpi");
-                profile.setPreference("extensions.firebug.currentVersion", "999");
-                profile.setPreference("dom.max_script_run_time", 120);
-                profile.setPreference("dom.max_chrome_script_run_time", 120);
-                profile.setPreference("browser.download.useDownloadDir", true);
-                profile.setPreference("browser.download.folderList", 2);
-                profile.setPreference("browser.download.dir", downDir);
-                profile.setPreference("browser.helperApps.neverAsk.saveToDisk",
-                        "application/zip,image/png,text/xml");
-                // profile.setEnableNativeEvents(true);
-                profile.setPreference("security.mixed_content.block_active_content", false);
-                profile.setPreference("security.mixed_content.block_display_content", false);
-                DesiredCapabilities cap = DesiredCapabilities.firefox();
-                if (proxy != null) {
-                    cap.setCapability(CapabilityType.PROXY, proxy);
+                setFirefoxPreferences(profile, downDir);
+                FirefoxOptions options = new FirefoxOptions();
+                if (firefoxHeadless) {
+                    options.addArguments("-headless");
                 }
-                FirefoxOptions options = new FirefoxOptions(cap);
+                if (proxy != null) {
+                    options.setCapability(CapabilityType.PROXY, proxy);
+                }
                 options.setBinary(binary);
                 options.setProfile(profile);
                 driver = new FirefoxDriver(options);
