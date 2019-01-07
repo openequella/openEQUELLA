@@ -13,6 +13,11 @@ give a simple tutorial on usage.
 * Binding config options from config properties files
 * Standard openEQUELLA Guice Modules
 
+**NOTE**
+
+In general the JPF Guice integration should be for legacy code only, as most new code 
+should simply extend functionality directly in code as it's more type safe.
+
 # Injector per JPF Plugin
 
 Each JPF plugin can have it's own Guice `Injector` which in turn can look up bindings from 
@@ -116,7 +121,7 @@ The `PluginTracker` is responsible for keeping track of all connected extensions
 The `PluginTracker` can be instantied directly with `new` but the best way to use it is to bind an instance with a guice module. Given the following extension point declaration and interface class:
 
 ```xml
-<plugin id="my.extendable.plugin" version="1">
+<plugin id="my.welcome.plugin" version="1">
   <extension-point id="myextensionpoint">
     <parameter-def id="bean" multiplicity="one" type="string" />
   </extension-point>
@@ -130,3 +135,106 @@ public interface MyExtensionPoint
 }
 ```
 
+You can create a service which can lookup the extensions by `@Inject`ing a `PluginTracker` instance:
+
+```java
+@Bind
+public class MyWelcomeService
+{
+	@Inject 
+	private PluginTracker<MyExtensionPoint> extensionTracker;
+	
+	public String getWelcomeMessage()
+	{
+		List<String> welcomes = extensionTracker.getBeanList().stream()
+		    .map(w -> w.welcomeText()).collect(Collectors.toList());
+		return String.join(", ", welcomes);
+	}
+} 
+```
+
+In order to bind the `PluginTracker` you need to create and register a 
+guice module which extends `PluginTrackerModule`:
+
+```java
+public class ExtensionTrackers extends PluginTrackerModule
+{
+	@Override
+	protected String getPluginId()
+	{
+		return "my.welcome.plugin";
+	}
+
+	@Override
+	protected void configure()
+	{
+		bindTracker(MyExtensionPoint.class, "myextensionpoint", "bean");
+	}	
+}
+```
+
+In order to implement the extension you can simply create your implementing class(es):
+
+```java
+package hello.world;
+
+@Bind 
+public class HelloWorldGuice implements MyExtensionPoint
+{
+	@Inject
+	private SomeService service;
+	
+	String welcomeText()
+	{
+		return "Hello World";
+	}
+}
+```
+```java
+package willkommen;
+
+public class Willkommen implements MyExtensionPoint
+{
+	String welcomeText()
+	{
+		return "Willkommen";
+	}	
+}
+```
+
+And ensure your `plugin-jpf.xml` has an entry for the extension:
+
+```xml 
+<plugin id="myhelloworld" version="1">
+  <requires>
+    <import plugin-id="com.tle.core.guice" />
+    <import plugin-id="my.welcome.plugin" />
+    <!-- other imports -->
+  </requires>
+  
+  <extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules"/>
+  
+  <extension plugin-id="my.welcome.plugin" point-id="myextensionpoint" id="helloworld">
+    <parameter id="bean" value="bean:hello.world.HelloWorldGuice" />
+  </extension>
+
+  <extension plugin-id="my.welcome.plugin" point-id="myextensionpoint" id="willkommen">
+    <parameter id="bean" value="willkommen.Willkommen" />
+  </extension>
+</plugin>
+``` 
+
+Please note that the "helloworld" extension "bean" parameter has it's value 
+prefixed with "`bean:`" which means that the extension instance should be 
+retrieved from the Guice Injector for the plugin. If you don't include "`bean:`", 
+an instance will be created by Reflection using the given classes no arg constructor.
+
+# Binding server config properties
+
+TODO
+
+# Standard openEQUELLA Guice Modules
+
+TODO
+
+   
