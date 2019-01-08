@@ -85,7 +85,7 @@ legacy = unsafeCreateLeafElement $ withStyles styles $ component "LegacyPage" $ 
                   "HIDDEN" -> [] 
                   _ -> [classes.withPadding]
               options html = [ 
-                  iconButton {color: inherit, onClick: withCurrentTarget $ d <<< OptionsAnchor <<< Just} [ icon_ [text "more_vert"] ],
+                  iconButton {onClick: withCurrentTarget $ d <<< OptionsAnchor <<< Just} [ icon_ [text "more_vert"] ],
                   popover { open: isJust s.optionsAnchor
                       , marginThreshold: 64
                       , anchorOrigin: {vertical:"bottom",horizontal:"left"}

@@ -279,12 +279,12 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       topBar = appBar {className: classes.appBar} $ catMaybes [
         Just $ toolbar {disableGutters: true} $ concat [
           guard hasMenu $> iconButton {
-              color: inherit, className: classes.navIconHide, 
+              color: inherit, className: classes.navIconHide,
               onClick: d ToggleMenu } [ icon_ [D.text "menu" ] 
           ], [
             D.div [DP.className classes.titleArea] $ catMaybes [
-              toMaybe backRoute $> iconButton {color: inherit, onClick: d GoBack} [ icon_ [D.text "arrow_back" ] ],
-              Just $ typography {variant: headline, color: inherit, className: classes.title} [ D.text titleText ], 
+              toMaybe backRoute $> iconButton { onClick: d GoBack} [ icon_ [D.text "arrow_back" ] ],
+              Just $ typography {variant: headline, color: inherit, className: classes.title} [ D.text titleText ],
               toMaybe titleExtra
             ],
             userMenu 
@@ -325,7 +325,7 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
       badgedLink iconName count uri tip = 
         let iconOnly = icon_ [ D.text iconName ] 
             buttonLink :: forall a. IsTSEq a ButtonColors => a -> ReactElement -> ReactElement
-            buttonLink col linkContent = iconButton {"aria-label": tip, href: uri, color: asTS col :: ButtonColors} [ linkContent ] 
+            buttonLink col linkContent = iconButton {"aria-label": tip, href: uri} [ linkContent ]
         in tooltip {title: tip}
           case fromMaybe 0 $ preview (_Just <<< _counts <<< _Just <<< count) user of
               0 -> buttonLink default iconOnly
