@@ -11,7 +11,7 @@ give a simple tutorial on usage.
 * Classpath scanning for registering instances/classes
 * Helper classes for looking up JPF extensions via Injector 
 * Binding config options from config properties files
-* Standard openEQUELLA Guice Modules
+* DB transactions and security
 
 **NOTE**
 
@@ -231,10 +231,51 @@ an instance will be created by Reflection using the given classes no arg constru
 
 # Binding server config properties
 
-TODO
+Server level configuration properties can be retrieved by guice created instances by extending
+some pre-defined `Module` classes. In order to retrieve settings from the `"mandatory-config.properties"` 
+you can extend `com.tle.core.config.guice.MandatoryConfigModule`, for `"optiona-config.properties"` use
+`com.tle.core.config.guice.OptionalConfigModule`. These classes have various methods for binding 
+primitive values to named instances, such as `bindInt()`, `bindLong()` and `bindBoolean()`.
 
-# Standard openEQUELLA Guice Modules
+```java
+public class MyServerConfig extends OptionalConfigModule
+{
+	public void configure()
+	{
+		bindInt("my.number.property", -1);
+	}
+}
 
-TODO
+@Bind
+@Singleton
+public class MyGuiceService
+{
+	@Named("my.number.property")
+	private int configuredNumber;
+}
+```
+
+learningedge-config/optional-config.properties:
+```properties 
+my.number.property = 100
+```
+
+# AOP based transactions and security
+
+Guice can handle AOP by scanning for annotations on methods/classes and openEQUELLA uses
+those facilities for DB transactions and security.
+
+For DB transactions, openEQUELLA supports the Spring `@Transactional` annotation which is required
+in order to make writes persist to the DB as by default the DB access is read-only. To include 
+support for this you must include `com.tle.core.hibernate.guice.TransactionModule`.
+
+To secure your services, you can add security annotations such as `@SecureOnCall` and `@SecureReturn` 
+which can be used to prevent access or filter the results of a method. To use these you must include 
+`com.tle.core.security.guice.SecurityModule`. There are quite a few security annotations (~8) and 
+their usage is out of scope for this particular document.
+
+The common case for Java services is that you need support for both DB transactions and Security annotations,
+so there is a handy module which installs both modules together, `com.tle.core.services.guice.ServicesModule`.
+
 
    
