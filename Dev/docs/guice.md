@@ -13,11 +13,6 @@ give a simple tutorial on usage.
 * Binding config options from config properties files
 * DB transactions and security
 
-**NOTE**
-
-In general the JPF Guice integration should be for legacy code only, as most new code 
-should simply extend functionality directly in code as it's more type safe.
-
 # Injector per JPF Plugin
 
 Each JPF plugin can have it's own Guice `Injector` which in turn can look up bindings from 
@@ -229,11 +224,35 @@ prefixed with "`bean:`" which means that the extension instance should be
 retrieved from the Guice Injector for the plugin. If you don't include "`bean:`", 
 an instance will be created by Reflection using the given classes no arg constructor.
 
+**NOTE**
+
+In general the JPF Guice integration should be for legacy code or for genuine extensions which Third Parties 
+might want to extend. If the extension interface should only be exposed to the core then it is much better to
+generate the list of extensions in code as it's more type safe. For example it would be better
+to create a class which tracked the `MyExtensionPoint`:
+
+```java
+@Bind
+@Singleton
+public class MyExtensions
+{
+    @Inject 
+    private HelloWorldGuice helloWorld;
+    
+    private Willkommen willkommen = new WillKommen();
+    
+    public List<MyExtensionPoint> getGreeters()
+    {
+    	return Collections.asList(helloWorld, willkommen);
+    }
+}
+```
+
 # Binding server config properties
 
 Server level configuration properties can be retrieved by guice created instances by extending
 some pre-defined `Module` classes. In order to retrieve settings from the `"mandatory-config.properties"` 
-you can extend `com.tle.core.config.guice.MandatoryConfigModule`, for `"optiona-config.properties"` use
+you can extend `com.tle.core.config.guice.MandatoryConfigModule`, for `"optional-config.properties"` use
 `com.tle.core.config.guice.OptionalConfigModule`. These classes have various methods for binding 
 primitive values to named instances, such as `bindInt()`, `bindLong()` and `bindBoolean()`.
 
