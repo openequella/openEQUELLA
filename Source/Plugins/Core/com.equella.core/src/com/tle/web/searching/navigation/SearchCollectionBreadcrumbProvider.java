@@ -87,7 +87,7 @@ public class SearchCollectionBreadcrumbProvider implements BreadcrumbProvider
 		collectionLink.setLabel(label);
 
 
-		if (isNewSearchActive())
+		if (UISettingsJava.isNewSearchActive())
 		{
 			collectionLink.setBookmark(new SimpleBookmark("page/search"));
 		}
@@ -114,11 +114,5 @@ public class SearchCollectionBreadcrumbProvider implements BreadcrumbProvider
 		collectionLink.setRel("parent");
 		collectionLink.setTitle(BREADCRUMB_TITLE);
 		return collectionLink;
-	}
-
-	private boolean isNewSearchActive()
-	{
-		UISettings uis = UISettingsJava.getUISettings();
-		return uis.newUI().enabled() && uis.newUI().newSearch();
 	}
 }

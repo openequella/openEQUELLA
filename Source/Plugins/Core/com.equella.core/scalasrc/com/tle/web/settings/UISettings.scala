@@ -49,4 +49,9 @@ object UISettingsJava {
   def getUISettings: UISettings = RunWithDB.executeWithHibernate {
     UISettings.getUISettings.map(_.getOrElse(UISettings.defaultSettings))
   }
+
+  def isNewSearchActive: Boolean = {
+    val uis = UISettingsJava.getUISettings
+    uis.newUI.enabled && uis.newUI.newSearch
+  }
 }
