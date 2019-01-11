@@ -14,37 +14,3 @@ generated.keystore
 # Remove this one day
 Source/Plugins/Kaltura
 server.xml
-
-### Intellij ###
-## https://intellij-support.jetbrains.com/hc/en-us/articles/206544839-How-to-manage-projects-under-Version-Control-Systems
-
-.idea/artifacts/
-.idea/httpRequests/
-
-# User-specific stuff:
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/dictionaries
-.idea/vcs.xml
-.idea/jsLibraryMappings.xml
-
-# Sensitive or high-churn files:
-.idea/dataSources.ids
-.idea/dataSources.xml
-.idea/dataSources.local.xml
-.idea/dataSources/
-.idea/sqlDataSources.xml
-.idea/dynamic.xml
-.idea/uiDesigner.xml
-
-## And seeing SBT projects also regenerates .iml module files
-## lets ignore them all:
-.idea/modules/
-
-.idea/libraries/
-.idea/sonarlint/
-.idea/scala_compiler.xml 
-.idea/hydra.xml
-.idea/inspectionProfiles/Project_Default.xml
-
-### Intellij - END ###
