@@ -109,12 +109,6 @@ type RenderData = {
   newUI::Boolean
 }
 
-type ButtonColors = OneOf (
-    typed :: StringConst "inherit",
-    typed :: StringConst "default",
-    typed :: StringConst "primary",
-    typed :: StringConst "secondary")
-
 foreign import preventUnload :: EventListener
 
 foreign import renderData :: RenderData
@@ -324,12 +318,12 @@ templateClass = withStyles ourStyles $ R.component "Template" $ \this -> do
           ])
       badgedLink iconName count uri tip = 
         let iconOnly = icon_ [ D.text iconName ] 
-            buttonLink :: forall a. IsTSEq a ButtonColors => a -> ReactElement -> ReactElement
-            buttonLink col linkContent = iconButton {"aria-label": tip, href: uri} [ linkContent ]
+            buttonLink :: ReactElement -> ReactElement
+            buttonLink linkContent = iconButton {"aria-label": tip, href: uri} [ linkContent ]
         in tooltip {title: tip}
           case fromMaybe 0 $ preview (_Just <<< _counts <<< _Just <<< count) user of
-              0 -> buttonLink default iconOnly
-              c -> buttonLink inherit $ badge {badgeContent: c, color: secondary} [iconOnly]
+              0 -> buttonLink iconOnly
+              c -> buttonLink $ badge {badgeContent: c, color: secondary} [iconOnly]
         
       menuContent = [D.div [DP.className classes.logo] [ D.img [ DP.role "presentation", DP.src logoSrc] ]] <>
                     intercalate [divider_ []] (map group $ fromMaybe [] $ userMaybe _menuGroups)
