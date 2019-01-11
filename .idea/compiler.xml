@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="8">
+      <module name="adminConsoleJar" target="8" />
+      <module name="adminTool" target="8" />
+      <module name="allPlugins" target="8" />
+      <module name="com_equella_admin" target="8" />
+      <module name="com_equella_base" target="8" />
+      <module name="com_equella_core" target="8" />
+      <module name="com_equella_oai" target="8" />
+      <module name="com_equella_reporting" target="8" />
+      <module name="com_equella_serverbase" target="8" />
+      <module name="com_equella_srw" target="8" />
+      <module name="com_equella_z3950" target="8" />
+      <module name="com_tle_common_applet" target="8" />
+      <module name="com_tle_common_inplaceeditor" target="8" />
+      <module name="com_tle_core_guice" target="8" />
+      <module name="com_tle_core_security" target="8" />
+      <module name="com_tle_log4j" target="8" />
+      <module name="com_tle_platform_common" target="8" />
+      <module name="com_tle_platform_equella" target="8" />
+      <module name="com_tle_platform_swing" target="8" />
+      <module name="com_tle_web_adminconsole" target="8" />
+      <module name="com_tle_web_filemanager_applet" target="8" />
+      <module name="com_tle_web_sections" target="8" />
+      <module name="com_tle_webstart_admin" target="8" />
+      <module name="conversion" target="8" />
+      <module name="Equella" target="8" />
+      <module name="equellaserver" target="8" />
+      <module name="filemanagerApplet" target="8" />
+      <module name="inplaceEditorJar" target="8" />
+      <module name="Installer" target="8" />
+      <module name="learningedge_config" target="8" />
+      <module name="org_eclipse_birt_osgi" target="8" />
+      <module name="org_hibernate" target="8" />
+      <module name="UpgradeInstallation" target="8" />
+      <module name="UpgradeManager" target="8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

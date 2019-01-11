@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Equella.iml" filepath="$PROJECT_DIR$/.idea/modules/Equella.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Equella-build.iml" filepath="$PROJECT_DIR$/.idea/modules/Equella-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Installer.iml" filepath="$PROJECT_DIR$/.idea/modules/Installer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/UpgradeInstallation.iml" filepath="$PROJECT_DIR$/.idea/modules/UpgradeInstallation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/UpgradeManager.iml" filepath="$PROJECT_DIR$/.idea/modules/UpgradeManager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/adminConsoleJar.iml" filepath="$PROJECT_DIR$/.idea/modules/adminConsoleJar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/adminTool.iml" filepath="$PROJECT_DIR$/.idea/modules/adminTool.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/allPlugins.iml" filepath="$PROJECT_DIR$/.idea/modules/allPlugins.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_equella_admin.iml" filepath="$PROJECT_DIR$/.idea/modules/com_equella_admin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_equella_base.iml" filepath="$PROJECT_DIR$/.idea/modules/com_equella_base.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_equella_core.iml" filepath="$PROJECT_DIR$/.idea/modules/com_equella_core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_equella_oai.iml" filepath="$PROJECT_DIR$/.idea/modules/com_equella_oai.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_equella_reporting.iml" filepath="$PROJECT_DIR$/.idea/modules/com_equella_reporting.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_equella_serverbase.iml" filepath="$PROJECT_DIR$/.idea/modules/com_equella_serverbase.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_equella_srw.iml" filepath="$PROJECT_DIR$/.idea/modules/com_equella_srw.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_equella_z3950.iml" filepath="$PROJECT_DIR$/.idea/modules/com_equella_z3950.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_tle_common_applet.iml" filepath="$PROJECT_DIR$/.idea/modules/com_tle_common_applet.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_tle_common_inplaceeditor.iml" filepath="$PROJECT_DIR$/.idea/modules/com_tle_common_inplaceeditor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_tle_core_guice.iml" filepath="$PROJECT_DIR$/.idea/modules/com_tle_core_guice.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_tle_core_security.iml" filepath="$PROJECT_DIR$/.idea/modules/com_tle_core_security.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_tle_log4j.iml" filepath="$PROJECT_DIR$/.idea/modules/com_tle_log4j.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_tle_platform_common.iml" filepath="$PROJECT_DIR$/.idea/modules/com_tle_platform_common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_tle_platform_equella.iml" filepath="$PROJECT_DIR$/.idea/modules/com_tle_platform_equella.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_tle_platform_swing.iml" filepath="$PROJECT_DIR$/.idea/modules/com_tle_platform_swing.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_tle_web_adminconsole.iml" filepath="$PROJECT_DIR$/.idea/modules/com_tle_web_adminconsole.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_tle_web_filemanager_applet.iml" filepath="$PROJECT_DIR$/.idea/modules/com_tle_web_filemanager_applet.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_tle_web_sections.iml" filepath="$PROJECT_DIR$/.idea/modules/com_tle_web_sections.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com_tle_webstart_admin.iml" filepath="$PROJECT_DIR$/.idea/modules/com_tle_webstart_admin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/conversion.iml" filepath="$PROJECT_DIR$/.idea/modules/conversion.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/equellaserver.iml" filepath="$PROJECT_DIR$/.idea/modules/equellaserver.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/filemanagerApplet.iml" filepath="$PROJECT_DIR$/.idea/modules/filemanagerApplet.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/inplaceEditorJar.iml" filepath="$PROJECT_DIR$/.idea/modules/inplaceEditorJar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/learningedge_config.iml" filepath="$PROJECT_DIR$/.idea/modules/learningedge_config.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/org_eclipse_birt_osgi.iml" filepath="$PROJECT_DIR$/.idea/modules/org_eclipse_birt_osgi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/org_hibernate.iml" filepath="$PROJECT_DIR$/.idea/modules/org_hibernate.iml" />
+    </modules>
+  </component>
+</project>
