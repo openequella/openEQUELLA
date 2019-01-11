@@ -48,7 +48,8 @@ import java.util.Map;
  */
 @Bind
 @Singleton
-public class SearchCollectionBreadcrumbProvider implements BreadcrumbProvider {
+public class SearchCollectionBreadcrumbProvider implements BreadcrumbProvider
+{
 	@PlugKey("breadcrumb.collection.untitled")
 	private static Label LABEL_UNTITLED;
 	@PlugKey("searching.breadcrumb.title")
@@ -63,7 +64,8 @@ public class SearchCollectionBreadcrumbProvider implements BreadcrumbProvider {
 
 	@SuppressWarnings("nls")
 	@Override
-	public TagState getBreadcrumb(SectionInfo info, Map<String, ?> params) {
+	public TagState getBreadcrumb(SectionInfo info, Map<String, ?> params)
+	{
 		final String collectionUuid = (String) params.get("collectionUuid");
 		final SectionInfo fwd = info.createForward("/searching.do");
 		final SearchQuerySection search = fwd.lookupSection(SearchQuerySection.class);
@@ -73,7 +75,8 @@ public class SearchCollectionBreadcrumbProvider implements BreadcrumbProvider {
 		final Label label = new BundleLabel(collection.getName(), LABEL_UNTITLED, bundleCache);
 
 		if (Check
-			.isEmpty(aclService.filterNonGrantedPrivileges(collection, Collections.singleton("SEARCH_COLLECTION")))) {
+			.isEmpty(aclService.filterNonGrantedPrivileges(collection, Collections.singleton("SEARCH_COLLECTION"))))
+		{
 			final HtmlComponentState collectionSpan = new HtmlComponentState();
 			collectionSpan.setDefaultRenderer("span");
 			collectionSpan.setLabel(label);
@@ -84,9 +87,12 @@ public class SearchCollectionBreadcrumbProvider implements BreadcrumbProvider {
 		collectionLink.setLabel(label);
 
 
-		if (isNewSearchActive()) {
+		if (isNewSearchActive())
+		{
 			collectionLink.setBookmark(new SimpleBookmark("page/search"));
-		} else {
+		}
+		else
+		{
 			// "..page=<n>.." can be misleading (when the original search which
 			// rendered the item we are now viewing was an "All Resources" search),
 			// so remove it from the breadcrumb. (Redmine #6041). Other filters
@@ -94,9 +100,11 @@ public class SearchCollectionBreadcrumbProvider implements BreadcrumbProvider {
 			// independently of the breadcrumb. NB: note that if the "q" attribute
 			// is removed, the page reloads with an empty result set, so we're
 			// obliged to leave that one at least (as well as the collection "in").
-			Bookmark unpagedBookmark = new BookmarkAndModify(fwd, new BookmarkModifier() {
+			Bookmark unpagedBookmark = new BookmarkAndModify(fwd, new BookmarkModifier()
+			{
 				@Override
-				public void addToBookmark(SectionInfo info, Map<String, String[]> bookmarkState) {
+				public void addToBookmark(SectionInfo info, Map<String, String[]> bookmarkState)
+				{
 					bookmarkState.remove("page");
 				}
 			});
@@ -108,7 +116,8 @@ public class SearchCollectionBreadcrumbProvider implements BreadcrumbProvider {
 		return collectionLink;
 	}
 
-	private boolean isNewSearchActive() {
+	private boolean isNewSearchActive()
+	{
 		UISettings uis = UISettingsJava.getUISettings();
 		return uis.newUI().enabled() && uis.newUI().newSearch();
 	}
