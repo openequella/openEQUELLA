@@ -87,7 +87,7 @@ public class SearchCollectionBreadcrumbProvider implements BreadcrumbProvider
 		collectionLink.setLabel(label);
 
 
-		if (UISettingsJava.isNewSearchActive())
+		if (UISettingsJava.getUISettings().isNewSearchActive())
 		{
 			collectionLink.setBookmark(new SimpleBookmark("page/search"));
 		}

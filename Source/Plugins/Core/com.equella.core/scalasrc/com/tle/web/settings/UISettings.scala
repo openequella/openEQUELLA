@@ -26,7 +26,9 @@ import io.circe.generic.extras.auto._
 
 case class NewUISettings(enabled: Boolean, newSearch: Boolean = false)
 
-case class UISettings(newUI: NewUISettings)
+case class UISettings(newUI: NewUISettings) {
+  def isNewSearchActive: Boolean = newUI.enabled && newUI.newSearch
+}
 
 object UISettings {
   implicit val customConfig: Configuration = Configuration.default.withDefaults
@@ -50,8 +52,4 @@ object UISettingsJava {
     UISettings.getUISettings.map(_.getOrElse(UISettings.defaultSettings))
   }
 
-  def isNewSearchActive: Boolean = {
-    val uis = UISettingsJava.getUISettings
-    uis.newUI.enabled && uis.newUI.newSearch
-  }
 }
