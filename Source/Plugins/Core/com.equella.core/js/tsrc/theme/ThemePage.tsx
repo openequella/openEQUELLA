@@ -42,7 +42,7 @@ export const strings = prepLangStrings("newuisettings",
       secondarycolour: "Secondary Colour",
       sidebartextcolour: "Sidebar Text Colour",
       textcolour: "Text Colour",
-      sidebariconcolour: "Sidebar Icon Colour"
+      sidebariconcolour: "Icon Colour"
     },
     logosettings: {
       title: "Logo Settings",
