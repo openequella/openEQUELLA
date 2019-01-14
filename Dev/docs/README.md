@@ -52,5 +52,8 @@ Usually `com.equella.core` is the place where new architecture classes will be p
 * [React based web pages](reactjs.md)
 * [Scala server side code](scaladb.md)
 * [Unexpected errors and notifications](clienterrors.md)
+* [Guice integration](guice.md)
+
+
 
 
