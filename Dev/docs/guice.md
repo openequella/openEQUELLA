@@ -16,7 +16,7 @@ give a simple tutorial on usage.
 # Injector per JPF Plugin
 
 Each JPF plugin can have it's own Guice `Injector` which in turn can look up bindings from 
-dependant JPF plugins. In order to have an `Injector` created for your plugin you must put 
+dependent JPF plugins. In order to have an `Injector` created for your plugin you must put 
 an extension into your `plugin-jpf.xml`:
 
 ```xml  
@@ -39,12 +39,12 @@ You don't necessarily need to create a `Module` however, as it's possible that y
 use the **Classpath scanning** feature to create your bindings. There are also a set of 
 openEQUELLA specific Guice Modules which are useful to add depending on what your Plugin will do.     
 
-Also note that for any `@Inject` lookups in your plugin which can't be found, dependant plugins 
+Also note that for any `@Inject` lookups in your plugin which can't be found, dependent plugins 
 (`some.other.plugin` in the example) will be used to lookup the binding. 
 
 Generally you won't need to interact directly with the `Injector` itself as your 
-classes will normally be instantiated by Guice itself and @Inject dependant instances, 
-however if you do need that level of access, `PluginService` gives you programatic 
+classes will normally be instantiated by Guice itself and @Inject dependent instances, 
+however if you do need that level of access, `PluginService` gives you programmatic 
 access to looking up arbitrary Plugin's `Injector`s.
 
 
@@ -80,10 +80,10 @@ public class MyClient
 
 public class MyClientModule extends AbstractModule
 {
-  protected void configure()
+	protected void configure()
   {
-    bind(MyService.class).to(MyServiceImpl.class);
-  }
+		bind(MyService.class).to(MyServiceImpl.class);
+	}
 }
 ```  
 
@@ -126,7 +126,7 @@ The `PluginTracker` can be instantied directly with `new` but the best way to us
 ```java
 public interface MyExtensionPoint
 {
-   String welcomeText();
+	String welcomeText();
 }
 ```
 
