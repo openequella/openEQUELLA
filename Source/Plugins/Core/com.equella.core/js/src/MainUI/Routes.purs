@@ -4,37 +4,20 @@ import Prelude
 
 import Control.Alt ((<|>))
 import Data.Either (either)
-import Data.List (List, foldMap)
-import Data.Map as Map
 import Data.Maybe (Maybe(Just, Nothing))
-import Data.Newtype (wrap)
-import Data.Tuple (Tuple(..))
 import Effect (Effect)
 import Effect.Ref (Ref, new, read, write)
 import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
 import Effect.Unsafe (unsafePerformEffect)
 import Foreign (unsafeToForeign)
-import Foreign.Object (Object, isEmpty)
 import Foreign.Object as Object
 import OEQ.Data.Item (ItemRef(..))
+import OEQ.Data.LegacyContent (LegacyURI(..), legacyRoute, legacyURIToString)
 import OEQ.UI.Common (ClickableHref)
-import OEQ.Utils.QueryString (queryStringObj)
-import React.SyntheticEvent (SyntheticEvent, SyntheticEvent_, preventDefault, stopPropagation)
+import React.SyntheticEvent (SyntheticEvent_, preventDefault, stopPropagation)
 import Routing (match)
 import Routing.Match (Match, int, lit, str)
 import Routing.PushState (PushStateInterface, makeInterface)
-import Routing.Types (RoutePart(..))
-
-data LegacyURI = LegacyURI String (Object (Array String))
-
-instance legacySG :: Semigroup LegacyURI where 
-  append (LegacyURI path1 qp) (LegacyURI path2 qp2) = LegacyURI (case {path1,path2} of 
-    {path1:""} -> path2 
-    {path2:""} -> path1 
-    _ -> path1 <> "/" <> path2) (qp <> qp2)
-instance legacyMonoid :: Monoid LegacyURI where 
-  mempty = LegacyURI "" Object.empty
-derive instance eqLURI :: Eq LegacyURI 
 
 data Route = 
     LegacyPage LegacyURI |
@@ -60,15 +43,6 @@ emptyPreventNav = mkEffectFn1 $ const $ pure false
 
 homeSlash :: Match Unit
 homeSlash = lit ""
-
-remainingParts :: Match (List RoutePart)
-remainingParts = wrap $ \r -> pure $ Tuple r r
-
-legacyRoute :: Match LegacyURI
-legacyRoute = foldMap toLegURI <$> remainingParts
-  where 
-    toLegURI (Path p) = LegacyURI p Object.empty
-    toLegURI (Query qm) = LegacyURI "" $ pure <$> (Object.fromFoldable $ Map.toUnfoldable qm :: Array (Tuple String String))
 
 routeMatch :: Match Route
 routeMatch = 
@@ -125,9 +99,7 @@ routeURI r = (case r of
     ThemePage -> "page/themeconfiguration"
     CourseEdit cid -> "page/course/" <> cid <> "/edit"
     ViewItemPage (ItemRef uuid version) -> "integ/gen/" <> uuid <> "/" <> show version
-    LegacyPage (LegacyURI path params) -> 
-        if isEmpty params then path 
-        else path <> "?" <> queryStringObj params
+    LegacyPage leg -> legacyURIToString leg
   )
 
 logoutRoute :: Route 

@@ -2,6 +2,7 @@ module OEQ.SelectionUI.Main where
 
 import Prelude
 
+import Control.Monad.Except (except, runExceptT)
 import Control.Monad.Trans.Class (lift)
 import Data.Argonaut (jsonParser)
 import Data.Array as Array
@@ -16,6 +17,7 @@ import Data.String (Pattern(..), stripPrefix)
 import Data.Symbol (SProxy(..))
 import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..))
+import Debug.Trace (traceM)
 import Dispatcher (affAction)
 import Dispatcher.React (getProps, getState, modifyState, renderer)
 import Effect (Effect)
@@ -44,10 +46,11 @@ import OEQ.Search.SearchQuery (blankQuery)
 import OEQ.Search.WithinLastControl (withinLastControl)
 import OEQ.SelectionUI.CourseStructure (courseStructure)
 import OEQ.SelectionUI.ReturnResult (addSelection, callReturn, removeSelection)
-import OEQ.SelectionUI.Routes (SelectionPage(..), SelectionRoute(..), SessionParams, matchSelection, selectionClicker, withPage)
+import OEQ.SelectionUI.Routes (SelectionPage(..), SelectionRoute(..), SessionParams, matchSelection, pushSelectionRoute, selectionClicker, selectionPageMatch)
 import OEQ.UI.Common (renderMain, rootTag)
 import OEQ.UI.ItemSummary.ViewItem (viewItem)
 import OEQ.UI.Layout (dualPane)
+import OEQ.UI.LegacyContent (legacyContent)
 import OEQ.UI.MessageInfo (messageInfo)
 import OEQ.Utils.Polyfills (polyfill)
 import Partial.Unsafe (unsafeCrashWith, unsafePartial)
@@ -57,6 +60,7 @@ import React.DOM (text)
 import React.DOM as RD
 import React.DOM.Dynamic (div')
 import React.DOM.Props (key)
+import Routing (match)
 import Routing.PushState (matchesWith)
 import Web.HTML (window)
 import Web.HTML.Location (pathname)
@@ -72,6 +76,7 @@ data Command = Init
   | ReturnSelections 
   | UpdateTitle String
   | Errored ErrorResponse
+  | Redirected {href::String, external::Boolean}
   | CloseError
 
 type State = {
@@ -111,9 +116,9 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
 
     searchControls = [orderControl Filters, oc, withinLastControl Filters, 
       renderResults $ do 
-        {route} <- R.getState this
+        {sessionParams} <- R.getProps this
         pure $ \r@Result {uuid,version} -> 
-          let {href,onClick} = selectionClicker $ withPage route (ViewItem uuid version)
+          let {href,onClick} = selectionClicker $ Route sessionParams (ViewItem uuid version)
           in (itemResultOptions {href, onClick} r) {onSelect = Just $ d <<< SelectionMade}, 
       courseControl]
 
@@ -122,7 +127,8 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
       onClose: d CloseError, title, code: toNullable $ Just code  } ]
     renderError _ = []
 
-    render {props:{classes,selection}, state:s@{title, route: Just (Route params r), selectedFolder,selections}} = case r of 
+
+    render {props:{classes,selection,sessionParams:sp}, state:s@{title, route: Just (Route params r), selectedFolder,selections}} = case r of 
       Search -> let 
         renderTemplate {queryBar,content} = rootTag classes.root $ [ 
           appBar {position: sticky} [ 
@@ -133,6 +139,19 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
           content 
         ] <> renderError s
         in searchLayout {searchControls, initialQuery:blankQuery, strings: searchStrings, renderTemplate}
+      LegacySelectionPage page -> 
+        dualPane {
+            left: [
+              legacyContent {
+                page, 
+                contentUpdated: \_ -> pure unit, 
+                userUpdated: traceM "UPDATED",
+                redirected: d <<< Redirected
+              } ],  
+            right:[
+              renderStructure selection {selectedFolder, selections}
+            ]
+        }
       ViewItem uuid version -> rootTag classes.root $ [
           appBar {position: sticky} [
             toolbar_ [
@@ -148,17 +167,20 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
               renderStructure selection {selectedFolder, selections}
             ]
           }
-      ] <> renderError s
+      ] <> renderError s 
     render _ = div' [text "NOTHING"]
 
     eval = case _ of 
       UpdateTitle t -> modifyState _ {title = Just t}
       SelectFolder f -> modifyState _ {selectedFolder = f}
       CloseError -> modifyState _ {errorOpen=false}
+      ChangeRoute r -> modifyState _ {route=Just r}
+
       RemoveSelection folderId is -> do
         {sessionParams} <- getProps
         modifyState $ over (_selections <<< at folderId) (map $ Array.delete is)
         maybeError =<< (lift $ removeSelection sessionParams folderId is)
+
       SelectionMade sel -> do 
         let 
           addToFolder (Just f) = Just $ (f <> [sel])
@@ -167,17 +189,26 @@ selectSearch = unsafeCreateLeafElement $ withStyles styles $ component "SelectSe
         modifyState $ over (_selections <<< at selectedFolder) addToFolder
         {sessionParams} <- getProps
         maybeError =<< (lift $ addSelection sessionParams selectedFolder sel)
+
+      Redirected {href} -> do 
+        {sessionParams} <- getProps
+        void $ runExceptT $ do 
+          page <- except $ match selectionPageMatch href
+          liftEffect $ pushSelectionRoute $ Route sessionParams page
+
       Errored error -> modifyState _ {error = Just error}
+
       ReturnSelections -> do
         {sessionParams} <- getProps
         liftEffect $ callReturn sessionParams
+
       Init -> do 
         selectDefaultFolder
         liftEffect $ do
           bp <- either (throw <<< show) pure basePath
           let baseStripped p = fromMaybe p $ stripPrefix (Pattern $ bp) p
           void $ matchesWith (matchSelection <<< baseStripped) (\_ -> affAction this <<< eval <<< ChangeRoute) globalNav
-      ChangeRoute r -> modifyState _ {route=Just r}
+      
       where 
         maybeError = either (\error -> modifyState _ {error = Just error}) pure
 
