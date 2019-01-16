@@ -1,13 +1,11 @@
 exports.postFile_ = function(options) {
-
-  return function (errback, callback) {
-
+  return function(errback, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open("POST", options.url, true);
-    xhr.onerror = function () {
-      errback(new Error("AJAX request failed: "+options.url));
+    xhr.onerror = function() {
+      errback(new Error("AJAX request failed: " + options.url));
     };
-    xhr.onload = function () {
+    xhr.onload = function() {
       callback({
         status: xhr.status,
         headers: [],
@@ -18,13 +16,13 @@ exports.postFile_ = function(options) {
     xhr.responseType = "text";
     xhr.send(options.file);
 
-    return function (cancelError, cancelErrback, cancelCallback) {
+    return function(cancelError, cancelErrback, cancelCallback) {
       try {
         xhr.abort();
       } catch (e) {
         return cancelErrback(e);
       }
       return cancelCallback();
-    }
-  }
-}
+    };
+  };
+};
