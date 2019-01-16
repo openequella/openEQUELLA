@@ -17,16 +17,25 @@ object Common {
 
   def saxBuilder = {
     val sb = new SAXBuilder(XMLReaders.NONVALIDATING)
-    sb.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-    sb.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+    sb.setFeature(
+      "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+      false)
+    sb.setFeature(
+      "http://apache.org/xml/features/nonvalidating/load-dtd-grammar",
+      false);
     sb
   }
 
-  private val defaultConfig = ConfigFactory.parseFile(file("project/build-defaults.conf"))
+  private val defaultConfig =
+    ConfigFactory.parseFile(file("project/build-defaults.conf"))
   private val configFile = sys.props.get("config.file").getOrElse("build.conf")
-  val buildConfig = ConfigFactory.load(ConfigFactory.parseFile(file(configFile))).withFallback(defaultConfig)
+  val buildConfig = ConfigFactory
+    .load(ConfigFactory.parseFile(file(configFile)))
+    .withFallback(defaultConfig)
 
-  def loadLangProperties(f: File, prefix: String, group: String) : LangStrings = {
+  def loadLangProperties(f: File,
+                         prefix: String,
+                         group: String): LangStrings = {
     val p = new Properties()
 
     Using.fileInputStream(f) { finp =>
@@ -34,25 +43,35 @@ object Common {
       if (xml) p.loadFromXML(finp) else p.load(finp)
       val s = p.asScala.map {
         case (k, v) if k.startsWith("/") => k.substring(1) -> v
-        case (k, v) => prefix+k -> v
+        case (k, v)                      => prefix + k -> v
       }
       LangStrings(group, xml, s.toMap)
     }
   }
 
-  val pluginElemOrder = Seq("doc", "attributes", "requires", "runtime", "extension-point", "extension")
+  val pluginElemOrder = Seq("doc",
+                            "attributes",
+                            "requires",
+                            "runtime",
+                            "extension-point",
+                            "extension")
 
-  def insertPluginChildElement(pluginElem: Element, childName: String): Element = {
+  def insertPluginChildElement(pluginElem: Element,
+                               childName: String): Element = {
 
     val orderNum = pluginElemOrder.indexOf(childName)
 
     @tailrec
-    def insertionPoint(elems: List[Element], insertIndex: Int): Int = elems match {
-      case elem :: tail if pluginElemOrder.indexOf(elem.getName) < orderNum => insertionPoint(tail, pluginElem.indexOf(elem)+1)
-      case _ => insertIndex
-    }
+    def insertionPoint(elems: List[Element], insertIndex: Int): Int =
+      elems match {
+        case elem :: tail if pluginElemOrder.indexOf(elem.getName) < orderNum =>
+          insertionPoint(tail, pluginElem.indexOf(elem) + 1)
+        case _ => insertIndex
+      }
     val rt = new Element(childName)
-    pluginElem.addContent(insertionPoint(pluginElem.getChildren.asScala.toList, 0), rt)
+    pluginElem.addContent(
+      insertionPoint(pluginElem.getChildren.asScala.toList, 0),
+      rt)
     rt
   }
 
@@ -60,9 +79,10 @@ object Common {
     val os = sys.props("os.name").toLowerCase
     val precmd = os match {
       case x if x contains "windows" => Seq("cmd", "/C")
-      case _ => Seq.empty
+      case _                         => Seq.empty
     }
     if (Process(precmd ++ Seq("yarn", "--mutex", "network", "run", script), dir).! > 0)
-      sys.error(s"Running yarn script '$script' in dir ${dir.absolutePath} failed")
+      sys.error(
+        s"Running yarn script '$script' in dir ${dir.absolutePath} failed")
   }
 }

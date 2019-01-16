@@ -25,29 +25,37 @@ import com.tle.web.sections.result.util.KeyLabel
 import com.tle.web.workflow.notification.NotificationLangStrings.KEYPFX_EMAIL_SUBJECT
 import javax.inject.Singleton
 
-case class ScriptTaskGroup(reason: String, taskName: String) extends NotificationGroup
-{
+case class ScriptTaskGroup(reason: String, taskName: String)
+    extends NotificationGroup {
   override def templateName: String = "notification-script.ftl"
 
-  def subjectLabel: Label = new KeyLabel(KEYPFX_EMAIL_SUBJECT+reason, taskName)
+  def subjectLabel: Label =
+    new KeyLabel(KEYPFX_EMAIL_SUBJECT + reason, taskName)
 
-  def headerHello(user: UserBean) = NotificationLangStrings.userHeaderLabel(user)
+  def headerHello(user: UserBean) =
+    NotificationLangStrings.userHeaderLabel(user)
 
-  def headerReason(total: Int) = new KeyLabel(NotificationLangStrings.pluralKey(NotificationLangStrings.KEY_HEADER+reason, total), taskName)
+  def headerReason(total: Int) =
+    new KeyLabel(NotificationLangStrings.pluralKey(
+                   NotificationLangStrings.KEY_HEADER + reason,
+                   total),
+                 taskName)
 }
 
 @Bind
 @Singleton
-class ScriptTaskNotification extends FilterableNotification with TemplatedNotification with NotificationLookup {
+class ScriptTaskNotification
+    extends FilterableNotification
+    with TemplatedNotification
+    with NotificationLookup {
   type N = ScriptNotification
 
-  case class ScriptNotification(note: Notification, item: Item) extends TaskNotification
-  {
+  case class ScriptNotification(note: Notification, item: Item)
+      extends TaskNotification {
     def group = ScriptTaskGroup(note.getReason, getTaskName.getText)
   }
 
-  def toFreemarkerModel(notes: Iterable[Notification]) = createDataIgnore(notes, ScriptNotification)
+  def toFreemarkerModel(notes: Iterable[Notification]) =
+    createDataIgnore(notes, ScriptNotification)
 
 }
-
-

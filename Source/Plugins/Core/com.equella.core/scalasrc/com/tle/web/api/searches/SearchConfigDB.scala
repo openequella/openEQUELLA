@@ -24,14 +24,13 @@ import com.tle.core.settings.SettingsDB
 
 object SearchConfigDB {
 
-
   def configName(id: UUID): String = s"searchconfig.$id"
   def pageConfigName(name: String): String = s"searchpage.$name"
 
   def writeConfig(id: UUID, config: SearchConfig): DB[Unit] =
     SettingsDB.setJsonProperty(configName(id), config)
 
-  def readConfig(id: UUID) : OptionT[DB, SearchConfig] =
+  def readConfig(id: UUID): OptionT[DB, SearchConfig] =
     SettingsDB.jsonProperty(configName(id))
 
   def readPageConfig(page: String): OptionT[DB, SearchPageConfig] =

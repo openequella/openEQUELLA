@@ -27,8 +27,11 @@ object JPFPlugin extends AutoPlugin {
     jpfCodeDirs := Seq((classDirectory in Compile).value),
     resourceDirectory in Compile := baseDirectory.value / "resources",
     jpfResourceDirs := (resourceDirectories in Compile).value,
-    jpfRuntime := JPFRuntime(baseDirectory.value / "plugin-jpf.xml", jpfCodeDirs.value, jpfResourceDirs.value,
-      jpfLibraryJars.value.files, baseDirectory.value.getParentFile.getName),
+    jpfRuntime := JPFRuntime(baseDirectory.value / "plugin-jpf.xml",
+                             jpfCodeDirs.value,
+                             jpfResourceDirs.value,
+                             jpfLibraryJars.value.files,
+                             baseDirectory.value.getParentFile.getName),
     jpfLibraryJars := Seq(),
     managedClasspath in Compile ++= jpfLibraryJars.value,
     javaSource in Compile := baseDirectory.value / "src",
@@ -49,13 +52,22 @@ object JPFPlugin extends AutoPlugin {
     langStrings := {
       val doc = Common.saxBuilder.build(jpfRuntime.value.manifest)
       val rootElem = doc.getRootElement
-      val pfx = rootElem.getAttributeValue("id")+"."
+      val pfx = rootElem.getAttributeValue("id") + "."
       rootElem.getChildren("extension").asScala.collect {
-        case e if "com.tle.common.i18n" == e.getAttributeValue("plugin-id") && "bundle" == e.getAttributeValue("point-id") =>
-          val paramMap = e.getChildren("parameter").asScala.map(e => (e.getAttributeValue("id"), e.getAttributeValue("value"))).toMap
+        case e
+            if "com.tle.common.i18n" == e
+              .getAttributeValue("plugin-id") && "bundle" == e
+              .getAttributeValue("point-id") =>
+          val paramMap = e
+            .getChildren("parameter")
+            .asScala
+            .map(e => (e.getAttributeValue("id"), e.getAttributeValue("value")))
+            .toMap
           val fp = paramMap("file")
           val group = paramMap.getOrElse("group", "resource-centre")
-          Common.loadLangProperties((resourceDirectory in Compile).value / fp, pfx, group)
+          Common.loadLangProperties((resourceDirectory in Compile).value / fp,
+                                    pfx,
+                                    group)
       }
     }
   )

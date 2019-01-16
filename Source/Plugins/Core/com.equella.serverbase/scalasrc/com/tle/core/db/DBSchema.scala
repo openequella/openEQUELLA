@@ -19,7 +19,12 @@ package com.tle.core.db
 import java.util
 
 import com.tle.core.db.migration.DBSchemaMigration
-import com.tle.core.db.tables.{AttachmentViewCount, AuditLogEntry, ItemViewCount, Setting}
+import com.tle.core.db.tables.{
+  AttachmentViewCount,
+  AuditLogEntry,
+  ItemViewCount,
+  Setting
+}
 import com.tle.core.db.types.{DbUUID, InstId, JsonColumn}
 import com.tle.core.hibernate.factory.guice.HibernateFactoryModule
 import fs2.Stream
@@ -36,28 +41,32 @@ trait DBSchema extends StdColumns {
 
   implicit def dbUuidCol: C[DbUUID]
 
-  def schemaSQL : JDBCSchemaSQL = config.schemaSQL
+  def schemaSQL: JDBCSchemaSQL = config.schemaSQL
 
   def indexEach(cols: TableColumns, name: NamedColumn => String): Seq[String] =
     cols.columns.map { cb =>
       schemaSQL.createIndex(TableColumns(cols.name, Seq(cb)), name(cb))
     }
 
-
   def jsonColumnMod(ct: ColumnType): ColumnType = ct
 
-  implicit def jsonColumns[A <: JsonColumn](implicit c: Iso[A, Option[String]], col: C[Option[String]]): C[A] =
+  implicit def jsonColumns[A <: JsonColumn](implicit c: Iso[A, Option[String]],
+                                            col: C[Option[String]]): C[A] =
     wrap[Option[String], A](col, _.isoMap[A](c), jsonColumnMod)
 
   def autoIdCol: C[Long]
 
-  val auditLog = TableMapper[AuditLogEntry].table("audit_log_entry").edit('id, autoIdCol).key('id)
+  val auditLog = TableMapper[AuditLogEntry]
+    .table("audit_log_entry")
+    .edit('id, autoIdCol)
+    .key('id)
 
   def insertAuditLog: (Long => AuditLogEntry) => Stream[JDBCIO, AuditLogEntry]
 
   val userAndInst = Cols('user_id, 'institution_id)
 
-  val auditLogQueries = AuditLogQueries(insertAuditLog,
+  val auditLogQueries = AuditLogQueries(
+    insertAuditLog,
     auditLog.delete.where(userAndInst, BinOp.EQ).build,
     auditLog.query.where(userAndInst, BinOp.EQ).build,
     auditLog.delete.where('institution_id, BinOp.EQ).build,
@@ -68,40 +77,64 @@ trait DBSchema extends StdColumns {
 
   val auditLogTable = auditLog.definition
 
-  val auditLogIndexColumns : TableColumns = auditLog.subset(Cols('institution_id, 'timestamp, 'event_category, 'event_type,
-    'user_id) ++ Cols('session_id, 'data1, 'data2, 'data3))
+  val auditLogIndexColumns: TableColumns =
+    auditLog.subset(Cols('institution_id,
+                         'timestamp,
+                         'event_category,
+                         'event_type,
+                         'user_id) ++ Cols('session_id, 'data1, 'data2, 'data3))
 
   val auditLogNewColumns = auditLog.subset(Cols('meta))
 
   val itemViewId = Cols('inst, 'item_uuid, 'item_version)
-  val itemViewCount = TableMapper[ItemViewCount].table("viewcount_item").keys(itemViewId)
-  val attachmentViewCount = TableMapper[AttachmentViewCount].table("viewcount_attachment")
+  val itemViewCount =
+    TableMapper[ItemViewCount].table("viewcount_item").keys(itemViewId)
+  val attachmentViewCount = TableMapper[AttachmentViewCount]
+    .table("viewcount_attachment")
     .keys(itemViewId ++ Cols('attachment))
 
-  val viewCountTables = Seq(itemViewCount.definition, attachmentViewCount.definition)
+  val viewCountTables =
+    Seq(itemViewCount.definition, attachmentViewCount.definition)
 
-  val countByCol = JDBCQueries.queryRawSQL("select sum(\"count\") from viewcount_item vci " +
-    "inner join item i on vci.item_uuid = i.uuid and vci.item_version = i.version " +
-    "inner join base_entity be on be.id = i.item_definition_id where be.id = ?",
-    config.record[Long :: HNil], config.record[Option[Int] :: HNil])
+  val countByCol = JDBCQueries.queryRawSQL(
+    "select sum(\"count\") from viewcount_item vci " +
+      "inner join item i on vci.item_uuid = i.uuid and vci.item_version = i.version " +
+      "inner join base_entity be on be.id = i.item_definition_id where be.id = ?",
+    config.record[Long :: HNil],
+    config.record[Option[Int] :: HNil]
+  )
 
-  val attachmentViewCountByCol = JDBCQueries.queryRawSQL("select sum(\"count\") from viewcount_attachment vca " +
-    "inner join attachment a on vca.attachment = a.uuid " +
-    "inner join item i on a.item_id = i.id " +
-    "inner join base_entity be on be.id = i.item_definition_id where be.id = ?",
-    config.record[Long :: HNil], config.record[Option[Int] :: HNil])
+  val attachmentViewCountByCol = JDBCQueries.queryRawSQL(
+    "select sum(\"count\") from viewcount_attachment vca " +
+      "inner join attachment a on vca.attachment = a.uuid " +
+      "inner join item i on a.item_id = i.id " +
+      "inner join base_entity be on be.id = i.item_definition_id where be.id = ?",
+    config.record[Long :: HNil],
+    config.record[Option[Int] :: HNil]
+  )
 
   val viewCountQueries = {
-    val del1 = itemViewCount.delete.where(itemViewId, BinOp.EQ).build[(InstId, DbUUID, Int)]
-    val del2 = attachmentViewCount.delete.where(itemViewId, BinOp.EQ).build[(InstId, DbUUID, Int)]
-    ViewCountQueries(itemViewCount.writes,
+    val del1 = itemViewCount.delete
+      .where(itemViewId, BinOp.EQ)
+      .build[(InstId, DbUUID, Int)]
+    val del2 = attachmentViewCount.delete
+      .where(itemViewId, BinOp.EQ)
+      .build[(InstId, DbUUID, Int)]
+    ViewCountQueries(
+      itemViewCount.writes,
       attachmentViewCount.writes,
       itemViewCount.byPK,
       itemViewCount.query.where(Cols('inst), BinOp.EQ).build,
       attachmentViewCount.byPK,
-      attachmentViewCount.query.where(Cols('inst, 'item_uuid, 'item_version), BinOp.EQ).build,
-      countByCol.as[Long => Stream[JDBCIO, Option[Int]]].andThen(_.map(_.getOrElse(0))),
-      attachmentViewCountByCol.as[Long => Stream[JDBCIO, Option[Int]]].andThen(_.map(_.getOrElse(0))),
+      attachmentViewCount.query
+        .where(Cols('inst, 'item_uuid, 'item_version), BinOp.EQ)
+        .build,
+      countByCol
+        .as[Long => Stream[JDBCIO, Option[Int]]]
+        .andThen(_.map(_.getOrElse(0))),
+      attachmentViewCountByCol
+        .as[Long => Stream[JDBCIO, Option[Int]]]
+        .andThen(_.map(_.getOrElse(0))),
       id => del1(id) ++ del2(id)
     )
   }
@@ -112,27 +145,28 @@ trait DBSchema extends StdColumns {
       viewCountTables.map(schemaSQL.createTable)
   }.asJava
 
-  val settingsRel = TableMapper[Setting].table("configuration_property").keys(Cols('institution_id, 'property))
+  val settingsRel = TableMapper[Setting]
+    .table("configuration_property")
+    .keys(Cols('institution_id, 'property))
 
   val settingsQueries = SettingsQueries(settingsRel.writes, settingsRel.byPK)
 
-
 }
 
-object DBSchema
-{
-  lazy private val schemaForDBType: DBSchema with DBQueries with DBSchemaMigration = {
+object DBSchema {
+  lazy private val schemaForDBType
+    : DBSchema with DBQueries with DBSchemaMigration = {
     val p = new HibernateFactoryModule
     p.getProperty("hibernate.connection.driver_class") match {
-      case "org.postgresql.Driver" => PostgresSchema
+      case "org.postgresql.Driver"                        => PostgresSchema
       case "com.microsoft.sqlserver.jdbc.SQLServerDriver" => SQLServerSchema
-      case "oracle.jdbc.driver.OracleDriver" => OracleSchema
+      case "oracle.jdbc.driver.OracleDriver"              => OracleSchema
     }
   }
 
-  def schema : DBSchema = schemaForDBType
+  def schema: DBSchema = schemaForDBType
 
-  def schemaMigration : DBSchemaMigration = schemaForDBType
+  def schemaMigration: DBSchemaMigration = schemaForDBType
 
-  def queries : DBQueries = schemaForDBType
+  def queries: DBQueries = schemaForDBType
 }

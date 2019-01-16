@@ -22,7 +22,11 @@ import io.doolse.simpledba.Iso
 import io.doolse.simpledba.jdbc._
 import io.doolse.simpledba.jdbc.oracle._
 
-object OracleSchema extends DBSchemaMigration with DBSchema with DBQueries with StdOracleColumns {
+object OracleSchema
+    extends DBSchemaMigration
+    with DBSchema
+    with DBQueries
+    with StdOracleColumns {
 
   implicit lazy val config = setupLogging(oracleConfig)
 
@@ -33,6 +37,8 @@ object OracleSchema extends DBSchemaMigration with DBSchema with DBQueries with 
   override def insertAuditLog = insertWith(auditLog, hibSeq)
 
   def dbUuidCol =
-    wrap[String, DbUUID](stringCol, _.isoMap(Iso(_.id.toString, DbUUID.fromString)), _.copy(typeName = "VARCHAR(36)"))
+    wrap[String, DbUUID](stringCol,
+                         _.isoMap(Iso(_.id.toString, DbUUID.fromString)),
+                         _.copy(typeName = "VARCHAR(36)"))
 
 }

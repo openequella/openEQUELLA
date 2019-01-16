@@ -35,16 +35,27 @@ object SearchMenuContributor extends MenuContributor {
   private val LABEL_KEY = new KeyLabel(CoreStrings.key("searching.menu"))
   private val ICON_PATH = CoreStrings.lookup.url("images/menu-icon-search.png")
 
-  override def getMenuContributions(info: SectionInfo): util.List[MenuContribution] = {
-    if (LegacyGuice.aclManager.filterNonGrantedPrivileges(WebConstants.SEARCH_PAGE_PRIVILEGE).isEmpty) {
+  override def getMenuContributions(
+      info: SectionInfo): util.List[MenuContribution] = {
+    if (LegacyGuice.aclManager
+          .filterNonGrantedPrivileges(WebConstants.SEARCH_PAGE_PRIVILEGE)
+          .isEmpty) {
       Collections.emptyList()
-    }
-    else {
-      val uis = RunWithDB.executeIfInInstitution(UISettings.cachedUISettings).getOrElse(UISettings.defaultSettings)
-      val useNewSearch = uis.newUI.newSearch && RenderNewTemplate.isNewLayout(info)
-      val hls = new HtmlLinkState(new SimpleBookmark(if (useNewSearch) "page/search" else "searching.do"))
+    } else {
+      val uis = RunWithDB
+        .executeIfInInstitution(UISettings.cachedUISettings)
+        .getOrElse(UISettings.defaultSettings)
+      val useNewSearch = uis.newUI.newSearch && RenderNewTemplate.isNewLayout(
+        info)
+      val hls = new HtmlLinkState(
+        new SimpleBookmark(if (useNewSearch) "page/search" else "searching.do"))
       hls.setLabel(SearchMenuContributor.LABEL_KEY)
-      val mc = new MenuContributor.MenuContribution(hls, SearchMenuContributor.ICON_PATH, 1, 20, "search",
+      val mc = new MenuContributor.MenuContribution(
+        hls,
+        SearchMenuContributor.ICON_PATH,
+        1,
+        20,
+        "search",
         if (useNewSearch) "page/search" else null)
       Collections.singletonList(mc)
     }

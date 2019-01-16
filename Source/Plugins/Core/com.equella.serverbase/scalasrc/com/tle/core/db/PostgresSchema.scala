@@ -24,11 +24,16 @@ import io.doolse.simpledba.Iso
 import io.doolse.simpledba.jdbc._
 import io.doolse.simpledba.jdbc.postgres._
 
-object PostgresSchema extends DBSchemaMigration with DBSchema with DBQueries with StdPostgresColumns {
+object PostgresSchema
+    extends DBSchemaMigration
+    with DBSchema
+    with DBQueries
+    with StdPostgresColumns {
 
   implicit def config = setupLogging(postgresConfig)
 
-  override def jsonColumnMod(ct: ColumnType): ColumnType = ct.copy(typeName = "JSONB")
+  override def jsonColumnMod(ct: ColumnType): ColumnType =
+    ct.copy(typeName = "JSONB")
 
   lazy val hibSeq = Sequence[Long]("hibernate_sequence")
 
@@ -38,7 +43,9 @@ object PostgresSchema extends DBSchemaMigration with DBSchema with DBQueries wit
     insertWith(auditLog, hibSeq)
   }
 
-  def dbUuidCol = wrap[String, DbUUID](stringCol, _.isoMap(Iso(_.id.toString, DbUUID.fromString)),
-    _.copy(typeName = "VARCHAR(36)"))
+  def dbUuidCol =
+    wrap[String, DbUUID](stringCol,
+                         _.isoMap(Iso(_.id.toString, DbUUID.fromString)),
+                         _.copy(typeName = "VARCHAR(36)"))
 
 }

@@ -21,8 +21,7 @@ import com.tle.web.resources.ResourcesService
 import com.tle.web.sections.render.Label
 import com.tle.web.sections.result.util.{KeyLabel, PluralKeyLabel}
 
-object NotificationLangStrings
-{
+object NotificationLangStrings {
   val r = ResourcesService.getResourceHelper(getClass)
 
   def l(key: String) = new KeyLabel(r.key(key))
@@ -34,11 +33,19 @@ object NotificationLangStrings
   val KEY_MSG_FRMT = r.key("email.msgformat")
   val KEY_TASK_MISSING = r.key("task.missing")
 
-  def subject(reason: String) : Label = new KeyLabel(KEYPFX_EMAIL_SUBJECT+reason)
-  def headerLabel(reason: String, total: Int) : Label = new PluralKeyLabel(KEY_HEADER + reason, total)
-  def userHeaderLabel(user: UserBean) : Label = new KeyLabel(KEY_USER_HEADER, user.getFirstName, user.getLastName, user.getUsername)
-  def somethingBy(something: Label, by: Label) = new KeyLabel(KEY_MSG_FRMT, something, by)
+  def subject(reason: String): Label =
+    new KeyLabel(KEYPFX_EMAIL_SUBJECT + reason)
+  def headerLabel(reason: String, total: Int): Label =
+    new PluralKeyLabel(KEY_HEADER + reason, total)
+  def userHeaderLabel(user: UserBean): Label =
+    new KeyLabel(KEY_USER_HEADER,
+                 user.getFirstName,
+                 user.getLastName,
+                 user.getUsername)
+  def somethingBy(something: Label, by: Label) =
+    new KeyLabel(KEY_MSG_FRMT, something, by)
   def unknownTask(taskId: String) = new KeyLabel(KEY_TASK_MISSING, taskId)
 
-  def pluralKey(key: String, total: Int) : String = if (total == 1) key+".1" else key
+  def pluralKey(key: String, total: Int): String =
+    if (total == 1) key + ".1" else key
 }

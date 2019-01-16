@@ -22,12 +22,23 @@ import java.util.{Calendar, Collections}
 import com.tle.common.i18n.StringLookup
 import com.tle.core.db.{DBSchema, RunWithDB}
 import com.tle.core.hibernate.CurrentDataSource
-import com.tle.core.migration.{Migration, MigrationExt, MigrationInfo, MigrationResult}
+import com.tle.core.migration.{
+  Migration,
+  MigrationExt,
+  MigrationInfo,
+  MigrationResult
+}
 import io.doolse.simpledba.jdbc.JDBCIO
 
-abstract class SimpleMigration(val id: String, year: Int, month: Int, day: Int, strings: StringLookup) extends MigrationExt {
+abstract class SimpleMigration(val id: String,
+                               year: Int,
+                               month: Int,
+                               day: Int,
+                               strings: StringLookup)
+    extends MigrationExt {
 
-  def migration(progress: MigrationResult, schema: DBSchemaMigration): JDBCIO[Unit]
+  def migration(progress: MigrationResult,
+                schema: DBSchemaMigration): JDBCIO[Unit]
 
   override def placeholder(): Boolean = false
 
@@ -36,7 +47,9 @@ abstract class SimpleMigration(val id: String, year: Int, month: Int, day: Int, 
 
     override def migrate(status: MigrationResult): Unit = {
       val mig = migration(status, DBSchema.schemaMigration)
-      RunWithDB.executeTransaction(CurrentDataSource.get().getDataSource.getConnection, mig)
+      RunWithDB.executeTransaction(
+        CurrentDataSource.get().getDataSource.getConnection,
+        mig)
     }
 
     override def createMigrationInfo(): MigrationInfo =

@@ -37,21 +37,23 @@ import org.jsoup.Jsoup
 
 import scala.collection.JavaConverters._
 
-
 object CalSummaryDisplay {
 
   val chapterNameCompare = {
     val comp = new NumberStringComparator[BookChapter] {
       override def convertToString(t: BookChapter): String = t.chapterName
     }
-    (c1: BookChapter, c2: BookChapter) => comp.compare(c1, c2) < 0
+    (c1: BookChapter, c2: BookChapter) =>
+      comp.compare(c1, c2) < 0
   }
 
   def citationForItem(item: Item): Option[String] = {
     val calService = LegacyGuice.calService
     for {
       holding <- Option(calService.getHoldingForItem(item))
-      portions = calService.getPortionsForItems(Collections.singletonList(item)).asScala
+      portions = calService
+        .getPortionsForItems(Collections.singletonList(item))
+        .asScala
       portion = portions.get(item.getId).flatMap(_.asScala.headOption)
       html <- Option(calService.citate(holding, portion.orNull))
     } yield html
@@ -60,31 +62,50 @@ object CalSummaryDisplay {
   def attachmentDisplayName(attachment: Attachment): String = {
     val item = attachment.getItem
     val attributes = item.getItemDefinition.getAttributes
-    if (java.lang.Boolean.valueOf(attributes.get(CALConstants.KEY_USE_CITATION_AS_NAME))) {
-      citationForItem(item).map(h => Jsoup.parse(h).text()).getOrElse(attachment.getDescription)
+    if (java.lang.Boolean.valueOf(
+          attributes.get(CALConstants.KEY_USE_CITATION_AS_NAME))) {
+      citationForItem(item)
+        .map(h => Jsoup.parse(h).text())
+        .getOrElse(attachment.getDescription)
     } else attachment.getDescription
   }
 
-  def copyrightAttachment(info: SectionInfo, item: Item, vi: NewDefaultViewableItem, at: Attachment) = {
-    val vr = LegacyGuice.attachmentResourceService.getViewableResource(info, vi, at)
-    val ls = LegacyGuice.viewItemService.getViewableLink(info, vr, null).getLinkState
-    val href = Option(ls.getBookmark).map(b => ItemUrlDisplay.addBaseUri(b.getHref))
+  def copyrightAttachment(info: SectionInfo,
+                          item: Item,
+                          vi: NewDefaultViewableItem,
+                          at: Attachment) = {
+    val vr =
+      LegacyGuice.attachmentResourceService.getViewableResource(info, vi, at)
+    val ls =
+      LegacyGuice.viewItemService.getViewableLink(info, vr, null).getLinkState
+    val href =
+      Option(ls.getBookmark).map(b => ItemUrlDisplay.addBaseUri(b.getHref))
     val atUuid = at.getUuid
     val status = LegacyGuice.calWebService.getStatus(info, item, atUuid) match {
-      case ActivateRequest.TYPE_ACTIVE => "active"
+      case ActivateRequest.TYPE_ACTIVE   => "active"
       case ActivateRequest.TYPE_INACTIVE => "inactive"
-      case ActivateRequest.TYPE_PENDING => "pending"
+      case ActivateRequest.TYPE_PENDING  => "pending"
     }
-    CopyrightAttachment(item.getItemId, href, attachmentDisplayName(at), atUuid, status)
+    CopyrightAttachment(item.getItemId,
+                        href,
+                        attachmentDisplayName(at),
+                        atUuid,
+                        status)
   }
 
-  def bookData(info: SectionInfo, holding: CALHolding, activatable: util.Set[Item]): HoldingSummary = {
+  def bookData(info: SectionInfo,
+               holding: CALHolding,
+               activatable: util.Set[Item]): HoldingSummary = {
     val bookPortions = holding.getPortions.asScala.map { p =>
       val item = p.getItem
 
-      val attachMap = LegacyGuice.calWebService.getAttachmentMap(info, item).asScala
-      val vi = LegacyGuice.viewableItemFactory.createNewViewableItem(item.getItemId)
-      val title = LangUtils.getString(item.getName, CoreStrings.text("summary.unnamedportion"))
+      val attachMap =
+        LegacyGuice.calWebService.getAttachmentMap(info, item).asScala
+      val vi =
+        LegacyGuice.viewableItemFactory.createNewViewableItem(item.getItemId)
+      val title =
+        LangUtils.getString(item.getName,
+                            CoreStrings.text("summary.unnamedportion"))
       val sections = p.getSections.asScala.flatMap { s =>
         val range = s.getRange
         val pageCount = PageCounter.countTotalRange(range)
@@ -96,14 +117,16 @@ object CalSummaryDisplay {
       }
       BookChapter(title, p.getChapter, activatable.contains(item), sections)
     }
-    BookSummary(PageCounter.countTotalPages(holding.getLength), bookPortions.sortWith(chapterNameCompare))
+    BookSummary(PageCounter.countTotalPages(holding.getLength),
+                bookPortions.sortWith(chapterNameCompare))
   }
 
   def journalData(info: SectionInfo, holding: CALHolding): HoldingSummary = {
     val calWebService = LegacyGuice.calWebService
     val journalPortions = holding.getPortions.asScala.flatMap { p =>
       val item = p.getItem
-      val vi = LegacyGuice.viewableItemFactory.createNewViewableItem(item.getItemId)
+      val vi =
+        LegacyGuice.viewableItemFactory.createNewViewableItem(item.getItemId)
       val attachMap = calWebService.getAttachmentMap(info, item).asScala
       val sections = p.getSections.asScala.flatMap { s =>
         val atUuid = s.getAttachment
@@ -116,21 +139,27 @@ object CalSummaryDisplay {
       }
     }
 
-    JournalSummary(Option(holding.getVolume), Option(holding.getIssueNumber), journalPortions)
+    JournalSummary(Option(holding.getVolume),
+                   Option(holding.getIssueNumber),
+                   journalPortions)
   }
 
-  def copyrightData(info: SectionInfo, ii: ItemSectionInfo): Option[CopyrightData] = {
+  def copyrightData(info: SectionInfo,
+                    ii: ItemSectionInfo): Option[CopyrightData] = {
     val calService = LegacyGuice.calService
     val activationService = LegacyGuice.activationService
     val item = ii.getItem
-    if (!calService.isCopyrightedItem(item)) None else Option(calService.getHoldingForItem(item)).map { holding =>
-      val activatableItems = activationService.filterActivatableItems(new util.HashSet[Item](
-        holding.getPortions.asScala.map(_.getItem).asJava))
-      val holdingSummary = holding.getType match {
-        case CALConstants.BOOK => bookData(info, holding, activatableItems)
-        case CALConstants.JOURNAL => journalData(info, holding)
+    if (!calService.isCopyrightedItem(item)) None
+    else
+      Option(calService.getHoldingForItem(item)).map { holding =>
+        val activatableItems = activationService.filterActivatableItems(
+          new util.HashSet[Item](
+            holding.getPortions.asScala.map(_.getItem).asJava))
+        val holdingSummary = holding.getType match {
+          case CALConstants.BOOK    => bookData(info, holding, activatableItems)
+          case CALConstants.JOURNAL => journalData(info, holding)
+        }
+        CopyrightData(holding.getItem.getItemId, holdingSummary)
       }
-      CopyrightData(holding.getItem.getItemId, holdingSummary)
-    }
   }
 }

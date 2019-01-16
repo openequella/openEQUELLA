@@ -22,11 +22,13 @@ import javax.inject.Singleton
 
 @Bind
 @Singleton
-class StandardNotifications extends FilterableNotification with TemplatedNotification with NotificationLookup {
+class StandardNotifications
+    extends FilterableNotification
+    with TemplatedNotification
+    with NotificationLookup {
 
   type N = ItemNotification
 
-  def toFreemarkerModel(notes: Iterable[Notification]) = createItemNotifications("notification-item.ftl", notes)
+  def toFreemarkerModel(notes: Iterable[Notification]) =
+    createItemNotifications("notification-item.ftl", notes)
 }
-
-

@@ -46,79 +46,106 @@ object RenderNewTemplate {
   val reactTemplate = r.url("reactjs/index.js")
 
   val bundleJs = new PreRenderable {
-    override def preRender(info: PreRenderContext): Unit =
-    {
-      new IncludeFile(s"api/language/bundle/${LocaleLookup.selectLocale.getLocale.toLanguageTag}/bundle.js").preRender(info)
+    override def preRender(info: PreRenderContext): Unit = {
+      new IncludeFile(
+        s"api/language/bundle/${LocaleLookup.selectLocale.getLocale.toLanguageTag}/bundle.js")
+        .preRender(info)
       new IncludeFile(s"api/theme/theme.js").preRender(info)
     }
 
   }
 
-
   val NewLayoutKey = "NEW_LAYOUT"
 
   def isNewLayout(info: SectionInfo): Boolean = {
     Option(info.getAttribute(NewLayoutKey)).getOrElse {
-      val paramOverride = Option(info.getRequest.getParameter("old")).map(!_.toBoolean)
-      val sessionOverride = paramOverride.fold(Option(LegacyGuice.userSessionService.getAttribute[Boolean](NewLayoutKey))) {
+      val paramOverride =
+        Option(info.getRequest.getParameter("old")).map(!_.toBoolean)
+      val sessionOverride = paramOverride.fold(
+        Option(
+          LegacyGuice.userSessionService.getAttribute[Boolean](NewLayoutKey))) {
         newUI =>
           LegacyGuice.userSessionService.setAttribute(NewLayoutKey, newUI)
           Some(newUI)
       }
       val newLayout = sessionOverride.getOrElse {
-        RunWithDB.executeIfInInstitution(UISettings.cachedUISettings).getOrElse(UISettings.defaultSettings).newUI.enabled
+        RunWithDB
+          .executeIfInInstitution(UISettings.cachedUISettings)
+          .getOrElse(UISettings.defaultSettings)
+          .newUI
+          .enabled
       }
       info.setAttribute(NewLayoutKey, newLayout)
       newLayout
     }
   }
 
-  case object HeaderSection extends ScalaSectionRenderable({
-    writer =>
-      writer.getInfo() match {
-        case src: StandardRenderContext =>
-          src.getJsFiles.asScala.foreach {
-            s =>
+  case object HeaderSection
+      extends ScalaSectionRenderable({ writer =>
+        writer.getInfo() match {
+          case src: StandardRenderContext =>
+            src.getJsFiles.asScala.foreach { s =>
               writer.writeTag("script", "src", s)
               writer.endTag("script")
-          }
-          src.getCssFiles.asScala.foreach {
-            s: CssInclude =>
-              writer.writeTag("link", "rel", "stylesheet", "type", "text/css",
-                "href", s.getHref(src))
+            }
+            src.getCssFiles.asScala.foreach { s: CssInclude =>
+              writer.writeTag("link",
+                              "rel",
+                              "stylesheet",
+                              "type",
+                              "text/css",
+                              "href",
+                              s.getHref(src))
               writer.endTag("link")
-          }
-      }
-  })
+            }
+        }
+      })
 
-  def renderNewHtml(context: RenderEventContext, viewFactory: FreemarkerFactory): SectionResult = {
+  def renderNewHtml(context: RenderEventContext,
+                    viewFactory: FreemarkerFactory): SectionResult = {
     val req = context.getRequest
-    val _renderData = new ObjectExpression("baseResources", r.url(""),
-      "newUI", java.lang.Boolean.TRUE)
+    val _renderData = new ObjectExpression("baseResources",
+                                           r.url(""),
+                                           "newUI",
+                                           java.lang.Boolean.TRUE)
     val renderData =
-      Option(req.getAttribute(SetupJSKey).asInstanceOf[ObjectExpression => ObjectExpression]).map(_.apply(_renderData)).getOrElse(_renderData)
-    val bundleJS = Option(req.getAttribute(ReactJSKey).asInstanceOf[String]).getOrElse(reactTemplate)
+      Option(
+        req
+          .getAttribute(SetupJSKey)
+          .asInstanceOf[ObjectExpression => ObjectExpression])
+        .map(_.apply(_renderData))
+        .getOrElse(_renderData)
+    val bundleJS = Option(req.getAttribute(ReactJSKey).asInstanceOf[String])
+      .getOrElse(reactTemplate)
     renderReact(context, viewFactory, renderData, bundleJS)
   }
 
-  def renderReact(context: RenderEventContext, viewFactory: FreemarkerFactory, renderData: ObjectExpression,
+  def renderReact(context: RenderEventContext,
+                  viewFactory: FreemarkerFactory,
+                  renderData: ObjectExpression,
                   scriptUrl: String): SectionResult = {
     context.preRender(JQueryCore.PRERENDER)
     if (DebugSettings.isAutoTestMode) {
       context.preRender(RenderTemplate.AUTOTEST_JS)
     }
 
-    if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident"))) {
-      context.getPreRenderContext.addJs("https://cdn.polyfill.io/v2/polyfill.min.js?features=es6")
+    if (Option(context.getRequest.getHeader("User-Agent"))
+          .exists(_.contains("Trident"))) {
+      context.getPreRenderContext.addJs(
+        "https://cdn.polyfill.io/v2/polyfill.min.js?features=es6")
     }
     context.preRender(bundleJs)
     val tempResult = new GenericTemplateResult()
     tempResult.addNamedResult("header", HeaderSection)
-    viewFactory.createResultWithModel("layouts/outer/react.ftl",
+    viewFactory.createResultWithModel(
+      "layouts/outer/react.ftl",
       TemplateScript(scriptUrl, renderData, tempResult, ""))
   }
 
-  case class TemplateScript(getScriptUrl: String, getRenderJs: ObjectExpression, getTemplate: TemplateResult, htmlAttributes: String) {
+  case class TemplateScript(getScriptUrl: String,
+                            getRenderJs: ObjectExpression,
+                            getTemplate: TemplateResult,
+                            htmlAttributes: String) {
     def getLang = LocaleUtils.toHtmlLang(CurrentLocale.getLocale)
 
     def isRightToLeft = CurrentLocale.isRightToLeft

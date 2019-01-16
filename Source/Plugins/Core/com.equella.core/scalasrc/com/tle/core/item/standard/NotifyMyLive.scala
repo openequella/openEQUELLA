@@ -24,13 +24,21 @@ import scala.collection.JavaConverters._
 
 object NotifyMyLive {
 
-  def notifyOwners(op: AbstractStandardWorkflowOperation, ups: UserPreferenceService): Unit = {
+  def notifyOwners(op: AbstractStandardWorkflowOperation,
+                   ups: UserPreferenceService): Unit = {
     val item = op.getItem
-    val users = ups.getPreferenceForUsers(UserPreferenceService.NOTIFY_MYLIVE,
-      (item.getCollaborators.asScala.toBuffer :+ item.getOwner).asJavaCollection).asScala.collect {
-      case (u, "true") => u
-    }
-    op.addNotifications(item.getItemId, users.asJavaCollection, Notification.REASON_MYLIVE, false)
+    val users = ups
+      .getPreferenceForUsers(
+        UserPreferenceService.NOTIFY_MYLIVE,
+        (item.getCollaborators.asScala.toBuffer :+ item.getOwner).asJavaCollection)
+      .asScala
+      .collect {
+        case (u, "true") => u
+      }
+    op.addNotifications(item.getItemId,
+                        users.asJavaCollection,
+                        Notification.REASON_MYLIVE,
+                        false)
   }
 
 }

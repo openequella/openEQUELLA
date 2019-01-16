@@ -20,8 +20,7 @@ import com.tle.web.notification.WebNotificationExtension
 import com.tle.web.sections.result.util.KeyLabel
 import com.tle.web.workflow.notification.FilterableNotification._
 
-object FilterableNotification
-{
+object FilterableNotification {
   import NotificationLangStrings.r
 
   val KEY_REASON_FILTER = r.key("notereason.")

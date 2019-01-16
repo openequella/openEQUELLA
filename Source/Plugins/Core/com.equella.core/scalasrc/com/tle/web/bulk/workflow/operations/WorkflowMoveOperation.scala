@@ -31,43 +31,55 @@ import javax.inject.Inject
 import scala.collection.JavaConverters._
 
 @SecureInModeration
-class WorkflowMoveOperation @AssistedInject()(@Assisted("msg") val msg: String, @Assisted("toStep") val toStep: String) extends TaskOperation {
+class WorkflowMoveOperation @AssistedInject()(
+    @Assisted("msg") val msg: String,
+    @Assisted("toStep") val toStep: String)
+    extends TaskOperation {
 
   @Inject var aclService: TLEAclManager = _
 
-
   override def execute: Boolean = {
     if (!aclService.hasPrivilege(getWorkflow, Privilege.MANAGE_WORKFLOW)) {
-      throw new AccessDeniedException(CurrentLocale.get("com.tle.core.services.item.error.nopriv", "MANAGE_WORKFLOW", getItemId))
+      throw new AccessDeniedException(
+        CurrentLocale.get("com.tle.core.services.item.error.nopriv",
+                          "MANAGE_WORKFLOW",
+                          getItemId))
     }
 
     clearAllStatuses()
 
     val nodeSeq = getWorkflow.getNodes.asScala.toSeq
 
-    def requiresSiblingCompletion(wn: WorkflowNode) = wn.getType != WorkflowNode.PARALLEL_TYPE
+    def requiresSiblingCompletion(wn: WorkflowNode) =
+      wn.getType != WorkflowNode.PARALLEL_TYPE
 
     val parentMap = nodeSeq.groupBy(n => Option(n.getParent))
 
     def newStatus(completed: Boolean)(n: WorkflowNode) = {
       val ns = n.getType match {
-        case WorkflowNode.ITEM_TYPE => val wis = new WorkflowItemStatus(n, null)
+        case WorkflowNode.ITEM_TYPE =>
+          val wis = new WorkflowItemStatus(n, null)
           wis.setStarted(params.getDateNow)
           wis
         case _ => new WorkflowNodeStatus(n)
       }
-      ns.setStatus(if (completed) WorkflowNodeStatus.COMPLETE else WorkflowNodeStatus.INCOMPLETE)
+      ns.setStatus(
+        if (completed) WorkflowNodeStatus.COMPLETE
+        else WorkflowNodeStatus.INCOMPLETE)
       ns
     }
 
     nodeSeq.find(_.getUuid == toStep).foreach { wn =>
-
-      def completePreviousSiblings(child: WorkflowNode): Seq[WorkflowNodeStatus] = (for {
-        parent <- Option(child.getParent).filter(requiresSiblingCompletion)
-        children <- parentMap.get(Some(parent))
-      } yield {
-        children.filter(_.getChildIndex < child.getChildIndex).map(newStatus(true))
-      }).getOrElse(Seq.empty)
+      def completePreviousSiblings(
+          child: WorkflowNode): Seq[WorkflowNodeStatus] =
+        (for {
+          parent <- Option(child.getParent).filter(requiresSiblingCompletion)
+          children <- parentMap.get(Some(parent))
+        } yield {
+          children
+            .filter(_.getChildIndex < child.getChildIndex)
+            .map(newStatus(true))
+        }).getOrElse(Seq.empty)
 
       def addParentStatuses(child: WorkflowNode): Seq[WorkflowNodeStatus] = {
         (completePreviousSiblings(child) :+ newStatus(false)(child)) ++

@@ -21,7 +21,11 @@ import com.tle.legacy.LegacyGuice
 import com.tle.web.sections.equella.AbstractScalaSection
 import com.tle.web.sections.events.RenderEventContext
 import com.tle.web.sections.registry.SectionsServlet
-import com.tle.web.sections.render.{HtmlRenderer, SimpleSectionResult, TextLabel}
+import com.tle.web.sections.render.{
+  HtmlRenderer,
+  SimpleSectionResult,
+  TextLabel
+}
 import com.tle.web.sections.{SectionInfo, SectionResult, SectionTree}
 import com.tle.web.selection.NewSelectionPage
 import javax.servlet.http.HttpServletRequest
@@ -29,8 +33,7 @@ import javax.servlet.http.HttpServletRequest
 import scala.collection.JavaConverters._
 
 @Bind
-class SinglePageAppServlet extends SectionsServlet
-{
+class SinglePageAppServlet extends SectionsServlet {
   val tree = LegacyGuice.treeRegistry.getTreeForPath("/newpage.do")
 
   override def lookupTree(request: HttpServletRequest): SectionTree = tree
@@ -38,13 +41,18 @@ class SinglePageAppServlet extends SectionsServlet
   override def getServletPath(request: HttpServletRequest): String = {
     request.getServletPath match {
       case "/selection" => NewSelectionPage.setupSelection(request)
-      case o => ()
+      case o            => ()
     }
     request.getServletPath + request.getPathInfo
   }
 
   override val defaultAttributes = {
-    super.defaultAttributes().asScala.toMap.updated(RenderNewTemplate.NewLayoutKey, java.lang.Boolean.valueOf(true)).asJava
+    super
+      .defaultAttributes()
+      .asScala
+      .toMap
+      .updated(RenderNewTemplate.NewLayoutKey, java.lang.Boolean.valueOf(true))
+      .asJava
   }
 }
 

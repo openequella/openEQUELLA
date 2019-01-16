@@ -17,7 +17,8 @@ excludeDependencies ++= Seq(
 
 unmanagedJars in Compile ++= oracleDriverJar.value.toSeq.classpath
 
-assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
+assemblyOption in assembly := (assemblyOption in assembly).value
+  .copy(includeScala = false)
 
 mainClass in assembly := Some("com.dytech.edge.installer.application.Launch")
 
@@ -30,7 +31,7 @@ installerZip := {
   val dirname = s"equella-installer-${ver.majorMinor}"
   val outZip = target.value / s"$dirname.zip"
   val serverData = baseDirectory.value / "data/server"
-  val allServerFiles = serverData ** "*" pair(relativeTo(serverData), false)
+  val allServerFiles = serverData ** "*" pair (relativeTo(serverData), false)
   val upZip = (upgradeZip in equellaserver).value
   val allFiles = Seq(
     assembly.value -> "enterprise-install.jar",

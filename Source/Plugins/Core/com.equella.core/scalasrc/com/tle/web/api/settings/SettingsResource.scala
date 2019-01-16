@@ -27,14 +27,18 @@ import io.swagger.annotations.Api
 import javax.ws.rs.{GET, PUT, Path, Produces}
 
 case class SettingTypeLinks(web: Option[URI], rest: Option[URI])
-case class SettingType(id: String, name: String, description: String,
-                       group: String, links: SettingTypeLinks)
+case class SettingType(id: String,
+                       name: String,
+                       description: String,
+                       group: String,
+                       links: SettingTypeLinks)
 
 object SettingTypeLinks {
-  def apply(instUri: URI, ed: EditableSettings): SettingTypeLinks = ed.uriType match {
-    case "rest" => SettingTypeLinks(None, Option(instUri.resolve(ed.uri)))
-    case _ => SettingTypeLinks(Option(instUri.resolve(ed.uri)), None)
-  }
+  def apply(instUri: URI, ed: EditableSettings): SettingTypeLinks =
+    ed.uriType match {
+      case "rest" => SettingTypeLinks(None, Option(instUri.resolve(ed.uri)))
+      case _      => SettingTypeLinks(Option(instUri.resolve(ed.uri)), None)
+    }
 }
 
 @Path("settings/")
@@ -43,20 +47,27 @@ object SettingTypeLinks {
 class SettingsResource {
 
   @GET
-  def settings : Iterable[SettingType] = {
+  def settings: Iterable[SettingType] = {
     val baseUri = CurrentInstitution.get().getUrlAsUri
     SettingsList.allSettings.filter(_.isEditable).map { s =>
-      SettingType(s.id, s.name, s.description, s.group, SettingTypeLinks(baseUri, s))
+      SettingType(s.id,
+                  s.name,
+                  s.description,
+                  s.group,
+                  SettingTypeLinks(baseUri, s))
     }
   }
 
   @GET
   @Path("ui")
-  def getUISettings: UISettings = RunWithDB.execute(UISettings.getUISettings).getOrElse(UISettings.defaultSettings)
+  def getUISettings: UISettings =
+    RunWithDB
+      .execute(UISettings.getUISettings)
+      .getOrElse(UISettings.defaultSettings)
 
   @PUT
   @Path("ui")
-  def setUISettings(in: UISettings) : Unit = RunWithDB.executeWithPostCommit(
+  def setUISettings(in: UISettings): Unit = RunWithDB.executeWithPostCommit(
     SettingsDB.ensureEditSystem(UISettings.setUISettings(in))
   )
 }

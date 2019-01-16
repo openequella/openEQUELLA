@@ -1,4 +1,8 @@
-import com.yahoo.platform.yui.compressor.{CssCompressor, JavaScriptCompressor, YUICompressor}
+import com.yahoo.platform.yui.compressor.{
+  CssCompressor,
+  JavaScriptCompressor,
+  YUICompressor
+}
 import org.mozilla.javascript.{ErrorReporter, EvaluatorException}
 import sbt._
 import sbt.Keys._
@@ -19,7 +23,11 @@ object YUICompressPlugin extends AutoPlugin {
   import autoImport._
 
   object jsReporter extends ErrorReporter {
-    def runtimeError(s: String, s1: String, i: Int, s2: String, i1: Int): EvaluatorException = ???
+    def runtimeError(s: String,
+                     s1: String,
+                     i: Int,
+                     s2: String,
+                     i1: Int): EvaluatorException = ???
 
     def error(s: String, s1: String, i: Int, s2: String, i1: Int): Unit = ???
 
@@ -30,29 +38,34 @@ object YUICompressPlugin extends AutoPlugin {
     minify in Compile := {
       val logger = streams.value.log
       val baseDir = (resourceManaged in Compile).value
-      yuiResources.value.pair(rebase((resourceDirectory in Compile).value, "")).map {
-        case (f, path) => IO.reader(f) { br =>
-          val ind = path.lastIndexOf('.')
-          path.substring(ind + 1) match {
-            case "js" =>
-              val jsCompress = new JavaScriptCompressor(br, jsReporter)
-              val outFile = baseDir / (path.substring(0, ind) + ".min.js")
-              logger.info(s"Minifying ${outFile.absolutePath}")
-              IO.writer(outFile, "", IO.utf8) { bw =>
-                jsCompress.compress(bw, 8000, true, false, false, false)
-              }
-              outFile
-            case "css" =>
-              val cssCompress = new CssCompressor(br)
-              val outFile = baseDir / (path.substring(0, ind) + ".min.css")
-              logger.info(s"Minifying ${outFile.absolutePath}")
-              IO.writer(outFile, "", IO.utf8) { bw =>
-                cssCompress.compress(bw, 8000)
-              }
-              outFile
-          }
+      yuiResources.value
+        .pair(rebase((resourceDirectory in Compile).value, ""))
+        .map {
+          case (f, path) =>
+            IO.reader(f) {
+              br =>
+                val ind = path.lastIndexOf('.')
+                path.substring(ind + 1) match {
+                  case "js" =>
+                    val jsCompress = new JavaScriptCompressor(br, jsReporter)
+                    val outFile = baseDir / (path.substring(0, ind) + ".min.js")
+                    logger.info(s"Minifying ${outFile.absolutePath}")
+                    IO.writer(outFile, "", IO.utf8) { bw =>
+                      jsCompress.compress(bw, 8000, true, false, false, false)
+                    }
+                    outFile
+                  case "css" =>
+                    val cssCompress = new CssCompressor(br)
+                    val outFile = baseDir / (path
+                      .substring(0, ind) + ".min.css")
+                    logger.info(s"Minifying ${outFile.absolutePath}")
+                    IO.writer(outFile, "", IO.utf8) { bw =>
+                      cssCompress.compress(bw, 8000)
+                    }
+                    outFile
+                }
+            }
         }
-      }
     },
     resourceGenerators in Compile += (minify in Compile).taskValue
   )

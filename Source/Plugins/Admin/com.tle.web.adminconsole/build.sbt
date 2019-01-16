@@ -6,4 +6,3 @@ resourceGenerators in Compile += Def.task {
   (jarSigner.value).apply(jarFile, outJar)
   Seq(outJar)
 }.taskValue
-

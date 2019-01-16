@@ -18,8 +18,17 @@ package com.tle.web.controls.universal.handlers.fileupload.details
 
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings
 import com.tle.web.controls.universal.handlers.fileupload.packages.PackageFileCreate
-import com.tle.web.controls.universal.handlers.fileupload.{PackageType, ValidatedUpload, WebFileUploads}
-import com.tle.web.controls.universal.{AbstractDetailsAttachmentHandler, ControlContext, DialogRenderOptions, RenderHelper}
+import com.tle.web.controls.universal.handlers.fileupload.{
+  PackageType,
+  ValidatedUpload,
+  WebFileUploads
+}
+import com.tle.web.controls.universal.{
+  AbstractDetailsAttachmentHandler,
+  ControlContext,
+  DialogRenderOptions,
+  RenderHelper
+}
 import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.freemarker.annotations.ViewFactory
 import com.tle.web.sections.annotations.{EventFactory, EventHandlerMethod}
@@ -37,16 +46,20 @@ import scala.collection.JavaConverters._
 
 object FileOptions {
   val TITLE = WebFileUploads.label("handlers.file.packageoption.title")
-  val LABEL_TREAT_AS_FILE = WebFileUploads.label("handlers.file.packageoptions.asfile")
+  val LABEL_TREAT_AS_FILE =
+    WebFileUploads.label("handlers.file.packageoptions.asfile")
 }
 
 import com.tle.web.controls.universal.handlers.fileupload.details.FileOptions._
 
-class FileOptions(parentId: String, tree: SectionTree, settings: FileUploadSettings,
+class FileOptions(parentId: String,
+                  tree: SectionTree,
+                  settings: FileUploadSettings,
                   ctx: ControlContext,
                   currentUpload: SectionInfo => ValidatedUpload,
                   resolved: (SectionInfo, ValidatedUpload) => Unit)
-  extends AbstractScalaSection with RenderHelper {
+    extends AbstractScalaSection
+    with RenderHelper {
   type M = Model
 
   class Model(info: SectionInfo) {
@@ -66,7 +79,7 @@ class FileOptions(parentId: String, tree: SectionTree, settings: FileUploadSetti
     val selType = packageOptions.getSelectedValue(info)
     resolved(info, selType.value match {
       case "file" => vu.copy(detected = Seq.empty)
-      case o => vu.copy(detected = Seq(PackageType.fromString(o)))
+      case o      => vu.copy(detected = Seq(PackageType.fromString(o)))
     })
   }
 
@@ -74,11 +87,14 @@ class FileOptions(parentId: String, tree: SectionTree, settings: FileUploadSetti
 
   override def getDefaultPropertyName = "po"
 
-  val defaultOptions = if (!settings.isPackagesOnly) Seq(TreatAsOption(LABEL_TREAT_AS_FILE, "file")) else Seq.empty
+  val defaultOptions =
+    if (!settings.isPackagesOnly)
+      Seq(TreatAsOption(LABEL_TREAT_AS_FILE, "file"))
+    else Seq.empty
 
   def defaultResolve(vu: ValidatedUpload): Option[ValidatedUpload] = {
     if ((settings.isPackagesOnly && (settings.isQtiPackagesOnly || settings.isScormPackagesOnly || vu.detected.size == 1)) ||
-      (!settings.isPackagesOnly && vu.detected.isEmpty)) Some(vu)
+        (!settings.isPackagesOnly && vu.detected.isEmpty)) Some(vu)
     else None
   }
 
@@ -89,17 +105,19 @@ class FileOptions(parentId: String, tree: SectionTree, settings: FileUploadSetti
 
     def getPackageOptions = packageOptions
 
-    def getCommonIncludePath = AbstractDetailsAttachmentHandler.COMMON_INCLUDE_PATH
+    def getCommonIncludePath =
+      AbstractDetailsAttachmentHandler.COMMON_INCLUDE_PATH
 
     def getCommonPrefix = AbstractDetailsAttachmentHandler.COMMON_PREFIX
   }
 
-  def prepareUI(info: SectionInfo, vu: ValidatedUpload): Unit = {
+  def prepareUI(info: SectionInfo, vu: ValidatedUpload): Unit = {}
 
-  }
-
-  def render(context: RenderContext, vu: ValidatedUpload): (SectionRenderable, DialogRenderOptions => Unit) = {
-    (renderModel("file/file-packageoptions.ftl", new PackageEditOptionsModel), _.addAction(optionsButton))
+  def render(
+      context: RenderContext,
+      vu: ValidatedUpload): (SectionRenderable, DialogRenderOptions => Unit) = {
+    (renderModel("file/file-packageoptions.ftl", new PackageEditOptionsModel),
+     _.addAction(optionsButton))
   }
 
   override def registered(id: String, tree: SectionTree): Unit = {
@@ -110,7 +128,8 @@ class FileOptions(parentId: String, tree: SectionTree, settings: FileUploadSetti
   }
 
   class PackageOptionsListModel extends DynamicHtmlListModel[TreatAsOption] {
-    override protected def populateModel(info: SectionInfo): java.lang.Iterable[TreatAsOption] = {
+    override protected def populateModel(
+        info: SectionInfo): java.lang.Iterable[TreatAsOption] = {
       val dynamicOptions = getModel(info).vu.detected.map { pt =>
         val t = PackageType.packageTypeString(pt)
         TreatAsOption(PackageFileCreate.packageCreateById(t).treatAsLabel, t)
@@ -118,9 +137,9 @@ class FileOptions(parentId: String, tree: SectionTree, settings: FileUploadSetti
       (dynamicOptions ++ defaultOptions).asJava
     }
 
-    override protected def convertToOption(info: SectionInfo, obj: TreatAsOption) =
+    override protected def convertToOption(info: SectionInfo,
+                                           obj: TreatAsOption) =
       new LabelOption[TreatAsOption](obj.label, obj.value, obj)
   }
-
 
 }

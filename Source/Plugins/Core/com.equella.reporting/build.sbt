@@ -8,6 +8,7 @@ libraryDependencies ++= Seq(
   "rhino" % "js" % "1.7R2"
 ).map(_ % Birt)
 
-ivyConfigurations := overrideConfigs(Birt, CustomCompile)(ivyConfigurations.value)
+ivyConfigurations := overrideConfigs(Birt, CustomCompile)(
+  ivyConfigurations.value)
 
 jpfLibraryJars := Classpaths.managedJars(Birt, Set("jar"), update.value)

@@ -14,7 +14,8 @@ excludeDependencies ++= Seq(
 )
 
 mainClass in assembly := Some("com.tle.upgrade.UpgradeMain")
-assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
+assemblyOption in assembly := (assemblyOption in assembly).value
+  .copy(includeScala = false)
 
 assemblyMergeStrategy in assembly := {
   case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first

@@ -20,7 +20,10 @@ import com.tle.beans.item.attachments.Attachment
 import com.tle.common.Check
 import com.tle.common.filesystem.FileEntry
 import com.tle.core.services.ZipProgress
-import com.tle.web.controls.universal.handlers.fileupload.{AttachmentDelete, WebFileUploads}
+import com.tle.web.controls.universal.handlers.fileupload.{
+  AttachmentDelete,
+  WebFileUploads
+}
 import com.tle.web.controls.universal.{ControlContext, DialogRenderOptions}
 import com.tle.web.sections.SectionInfo
 import com.tle.web.sections.events.RenderContext
@@ -66,11 +69,15 @@ trait DetailsPage {
 
   def previewable: Boolean
 
-  def renderDetails(context: RenderContext): (SectionRenderable, DialogRenderOptions => Unit)
+  def renderDetails(
+      context: RenderContext): (SectionRenderable, DialogRenderOptions => Unit)
 
   def prepareUI(info: SectionInfo): Unit
 
-  def editAttachment(info: SectionInfo, a: Attachment, ctx: ControlContext): (Attachment, Option[AttachmentDelete])
+  def editAttachment(
+      info: SectionInfo,
+      a: Attachment,
+      ctx: ControlContext): (Attachment, Option[AttachmentDelete])
 
   def validate(info: SectionInfo): Boolean
 
@@ -82,4 +89,3 @@ trait DetailsPage {
     } else None
   }
 }
-

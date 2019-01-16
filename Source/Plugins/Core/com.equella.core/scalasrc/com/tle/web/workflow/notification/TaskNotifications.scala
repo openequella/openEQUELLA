@@ -58,7 +58,10 @@ import com.tle.web.workflow.notification.TaskNotifications._
 
 @Bind
 @Singleton
-class TaskNotifications extends FilterableNotification with NotificationLookup with TemplatedNotification {
+class TaskNotifications
+    extends FilterableNotification
+    with NotificationLookup
+    with TemplatedNotification {
 
   type N = TaskNoteModel
   @Inject
@@ -84,64 +87,110 @@ class TaskNotifications extends FilterableNotification with NotificationLookup w
     def date = msg.getDate
 
     val uuid = msg.getUuid
-    val getFiles = fileSystemService.enumerate(new WorkflowMessageFile(uuid), Constants.BLANK, null).map {
-      fe => new NameValue(fe.getName, WorkflowMessageServlet.messageUrl(uuid, fe.getName))
-    }
+    val getFiles = fileSystemService
+      .enumerate(new WorkflowMessageFile(uuid), Constants.BLANK, null)
+      .map { fe =>
+        new NameValue(fe.getName,
+                      WorkflowMessageServlet.messageUrl(uuid, fe.getName))
+      }
     val isHasFiles = getFiles.nonEmpty
-
 
   }
 
-  val msgTypes = Set(WorkflowMessage.TYPE_ACCEPT, WorkflowMessage.TYPE_REJECT, WorkflowMessage.TYPE_SUBMIT)
+  val msgTypes = Set(WorkflowMessage.TYPE_ACCEPT,
+                     WorkflowMessage.TYPE_REJECT,
+                     WorkflowMessage.TYPE_SUBMIT)
 
-  case class TaskGroup(multiple: Boolean, rejected: Boolean, taskName: String) extends NotificationGroup
-  {
-    def groupName = s"task.${if (multiple) "m" else "s"}${if (rejected) "r" else "a"}"
+  case class TaskGroup(multiple: Boolean, rejected: Boolean, taskName: String)
+      extends NotificationGroup {
+    def groupName =
+      s"task.${if (multiple) "m" else "s"}${if (rejected) "r" else "a"}"
 
-    def subjectLabel: Label = new KeyLabel(KEYPFX_EMAIL_SUBJECT+groupName, taskName)
+    def subjectLabel: Label =
+      new KeyLabel(KEYPFX_EMAIL_SUBJECT + groupName, taskName)
 
     def templateName: String = "notification-tasks.ftl"
 
-    def headerHello(user: UserBean): Label = NotificationLangStrings.userHeaderLabel(user)
+    def headerHello(user: UserBean): Label =
+      NotificationLangStrings.userHeaderLabel(user)
 
-    def headerReason(total: Int): Label = new KeyLabel(NotificationLangStrings.pluralKey(NotificationLangStrings.KEY_HEADER+groupName, total), taskName)
+    def headerReason(total: Int): Label =
+      new KeyLabel(NotificationLangStrings.pluralKey(
+                     NotificationLangStrings.KEY_HEADER + groupName,
+                     total),
+                   taskName)
   }
 
-  case class TaskNoteModel(lul: LazyUserLookup)(val note: Notification, val item: Item) extends TaskNotification with OwnerLookup {
+  case class TaskNoteModel(lul: LazyUserLookup)(val note: Notification,
+                                                val item: Item)
+      extends TaskNotification
+      with OwnerLookup {
     val status = Option(workflowService.getIncompleteStatus(itemTaskId))
     val currentTask: Option[WorkflowItem] = workflowItem(taskId).collect {
       case wi: WorkflowItem => wi
     }
     val getAutoAction = currentTask.flatMap { workflowItem =>
-      Option(workflowItem.getAutoAction).collect {
-        case AutoAction.ACCEPT => LABEL_AUTOACCEPT
-        case AutoAction.REJECT => LABEL_AUTOREJECT
-      }.map { l => new KeyLabel(KEY_AUTOMSG, l, new PluralKeyLabel(KEY_AUTODAYS, workflowItem.getActionDays)) }
+      Option(workflowItem.getAutoAction)
+        .collect {
+          case AutoAction.ACCEPT => LABEL_AUTOACCEPT
+          case AutoAction.REJECT => LABEL_AUTOREJECT
+        }
+        .map { l =>
+          new KeyLabel(KEY_AUTOMSG,
+                       l,
+                       new PluralKeyLabel(KEY_AUTODAYS,
+                                          workflowItem.getActionDays))
+        }
     }.orNull
     val causeStep = status.flatMap(wis => Option(wis.getCause))
-    val causeAccepted = causeStep.filter(_.getNode.getParent != null).map(_.getStatus == WorkflowNodeStatus.COMPLETE)
+    val causeAccepted = causeStep
+      .filter(_.getNode.getParent != null)
+      .map(_.getStatus == WorkflowNodeStatus.COMPLETE)
 
-    def getCauseTask = causeStep.map(wns => new BundleLabel(wns.getNode.getName, bundleCache)).orNull
+    def getCauseTask =
+      causeStep
+        .map(wns => new BundleLabel(wns.getNode.getName, bundleCache))
+        .orNull
 
-    def getCauseLabel = causeAccepted.map(if (_) LABEL_CAUSEACCEPTED else LABEL_CAUSEREJECTED).orNull
+    def getCauseLabel =
+      causeAccepted
+        .map(if (_) LABEL_CAUSEACCEPTED else LABEL_CAUSEREJECTED)
+        .orNull
 
-    val getMessages = causeStep.map(_.getComments.asScala.collect {
-      case c if msgTypes(c.getType) => new Message(lul, c)
-    }.toSeq.sortBy(_.date)).getOrElse(Seq.empty).asJava
+    val getMessages = causeStep
+      .map(
+        _.getComments.asScala
+          .collect {
+            case c if msgTypes(c.getType) => new Message(lul, c)
+          }
+          .toSeq
+          .sortBy(_.date))
+      .getOrElse(Seq.empty)
+      .asJava
 
-    def isHasCauseInfo = causeStep.isDefined && (causeAccepted.isDefined || !getMessages.isEmpty)
+    def isHasCauseInfo =
+      causeStep.isDefined && (causeAccepted.isDefined || !getMessages.isEmpty)
 
     def getDueDate = status.map(_.getDateDue).orNull
 
-    def isSingleModerator : Boolean =
-      currentTask.map(wi => workflowService.getAllModeratorUserIDs(new PropBagEx(item.getItemXml.getXml), wi))
+    def isSingleModerator: Boolean =
+      currentTask
+        .map(wi =>
+          workflowService
+            .getAllModeratorUserIDs(new PropBagEx(item.getItemXml.getXml), wi))
         .exists(_.size() == 1)
 
     override def group = note.getReason match {
-      case Notification.REASON_OVERDUE => StdNotificationGroup("notification-overdue.ftl", Notification.REASON_OVERDUE)
-      case _ => TaskGroup(!isSingleModerator, causeAccepted.exists(!_), getTaskName.getText)
+      case Notification.REASON_OVERDUE =>
+        StdNotificationGroup("notification-overdue.ftl",
+                             Notification.REASON_OVERDUE)
+      case _ =>
+        TaskGroup(!isSingleModerator,
+                  causeAccepted.exists(!_),
+                  getTaskName.getText)
     }
   }
 
-  def toFreemarkerModel(notes: Iterable[Notification]) = createDataIgnore(notes, TaskNoteModel(new LazyUserLookup(userService)))
+  def toFreemarkerModel(notes: Iterable[Notification]) =
+    createDataIgnore(notes, TaskNoteModel(new LazyUserLookup(userService)))
 }

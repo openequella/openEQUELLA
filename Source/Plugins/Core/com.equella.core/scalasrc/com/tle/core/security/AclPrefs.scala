@@ -26,14 +26,19 @@ object AclPrefs {
   private val RECENT_TARGETS = "acl.recenttargets"
   private val MAX_RECENT = 10
 
-  def getRecentTargets : Iterable[String] =
-    UserPrefs.jsonPref[Iterable[String]](RECENT_TARGETS).getOrElse(Iterable.empty)
+  def getRecentTargets: Iterable[String] =
+    UserPrefs
+      .jsonPref[Iterable[String]](RECENT_TARGETS)
+      .getOrElse(Iterable.empty)
 
-
-  def addAndRemoveRecent(add: Iterable[String], remove: Iterable[String]): Option[ExpressionError] = {
-    if (add.exists(_.contains(" "))) Some(InvalidTarget("Target contains space")) else {
-      UserPrefs.setJsonPref(RECENT_TARGETS, (add.toList ::: getRecentTargets.toList.
-        filterNot(remove.toSet)).distinct.take(MAX_RECENT))
+  def addAndRemoveRecent(add: Iterable[String],
+                         remove: Iterable[String]): Option[ExpressionError] = {
+    if (add.exists(_.contains(" ")))
+      Some(InvalidTarget("Target contains space"))
+    else {
+      UserPrefs.setJsonPref(RECENT_TARGETS,
+                            (add.toList ::: getRecentTargets.toList.filterNot(
+                              remove.toSet)).distinct.take(MAX_RECENT))
       None
     }
 

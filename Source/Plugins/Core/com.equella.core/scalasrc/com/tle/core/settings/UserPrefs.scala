@@ -29,7 +29,7 @@ object UserPrefs {
     }
   }
 
-  def setJsonPref[A : Encoder](k: String, a: A): Unit = {
+  def setJsonPref[A: Encoder](k: String, a: A): Unit = {
     LegacyGuice.userPreferenceService.setPreference(k, a.asJson.spaces2)
   }
 }

@@ -34,15 +34,18 @@ class SearchConfigApi {
 
   @GET
   @Path("config/{uuid}")
-  @ApiOperation(value = "Get search configuration", response = classOf[SearchConfig])
-  def getConfig(@PathParam("uuid") configId: UUID): Response = ApiHelper.runAndBuild {
-    ApiHelper.entityOrNotFoundDB(SearchConfigDB.readConfig(configId))
-  }
+  @ApiOperation(value = "Get search configuration",
+                response = classOf[SearchConfig])
+  def getConfig(@PathParam("uuid") configId: UUID): Response =
+    ApiHelper.runAndBuild {
+      ApiHelper.entityOrNotFoundDB(SearchConfigDB.readConfig(configId))
+    }
 
   @PUT
   @Path("config/{uuid}")
   @ApiOperation(value = "Edit search configuration")
-  def editConfig(@PathParam("uuid") configId: UUID, config: SearchConfig): Response = {
+  def editConfig(@PathParam("uuid") configId: UUID,
+                 config: SearchConfig): Response = {
     ApiHelper.runAndBuild {
       SettingsDB.ensureEditSystem {
         SearchConfigDB.writeConfig(configId, config).map(_ => Response.ok())
@@ -57,7 +60,9 @@ class SearchConfigApi {
     val newID = UUID.randomUUID()
     ApiHelper.runAndBuild {
       SettingsDB.ensureEditSystem {
-        SearchConfigDB.writeConfig(newID, config).map(_ => Response.ok().header("X-UUID", newID))
+        SearchConfigDB
+          .writeConfig(newID, config)
+          .map(_ => Response.ok().header("X-UUID", newID))
       }
     }
   }
@@ -65,30 +70,37 @@ class SearchConfigApi {
   @GET
   @Path("page/{pagename}/resolve")
   @ApiOperation("Resolve configuration for a page")
-  def resolveConfig(@PathParam("pagename") pagename: String): Response = ApiHelper.runAndBuild {
-    for {
-      config <- SearchConfigDB.readPageConfig(pagename).flatMap { sc =>
-        SearchConfigDB.readConfig(sc.configId)
-      }.value
-    } yield {
-      (config, SearchDefaults.defaultMap.get(pagename)) match {
-        case (Some(c), Some(d)) => Response.ok(SearchDefaults.mergeDefaults(d, c))
-        case (a, b) => ApiHelper.entityOrNotFound(a.orElse(b))
+  def resolveConfig(@PathParam("pagename") pagename: String): Response =
+    ApiHelper.runAndBuild {
+      for {
+        config <- SearchConfigDB
+          .readPageConfig(pagename)
+          .flatMap { sc =>
+            SearchConfigDB.readConfig(sc.configId)
+          }
+          .value
+      } yield {
+        (config, SearchDefaults.defaultMap.get(pagename)) match {
+          case (Some(c), Some(d)) =>
+            Response.ok(SearchDefaults.mergeDefaults(d, c))
+          case (a, b) => ApiHelper.entityOrNotFound(a.orElse(b))
+        }
       }
     }
-  }
 
   @GET
   @Path("page/{pagename}")
   @ApiOperation("Read configuration association for a page")
-  def readPageConfig(@PathParam("pagename") pagename: String): Response = ApiHelper.runAndBuild {
-    ApiHelper.entityOrNotFoundDB(SearchConfigDB.readPageConfig(pagename))
-  }
+  def readPageConfig(@PathParam("pagename") pagename: String): Response =
+    ApiHelper.runAndBuild {
+      ApiHelper.entityOrNotFoundDB(SearchConfigDB.readPageConfig(pagename))
+    }
 
   @PUT
   @Path("page/{pagename}")
   @ApiOperation("Edit page configuration association")
-  def editPageConfig(@PathParam("pagename") pagename: String, config: SearchPageConfig): Response =
+  def editPageConfig(@PathParam("pagename") pagename: String,
+                     config: SearchPageConfig): Response =
     ApiHelper.runAndBuild {
       SettingsDB.ensureEditSystem {
         SearchConfigDB.writePageConfig(pagename, config).map(_ => Response.ok())

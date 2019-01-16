@@ -10,17 +10,25 @@ object CommonSettings extends AutoPlugin {
     lazy val versionProperties = taskKey[File]("Version property file")
     lazy val upgradeZip = taskKey[File]("Create upgrade zip")
     lazy val installerZip = taskKey[File]("Create the installer zip")
-    lazy val equellaMajorMinor = settingKey[String]("The major minor equella version")
+    lazy val equellaMajorMinor =
+      settingKey[String]("The major minor equella version")
     lazy val equellaStream = settingKey[String]("The equella stream name")
     lazy val equellaBuild = settingKey[String]("The equella build version")
-    lazy val equellaVersion = settingKey[EquellaVersion]("The full equella version")
+    lazy val equellaVersion =
+      settingKey[EquellaVersion]("The full equella version")
     lazy val oracleDriverJar = settingKey[Option[File]]("The oracle driver jar")
-    lazy val buildConfig = settingKey[Config]("The build configuration settings")
-    lazy val prepareDevConfig = taskKey[Unit]("Prepare the dev learningedge-config folder")
-    lazy val writeSourceZip = taskKey[File]("Write out a zip containing all sources")
-    lazy val langStrings = taskKey[Seq[LangStrings]]("Fully qualified language strings")
-    lazy val writeLanguagePack = taskKey[File]("Write the default language pack")
-    lazy val writeScriptingJavadoc = taskKey[File]("Write the scripting javadoc")
+    lazy val buildConfig =
+      settingKey[Config]("The build configuration settings")
+    lazy val prepareDevConfig =
+      taskKey[Unit]("Prepare the dev learningedge-config folder")
+    lazy val writeSourceZip =
+      taskKey[File]("Write out a zip containing all sources")
+    lazy val langStrings =
+      taskKey[Seq[LangStrings]]("Fully qualified language strings")
+    lazy val writeLanguagePack =
+      taskKey[File]("Write the default language pack")
+    lazy val writeScriptingJavadoc =
+      taskKey[File]("Write the scripting javadoc")
     lazy val mergeJPF = inputKey[Unit]("Merge all")
     lazy val buildJS = taskKey[Seq[File]]("Build JS resources")
 

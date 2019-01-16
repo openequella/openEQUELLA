@@ -16,7 +16,10 @@
 
 package com.tle.core.json
 
-import com.tle.web.sections.js.generic.expression.{ArrayExpression, ObjectExpression}
+import com.tle.web.sections.js.generic.expression.{
+  ArrayExpression,
+  ObjectExpression
+}
 import com.tle.web.sections.js.{JSExpression, JSUtils}
 import io.circe.syntax._
 import io.circe.{Encoder, Json, JsonObject}
@@ -27,14 +30,22 @@ object CirceUtils {
 
     def objExpression(jsonObject: JsonObject): ObjectExpression = {
       val o = new ObjectExpression()
-      jsonObject.toIterable.foreach { case (k, v) => o.put(k, jsonToExpression(v)) }
+      jsonObject.toIterable.foreach {
+        case (k, v) => o.put(k, jsonToExpression(v))
+      }
       o
     }
 
-    JSUtils.convertExpression(j.fold(null, java.lang.Boolean.valueOf, _.toDouble,
-      identity, a => new ArrayExpression(a.map(jsonToExpression): _*), objExpression))
+    JSUtils.convertExpression(
+      j.fold(null,
+             java.lang.Boolean.valueOf,
+             _.toDouble,
+             identity,
+             a => new ArrayExpression(a.map(jsonToExpression): _*),
+             objExpression))
   }
 
-  def circeToExpression[A : Encoder](a: A): JSExpression = jsonToExpression(a.asJson)
+  def circeToExpression[A: Encoder](a: A): JSExpression =
+    jsonToExpression(a.asJson)
 
 }

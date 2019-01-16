@@ -18,32 +18,37 @@ package com.tle.web.api.users
 
 import com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings
 import com.tle.common.security.SecurityConstants
-import com.tle.common.usermanagement.user.valuebean.{GroupBean, RoleBean, UserBean}
+import com.tle.common.usermanagement.user.valuebean.{
+  GroupBean,
+  RoleBean,
+  UserBean
+}
 import com.tle.legacy.LegacyGuice
 import io.swagger.annotations.{Api, ApiParam}
 import javax.ws.rs._
 
 import scala.collection.JavaConverters._
 
-case class LookupQuery(users: Seq[String], groups: Seq[String], roles: Seq[String])
-
+case class LookupQuery(users: Seq[String],
+                       groups: Seq[String],
+                       roles: Seq[String])
 
 case class GroupQueryResult(id: String, name: String)
 
 case class RoleQueryResult(id: String, name: String)
 
-object GroupQueryResult
-{
+object GroupQueryResult {
   def apply(gb: GroupBean): GroupQueryResult =
     GroupQueryResult(gb.getUniqueID, gb.getName)
 }
 
-object RoleQueryResult
-{
-  def apply(rb: RoleBean): RoleQueryResult = RoleQueryResult(rb.getUniqueID, rb.getName)
+object RoleQueryResult {
+  def apply(rb: RoleBean): RoleQueryResult =
+    RoleQueryResult(rb.getUniqueID, rb.getName)
 }
 
-case class LookupQueryResult(users: Iterable[UserDetails], groups: Iterable[GroupQueryResult],
+case class LookupQueryResult(users: Iterable[UserDetails],
+                             groups: Iterable[GroupQueryResult],
                              roles: Iterable[RoleQueryResult])
 
 @Path("userquery/")
@@ -51,7 +56,8 @@ case class LookupQueryResult(users: Iterable[UserDetails], groups: Iterable[Grou
 @Api(value = "User queries")
 class UserQueryResource {
 
-  val exclude = Set(SecurityConstants.LOGGED_IN_USER_ROLE_ID, SecurityConstants.GUEST_USER_ROLE_ID)
+  val exclude = Set(SecurityConstants.LOGGED_IN_USER_ROLE_ID,
+                    SecurityConstants.GUEST_USER_ROLE_ID)
   @POST
   @Path("lookup")
   def lookup(queries: LookupQuery): LookupQueryResult = {
@@ -60,21 +66,25 @@ class UserQueryResource {
     val groups = us.getInformationForGroups(queries.groups.asJava)
     val roles = us.getInformationForRoles(queries.roles.asJava)
     LookupQueryResult(users.asScala.values.map(UserDetails.apply),
-      groups.asScala.values.map(GroupQueryResult.apply),
-      roles.asScala.values.map(RoleQueryResult.apply))
+                      groups.asScala.values.map(GroupQueryResult.apply),
+                      roles.asScala.values.map(RoleQueryResult.apply))
   }
 
   @GET
   @Path("search")
-  def search(@QueryParam(value="q") q : String,
-             @QueryParam("users") @DefaultValue("true") @ApiParam("Include users") susers: Boolean,
-             @QueryParam("groups") @DefaultValue("true") @ApiParam("Include groups") sgroups: Boolean,
-             @QueryParam("roles") @DefaultValue("true") @ApiParam("Include roles") sroles: Boolean) : LookupQueryResult = {
+  def search(@QueryParam(value = "q") q: String,
+             @QueryParam("users") @DefaultValue("true") @ApiParam(
+               "Include users") susers: Boolean,
+             @QueryParam("groups") @DefaultValue("true") @ApiParam(
+               "Include groups") sgroups: Boolean,
+             @QueryParam("roles") @DefaultValue("true") @ApiParam(
+               "Include roles") sroles: Boolean): LookupQueryResult = {
     val us = LegacyGuice.userService
     val users = if (susers) us.searchUsers(q).asScala else Iterable.empty
     val groups = if (sgroups) us.searchGroups(q).asScala else Iterable.empty
     val roles = if (sroles) us.searchRoles(q).asScala else Iterable.empty
-    LookupQueryResult(users.map(UserDetails.apply),
+    LookupQueryResult(
+      users.map(UserDetails.apply),
       groups.map(GroupQueryResult.apply),
       roles.filterNot(r => exclude(r.getUniqueID)).map(RoleQueryResult.apply))
   }
@@ -82,8 +92,11 @@ class UserQueryResource {
   @GET
   @Path("tokens")
   def listTokens = {
-    Option(LegacyGuice.userService.getReadOnlyPluginConfig("com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings")) match {
-      case Some(s: SharedSecretSettings) => s.getSharedSecrets.asScala.map(_.getId)
+    Option(
+      LegacyGuice.userService.getReadOnlyPluginConfig(
+        "com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings")) match {
+      case Some(s: SharedSecretSettings) =>
+        s.getSharedSecrets.asScala.map(_.getId)
       case _ => Iterable()
     }
   }

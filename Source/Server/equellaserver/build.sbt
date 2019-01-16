@@ -11,7 +11,8 @@ scalaSource in Compile := baseDirectory.value / "scalasrc"
 
 updateOptions := updateOptions.value.withCachedResolution(true)
 
-unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_config")).value
+unmanagedClasspath in Runtime += (baseDirectory in LocalProject(
+  "learningedge_config")).value
 
 val jacksonVersion = "2.9.4"
 val axis2Version = "1.6.2"
@@ -43,8 +44,9 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-base" % jacksonVersion,
   "com.fasterxml.jackson.jaxrs" % "jackson-jaxrs-json-provider" % jacksonVersion,
   "com.flickr4java" % "flickr4java" % "2.16" excludeAll (
-    ExclusionRule(organization = "org.apache.axis", name = "axis")
-    ),
+    ExclusionRule(organization = "org.apache.axis",
+                  name = "axis")
+  ),
   "com.google.api-client" % "google-api-client" % "1.20.0",
   "com.google.apis" % "google-api-services-books" % "v1-rev72-1.20.0",
   "com.google.apis" % "google-api-services-youtube" % "v3-rev136-1.20.0",
@@ -60,12 +62,10 @@ libraryDependencies ++= Seq(
   "com.miglayout" % "miglayout-swing" % "4.2",
   "com.ning" % "async-http-client" % "1.9.31",
   "com.rometools" % "rome" % "1.7.2",
-
   "io.swagger" % "swagger-core" % SwaggerVersion,
   "io.swagger" % "swagger-annotations" % SwaggerVersion,
   "io.swagger" % "swagger-jaxrs" % SwaggerVersion,
   "io.swagger" %% "swagger-scala-module" % "1.0.3",
-
   "com.zaxxer" % "HikariCP" % "2.6.1",
   "commons-beanutils" % "commons-beanutils" % "1.9.3",
   "commons-codec" % "commons-codec" % "1.7",
@@ -101,7 +101,7 @@ libraryDependencies ++= Seq(
   "org.apache.curator" % "curator-client" % "2.6.0",
   "org.apache.curator" % "curator-framework" % "2.6.0",
   "org.apache.curator" % "curator-recipes" % "2.6.0",
-  "org.apache.cxf" % "cxf-bundle" % "2.7.6" excludeAll(
+  "org.apache.cxf" % "cxf-bundle" % "2.7.6" excludeAll (
     ExclusionRule(organization = "org.apache.geronimo.specs"),
     ExclusionRule(organization = "javax.xml.bind"),
     ExclusionRule(organization = "javax.xml.soap"),
@@ -134,21 +134,22 @@ libraryDependencies ++= Seq(
   "org.apache.lucene" % "lucene-queries" % "3.5.0",
   "org.apache.pdfbox" % "pdfbox" % "1.8.7",
   "org.apache.poi" % "poi-ooxml" % "3.9",
-  "org.apache.rampart" % "rampart-core" % "1.6.2" excludeAll(
+  "org.apache.rampart" % "rampart-core" % "1.6.2" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
   ),
-  "org.apache.rampart" % "rampart-policy" % "1.6.2" excludeAll(
+  "org.apache.rampart" % "rampart-policy" % "1.6.2" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
   ),
-  "org.apache.rampart" % "rampart-trust" % "1.6.2" excludeAll(
+  "org.apache.rampart" % "rampart-trust" % "1.6.2" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
   ),
   "org.apache.struts" % "struts-core" % "1.3.10" excludeAll (
-    ExclusionRule(organization = "antlr", name = "antlr")
-    ),
+    ExclusionRule(organization = "antlr",
+                  name = "antlr")
+  ),
   "org.apache.struts" % "struts-extras" % "1.3.10",
   "org.apache.struts" % "struts-taglib" % "1.3.10",
   "org.apache.tika" % "tika-core" % "1.3",
@@ -168,8 +169,9 @@ libraryDependencies ++= Seq(
   "org.apache.ws.commons.axiom" % "axiom-impl" % "1.2.13",
   "org.apache.ws.security" % "wss4j" % "1.6.2",
   "org.apache.zookeeper" % "zookeeper" % "3.4.6" excludeAll (
-    ExclusionRule(organization = "org.slf4j", name = "slf4j-log4j12")
-    ),
+    ExclusionRule(organization = "org.slf4j",
+                  name = "slf4j-log4j12")
+  ),
   "org.bouncycastle" % "bcprov-jdk15on" % "1.51",
   "org.ccil.cowan.tagsoup" % "tagsoup" % "1.2.1",
   "org.codehaus.woodstox" % "stax2-api" % "3.1.3",
@@ -196,7 +198,7 @@ libraryDependencies ++= Seq(
   xstreamDep,
   "org.opensaml" % "xmltooling" % "1.3.1" excludeAll (
     ExclusionRule(organization = "org.slf4j")
-    ),
+  ),
   "org.ow2.asm" % "asm" % "5.0.3",
   postgresDep,
   "org.scannotation" % "scannotation" % "1.0.3",
@@ -206,8 +208,9 @@ libraryDependencies ++= Seq(
   "org.springframework" % "spring-aop" % "2.5.5",
   "org.springframework" % "spring-context" % "2.5.5",
   "org.springframework" % "spring-context-support" % "2.5.5" excludeAll (
-    ExclusionRule(organization = "jasperreports", name = "jasperreports")
-    ),
+    ExclusionRule(organization = "jasperreports",
+                  name = "jasperreports")
+  ),
   "org.springframework" % "spring-jdbc" % "2.5.5",
   "org.springframework" % "spring-tx" % "2.5.5",
   "org.springframework" % "spring-web" % "2.5.5",
@@ -217,7 +220,7 @@ libraryDependencies ++= Seq(
   "stax" % "stax-api" % "1.0.1",
   "taglibs" % "standard" % "1.1.2",
   "tomcat" % "jsp-api" % "5.5.23",
-  "com.github.equella.legacy" % "qtiworks-jqtiplus" % "1.0-beta3" excludeAll(
+  "com.github.equella.legacy" % "qtiworks-jqtiplus" % "1.0-beta3" excludeAll (
     ExclusionRule(organization = "org.slf4j"),
     ExclusionRule(organization = "ch.qos.logback"),
     ExclusionRule(organization = "net.sf.saxon")
@@ -263,10 +266,13 @@ unmanagedJars in Compile ++= oracleDriverJar.value.toSeq.classpath
 
 run := {
   val cp = (fullClasspath in Runtime).value
-  val o = ForkOptions().withRunJVMOptions(Vector(
-    "-cp", Path.makeString(cp.files),
-    "-Dequella.devmode=true", "-Dequella.autotest=true"
-  ))
+  val o = ForkOptions().withRunJVMOptions(
+    Vector(
+      "-cp",
+      Path.makeString(cp.files),
+      "-Dequella.devmode=true",
+      "-Dequella.autotest=true"
+    ))
   Fork.java(o, Seq("com.tle.core.equella.runner.EQUELLAServer"))
 }
 
@@ -275,20 +281,27 @@ mainClass in assembly := Some("com.tle.core.equella.runner.EQUELLAServer")
 fullClasspath in assembly := (fullClasspath in Compile).value
 
 assemblyMergeStrategy in assembly := {
-  case PathList("META-INF", "axiom.xml") => MergeStrategy.first
-  case PathList("javax", "wsdl", _*) => MergeStrategy.last
-  case PathList("com", "ibm", "wsdl", _*) => MergeStrategy.first
-  case PathList("org", "apache", "regexp", _*) => MergeStrategy.first
-  case PathList("javax", "servlet", "jsp", _*) => MergeStrategy.first
-  case PathList("javax", "annotation", _*) => MergeStrategy.first
-  case PathList("org", "w3c", "dom", _*) => MergeStrategy.first
-  case PathList("META-INF", "mailcap") => MergeStrategy.first
-  case PathList("META-INF", "mimetypes.default") => MergeStrategy.first
+  case PathList("META-INF", "axiom.xml")            => MergeStrategy.first
+  case PathList("javax", "wsdl", _*)                => MergeStrategy.last
+  case PathList("com", "ibm", "wsdl", _*)           => MergeStrategy.first
+  case PathList("org", "apache", "regexp", _*)      => MergeStrategy.first
+  case PathList("javax", "servlet", "jsp", _*)      => MergeStrategy.first
+  case PathList("javax", "annotation", _*)          => MergeStrategy.first
+  case PathList("org", "w3c", "dom", _*)            => MergeStrategy.first
+  case PathList("META-INF", "mailcap")              => MergeStrategy.first
+  case PathList("META-INF", "mimetypes.default")    => MergeStrategy.first
   case PathList("META-INF", "javamail.charset.map") => MergeStrategy.first
-  case PathList("javax", "activation", _*) => MergeStrategy.first
-  case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first
-  case PathList("junit", _*) => MergeStrategy.discard
-  case PathList("org", "apache", "axis2", "transport", "http", "util", "ComplexPart.class") => MergeStrategy.first
+  case PathList("javax", "activation", _*)          => MergeStrategy.first
+  case PathList("org", "xmlpull", "v1", _*)         => MergeStrategy.first
+  case PathList("junit", _*)                        => MergeStrategy.discard
+  case PathList("org",
+                "apache",
+                "axis2",
+                "transport",
+                "http",
+                "util",
+                "ComplexPart.class") =>
+    MergeStrategy.first
   case x =>
     val oldStrategy = (assemblyMergeStrategy in assembly).value
     oldStrategy(x)
@@ -299,22 +312,25 @@ lazy val collectJars = taskKey[Set[File]]("Collect jars")
 collectJars := {
   val destDir = target.value / "jars"
   IO.delete(destDir)
-  IO.copy((managedClasspath in Compile).value.map(af => (af.data, destDir / af.data.getName)))
+  IO.copy((managedClasspath in Compile).value.map(af =>
+    (af.data, destDir / af.data.getName)))
 }
 
-lazy val allPlugins : ProjectReference = LocalProject("allPlugins")
+lazy val allPlugins: ProjectReference = LocalProject("allPlugins")
 runnerTasks(allPlugins)
 
 additionalPlugins := {
-  ((baseDirectory in allPlugins).value / "Extensions" * "*" * "plugin-jpf.xml").get.map {
-    mf => JPFRuntime(mf, Seq.empty, Seq.empty, Seq.empty, "Extensions")
-  }
+  ((baseDirectory in allPlugins).value / "Extensions" * "*" * "plugin-jpf.xml").get
+    .map { mf =>
+      JPFRuntime(mf, Seq.empty, Seq.empty, Seq.empty, "Extensions")
+    }
 }
 
 upgradeZip := {
   val log = streams.value.log
   val ver = equellaVersion.value
-  val outZip: File = target.value / s"tle-upgrade-${ver.majorMinor}.r${ver.commits} (${ver.majorMinor}-${ver.releaseType}).zip"
+  val outZip
+    : File = target.value / s"tle-upgrade-${ver.majorMinor}.r${ver.commits} (${ver.majorMinor}-${ver.releaseType}).zip"
   val plugVer = ver.fullVersion
   val zipFiles = Seq(
     assembly.value -> "equella-server.jar",
@@ -322,7 +338,8 @@ upgradeZip := {
     (assembly in LocalProject("conversion")).value -> "conversion-service.jar",
     (versionProperties in LocalProject("equella")).value -> "version.properties"
   )
-  val pluginJars = writeJars.value.map(t => (t.file, s"plugins/${t.group}/${t.pluginId}-$plugVer.jar"))
+  val pluginJars = writeJars.value.map(t =>
+    (t.file, s"plugins/${t.group}/${t.pluginId}-$plugVer.jar"))
   log.info(s"Creating upgrade zip ${outZip.absolutePath}")
   IO.zip(zipFiles ++ pluginJars, outZip)
   outZip
@@ -335,7 +352,8 @@ lazy val sourcesForZip = Def.task[Seq[(File, String)]] {
 
 writeSourceZip := {
   val outZip = target.value / "equella-sources.zip"
-  val allSrcs = sourcesForZip.all(ScopeFilter(inAggregates(allPlugins))).value.flatten
+  val allSrcs =
+    sourcesForZip.all(ScopeFilter(inAggregates(allPlugins))).value.flatten
   sLog.value.info(s"Zipping all sources into $outZip")
   IO.zip(allSrcs, outZip)
   outZip

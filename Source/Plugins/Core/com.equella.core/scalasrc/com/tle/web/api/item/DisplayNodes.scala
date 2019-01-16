@@ -24,24 +24,30 @@ import com.tle.web.api.item.interfaces.beans.MetaDisplay
 
 import scala.collection.JavaConverters._
 
-
 object DisplayNodes {
 
   def create(itemxml: PropBagEx)(dn: DisplayNode): Option[MetaDisplay] = {
     val nodePath = dn.getNode
-    val valueText = if (nodePath.indexOf('@') != -1)
-    {
+    val valueText = if (nodePath.indexOf('@') != -1) {
       itemxml.getNode(nodePath)
     } else {
       val _splitter = dn.getSplitter
-      val splitter = if (dn.getType == "text") Utils.unent(_splitter) else _splitter
-      itemxml.iterateAll(nodePath).iterator().asScala.map { x =>
-        LangUtils.getString(LangUtils.getBundleFromXml(x), "")
-      }.mkString(splitter)
+      val splitter =
+        if (dn.getType == "text") Utils.unent(_splitter) else _splitter
+      itemxml
+        .iterateAll(nodePath)
+        .iterator()
+        .asScala
+        .map { x =>
+          LangUtils.getString(LangUtils.getBundleFromXml(x), "")
+        }
+        .mkString(splitter)
     }
     if (valueText.nonEmpty) Some {
-      MetaDisplay(LangUtils.getString(dn.getTitle), valueText, !dn.isDoubleMode, dn.getType)
-    }
-    else None
+      MetaDisplay(LangUtils.getString(dn.getTitle),
+                  valueText,
+                  !dn.isDoubleMode,
+                  dn.getType)
+    } else None
   }
 }

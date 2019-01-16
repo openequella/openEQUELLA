@@ -21,7 +21,8 @@ import com.tle.web.controls.universal.StagingContext
 
 object StandardFileCreate {
 
-  def fileAttachmentFromUpload(uploaded: SuccessfulUpload, suppressThumb: Boolean): AttachmentCreate = {
+  def fileAttachmentFromUpload(uploaded: SuccessfulUpload,
+                               suppressThumb: Boolean): AttachmentCreate = {
     def createStaged(stg: StagingContext) = {
       val fa = new FileAttachment
       fa.setFilename(uploaded.uploadPath)
@@ -38,11 +39,15 @@ object StandardFileCreate {
       case fa: FileAttachment =>
         stg.moveFile(uploaded.uploadPath, uploaded.originalFilename)
         fa.setFilename(uploaded.originalFilename)
-        fa.setThumbnail(if (suppressThumb) WebFileUploads.SUPPRESS_THUMB_VALUE else stg.thumbRequest(uploaded.originalFilename))
+        fa.setThumbnail(
+          if (suppressThumb) WebFileUploads.SUPPRESS_THUMB_VALUE
+          else stg.thumbRequest(uploaded.originalFilename))
         stg.deregisterFilename(uploaded.id)
         fa
     }
 
-    AttachmentCreate(createStaged, commit, (_, stg) => stg.delete(uploaded.uploadPath))
+    AttachmentCreate(createStaged,
+                     commit,
+                     (_, stg) => stg.delete(uploaded.uploadPath))
   }
 }

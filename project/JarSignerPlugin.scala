@@ -8,7 +8,7 @@ import CommonSettings.autoImport._
 
 object JarSignerPlugin extends AutoPlugin {
 
-  var lastSignTime : Option[Instant] = None
+  var lastSignTime: Option[Instant] = None
 
   override def trigger: PluginTrigger = noTrigger
 
@@ -28,7 +28,8 @@ object JarSignerPlugin extends AutoPlugin {
   override def projectSettings = Seq(
     (keystore in ThisBuild) := {
       val c = buildConfig.value
-      if (c.hasPath("signer.keystore")) file(c.getString("signer.keystore")) else {
+      if (c.hasPath("signer.keystore")) file(c.getString("signer.keystore"))
+      else {
         (baseDirectory in ThisProject).value / "generated.keystore"
       }
     },
@@ -38,58 +39,72 @@ object JarSignerPlugin extends AutoPlugin {
     },
     (storePassword in ThisBuild) := {
       val c = buildConfig.value
-      if (c.hasPath("signer.storePassword")) c.getString("signer.storePassword") else "genpassword"
+      if (c.hasPath("signer.storePassword")) c.getString("signer.storePassword")
+      else "genpassword"
     },
     (keyPassword in ThisBuild) := {
       val c = buildConfig.value
-      if (c.hasPath("signer.keyPassword")) Some(c.getString("signer.keyPassword")) else None
+      if (c.hasPath("signer.keyPassword"))
+        Some(c.getString("signer.keyPassword"))
+      else None
     },
     (tsaUrl in ThisBuild) := {
       val c = buildConfig.value
       val seconds = c.getInt("signer.tsaDelay")
-      if (c.hasPath("signer.tsaUrl")) Some((c.getString("signer.tsaUrl"), seconds)) else None
+      if (c.hasPath("signer.tsaUrl"))
+        Some((c.getString("signer.tsaUrl"), seconds))
+      else None
     },
-    (jarSigner in ThisBuild) := {
-      (inJar, outJar) =>
-        val log = sLog.value
-        val keyFile = keystore.value
-        val alias = keyAlias.value
-        val spasswd = storePassword.value
-        val kpasswd = keyPassword.value
-        if (!keyFile.exists) {
-          log.info(s"Keystore ${keyFile.absolutePath} does not exist, creating.")
-          val cmd = List(
-            "keytool", "-genkey",
-            "-alias", alias,
-            "-keystore", keyFile.absolutePath,
-            "-storepass", spasswd,
-            "-keypass", kpasswd.getOrElse(spasswd),
-            "-dname", "CN=equella"
-          )
-          cmd !
-        }
-        outJar.getParentFile.mkdirs()
-        val ops = Seq(
-          "jarsigner", "-keystore", keyFile.toURI.toString,
-          "-storepass", spasswd,
-          "-signedjar", outJar.absolutePath
-        ) ++ kpasswd.map(kp => List("-keypass", kp)).getOrElse(Nil) ++
-          tsaUrl.value.map(u => List("-tsa", u._1)).getOrElse(Nil) ++
-          List(inJar.absolutePath, alias)
-        tsaUrl.value.foreach {
-          case (_, seconds) =>
-            while (lastSignTime.exists(_.plus(seconds, ChronoUnit.SECONDS).isAfter(Instant.now()))) {
-              log.info(s"Jar signer ran less than $seconds seconds ago - waiting")
-              Thread.sleep(5000L)
-            }
-        }
-        lastSignTime = Some(Instant.now())
-        log.info(s"Signing jar ${inJar.absolutePath} to ${outJar.absolutePath}")
-        val exResult = (ops !)
-        if (exResult != 0)
-        {
-          sys.error(s"jarsigner exited with code $exResult")
-        }
+    (jarSigner in ThisBuild) := { (inJar, outJar) =>
+      val log = sLog.value
+      val keyFile = keystore.value
+      val alias = keyAlias.value
+      val spasswd = storePassword.value
+      val kpasswd = keyPassword.value
+      if (!keyFile.exists) {
+        log.info(s"Keystore ${keyFile.absolutePath} does not exist, creating.")
+        val cmd = List(
+          "keytool",
+          "-genkey",
+          "-alias",
+          alias,
+          "-keystore",
+          keyFile.absolutePath,
+          "-storepass",
+          spasswd,
+          "-keypass",
+          kpasswd.getOrElse(spasswd),
+          "-dname",
+          "CN=equella"
+        )
+        cmd !
+      }
+      outJar.getParentFile.mkdirs()
+      val ops = Seq(
+        "jarsigner",
+        "-keystore",
+        keyFile.toURI.toString,
+        "-storepass",
+        spasswd,
+        "-signedjar",
+        outJar.absolutePath
+      ) ++ kpasswd.map(kp => List("-keypass", kp)).getOrElse(Nil) ++
+        tsaUrl.value.map(u => List("-tsa", u._1)).getOrElse(Nil) ++
+        List(inJar.absolutePath, alias)
+      tsaUrl.value.foreach {
+        case (_, seconds) =>
+          while (lastSignTime.exists(_.plus(seconds, ChronoUnit.SECONDS)
+                   .isAfter(Instant.now()))) {
+            log.info(s"Jar signer ran less than $seconds seconds ago - waiting")
+            Thread.sleep(5000L)
+          }
+      }
+      lastSignTime = Some(Instant.now())
+      log.info(s"Signing jar ${inJar.absolutePath} to ${outJar.absolutePath}")
+      val exResult = (ops !)
+      if (exResult != 0) {
+        sys.error(s"jarsigner exited with code $exResult")
+      }
     }
   )
 }

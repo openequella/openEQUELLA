@@ -8,19 +8,42 @@ langStrings := {
   val baseJs = baseDirectory.value / "js"
   Common.runYarn("build:langbundle", baseJs)
   val bundle =
-    decode[Map[String, String]](IO.read(baseJs / "target/resources/lang/jsbundle.json")).fold(throw _, identity)
+    decode[Map[String, String]](
+      IO.read(baseJs / "target/resources/lang/jsbundle.json"))
+      .fold(throw _, identity)
   val pluginLangStrings = langStrings.value
   Seq(
-    Common.loadLangProperties(langDir / "i18n-resource-centre.properties", "", "resource-centre"),
-    Common.loadLangProperties(langDir / "i18n-admin-console.properties", "", "admin-console"),
+    Common.loadLangProperties(langDir / "i18n-resource-centre.properties",
+                              "",
+                              "resource-centre"),
+    Common.loadLangProperties(langDir / "i18n-admin-console.properties",
+                              "",
+                              "admin-console"),
     LangStrings("newui", false, bundle)
   ) ++ pluginLangStrings
 }
 
-lazy val jql = Seq("jquery.fancybox.js", "jquery.ui.datepicker.js", "jquery.ui.draggable.js", "jquery.ui.droppable.js",
-  "jquery.ui.mouse.js", "jquery.ui.resizable.js", "jquery.scrollTo.js", "jquery.ui.slider.js", "jquery.ui.sortable.js",
-  "jquery.stars.js", "jquery.stylish-select.js", "jquery.ui.tabs.js", "jquery.hint.js", "jquery.timer.js", "jquery.ui.accordion.js",
-  "jquery.ui.autocomplete.js", "jquery.ui.core.js", "jquery.ui.effect.js", "jquery.ui.menu.js", "jquery.ui.position.js",
+lazy val jql = Seq(
+  "jquery.fancybox.js",
+  "jquery.ui.datepicker.js",
+  "jquery.ui.draggable.js",
+  "jquery.ui.droppable.js",
+  "jquery.ui.mouse.js",
+  "jquery.ui.resizable.js",
+  "jquery.scrollTo.js",
+  "jquery.ui.slider.js",
+  "jquery.ui.sortable.js",
+  "jquery.stars.js",
+  "jquery.stylish-select.js",
+  "jquery.ui.tabs.js",
+  "jquery.hint.js",
+  "jquery.timer.js",
+  "jquery.ui.accordion.js",
+  "jquery.ui.autocomplete.js",
+  "jquery.ui.core.js",
+  "jquery.ui.effect.js",
+  "jquery.ui.menu.js",
+  "jquery.ui.position.js",
   "jquery.ui.widget.js"
 )
 lazy val jqlc = Seq("fancybox/jquery.fancybox.css", "jquery.stylish-select.css")
@@ -39,8 +62,8 @@ yuiResources := {
     (jqlDir * "jquery.ui.effect-*.js").get
 }
 
-yuiResources ++= Seq("js/bootstrap.js", "css/bootstrap.css").
-  map(p => (resourceDirectory in Compile).value / "web/bootstrap" / p)
+yuiResources ++= Seq("js/bootstrap.js", "css/bootstrap.css").map(p =>
+  (resourceDirectory in Compile).value / "web/bootstrap" / p)
 
 enablePlugins(YUICompressPlugin)
 
@@ -51,22 +74,39 @@ sourceGenerators in Compile += Def.task {
   val equellaWSDL = baseDirectory.value / "EQUELLA.WS.wsdl"
   val contextWSDL = baseDirectory.value / "Context.WS.wsdl"
 
-  WSDL2Java.main(Array(
-    "-o", gensrc.getAbsolutePath, "-S", ".", "-d", "adb",
-    "-p", "com.tle.core.connectors.blackboard.webservice",
-    "-uri", equellaWSDL.getAbsolutePath
-  ))
-  WSDL2Java.main(Array(
-    "-o", gensrc.getAbsolutePath, "-S", ".", "-d", "adb",
-    "-p", "com.blackboard",
-    "-uri", contextWSDL.getAbsolutePath
-  ))
+  WSDL2Java.main(
+    Array(
+      "-o",
+      gensrc.getAbsolutePath,
+      "-S",
+      ".",
+      "-d",
+      "adb",
+      "-p",
+      "com.tle.core.connectors.blackboard.webservice",
+      "-uri",
+      equellaWSDL.getAbsolutePath
+    ))
+  WSDL2Java.main(
+    Array(
+      "-o",
+      gensrc.getAbsolutePath,
+      "-S",
+      ".",
+      "-d",
+      "adb",
+      "-p",
+      "com.blackboard",
+      "-uri",
+      contextWSDL.getAbsolutePath
+    ))
   (gensrc ** "*.java").get
 }.taskValue
 
 resourceGenerators in Compile += Def.task {
   val base = (resourceManaged in Compile).value
-  IO.copy(Some(versionProperties.value -> base / "web/version.properties")).toSeq
+  IO.copy(Some(versionProperties.value -> base / "web/version.properties"))
+    .toSeq
 }.taskValue
 
 lazy val inplaceEditorJar = project in file("jarsrc")
@@ -92,7 +132,10 @@ buildJS := {
   Common.runYarn("build", baseJs)
   val outDir = (resourceManaged in Compile).value
   val baseJsTarget = baseJs / "target/resources"
-  IO.copy((baseJsTarget ** ("*.js"|"*.css"|"*.json")).pair(rebase(baseJsTarget, outDir))).toSeq
+  IO.copy(
+      (baseJsTarget ** ("*.js" | "*.css" | "*.json"))
+        .pair(rebase(baseJsTarget, outDir)))
+    .toSeq
 }
 
 resourceGenerators in Compile += buildJS.taskValue

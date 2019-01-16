@@ -10,13 +10,14 @@ libraryDependencies := Seq(
   "com.thoughtworks.xstream" % "xstream-hibernate" % "1.4.9" excludeAll (
     ExclusionRule(organization = "org.hibernate")
   ),
-  "org.springframework" % "spring-orm" % "2.5.5" excludeAll(
+  "org.springframework" % "spring-orm" % "2.5.5" excludeAll (
     ExclusionRule(organization = "com.oracle", name = "toplink-essentials"),
     ExclusionRule(organization = "org.springframework", name = "spring-beans"),
     ExclusionRule(organization = "org.springframework", name = "spring-tx"),
     ExclusionRule(organization = "org.springframework", name = "spring-core"),
     ExclusionRule(organization = "org.springframework", name = "spring-context")
-  )).map(_ % Hibernate)
+  )
+).map(_ % Hibernate)
 
 excludeDependencies ++= Seq(
   "org.slf4j" % "slf4j-api",
@@ -26,6 +27,7 @@ excludeDependencies ++= Seq(
   "aopalliance" % "aopalliance"
 )
 
-ivyConfigurations := overrideConfigs(Hibernate, CustomCompile)(ivyConfigurations.value)
+ivyConfigurations := overrideConfigs(Hibernate, CustomCompile)(
+  ivyConfigurations.value)
 
 jpfLibraryJars := Classpaths.managedJars(Hibernate, Set("jar"), update.value)

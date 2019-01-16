@@ -37,12 +37,15 @@ object UISettings {
 
   val defaultSettings = UISettings(NewUISettings(enabled = false))
 
-  val getUISettings: DB[Option[UISettings]] = SettingsDB.jsonProperty[UISettings](UIPropName).value
+  val getUISettings: DB[Option[UISettings]] =
+    SettingsDB.jsonProperty[UISettings](UIPropName).value
 
-  implicit val cacheable = InstCacheable[Option[UISettings]]("uiSettings", getUISettings)
+  implicit val cacheable =
+    InstCacheable[Option[UISettings]]("uiSettings", getUISettings)
 
-  def setUISettings(in: UISettings): DB[IO[Unit]] = SettingsDB.setJsonProperty(UIPropName, in) *>
-    Cache.invalidate[Option[UISettings]]
+  def setUISettings(in: UISettings): DB[IO[Unit]] =
+    SettingsDB.setJsonProperty(UIPropName, in) *>
+      Cache.invalidate[Option[UISettings]]
 
   def cachedUISettings: DB[Option[UISettings]] = Cache.get[Option[UISettings]]
 }
